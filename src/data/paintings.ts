@@ -64,18 +64,21 @@ export const COLLECTIONS: Collection[] = [
     title: "Habundia — Seven Wild Flowers of the British Isles",
     description:
       "Stephen spent his life studying the sacred geometry of ancient temples, Persian courts and Tibetan monasteries. In 2018, he turned to the fields outside his door.\n\nA series of British wild flower mandalas, each painted with oil pressed from the flower it depicts, each built on the same geometric precision he brought to every canvas.\n\nHabundia is the medieval spirit of wild abundance. She is not cultivated. She cannot be controlled. Stephen named this series after her because the flowers he chose share that quality: they appear where they will, in their season, without permission.\n\nHe found the same ancient geometry in all of them.",
+    backdropImage: "/img/scenes/habundia.jpg",
   },
   {
     id: "genesis",
     title: "Genesis Mandalas",
     description:
       "Stephen had been exploring geometry in private sketchbooks for years, learning the techniques of Celtic and Persian pattern making, studying the decorative arts of Gothic Europe and Tibet. In 1999, while studying Architecture at the University of Brighton, he made his first major mandala.\n\nThese are the Genesis paintings — three works from the earliest years of his life as a mandala artist, made between 1999 and 2001. The works that opened Stephen's practice and established its three foundations: sacred number, divine encounter, and nature's rarest geometry.",
+    backdropImage: "/img/scenes/genesis.jpg",
   },
   {
     id: "born-in-the-sky",
     title: "Born in the Sky",
     description:
       "Stephen worked at night. While the world slept, he was at his canvas, alone with geometry and gold leaf and the dark outside the window. He understood, more than most, what it felt like to carry knowledge that set you apart. To see things others didn't look for. To find more companionship in the sky than in a room full of people.\n\nThese five paintings came from that place. Each one about something above us that most people never notice: a constellation left out, a comet on its only pass, a message sent into deep space not knowing if it will ever be received, nine stars in the shape of a swan.\n\nThings that exist beyond the edge of what is commonly seen or celebrated. Stephen found them beautiful. He spent months, sometimes over a year, bringing each one down to earth.\n\nHe called the Enneagon a painting born in the sky. All five of these were.",
+    backdropImage: "/img/scenes/born-in-the-sky.jpg",
   },
 ];
 
