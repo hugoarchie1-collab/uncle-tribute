@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
+import { CollectionBackdrop } from "../components/CollectionBackdrop";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 
 export const Collections = () => (
@@ -9,22 +10,26 @@ export const Collections = () => (
       <header className="collections-hero">
         <h1 className="collections-title">The Collections</h1>
         <p className="collections-subtitle">
-          Three bodies of work, made over thirty years.
+          Three bodies of work. Earth, water, sky.
         </p>
       </header>
 
       {COLLECTIONS.map((coll) => {
         const items = PAINTINGS.filter((p) => p.collection === coll.id);
         return (
-          <section key={coll.id} className="collection-section">
-            <header className="collection-header">
-              <h2 className="collection-title">{coll.title}</h2>
-              <div className="collection-description">
-                {coll.description.split("\n\n").map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
+          <section key={coll.id} className={`collection-section collection-section--${coll.id}`}>
+            <div className="collection-hero">
+              <CollectionBackdrop collectionId={coll.id} photoUrl={coll.backdropImage} />
+              <div className="collection-hero__overlay" />
+              <div className="collection-hero__content">
+                <h2 className="collection-title">{coll.title}</h2>
+                <div className="collection-description">
+                  {coll.description.split("\n\n").map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
+                </div>
               </div>
-            </header>
+            </div>
 
             <div className="painting-grid">
               {items.map((painting) => {

@@ -39,6 +39,19 @@ export interface Collection {
   id: "habundia" | "genesis" | "born-in-the-sky";
   title: string;
   description: string;
+  /**
+   * Optional path to a real photograph to use as the collection hero backdrop.
+   * If present, this overrides the hand-drawn SVG scene.
+   *
+   * Source images (Earth → Water → Sky):
+   *   habundia:        ancient British woodland, dawn light through canopy, bluebells
+   *   genesis:         bioluminescent ocean at night, electric blue/teal blooms
+   *   born-in-the-sky: Milky Way arching over a dark horizon, dense star field
+   *
+   * Save the file at e.g. /public/img/scenes/habundia.jpg and reference it as
+   * "/img/scenes/habundia.jpg".
+   */
+  backdropImage?: string;
 }
 
 // -----------------------------------------------------------------------------
