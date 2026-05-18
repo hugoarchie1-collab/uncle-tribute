@@ -5,9 +5,12 @@ import { PaintingDetail } from "./pages/PaintingDetail";
 import { About } from "./pages/About";
 import "./styles/global.css";
 
+// Strip the trailing slash so React Router treats "/" correctly under any base.
+const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/collections" element={<Collections />} />

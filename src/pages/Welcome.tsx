@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { CaveIntro } from "../components/CaveIntro";
 import { AudioPlayer } from "../components/AudioPlayer";
 import { Nav } from "../components/Nav";
@@ -45,10 +46,10 @@ export const Welcome = () => {
           </section>
 
           <section className="welcome-cta">
-            <a href="/collections" className="cta-link">
+            <Link to="/collections" className="cta-link">
               Enter the Collections
               <span aria-hidden="true"> →</span>
-            </a>
+            </Link>
           </section>
         </main>
       </div>
