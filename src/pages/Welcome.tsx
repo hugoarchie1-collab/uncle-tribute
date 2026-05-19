@@ -20,11 +20,11 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative">
-          {/* HERO — centered editorial quote */}
-          <section className="mx-auto max-w-[1100px] px-6 md:px-10 lg:px-16 pt-32 md:pt-44 pb-20 md:pb-28 text-center">
+          {/* HERO — centered editorial quote (tightened so it doesn't read as a giant banner after the video) */}
+          <section className="mx-auto max-w-[1000px] px-6 md:px-10 lg:px-16 pt-16 md:pt-24 pb-16 md:pb-20 text-center">
             <Reveal>
               <blockquote className="m-0 border-0 p-0">
-                <p className="font-display italic font-normal leading-[1.05] tracking-[-0.02em] text-ink m-0 mb-8 text-balance text-[clamp(44px,7.5vw,96px)]">
+                <p className="font-display italic font-normal leading-[1.06] tracking-[-0.02em] text-ink m-0 mb-6 text-balance text-[clamp(36px,5.6vw,72px)]">
                   {WELCOME.openingQuote}
                 </p>
                 <cite className="not-italic font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/55">
