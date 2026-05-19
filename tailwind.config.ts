@@ -19,14 +19,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         // Two families only.
-        // Display — Bricolage Grotesque (variable, designer feel, edgy bold)
-        display: [
-          '"Bricolage Grotesque"',
-          "Inter",
-          "-apple-system",
-          "sans-serif",
-        ],
-        // Body — Inter, refined legibility
+        // Display — Bodoni Moda (bold editorial serif, ALET reference vibe)
+        display: ['"Bodoni Moda"', "Georgia", "serif"],
+        // Body — Inter, refined sans
         sans: [
           "Inter",
           "-apple-system",

@@ -10,8 +10,6 @@ import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
-const CAP = "(n/a)";
-
 export const Welcome = () => {
   usePageTitle();
 
@@ -225,11 +223,8 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* SUNSTAR IMAGE — small, centered, (n/a) ABOVE */}
+          {/* SUNSTAR IMAGE — small, centered, no caption */}
           <Reveal as="figure" className="m-0 mx-auto max-w-[480px] px-4 pb-8 pt-4 text-center">
-            <figcaption className="mb-3 font-sans text-[10px] font-bold tracking-[0.38em] uppercase text-ink/40">
-              {CAP}
-            </figcaption>
             <ImageReveal
               src="/img/welcome/05-arista-sunstar.jpg"
               alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
