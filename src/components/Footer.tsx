@@ -4,7 +4,9 @@ import { Logo } from "./Logo";
 const YEAR = new Date().getFullYear();
 
 /**
- * Site-wide footer. Mandala wordmark, links, socials, copyright.
+ * Site-wide footer. Minimal — logo, primary nav, studio address (from the
+ * PDF), social/contact slots (placeholders the user fills in later) and
+ * the copyright line. No invented taglines.
  *
  * Social media URLs are intentionally left as "#" placeholders — fill them
  * in `socialLinks` below when ready.
@@ -17,16 +19,9 @@ const socialLinks: { label: string; href: string }[] = [
 
 export const Footer = () => (
   <footer className="site-footer" role="contentinfo">
-    <div className="site-footer__wordmark" aria-hidden="true">
-      Mandala.
-    </div>
-
     <div className="site-footer__grid">
       <div className="site-footer__col site-footer__col--brand">
         <Logo size={28} wordmark />
-        <p className="site-footer__tagline">
-          A life devoted to the geometry of light, pattern and the ever-true.
-        </p>
       </div>
 
       <div className="site-footer__col">
@@ -52,7 +47,11 @@ export const Footer = () => (
         <ul className="site-footer__list">
           {socialLinks.map((s) => (
             <li key={s.label}>
-              <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer noopener">
+              <a
+                href={s.href}
+                target={s.href.startsWith("http") ? "_blank" : undefined}
+                rel="noreferrer noopener"
+              >
                 {s.label}
               </a>
             </li>

@@ -234,18 +234,6 @@ p { margin: 0; }
   color: var(--ink-soft);
   background: var(--bg);
 }
-.site-footer__wordmark {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(72px, 16vw, 220px);
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-  margin: 0 auto 80px;
-  text-align: center;
-  max-width: var(--max-wide);
-  opacity: 0.95;
-}
 .site-footer__grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -253,16 +241,7 @@ p { margin: 0; }
   max-width: var(--max-section);
   margin: 0 auto 60px;
 }
-.site-footer__col--brand .logo { margin-bottom: 18px; }
-.site-footer__tagline {
-  margin: 0;
-  max-width: 320px;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--ink-soft);
-}
+.site-footer__col--brand .logo { margin-bottom: 0; }
 .site-footer__heading {
   margin: 0 0 18px;
   font-family: var(--font-sans);
@@ -1159,8 +1138,7 @@ p { margin: 0; }
   .welcome-paragraph { font-size: 16px; }
   .welcome-passing { font-size: 18px; padding: 20px 0; }
 
-  .welcome-garden, .collections-hero { padding: 60px 0; }
-  .welcome-garden__grid, .painting-grid { grid-template-columns: 1fr; gap: 32px; }
+  .painting-grid { grid-template-columns: 1fr; gap: 32px; }
 
   .collection-hero { min-height: 320px; }
   .collection-hero__content { padding: 32px 24px; }
@@ -1177,7 +1155,6 @@ p { margin: 0; }
   .about-pullquote { padding: 28px 24px; }
 
   .site-footer { padding: 60px 20px 40px; margin-top: 80px; }
-  .site-footer__wordmark { margin-bottom: 48px; }
   .site-footer__grid { grid-template-columns: 1fr; gap: 36px; }
   .site-footer__col--brand { grid-column: auto; }
   .site-footer__legal { flex-direction: column; align-items: flex-start; gap: 8px; }
