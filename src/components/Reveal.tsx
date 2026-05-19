@@ -5,7 +5,7 @@ interface RevealProps {
   children: ReactNode;
   delay?: number;
   className?: string;
-  as?: "div" | "section" | "article" | "figure" | "header";
+  as?: "div" | "section" | "article" | "figure" | "header" | "ul";
   offset?: number;
   once?: boolean;
 }

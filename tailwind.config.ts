@@ -18,9 +18,15 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        // Display — Cormorant Garamond, classical fine-art serif
-        display: ['"Cormorant Garamond"', "ui-serif", "Georgia", "serif"],
-        // Body — Inter, refined legibility
+        // Display + body — Inter, bold sans-serif (Ovalen reference)
+        display: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          "sans-serif",
+        ],
         sans: [
           "Inter",
           "-apple-system",
@@ -29,7 +35,7 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        // Pull-quote — Cormorant italic
+        // Editorial pull-quote only (used sparingly)
         serif: ['"Cormorant Garamond"', "Georgia", "serif"],
       },
       letterSpacing: {

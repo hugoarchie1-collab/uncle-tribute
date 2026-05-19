@@ -96,7 +96,7 @@ export const PaintingDetail = () => {
                 <Badge variant="accent">{collection.title}</Badge>
               </div>
             )}
-            <h1 className="font-display font-bold italic tracking-[-0.025em] leading-[1.02] text-[clamp(40px,5.4vw,72px)] text-ink m-0 mb-6">
+            <h1 className="font-display font-bold tracking-[-0.04em] leading-[1.0] text-[clamp(36px,4.8vw,64px)] text-ink m-0 mb-6">
               {painting.title}
             </h1>
 
@@ -126,7 +126,7 @@ export const PaintingDetail = () => {
           {painting.artistQuote && (
             <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto">
               <blockquote className="m-0 pl-6 border-l-2 border-accent py-2 text-center">
-                <p className="font-display italic font-semibold text-[clamp(18px,1.9vw,22px)] leading-[1.55] text-ink m-0 mb-3">
+                <p className="font-serif italic font-medium text-[clamp(18px,1.9vw,22px)] leading-[1.55] text-ink m-0 mb-3">
                   &ldquo;{painting.artistQuote}&rdquo;
                 </p>
                 <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/60">
@@ -162,7 +162,7 @@ export const PaintingDetail = () => {
             </p>
 
             {hasAlternateColourways && (
-              <p className="font-display italic font-medium text-[15px] leading-[1.6] text-ink/85 m-0 mb-6">
+              <p className="font-serif italic font-medium text-[15px] leading-[1.6] text-ink/85 m-0 mb-6">
                 {COLOURWAY_NOTE}
               </p>
             )}
@@ -195,10 +195,10 @@ export const PaintingDetail = () => {
               </div>
             )}
 
-            <p className="font-display italic font-semibold text-[clamp(22px,2vw,28px)] text-ink m-0">
+            <p className="font-display font-bold tracking-[-0.02em] text-[clamp(22px,2vw,28px)] text-ink m-0">
               {selected.name}
               {selected.isOriginal && (
-                <span className="not-italic ml-3 font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-accent">
+                <span className="ml-3 font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-accent">
                   · original
                 </span>
               )}

@@ -23,9 +23,10 @@
 
   h1, h2, h3, h4 {
     @apply font-display text-ink;
-    font-weight: 600;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1.0;
+    letter-spacing: -0.035em;
   }
 
   img, svg, video { display: block; max-width: 100%; height: auto; }

@@ -48,13 +48,13 @@ export const Collections = () => {
                     {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className="font-display font-bold italic tracking-[-0.025em] text-[clamp(44px,6.4vw,84px)] leading-[1.0] text-white m-0 mb-7 text-balance"
+                    className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,5.8vw,76px)] leading-[1.0] text-white m-0 mb-6 text-balance"
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className="font-sans font-medium text-[17px] md:text-[18px] leading-[1.75] text-white flex flex-col gap-4 max-w-[640px] mx-auto"
+                    className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 flex flex-col gap-4 max-w-[640px] mx-auto"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -98,7 +98,7 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-4 text-center">
                             <h3
-                              className="font-display font-bold italic text-[22px] md:text-[26px] leading-[1.15] tracking-[-0.015em] text-white m-0"
+                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-white m-0"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}
