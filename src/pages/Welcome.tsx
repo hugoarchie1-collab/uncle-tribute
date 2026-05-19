@@ -1,33 +1,30 @@
+import { Link } from "react-router-dom";
 import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { WELCOME } from "../data/content";
+import { PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
-/**
- * Welcome / Home page.
- *
- * Order is taken verbatim from "First Page - Welcome to The Mandala
- * Company" PDF — text passages and images interleaved exactly as the
- * PDF lays them out:
- *
- *   1.  Opening quote
- *   2.  Reminder paragraph
- *   3.  IMAGE — Stephen at his drafting table painting the Wild Rose
- *   4.  "Steve passed away in …."
- *   5.  IMAGE — Stephen portrait (denim shirt)
- *   6.  "In Steve's own words…" + SEM bio paragraph
- *   7.  IMAGE — Stephen painting in studio
- *   8.  Sacred Geometry / four-traditions paragraph
- *   9.  IMAGE — wall arrangement of paintings
- *  10.  Arista SunStar paragraph
- *  11.  IMAGE — Stephen beside the 3.6m Arista SunStar at Farmacy
- */
 const CAPTION_TBD = "(n/a)";
 
+/**
+ * Welcome / Home page — restructured to a Hero + Featured Grid + Narrow
+ * Narrative rhythm (Globe-Trotter / Luxora pattern), so the page no longer
+ * reads like a vertical essay.
+ *
+ * Every line of PDF text is preserved. Every welcome image is preserved.
+ * What changed: where they sit on the page and how they group up.
+ */
 export const Welcome = () => {
   usePageTitle();
+
+  // Three featured paintings — bring the collection up onto the home page.
+  const featuredIds = ["wild-rose", "peacock-minerva", "enneagon-swans"];
+  const featured = featuredIds
+    .map((id) => PAINTINGS.find((p) => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <>
@@ -37,17 +34,62 @@ export const Welcome = () => {
         <Nav />
 
         <main className="welcome-main">
-          <section className="welcome-hero" data-reveal>
+          {/* ─── HERO — 2-column editorial: quote left, portrait right ─── */}
+          <section className="welcome-hero welcome-hero--split" data-reveal>
             <blockquote className="welcome-quote">
               <p>{WELCOME.openingQuote}</p>
               <cite>— {WELCOME.openingAttribution}</cite>
             </blockquote>
+            <figure className="welcome-hero__portrait">
+              <img
+                src={asset("/img/welcome/02-portrait-denim.jpg")}
+                alt="Stephen Meakin"
+                loading="eager"
+              />
+            </figure>
           </section>
 
-          <section className="welcome-body" data-reveal>
-            <p className="welcome-paragraph">{WELCOME.reminder}</p>
+          {/* ─── FEATURED COLLECTION — 3-painting grid on a cream card ─── */}
+          <section className="welcome-featured" data-reveal>
+            <div className="welcome-featured__grid">
+              {featured.map((p) => {
+                const cover =
+                  p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
+                return (
+                  <Link
+                    key={p.id}
+                    to={`/collections/${p.id}`}
+                    className="featured-card"
+                  >
+                    <div className="featured-card__image">
+                      <img src={asset(cover.image)} alt={p.title} loading="lazy" />
+                    </div>
+                    <div className="featured-card__meta">
+                      <span className="featured-card__title">{p.title}</span>
+                      {p.year !== "[ DATE ]" && (
+                        <span className="featured-card__year">{p.year}</span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
 
-            <figure className="welcome-figure" data-reveal>
+          {/* ─── PASSING + INVOCATION — centred minimal strip ─── */}
+          <section className="welcome-passing-band" data-reveal>
+            <p className="welcome-paragraph welcome-paragraph--reminder">
+              {WELCOME.reminder}
+            </p>
+            <p className="welcome-passing">{WELCOME.passingNote}</p>
+            <p className="welcome-invocation">{WELCOME.invocation}</p>
+          </section>
+
+          {/* ─── NARROW NARRATIVE — bio with images at small / inline size ─── */}
+          <section className="welcome-narrative" data-reveal>
+            <p className="welcome-paragraph">{WELCOME.bio[0]}</p>
+
+            <figure className="welcome-figure welcome-figure--inline" data-reveal>
               <img
                 src={asset("/img/welcome/01-painting-wild-rose.jpg")}
                 alt="Stephen at his drafting table"
@@ -56,27 +98,9 @@ export const Welcome = () => {
               <figcaption>{CAPTION_TBD}</figcaption>
             </figure>
 
-            <p className="welcome-passing">{WELCOME.passingNote}</p>
+            <p className="welcome-paragraph">{WELCOME.bio[1]}</p>
 
-            <figure className="welcome-figure welcome-figure--portrait" data-reveal>
-              <img
-                src={asset("/img/welcome/02-portrait-denim.jpg")}
-                alt="Stephen Meakin"
-                loading="lazy"
-              />
-              <figcaption>{CAPTION_TBD}</figcaption>
-            </figure>
-
-            <p className="welcome-invocation">{WELCOME.invocation}</p>
-
-            {/* WELCOME.bio is three paragraphs in PDF order:
-                [0] SEM bio          → followed by image 3
-                [1] Sacred Geometry  → followed by image 4
-                [2] Arista SunStar   → followed by image 5
-            */}
-            <p className="welcome-paragraph">{WELCOME.bio[0]}</p>
-
-            <figure className="welcome-figure" data-reveal>
+            <figure className="welcome-figure welcome-figure--inline" data-reveal>
               <img
                 src={asset("/img/welcome/03-painting-in-studio.jpg")}
                 alt="Stephen painting in the studio"
@@ -85,9 +109,7 @@ export const Welcome = () => {
               <figcaption>{CAPTION_TBD}</figcaption>
             </figure>
 
-            <p className="welcome-paragraph">{WELCOME.bio[1]}</p>
-
-            <figure className="welcome-figure" data-reveal>
+            <figure className="welcome-figure welcome-figure--inline" data-reveal>
               <img
                 src={asset("/img/welcome/04-paintings-collection.jpg")}
                 alt="A wall of Stephen's mandalas"
@@ -97,16 +119,17 @@ export const Welcome = () => {
             </figure>
 
             <p className="welcome-paragraph">{WELCOME.bio[2]}</p>
-
-            <figure className="welcome-figure" data-reveal>
-              <img
-                src={asset("/img/welcome/05-arista-sunstar.jpg")}
-                alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-                loading="lazy"
-              />
-              <figcaption>{CAPTION_TBD}</figcaption>
-            </figure>
           </section>
+
+          {/* ─── CLOSING — Arista SunStar gets its own wide moment ─── */}
+          <figure className="welcome-figure welcome-figure--full" data-reveal>
+            <img
+              src={asset("/img/welcome/05-arista-sunstar.jpg")}
+              alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
+              loading="lazy"
+            />
+            <figcaption>{CAPTION_TBD}</figcaption>
+          </figure>
         </main>
 
         <Footer />

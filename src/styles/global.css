@@ -49,6 +49,13 @@
   --accent:        #c97844;   /* warm rust — Sussex Pink / Solstice Orange family */
   --accent-soft:   #d99466;
 
+  /* Hybrid theme — cream surfaces float inside the dark shell so paintings pop */
+  --cream:         #f5efe3;
+  --cream-soft:    #ebe3d3;
+  --cream-line:    #d9d1bf;
+  --cream-ink:     #1a1612;
+  --cream-ink-soft:#5a544a;
+
   /* Motion */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --t-fast: 180ms;
@@ -454,6 +461,161 @@ figcaption {
   text-align: center;
   position: relative;
 }
+
+/* 2-column hero: italic quote on the left, portrait on the right */
+.welcome-hero--split {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--s-7);
+  text-align: left;
+  align-items: center;
+  max-width: var(--max-section);
+  margin: 0 auto;
+  padding: var(--s-8) var(--gutter) var(--s-7);
+}
+.welcome-hero--split::before,
+.welcome-hero--split::after { display: none; }
+.welcome-hero--split .welcome-quote { margin: 0; max-width: none; }
+.welcome-hero--split .welcome-quote p {
+  font-size: clamp(36px, 5.5vw, 76px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--s-4);
+  text-wrap: balance;
+}
+.welcome-hero__portrait {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.welcome-hero__portrait img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 0;
+  filter: brightness(0.98);
+  box-shadow: 0 36px 70px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+@media (max-width: 900px) {
+  .welcome-hero--split {
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+    text-align: center;
+    padding: var(--s-7) var(--gutter) var(--s-6);
+  }
+  .welcome-hero__portrait { max-width: 360px; margin: 0 auto; }
+}
+
+/* Featured Collection — 3-painting grid on a cream card */
+.welcome-featured {
+  margin: var(--s-7) auto;
+  max-width: var(--max-section);
+  padding: 0 var(--gutter);
+}
+.welcome-featured__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+  padding: var(--s-5);
+  background: var(--cream);
+  border-radius: 4px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(0,0,0,0.04);
+}
+.featured-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  color: var(--cream-ink);
+  text-align: center;
+  padding: var(--s-2);
+  border-radius: 2px;
+  transition: transform 400ms var(--ease), background 400ms var(--ease);
+}
+.featured-card:hover {
+  background: rgba(0, 0, 0, 0.03);
+  transform: translateY(-3px);
+}
+.featured-card__image {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--cream-soft);
+  border-radius: 2px;
+}
+.featured-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--ease);
+}
+.featured-card:hover .featured-card__image img { transform: scale(1.03); }
+.featured-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--s-1) 0 var(--s-2);
+}
+.featured-card__title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--cream-ink);
+}
+.featured-card__year {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(26, 22, 18, 0.55);
+}
+@media (max-width: 820px) {
+  .welcome-featured__grid { grid-template-columns: 1fr; gap: var(--s-4); }
+}
+
+/* Passing + invocation strip */
+.welcome-passing-band {
+  max-width: 740px;
+  margin: var(--s-7) auto;
+  padding: 0 var(--gutter);
+  text-align: center;
+}
+.welcome-paragraph--reminder {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(22px, 2.6vw, 28px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: var(--s-5);
+  text-wrap: balance;
+}
+
+/* Narrative body — narrow column, images at smaller inline sizes */
+.welcome-narrative {
+  max-width: 720px;
+  margin: var(--s-7) auto;
+  padding: 0 var(--gutter);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.welcome-figure--inline {
+  margin: var(--s-3) 0 !important;
+}
+.welcome-figure--inline img {
+  max-width: 560px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Closing wide moment */
+.welcome-figure--full {
+  margin: var(--s-7) auto !important;
+  max-width: var(--max-wide);
+  padding: 0 var(--gutter);
+}
 /* Decorative horizontal hairlines bracketing the hero — Luxora-style rails */
 .welcome-hero::before,
 .welcome-hero::after {
@@ -785,23 +947,24 @@ figcaption {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
-  color: var(--ink);
+  color: var(--cream-ink);
   padding: var(--s-3) var(--s-3) var(--s-4);
-  background: rgba(237, 230, 214, 0.04);
-  border: 1px solid rgba(237, 230, 214, 0.06);
-  border-radius: 0;
-  transition: border-color 400ms var(--ease), background 400ms var(--ease), transform 400ms var(--ease);
+  background: var(--cream);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 2px;
+  transition: transform 400ms var(--ease), box-shadow 400ms var(--ease);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.4);
 }
 .painting-tile:hover {
-  border-color: rgba(201, 120, 68, 0.35);
-  background: rgba(237, 230, 214, 0.06);
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(0,0,0,0.55);
 }
 .painting-tile__image-wrap {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #0a0a0a;
-  border-radius: 0;
+  background: var(--cream-soft);
+  border-radius: 2px;
 }
 .painting-tile__image-wrap img {
   width: 100%;
@@ -825,10 +988,10 @@ figcaption {
 .painting-tile__title {
   font-family: var(--font-display);
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: var(--ink);
+  color: var(--cream-ink);
 }
 .painting-tile__year {
   font-family: var(--font-sans);
@@ -836,7 +999,7 @@ figcaption {
   font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(237, 230, 214, 0.45);
+  color: rgba(26, 22, 18, 0.55);
 }
 
 
