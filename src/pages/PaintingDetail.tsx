@@ -71,9 +71,9 @@ export const PaintingDetail = () => {
             ← {collection?.title ?? "All collections"}
           </Link>
 
-          {/* HERO — painting image, centered, dominant */}
+          {/* HERO — painting image, centered, dominant, soft edges */}
           <Reveal>
-            <div className="aspect-square mx-auto max-w-[640px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+            <div className="aspect-square mx-auto max-w-[640px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] soft-edge">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selected.image}
@@ -126,7 +126,7 @@ export const PaintingDetail = () => {
           {painting.artistQuote && (
             <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto">
               <blockquote className="m-0 pl-6 border-l-2 border-accent py-2 text-center">
-                <p className="font-serif italic font-medium text-[clamp(18px,1.9vw,22px)] leading-[1.55] text-ink m-0 mb-3">
+                <p className="font-display font-semibold text-[clamp(18px,1.9vw,22px)] leading-[1.4] text-ink m-0 mb-3">
                   &ldquo;{painting.artistQuote}&rdquo;
                 </p>
                 <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/60">
@@ -162,7 +162,7 @@ export const PaintingDetail = () => {
             </p>
 
             {hasAlternateColourways && (
-              <p className="font-serif italic font-medium text-[15px] leading-[1.6] text-ink/85 m-0 mb-6">
+              <p className="font-display font-medium text-[15px] leading-[1.55] text-ink/85 m-0 mb-6">
                 {COLOURWAY_NOTE}
               </p>
             )}

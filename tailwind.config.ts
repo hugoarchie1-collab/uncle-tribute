@@ -18,15 +18,15 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        // Display + body — Inter, bold sans-serif (Ovalen reference)
+        // Two families only.
+        // Display — Bricolage Grotesque (variable, designer feel, edgy bold)
         display: [
+          '"Bricolage Grotesque"',
           "Inter",
           "-apple-system",
-          "BlinkMacSystemFont",
-          '"Segoe UI"',
-          "Roboto",
           "sans-serif",
         ],
+        // Body — Inter, refined legibility
         sans: [
           "Inter",
           "-apple-system",
@@ -35,8 +35,6 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        // Editorial pull-quote only (used sparingly)
-        serif: ['"Cormorant Garamond"', "Georgia", "serif"],
       },
       letterSpacing: {
         tightest: "-0.04em",
