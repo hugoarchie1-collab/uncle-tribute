@@ -12,13 +12,6 @@ export const Collections = () => {
   <div className="collections-page">
     <Nav />
     <main className="collections-main">
-      <header className="collections-hero">
-        <h1 className="collections-title">The Collections</h1>
-        <p className="collections-subtitle">
-          Three bodies of work. Earth, water, sky.
-        </p>
-      </header>
-
       {COLLECTIONS.map((coll) => {
         const items = PAINTINGS.filter((p) => p.collection === coll.id);
         return (
