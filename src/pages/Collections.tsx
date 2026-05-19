@@ -1,46 +1,99 @@
+import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { CollectionBackdrop } from "../components/CollectionBackdrop";
 import { Reveal, RevealStagger } from "../components/Reveal";
-import { motion } from "framer-motion";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
+/**
+ * Fixed backdrop layer that cross-fades between collection scenes as the
+ * user scrolls. Each backdrop tracks its own section's visibility — when a
+ * section is in view, its backdrop fades to full opacity; when leaving, it
+ * fades back out. Adjacent backdrops overlap, eliminating the hard
+ * horizontal seam between collections.
+ */
+const ScrollBackdrop = ({
+  photoUrl,
+  sectionRef,
+}: {
+  photoUrl: string;
+  sectionRef: RefObject<HTMLElement | null>;
+}) => {
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  // Fade in 0→1 across first 25% of overlap, stay full 25-75%, fade out
+  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0, 1, 1, 0]);
+  // Subtle parallax drift
+  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1.04, 1.0]);
+
+  return (
+    <motion.div
+      style={{
+        opacity,
+        y,
+        scale,
+        backgroundImage: `url("${photoUrl}")`,
+      }}
+      className="absolute inset-0 bg-cover bg-center will-change-transform"
+      aria-hidden="true"
+    />
+  );
+};
+
 export const Collections = () => {
   usePageTitle("The Collections");
+
+  // One ref per collection section so each backdrop can track its own visibility
+  const sectionRefs = [
+    useRef<HTMLElement>(null),
+    useRef<HTMLElement>(null),
+    useRef<HTMLElement>(null),
+  ];
 
   return (
     <div className="relative bg-bg">
       <Nav />
-      <main className="relative">
+
+      {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {COLLECTIONS.map((coll, i) =>
+          coll.backdropImage ? (
+            <ScrollBackdrop
+              key={coll.id}
+              photoUrl={asset(coll.backdropImage)}
+              sectionRef={sectionRefs[i]}
+            />
+          ) : null,
+        )}
+        {/* Shared scrim — soft vignette so painting tiles + text read clearly */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+          }}
+        />
+      </div>
+
+      <main className="relative z-10">
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
           return (
             <section
               key={coll.id}
               id={`collection-${coll.id}`}
-              className="relative overflow-hidden"
+              ref={sectionRefs[collIndex]}
+              className="relative"
             >
-              <CollectionBackdrop
-                collectionId={coll.id}
-                photoUrl={coll.backdropImage ? asset(coll.backdropImage) : undefined}
-              />
-
-              {/* Very light scrim — just enough darkening behind the title.
-                  The photo should read clearly through it. */}
-              <div
-                aria-hidden
-                className="absolute inset-0 z-[1] pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(60% 40% at 50% 20%, rgba(10,9,8,0.45) 0%, rgba(10,9,8,0.05) 100%)",
-                }}
-              />
-
-              <div className="relative z-[2] mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 pt-20 md:pt-28 pb-16 md:pb-20">
-                <Reveal as="header" className="max-w-[780px] mx-auto text-center mb-14 md:mb-20">
+              <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-28 pb-12 md:pb-16">
+                <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-12 md:mb-16">
                   <p
                     className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -48,7 +101,7 @@ export const Collections = () => {
                     {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,5.8vw,76px)] leading-[1.0] text-white m-0 mb-6 text-balance"
+                    className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6.4vw,84px)] leading-[0.96] text-white m-0 mb-6 text-balance"
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
@@ -98,7 +151,7 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-4 text-center">
                             <h3
-                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-white m-0"
+                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.2] tracking-[-0.015em] text-white m-0"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}
@@ -122,6 +175,7 @@ export const Collections = () => {
           );
         })}
       </main>
+
       <Footer />
     </div>
   );
