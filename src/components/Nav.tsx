@@ -2,14 +2,17 @@ import { Link, NavLink } from "react-router-dom";
 import { Logo } from "./Logo";
 
 interface NavProps {
-  /** if true, render in dark-on-light style; if false, light-on-dark */
+  /**
+   * Kept for backwards compatibility with existing page calls.
+   * The site is dark mode throughout; no light variant needed.
+   */
   light?: boolean;
 }
 
-export const Nav = ({ light = false }: NavProps) => (
-  <header className={`site-nav ${light ? "site-nav--light" : ""}`}>
-    <Link to="/" className="site-nav__brand" aria-label="Home">
-      <Logo size={28} light={light} />
+export const Nav = (_props: NavProps = {}) => (
+  <header className="site-nav">
+    <Link to="/" className="site-nav__brand" aria-label="The Art of Stephen Meakin — home">
+      <Logo size={30} wordmark />
     </Link>
     <nav className="site-nav__links" aria-label="Primary">
       <NavLink to="/" end className="site-nav__link">
