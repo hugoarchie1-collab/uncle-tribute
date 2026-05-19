@@ -6,6 +6,7 @@ import { PaintingDetail } from "./pages/PaintingDetail";
 import { About } from "./pages/About";
 import { NotFound } from "./pages/NotFound";
 import { Privacy, Terms } from "./pages/Legal";
+import { useScrollReveal } from "./lib/useScrollReveal";
 import "./styles/global.css";
 
 // Strip the trailing slash so React Router treats "/" correctly under any base.
@@ -20,10 +21,17 @@ const ScrollToTop = () => {
   return null;
 };
 
+/** Wires up the scroll-reveal IntersectionObserver on every route. */
+const RevealOnScroll = () => {
+  useScrollReveal();
+  return null;
+};
+
 export default function App() {
   return (
     <BrowserRouter basename={basename}>
       <ScrollToTop />
+      <RevealOnScroll />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/collections" element={<Collections />} />

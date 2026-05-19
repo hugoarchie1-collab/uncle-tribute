@@ -47,7 +47,7 @@ export const PaintingDetail = () => {
         </Link>
 
         <div className="painting-detail__layout">
-          <div className="painting-detail__hero">
+          <div className="painting-detail__hero" data-reveal>
             <img
               key={selected.image}
               src={asset(selected.image)}
@@ -56,7 +56,7 @@ export const PaintingDetail = () => {
             />
           </div>
 
-          <aside className="painting-detail__sidebar">
+          <aside className="painting-detail__sidebar" data-reveal>
             <div className="painting-detail__crumb">{collection?.title}</div>
             <h1 className="painting-detail__title">{painting.title}</h1>
 

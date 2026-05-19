@@ -27,7 +27,7 @@ export const Collections = () => {
               <div className="collection-section__scrim" aria-hidden="true" />
 
               <div className="collection-section__inner">
-                <header className="collection-hero">
+                <header className="collection-hero" data-reveal>
                   <div className="collection-hero__card">
                     <h2 className="collection-title">{coll.title}</h2>
                     <div className="collection-description">
@@ -38,7 +38,7 @@ export const Collections = () => {
                   </div>
                 </header>
 
-                <div className="painting-grid">
+                <div className="painting-grid" data-reveal>
                   {items.map((painting) => {
                     const cover =
                       painting.colourways.find((c) => c.isOriginal) ??

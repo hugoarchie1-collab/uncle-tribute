@@ -37,17 +37,17 @@ export const Welcome = () => {
         <Nav />
 
         <main className="welcome-main">
-          <section className="welcome-hero">
+          <section className="welcome-hero" data-reveal>
             <blockquote className="welcome-quote">
               <p>{WELCOME.openingQuote}</p>
               <cite>— {WELCOME.openingAttribution}</cite>
             </blockquote>
           </section>
 
-          <section className="welcome-body">
+          <section className="welcome-body" data-reveal>
             <p className="welcome-paragraph">{WELCOME.reminder}</p>
 
-            <figure className="welcome-figure">
+            <figure className="welcome-figure" data-reveal>
               <img
                 src={asset("/img/welcome/01-painting-wild-rose.jpg")}
                 alt="Stephen at his drafting table"
@@ -58,7 +58,7 @@ export const Welcome = () => {
 
             <p className="welcome-passing">{WELCOME.passingNote}</p>
 
-            <figure className="welcome-figure welcome-figure--portrait">
+            <figure className="welcome-figure welcome-figure--portrait" data-reveal>
               <img
                 src={asset("/img/welcome/02-portrait-denim.jpg")}
                 alt="Stephen Meakin"
@@ -76,7 +76,7 @@ export const Welcome = () => {
             */}
             <p className="welcome-paragraph">{WELCOME.bio[0]}</p>
 
-            <figure className="welcome-figure">
+            <figure className="welcome-figure" data-reveal>
               <img
                 src={asset("/img/welcome/03-painting-in-studio.jpg")}
                 alt="Stephen painting in the studio"
@@ -87,7 +87,7 @@ export const Welcome = () => {
 
             <p className="welcome-paragraph">{WELCOME.bio[1]}</p>
 
-            <figure className="welcome-figure">
+            <figure className="welcome-figure" data-reveal>
               <img
                 src={asset("/img/welcome/04-paintings-collection.jpg")}
                 alt="A wall of Stephen's mandalas"
@@ -98,7 +98,7 @@ export const Welcome = () => {
 
             <p className="welcome-paragraph">{WELCOME.bio[2]}</p>
 
-            <figure className="welcome-figure">
+            <figure className="welcome-figure" data-reveal>
               <img
                 src={asset("/img/welcome/05-arista-sunstar.jpg")}
                 alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"

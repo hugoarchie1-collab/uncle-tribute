@@ -112,6 +112,26 @@ button { font: inherit; cursor: pointer; }
   color: var(--bg);
 }
 
+/* Scroll-reveal — every element with [data-reveal] starts hidden and
+   eases in when it crosses into view (see src/lib/useScrollReveal.ts). */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  will-change: opacity, transform;
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 
 /* -----------------------------------------------------------------------------
    2. BASE TYPOGRAPHY & UTILITIES
@@ -205,12 +225,23 @@ figcaption {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 18px var(--gutter);
-  background: rgba(10, 9, 8, 0.78);
-  backdrop-filter: saturate(160%) blur(18px);
-  -webkit-backdrop-filter: saturate(160%) blur(18px);
-  border-bottom: 1px solid var(--line);
+  padding: 20px var(--gutter);
+  /* Transparent at the very top — bg only kicks in on scroll */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 200ms var(--ease),
+    border-color 200ms var(--ease),
+    padding 200ms var(--ease),
+    backdrop-filter 200ms var(--ease);
   color: var(--ink);
+}
+.site-nav--scrolled {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  padding: 14px var(--gutter);
 }
 
 .site-nav__brand { display: inline-flex; align-items: center; }
