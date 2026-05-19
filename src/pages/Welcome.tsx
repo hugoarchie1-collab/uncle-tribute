@@ -4,6 +4,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
+import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME, PASSING_DATE } from "../data/content";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
@@ -27,25 +28,26 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative">
-          {/* HERO — Ovalen pattern: text LEFT, image RIGHT (items-stretch kills bottom gap) */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 pt-10 md:pt-16 pb-10 md:pb-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
+          {/* HERO — Ovalen pattern: text LEFT, image RIGHT */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-12 md:pt-16 pb-8 md:pb-14">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-stretch">
               <Reveal as="div" className="md:col-span-6 flex flex-col justify-center">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   In memoriam · 1966 — {PASSING_DATE}
                 </p>
-                <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.8vw,84px)] leading-[0.98] text-ink m-0 mb-6 text-balance">
+                <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,6vw,84px)] leading-[0.98] text-ink m-0 mb-6 text-balance">
                   {WELCOME.openingQuote}
                 </h1>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/80 m-0 mb-7 max-w-[480px]">
+                <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.7] text-ink/80 m-0 mb-7 max-w-[480px]">
                   {WELCOME.reminder}
                 </p>
-                <Link
+                <MagneticLink
                   to="/collections"
-                  className="inline-flex w-fit items-center gap-2 bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-all duration-300 hover:bg-accent hover:text-ink"
+                  className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                  ariaLabel="Explore the collections"
                 >
                   Explore the collections <span aria-hidden="true">→</span>
-                </Link>
+                </MagneticLink>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-6 min-h-[60vh]">
                 <ImageReveal
