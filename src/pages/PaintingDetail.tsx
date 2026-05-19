@@ -73,7 +73,7 @@ export const PaintingDetail = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-start">
             <Reveal as="div" className="lg:sticky lg:top-[100px]">
-              <div className="aspect-square overflow-hidden bg-black/40 ring-1 ring-white/10 shadow-[0_28px_72px_rgba(0,0,0,0.55)]">
+              <div className="aspect-square overflow-hidden shadow-[0_28px_72px_rgba(0,0,0,0.55)]">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={selected.image}
@@ -92,7 +92,7 @@ export const PaintingDetail = () => {
             <Reveal as="article" delay={0.1} className="flex flex-col gap-6">
               {collection && <Badge variant="accent">{collection.title}</Badge>}
 
-              <h1 className="font-display font-light italic tracking-[-0.02em] leading-[1.05] text-[clamp(36px,4.5vw,64px)] text-ink m-0">
+              <h1 className="font-display font-semibold italic tracking-[-0.025em] leading-[1.04] text-[clamp(38px,5vw,68px)] text-ink m-0">
                 {painting.title}
               </h1>
 

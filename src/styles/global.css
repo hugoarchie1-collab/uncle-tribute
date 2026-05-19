@@ -13,7 +13,7 @@
 
   body {
     @apply font-sans text-body text-ink-soft bg-bg antialiased;
-    font-weight: 300;
+    font-weight: 400;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1, "liga" 1;
@@ -23,9 +23,9 @@
 
   h1, h2, h3, h4 {
     @apply font-display text-ink;
-    font-weight: 400;
-    line-height: 1.06;
-    letter-spacing: -0.015em;
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
   }
 
   img, svg, video { display: block; max-width: 100%; height: auto; }
@@ -106,6 +106,25 @@
   inset: 0;
   background:
     radial-gradient(80% 70% at 50% 40%, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.7) 100%);
+}
+
+/* =============================================================================
+   Collection backdrop — photo behind each collection on /collections.
+   Feathered top + bottom so adjacent collections cross-dissolve smoothly
+   (no hard block borders between them).
+   ============================================================================= */
+
+.collection-backdrop {
+  position: absolute;
+  inset: -8% 0;
+  z-index: 0;
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+.collection-backdrop--photo {
+  background-size: cover;
+  background-position: center 38%;
 }
 
 @media (prefers-reduced-motion: reduce) {
