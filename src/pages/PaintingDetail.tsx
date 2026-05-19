@@ -63,140 +63,147 @@ export const PaintingDetail = () => {
       <div className="relative z-[1]">
         <Nav />
 
-        <main className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16 pt-8 pb-24 md:pb-32">
+        <main className="mx-auto max-w-[820px] px-4 md:px-8 lg:px-12 pt-6 pb-20 md:pb-28">
           <Link
-            to="/collections"
-            className="inline-flex items-center gap-2 mb-12 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/55 transition-colors duration-300 hover:text-accent"
+            to={collection ? `/collections#collection-${collection.id}` : "/collections"}
+            className="inline-flex items-center gap-2 mb-10 font-sans text-[10px] font-bold tracking-[0.34em] uppercase text-ink/60 transition-colors duration-300 hover:text-accent"
           >
-            ← All collections
+            ← {collection?.title ?? "All collections"}
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-start">
-            <Reveal as="div" className="lg:sticky lg:top-[100px]">
-              <div className="aspect-square overflow-hidden shadow-[0_28px_72px_rgba(0,0,0,0.55)]">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={selected.image}
-                    src={asset(selected.image)}
-                    alt={`${painting.title} — ${selected.name}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
-                    className="w-full h-full object-cover"
-                  />
-                </AnimatePresence>
+          {/* HERO — painting image, centered, dominant */}
+          <Reveal>
+            <div className="aspect-square mx-auto max-w-[640px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={selected.image}
+                  src={asset(selected.image)}
+                  alt={`${painting.title} — ${selected.name}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+                  className="w-full h-full object-cover"
+                />
+              </AnimatePresence>
+            </div>
+          </Reveal>
+
+          {/* TITLE BLOCK — centered, immediately under the painting */}
+          <Reveal as="div" className="mt-12 md:mt-16 text-center max-w-[680px] mx-auto">
+            {collection && (
+              <div className="flex justify-center mb-5">
+                <Badge variant="accent">{collection.title}</Badge>
               </div>
-            </Reveal>
+            )}
+            <h1 className="font-display font-bold italic tracking-[-0.025em] leading-[1.02] text-[clamp(40px,5.4vw,72px)] text-ink m-0 mb-6">
+              {painting.title}
+            </h1>
 
-            <Reveal as="article" delay={0.1} className="flex flex-col gap-6">
-              {collection && <Badge variant="accent">{collection.title}</Badge>}
-
-              <h1 className="font-display font-semibold italic tracking-[-0.025em] leading-[1.04] text-[clamp(38px,5vw,68px)] text-ink m-0">
-                {painting.title}
-              </h1>
-
-              <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 text-[14px]">
-                {painting.year !== "[ DATE ]" && (
-                  <>
-                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Date</dt>
-                    <dd className="m-0 text-ink">{painting.year}</dd>
-                  </>
-                )}
-                {painting.size && (
-                  <>
-                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Size</dt>
-                    <dd className="m-0 text-ink">{painting.size}</dd>
-                  </>
-                )}
-                {painting.location && (
-                  <>
-                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Painted in</dt>
-                    <dd className="m-0 text-ink">{painting.location}</dd>
-                  </>
-                )}
-              </dl>
-
-              {painting.artistQuote && (
-                <blockquote className="my-4 pl-6 border-l-2 border-accent py-2">
-                  <p className="font-display italic font-light text-[18px] leading-[1.65] text-ink m-0 mb-3">
-                    &ldquo;{painting.artistQuote}&rdquo;
-                  </p>
-                  <cite className="not-italic font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/55">
-                    — Stephen Meakin
-                  </cite>
-                </blockquote>
+            <dl className="inline-grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-[14px] text-left">
+              {painting.year !== "[ DATE ]" && (
+                <>
+                  <dt className="font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-ink/55 pt-1">Date</dt>
+                  <dd className="m-0 text-ink">{painting.year}</dd>
+                </>
               )}
+              {painting.size && (
+                <>
+                  <dt className="font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-ink/55 pt-1">Size</dt>
+                  <dd className="m-0 text-ink">{painting.size}</dd>
+                </>
+              )}
+              {painting.location && (
+                <>
+                  <dt className="font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-ink/55 pt-1">Painted in</dt>
+                  <dd className="m-0 text-ink">{painting.location}</dd>
+                </>
+              )}
+            </dl>
+          </Reveal>
 
-              <div className="flex flex-col gap-4 font-sans font-light text-[17px] leading-[1.85] text-ink/85">
-                {painting.description.split("\n\n").map((para, i) => (
-                  <p key={i} className="m-0">{para}</p>
-                ))}
-              </div>
-
-              <Separator className="bg-white/10 mt-6" />
-
-              <div className="pt-2">
-                <p className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 m-0 mb-3">
-                  Original Print
+          {/* ARTIST QUOTE — if present */}
+          {painting.artistQuote && (
+            <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto">
+              <blockquote className="m-0 pl-6 border-l-2 border-accent py-2 text-center">
+                <p className="font-display italic font-semibold text-[clamp(18px,1.9vw,22px)] leading-[1.55] text-ink m-0 mb-3">
+                  &ldquo;{painting.artistQuote}&rdquo;
                 </p>
-                <p className="font-sans font-light text-[15px] leading-[1.7] text-ink/85 m-0">
-                  {ORIGINAL_PRINT_SPEC}
-                </p>
-              </div>
-
-              <Separator className="bg-white/10" />
-
-              <div className="pt-2">
-                <p className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 m-0 mb-3">
-                  {hasAlternateColourways ? "Colourways" : "Original colourway"}
-                </p>
-
-                {hasAlternateColourways && (
-                  <p className="font-display italic font-light text-[15px] leading-[1.6] text-ink/80 m-0 mb-5">
-                    {COLOURWAY_NOTE}
-                  </p>
-                )}
-
-                {hasAlternateColourways && (
-                  <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-3 mb-5">
-                    {availableColourways.map((c) => {
-                      const isSelected = c.name === selected.name;
-                      return (
-                        <motion.button
-                          key={c.name}
-                          type="button"
-                          role="radio"
-                          aria-checked={isSelected}
-                          aria-label={c.name}
-                          title={c.name}
-                          onClick={() => setSelectedName(c.name)}
-                          whileHover={{ scale: 1.08 }}
-                          whileTap={{ scale: 0.94 }}
-                          className={cn(
-                            "w-8 h-8 rounded-full cursor-pointer transition-all duration-300",
-                            isSelected
-                              ? "ring-2 ring-ink ring-offset-2 ring-offset-bg"
-                              : "ring-1 ring-white/15 hover:ring-white/40",
-                          )}
-                          style={{ backgroundColor: c.hex }}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-
-                <p className="font-display italic font-light text-[22px] text-ink m-0">
-                  {selected.name}
-                  {selected.isOriginal && (
-                    <span className="not-italic ml-3 font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-accent">
-                      · original
-                    </span>
-                  )}
-                </p>
-              </div>
+                <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/60">
+                  — Stephen Meakin
+                </cite>
+              </blockquote>
             </Reveal>
-          </div>
+          )}
+
+          {/* DESCRIPTION — main body */}
+          <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto flex flex-col gap-5 font-sans font-normal text-[17px] md:text-[18px] leading-[1.8] text-ink/90">
+            {painting.description.split("\n\n").map((para, i) => (
+              <p key={i} className="m-0">{para}</p>
+            ))}
+          </Reveal>
+
+          {/* ORIGINAL PRINT SPEC */}
+          <Reveal as="div" className="mt-14 md:mt-20 max-w-[640px] mx-auto">
+            <Separator className="bg-white/10 mb-8" />
+            <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-4">
+              Original Print
+            </p>
+            <p className="font-sans font-normal text-[16px] leading-[1.7] text-ink/90 m-0">
+              {ORIGINAL_PRINT_SPEC}
+            </p>
+          </Reveal>
+
+          {/* COLOURWAYS */}
+          <Reveal as="div" className="mt-10 md:mt-14 max-w-[640px] mx-auto">
+            <Separator className="bg-white/10 mb-8" />
+            <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-4">
+              {hasAlternateColourways ? `Colourways · ${availableColourways.length}` : "Original colourway"}
+            </p>
+
+            {hasAlternateColourways && (
+              <p className="font-display italic font-medium text-[15px] leading-[1.6] text-ink/85 m-0 mb-6">
+                {COLOURWAY_NOTE}
+              </p>
+            )}
+
+            {hasAlternateColourways && (
+              <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-3 mb-6">
+                {availableColourways.map((c) => {
+                  const isSelected = c.name === selected.name;
+                  return (
+                    <motion.button
+                      key={c.name}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      aria-label={c.name}
+                      title={c.name}
+                      onClick={() => setSelectedName(c.name)}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.94 }}
+                      className={cn(
+                        "w-9 h-9 rounded-full cursor-pointer transition-all duration-300",
+                        isSelected
+                          ? "ring-2 ring-ink ring-offset-2 ring-offset-bg"
+                          : "ring-1 ring-white/15 hover:ring-white/40",
+                      )}
+                      style={{ backgroundColor: c.hex }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            <p className="font-display italic font-semibold text-[clamp(22px,2vw,28px)] text-ink m-0">
+              {selected.name}
+              {selected.isOriginal && (
+                <span className="not-italic ml-3 font-sans text-[10px] font-bold tracking-[0.3em] uppercase text-accent">
+                  · original
+                </span>
+              )}
+            </p>
+          </Reveal>
         </main>
         <Footer />
       </div>
