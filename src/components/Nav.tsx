@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Logo } from "./Logo";
+import { cn } from "../lib/cn";
 
-interface NavProps {
-  /** kept for back-compat; site is dark mode throughout. */
-  light?: boolean;
-}
+interface NavProps { light?: boolean }
 
-/**
- * Sticky site nav. Transparent at the very top of the page, then turns
- * into a translucent dark bar with backdrop-blur once the user scrolls
- * past ~40px. The transition is short and quiet (200ms) so it never
- * draws attention to itself.
- */
 export const Nav = (_props: NavProps = {}) => {
   const [scrolled, setScrolled] = useState(false);
 
@@ -24,20 +16,40 @@ export const Nav = (_props: NavProps = {}) => {
   }, []);
 
   return (
-    <header className={`site-nav${scrolled ? " site-nav--scrolled" : ""}`}>
-      <Link to="/" className="site-nav__brand" aria-label="The Art of Stephen Meakin — home">
+    <header
+      className={cn(
+        "sticky top-0 z-50 flex items-center justify-between gap-6 px-6 md:px-10 lg:px-16 transition-all duration-300 ease-smooth text-ink",
+        scrolled
+          ? "py-3 bg-black/85 backdrop-blur-md border-b border-white/5"
+          : "py-5 bg-transparent border-b border-transparent",
+      )}
+    >
+      <Link to="/" className="inline-flex items-center" aria-label="The Art of Stephen Meakin — home">
         <Logo size={30} wordmark />
       </Link>
-      <nav className="site-nav__links" aria-label="Primary">
-        <NavLink to="/" end className="site-nav__link">
-          Home
-        </NavLink>
-        <NavLink to="/collections" className="site-nav__link">
-          Collections
-        </NavLink>
-        <NavLink to="/about" className="site-nav__link">
-          About
-        </NavLink>
+      <nav className="flex items-center gap-7 md:gap-9" aria-label="Primary">
+        {[
+          { to: "/", label: "Home", end: true },
+          { to: "/collections", label: "Collections" },
+          { to: "/about", label: "About" },
+        ].map((l) => (
+          <NavLink
+            key={l.to}
+            to={l.to}
+            end={l.end}
+            className={({ isActive }) =>
+              cn(
+                "relative py-2 font-sans text-[12px] font-medium tracking-wider uppercase transition-colors duration-300",
+                isActive ? "text-ink" : "text-ink/55 hover:text-ink",
+                "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-left after:transition-transform after:duration-300",
+                isActive && "after:scale-x-100",
+                "hover:after:scale-x-100",
+              )
+            }
+          >
+            {l.label}
+          </NavLink>
+        ))}
       </nav>
     </header>
   );
