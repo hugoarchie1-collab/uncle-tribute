@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1450 220" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <!-- The Art of Stephen Meakin — full horizontal lockup (emblem + wordmark). -->
+  <title>The Art of Stephen Meakin</title>
+
+  <!-- Emblem on the left, sized to ~200×200 within the 220px-tall band. -->
+  <g transform="translate(10 10)">
+    <defs>
+      <g id="petal">
+        <path d="M 96 76 C 78 70, 72 44, 100 22 C 128 44, 122 70, 104 76 Z" />
+        <path d="M 98 68 C 88 64, 86 48, 100 36 C 114 48, 112 64, 102 68 Z" />
+      </g>
+      <g id="sepal">
+        <path d="M 100 70 C 108 62, 113 48, 110 36 C 106 32, 102 34, 100 40 C 98 34, 94 32, 90 36 C 87 48, 92 62, 100 70 Z" />
+      </g>
+    </defs>
+    <g>
+      <use href="#sepal" />
+      <use href="#sepal" transform="rotate(72 100 100)" />
+      <use href="#sepal" transform="rotate(144 100 100)" />
+      <use href="#sepal" transform="rotate(216 100 100)" />
+      <use href="#sepal" transform="rotate(288 100 100)" />
+    </g>
+    <g transform="rotate(36 100 100)">
+      <use href="#petal" />
+      <use href="#petal" transform="rotate(72 100 100)" />
+      <use href="#petal" transform="rotate(144 100 100)" />
+      <use href="#petal" transform="rotate(216 100 100)" />
+      <use href="#petal" transform="rotate(288 100 100)" />
+    </g>
+    <circle cx="100" cy="100" r="10" />
+    <circle cx="100" cy="100" r="2.4" fill="currentColor" stroke="none" />
+  </g>
+
+  <!-- Wordmark to the right of the emblem. -->
+  <text x="250" y="142"
+        fill="currentColor" stroke="none"
+        font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+        font-weight="300" font-size="92" letter-spacing="-1.2">The Art of Stephen Meakin</text>
+</svg>

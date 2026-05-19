@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+  <!-- The Art of Stephen Meakin — heraldic 5-petal rose. -->
+  <defs>
+    <!-- Single petal pointing up. Base sits just outside the central pip. -->
+    <g id="petal">
+      <path d="
+        M 96 76
+        C 78 70, 72 44, 100 22
+        C 128 44, 122 70, 104 76 Z" />
+      <!-- Inner echo: smaller petal echoing the outer shape -->
+      <path d="
+        M 98 68
+        C 88 64, 86 48, 100 36
+        C 114 48, 112 64, 102 68 Z" />
+    </g>
+    <!-- Small sepal-leaf tucked between petals, pointing up. -->
+    <g id="sepal">
+      <path d="
+        M 100 70
+        C 108 62, 113 48, 110 36
+        C 106 32, 102 34, 100 40
+        C 98 34, 94 32, 90 36
+        C 87 48, 92 62, 100 70 Z" />
+    </g>
+  </defs>
+
+  <!-- 5 small sepals (rendered first so they sit behind) -->
+  <g>
+    <use href="#sepal" />
+    <use href="#sepal" transform="rotate(72 100 100)" />
+    <use href="#sepal" transform="rotate(144 100 100)" />
+    <use href="#sepal" transform="rotate(216 100 100)" />
+    <use href="#sepal" transform="rotate(288 100 100)" />
+  </g>
+
+  <!-- 5 main petals, offset 36° to sit between the sepals -->
+  <g transform="rotate(36 100 100)">
+    <use href="#petal" />
+    <use href="#petal" transform="rotate(72 100 100)" />
+    <use href="#petal" transform="rotate(144 100 100)" />
+    <use href="#petal" transform="rotate(216 100 100)" />
+    <use href="#petal" transform="rotate(288 100 100)" />
+  </g>
+
+  <!-- Central pip -->
+  <circle cx="100" cy="100" r="10" />
+  <circle cx="100" cy="100" r="2.4" fill="currentColor" stroke="none" />
+</svg>
