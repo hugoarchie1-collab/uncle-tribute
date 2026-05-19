@@ -20,14 +20,14 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative">
-          {/* HERO — bolder, tighter */}
-          <section className="mx-auto max-w-[1000px] px-4 md:px-8 lg:px-12 pt-12 md:pt-20 pb-12 md:pb-16 text-center">
+          {/* HERO — bold, tight, striking */}
+          <section className="mx-auto max-w-[1040px] px-4 md:px-8 lg:px-12 pt-12 md:pt-20 pb-12 md:pb-16 text-center">
             <Reveal>
               <blockquote className="m-0 border-0 p-0">
-                <p className="font-display italic font-semibold leading-[1.06] tracking-[-0.025em] text-ink m-0 mb-5 text-balance text-[clamp(38px,6vw,78px)]">
+                <p className="font-display italic font-bold leading-[1.04] tracking-[-0.03em] text-ink m-0 mb-5 text-balance text-[clamp(40px,6.4vw,84px)]">
                   {WELCOME.openingQuote}
                 </p>
-                <cite className="not-italic font-sans text-[10px] font-semibold tracking-[0.34em] uppercase text-ink/60">
+                <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/65">
                   — {WELCOME.openingAttribution}
                 </cite>
               </blockquote>
@@ -37,7 +37,7 @@ export const Welcome = () => {
           {/* Reminder paragraph */}
           <section className="mx-auto max-w-[720px] px-4 md:px-8 pb-16 md:pb-24 text-center">
             <Reveal>
-              <p className="font-display italic font-medium text-[clamp(22px,2.4vw,28px)] leading-[1.5] text-ink text-balance m-0">
+              <p className="font-display italic font-semibold text-[clamp(22px,2.6vw,30px)] leading-[1.45] text-ink text-balance m-0">
                 {WELCOME.reminder}
               </p>
             </Reveal>
@@ -60,7 +60,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[640px] px-4 md:px-8 py-16 md:py-24 text-center">
             <Reveal>
               <Separator className="mb-8 bg-ink/15" />
-              <p className="font-display italic font-medium text-[clamp(22px,2.4vw,28px)] leading-snug text-ink m-0">
+              <p className="font-display italic font-semibold text-[clamp(22px,2.6vw,30px)] leading-snug text-ink m-0">
                 {WELCOME.passingNote}
               </p>
               <Separator className="mt-8 bg-ink/15" />

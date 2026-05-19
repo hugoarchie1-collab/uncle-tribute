@@ -28,25 +28,35 @@ export const Collections = () => {
                 photoUrl={coll.backdropImage ? asset(coll.backdropImage) : undefined}
               />
 
-              {/* Soft focal scrim — keeps the title legible without crushing the photo */}
+              {/* Very light scrim — just enough darkening behind the title.
+                  The photo should read clearly through it. */}
               <div
                 aria-hidden
                 className="absolute inset-0 z-[1] pointer-events-none"
                 style={{
                   background:
-                    "radial-gradient(70% 55% at 50% 25%, rgba(10,9,8,0.6) 0%, rgba(10,9,8,0.25) 100%)",
+                    "radial-gradient(60% 40% at 50% 20%, rgba(10,9,8,0.45) 0%, rgba(10,9,8,0.05) 100%)",
                 }}
               />
 
               <div className="relative z-[2] mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 pt-20 md:pt-28 pb-16 md:pb-20">
-                <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-14 md:mb-20">
-                  <p className="font-sans text-[11px] font-semibold tracking-[0.34em] uppercase text-accent m-0 mb-5 drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)]">
+                <Reveal as="header" className="max-w-[780px] mx-auto text-center mb-14 md:mb-20">
+                  <p
+                    className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                  >
                     {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
-                  <h2 className="font-display font-semibold italic tracking-[-0.02em] text-[clamp(40px,6vw,78px)] leading-[1.02] text-ink m-0 mb-7 text-balance drop-shadow-[0_2px_24px_rgba(0,0,0,0.7)]">
+                  <h2
+                    className="font-display font-bold italic tracking-[-0.025em] text-[clamp(44px,6.4vw,84px)] leading-[1.0] text-white m-0 mb-7 text-balance"
+                    style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  >
                     {coll.title}
                   </h2>
-                  <div className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.75] text-ink/90 flex flex-col gap-4 max-w-[640px] mx-auto drop-shadow-[0_1px_12px_rgba(0,0,0,0.55)]">
+                  <div
+                    className="font-sans font-medium text-[17px] md:text-[18px] leading-[1.75] text-white flex flex-col gap-4 max-w-[640px] mx-auto"
+                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  >
                     {coll.description.split("\n\n").map((para, i) => (
                       <p key={i} className="m-0">{para}</p>
                     ))}
@@ -87,11 +97,17 @@ export const Collections = () => {
                             />
                           </div>
                           <figcaption className="pt-4 text-center">
-                            <h3 className="font-display font-semibold italic text-[22px] md:text-[24px] leading-[1.2] tracking-[-0.01em] text-ink m-0 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]">
+                            <h3
+                              className="font-display font-bold italic text-[22px] md:text-[26px] leading-[1.15] tracking-[-0.015em] text-white m-0"
+                              style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
+                            >
                               {painting.title}
                             </h3>
                             {painting.year && painting.year !== "[ DATE ]" && (
-                              <p className="mt-1.5 font-sans text-[10px] font-semibold tracking-[0.32em] uppercase text-ink/70 m-0">
+                              <p
+                                className="mt-1.5 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-white/85 m-0"
+                                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                              >
                                 {painting.year}
                               </p>
                             )}

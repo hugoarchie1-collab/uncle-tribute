@@ -50,13 +50,13 @@ export const About = () => {
           className="mx-auto max-w-[1100px] px-4 md:px-8 lg:px-12 pt-20 md:pt-28 pb-14 text-center"
         >
           <Badge variant="accent" className="mb-6">In memoriam</Badge>
-          <h1 className="font-display font-semibold italic tracking-[-0.025em] text-[clamp(54px,8.4vw,116px)] leading-[1.0] text-ink m-0 text-balance">
+          <h1 className="font-display font-bold italic tracking-[-0.03em] text-[clamp(58px,9vw,124px)] leading-[0.98] text-ink m-0 text-balance">
             Stephen Meakin
           </h1>
-          <p className="mt-6 font-display italic font-medium text-[clamp(18px,1.8vw,24px)] text-ink/85 m-0">
+          <p className="mt-6 font-display italic font-semibold text-[clamp(20px,2vw,26px)] text-ink/90 m-0">
             1966 <span className="text-ink/40 px-2">—</span> {PASSING_DATE}
           </p>
-          <p className="mt-3 font-sans text-[10px] font-semibold tracking-[0.34em] uppercase text-ink/60 m-0">
+          <p className="mt-3 font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/65 m-0">
             SEM · Mandala Artist &amp; Sacred Geometer
           </p>
         </Reveal>
