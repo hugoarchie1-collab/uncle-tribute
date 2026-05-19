@@ -23,9 +23,18 @@
    -------------------------------------------------------------------------- */
 
 :root {
-  /* Type */
-  --font-display: "Cormorant Garamond", "Adobe Caslon", Georgia, serif;
+  /* Type — Cormorant Infant (display, museum-monograph) + Inter (body, Stripe-clean) */
+  --font-display: "Cormorant Infant", "Cormorant Garamond", Georgia, serif;
   --font-sans: "Inter", -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Type scale (clamp ties mobile → desktop) */
+  --fs-h1: clamp(40px, 6vw, 80px);
+  --fs-h2: clamp(32px, 4.2vw, 52px);
+  --fs-h3: clamp(24px, 2.6vw, 34px);
+  --fs-body: 18px;
+  --fs-body-sm: 16px;
+  --fs-caption: 13px;
+  --fs-nav: 13px;
 
   /* Palette — warm deep dark, never pure black */
   --bg:            #0a0908;
@@ -46,11 +55,22 @@
   --t-base: 320ms;
   --t-slow: 560ms;
 
+  /* Spacing scale — strict 8-step ladder, use only these */
+  --s-1:   8px;
+  --s-2:  16px;
+  --s-3:  24px;
+  --s-4:  32px;
+  --s-5:  48px;
+  --s-6:  64px;
+  --s-7:  96px;
+  --s-8: 128px;
+  --s-9: 160px;
+
   /* Layout */
-  --gutter: clamp(20px, 4vw, 64px);
-  --max-prose: 680px;
+  --gutter: clamp(24px, 5vw, 80px);
+  --max-prose: 640px;
   --max-section: 1200px;
-  --max-wide: 1480px;
+  --max-wide: 1400px;
 
   color-scheme: dark;
 }
@@ -61,11 +81,11 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-sans);
-  font-weight: 300;
-  font-size: 17px;
-  line-height: 1.7;
-  letter-spacing: 0.005em;
-  color: var(--ink);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 1.75;
+  letter-spacing: 0;
+  color: rgba(237, 230, 214, 0.85);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -100,22 +120,45 @@ button { font: inherit; cursor: pointer; }
 h1, h2, h3, h4 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.012em;
   color: var(--ink);
+}
+h1 {
+  font-size: var(--fs-h1);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+h3 {
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+h4 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  line-height: 1.3;
 }
 
 p { margin: 0; }
 
-/* All-caps eyebrow label used throughout */
-.eyebrow {
-  display: inline-block;
+/* All-caps caption — used for image captions, eyebrows, meta labels.
+   Spec: 13px / w400 / ls 0.06em / uppercase / opacity 0.55. */
+.eyebrow,
+figcaption {
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-size: var(--fs-caption);
+  font-weight: 400;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink-fade);
+  color: rgba(237, 230, 214, 0.55);
 }
 
 /* Inline link / CTA */
@@ -177,16 +220,16 @@ p { margin: 0; }
   align-items: center;
   gap: 36px;
   font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.18em;
+  font-size: var(--fs-nav);
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: rgba(237, 230, 214, 0.7);
 }
 .site-nav__link {
   position: relative;
   padding: 8px 0;
-  color: var(--ink-soft);
+  color: rgba(237, 230, 214, 0.7);
   transition: color var(--t-base) var(--ease);
 }
 .site-nav__link::after {
