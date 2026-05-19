@@ -18,9 +18,9 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        // Display — Space Grotesk, modern grotesque
-        display: ['"Space Grotesk"', "ui-sans-serif", "system-ui"],
-        // Body — Inter, Stripe-clean
+        // Display — Cormorant Garamond, classical fine-art serif
+        display: ['"Cormorant Garamond"', "ui-serif", "Georgia", "serif"],
+        // Body — Inter, refined legibility
         sans: [
           "Inter",
           "-apple-system",
@@ -29,8 +29,8 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        // Italic editorial fallback (kept for the rare italic pull-quote)
-        serif: ['"Cormorant Infant"', "Georgia", "serif"],
+        // Pull-quote — Cormorant italic
+        serif: ['"Cormorant Garamond"', "Georgia", "serif"],
       },
       letterSpacing: {
         tightest: "-0.04em",

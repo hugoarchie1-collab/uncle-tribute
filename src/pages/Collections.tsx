@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { CollectionBackdrop } from "../components/CollectionBackdrop";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { motion } from "framer-motion";
-import { Card } from "../components/ui/card";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -13,89 +11,93 @@ export const Collections = () => {
   usePageTitle("The Collections");
 
   return (
-    <div className="bg-bg">
+    <div className="relative bg-bg">
       <Nav />
-      <main>
-        {COLLECTIONS.map((coll) => {
+      <main className="relative">
+        {/* Page header */}
+        <section className="mx-auto max-w-[1100px] px-6 md:px-10 lg:px-16 pt-28 md:pt-40 pb-16 text-center">
+          <Reveal>
+            <p className="font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-accent m-0 mb-5">
+              The Collections
+            </p>
+            <h1 className="font-display font-light italic tracking-[-0.02em] text-[clamp(40px,6vw,76px)] leading-[1.04] text-ink m-0">
+              A lifetime of work
+            </h1>
+          </Reveal>
+        </section>
+
+        {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
           return (
             <section
               key={coll.id}
-              className="relative isolate overflow-hidden border-t border-line first-of-type:border-t-0"
+              id={`collection-${coll.id}`}
+              className={`relative mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 py-20 md:py-28 ${
+                collIndex > 0 ? "border-t border-white/8" : ""
+              }`}
             >
-              <CollectionBackdrop
-                collectionId={coll.id}
-                photoUrl={coll.backdropImage ? asset(coll.backdropImage) : undefined}
-              />
-              <div
-                aria-hidden
-                className="absolute inset-0 z-[1] pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 50% 50%, transparent 0%, rgba(0,0,0,0.35) 100%), linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.65) 100%)",
-                }}
-              />
+              <Reveal as="header" className="max-w-[720px] mx-auto text-center mb-16 md:mb-20">
+                <p className="font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-accent m-0 mb-5">
+                  {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
+                </p>
+                <h2 className="font-display font-light italic tracking-[-0.02em] text-[clamp(36px,5vw,64px)] leading-[1.04] text-ink m-0 mb-8 text-balance">
+                  {coll.title}
+                </h2>
+                <div className="font-sans font-light text-[16px] md:text-[17px] leading-[1.85] text-ink/80 flex flex-col gap-4 max-w-[620px] mx-auto">
+                  {coll.description.split("\n\n").map((para, i) => (
+                    <p key={i} className="m-0">{para}</p>
+                  ))}
+                </div>
+              </Reveal>
 
-              <div className="relative z-[2] mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16 py-24 md:py-36">
-                <Reveal as="header" className="mb-16 md:mb-24">
-                  <Card className="max-w-[680px] bg-black/50 text-ink ring-1 ring-white/8 backdrop-blur-xl p-8 md:p-12 shadow-liftLg">
-                    <h2 className="font-display font-bold tracking-tightest text-h2 text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] m-0 mb-6">
-                      {coll.title}
-                    </h2>
-                    <div className="font-sans font-light text-body leading-loose text-white/90 flex flex-col gap-4 drop-shadow-[0_1px_12px_rgba(0,0,0,0.45)]">
-                      {coll.description.split("\n\n").map((para, i) => (
-                        <p key={i} className="m-0">{para}</p>
-                      ))}
-                    </div>
-                  </Card>
-                </Reveal>
-
-                <RevealStagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-                  {items.map((painting) => {
-                    const cover =
-                      painting.colourways.find((c) => c.isOriginal) ??
-                      painting.colourways[0];
-                    return (
-                      <motion.div
-                        key={painting.id}
-                        variants={{
-                          hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
-                          show: {
-                            opacity: 1, y: 0, filter: "blur(0px)",
-                            transition: { duration: 0.8, ease: [0.22, 0.61, 0.36, 1] },
-                          },
-                        }}
+              <RevealStagger
+                delay={0.06}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14 md:gap-y-20"
+              >
+                {items.map((painting) => {
+                  const cover =
+                    painting.colourways.find((c) => c.isOriginal) ??
+                    painting.colourways[0];
+                  return (
+                    <motion.figure
+                      key={painting.id}
+                      className="m-0"
+                      variants={{
+                        hidden: { opacity: 0, y: 16 },
+                        show: {
+                          opacity: 1, y: 0,
+                          transition: { duration: 0.55, ease: [0.22, 0.61, 0.36, 1] },
+                        },
+                      }}
+                    >
+                      <Link
+                        to={`/collections/${painting.id}`}
+                        className="group block"
+                        aria-label={`View ${painting.title}`}
                       >
-                        <Link
-                          to={`/collections/${painting.id}`}
-                          className="group block"
-                        >
-                          <Card className="p-5 transition-all duration-500 ease-smooth group-hover:-translate-y-1 group-hover:shadow-liftLg">
-                            <div className="aspect-square overflow-hidden bg-cream-soft">
-                              <img
-                                src={asset(cover.image)}
-                                alt={painting.title}
-                                loading="lazy"
-                                className="w-full h-full object-cover transition-transform duration-700 ease-smooth group-hover:scale-[1.03]"
-                              />
-                            </div>
-                            <div className="pt-4 text-center">
-                              <h3 className="font-display text-[22px] font-semibold tracking-tight leading-snug text-cream-ink m-0">
-                                {painting.title}
-                              </h3>
-                              {painting.year !== "[ DATE ]" && (
-                                <p className="mt-1.5 font-sans text-[11px] font-medium tracking-widest uppercase text-cream-ink/55 m-0">
-                                  {painting.year}
-                                </p>
-                              )}
-                            </div>
-                          </Card>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </RevealStagger>
-              </div>
+                        <div className="aspect-square overflow-hidden ring-1 ring-white/10 shadow-[0_18px_44px_rgba(0,0,0,0.5)] transition-all duration-500 group-hover:ring-accent/40 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.65)]">
+                          <img
+                            src={asset(cover.image)}
+                            alt={painting.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                          />
+                        </div>
+                        <figcaption className="pt-5 text-center">
+                          <h3 className="font-display font-normal italic text-[22px] leading-[1.2] tracking-[-0.01em] text-ink m-0">
+                            {painting.title}
+                          </h3>
+                          {painting.year && painting.year !== "[ DATE ]" && (
+                            <p className="mt-2 font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/55 m-0">
+                              {painting.year}
+                            </p>
+                          )}
+                        </figcaption>
+                      </Link>
+                    </motion.figure>
+                  );
+                })}
+              </RevealStagger>
             </section>
           );
         })}

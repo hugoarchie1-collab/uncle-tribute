@@ -3,35 +3,35 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
-import { ABOUT } from "../data/content";
+import { ABOUT, PASSING_DATE } from "../data/content";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
-const CAPTION_TBD = "(n/a)";
+const CAP = "(n/a)";
 
 const Figure = ({
   src,
   alt,
-  caption = CAPTION_TBD,
-  className = "",
-  delay = 0,
+  caption = CAP,
+  width = "max-w-[680px]",
+  aspect = "aspect-[3/2]",
   eager = false,
 }: {
   src: string;
   alt: string;
   caption?: string;
-  className?: string;
-  delay?: number;
+  width?: string;
+  aspect?: string;
   eager?: boolean;
 }) => (
-  <Reveal as="figure" delay={delay} className={`m-0 my-12 mx-auto max-w-[1200px] px-6 md:px-10 ${className}`}>
+  <Reveal as="figure" className={`m-0 my-14 md:my-20 mx-auto px-6 md:px-10 ${width}`}>
     <img
       src={asset(src)}
       alt={alt}
       loading={eager ? "eager" : "lazy"}
-      className="w-full shadow-liftLg ring-1 ring-white/5"
+      className={`w-full ${aspect} object-cover ring-1 ring-white/8 shadow-[0_24px_60px_rgba(0,0,0,0.5)]`}
     />
-    <figcaption className="mt-3 text-center font-sans text-[11px] font-medium tracking-widest uppercase text-ink/35">
+    <figcaption className="mt-3 text-center font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/35">
       {caption}
     </figcaption>
   </Reveal>
@@ -44,97 +44,106 @@ export const About = () => {
     <div className="relative bg-bg">
       <Nav />
       <main>
-        {/* Hero — name + small badge */}
-        <Reveal as="section" className="mx-auto max-w-[1200px] px-6 md:px-10 lg:px-16 pt-24 md:pt-32 pb-12 text-center">
-          <Badge variant="accent" className="mb-6">In memoriam</Badge>
-          <h1 className="font-display font-bold tracking-tightest text-[clamp(48px,7vw,96px)] leading-[1.04] text-ink m-0">
+        {/* Hero — name + dates */}
+        <Reveal
+          as="section"
+          className="mx-auto max-w-[1100px] px-6 md:px-10 lg:px-16 pt-28 md:pt-40 pb-16 text-center"
+        >
+          <Badge variant="accent" className="mb-7">In memoriam</Badge>
+          <h1 className="font-display font-light italic tracking-[-0.02em] text-[clamp(54px,8vw,108px)] leading-[1.02] text-ink m-0 text-balance">
             Stephen Meakin
           </h1>
-          <p className="mt-5 font-sans text-[12px] font-medium tracking-widest uppercase text-ink/55 m-0">
-            SEM · Mandala Artist & Sacred Geometer · b. 1966
+          <p className="mt-7 font-display italic font-light text-[clamp(18px,1.8vw,22px)] text-ink/80 m-0">
+            1966 <span className="text-ink/40 px-2">—</span> {PASSING_DATE}
+          </p>
+          <p className="mt-4 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/55 m-0">
+            SEM · Mandala Artist &amp; Sacred Geometer
           </p>
         </Reveal>
 
-        {/* 1. Opening line */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12">
-          <p className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">{ABOUT.opening[0]}</p>
+        {/* Opening — first paragraph */}
+        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-10 md:py-14">
+          <p className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">{ABOUT.opening[0]}</p>
         </Reveal>
 
-        <Figure src="/img/about/01-stephen-at-gallery.jpg" alt="Stephen Meakin" eager />
+        <Figure src="/img/about/01-stephen-at-gallery.jpg" alt="Stephen Meakin" width="max-w-[380px]" aspect="aspect-[3/4]" eager />
 
-        {/* 3. Artist statement */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12">
-          <p className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">{ABOUT.opening[1]}</p>
+        {/* Artist statement */}
+        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-10 md:py-14">
+          <p className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">{ABOUT.opening[1]}</p>
         </Reveal>
 
-        <Figure src="/img/about/02-painting-table.jpg" alt="Working on a mandala" />
+        <Figure src="/img/about/02-painting-table.jpg" alt="Working on a mandala" width="max-w-[640px]" aspect="aspect-[3/2]" />
 
-        {/* 5. Biographical run */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12 flex flex-col gap-6">
+        {/* Biographical run */}
+        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-10 md:py-14 flex flex-col gap-6">
           {ABOUT.earlyLife.map((p, i) => (
-            <p key={i} className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">{p}</p>
+            <p key={i} className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">{p}</p>
           ))}
         </Reveal>
 
-        {/* 7. Anegada quote — bracketed with rules */}
-        <Reveal as="section" className="mx-auto max-w-[760px] px-6 md:px-10 my-16 py-12 border-y border-ink/15 flex flex-col gap-6">
+        {/* Anegada — three paragraphs, simple bracketed quote treatment */}
+        <Reveal as="section" className="mx-auto max-w-[760px] px-6 md:px-10 my-16 md:my-24 py-12 border-y border-white/10 flex flex-col gap-8">
+          <p className="font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-accent m-0 text-center">
+            Anegada, 1995
+          </p>
           {ABOUT.anegada.map((p, i) => (
-            <blockquote
+            <p
               key={i}
-              className="m-0 pl-6 border-l-2 border-accent bg-bg-soft/50 backdrop-blur-sm rounded-r-sm p-7 font-serif italic font-medium text-[18px] leading-loose text-ink"
+              className="font-display italic font-light text-[clamp(18px,1.7vw,21px)] leading-[1.65] text-ink/90 m-0"
             >
-              <p className="m-0">{p}</p>
-            </blockquote>
+              {p}
+            </p>
           ))}
         </Reveal>
 
-        <Figure src="/img/about/03-stephen-on-cairn.jpg" alt="Stephen on a stone cairn" />
+        <Figure src="/img/about/03-stephen-on-cairn.jpg" alt="Stephen on a stone cairn" width="max-w-[460px]" aspect="aspect-[3/4]" />
 
-        <Separator className="bg-ink/15 max-w-[680px] mx-auto" />
+        <Separator className="bg-white/10 max-w-[680px] mx-auto" />
 
         {/* Phoenix Place + commissions */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12 flex flex-col gap-6">
+        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-10 md:py-14 flex flex-col gap-6">
           {ABOUT.legacy.map((p, i) => (
-            <p key={i} className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">{p}</p>
+            <p key={i} className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">{p}</p>
           ))}
         </Reveal>
 
-        {/* Three commissions images */}
-        <Figure src="/img/about/04-mystic-rose-flyer.jpg" alt="The Mystic Rose exhibition, Fairmont Dubai" />
-        <Figure src="/img/about/05-force-india-layout.jpg" alt="Sahara Force India F1 mandala layout" />
-        <Figure src="/img/about/06-force-india-final.jpg" alt="Sahara Force India F1 mandala — final design" />
+        {/* Commissions images */}
+        <Figure src="/img/about/04-mystic-rose-flyer.jpg" alt="The Mystic Rose exhibition, Fairmont Dubai" width="max-w-[400px]" aspect="aspect-[3/2]" />
+        <Figure src="/img/about/05-force-india-layout.jpg" alt="Sahara Force India F1 mandala layout" width="max-w-[520px]" aspect="aspect-[3/2]" />
+        <Figure src="/img/about/06-force-india-final.jpg" alt="Sahara Force India F1 mandala — final design" width="max-w-[520px]" aspect="aspect-[3/2]" />
 
         {/* TAGA + Academy quote */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12 flex flex-col gap-6">
-          <p className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">
+        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-10 md:py-14 flex flex-col gap-6">
+          <p className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">
             In 2010 he founded TAGA — The Art of Geometry Academy — at Phoenix Place, Lewes.
           </p>
-          <blockquote className="m-0 my-6 pl-6 border-l-2 border-ink/25 bg-bg-soft/40 rounded-r-sm p-7 font-serif italic text-[17px] leading-relaxed text-ink">
+          <blockquote className="m-0 my-6 pl-6 border-l-2 border-ink/25 py-2 font-display italic font-light text-[17px] leading-[1.7] text-ink/90">
             <p className="m-0">{ABOUT.academyQuote}</p>
           </blockquote>
-          <p className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0">{ABOUT.palestine}</p>
+          <p className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0">{ABOUT.palestine}</p>
         </Reveal>
 
-        <Figure src="/img/about/07-az-zarqa-students.jpg" alt="Stephen with children at the Az-Zarqa School for Palestinian Orphans and Refugees, Jordan" />
+        <Figure src="/img/about/07-az-zarqa-students.jpg" alt="Stephen with children at the Az-Zarqa School for Palestinian Orphans and Refugees, Jordan" width="max-w-[560px]" aspect="aspect-[3/2]" />
 
         {/* Letter to every student */}
-        <Reveal as="section" className="mx-auto max-w-[680px] px-6 md:px-10 py-12">
-          <p className="font-sans font-light text-[18px] leading-loose text-ink/85 m-0 mb-6">
+        <Reveal as="section" className="mx-auto max-w-[720px] px-6 md:px-10 py-10 md:py-14">
+          <p className="font-sans font-light text-[17px] leading-[1.85] text-ink/85 m-0 mb-8 text-center">
             {ABOUT.studentsIntro}
           </p>
-          <blockquote className="m-0 p-10 bg-gradient-to-b from-bg-soft to-bg-elevated border border-line rounded-sm">
-            <p className="font-serif italic text-[19px] leading-[1.85] text-ink m-0 mb-6">{ABOUT.studentsLetter}</p>
-            <cite className="not-italic font-sans text-[11px] font-medium tracking-widest uppercase text-ink/55">
+          <blockquote className="m-0 p-10 bg-bg-soft ring-1 ring-white/8">
+            <p className="font-display italic font-light text-[18px] leading-[1.8] text-ink m-0 mb-6">{ABOUT.studentsLetter}</p>
+            <cite className="not-italic font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/55">
               — Stephen Meakin
             </cite>
           </blockquote>
         </Reveal>
 
-        {/* Final images */}
-        <Figure src="/img/about/08-taga-group.jpg" alt="A group at TAGA with their paintings" />
-        <Figure src="/img/about/09-taga-studio.jpg" alt="The TAGA drafting studio" />
-        <Figure src="/img/about/10-taga-classroom.jpg" alt="A TAGA class in session" />
-        <Figure src="/img/about/11-ophiuchus-painting.jpg" alt="A painting on the studio floor" />
+        {/* Final TAGA images */}
+        <Figure src="/img/about/08-taga-group.jpg" alt="A group at TAGA with their paintings" width="max-w-[560px]" aspect="aspect-[3/2]" />
+        <Figure src="/img/about/09-taga-studio.jpg" alt="The TAGA drafting studio" width="max-w-[460px]" aspect="aspect-[3/2]" />
+        <Figure src="/img/about/10-taga-classroom.jpg" alt="A TAGA class in session" width="max-w-[560px]" aspect="aspect-[3/2]" />
+        <Figure src="/img/about/11-ophiuchus-painting.jpg" alt="A painting on the studio floor" width="max-w-[440px]" aspect="aspect-[1/1]" />
       </main>
       <Footer />
     </div>

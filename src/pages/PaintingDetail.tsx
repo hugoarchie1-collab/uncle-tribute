@@ -51,7 +51,7 @@ export const PaintingDetail = () => {
             src={asset(selected.image)}
             alt=""
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.55 }}
+            animate={{ opacity: 0.45 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
             className="painting-detail__ambient-img"
@@ -66,94 +66,94 @@ export const PaintingDetail = () => {
         <main className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16 pt-8 pb-24 md:pb-32">
           <Link
             to="/collections"
-            className="inline-flex items-center gap-2 mb-12 font-sans text-[12px] font-medium tracking-wider uppercase text-ink/55 transition-colors duration-300 hover:text-ink"
+            className="inline-flex items-center gap-2 mb-12 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/55 transition-colors duration-300 hover:text-accent"
           >
             ← All collections
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20 items-start">
             <Reveal as="div" className="lg:sticky lg:top-[100px]">
-              <div className="aspect-square overflow-hidden bg-cream ring-1 ring-white/5 shadow-liftLg">
+              <div className="aspect-square overflow-hidden bg-black/40 ring-1 ring-white/10 shadow-[0_28px_72px_rgba(0,0,0,0.55)]">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={selected.image}
                     src={asset(selected.image)}
                     alt={`${painting.title} — ${selected.name}`}
-                    initial={{ opacity: 0, scale: 0.99 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
+                    transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
                     className="w-full h-full object-cover"
                   />
                 </AnimatePresence>
               </div>
             </Reveal>
 
-            <Reveal as="article" delay={0.15} className="flex flex-col gap-6">
-              <Badge variant="accent">{collection?.title}</Badge>
+            <Reveal as="article" delay={0.1} className="flex flex-col gap-6">
+              {collection && <Badge variant="accent">{collection.title}</Badge>}
 
-              <h1 className="font-display font-bold tracking-tightest leading-[1.05] text-[clamp(36px,4.5vw,64px)] text-ink m-0">
+              <h1 className="font-display font-light italic tracking-[-0.02em] leading-[1.05] text-[clamp(36px,4.5vw,64px)] text-ink m-0">
                 {painting.title}
               </h1>
 
               <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 text-[14px]">
                 {painting.year !== "[ DATE ]" && (
                   <>
-                    <dt className="font-sans text-[10px] font-medium tracking-widest uppercase text-ink/45 pt-1">Date</dt>
+                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Date</dt>
                     <dd className="m-0 text-ink">{painting.year}</dd>
                   </>
                 )}
                 {painting.size && (
                   <>
-                    <dt className="font-sans text-[10px] font-medium tracking-widest uppercase text-ink/45 pt-1">Size</dt>
+                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Size</dt>
                     <dd className="m-0 text-ink">{painting.size}</dd>
                   </>
                 )}
                 {painting.location && (
                   <>
-                    <dt className="font-sans text-[10px] font-medium tracking-widest uppercase text-ink/45 pt-1">Painted in</dt>
+                    <dt className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 pt-1">Painted in</dt>
                     <dd className="m-0 text-ink">{painting.location}</dd>
                   </>
                 )}
               </dl>
 
               {painting.artistQuote && (
-                <blockquote className="my-4 pl-6 border-l-2 border-accent bg-bg-soft/60 backdrop-blur-sm rounded-r-sm p-7">
-                  <p className="font-serif italic text-[18px] leading-relaxed text-ink m-0 mb-3">
+                <blockquote className="my-4 pl-6 border-l-2 border-accent py-2">
+                  <p className="font-display italic font-light text-[18px] leading-[1.65] text-ink m-0 mb-3">
                     &ldquo;{painting.artistQuote}&rdquo;
                   </p>
-                  <cite className="not-italic font-sans text-[11px] font-medium tracking-widest uppercase text-ink/55">
+                  <cite className="not-italic font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/55">
                     — Stephen Meakin
                   </cite>
                 </blockquote>
               )}
 
-              <div className="flex flex-col gap-4 font-sans font-light text-[16px] leading-loose text-ink/85">
+              <div className="flex flex-col gap-4 font-sans font-light text-[17px] leading-[1.85] text-ink/85">
                 {painting.description.split("\n\n").map((para, i) => (
                   <p key={i} className="m-0">{para}</p>
                 ))}
               </div>
 
-              <Separator className="bg-ink/15 mt-6" />
+              <Separator className="bg-white/10 mt-6" />
 
               <div className="pt-2">
-                <p className="font-sans text-[11px] font-medium tracking-widest uppercase text-ink/45 m-0 mb-3">
+                <p className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 m-0 mb-3">
                   Original Print
                 </p>
-                <p className="font-sans font-light text-[15px] leading-relaxed text-ink/85 m-0">
+                <p className="font-sans font-light text-[15px] leading-[1.7] text-ink/85 m-0">
                   {ORIGINAL_PRINT_SPEC}
                 </p>
               </div>
 
-              <Separator className="bg-ink/15" />
+              <Separator className="bg-white/10" />
 
               <div className="pt-2">
-                <p className="font-sans text-[11px] font-medium tracking-widest uppercase text-ink/45 m-0 mb-3">
+                <p className="font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-ink/45 m-0 mb-3">
                   {hasAlternateColourways ? "Colourways" : "Original colourway"}
                 </p>
 
                 {hasAlternateColourways && (
-                  <p className="font-serif italic text-[15px] leading-relaxed text-ink/85 m-0 mb-5">
+                  <p className="font-display italic font-light text-[15px] leading-[1.6] text-ink/80 m-0 mb-5">
                     {COLOURWAY_NOTE}
                   </p>
                 )}
@@ -171,11 +171,13 @@ export const PaintingDetail = () => {
                           aria-label={c.name}
                           title={c.name}
                           onClick={() => setSelectedName(c.name)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.94 }}
                           className={cn(
-                            "w-7 h-7 rounded-full border-2 cursor-pointer transition-colors duration-300",
-                            isSelected ? "border-ink scale-110" : "border-transparent ring-1 ring-white/10",
+                            "w-8 h-8 rounded-full cursor-pointer transition-all duration-300",
+                            isSelected
+                              ? "ring-2 ring-ink ring-offset-2 ring-offset-bg"
+                              : "ring-1 ring-white/15 hover:ring-white/40",
                           )}
                           style={{ backgroundColor: c.hex }}
                         />
@@ -184,10 +186,10 @@ export const PaintingDetail = () => {
                   </div>
                 )}
 
-                <p className="font-serif italic text-[20px] text-ink m-0">
+                <p className="font-display italic font-light text-[22px] text-ink m-0">
                   {selected.name}
                   {selected.isOriginal && (
-                    <span className="not-italic ml-2 font-sans text-[10px] font-medium tracking-widest uppercase text-accent">
+                    <span className="not-italic ml-3 font-sans text-[10px] font-medium tracking-[0.28em] uppercase text-accent">
                       · original
                     </span>
                   )}

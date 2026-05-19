@@ -3,14 +3,11 @@
 @tailwind utilities;
 
 /* =============================================================================
-   Base layer — global defaults Tailwind doesn't cover
+   Base layer — global defaults
    ============================================================================= */
 
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
-
+  :root { color-scheme: dark; }
   html, body, #root { margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
 
@@ -18,36 +15,24 @@
     @apply font-sans text-body text-ink-soft bg-bg antialiased;
     font-weight: 300;
     overflow-x: hidden;
-
-    /* Radial glow auras — soft warm purple + rust + violet, pinned to viewport */
-    background-image:
-      radial-gradient(60% 40% at 20% 8%,  rgba(122, 70, 158, 0.18) 0%, transparent 60%),
-      radial-gradient(50% 35% at 85% 28%, rgba(201, 120, 68, 0.10) 0%, transparent 60%),
-      radial-gradient(55% 35% at 50% 70%, rgba(74, 56, 120, 0.14) 0%, transparent 70%);
-    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Default headings use Space Grotesk display */
   h1, h2, h3, h4 {
-    @apply font-display tracking-tightest text-ink;
-    font-weight: 700;
-    line-height: 1.05;
+    @apply font-display text-ink;
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.015em;
   }
 
-  img, svg, video {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
-
+  img, svg, video { display: block; max-width: 100%; height: auto; }
   a { color: inherit; text-decoration: none; }
-
   button { font: inherit; cursor: pointer; }
 
-  ::selection {
-    @apply bg-accent;
-    color: #0a0908;
-  }
+  ::selection { @apply bg-accent; color: #0a0908; }
 
   :focus-visible {
     outline: 2px solid theme(colors.accent.DEFAULT);
@@ -57,34 +42,14 @@
 }
 
 /* =============================================================================
-   Component layer — things that aren't trivial in pure Tailwind
-   ============================================================================= */
-
-@layer components {
-  /* Eyebrow / caption */
-  .eyebrow {
-    @apply font-sans text-[12px] font-medium tracking-widest uppercase;
-    color: rgba(237, 230, 214, 0.55);
-  }
-
-  /* Pill CTA */
-  .cta-pill {
-    @apply inline-flex items-center gap-2 px-6 py-3 font-sans text-[12px] font-medium tracking-wider uppercase rounded-full transition-all duration-300;
-    background: #ede6d6;
-    color: #0a0908;
-  }
-  .cta-pill:hover { transform: translateY(-1px); }
-}
-
-/* =============================================================================
-   Video Intro — sticky scroll-driven layer (can't be Tailwind cleanly)
+   Video intro — sticky scroll-driven layer
    ============================================================================= */
 
 .video-intro {
   position: relative;
   width: 100%;
-  height: 110vh;
-  background: #000;
+  height: 105vh;
+  background: #0a0908;
 }
 .video-intro__stage {
   position: sticky;
@@ -101,36 +66,14 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #000;
+  background: #0a0908;
 }
 .video-intro__vignette {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%),
-    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.75) 100%);
+    radial-gradient(ellipse at center, transparent 65%, rgba(0,0,0,0.45) 100%);
   pointer-events: none;
-}
-.video-intro__cue {
-  position: absolute;
-  left: 50%;
-  bottom: 36px;
-  transform: translateX(-50%);
-  pointer-events: auto;
-  background: transparent;
-  border: 0;
-  padding: 16px;
-  color: rgba(237, 230, 214, 0.55);
-  transition: color 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.video-intro__cue:hover { color: #ede6d6; }
-.video-intro__cue-line {
-  display: block;
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, rgba(237,230,214,0.65), transparent);
-  animation: scrollCue 2.4s ease-in-out infinite;
-  transform-origin: top;
 }
 
 /* =============================================================================
@@ -150,41 +93,16 @@
   width: 120%;
   height: 120%;
   object-fit: cover;
-  filter: blur(120px) saturate(1.25) brightness(0.55);
+  filter: blur(140px) saturate(1.3) brightness(0.45);
   transform: scale(1.15);
-  opacity: 0.55;
-  animation: ambientFade 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  opacity: 0.45;
 }
 .painting-detail__ambient-veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(80% 70% at 50% 40%, rgba(10,9,8,0.0) 0%, rgba(10,9,8,0.55) 60%, rgba(10,9,8,0.85) 100%),
-    linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.30) 50%, rgba(10,9,8,0.75) 100%);
+    radial-gradient(80% 70% at 50% 40%, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.7) 100%);
 }
-@keyframes ambientFade {
-  from { opacity: 0; }
-  to   { opacity: 0.55; }
-}
-
-/* =============================================================================
-   Collection backdrop (CollectionBackdrop component fallback SVG)
-   ============================================================================= */
-
-.collection-backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  will-change: transform;
-}
-.collection-backdrop--photo {
-  background-size: cover;
-  background-position: center;
-}
-
-/* =============================================================================
-   Reduced motion
-   ============================================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -193,12 +111,7 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .video-intro__cue-line { animation: none; }
 }
-
-/* =============================================================================
-   Print
-   ============================================================================= */
 
 @media print {
   .video-intro, .painting-detail__ambient { display: none !important; }

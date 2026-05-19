@@ -3,24 +3,21 @@ import { Logo } from "./Logo";
 
 const YEAR = new Date().getFullYear();
 
-const socialLinks: { label: string; href: string }[] = [
-  { label: "Instagram", href: "#" },
-  { label: "Pinterest", href: "#" },
-  { label: "Email", href: "mailto:enquiries@example.com" },
-];
-
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative mt-32 border-t border-line bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-24 pb-12"
+    className="relative mt-24 border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-20 pb-12"
   >
-    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr] gap-y-12 gap-x-10 mb-16 items-start">
+    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-10 mb-14 items-start">
       <div>
-        <Logo size={30} wordmark />
+        <Logo size={32} wordmark />
+        <p className="mt-5 max-w-[280px] font-display italic font-light text-[15px] leading-[1.6] text-ink/70 m-0">
+          A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
+        </p>
       </div>
 
       <div>
-        <h3 className="mb-5 font-sans text-[11px] font-medium tracking-widest uppercase text-ink/45">
+        <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
           Site
         </h3>
         <ul className="flex flex-col gap-3 text-sm text-ink/70">
@@ -31,7 +28,7 @@ export const Footer = () => (
       </div>
 
       <div>
-        <h3 className="mb-5 font-sans text-[11px] font-medium tracking-widest uppercase text-ink/45">
+        <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
           Studio
         </h3>
         <ul className="flex flex-col gap-3 text-sm text-ink/70">
@@ -40,32 +37,11 @@ export const Footer = () => (
           <li>United Kingdom</li>
         </ul>
       </div>
-
-      <div>
-        <h3 className="mb-5 font-sans text-[11px] font-medium tracking-widest uppercase text-ink/45">
-          Elsewhere
-        </h3>
-        <ul className="flex flex-col gap-3 text-sm text-ink/70">
-          {socialLinks.map((s) => (
-            <li key={s.label}>
-              <a
-                href={s.href}
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer noopener"
-                className="transition-colors hover:text-ink"
-              >
-                {s.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
 
-    <div className="mx-auto max-w-[1200px] pt-8 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-ink/45">
+    <div className="mx-auto max-w-[1200px] pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-ink/45">
       <p className="m-0">
-        © {YEAR} The Art of Stephen Meakin. All works and writings ©
-        the estate of Stephen Meakin. All rights reserved.
+        © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>
       <p className="m-0 flex items-center gap-2">
         <Link to="/privacy" className="text-ink/70 transition-colors hover:text-ink">Privacy</Link>
