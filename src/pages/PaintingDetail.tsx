@@ -2,7 +2,12 @@ import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { COLLECTIONS, getPaintingById } from "../data/paintings";
+import {
+  COLLECTIONS,
+  getPaintingById,
+  ORIGINAL_PRINT_SPEC,
+  COLOURWAY_NOTE,
+} from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -17,20 +22,21 @@ export const PaintingDetail = () => {
     [painting],
   );
 
-  const initialColourway = availableColourways.find((c) => c.isOriginal) ?? availableColourways[0];
-  const [selectedName, setSelectedName] = useState<string | undefined>(initialColourway?.name);
+  const initialColourway =
+    availableColourways.find((c) => c.isOriginal) ?? availableColourways[0];
+  const [selectedName, setSelectedName] = useState<string | undefined>(
+    initialColourway?.name,
+  );
 
   if (!painting) return <Navigate to="/collections" replace />;
 
-  const selected = availableColourways.find((c) => c.name === selectedName) ?? initialColourway;
+  const selected =
+    availableColourways.find((c) => c.name === selectedName) ?? initialColourway;
   const collection = COLLECTIONS.find((c) => c.id === painting.collection);
 
   if (!selected) return <Navigate to="/collections" replace />;
 
-  // Aggregate "do any colourways have any [TBD] details to show?"
-  const hasAcquireInfo = Boolean(
-    selected.sizing || selected.framing || selected.price || selected.editionSize,
-  );
+  const hasAlternateColourways = availableColourways.length > 1;
 
   return (
     <div className="painting-detail">
@@ -53,36 +59,27 @@ export const PaintingDetail = () => {
           <aside className="painting-detail__sidebar">
             <div className="painting-detail__crumb">{collection?.title}</div>
             <h1 className="painting-detail__title">{painting.title}</h1>
-            <div className="painting-detail__meta">
-              {painting.year !== "[ DATE ]" && <span>{painting.year}</span>}
-              {painting.location && <span> · {painting.location}</span>}
-            </div>
 
-            {availableColourways.length > 1 && (
-              <div className="colourway-selector" role="radiogroup" aria-label="Colourway">
-                {availableColourways.map((c) => {
-                  const isSelected = c.name === selected.name;
-                  return (
-                    <button
-                      key={c.name}
-                      type="button"
-                      role="radio"
-                      aria-checked={isSelected}
-                      aria-label={c.name}
-                      title={c.name}
-                      onClick={() => setSelectedName(c.name)}
-                      className={`swatch ${isSelected ? "swatch--selected" : ""}`}
-                      style={{ backgroundColor: c.hex }}
-                    />
-                  );
-                })}
-              </div>
-            )}
-
-            <div className="painting-detail__colourway-name">
-              <em>{selected.name}</em>
-              {selected.isOriginal && <span className="original-tag"> · original</span>}
-            </div>
+            <dl className="painting-detail__specs">
+              {painting.year !== "[ DATE ]" && (
+                <>
+                  <dt>Date</dt>
+                  <dd>{painting.year}</dd>
+                </>
+              )}
+              {painting.size && (
+                <>
+                  <dt>Size</dt>
+                  <dd>{painting.size}</dd>
+                </>
+              )}
+              {painting.location && (
+                <>
+                  <dt>Painted in</dt>
+                  <dd>{painting.location}</dd>
+                </>
+              )}
+            </dl>
 
             {painting.artistQuote && (
               <blockquote className="painting-detail__quote">
@@ -97,54 +94,46 @@ export const PaintingDetail = () => {
               ))}
             </div>
 
-            {selected.colourwayNote && (
-              <div className="colourway-note">
-                <h3>About this colourway</h3>
-                <p>{selected.colourwayNote}</p>
-              </div>
-            )}
+            <div className="painting-detail__original-print">
+              <p className="painting-detail__spec-label">Original Print</p>
+              <p>{ORIGINAL_PRINT_SPEC}</p>
+            </div>
 
-            <section className="acquire">
-              <h3>Acquire this print</h3>
-              {hasAcquireInfo ? (
-                <dl className="acquire-grid">
-                  {selected.sizing && (
-                    <>
-                      <dt>Size</dt>
-                      <dd>{selected.sizing}</dd>
-                    </>
-                  )}
-                  {selected.framing && (
-                    <>
-                      <dt>Framing</dt>
-                      <dd>{selected.framing}</dd>
-                    </>
-                  )}
-                  {selected.editionSize && (
-                    <>
-                      <dt>Edition</dt>
-                      <dd>{selected.editionSize}</dd>
-                    </>
-                  )}
-                  {selected.price && (
-                    <>
-                      <dt>Price</dt>
-                      <dd>{selected.price}</dd>
-                    </>
-                  )}
-                </dl>
-              ) : (
-                <p className="acquire-tbd">
-                  Sizing, framing and pricing details coming soon. For enquiries please contact the studio.
-                </p>
+            <div className="painting-detail__colourway-block">
+              <p className="painting-detail__spec-label">
+                {hasAlternateColourways ? "Colourways" : "Original colourway"}
+              </p>
+
+              {hasAlternateColourways && (
+                <p className="painting-detail__colourway-note">{COLOURWAY_NOTE}</p>
               )}
-              <a
-                className="acquire-enquire"
-                href={`mailto:enquiries@example.com?subject=${encodeURIComponent(`Print enquiry: ${painting.title} — ${selected.name}`)}`}
-              >
-                Enquire about this print
-              </a>
-            </section>
+
+              {hasAlternateColourways && (
+                <div className="colourway-selector" role="radiogroup" aria-label="Colourway">
+                  {availableColourways.map((c) => {
+                    const isSelected = c.name === selected.name;
+                    return (
+                      <button
+                        key={c.name}
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        aria-label={c.name}
+                        title={c.name}
+                        onClick={() => setSelectedName(c.name)}
+                        className={`swatch ${isSelected ? "swatch--selected" : ""}`}
+                        style={{ backgroundColor: c.hex }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="painting-detail__colourway-name">
+                <em>{selected.name}</em>
+                {selected.isOriginal && <span className="original-tag"> · original</span>}
+              </div>
+            </div>
           </aside>
         </div>
       </main>

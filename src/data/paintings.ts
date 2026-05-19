@@ -29,11 +29,22 @@ export interface Painting {
   title: string;
   year: string;
   collection: "habundia" | "genesis" | "born-in-the-sky";
+  size?: string;           // e.g. "60 × 60 cm (approx. 24 × 24 in)" — from the source PDF
   description: string;     // the full story for this painting
   artistQuote?: string;    // Stephen's own words, if a quote exists for this piece
   location?: string;       // e.g. "Ditchling, Sussex"
   colourways: Colourway[];
 }
+
+/**
+ * Boilerplate from the source PDFs, identical for every painting.
+ * Centralised here so editing once propagates to every painting page.
+ */
+export const ORIGINAL_PRINT_SPEC =
+  "Printed on 350gsm archival canvas using pigment inks, hand-stretched on a deep wooden frame. Individually made to order.";
+
+export const COLOURWAY_NOTE =
+  "Each colourway was created by Stephen himself and discovered on his computer in his studio. These are his own colour variations of the work, exactly as he left them.";
 
 export interface Collection {
   id: "habundia" | "genesis" | "born-in-the-sky";
@@ -95,6 +106,7 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of Wild Rose",
     year: "2018",
     collection: "habundia",
+    size: "60 × 60 cm (approx. 24 × 24 in)",
     location: "Ditchling, Sussex",
     description:
       "Habundia is the medieval spirit of wild abundance, the presence that moves through the hedgerows and ungoverned places. Stephen named his seven British wild flower mandalas after her.\n\nHe painted this one with actual wild rose oil. The painting contains the flower it depicts.\n\nThe numbers carry their own meaning. Six flowers: the hexagon. Five buds: the geometry of Venus, the planet that traces a five-petalled rose across the sky in its eight-year dance with Earth. The wild rose has five petals. It already carries that geometry.\n\nThe thorns are inside the circle, too. The rose cannot be separated from what protects it. Beauty and danger arriving together — every tradition that has encountered this plant understands this.\n\nThe wild rose blooms across every Sussex hedgerow each June without being planted. It simply appears, as it has for millennia.\n\nStephen painted this in Ditchling, Sussex, in the heart of the South Downs.",
@@ -122,6 +134,7 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of English Bluebells",
     year: "2019",
     collection: "habundia",
+    size: "60 × 60 cm (approx. 24 × 24 in)",
     location: "Brighton",
     description:
       "The second painting from the Habundia collection. As with the Wild Rose, Stephen painted it using actual bluebell oil.\n\nNot a painting of bluebells. A painting about being there.\n\nSix large bells. Twelve small. Forty-eight buds, three white and one pink among them: the exceptions noticed, named, counted. Five open blooms and one pentangle. The pentangle is a five-pointed star, the geometry of Venus, the planet that traces a five-petalled rose across the sky in its eight-year orbit with Earth. The wild rose carries it in its petals. Stephen found it again here.\n\nSix owls sit in six trees whose leaves have not yet opened. The bluebell blooms in a narrow window each spring, before the canopy closes and the light disappears from the forest floor. The owls are in the bare branches above. They see in darkness what others cannot.\n\nThis was the centrepiece of Stephen's final exhibition, at Unique Arts Gallery in Brighton, 2019.",
@@ -146,6 +159,7 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of Seven — Orchis 7 — Septagon",
     year: "1999",
     collection: "genesis",
+    size: "70 × 70 cm (approx. 28 × 28 in)",
     description:
       "The septagon cannot be drawn perfectly. Unlike every other regular polygon, it cannot be constructed with a compass and straight edge alone. It can only be estimated. Stephen chose it as the foundation of this work.\n\nSeven is the only number between one and ten that neither divides nor multiplies into any other. Every tradition assigned it to the sacred: seven chakras, seven heavens, seven planets. Pythagoras called it three plus four, triangle plus square, heaven plus earth. The number that belongs to neither and therefore stands alone.\n\nThe flower Stephen placed within this geometry is the Lady's Slipper Orchid. It is Britain's rarest native wildflower. There is one wild plant left in England. Its location is secret, guarded by Natural England. Darwin studied the pollination mechanism: the flower's pouch traps an insect, coats it in pollen, and then releases it. Stephen painted thirty of them.\n\nHe gave the rarest flower in England to the polygon that cannot be perfectly drawn. Two things that can only be approximated, held together in gold leaf.\n\nJung documented the mandala emerging spontaneously during individuation, the psyche's own attempt to picture its wholeness. Stephen spent hundreds of hours constructing what the psyche reaches for on its own.",
     artistQuote:
@@ -191,8 +205,9 @@ export const PAINTINGS: Painting[] = [
   {
     id: "flower-of-life",
     title: "Mandala of Transformation — Flower of Life",
-    year: "2000",
+    year: "Y2K (2000)",
     collection: "genesis",
+    size: "75 × 75 cm (approx. 30 × 30 in)",
     description:
       "At the turn of the millennium, Stephen had not painted for fourteen months. Then a peacock butterfly came through the window.\n\nHe built the work on the Flower of Life, a geometric symbol found carved into the Osireion at Abydos and studied by Leonardo da Vinci. It is the structure from which all other sacred geometry derives. Its natural form is the dodecagon: twelve, the number every civilisation has used to mark a complete cycle. The zodiac. The apostles. The months.\n\nThe peacock butterfly carries eyes on its wings. In Indian tradition, it is the companion of Lakshmi. In Roman mythology, its markings are the eyes of Argus, a symbol of all-seeing vision.\n\nIn Greek, psyche means soul. It also means butterfly.",
     artistQuote:
@@ -233,6 +248,7 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of 30 Slipper Orchids",
     year: "2001",
     collection: "genesis",
+    size: "50 × 50 cm (approx. 20 × 20 in)",
     description:
       "The Lady's Slipper Orchid is Britain's rarest native wildflower. One wild plant remains in England. Its location is kept secret. It is guarded around the clock by Natural England.\n\nDarwin spent years studying its pouch, the distinctive curved lip that traps visiting insects, coats them in pollen, then releases them to carry it elsewhere. Plant and insect co-evolved across millions of years until neither could exist without the other. A mechanism of such precision that Darwin used as evidence of evolution itself.\n\nThirty is the number of days in the moon's cycle, the number of degrees in each sign of the zodiac, and the age at which Christ began his ministry. Stephen counted thirty of these flowers and placed each one with the same precision that the flower itself embodies.\n\nFrom a distance, the composition reads like a frost crystal or a nebula. Up close, each orchid is identifiable, its pouch and petals exact.\n\nThe orchid has been collected, coveted and nearly lost. Stephen returned it to abundance.",
     colourways: [
@@ -275,6 +291,7 @@ export const PAINTINGS: Painting[] = [
     title: "The Peacock Mandala — Pavo Cristatus — Shield of Minerva",
     year: "2006–2007",
     collection: "born-in-the-sky",
+    size: "65 × 65 cm (approx. 26 × 26 in)",
     location: "East Sussex",
     description:
       "The peacock carries more symbolic weight than almost any other creature. It is the national bird of India. Krishna wears its feather. In Greek mythology, when Hermes killed the hundred-eyed giant Argus Panoptes, Hera placed all one hundred of his eyes onto the tail of the peacock, which is why each feather bears an eye. In alchemy, the cauda pavonis, the peacock's tail, marks the moment of transformation made visible. In early Christianity, the peacock symbolised resurrection. Its flesh was thought to be incorruptible.\n\nStephen knew all of this. And in 2006, the peacock sent him a feather.\n\nHe worked on it for over a year. Minerva's aegis was a shield covered in eyes. The peacock's tail is the same. Stephen saw the connection and named the painting accordingly.\n\nThe peacock finds the sun. The sun finds the painter. The painter finds the feather.",
@@ -316,6 +333,7 @@ export const PAINTINGS: Painting[] = [
     title: "Ophiuchus",
     year: "2006",
     collection: "born-in-the-sky",
+    size: "60 × 80 cm (approx. 24 × 32 in)",
     description:
       "There are thirteen constellations through which the ecliptic passes. The Babylonians used twelve, one for each month. Ophiuchus, through which the sun travels for eighteen days between November and December, was left out. It has been the excluded thirteenth ever since.\n\nOphiuchus is the Serpent Bearer. In Greek mythology, he is Asclepius, son of Apollo, who became so skilled in healing that he could raise the dead. Zeus killed him with a thunderbolt for upsetting the natural order, then placed him in the sky as a constellation, holding a serpent in both hands.\n\nThe Rod of Asclepius, a single serpent coiled around a staff, remains the global symbol of medicine. The serpent was chosen because its venom is simultaneously poison and cure. The same substance kills and heals. Asclepius understood that there is no such thing as a toxin that is only a toxin.\n\nStephen built this painting on a square — the Tibetan mandala palace form, four gates facing four directions, the sacred architecture of the cosmos. Most of his mandalas are circular. This one is not. The excluded constellation demanded a different kind of space.\n\nStephen described it as his homage to Ophiuchus, the constellation of the serpent bearer and toxin protector.",
     colourways: [
@@ -333,6 +351,7 @@ export const PAINTINGS: Painting[] = [
     title: "Tridecagon Moon Star — Star of Messier 13",
     year: "2007",
     collection: "born-in-the-sky",
+    size: "65 × 65 cm (approx. 26 × 26 in)",
     description:
       "In 1974, scientists pointed the Arecibo radio telescope at Messier 13, the Great Globular Cluster in Hercules, 300,000 stars, 25,000 light-years away, and broadcast the most ambitious message humanity has ever sent into space. It contained our DNA, our form, our solar system, our numbers. The message is still travelling. It will arrive in approximately 24,975 years.\n\nStephen named this painting after that cluster and built it on thirteen.\n\nThere are thirteen full moons in a solar year. The Gregorian calendar erased one.\n\nMutable: the astrological word for signs of transition, for things that change form rather than hold it. Thirteen is the number of the cycle that refuses to stay fixed. It waxes and wanes. It cannot be suppressed by a calendar.",
     artistQuote:
@@ -380,6 +399,7 @@ export const PAINTINGS: Painting[] = [
     title: "Lulin",
     year: "2012",
     collection: "born-in-the-sky",
+    size: "65 × 65 cm (approx. 26 × 26 in)",
     description:
       "On 24 February 2009, a green comet made its closest approach to Earth. It came within 38 million miles, glowing green from cyanogen and diatomic carbon burning in its atmosphere. Cyanogen is a poisonous gas. It makes one of the most beautiful colours in the night sky.\n\nComet Lulin was discovered in 2007 by a nineteen-year-old Chinese student named Ye Quanzhi, studying a photograph taken at the Lulin Observatory in Taiwan. He noticed something that wasn't a star. No one had seen it before, because it had never been here before. This was Comet Lulin's first visit to the inner solar system, its first exposure to sunlight. It moved backwards, retrograde, against the direction of every planet.\n\nIt orbits the sun once every million years. It will not return.\n\nStephen painted it three years after its passing. A portrait of something most people missed entirely, already gone, made permanent.",
     colourways: [
@@ -397,6 +417,7 @@ export const PAINTINGS: Painting[] = [
     title: "Enneagon — The Swans",
     year: "[ DATE ]", // [TBD] — mum will fill in
     collection: "born-in-the-sky",
+    size: "65 × 65 cm (approx. 26 × 26 in)",
     description:
       "The constellation of Cygnus has exactly nine principal stars. Stephen looked up, counted them, and came home to paint this.\n\nIn Hindu tradition, the swan is hamsa, the carrier of the soul. The word itself is the sound of breathing: ham as you breathe in, sa as you breathe out. Every person alive is saying the swan's name without knowing it.\n\nIn Celtic mythology swans moved between worlds. In Greek tradition, they were Apollo's birds, and when the sun god was gone, they sang.\n\nTwo swans facing each other make a heart with their necks. Stephen placed nine such pairs inside this mandala and called it a painting of global consciousness.\n\nHe meant it.",
     artistQuote:
