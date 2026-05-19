@@ -433,6 +433,32 @@ p { margin: 0; }
   color: var(--ink-fade);
 }
 
+.welcome-figure {
+  margin: 24px 0;
+  padding: 0;
+}
+.welcome-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+  filter: brightness(0.96);
+}
+.welcome-figure--portrait img {
+  max-width: 480px;
+  margin: 0 auto;
+  display: block;
+}
+.welcome-figure figcaption {
+  margin-top: 12px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
 .welcome-garden {
   padding: 80px 0 60px;
 }
@@ -1011,6 +1037,20 @@ p { margin: 0; }
 .about-figure--in-grid img { aspect-ratio: 4 / 3; object-fit: cover; }
 @media (max-width: 640px) {
   .about-trio { grid-template-columns: 1fr; }
+}
+
+/* The Anegada / Art-as-Ritual / Floral-Display passage is bracketed
+   between horizontal rules in the source PDF — mirror that here. */
+.about-section--rules {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 48px 0;
+  margin: 60px 0;
+}
+.about-section--rule-top {
+  border-top: 1px solid var(--line);
+  padding-top: 48px;
+  margin-top: 60px;
 }
 
 .about-section--anegada .anegada-quote {
