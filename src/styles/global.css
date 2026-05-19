@@ -94,6 +94,11 @@ body {
   letter-spacing: 0;
   color: rgba(237, 230, 214, 0.85);
   background: var(--bg);
+  background-image:
+    radial-gradient(60% 40% at 20% 8%,  rgba(122, 70, 158, 0.18) 0%, transparent 60%),
+    radial-gradient(50% 35% at 85% 28%, rgba(201, 120, 68, 0.10) 0%, transparent 60%),
+    radial-gradient(55% 35% at 50% 70%, rgba(74, 56, 120, 0.14) 0%, transparent 70%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -472,6 +477,16 @@ figcaption {
   max-width: var(--max-section);
   margin: 0 auto;
   padding: var(--s-8) var(--gutter) var(--s-7);
+  position: relative;
+}
+.welcome-hero--split::before {
+  content: "";
+  position: absolute;
+  inset: -8% -10%;
+  z-index: -1;
+  background: radial-gradient(45% 55% at 22% 50%, rgba(201, 120, 68, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(20px);
 }
 .welcome-hero--split::before,
 .welcome-hero--split::after { display: none; }
