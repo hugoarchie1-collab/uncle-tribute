@@ -308,7 +308,7 @@ p { margin: 0; }
 .video-intro {
   position: relative;
   width: 100%;
-  height: 200vh;   /* extra height gives room for scroll-fade */
+  height: 110vh;   /* short scroll-room — fades out quickly */
   background: #000;
 }
 .video-intro__stage {
@@ -336,71 +336,26 @@ p { margin: 0; }
     linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.75) 100%);
   pointer-events: none;
 }
-.video-intro__overlay {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-rows: 1fr auto auto 1fr;
-  align-items: center;
-  justify-items: center;
-  padding: 60px var(--gutter);
-  color: var(--ink);
-  pointer-events: none;
-}
-.video-intro__caption {
-  grid-row: 2;
-  margin: 0;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: fadeUp 1.6s var(--ease) both;
-  animation-delay: 0.4s;
-}
-.video-intro__caption-line {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: rgba(237, 230, 214, 0.85);
-}
-.video-intro__caption-name {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(48px, 9vw, 120px);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  text-shadow: 0 2px 28px rgba(0,0,0,0.6);
-}
 .video-intro__cue {
-  grid-row: 3;
-  align-self: end;
-  margin-bottom: 24px;
+  position: absolute;
+  left: 50%;
+  bottom: 36px;
+  transform: translateX(-50%);
   pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 24px;
   background: transparent;
   border: 0;
-  color: rgba(237, 230, 214, 0.7);
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
+  padding: 16px;
+  color: rgba(237, 230, 214, 0.55);
   transition: color var(--t-base) var(--ease);
   animation: fadeUp 1.6s var(--ease) both;
-  animation-delay: 1.4s;
+  animation-delay: 0.8s;
 }
 .video-intro__cue:hover { color: var(--ink); }
 .video-intro__cue-line {
+  display: block;
   width: 1px;
-  height: 56px;
-  background: linear-gradient(to bottom, rgba(237,230,214,0.7), transparent);
+  height: 48px;
+  background: linear-gradient(to bottom, rgba(237,230,214,0.65), transparent);
   animation: scrollCue 2.4s ease-in-out infinite;
   transform-origin: top;
 }

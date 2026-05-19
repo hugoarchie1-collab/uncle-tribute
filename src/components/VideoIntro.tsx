@@ -98,22 +98,14 @@ export const VideoIntro = ({ onComplete }: VideoIntroProps) => {
 
         <div className="video-intro__vignette" aria-hidden="true" />
 
-        <div className="video-intro__overlay">
-          <p className="video-intro__caption">
-            <span className="video-intro__caption-line">The Art of</span>
-            <span className="video-intro__caption-name">Stephen Meakin</span>
-          </p>
-
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="video-intro__cue"
-            aria-label="Scroll to the site"
-          >
-            <span>scroll</span>
-            <span className="video-intro__cue-line" aria-hidden="true" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleSkip}
+          className="video-intro__cue"
+          aria-label="Enter the site"
+        >
+          <span className="video-intro__cue-line" aria-hidden="true" />
+        </button>
       </div>
     </section>
   );
