@@ -1,11 +1,14 @@
 name: Deploy to GitHub Pages
 
+# Disabled — site is hosted on Vercel now.
+# To re-enable, uncomment the `push` block below. Leaving manual-dispatch
+# in place so you can still trigger it from the Actions tab if needed.
 on:
-  push:
-    branches:
-      - main
-      - claude/memorial-website-scroll-intro-a8VOZ
   workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  #     - claude/memorial-website-scroll-intro-a8VOZ
 
 permissions:
   contents: read
