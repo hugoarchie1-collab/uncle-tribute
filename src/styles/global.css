@@ -116,8 +116,8 @@ button { font: inherit; cursor: pointer; }
    eases in when it crosses into view (see src/lib/useScrollReveal.ts). */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+  transform: translateY(32px);
+  transition: opacity 1000ms var(--ease), transform 1000ms var(--ease);
   will-change: opacity, transform;
 }
 [data-reveal].is-revealed {
@@ -455,21 +455,25 @@ figcaption {
 .welcome-quote p {
   font-family: var(--font-display);
   font-style: italic;
-  font-weight: 400;
-  font-size: clamp(28px, 4.5vw, 54px);
-  line-height: 1.25;
-  letter-spacing: -0.005em;
+  font-weight: 500;
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
   color: var(--ink);
-  margin: 0 0 28px;
+  margin: 0 0 var(--s-4);
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .welcome-quote cite {
   display: inline-block;
   font-style: normal;
   font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.24em;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-fade);
+  color: rgba(237, 230, 214, 0.55);
 }
 
 .welcome-body {
@@ -509,14 +513,23 @@ figcaption {
 }
 
 .welcome-figure {
-  margin: 24px 0;
+  margin: var(--s-6) 0;
   padding: 0;
+  position: relative;
 }
 .welcome-figure img {
   width: 100%;
   height: auto;
-  border-radius: 2px;
+  border-radius: 0;            /* museum-clean — no rounding */
   filter: brightness(0.96);
+  box-shadow:
+    0 32px 60px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: transform 800ms var(--ease), filter 600ms var(--ease);
+}
+.welcome-figure:hover img {
+  filter: brightness(1.02);
+  transform: translateY(-3px);
 }
 .welcome-figure--portrait img {
   max-width: 480px;
@@ -757,7 +770,10 @@ figcaption {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #0a0a0a;
-  border-radius: 2px;
+  border-radius: 0;
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.45),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 .painting-tile__image-wrap img {
   width: 100%;
@@ -1078,12 +1094,24 @@ figcaption {
   max-width: var(--max-prose);
 }
 
-.about-figure { margin: 60px 0; padding: 0; }
+.about-figure {
+  margin: var(--s-7) auto;
+  padding: 0;
+  max-width: var(--max-section);
+}
 .about-figure img {
   width: 100%;
   height: auto;
-  border-radius: 2px;
+  border-radius: 0;
   filter: brightness(0.97);
+  box-shadow:
+    0 32px 60px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: transform 800ms var(--ease), filter 600ms var(--ease);
+}
+.about-figure:hover img {
+  filter: brightness(1.02);
+  transform: translateY(-3px);
 }
 .about-figure figcaption {
   margin-top: 14px;
