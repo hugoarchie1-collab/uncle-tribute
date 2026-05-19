@@ -1,28 +1,37 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { CaveIntro } from "../components/CaveIntro";
-import { AudioPlayer } from "../components/AudioPlayer";
+import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
+import { Footer } from "../components/Footer";
 import { WELCOME } from "../data/content";
+import { PAINTINGS } from "../data/paintings";
+import { asset } from "../lib/asset";
 
+/**
+ * Homepage. Scroll-trigger video intro, then the welcome content rises
+ * underneath. Ends with a "Garden of geometry" featured-works grid that
+ * links into the collections page.
+ */
 export const Welcome = () => {
-  const [introDone, setIntroDone] = useState(false);
-  const welcomeRef = useRef<HTMLDivElement>(null);
-
-  // Once the intro completes, smooth-scroll the user into the welcome content.
-  useEffect(() => {
-    if (introDone && welcomeRef.current) {
-      welcomeRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [introDone]);
+  // Six featured paintings for the home grid — easy to change here.
+  const featuredIds = [
+    "wild-rose",
+    "english-bluebells",
+    "orchis-7",
+    "flower-of-life",
+    "peacock-minerva",
+    "enneagon-swans",
+  ];
+  const featured = featuredIds
+    .map((id) => PAINTINGS.find((p) => p.id === id))
+    .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <>
-      <AudioPlayer fadeOut={introDone} />
-      <CaveIntro onComplete={() => setIntroDone(true)} />
+      <VideoIntro />
 
-      <div ref={welcomeRef} className="welcome-page">
+      <div id="welcome-anchor" className="welcome-page">
         <Nav />
+
         <main className="welcome-main">
           <section className="welcome-hero">
             <blockquote className="welcome-quote">
@@ -45,13 +54,47 @@ export const Welcome = () => {
             ))}
           </section>
 
-          <section className="welcome-cta">
-            <Link to="/collections" className="cta-link">
-              Enter the Collections
-              <span aria-hidden="true"> →</span>
-            </Link>
+          <section className="welcome-garden" aria-labelledby="garden-heading">
+            <header className="welcome-garden__header">
+              <span className="welcome-garden__eyebrow">A garden of geometry</span>
+              <h2 id="garden-heading" className="welcome-garden__title">
+                Six paintings from a life's work
+              </h2>
+            </header>
+
+            <div className="welcome-garden__grid">
+              {featured.map((p) => {
+                const cover =
+                  p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
+                return (
+                  <Link
+                    key={p.id}
+                    to={`/collections/${p.id}`}
+                    className="welcome-garden__tile"
+                  >
+                    <div className="welcome-garden__image-wrap">
+                      <img src={asset(cover.image)} alt={p.title} loading="lazy" />
+                    </div>
+                    <div className="welcome-garden__meta">
+                      <span className="welcome-garden__name">{p.title}</span>
+                      {p.year !== "[ DATE ]" && (
+                        <span className="welcome-garden__year">{p.year}</span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="welcome-garden__more">
+              <Link to="/collections" className="cta-link">
+                All ten paintings <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </section>
         </main>
+
+        <Footer />
       </div>
     </>
   );

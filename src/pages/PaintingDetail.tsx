@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Nav } from "../components/Nav";
+import { Footer } from "../components/Footer";
 import { COLLECTIONS, getPaintingById } from "../data/paintings";
+import { asset } from "../lib/asset";
 
 export const PaintingDetail = () => {
   const { id } = useParams();
@@ -29,7 +31,7 @@ export const PaintingDetail = () => {
 
   return (
     <div className="painting-detail">
-      <Nav light />
+      <Nav />
       <main className="painting-detail__main">
         <Link to="/collections" className="back-link">
           ← All collections
@@ -39,7 +41,7 @@ export const PaintingDetail = () => {
           <div className="painting-detail__hero">
             <img
               key={selected.image}
-              src={selected.image}
+              src={asset(selected.image)}
               alt={`${painting.title} — ${selected.name}`}
               className="painting-detail__image"
             />
@@ -143,6 +145,7 @@ export const PaintingDetail = () => {
           </aside>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

@@ -1,23 +1,24 @@
 # Editing the site
 
-This is a guide for editing content without touching the design or layout.
-Everything below can be done by anyone comfortable with a text editor.
+This guide is for editing the site without touching design or layout.
+Everything below can be done by anyone comfortable with a text editor —
+no JavaScript knowledge required.
 
 ## Where the words live
 
 All text on the site comes from two files:
 
-- **`src/data/content.ts`** — Welcome page text, About page text, and the passing date.
+- **`src/data/content.ts`** — Welcome page text, About page text, the passing date.
 - **`src/data/paintings.ts`** — Every painting, every colourway, every sizing / framing / price detail.
 
-You don't need to know JavaScript. Just find the line you want to change,
-edit the text inside the quotes (`"..."`), save, commit, push.
+Just find the line you want to change, edit the text inside the quotes
+(`"..."`), save, commit, push. The site rebuilds and deploys automatically.
 
 ---
 
-## Setting the passing dates
+## Setting the passing date
 
-Find this line in `src/data/content.ts`:
+Find this line near the top of `src/data/content.ts`:
 
 ```ts
 export const PASSING_DATE = "[ DATE ]";
@@ -42,7 +43,7 @@ to the real year.
 
 ## Adding sizing, framing and price for a colourway
 
-In `src/data/paintings.ts`, every colourway object has these optional fields:
+In `src/data/paintings.ts`, every colourway object can have these optional fields:
 
 ```ts
 {
@@ -92,49 +93,81 @@ Then drop the matching image file into `public/img/paintings/`.
 
 ---
 
-## Replacing a low-resolution image with a higher-res master
+## Swapping any image for a higher-res master
 
-Just overwrite the file in `public/img/paintings/` with the same filename.
-No code change needed. The current low-res ones to replace when you get masters:
+Just overwrite the file in `public/` with the same filename — no code
+change needed. The site picks it up on the next build.
 
-- `enneagon-cygnus-gold.jpg` (1080×1080 → ideally 2048+)
-- `lulin-original.jpg` (1080×1080 → ideally 2048+)
-- `orchis7-amethyst-purple.jpg` (1080×1080 → ideally 2048+)
-- `peacock-blood-moon-red.jpg` (1084×1080 → ideally 2048+)
+Layout map:
+
+```
+public/
+  favicon.svg               site favicon (the rose emblem)
+  og-image.jpg              social share image (1200×630)
+  robots.txt                search engines
+  sitemap.xml               search engines
+  logo/
+    logo.svg                horizontal lockup (emblem + wordmark)
+    logo-stacked.svg        stacked variant
+    logo-emblem.svg         emblem only (used by Logo component)
+    renders/*.png           4K raster exports
+  video/
+    intro.mp4               H.264 universal-compat (~10 MB)
+    intro.webm              VP9 modern browsers (~5 MB)
+    poster.jpg              first frame, shown before video plays
+  img/
+    paintings/              32 painting JPGs, one per colourway
+    about/                  Stephen / studio / TAGA / gallery photos
+    scenes/                 collection hero backdrops (habundia / genesis / born-in-the-sky)
+```
 
 ---
 
-## Adding the intro audio file
+## Replacing the intro video
 
-Source a "singing bowl wind chimes meditation" audio file
-(Pixabay or Freesound, free / CC0). Save it as:
+Drop new files at `public/video/intro.mp4` and `public/video/intro.webm`
+(same filenames). For the still poster shown while the video loads,
+overwrite `public/video/poster.jpg`.
 
-```
-public/audio/intro.mp3
-```
-
-Length: ideally 3–5 minutes; the player loops it automatically. The site
-will quietly skip the audio if the file isn't there.
+The intro plays muted on loop by browser policy — there is no audio
+track in the current files.
 
 ---
 
-## Adding a real photograph of the easel + empty chair scene
+## Replacing collection backdrops
 
-If you find or take a real photograph of the Wild Rose mandala on an easel
-outside with the empty chair beside it, save it as:
+Drop a JPG at:
 
+- `public/img/scenes/habundia.jpg`
+- `public/img/scenes/genesis.jpg`
+- `public/img/scenes/born-in-the-sky.jpg`
+
+These appear as the hero backdrop for each collection. The text is
+rendered on top with a dark overlay, so anything works — landscapes,
+abstracts, painted moods.
+
+---
+
+## Adding contact / social media links
+
+Open `src/components/Footer.tsx`. Find the `socialLinks` array near the top:
+
+```ts
+const socialLinks: { label: string; href: string }[] = [
+  { label: "Instagram", href: "#" },
+  { label: "Pinterest", href: "#" },
+  { label: "Email", href: "mailto:enquiries@example.com" },
+];
 ```
-public/img/scenes/easel-chair.jpg
-```
 
-and tell whoever is editing to swap the contents of
-`src/components/GardenScene.tsx` for a single `<img>` tag pointing at it.
+Replace the `"#"` URLs with your real handles. Remove or add entries
+as you like — the footer renders whatever's in the list.
 
 ---
 
 ## Running the site locally
 
-You'll need Node.js (v20 or newer) installed once: https://nodejs.org
+You'll need Node.js v20 or newer: https://nodejs.org
 
 ```bash
 git clone <repo-url>
@@ -152,12 +185,23 @@ npm run build
 ```
 
 The output goes in `dist/`. Drag that folder into Vercel, Netlify or
-Cloudflare Pages to deploy.
+Cloudflare Pages to deploy — or push to the branch and the included
+GitHub Actions workflow (`.github/workflows/deploy.yml`) builds and
+deploys to GitHub Pages automatically.
+
+---
+
+## Editing legal pages
+
+`src/pages/Legal.tsx` contains placeholder Privacy and Terms text.
+Edit the `PRIVACY_BODY` and `TERMS_BODY` arrays — each item is a
+paragraph. Replace the placeholder wording with your final policies
+before going live.
 
 ---
 
 ## Asking for help
 
-Anything you can't find in here, ask me (or Claude). The whole site is
-designed so the words and the design are separate — you change words,
-the design holds.
+Anything you can't find in here, ask. The whole site is designed so
+the words and the design are separate — you change words, the design
+holds.

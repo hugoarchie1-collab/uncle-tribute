@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
+import { Footer } from "../components/Footer";
 import { CollectionBackdrop } from "../components/CollectionBackdrop";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
+import { asset } from "../lib/asset";
 
 export const Collections = () => (
   <div className="collections-page">
-    <Nav light />
+    <Nav />
     <main className="collections-main">
       <header className="collections-hero">
         <h1 className="collections-title">The Collections</h1>
@@ -19,7 +21,10 @@ export const Collections = () => (
         return (
           <section key={coll.id} className={`collection-section collection-section--${coll.id}`}>
             <div className="collection-hero">
-              <CollectionBackdrop collectionId={coll.id} photoUrl={coll.backdropImage} />
+              <CollectionBackdrop
+                collectionId={coll.id}
+                photoUrl={coll.backdropImage ? asset(coll.backdropImage) : undefined}
+              />
               <div className="collection-hero__overlay" />
               <div className="collection-hero__content">
                 <h2 className="collection-title">{coll.title}</h2>
@@ -41,7 +46,7 @@ export const Collections = () => (
                     className="painting-tile"
                   >
                     <div className="painting-tile__image-wrap">
-                      <img src={cover.image} alt={painting.title} loading="lazy" />
+                      <img src={asset(cover.image)} alt={painting.title} loading="lazy" />
                     </div>
                     <div className="painting-tile__meta">
                       <div className="painting-tile__title">{painting.title}</div>
@@ -55,5 +60,6 @@ export const Collections = () => (
         );
       })}
     </main>
+    <Footer />
   </div>
 );
