@@ -40,6 +40,19 @@ export const PaintingDetail = () => {
 
   return (
     <div className="painting-detail">
+      {/* Ambient backdrop — same image as the selected colourway, blurred &
+          scaled to fill the viewport behind the page. The colour halo around
+          the painting shifts every time you pick a new swatch. */}
+      <div className="painting-detail__ambient" aria-hidden="true">
+        <img
+          key={selected.image}
+          src={asset(selected.image)}
+          alt=""
+          className="painting-detail__ambient-img"
+        />
+        <div className="painting-detail__ambient-veil" />
+      </div>
+
       <Nav />
       <main className="painting-detail__main">
         <Link to="/collections" className="back-link">

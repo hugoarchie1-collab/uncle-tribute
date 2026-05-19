@@ -844,7 +844,57 @@ figcaption {
    8. PAINTING DETAIL PAGE
    -------------------------------------------------------------------------- */
 
-.painting-detail { background: var(--bg); }
+.painting-detail {
+  background: var(--bg);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Ambient colour backdrop — the selected painting image, heavily blurred,
+   scaled up, and pinned behind every layer. The bg shifts with each
+   colourway click so the entire page picks up the painting's palette. */
+.painting-detail__ambient {
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.painting-detail__ambient-img {
+  position: absolute;
+  inset: 0;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  filter: blur(120px) saturate(1.25) brightness(0.55);
+  transform: scale(1.15);
+  opacity: 0.55;
+  animation: ambientFade 800ms var(--ease);
+}
+.painting-detail__ambient-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 70% at 50% 40%, rgba(10,9,8,0.0) 0%, rgba(10,9,8,0.55) 60%, rgba(10,9,8,0.85) 100%),
+    linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.30) 50%, rgba(10,9,8,0.75) 100%);
+}
+@keyframes ambientFade {
+  from { opacity: 0; }
+  to   { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .painting-detail__ambient-img { animation: none; }
+}
+
+/* Everything above the ambient sits on a new stacking context */
+.painting-detail .site-nav,
+.painting-detail__main,
+.painting-detail .site-footer {
+  position: relative;
+  z-index: 1;
+}
+
 .painting-detail__main {
   max-width: var(--max-wide);
   margin: 0 auto;
