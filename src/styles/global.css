@@ -521,10 +521,13 @@ p { margin: 0; }
 
 .collections-page { background: var(--bg); }
 
+/* Sections inside .collections-main go edge-to-edge of the viewport.
+   The gutter is re-applied INSIDE each section's __inner so content
+   still respects the page rhythm. */
 .collections-main {
-  max-width: var(--max-wide);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .collections-hero {
@@ -549,62 +552,86 @@ p { margin: 0; }
   color: var(--ink-soft);
 }
 
-.collection-section { padding: 60px 0 80px; border-top: 1px solid var(--line); }
+/* Each collection occupies its own full-bleed band. The backdrop image
+   spans the whole band (hero + paintings grid). A heavy dark scrim sits
+   above the image, and a frosted-glass card sits behind the description
+   so it is always crisply legible. Paintings sit on top of the scrim. */
+.collection-section {
+  position: relative;
+  isolation: isolate;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+}
 .collection-section:first-of-type { border-top: 0; }
 
-.collection-hero {
-  position: relative;
-  min-height: 420px;
-  margin-bottom: 60px;
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--bg-soft);
-}
-.collection-hero__overlay {
+.collection-section__scrim {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.75) 100%);
+  z-index: 1;
   pointer-events: none;
+  background:
+    radial-gradient(ellipse at top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.78) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.80) 100%);
 }
-.collection-hero__content {
+
+.collection-section__inner {
   position: relative;
   z-index: 2;
-  padding: clamp(40px, 6vw, 72px);
-  max-width: 760px;
-  color: var(--ink);
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: clamp(60px, 10vw, 140px) var(--gutter) clamp(80px, 12vw, 160px);
 }
-.collection-title {
-  font-family: var(--font-display);
-  font-size: clamp(34px, 5vw, 56px);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.012em;
-  margin: 0 0 24px;
-  color: var(--ink);
-  text-shadow: 0 2px 18px rgba(0,0,0,0.6);
-}
-.collection-description {
-  font-size: 16px;
-  line-height: 1.7;
-  color: rgba(237, 230, 214, 0.92);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 600px;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
-}
-.collection-description p { margin: 0; }
 
 .collection-backdrop {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
 }
 .collection-backdrop--photo {
   background-size: cover;
   background-position: center;
 }
+
+.collection-hero {
+  margin-bottom: clamp(56px, 8vw, 96px);
+}
+
+.collection-hero__card {
+  max-width: 760px;
+  padding: clamp(32px, 4vw, 56px) clamp(32px, 5vw, 64px);
+  background: rgba(10, 9, 8, 0.62);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+}
+
+.collection-title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0 0 24px;
+  color: #ffffff;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.55);
+}
+
+.collection-description {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.94);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.45);
+}
+.collection-description p { margin: 0; }
 
 .painting-grid {
   display: grid;
