@@ -2,13 +2,16 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { ABOUT } from "../data/content";
 import { asset } from "../lib/asset";
+import { usePageTitle } from "../lib/usePageTitle";
 
 /**
  * About / Biography page. Photographs are placed contextually beside the
  * passage they illustrate. Swap any image by replacing the file in
  * /public/img/about/ with the same filename — no code change needed.
  */
-export const About = () => (
+export const About = () => {
+  usePageTitle("About Stephen Meakin");
+  return (
   <div className="about-page">
     <Nav />
     <main className="about-main">
@@ -161,4 +164,5 @@ export const About = () => (
 
     <Footer />
   </div>
-);
+  );
+};

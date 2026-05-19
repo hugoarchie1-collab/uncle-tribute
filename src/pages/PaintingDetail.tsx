@@ -4,10 +4,13 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { COLLECTIONS, getPaintingById } from "../data/paintings";
 import { asset } from "../lib/asset";
+import { usePageTitle } from "../lib/usePageTitle";
 
 export const PaintingDetail = () => {
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
+
+  usePageTitle(painting?.title);
 
   const availableColourways = useMemo(
     () => painting?.colourways.filter((c) => c.available) ?? [],

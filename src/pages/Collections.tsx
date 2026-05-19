@@ -4,8 +4,11 @@ import { Footer } from "../components/Footer";
 import { CollectionBackdrop } from "../components/CollectionBackdrop";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
+import { usePageTitle } from "../lib/usePageTitle";
 
-export const Collections = () => (
+export const Collections = () => {
+  usePageTitle("The Collections");
+  return (
   <div className="collections-page">
     <Nav />
     <main className="collections-main">
@@ -62,4 +65,5 @@ export const Collections = () => (
     </main>
     <Footer />
   </div>
-);
+  );
+};

@@ -1,5 +1,6 @@
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { usePageTitle } from "../lib/usePageTitle";
 
 /**
  * Plain-text legal pages. Each page is a heading + a few paragraphs.
@@ -30,7 +31,9 @@ export const Terms = () => (
   <LegalPage title="Terms" body={TERMS_BODY} />
 );
 
-const LegalPage = ({ title, body }: { title: string; body: string[] }) => (
+const LegalPage = ({ title, body }: { title: string; body: string[] }) => {
+  usePageTitle(title);
+  return (
   <div className="legal-page">
     <Nav />
     <main className="legal-main">
@@ -45,4 +48,5 @@ const LegalPage = ({ title, body }: { title: string; body: string[] }) => (
     </main>
     <Footer />
   </div>
-);
+  );
+};

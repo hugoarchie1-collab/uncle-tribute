@@ -5,6 +5,7 @@ import { Footer } from "../components/Footer";
 import { WELCOME } from "../data/content";
 import { PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
+import { usePageTitle } from "../lib/usePageTitle";
 
 /**
  * Homepage. Scroll-trigger video intro, then the welcome content rises
@@ -12,6 +13,8 @@ import { asset } from "../lib/asset";
  * links into the collections page.
  */
 export const Welcome = () => {
+  usePageTitle();
+
   // Six featured paintings for the home grid — easy to change here.
   const featuredIds = [
     "wild-rose",
