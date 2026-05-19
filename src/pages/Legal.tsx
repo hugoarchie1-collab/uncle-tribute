@@ -1,11 +1,8 @@
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { Reveal } from "../components/Reveal";
+import { Separator } from "../components/ui/separator";
 import { usePageTitle } from "../lib/usePageTitle";
-
-/**
- * Plain-text legal pages. Each page is a heading + a few paragraphs.
- * Replace the placeholder content with your real policies when ready.
- */
 
 const PRIVACY_BODY = [
   "This site is operated by the estate of Stephen Meakin in remembrance of his life and work. We collect only the information you choose to give us — for example, your name and email when you make a print enquiry.",
@@ -23,30 +20,26 @@ const TERMS_BODY = [
   "[ This is a placeholder. Replace with your final terms before going live. ]",
 ];
 
-export const Privacy = () => (
-  <LegalPage title="Privacy" body={PRIVACY_BODY} />
-);
-
-export const Terms = () => (
-  <LegalPage title="Terms" body={TERMS_BODY} />
-);
+export const Privacy = () => <LegalPage title="Privacy" body={PRIVACY_BODY} />;
+export const Terms = () => <LegalPage title="Terms" body={TERMS_BODY} />;
 
 const LegalPage = ({ title, body }: { title: string; body: string[] }) => {
   usePageTitle(title);
   return (
-  <div className="legal-page">
-    <Nav />
-    <main className="legal-main">
-      <header className="legal-hero">
-        <h1 className="legal-title">{title}</h1>
-      </header>
-      <article className="legal-body">
-        {body.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </article>
-    </main>
-    <Footer />
-  </div>
+    <div className="min-h-screen flex flex-col bg-bg">
+      <Nav />
+      <main className="flex-1 mx-auto w-full max-w-[680px] px-6 md:px-10 py-24 md:py-32">
+        <Reveal as="header" className="mb-12">
+          <h1 className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
+            {title}
+          </h1>
+          <Separator className="bg-ink/15 mt-8" />
+        </Reveal>
+        <Reveal as="article" className="flex flex-col gap-6 font-sans font-light text-[16px] leading-loose text-ink/85">
+          {body.map((p, i) => <p key={i} className="m-0">{p}</p>)}
+        </Reveal>
+      </main>
+      <Footer />
+    </div>
   );
 };
