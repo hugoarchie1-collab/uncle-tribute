@@ -6,9 +6,9 @@ const YEAR = new Date().getFullYear();
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative mt-24 border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-20 pb-12"
+    className="relative border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-12 md:pt-14 pb-10"
   >
-    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-10 mb-14 items-start">
+    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-10 mb-10 items-start">
       <div>
         <Logo size={32} wordmark />
         <p className="mt-5 max-w-[280px] font-sans font-normal text-[14px] leading-[1.65] text-ink/70 m-0">
