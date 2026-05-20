@@ -71,9 +71,9 @@ export const PaintingDetail = () => {
             ← {collection?.title ?? "All collections"}
           </Link>
 
-          {/* HERO — painting image, centered, dominant, soft edges */}
+          {/* HERO — painting image at its natural aspect ratio, centered, soft edges */}
           <Reveal>
-            <div className="aspect-square mx-auto max-w-[640px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] soft-edge">
+            <div className="mx-auto max-w-[760px] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] soft-edge">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={selected.image}
@@ -83,7 +83,7 @@ export const PaintingDetail = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                 />
               </AnimatePresence>
             </div>
