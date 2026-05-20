@@ -118,7 +118,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
                 >
                   {items.map((painting) => {
                     const cover =
@@ -127,7 +127,7 @@ export const Collections = () => {
                     return (
                       <motion.figure
                         key={painting.id}
-                        className="m-0"
+                        className="m-0 w-full sm:w-[calc(50%-0.625rem)] md:w-[calc(50%-0.875rem)] lg:w-[calc(33.333%-1.167rem)]"
                         variants={{
                           hidden: { opacity: 0, y: 14 },
                           show: {
