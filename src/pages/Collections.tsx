@@ -39,8 +39,9 @@ const ScrollBackdrop = ({
         y,
         scale,
         backgroundImage: `url("${photoUrl}")`,
+        filter: "blur(10px) saturate(1.05)",
       }}
-      className="absolute inset-0 bg-cover bg-center will-change-transform blur-[5px]"
+      className="absolute inset-0 bg-cover bg-center will-change-transform"
       aria-hidden="true"
     />
   );
