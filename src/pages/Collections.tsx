@@ -93,7 +93,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative"
             >
-              <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-28 pb-12 md:pb-16">
+              <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-12 md:mb-16">
                   <p
                     className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"

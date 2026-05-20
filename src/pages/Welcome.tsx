@@ -149,7 +149,7 @@ export const Welcome = () => {
           </section>
 
           {/* STUDIO full-bleed cinematic, parallax + soft top/bottom */}
-          <Reveal as="figure" className="m-0 w-full py-8 md:py-12">
+          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
@@ -203,7 +203,7 @@ export const Welcome = () => {
           </section>
 
           {/* MANDALAS WALL — full-bleed cinematic */}
-          <Reveal as="figure" className="m-0 w-full py-8 md:py-12">
+          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/04-paintings-collection.jpg"
               alt="A wall of Stephen's mandalas"
