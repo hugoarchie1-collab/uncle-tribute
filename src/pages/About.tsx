@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -8,8 +9,57 @@ import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
 const earlyLife = ABOUT.earlyLife;
-const FOUNDATIONS = earlyLife.slice(0, 2);
-const WANDERINGS = earlyLife.slice(2);
+
+// ─── Timeline entry layout ──────────────────────────────────────────────────
+// Each milestone aligns to a left-side "spine" (date + dot) with the chapter
+// content on the right. On mobile the spine collapses and content is full-width.
+
+const Milestone = ({
+  year,
+  place,
+  title,
+  children,
+}: {
+  year: string;
+  place?: string;
+  title: string;
+  children: ReactNode;
+}) => (
+  <Reveal as="section" className="relative pl-0 md:pl-[180px] py-10 md:py-14">
+    {/* Spine date marker — md+ only */}
+    <div className="hidden md:block absolute left-0 top-14 w-[140px] text-right pr-6">
+      <p className="font-display font-bold text-[clamp(28px,3vw,40px)] leading-none text-accent tabular-nums m-0">
+        {year}
+      </p>
+      {place && (
+        <p className="mt-2 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0">
+          {place}
+        </p>
+      )}
+    </div>
+    {/* Spine dot */}
+    <span
+      aria-hidden="true"
+      className="hidden md:block absolute left-[155px] top-[26px] w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-bg"
+    />
+    {/* Mobile date row */}
+    <div className="md:hidden mb-4">
+      <p className="inline font-display font-bold text-[28px] leading-none text-accent tabular-nums m-0 mr-3">
+        {year}
+      </p>
+      {place && (
+        <p className="inline font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0">
+          {place}
+        </p>
+      )}
+    </div>
+    {/* Content */}
+    <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.4vw,48px)] leading-[1.02] text-ink m-0 mb-6 max-w-[760px]">
+      {title}
+    </h2>
+    <div className="max-w-[760px] flex flex-col gap-5">{children}</div>
+  </Reveal>
+);
 
 export const About = () => {
   usePageTitle("Stephen Meakin");
@@ -32,7 +82,7 @@ export const About = () => {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.55) 100%)",
+                  "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.6) 100%)",
               }}
             />
             <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
@@ -51,266 +101,158 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ===== OPENING display pull-quote (paragraph 0) ===== */}
-        <section className="mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 text-center">
+        {/* ===== OPENING PULL ===== */}
+        <section className="mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 text-center">
           <Reveal>
-            <p className="font-display font-medium tracking-[-0.02em] text-[clamp(24px,3vw,42px)] leading-[1.2] text-ink m-0 max-w-[920px] mx-auto">
+            <p className="font-display font-medium tracking-[-0.02em] text-[clamp(22px,2.8vw,36px)] leading-[1.3] text-ink m-0 max-w-[940px] mx-auto">
               {ABOUT.opening[0]}
             </p>
           </Reveal>
         </section>
 
-        {/* ===== STATEMENT — image LEFT, paragraph 1 RIGHT ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-14">
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <figure className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
+        {/* ===== TIMELINE ===== */}
+        <div className="relative mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12">
+          {/* Vertical spine — md+ only */}
+          <span
+            aria-hidden="true"
+            className="hidden md:block absolute left-[156px] top-0 bottom-0 w-px bg-white/12"
+          />
+
+          <Milestone year="1966" place="Staffordshire" title="Born into a country of hedgerows and Georgian cities.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {earlyLife[0]}
+            </p>
+          </Milestone>
+
+          <Milestone year="1986" place="Brighton Polytechnic" title="Art Foundation — the search for a different aesthetic.">
+            <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/02-painting-table.jpg"
                 alt="Working on a mandala"
-                fill
+                aspect="aspect-[4/3]"
                 edges="all"
-                parallax={0.14}
+                parallax={0.12}
                 tilt
               />
-            </figure>
-            <div className="md:col-span-5 flex flex-col justify-center md:py-4">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
-                01 · Statement
-              </p>
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
-                {ABOUT.opening[1]}
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ===== CHAPTER I — Foundations ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter I · Foundations
+            </Reveal>
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              Encouraged to explore painting, textiles, sculpture and video. While the British Art movement was flowering in London, an exhibition of Aboriginal art moved him most — the start of a search for a universal visual language.
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
-              Born in Staffordshire,<br className="hidden sm:block" /> raised in the geometry of England.
-            </h2>
-          </Reveal>
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <figure className="m-0 md:col-span-5 md:order-2 min-h-[50vh] md:min-h-[60vh]">
-              <ImageReveal
-                src="/img/about/09-taga-studio.jpg"
-                alt="The TAGA drafting studio"
-                fill
-                edges="all"
-                parallax={0.16}
-                tilt
-              />
-            </figure>
-            <div className="md:col-span-7 md:order-1 flex flex-col justify-center gap-5">
-              {FOUNDATIONS.map((p, i) => (
-                <p key={i} className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
-                  {p}
-                </p>
-              ))}
-            </div>
-          </Reveal>
-        </section>
+          </Milestone>
 
-        {/* ===== CHAPTER II — Wanderings ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter II · Wanderings
+          <Milestone year="1990" place="Bournemouth" title="3D Design, and the discovery of geometric pattern.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {earlyLife[1]}
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
-              France, Ibiza, Mexico,<br className="hidden sm:block" /> the Virgin Islands.
-            </h2>
-          </Reveal>
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <figure className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
+          </Milestone>
+
+          <Milestone year="1990 — 1995" place="France · Ibiza · Mexico · Virgin Islands" title="Theatre backdrops, murals, sketchbooks of geometry.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {earlyLife[2]}
+            </p>
+          </Milestone>
+
+          <Milestone year="1995" place="Anegada, Caribbean Sea" title="Everything is connected.">
+            <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/03-stephen-on-cairn.jpg"
                 alt="Stephen on a stone cairn"
-                fill
+                aspect="aspect-[3/2]"
                 edges="all"
                 parallax={0.14}
                 objectPosition="center top"
                 tilt
               />
-            </figure>
-            <div className="md:col-span-5 flex flex-col justify-center gap-5">
-              {WANDERINGS.map((p, i) => (
-                <p key={i} className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
-                  {p}
-                </p>
-              ))}
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ===== CHAPTER III — Anegada ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter III · Anegada, 1995
-            </p>
-            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[1000px] mx-auto">
-              Everything is connected.
-            </h2>
-          </Reveal>
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <figure className="m-0 md:col-span-5 min-h-[55vh] md:min-h-[65vh]">
-              <ImageReveal
-                src="/img/about/11-ophiuchus-painting.jpg"
-                alt="A painting on the studio floor"
-                fill
-                edges="all"
-                parallax={0.16}
-                tilt
-              />
-            </figure>
-            <div className="md:col-span-7 flex flex-col justify-center gap-5">
-              {ABOUT.anegada.map((p, i) => (
-                <p
-                  key={i}
-                  className={
-                    i === 1
-                      ? "font-display font-medium text-[clamp(20px,2.2vw,28px)] leading-[1.35] text-ink m-0"
-                      : "font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.75] text-ink/85 m-0"
-                  }
-                >
-                  {p}
-                </p>
-              ))}
-              <p className="font-sans text-[10px] font-bold tracking-[0.38em] uppercase text-ink/55 m-0 mt-1 text-right">
-                — Stephen Meakin
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ===== CHAPTER IV — Phoenix Place + Commissions ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter IV · Phoenix Place, Lewes
-            </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
-              Commissions of consequence.
-            </h2>
-          </Reveal>
-          <Reveal as="div" className="max-w-[860px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-5 mb-12 md:mb-16">
-            {ABOUT.legacy.map((p, i) => (
-              <p key={i} className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.7] text-ink/85 m-0">
+            </Reveal>
+            {ABOUT.anegada.map((p, i) => (
+              <p
+                key={i}
+                className={
+                  i === 1
+                    ? "font-display font-medium text-[clamp(18px,1.9vw,22px)] leading-[1.45] text-ink m-0"
+                    : "font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.8] text-ink/85 m-0"
+                }
+              >
                 {p}
               </p>
             ))}
-          </Reveal>
-          <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-5">
-            {[
-              { src: "/img/about/04-mystic-rose-flyer.jpg", alt: "The Mystic Rose exhibition, Fairmont Dubai", title: "The Mystic Rose", subtitle: "Fairmont, Dubai", number: "01" },
-              { src: "/img/about/05-force-india-layout.jpg", alt: "Sahara Force India F1 mandala layout", title: "Force India", subtitle: "F1 mandala layout", number: "02" },
-              { src: "/img/about/06-force-india-final.jpg", alt: "Sahara Force India F1 mandala — final design", title: "Force India", subtitle: "Final design", number: "03" },
-            ].map((item) => (
-              <figure key={item.src} className="m-0 bg-bg-soft ring-1 ring-white/8 transition-all duration-500 hover:ring-accent/40 hover:-translate-y-1">
-                <ImageReveal
-                  src={item.src}
-                  alt={item.alt}
-                  aspect="aspect-[3/4]"
-                  parallax={0.08}
-                  edges="all"
-                  shadow=""
-                  tilt
-                />
-                <figcaption className="p-4 sm:p-5 flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-display font-bold text-[16px] tracking-[-0.01em] text-ink m-0 leading-[1.2]">
-                      {item.title}
-                    </p>
-                    <p className="font-sans font-normal text-[13px] text-ink/65 m-0 mt-1">
-                      {item.subtitle}
-                    </p>
-                  </div>
-                  <span className="font-display font-bold text-[14px] text-accent tracking-tight tabular-nums">
-                    {item.number}
-                  </span>
-                </figcaption>
-              </figure>
-            ))}
-          </Reveal>
-        </section>
-
-        {/* ===== CHAPTER V — TAGA + Az-Zarqa ===== */}
-        <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter V · TAGA + Az-Zarqa
+            <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55 m-0 mt-1 text-right">
+              — Stephen Meakin
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[1000px] mx-auto">
-              The teacher who travelled.
-            </h2>
-          </Reveal>
+          </Milestone>
 
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch mb-6 md:mb-10">
-            <div className="md:col-span-5 flex flex-col justify-center">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-3">
-                TAGA · est. 2010
-              </p>
-              <h3 className="font-display font-bold tracking-[-0.03em] text-[clamp(26px,3.4vw,46px)] leading-[0.96] text-ink m-0 mb-5">
-                The Art of Geometry Academy.
-              </h3>
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/85 m-0 mb-5">
-                In 2010 he founded TAGA — The Art of Geometry Academy — at Phoenix Place, Lewes.
-              </p>
-              <blockquote className="m-0 pl-5 border-l-2 border-accent">
-                <p className="font-sans font-medium text-[14px] leading-[1.6] text-ink/90 m-0">
-                  {ABOUT.academyQuote}
-                </p>
-              </blockquote>
-            </div>
-            <figure className="m-0 md:col-span-7 min-h-[50vh] md:min-h-0">
+          <Milestone year="1996" place="Brighton University" title="Architecture & Interior Design.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {earlyLife[3]}
+            </p>
+          </Milestone>
+
+          <Milestone year="1999" place="Brighton" title="The first major mandala.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {earlyLife[4]}
+            </p>
+          </Milestone>
+
+          <Milestone year="2002 — 2009" place="Lewes, East Sussex" title="MA Fine Art, Phoenix Place, and the years of mandalas.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {ABOUT.legacy[0]}
+            </p>
+          </Milestone>
+
+          <Milestone year="2010" place="TAGA · Phoenix Place" title="The Art of Geometry Academy is founded.">
+            <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/10-taga-classroom.jpg"
                 alt="A TAGA class in session"
-                fill
+                aspect="aspect-[4/3]"
                 edges="all"
-                parallax={0.14}
+                parallax={0.12}
                 tilt
               />
-            </figure>
-          </Reveal>
+            </Reveal>
+            <blockquote className="m-0 pl-5 border-l-2 border-accent">
+              <p className="font-display font-medium text-[15px] md:text-[16px] leading-[1.6] text-ink/95 m-0">
+                {ABOUT.academyQuote}
+              </p>
+            </blockquote>
+          </Milestone>
 
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <figure className="m-0 md:col-span-7 min-h-[50vh] md:min-h-0">
+          <Milestone year="2014" place="Az-Zarqa, Jordan" title="Teaching geometry to children who'd lost everything.">
+            <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen with children at the Az-Zarqa School for Palestinian Orphans and Refugees, Jordan"
-                fill
+                aspect="aspect-[3/2]"
                 edges="all"
-                parallax={0.14}
+                parallax={0.12}
                 tilt
               />
-            </figure>
-            <div className="md:col-span-5 flex flex-col justify-center">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-3">
-                Az-Zarqa · Jordan
-              </p>
-              <h3 className="font-display font-bold tracking-[-0.03em] text-[clamp(26px,3.4vw,44px)] leading-[0.96] text-ink m-0 mb-5">
-                Teaching geometry to children who'd lost everything.
-              </h3>
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/85 m-0">
-                {ABOUT.palestine}
-              </p>
-            </div>
-          </Reveal>
-        </section>
-
-        {/* ===== CHAPTER VI — Student Letter ===== */}
-        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
-          <Reveal as="div" className="text-center mb-8 md:mb-10">
-            <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
-              Chapter VI · To every student
+            </Reveal>
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {ABOUT.palestine}
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,4vw,52px)] leading-[1.02] text-ink m-0 max-w-[920px] mx-auto">
+          </Milestone>
+
+          <Milestone year="2016" place="Notting Hill, London" title="The 3.6-metre Arista SunStar.">
+            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+              {ABOUT.legacy[1]}
+            </p>
+          </Milestone>
+
+          <Milestone year={PASSING_DATE} place="The estate continues" title="A life devoted to the geometry of light.">
+            <p className="font-display font-medium text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
+              Stephen passed away in {PASSING_DATE}. The Mandala Company Foundation, on behalf of his immediate family, continues to carry his work forward.
+            </p>
+          </Milestone>
+        </div>
+
+        {/* ===== STUDENT LETTER — outside the timeline, as a closing chapter ===== */}
+        <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20">
+          <Reveal as="div" className="text-center mb-8 md:mb-10">
+            <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
+              To every student
+            </p>
+            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,4vw,52px)] leading-[1.0] text-ink m-0 max-w-[920px] mx-auto">
               {ABOUT.studentsIntro}
             </h2>
           </Reveal>
@@ -336,9 +278,19 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* ===== CLOSING — CTA only ===== */}
-        <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 text-center">
-          <Reveal as="div">
+        {/* ===== CLOSING — full-bleed painting + CTA ===== */}
+        <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+          <Reveal as="figure" className="m-0 mb-10 md:mb-14">
+            <ImageReveal
+              src="/img/about/11-ophiuchus-painting.jpg"
+              alt="A painting on the studio floor"
+              className="h-[55vh] sm:h-[65vh] md:h-[78vh] w-full"
+              edges="y"
+              parallax={0.26}
+              shadow=""
+            />
+          </Reveal>
+          <Reveal as="div" className="text-center">
             <MagneticLink
               to="/collections"
               className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
