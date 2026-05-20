@@ -13,9 +13,22 @@ import { usePageTitle } from "../lib/usePageTitle";
 export const Welcome = () => {
   usePageTitle();
 
-  const featuredIds = ["peacock-minerva", "ophiuchus", "orchis-7", "flower-of-life"];
-  const featured = featuredIds
-    .map((id) => PAINTINGS.find((p) => p.id === id))
+  // Featured pairs: painting id + specific colourway to show as the cover.
+  const featuredPicks: { id: string; colourway?: string }[] = [
+    { id: "peacock-minerva", colourway: "Blood Moon Red" },
+    { id: "ophiuchus" },
+    { id: "enneagon-swans", colourway: "Glacier Blue" },
+    { id: "tridecagon-moon-star", colourway: "Supernova Violet" },
+  ];
+  const featured = featuredPicks
+    .map((pick) => {
+      const painting = PAINTINGS.find((p) => p.id === pick.id);
+      if (!painting) return null;
+      const cover = pick.colourway
+        ? painting.colourways.find((c) => c.name === pick.colourway) ?? painting.colourways[0]
+        : painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
+      return { painting, cover };
+    })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
@@ -74,30 +87,27 @@ export const Welcome = () => {
               </Link>
             </div>
             <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-              {featured.map((p) => {
-                const cover = p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
-                return (
-                  <Link key={p.id} to={`/collections/${p.id}`} className="group block">
-                    <ImageReveal
-                      src={cover.image}
-                      alt={p.title}
-                      aspect="aspect-square"
-                      parallax={0.06}
-                      shadow="shadow-[0_16px_40px_rgba(0,0,0,0.45)] group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.65)] transition-shadow duration-500"
-                    />
-                    <div className="pt-3">
-                      <p className="font-display text-[14px] md:text-[16px] font-bold tracking-tight text-ink m-0 leading-[1.2]">
-                        {p.title}
+              {featured.map(({ painting, cover }) => (
+                <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
+                  <ImageReveal
+                    src={cover.image}
+                    alt={`${painting.title} — ${cover.name}`}
+                    aspect="aspect-square"
+                    parallax={0.06}
+                    shadow="shadow-[0_16px_40px_rgba(0,0,0,0.45)] group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.65)] transition-shadow duration-500"
+                  />
+                  <div className="pt-3">
+                    <p className="font-display text-[14px] md:text-[16px] font-bold tracking-tight text-ink m-0 leading-[1.2]">
+                      {painting.title}
+                    </p>
+                    {painting.year && painting.year !== "[ DATE ]" && (
+                      <p className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase text-ink/55 mt-1 m-0">
+                        {painting.year}
                       </p>
-                      {p.year && p.year !== "[ DATE ]" && (
-                        <p className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase text-ink/55 mt-1 m-0">
-                          {p.year}
-                        </p>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+                    )}
+                  </div>
+                </Link>
+              ))}
             </Reveal>
           </section>
 
