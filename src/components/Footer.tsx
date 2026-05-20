@@ -14,6 +14,9 @@ export const Footer = () => (
         <p className="mt-5 max-w-[280px] font-sans font-normal text-[14px] leading-[1.65] text-ink/70 m-0">
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
+        <p className="mt-3 max-w-[280px] font-sans font-medium text-[13px] leading-[1.6] text-ink/60 m-0">
+          On behalf of The Mandala Company Foundation — Steve's Immediate Family.
+        </p>
       </div>
 
       <div>
