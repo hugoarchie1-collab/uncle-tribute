@@ -40,7 +40,7 @@ const ScrollBackdrop = ({
         scale,
         backgroundImage: `url("${photoUrl}")`,
       }}
-      className="absolute inset-0 bg-cover bg-center will-change-transform"
+      className="absolute inset-0 bg-cover bg-center will-change-transform blur-[5px]"
       aria-hidden="true"
     />
   );

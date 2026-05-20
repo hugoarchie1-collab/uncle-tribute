@@ -261,13 +261,12 @@ export const Welcome = () => {
             <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
               {COLLECTIONS.map((coll) => {
                 const items = PAINTINGS.filter((p) => p.collection === coll.id);
-                const cover = items[0]?.colourways.find((c) => c.isOriginal) ?? items[0]?.colourways[0];
                 return (
                   <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
-                    {cover && (
+                    {coll.backdropImage && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
-                          src={asset(cover.image)}
+                          src={asset(coll.backdropImage)}
                           alt={coll.title}
                           loading="lazy"
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
