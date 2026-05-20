@@ -7,8 +7,6 @@ import { ABOUT, PASSING_DATE } from "../data/content";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
-const CAP = "(n/a)";
-
 const earlyLife = ABOUT.earlyLife;
 const FOUNDATIONS = earlyLife.slice(0, 2);
 const WANDERINGS = earlyLife.slice(2);
@@ -20,9 +18,9 @@ export const About = () => {
     <div className="relative bg-bg">
       <Nav />
       <main>
-        {/* ===== HERO — ALET-style massive serif overlay on full-bleed photo ===== */}
+        {/* ===== HERO ===== */}
         <section className="relative">
-          <div className="relative h-[78vh] sm:h-[88vh] md:h-[94vh] w-full overflow-hidden">
+          <div className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden">
             <img
               src={asset("/img/about/01-stephen-at-gallery.jpg")}
               alt="Stephen Meakin"
@@ -37,16 +35,16 @@ export const About = () => {
                   "linear-gradient(180deg, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.55) 100%)",
               }}
             />
-            <Reveal as="div" className="absolute top-24 md:top-32 left-1/2 -translate-x-1/2 text-center">
+            <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
               <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/85 m-0">
                 In memoriam · 1966 — {PASSING_DATE}
               </p>
             </Reveal>
-            <Reveal as="div" className="absolute inset-x-0 bottom-[6vh] md:bottom-[8vh] text-center px-4">
-              <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(72px,16vw,260px)] leading-[0.84] text-ink m-0">
+            <Reveal as="div" className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4">
+              <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0">
                 Stephen<br />Meakin
               </h1>
-              <p className="mt-4 md:mt-6 font-sans text-[11px] sm:text-[12px] font-bold tracking-[0.34em] uppercase text-ink/75 m-0">
+              <p className="mt-4 md:mt-5 font-sans text-[11px] sm:text-[12px] font-bold tracking-[0.34em] uppercase text-ink/75 m-0">
                 SEM · Mandala Artist &amp; Sacred Geometer
               </p>
             </Reveal>
@@ -92,25 +90,24 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter I · Foundations
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(36px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[920px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
               Born in Staffordshire,<br className="hidden sm:block" /> raised in the geometry of England.
             </h2>
           </Reveal>
           <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
             <figure className="m-0 md:col-span-5 md:order-2 min-h-[50vh] md:min-h-[60vh]">
               <ImageReveal
-                src="/img/about/03-stephen-on-cairn.jpg"
-                alt="Stephen on a stone cairn"
+                src="/img/about/09-taga-studio.jpg"
+                alt="The TAGA drafting studio"
                 fill
                 edges="all"
                 parallax={0.16}
-                objectPosition="center top"
                 tilt
               />
             </figure>
             <div className="md:col-span-7 md:order-1 flex flex-col justify-center gap-5">
               {FOUNDATIONS.map((p, i) => (
-                <p key={i} className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
+                <p key={i} className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {p}
                 </p>
               ))}
@@ -124,24 +121,25 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter II · Wanderings
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(36px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[920px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
               France, Ibiza, Mexico,<br className="hidden sm:block" /> the Virgin Islands.
             </h2>
           </Reveal>
           <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
             <figure className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
               <ImageReveal
-                src="/img/about/09-taga-studio.jpg"
-                alt="The TAGA drafting studio"
+                src="/img/about/03-stephen-on-cairn.jpg"
+                alt="Stephen on a stone cairn"
                 fill
                 edges="all"
                 parallax={0.14}
+                objectPosition="center top"
                 tilt
               />
             </figure>
             <div className="md:col-span-5 flex flex-col justify-center gap-5">
               {WANDERINGS.map((p, i) => (
-                <p key={i} className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
+                <p key={i} className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {p}
                 </p>
               ))}
@@ -155,7 +153,7 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter III · Anegada, 1995
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,7vw,120px)] leading-[0.9] text-ink m-0 max-w-[1000px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[1000px] mx-auto">
               Everything is connected.
             </h2>
           </Reveal>
@@ -196,7 +194,7 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter IV · Phoenix Place, Lewes
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(36px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[920px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[920px] mx-auto">
               Commissions of consequence.
             </h2>
           </Reveal>
@@ -247,7 +245,7 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter V · TAGA + Az-Zarqa
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(36px,6vw,84px)] leading-[0.94] text-ink m-0 max-w-[1000px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,64px)] leading-[0.98] text-ink m-0 max-w-[1000px] mx-auto">
               The teacher who travelled.
             </h2>
           </Reveal>
@@ -312,7 +310,7 @@ export const About = () => {
             <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0 mb-3">
               Chapter VI · To every student
             </p>
-            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,5vw,72px)] leading-[0.94] text-ink m-0 max-w-[920px] mx-auto">
+            <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,4vw,52px)] leading-[1.02] text-ink m-0 max-w-[920px] mx-auto">
               {ABOUT.studentsIntro}
             </h2>
           </Reveal>
@@ -338,22 +336,9 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* ===== CLOSING ===== */}
-        <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
-          <Reveal as="figure" className="m-0 mb-10 md:mb-14">
-            <ImageReveal
-              src="/img/about/11-ophiuchus-painting.jpg"
-              alt="A painting on the studio floor"
-              className="h-[55vh] sm:h-[65vh] md:h-[82vh] w-full"
-              edges="y"
-              parallax={0.26}
-              shadow=""
-            />
-            <figcaption className="mt-3 text-center font-sans text-[10px] font-bold tracking-[0.34em] uppercase text-ink/40">
-              {CAP}
-            </figcaption>
-          </Reveal>
-          <Reveal as="div" className="text-center">
+        {/* ===== CLOSING — CTA only ===== */}
+        <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 text-center">
+          <Reveal as="div">
             <MagneticLink
               to="/collections"
               className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"

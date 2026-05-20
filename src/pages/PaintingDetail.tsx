@@ -96,7 +96,7 @@ export const PaintingDetail = () => {
                 <Badge variant="accent">{collection.title}</Badge>
               </div>
             )}
-            <h1 className="font-display font-bold tracking-[-0.04em] leading-[1.0] text-[clamp(36px,4.8vw,64px)] text-ink m-0 mb-6">
+            <h1 className="font-display font-bold tracking-[-0.04em] leading-[1.02] text-[clamp(32px,4.4vw,56px)] text-ink m-0 mb-6">
               {painting.title}
             </h1>
 
@@ -137,7 +137,7 @@ export const PaintingDetail = () => {
           )}
 
           {/* DESCRIPTION — main body */}
-          <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto flex flex-col gap-5 font-sans font-normal text-[17px] md:text-[18px] leading-[1.8] text-ink/90">
+          <Reveal as="div" className="mt-12 md:mt-16 max-w-[640px] mx-auto flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/90">
             {painting.description.split("\n\n").map((para, i) => (
               <p key={i} className="m-0">{para}</p>
             ))}
@@ -149,7 +149,7 @@ export const PaintingDetail = () => {
             <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-4">
               Original Print
             </p>
-            <p className="font-sans font-normal text-[16px] leading-[1.7] text-ink/90 m-0">
+            <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink/85 m-0">
               {ORIGINAL_PRINT_SPEC}
             </p>
           </Reveal>
