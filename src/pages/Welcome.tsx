@@ -13,7 +13,7 @@ import { usePageTitle } from "../lib/usePageTitle";
 export const Welcome = () => {
   usePageTitle();
 
-  const featuredIds = ["wild-rose", "english-bluebells", "enneagon-swans", "lulin"];
+  const featuredIds = ["peacock-minerva", "ophiuchus", "orchis-7", "flower-of-life"];
   const featured = featuredIds
     .map((id) => PAINTINGS.find((p) => p.id === id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
