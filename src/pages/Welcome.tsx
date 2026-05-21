@@ -36,7 +36,7 @@ export const Welcome = () => {
     <>
       <VideoIntro />
 
-      <div id="welcome-anchor" className="relative bg-bg">
+      <div id="welcome-anchor" className="relative">
         <Nav />
 
         <main className="relative">
@@ -359,13 +359,47 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* PULL QUOTE — full-viewport single word, generous whitespace */}
-          <section className="mx-auto px-4 md:px-8 lg:px-12 py-24 md:py-40 text-center">
-            <Reveal>
-              <h2 className="font-display font-bold tracking-[-0.05em] text-[clamp(72px,16vw,240px)] leading-[0.88] text-ink m-0">
-                Sacred Geometry.
-              </h2>
-            </Reveal>
+          {/* SACRED GEOMETRY — full-bleed closing moment, Earth's limb */}
+          <section
+            className="relative w-full overflow-hidden bg-[#02040a]"
+            style={{ height: "118vh" }}
+            aria-label="Sacred Geometry"
+          >
+            {/* Earth image — scaled large, anchored bottom, curve brushing the text */}
+            <img
+              src={asset("/img/scenes/earth-limb.jpg")}
+              alt=""
+              aria-hidden="true"
+              className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[125%] max-w-none h-auto pointer-events-none select-none"
+              style={{ zIndex: 0 }}
+            />
+            {/* Top scrim — deepen the upper sky so the text reads cleanly */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(2,4,10,0.7) 0%, rgba(2,4,10,0.3) 22%, rgba(2,4,10,0) 50%)",
+                zIndex: 1,
+              }}
+            />
+
+            {/* Headline — massive, brushing the Earth's limb */}
+            <div className="relative z-10 pt-[7vh] md:pt-[8vh] px-2 md:px-4 text-center">
+              <Reveal>
+                <h2
+                  className="font-display font-bold tracking-[-0.06em] leading-[0.82] m-0"
+                  style={{
+                    fontSize: "clamp(108px, 26vw, 540px)",
+                    color: "#f5ecd6",
+                    textShadow:
+                      "0 6px 80px rgba(0,0,0,0.85), 0 3px 28px rgba(0,0,0,0.7), 0 1px 6px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
+                </h2>
+              </Reveal>
+            </div>
           </section>
 
           {/* VISIT / CONNECT / FOUNDATION — three engagement cards */}

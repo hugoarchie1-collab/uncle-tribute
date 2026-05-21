@@ -51,7 +51,7 @@ export const PaintingDetail = () => {
             src={asset(selected.image)}
             alt=""
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.45 }}
+            animate={{ opacity: 0.65 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
             className="painting-detail__ambient-img"
@@ -168,7 +168,7 @@ export const PaintingDetail = () => {
             )}
 
             {hasAlternateColourways && (
-              <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-3 mb-6">
+              <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-4 mb-6">
                 {availableColourways.map((c) => {
                   const isSelected = c.name === selected.name;
                   return (
@@ -183,12 +183,15 @@ export const PaintingDetail = () => {
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.94 }}
                       className={cn(
-                        "w-9 h-9 rounded-full cursor-pointer transition-all duration-300",
+                        "block w-12 h-12 rounded-full cursor-pointer border-0 p-0 transition-shadow duration-300",
                         isSelected
-                          ? "ring-2 ring-ink ring-offset-2 ring-offset-bg"
-                          : "ring-1 ring-white/15 hover:ring-white/40",
+                          ? "ring-2 ring-ink ring-offset-2 ring-offset-bg shadow-[0_6px_22px_rgba(0,0,0,0.55)]"
+                          : "ring-1 ring-white/25 hover:ring-white/55 shadow-[0_3px_14px_rgba(0,0,0,0.4)]",
                       )}
-                      style={{ backgroundColor: c.hex }}
+                      style={{
+                        background: c.hex,
+                        backgroundColor: c.hex,
+                      }}
                     />
                   );
                 })}
