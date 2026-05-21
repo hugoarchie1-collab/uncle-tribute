@@ -41,16 +41,16 @@ export const Welcome = () => {
 
         <main className="relative">
           {/* HERO — Ovalen pattern: text LEFT, image RIGHT */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-12 md:pt-16 pb-8 md:pb-14">
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-20 pb-20 md:pb-28">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-stretch">
               <Reveal as="div" className="md:col-span-6 flex flex-col justify-center">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   In memoriam · 1966 — {PASSING_DATE}
                 </p>
-                <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,6vw,84px)] leading-[0.98] text-ink m-0 mb-6 text-balance">
+                <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,80px)] leading-[0.98] text-ink m-0 mb-7 text-balance">
                   {WELCOME.openingQuote}
                 </h1>
-                <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.7] text-ink/80 m-0 mb-7 max-w-[480px]">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/80 m-0 mb-8 max-w-[480px]">
                   {WELCOME.reminder}
                 </p>
                 <MagneticLink
@@ -75,9 +75,9 @@ export const Welcome = () => {
           </section>
 
           {/* FEATURED 4 — product-strip pattern */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.03em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="flex items-end justify-between mb-10 md:mb-14 flex-wrap gap-4">
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0">
                 Featured works
               </h2>
               <Link
@@ -113,7 +113,7 @@ export const Welcome = () => {
           </section>
 
           {/* PRESS STRIP + PASSING NOTE — unified atmospheric block */}
-          <section className="relative mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+          <section className="relative mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
             <Reveal as="div" className="text-center">
               <p className="font-sans text-[10px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-6">
                 Exhibited at
@@ -142,10 +142,10 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
-              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
+          {/* PORTRAIT + INVOCATION + BIO 1 */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 md:items-center">
+              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-[68vh]">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
@@ -154,14 +154,14 @@ export const Welcome = () => {
                   parallax={0.16}
                 />
               </Reveal>
-              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center">
+                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   {WELCOME.invocation}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0 mb-7">
                   The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
                 </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -184,17 +184,17 @@ export const Welcome = () => {
           <GenerativeMandala />
 
           {/* SACRED GEOMETRY — 4-card grid */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <Reveal as="div" className="text-center mb-10 md:mb-12">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <Reveal as="div" className="text-center mb-14 md:mb-16">
+              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Four traditions, woven into one visual language.
               </h2>
             </Reveal>
 
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 list-none p-0 mb-10 md:mb-14">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 list-none p-0 mb-14 md:mb-16">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -203,15 +203,15 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="bg-bg-soft ring-1 ring-white/8 p-6 md:p-7 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
+                  className="border-t border-accent/30 pt-5 transition-colors duration-500 hover:border-accent"
                 >
-                  <p className="font-display font-bold text-accent text-[clamp(32px,3.4vw,44px)] leading-none m-0 mb-4 tracking-tight">
+                  <p className="font-display font-bold text-accent text-[clamp(28px,3vw,40px)] leading-none m-0 mb-4 tracking-tight">
                     {item.tag}
                   </p>
-                  <p className="font-sans text-[14px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
+                  <p className="font-display font-bold text-[18px] md:text-[20px] tracking-[-0.015em] text-ink m-0 mb-3 leading-[1.2]">
                     {item.name}
                   </p>
-                  <p className="font-sans font-normal text-[13px] leading-[1.5] text-ink/65 m-0">
+                  <p className="font-sans font-normal text-[13.5px] leading-[1.55] text-ink/65 m-0">
                     {item.note}
                   </p>
                 </li>
@@ -238,12 +238,12 @@ export const Welcome = () => {
           </Reveal>
 
           {/* PROCESS / CRAFT — drafting-table image + materials & method */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <Reveal as="div" className="text-center mb-10 md:mb-14">
-              <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28">
+            <Reveal as="div" className="text-center mb-14 md:mb-16">
+              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                 The Craft
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,5vw,68px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Each painting is a ritual.
               </h2>
             </Reveal>
@@ -284,41 +284,39 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* SUNSTAR — text split */}
-          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start">
+          {/* SUNSTAR — text split + image */}
+          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start mb-14 md:mb-16">
               <Reveal as="div" className="md:col-span-5">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   Arista SunStar · 2016
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.2vw,56px)] leading-[0.98] text-ink m-0">
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0">
                   A 3.6&#8209;metre commission for Notting Hill.
                 </h2>
               </Reveal>
-              <Reveal as="div" className="md:col-span-7 md:pt-3">
-                <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.75] text-ink/85 m-0">
+              <Reveal as="div" className="md:col-span-7 md:pt-2">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
             </div>
+            <Reveal as="figure" className="m-0 mx-auto max-w-[520px] text-center">
+              <ImageReveal
+                src="/img/welcome/05-arista-sunstar.jpg"
+                alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
+                aspect="aspect-[16/9]"
+                parallax={0.08}
+                edges="all"
+                shadow=""
+              />
+            </Reveal>
           </section>
 
-          {/* SUNSTAR IMAGE — small, centered, no caption */}
-          <Reveal as="figure" className="m-0 mx-auto max-w-[480px] px-4 pb-8 pt-4 text-center">
-            <ImageReveal
-              src="/img/welcome/05-arista-sunstar.jpg"
-              alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-              aspect="aspect-[16/9]"
-              parallax={0.08}
-              edges="all"
-              shadow="shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
-            />
-          </Reveal>
-
           {/* COLLECTIONS PROMO — 3-card grid */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
+          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="flex items-end justify-between mb-10 md:mb-14 flex-wrap gap-4">
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0">
                 Three collections
               </h2>
               <Link
@@ -328,11 +326,11 @@ export const Welcome = () => {
                 Explore all →
               </Link>
             </div>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
               {COLLECTIONS.map((coll) => {
                 const items = PAINTINGS.filter((p) => p.collection === coll.id);
                 return (
-                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
+                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block transition-transform duration-500 hover:-translate-y-1">
                     {coll.backdropImage && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
@@ -343,11 +341,11 @@ export const Welcome = () => {
                         />
                       </div>
                     )}
-                    <div className="p-5 md:p-6">
+                    <div className="pt-5">
                       <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
                         {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                       </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
+                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,2vw,26px)] leading-[1.15] text-ink m-0 group-hover:text-accent transition-colors duration-300">
                         {coll.title}
                       </h3>
                     </div>
@@ -401,16 +399,16 @@ export const Welcome = () => {
           </section>
 
           {/* VISIT / CONNECT / FOUNDATION — three engagement cards */}
-          <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <Reveal as="div" className="text-center mb-10 md:mb-14">
-              <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
+          <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28">
+            <Reveal as="div" className="text-center mb-14 md:mb-16">
+              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                 The Estate
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,4vw,52px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(32px,4vw,56px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Continue Stephen's work.
               </h2>
             </Reveal>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
               {[
                 {
                   eyebrow: "Prints",
@@ -437,15 +435,15 @@ export const Welcome = () => {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-6 md:p-7"
+                  className="group block border-t border-accent/30 pt-6 transition-colors duration-300 hover:border-accent"
                 >
                   <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-4">
                     {item.eyebrow}
                   </p>
-                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.9vw,26px)] leading-[1.15] text-ink m-0 mb-3">
+                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2vw,28px)] leading-[1.15] text-ink m-0 mb-4">
                     {item.title}
                   </h3>
-                  <p className="font-sans font-normal text-[14px] leading-[1.6] text-ink/75 m-0 mb-6">
+                  <p className="font-sans font-normal text-[14.5px] leading-[1.7] text-ink/75 m-0 mb-6">
                     {item.body}
                   </p>
                   <span className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
