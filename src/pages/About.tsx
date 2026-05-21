@@ -510,7 +510,7 @@ export const About = () => {
   usePageTitle("Stephen Meakin");
 
   return (
-    <div className="relative bg-bg">
+    <div className="relative">
       <Nav />
       <main>
         {/* HERO */}

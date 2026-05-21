@@ -36,7 +36,7 @@ export const Welcome = () => {
     <>
       <VideoIntro />
 
-      <div id="welcome-anchor" className="relative bg-bg">
+      <div id="welcome-anchor" className="relative">
         <Nav />
 
         <main className="relative">

@@ -63,7 +63,7 @@ export const Collections = () => {
   ];
 
   return (
-    <div className="relative bg-bg">
+    <div className="relative">
       <Nav />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
