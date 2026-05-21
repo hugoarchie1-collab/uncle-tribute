@@ -357,41 +357,41 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* SACRED GEOMETRY — full-bleed closing moment, Earth's limb */}
+          {/* SACRED GEOMETRY — transparent so the page aura shows through;
+              text sized so each word fits the viewport and Earth's limb
+              scrapes the bottom of "Geometry." */}
           <section
-            className="relative w-full overflow-hidden bg-[#02040a]"
-            style={{ height: "118vh" }}
+            className="relative w-full overflow-hidden"
+            style={{ height: "108vh" }}
             aria-label="Sacred Geometry"
           >
-            {/* Earth image — scaled large, anchored bottom, curve brushing the text */}
+            {/* Earth image — scaled to "scrape" the text bottom. Top of the
+                image is masked to dissolve into the page aura, no hard edge. */}
             <img
               src={asset("/img/scenes/earth-limb.jpg")}
               alt=""
               aria-hidden="true"
-              className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[125%] max-w-none h-auto pointer-events-none select-none"
-              style={{ zIndex: 0 }}
-            />
-            {/* Top scrim — deepen the upper sky so the text reads cleanly */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 pointer-events-none"
+              className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[135%] max-w-none h-auto pointer-events-none select-none"
               style={{
-                background:
-                  "linear-gradient(180deg, rgba(2,4,10,0.7) 0%, rgba(2,4,10,0.3) 22%, rgba(2,4,10,0) 50%)",
-                zIndex: 1,
+                zIndex: 0,
+                WebkitMaskImage:
+                  "linear-gradient(180deg, transparent 0%, #000 16%, #000 100%)",
+                maskImage:
+                  "linear-gradient(180deg, transparent 0%, #000 16%, #000 100%)",
               }}
             />
 
-            {/* Headline — massive, brushing the Earth's limb */}
-            <div className="relative z-10 pt-[7vh] md:pt-[8vh] px-2 md:px-4 text-center">
+            {/* Headline — each word fits the viewport width comfortably */}
+            <div className="relative z-10 pt-[9vh] md:pt-[10vh] px-4 md:px-6 text-center">
               <Reveal>
                 <h2
-                  className="font-display font-bold tracking-[-0.06em] leading-[0.82] m-0"
+                  className="font-display font-bold tracking-[-0.055em] leading-[0.84] m-0 mx-auto"
                   style={{
-                    fontSize: "clamp(108px, 26vw, 540px)",
+                    fontSize: "clamp(72px, 18vw, 320px)",
+                    maxWidth: "min(100%, 1700px)",
                     color: "#f5ecd6",
                     textShadow:
-                      "0 6px 80px rgba(0,0,0,0.85), 0 3px 28px rgba(0,0,0,0.7), 0 1px 6px rgba(0,0,0,0.5)",
+                      "0 6px 70px rgba(0,0,0,0.75), 0 3px 24px rgba(0,0,0,0.6)",
                   }}
                 >
                   Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
