@@ -359,40 +359,41 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* SACRED GEOMETRY — full-bleed closing moment, Earth from above */}
+          {/* SACRED GEOMETRY — full-bleed closing moment, Earth's limb */}
           <section
-            className="relative w-full overflow-hidden bg-[#02040a] min-h-screen flex flex-col"
+            className="relative w-full overflow-hidden bg-[#02040a]"
+            style={{ height: "118vh" }}
             aria-label="Sacred Geometry"
           >
-            {/* Earth image — full width, anchored bottom, curve facing up */}
+            {/* Earth image — scaled large, anchored bottom, curve brushing the text */}
             <img
               src={asset("/img/scenes/earth-limb.jpg")}
               alt=""
               aria-hidden="true"
-              loading="lazy"
-              className="absolute inset-x-0 bottom-0 w-full h-auto object-cover pointer-events-none select-none"
+              className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[125%] max-w-none h-auto pointer-events-none select-none"
               style={{ zIndex: 0 }}
             />
-            {/* Top scrim — deepen the upper sky so the text sits cleanly */}
+            {/* Top scrim — deepen the upper sky so the text reads cleanly */}
             <div
               aria-hidden="true"
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(2,4,10,0.55) 0%, rgba(2,4,10,0.15) 38%, rgba(2,4,10,0) 65%)",
+                  "linear-gradient(180deg, rgba(2,4,10,0.7) 0%, rgba(2,4,10,0.3) 22%, rgba(2,4,10,0) 50%)",
                 zIndex: 1,
               }}
             />
 
-            {/* Headline — fills the screen, dramatic and impactful */}
-            <div className="relative z-10 flex-1 flex items-center justify-center px-2 md:px-4 pt-[14vh] md:pt-[12vh] pb-[34vh] md:pb-[40vh]">
+            {/* Headline — massive, brushing the Earth's limb */}
+            <div className="relative z-10 pt-[7vh] md:pt-[8vh] px-2 md:px-4 text-center">
               <Reveal>
                 <h2
-                  className="font-display font-bold tracking-[-0.055em] text-[clamp(96px,24vw,420px)] leading-[0.84] m-0 text-center"
+                  className="font-display font-bold tracking-[-0.06em] leading-[0.82] m-0"
                   style={{
+                    fontSize: "clamp(108px, 26vw, 540px)",
                     color: "#f5ecd6",
                     textShadow:
-                      "0 4px 50px rgba(0,0,0,0.7), 0 2px 18px rgba(0,0,0,0.5)",
+                      "0 6px 80px rgba(0,0,0,0.85), 0 3px 28px rgba(0,0,0,0.7), 0 1px 6px rgba(0,0,0,0.5)",
                   }}
                 >
                   Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>

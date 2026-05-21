@@ -311,9 +311,9 @@ const MilestoneQuote = ({
 );
 
 // ─── AnegadaSpread ─────────────────────────────────────────────────────────
-// Anegada is the turning point — extracted from the timeline as its own
-// full-bleed chapter spread. Hero image with scroll-tied parallax, big
-// word-revealed headline, magazine-style multi-paragraph body.
+// Anegada is the turning point — broken out of the timeline as its own
+// full-screen cinematic moment with a distinct background tint, then a
+// magazine-style body that breaks every grid rule used in the timeline.
 const AnegadaSpread = () => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
@@ -321,90 +321,186 @@ const AnegadaSpread = () => {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.1, 1.0]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-14%", "14%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.14, 1.0]);
 
   return (
-    <section
-      ref={ref}
-      className="relative w-full bg-bg-soft my-10 md:my-16 overflow-hidden"
-      aria-label="Anegada — 1995, Stephen's turning point"
-    >
-      {/* Hero */}
-      <div className="relative w-full h-[78vh] md:h-[92vh] overflow-hidden">
-        <motion.div
-          className="absolute inset-0 will-change-transform"
-          style={
-            reduceMotion
-              ? {
-                  backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center 32%",
-                }
-              : {
-                  y: imgY,
-                  scale: imgScale,
-                  backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center 32%",
-                }
-          }
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.18) 35%, rgba(10,9,8,0.82) 100%)",
-          }}
-        />
-        <Reveal as="div" className="absolute top-10 md:top-14 left-1/2 -translate-x-1/2 text-center px-4">
-          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-ink/85 m-0">
-            Chapter · 1995 · Anegada, Caribbean Sea
+    <>
+      {/* Loud divider so the eye registers a chapter change */}
+      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-2">
+        <div className="flex items-center gap-5 md:gap-7">
+          <span
+            aria-hidden="true"
+            className="block h-px flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 100%)",
+            }}
+          />
+          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-accent m-0 whitespace-nowrap">
+            Interlude · The turning point
           </p>
-        </Reveal>
-        <div className="absolute inset-x-0 bottom-[7vh] md:bottom-[9vh] px-4 md:px-8 text-center">
-          <h2 className="font-display font-bold tracking-[-0.045em] text-[clamp(48px,9vw,140px)] leading-[0.92] text-ink m-0">
-            <WordReveal text="Everything is connected." stagger={0.1} duration={0.9} />
-          </h2>
+          <span
+            aria-hidden="true"
+            className="block h-px flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(201,120,68,0.55) 0%, transparent 100%)",
+            }}
+          />
         </div>
-      </div>
+      </Reveal>
 
-      {/* Magazine spread body */}
-      <div className="relative mx-auto max-w-[1240px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24">
-        {/* Para 1 — drop cap + side pull-quote */}
-        <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14">
-          <p className="md:col-span-7 font-sans font-normal text-[15.5px] md:text-[17px] leading-[1.85] text-ink/90 m-0 first-letter:font-display first-letter:font-bold first-letter:text-accent first-letter:text-[68px] first-letter:leading-[0.86] first-letter:float-left first-letter:mr-3 first-letter:mt-1">
-            {ABOUT.anegada[0]}
-          </p>
-          <aside className="md:col-span-5 md:pt-10">
-            <p className="font-display font-medium italic tracking-[-0.01em] text-[clamp(22px,2.4vw,30px)] leading-[1.4] text-accent m-0 border-l-2 border-accent/60 pl-5">
-              "At the exact moment I completed the circle, I felt something touch me that was inexplicable."
+      <section
+        ref={ref}
+        className="relative w-full overflow-hidden"
+        style={{ backgroundColor: "#0e0a08" }}
+        aria-label="Anegada — 1995, Stephen's turning point"
+      >
+        {/* HERO — full-screen */}
+        <div className="relative w-full h-screen overflow-hidden">
+          <motion.div
+            className="absolute inset-0 will-change-transform"
+            style={
+              reduceMotion
+                ? {
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center 30%",
+                  }
+                : {
+                    y: imgY,
+                    scale: imgScale,
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center 30%",
+                  }
+            }
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.12) 30%, rgba(10,9,8,0.85) 100%)",
+            }}
+          />
+          {/* Top eyebrow */}
+          <Reveal as="div" className="absolute top-10 md:top-14 left-1/2 -translate-x-1/2 text-center px-4">
+            <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.5em] uppercase text-ink/85 m-0">
+              1995 · Anegada · Caribbean Sea
             </p>
-          </aside>
-        </Reveal>
+          </Reveal>
 
-        {/* Para 2 — full-width display treatment */}
-        <Reveal as="div" className="mt-14 md:mt-20">
-          <p className="font-display font-medium tracking-[-0.01em] text-[clamp(18px,1.95vw,23px)] leading-[1.55] text-ink/95 m-0 max-w-[980px]">
-            {ABOUT.anegada[1]}
-          </p>
-        </Reveal>
+          {/* Big year stamp at bottom-left */}
+          <Reveal as="div" className="absolute bottom-[6vh] md:bottom-[7vh] left-4 sm:left-6 md:left-10 lg:left-14">
+            <p
+              className="font-display font-bold m-0 tabular-nums tracking-[-0.05em] leading-[0.84]"
+              style={{
+                fontSize: "clamp(96px, 14vw, 240px)",
+                background:
+                  "linear-gradient(180deg, rgba(245,236,214,0.95) 0%, rgba(220,168,76,0.85) 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              1995
+            </p>
+          </Reveal>
 
-        {/* Para 3 — narrow centred column */}
-        <Reveal as="div" className="mt-14 md:mt-20">
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.85] text-ink/85 m-0 max-w-[760px] mx-auto">
-            {ABOUT.anegada[2]}
-          </p>
-        </Reveal>
+          {/* Headline — bottom right, dominating */}
+          <div className="absolute inset-x-0 bottom-[6vh] md:bottom-[8vh] px-4 md:px-10 lg:px-14 text-right">
+            <h2
+              className="font-display font-bold tracking-[-0.05em] leading-[0.9] text-ink m-0"
+              style={{ fontSize: "clamp(48px, 8.8vw, 138px)" }}
+            >
+              <WordReveal text="Everything is connected." stagger={0.11} duration={1.0} />
+            </h2>
+          </div>
+        </div>
 
-        <Reveal as="div" className="mt-12 md:mt-16 text-right">
-          <p className="font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/60 m-0">
-            — Stephen Meakin, in his own words
+        {/* Magazine spread body — breaks the timeline grid */}
+        <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28">
+          {/* Para 1 — wide drop-cap column + side pull-quote */}
+          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
+            <p className="md:col-span-7 md:col-start-1 font-sans font-normal text-[16px] md:text-[17.5px] leading-[1.9] text-ink/92 m-0 first-letter:font-display first-letter:font-bold first-letter:text-accent first-letter:text-[80px] first-letter:leading-[0.84] first-letter:float-left first-letter:mr-4 first-letter:mt-1">
+              {ABOUT.anegada[0]}
+            </p>
+            <aside className="md:col-span-4 md:col-start-9 md:pt-16">
+              <p
+                className="font-display font-medium italic tracking-[-0.01em] m-0 border-l-[3px] border-accent pl-5 leading-[1.35]"
+                style={{
+                  fontSize: "clamp(22px, 2.5vw, 32px)",
+                  color: "rgba(220,168,76,0.95)",
+                }}
+              >
+                "At the exact moment I completed the circle, I felt something touch me that was inexplicable."
+              </p>
+            </aside>
+          </Reveal>
+
+          {/* Massive pull break — the realization */}
+          <Reveal as="div" className="mt-16 md:mt-24 text-center">
+            <p
+              className="font-display font-medium italic tracking-[-0.02em] m-0 mx-auto leading-[1.0] text-accent"
+              style={{
+                fontSize: "clamp(40px, 6.5vw, 110px)",
+              }}
+            >
+              Everything is connected.
+            </p>
+          </Reveal>
+
+          {/* Para 2 — display weight, offset wider than centre */}
+          <Reveal as="div" className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-8">
+            <p className="md:col-span-10 md:col-start-2 font-display font-medium tracking-[-0.012em] leading-[1.5] text-ink/95 m-0"
+               style={{ fontSize: "clamp(19px, 2.05vw, 25px)" }}
+            >
+              {ABOUT.anegada[1]}
+            </p>
+          </Reveal>
+
+          {/* Para 3 — narrow column, indented from right */}
+          <Reveal as="div" className="mt-16 md:mt-24 grid grid-cols-1 md:grid-cols-12 gap-8">
+            <p className="md:col-span-7 md:col-start-3 font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.9] text-ink/85 m-0">
+              {ABOUT.anegada[2]}
+            </p>
+          </Reveal>
+
+          <Reveal as="div" className="mt-14 md:mt-20 text-right">
+            <p className="font-sans text-[10px] font-bold tracking-[0.48em] uppercase text-accent m-0">
+              — Stephen Meakin, in his own words
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Closing divider */}
+      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-2">
+        <div className="flex items-center gap-5 md:gap-7">
+          <span
+            aria-hidden="true"
+            className="block h-px flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 100%)",
+            }}
+          />
+          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-ink/55 m-0 whitespace-nowrap">
+            Return to the work
           </p>
-        </Reveal>
-      </div>
-    </section>
+          <span
+            aria-hidden="true"
+            className="block h-px flex-1"
+            style={{
+              background:
+                "linear-gradient(90deg, rgba(201,120,68,0.55) 0%, transparent 100%)",
+            }}
+          />
+        </div>
+      </Reveal>
+    </>
   );
 };
 
