@@ -25,12 +25,11 @@ export const Reveal = ({
   }
 
   const variants: Variants = {
-    hidden: { opacity: 0, y: offset, filter: "blur(6px)" },
+    hidden: { opacity: 0, y: offset },
     show: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
-      transition: { duration: 0.9, delay, ease: [0.22, 0.61, 0.36, 1] },
+      transition: { duration: 0.7, delay, ease: [0.22, 0.61, 0.36, 1] },
     },
   };
 

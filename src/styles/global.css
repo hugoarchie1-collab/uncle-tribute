@@ -12,13 +12,22 @@
   html { scroll-behavior: smooth; }
 
   body {
-    @apply font-sans text-body text-ink-soft bg-bg antialiased;
+    @apply font-sans text-body text-ink-soft antialiased;
     font-weight: 400;
     overflow-x: hidden;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Dark base + subtle purple glow baked into the page bg.
+       Pure CSS, no JS animation, no mix-blend — so it costs
+       zero scroll performance. */
+    background-color: #08070a;
+    background-image:
+      radial-gradient(ellipse 75% 55% at 50% 38%, rgba(58, 42, 98, 0.32) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 22% 78%, rgba(42, 28, 78, 0.26) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 45% at 80% 22%, rgba(72, 50, 115, 0.22) 0%, transparent 65%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4 {
@@ -115,13 +124,8 @@
 .painting-detail__ambient-wash {
   position: absolute;
   inset: -10%;
-  filter: blur(80px) saturate(1.4);
-  mix-blend-mode: screen;
-  animation: ambient-pulse 9s ease-in-out infinite;
-}
-@keyframes ambient-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.06); opacity: 0.92; }
+  filter: blur(80px) saturate(1.3);
+  opacity: 0.55;
 }
 .painting-detail__ambient-veil {
   position: absolute;

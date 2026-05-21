@@ -6,7 +6,6 @@ import { PaintingDetail } from "./pages/PaintingDetail";
 import { About } from "./pages/About";
 import { NotFound } from "./pages/NotFound";
 import { Privacy, Terms } from "./pages/Legal";
-import { AmbientAura } from "./components/AmbientAura";
 import "./styles/global.css";
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
@@ -62,7 +61,6 @@ export default function App() {
   return (
     <BrowserRouter basename={basename}>
       <ScrollToTop />
-      <AmbientAura />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/collections" element={<Collections />} />
