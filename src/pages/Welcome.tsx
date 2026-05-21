@@ -353,48 +353,50 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* SACRED GEOMETRY — closing moment: text fills the upper half,
-              Earth's curve brushes the bottom of "Geometry.". */}
+          {/* SACRED GEOMETRY — closing moment: text dominates the viewport
+              top-to-near-bottom; Earth's curve overlaps the bottom of
+              "Geometry." with no dead space anywhere. */}
           <section
-            className="relative w-full overflow-hidden flex flex-col"
+            className="relative w-full overflow-hidden"
             style={{ height: "100vh" }}
             aria-label="Sacred Geometry"
           >
-            {/* Text — fills the upper portion */}
-            <div className="relative z-10 flex-1 flex items-center justify-center pt-[5vh] md:pt-[6vh] px-2 md:px-4">
+            {/* Earth — fills the bottom ~38vh, layered behind text, curve
+                positioned near the top of the band so it sits right under
+                "Geometry." */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 w-full pointer-events-none"
+              style={{
+                height: "38vh",
+                zIndex: 0,
+                backgroundImage: `url("${asset("/img/scenes/earth-limb.jpg")}")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center 58%",
+                backgroundRepeat: "no-repeat",
+                WebkitMaskImage:
+                  "linear-gradient(180deg, transparent 0%, #000 12%, #000 100%)",
+                maskImage:
+                  "linear-gradient(180deg, transparent 0%, #000 12%, #000 100%)",
+              }}
+            />
+
+            {/* Headline — fills viewport vertically, overlaps Earth at bottom */}
+            <div className="absolute inset-x-0 top-0 z-10 pt-[3vh] md:pt-[2vh] px-2 md:px-4 text-center">
               <Reveal>
                 <h2
-                  className="font-display font-bold tracking-[-0.055em] leading-[0.85] m-0 text-center"
+                  className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0"
                   style={{
-                    fontSize: "clamp(80px, 22vw, 460px)",
+                    fontSize: "clamp(96px, 24vw, 540px)",
                     color: "#f5ecd6",
                     textShadow:
-                      "0 6px 70px rgba(0,0,0,0.85), 0 3px 24px rgba(0,0,0,0.7)",
+                      "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
                   }}
                 >
                   Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
                 </h2>
               </Reveal>
             </div>
-
-            {/* Earth — fills the bottom portion, curve positioned near the top
-                of this band so it brushes the text bottom, dissolves to the
-                page bg via the mask. */}
-            <div
-              aria-hidden="true"
-              className="relative w-full pointer-events-none"
-              style={{
-                height: "44vh",
-                backgroundImage: `url("${asset("/img/scenes/earth-limb.jpg")}")`,
-                backgroundSize: "cover",
-                backgroundPosition: "center 62%",
-                backgroundRepeat: "no-repeat",
-                WebkitMaskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 16%, #000 100%)",
-                maskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 16%, #000 100%)",
-              }}
-            />
           </section>
 
           {/* VISIT / CONNECT / FOUNDATION — three engagement cards */}
