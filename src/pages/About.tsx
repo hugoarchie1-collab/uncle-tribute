@@ -708,7 +708,7 @@ export const About = () => {
             </h2>
           </Reveal>
           <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-10 md:items-stretch">
-            <blockquote className="m-0 md:col-span-7 p-6 sm:p-8 md:p-10 bg-bg-soft ring-1 ring-white/10">
+            <blockquote className="m-0 md:col-span-7 pl-6 md:pl-8 border-l-2 border-accent/60">
               <p className="font-sans font-medium text-[14.5px] md:text-[15.5px] leading-[1.85] text-ink m-0 mb-5">
                 {ABOUT.studentsLetter}
               </p>
