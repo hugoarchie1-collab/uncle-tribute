@@ -66,7 +66,6 @@ export const VideoIntro = () => {
             preload="auto"
             poster={`${base}video/poster.jpg`}
           >
-            <source src={`${base}video/intro.webm`} type="video/webm" />
             <source src={`${base}video/intro.mp4`} type="video/mp4" />
           </video>
         )}
