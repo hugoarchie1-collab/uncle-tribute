@@ -118,15 +118,14 @@
   width: 120%;
   height: 120%;
   object-fit: cover;
-  filter: blur(140px) saturate(1.3) brightness(0.45);
+  filter: blur(110px) saturate(1.35) brightness(0.7);
   transform: scale(1.15);
-  opacity: 0.45;
 }
 .painting-detail__ambient-veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(80% 70% at 50% 40%, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.7) 100%);
+    radial-gradient(80% 70% at 50% 38%, rgba(10,9,8,0.25) 0%, rgba(10,9,8,0.65) 100%);
 }
 
 /* =============================================================================

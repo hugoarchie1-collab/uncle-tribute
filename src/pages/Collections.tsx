@@ -26,11 +26,16 @@ const ScrollBackdrop = ({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
-  // Fade in 0→1 across first 25% of overlap, stay full 25-75%, fade out
-  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0, 1, 1, 0]);
-  // Subtle parallax drift
+  // Hold near full opacity across the bulk of the section so the photo
+  // is never invisible while the user is reading the collection. Soft
+  // fade at the very edges keeps adjacent collections cross-dissolving.
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, 0.12, 0.88, 1],
+    [0, 1, 1, 0],
+  );
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.04, 1.0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.0]);
 
   return (
     <motion.div
@@ -39,7 +44,7 @@ const ScrollBackdrop = ({
         y,
         scale,
         backgroundImage: `url("${photoUrl}")`,
-        filter: "blur(10px) saturate(1.05)",
+        filter: "blur(12px) saturate(1.15) brightness(0.92)",
       }}
       className="absolute inset-0 bg-cover bg-center will-change-transform"
       aria-hidden="true"
