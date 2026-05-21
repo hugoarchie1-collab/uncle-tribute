@@ -42,19 +42,21 @@ export const PaintingDetail = () => {
   const hasAlternateColourways = availableColourways.length > 1;
 
   return (
-    <div className="relative isolate bg-bg overflow-hidden">
-      {/* Ambient backdrop — selected colourway, blurred behind everything */}
+    <div className="relative overflow-hidden">
+      {/* Ambient backdrop — selected colourway HEX as a glowing wash so the
+          aura colour accurately matches the swatch the user clicked. */}
       <div className="painting-detail__ambient" aria-hidden>
         <AnimatePresence mode="sync">
-          <motion.img
-            key={selected.image}
-            src={asset(selected.image)}
-            alt=""
+          <motion.div
+            key={selected.hex}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.65 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 0.61, 0.36, 1] }}
-            className="painting-detail__ambient-img"
+            transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
+            className="painting-detail__ambient-wash"
+            style={{
+              background: `radial-gradient(70% 55% at 50% 38%, ${selected.hex} 0%, ${selected.hex}cc 25%, ${selected.hex}55 55%, transparent 80%)`,
+            }}
           />
         </AnimatePresence>
         <div className="painting-detail__ambient-veil" />
