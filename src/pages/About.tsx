@@ -1,4 +1,11 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -10,11 +17,124 @@ import { usePageTitle } from "../lib/usePageTitle";
 
 const earlyLife = ABOUT.earlyLife;
 
-// ─── Timeline entry layout ──────────────────────────────────────────────────
-// Each milestone aligns to a left-side "spine" (date + dot) with the chapter
-// content on the right. On mobile the spine collapses and content is full-width.
+// ─── WordReveal ────────────────────────────────────────────────────────────
+// Stagger every word into place with a blur-clear. Used on chapter
+// headlines so the eye moves left-to-right instead of seeing the whole
+// block appear at once.
+const WordReveal = ({
+  text,
+  className,
+  stagger = 0.07,
+  duration = 0.7,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  stagger?: number;
+  duration?: number;
+  delay?: number;
+}) => {
+  const reduceMotion = useReducedMotion();
+  if (reduceMotion) return <span className={className}>{text}</span>;
+  const words = text.split(" ");
+  const wordVariants: Variants = {
+    hidden: { opacity: 0, y: 28, filter: "blur(10px)" },
+    show: {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      transition: { duration, ease: [0.22, 0.61, 0.36, 1] },
+    },
+  };
+  return (
+    <motion.span
+      className={className}
+      style={{ display: "inline" }}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.4 }}
+      variants={{
+        hidden: {},
+        show: { transition: { staggerChildren: stagger, delayChildren: delay } },
+      }}
+    >
+      {words.map((w, i) => (
+        <motion.span
+          key={i}
+          variants={wordVariants}
+          style={{ display: "inline-block", whiteSpace: "pre" }}
+        >
+          {w}
+          {i < words.length - 1 ? " " : ""}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+};
 
-const Milestone = ({
+// ─── ChapterIntro ──────────────────────────────────────────────────────────
+// Editorial chapter break: large Roman numeral + label + title.
+const ChapterIntro = ({
+  numeral,
+  label,
+  years,
+  title,
+}: {
+  numeral: string;
+  label: string;
+  years: string;
+  title: string;
+}) => (
+  <section className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10">
+    <Reveal as="div" className="grid grid-cols-12 gap-4 md:gap-8 items-end">
+      <p className="col-span-12 md:col-span-3 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+         style={{
+           background: "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.7) 100%)",
+           WebkitBackgroundClip: "text",
+           backgroundClip: "text",
+           color: "transparent",
+         }}
+      >
+        {numeral}
+      </p>
+      <div className="col-span-12 md:col-span-9 md:pl-6 md:pb-3">
+        <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-4">
+          {label} · {years}
+        </p>
+        <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,62px)] leading-[1.02] text-ink m-0 max-w-[820px]">
+          <WordReveal text={title} stagger={0.06} />
+        </h2>
+      </div>
+    </Reveal>
+    <div
+      aria-hidden="true"
+      className="mt-12 md:mt-16 h-px"
+      style={{
+        background:
+          "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 50%, transparent 100%)",
+      }}
+    />
+  </section>
+);
+
+// ─── YearTag ────────────────────────────────────────────────────────────────
+const YearTag = ({ year, place }: { year: string; place?: string }) => (
+  <div className="flex flex-col gap-1.5">
+    <p className="font-display font-bold text-[clamp(28px,3vw,40px)] leading-none text-accent tabular-nums tracking-[-0.02em] m-0">
+      {year}
+    </p>
+    {place && (
+      <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55 m-0">
+        {place}
+      </p>
+    )}
+  </div>
+);
+
+// ─── Milestone variants ────────────────────────────────────────────────────
+
+// A — clean text milestone
+const MilestoneText = ({
   year,
   place,
   title,
@@ -25,41 +145,270 @@ const Milestone = ({
   title: string;
   children: ReactNode;
 }) => (
-  <Reveal as="section" className="relative pl-0 md:pl-[180px] py-10 md:py-14">
-    {/* Spine date marker — md+ only */}
-    <div className="hidden md:block absolute left-0 top-14 w-[140px] text-right pr-6">
-      <p className="font-display font-bold text-[clamp(28px,3vw,40px)] leading-none text-accent tabular-nums m-0">
-        {year}
-      </p>
-      {place && (
-        <p className="mt-2 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0">
-          {place}
-        </p>
-      )}
+  <Reveal as="section" className="relative mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
+    <div className="grid grid-cols-12 gap-4 md:gap-8">
+      <div className="col-span-12 md:col-span-3 md:pt-2">
+        <YearTag year={year} place={place} />
+      </div>
+      <div className="col-span-12 md:col-span-9">
+        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.2vw,44px)] leading-[1.06] text-ink m-0 mb-5 md:mb-6 max-w-[760px]">
+          {title}
+        </h3>
+        <div className="max-w-[720px] flex flex-col gap-5">{children}</div>
+      </div>
     </div>
-    {/* Spine dot */}
-    <span
-      aria-hidden="true"
-      className="hidden md:block absolute left-[155px] top-[26px] w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-bg"
-    />
-    {/* Mobile date row */}
-    <div className="md:hidden mb-4">
-      <p className="inline font-display font-bold text-[28px] leading-none text-accent tabular-nums m-0 mr-3">
-        {year}
-      </p>
-      {place && (
-        <p className="inline font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0">
-          {place}
-        </p>
-      )}
-    </div>
-    {/* Content */}
-    <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.4vw,48px)] leading-[1.02] text-ink m-0 mb-6 max-w-[760px]">
-      {title}
-    </h2>
-    <div className="max-w-[760px] flex flex-col gap-5">{children}</div>
   </Reveal>
 );
+
+// B — image on right, text on left
+const MilestoneImageRight = ({
+  year,
+  place,
+  title,
+  image,
+  alt,
+  children,
+}: {
+  year: string;
+  place?: string;
+  title: string;
+  image: string;
+  alt: string;
+  children: ReactNode;
+}) => (
+  <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-20">
+    <div className="grid grid-cols-12 gap-5 md:gap-12 items-center">
+      <div className="col-span-12 md:col-span-5 order-2 md:order-1">
+        <YearTag year={year} place={place} />
+        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.2vw,44px)] leading-[1.05] text-ink m-0 mt-6 mb-5">
+          {title}
+        </h3>
+        <div className="flex flex-col gap-4">{children}</div>
+      </div>
+      <figure className="col-span-12 md:col-span-7 order-1 md:order-2 m-0">
+        <ImageReveal src={image} alt={alt} aspect="aspect-[4/3]" edges="all" parallax={0.14} tilt />
+      </figure>
+    </div>
+  </Reveal>
+);
+
+// C — image on left, text on right
+const MilestoneImageLeft = ({
+  year,
+  place,
+  title,
+  image,
+  alt,
+  aspect = "aspect-[4/3]",
+  children,
+}: {
+  year: string;
+  place?: string;
+  title: string;
+  image: string;
+  alt: string;
+  aspect?: string;
+  children: ReactNode;
+}) => (
+  <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-20">
+    <div className="grid grid-cols-12 gap-5 md:gap-12 items-center">
+      <figure className="col-span-12 md:col-span-7 m-0">
+        <ImageReveal src={image} alt={alt} aspect={aspect} edges="all" parallax={0.14} tilt />
+      </figure>
+      <div className="col-span-12 md:col-span-5">
+        <YearTag year={year} place={place} />
+        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.2vw,44px)] leading-[1.05] text-ink m-0 mt-6 mb-5">
+          {title}
+        </h3>
+        <div className="flex flex-col gap-4">{children}</div>
+      </div>
+    </div>
+  </Reveal>
+);
+
+// D — massive year as design element, text right
+const MilestoneBigYear = ({
+  year,
+  place,
+  title,
+  children,
+}: {
+  year: string;
+  place?: string;
+  title: string;
+  children: ReactNode;
+}) => (
+  <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-28">
+    <div className="grid grid-cols-12 gap-4 md:gap-12 items-start">
+      <div className="col-span-12 md:col-span-5">
+        <p className="font-display font-bold text-[clamp(82px,11.5vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+           style={{
+             background: "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.6) 100%)",
+             WebkitBackgroundClip: "text",
+             backgroundClip: "text",
+             color: "transparent",
+           }}
+        >
+          {year}
+        </p>
+        {place && (
+          <p className="mt-4 font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0">
+            {place}
+          </p>
+        )}
+      </div>
+      <div className="col-span-12 md:col-span-7 md:pt-4">
+        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(26px,3.4vw,48px)] leading-[1.05] text-ink m-0 mb-6">
+          {title}
+        </h3>
+        <div className="flex flex-col gap-5">{children}</div>
+      </div>
+    </div>
+  </Reveal>
+);
+
+// E — quote callout with portrait image
+const MilestoneQuote = ({
+  year,
+  place,
+  title,
+  image,
+  alt,
+  quote,
+  attribution,
+}: {
+  year: string;
+  place?: string;
+  title: string;
+  image: string;
+  alt: string;
+  quote: string;
+  attribution?: string;
+}) => (
+  <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
+    <div className="grid grid-cols-12 gap-5 md:gap-12 items-stretch md:items-center">
+      <figure className="col-span-12 md:col-span-6 m-0">
+        <ImageReveal src={image} alt={alt} aspect="aspect-[4/5]" edges="all" parallax={0.16} tilt />
+      </figure>
+      <div className="col-span-12 md:col-span-6">
+        <YearTag year={year} place={place} />
+        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(24px,3.2vw,44px)] leading-[1.05] text-ink m-0 mt-6 mb-8">
+          {title}
+        </h3>
+        <blockquote className="m-0 pl-5 border-l-2 border-accent">
+          <p className="font-display font-medium text-[clamp(15px,1.5vw,18px)] leading-[1.65] text-ink/95 m-0 mb-3">
+            {quote}
+          </p>
+          {attribution && (
+            <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55">
+              — {attribution}
+            </cite>
+          )}
+        </blockquote>
+      </div>
+    </div>
+  </Reveal>
+);
+
+// ─── AnegadaSpread ─────────────────────────────────────────────────────────
+// Anegada is the turning point — extracted from the timeline as its own
+// full-bleed chapter spread. Hero image with scroll-tied parallax, big
+// word-revealed headline, magazine-style multi-paragraph body.
+const AnegadaSpread = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.1, 1.0]);
+
+  return (
+    <section
+      ref={ref}
+      className="relative w-full bg-bg-soft my-10 md:my-16 overflow-hidden"
+      aria-label="Anegada — 1995, Stephen's turning point"
+    >
+      {/* Hero */}
+      <div className="relative w-full h-[78vh] md:h-[92vh] overflow-hidden">
+        <motion.div
+          className="absolute inset-0 will-change-transform"
+          style={
+            reduceMotion
+              ? {
+                  backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center 32%",
+                }
+              : {
+                  y: imgY,
+                  scale: imgScale,
+                  backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center 32%",
+                }
+          }
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.18) 35%, rgba(10,9,8,0.82) 100%)",
+          }}
+        />
+        <Reveal as="div" className="absolute top-10 md:top-14 left-1/2 -translate-x-1/2 text-center px-4">
+          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-ink/85 m-0">
+            Chapter · 1995 · Anegada, Caribbean Sea
+          </p>
+        </Reveal>
+        <div className="absolute inset-x-0 bottom-[7vh] md:bottom-[9vh] px-4 md:px-8 text-center">
+          <h2 className="font-display font-bold tracking-[-0.045em] text-[clamp(48px,9vw,140px)] leading-[0.92] text-ink m-0">
+            <WordReveal text="Everything is connected." stagger={0.1} duration={0.9} />
+          </h2>
+        </div>
+      </div>
+
+      {/* Magazine spread body */}
+      <div className="relative mx-auto max-w-[1240px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24">
+        {/* Para 1 — drop cap + side pull-quote */}
+        <Reveal as="div" className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14">
+          <p className="md:col-span-7 font-sans font-normal text-[15.5px] md:text-[17px] leading-[1.85] text-ink/90 m-0 first-letter:font-display first-letter:font-bold first-letter:text-accent first-letter:text-[68px] first-letter:leading-[0.86] first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+            {ABOUT.anegada[0]}
+          </p>
+          <aside className="md:col-span-5 md:pt-10">
+            <p className="font-display font-medium italic tracking-[-0.01em] text-[clamp(22px,2.4vw,30px)] leading-[1.4] text-accent m-0 border-l-2 border-accent/60 pl-5">
+              "At the exact moment I completed the circle, I felt something touch me that was inexplicable."
+            </p>
+          </aside>
+        </Reveal>
+
+        {/* Para 2 — full-width display treatment */}
+        <Reveal as="div" className="mt-14 md:mt-20">
+          <p className="font-display font-medium tracking-[-0.01em] text-[clamp(18px,1.95vw,23px)] leading-[1.55] text-ink/95 m-0 max-w-[980px]">
+            {ABOUT.anegada[1]}
+          </p>
+        </Reveal>
+
+        {/* Para 3 — narrow centred column */}
+        <Reveal as="div" className="mt-14 md:mt-20">
+          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.85] text-ink/85 m-0 max-w-[760px] mx-auto">
+            {ABOUT.anegada[2]}
+          </p>
+        </Reveal>
+
+        <Reveal as="div" className="mt-12 md:mt-16 text-right">
+          <p className="font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/60 m-0">
+            — Stephen Meakin, in his own words
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+};
+
+// ─── About ─────────────────────────────────────────────────────────────────
 
 export const About = () => {
   usePageTitle("Stephen Meakin");
@@ -68,7 +417,7 @@ export const About = () => {
     <div className="relative bg-bg">
       <Nav />
       <main>
-        {/* ===== HERO ===== */}
+        {/* HERO */}
         <section className="relative">
           <div className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden">
             <img
@@ -101,7 +450,7 @@ export const About = () => {
           </div>
         </section>
 
-        {/* ===== OPENING PULL ===== */}
+        {/* OPENING */}
         <section className="mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 text-center">
           <Reveal>
             <p className="font-display font-medium tracking-[-0.02em] text-[clamp(22px,2.8vw,36px)] leading-[1.3] text-ink m-0 max-w-[940px] mx-auto">
@@ -110,143 +459,149 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* ===== TIMELINE ===== */}
-        <div className="relative mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12">
-          {/* Vertical spine — md+ only */}
-          <span
-            aria-hidden="true"
-            className="hidden md:block absolute left-[156px] top-0 bottom-0 w-px bg-white/12"
-          />
+        {/* CHAPTER I — Beginnings */}
+        <ChapterIntro
+          numeral="I"
+          label="Beginnings"
+          years="1966 → 1995"
+          title="A different aesthetic was always there to be found."
+        />
 
-          <Milestone year="1966" place="Staffordshire" title="Born into a country of hedgerows and Georgian cities.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {earlyLife[0]}
-            </p>
-          </Milestone>
+        <MilestoneText
+          year="1966"
+          place="Staffordshire"
+          title="Born into a country of hedgerows and Georgian cities."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {earlyLife[0]}
+          </p>
+        </MilestoneText>
 
-          <Milestone year="1986" place="Brighton Polytechnic" title="Art Foundation — the search for a different aesthetic.">
-            <Reveal as="figure" className="m-0">
-              <ImageReveal
-                src="/img/about/02-painting-table.jpg"
-                alt="Working on a mandala"
-                aspect="aspect-[4/3]"
-                edges="all"
-                parallax={0.12}
-                tilt
-              />
-            </Reveal>
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              Encouraged to explore painting, textiles, sculpture and video. While the British Art movement was flowering in London, an exhibition of Aboriginal art moved him most — the start of a search for a universal visual language.
-            </p>
-          </Milestone>
+        <MilestoneImageRight
+          year="1986"
+          place="Brighton Polytechnic"
+          title="Art Foundation — the search for a different aesthetic."
+          image="/img/about/02-painting-table.jpg"
+          alt="Working on a mandala"
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            Encouraged to explore painting, textiles, sculpture and video. While the British Art movement was flowering in London, an exhibition of Aboriginal art moved him most — the start of a search for a universal visual language.
+          </p>
+        </MilestoneImageRight>
 
-          <Milestone year="1990" place="Bournemouth" title="3D Design, and the discovery of geometric pattern.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {earlyLife[1]}
-            </p>
-          </Milestone>
+        <MilestoneBigYear
+          year="1990"
+          place="Bournemouth"
+          title="3D Design, and the discovery of geometric pattern."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {earlyLife[1]}
+          </p>
+        </MilestoneBigYear>
 
-          <Milestone year="1990 — 1995" place="France · Ibiza · Mexico · Virgin Islands" title="Theatre backdrops, murals, sketchbooks of geometry.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {earlyLife[2]}
-            </p>
-          </Milestone>
+        <MilestoneText
+          year="1990 — 1995"
+          place="France · Ibiza · Mexico · Virgin Islands"
+          title="Theatre backdrops, murals, sketchbooks of geometry."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {earlyLife[2]}
+          </p>
+        </MilestoneText>
 
-          <Milestone year="1995" place="Anegada, Caribbean Sea" title="Everything is connected.">
-            <Reveal as="figure" className="m-0">
-              <ImageReveal
-                src="/img/about/03-stephen-on-cairn.jpg"
-                alt="Stephen on a stone cairn"
-                aspect="aspect-[3/2]"
-                edges="all"
-                parallax={0.14}
-                objectPosition="center top"
-                tilt
-              />
-            </Reveal>
-            {ABOUT.anegada.map((p, i) => (
-              <p
-                key={i}
-                className={
-                  i === 1
-                    ? "font-display font-medium text-[clamp(18px,1.9vw,22px)] leading-[1.45] text-ink m-0"
-                    : "font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.8] text-ink/85 m-0"
-                }
-              >
-                {p}
-              </p>
-            ))}
-            <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55 m-0 mt-1 text-right">
-              — Stephen Meakin
-            </p>
-          </Milestone>
+        {/* CHAPTER BREAK — Anegada */}
+        <AnegadaSpread />
 
-          <Milestone year="1996" place="Brighton University" title="Architecture & Interior Design.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {earlyLife[3]}
-            </p>
-          </Milestone>
+        {/* CHAPTER II — Practice */}
+        <ChapterIntro
+          numeral="II"
+          label="Practice"
+          years="1996 → 2009"
+          title="An artist with a mission, decade by decade."
+        />
 
-          <Milestone year="1999" place="Brighton" title="The first major mandala.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {earlyLife[4]}
-            </p>
-          </Milestone>
+        <MilestoneText
+          year="1996"
+          place="Brighton University"
+          title="Architecture & Interior Design."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {earlyLife[3]}
+          </p>
+        </MilestoneText>
 
-          <Milestone year="2002 — 2009" place="Lewes, East Sussex" title="MA Fine Art, Phoenix Place, and the years of mandalas.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {ABOUT.legacy[0]}
-            </p>
-          </Milestone>
+        <MilestoneBigYear
+          year="1999"
+          place="Brighton"
+          title="The first major mandala."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {earlyLife[4]}
+          </p>
+        </MilestoneBigYear>
 
-          <Milestone year="2010" place="TAGA · Phoenix Place" title="The Art of Geometry Academy is founded.">
-            <Reveal as="figure" className="m-0">
-              <ImageReveal
-                src="/img/about/10-taga-classroom.jpg"
-                alt="A TAGA class in session"
-                aspect="aspect-[4/3]"
-                edges="all"
-                parallax={0.12}
-                tilt
-              />
-            </Reveal>
-            <blockquote className="m-0 pl-5 border-l-2 border-accent">
-              <p className="font-display font-medium text-[15px] md:text-[16px] leading-[1.6] text-ink/95 m-0">
-                {ABOUT.academyQuote}
-              </p>
-            </blockquote>
-          </Milestone>
+        <MilestoneImageLeft
+          year="2002 — 2009"
+          place="Lewes, East Sussex"
+          title="MA Fine Art, Phoenix Place, and the years of mandalas."
+          image="/img/about/09-taga-studio.jpg"
+          alt="Phoenix Place studio, Lewes"
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {ABOUT.legacy[0]}
+          </p>
+        </MilestoneImageLeft>
 
-          <Milestone year="2014" place="Az-Zarqa, Jordan" title="Teaching geometry to children who'd lost everything.">
-            <Reveal as="figure" className="m-0">
-              <ImageReveal
-                src="/img/about/07-az-zarqa-students.jpg"
-                alt="Stephen with children at the Az-Zarqa School for Palestinian Orphans and Refugees, Jordan"
-                aspect="aspect-[3/2]"
-                edges="all"
-                parallax={0.12}
-                tilt
-              />
-            </Reveal>
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {ABOUT.palestine}
-            </p>
-          </Milestone>
+        {/* CHAPTER III — Legacy */}
+        <ChapterIntro
+          numeral="III"
+          label="Legacy"
+          years="2010 →"
+          title="The Academy, the children, and the work that endures."
+        />
 
-          <Milestone year="2016" place="Notting Hill, London" title="The 3.6-metre Arista SunStar.">
-            <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
-              {ABOUT.legacy[1]}
-            </p>
-          </Milestone>
+        <MilestoneQuote
+          year="2010"
+          place="TAGA · Phoenix Place"
+          title="The Art of Geometry Academy is founded."
+          image="/img/about/10-taga-classroom.jpg"
+          alt="A TAGA class in session"
+          quote={ABOUT.academyQuote}
+        />
 
-          <Milestone year={PASSING_DATE} place="The estate continues" title="A life devoted to the geometry of light.">
-            <p className="font-display font-medium text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
-              Stephen passed away in {PASSING_DATE}. The Mandala Company Foundation, on behalf of his immediate family, continues to carry his work forward.
-            </p>
-          </Milestone>
-        </div>
+        <MilestoneImageRight
+          year="2014"
+          place="Az-Zarqa, Jordan"
+          title="Teaching geometry to children who'd lost everything."
+          image="/img/about/07-az-zarqa-students.jpg"
+          alt="Stephen with children at the Az-Zarqa School for Palestinian Orphans and Refugees, Jordan"
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {ABOUT.palestine}
+          </p>
+        </MilestoneImageRight>
 
-        {/* ===== STUDENT LETTER — outside the timeline, as a closing chapter ===== */}
+        <MilestoneBigYear
+          year="2016"
+          place="Notting Hill, London"
+          title="The 3.6-metre Arista SunStar."
+        >
+          <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">
+            {ABOUT.legacy[1]}
+          </p>
+        </MilestoneBigYear>
+
+        <MilestoneText
+          year={PASSING_DATE}
+          place="The estate continues"
+          title="A life devoted to the geometry of light."
+        >
+          <p className="font-display font-medium text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
+            Stephen passed away in {PASSING_DATE}. The Mandala Company Foundation, on behalf of his immediate family, continues to carry his work forward.
+          </p>
+        </MilestoneText>
+
+        {/* STUDENT LETTER */}
         <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20">
           <Reveal as="div" className="text-center mb-8 md:mb-10">
             <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
@@ -278,7 +633,7 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* ===== CLOSING — full-bleed painting + CTA ===== */}
+        {/* CLOSING */}
         <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
           <Reveal as="figure" className="m-0 mb-10 md:mb-14">
             <ImageReveal
