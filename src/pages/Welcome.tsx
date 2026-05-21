@@ -112,35 +112,33 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* PRESS STRIP — monochrome line of venues / commissions */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-5 md:py-7 border-y border-white/8">
-            <Reveal>
-              <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/50 m-0 text-center flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-                <span className="text-accent">Exhibited at</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>Majlis Gallery, Dubai</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>Trinity Art Gallery, London</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>Unique Arts, Brighton</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>Farmacy, Notting Hill</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>Sahara Force India F1</span>
-                <span aria-hidden="true" className="text-ink/25">·</span>
-                <span>The Tree of Wellbeing</span>
+          {/* PRESS STRIP + PASSING NOTE — unified atmospheric block */}
+          <section className="relative mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+            <Reveal as="div" className="text-center">
+              <p className="font-sans text-[10px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-6">
+                Exhibited at
               </p>
+              <ul className="list-none p-0 m-0 flex flex-wrap items-center justify-center gap-x-6 md:gap-x-8 gap-y-3 font-sans text-[12px] md:text-[13px] font-medium tracking-[0.18em] uppercase text-ink/75">
+                <li>Majlis Gallery, Dubai</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Trinity Art Gallery, London</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Unique Arts, Brighton</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Farmacy, Notting Hill</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Sahara Force India F1</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>The Tree of Wellbeing</li>
+              </ul>
             </Reveal>
-          </section>
 
-          {/* PASSING NOTE */}
-          <section className="mx-auto max-w-[760px] px-6 md:px-10 py-10 md:py-14 text-center">
-            <Reveal>
-              <span className="block h-px w-16 mx-auto bg-accent mb-7" />
-              <p className="font-display font-bold text-[clamp(22px,2.6vw,32px)] leading-[1.15] tracking-[-0.025em] text-ink m-0">
+            <Reveal as="div" className="mt-12 md:mt-16 text-center">
+              <span aria-hidden="true" className="block h-px w-24 mx-auto bg-gradient-to-r from-transparent via-accent/70 to-transparent mb-8" />
+              <p className="font-display font-medium text-[clamp(22px,2.6vw,32px)] leading-[1.2] tracking-[-0.02em] text-ink m-0">
                 {WELCOME.passingNote}
               </p>
-              <span className="block h-px w-16 mx-auto bg-accent mt-7" />
+              <span aria-hidden="true" className="block h-px w-24 mx-auto bg-gradient-to-r from-transparent via-accent/70 to-transparent mt-8" />
             </Reveal>
           </section>
 
