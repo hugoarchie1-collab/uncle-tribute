@@ -359,110 +359,43 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* PULL QUOTE — closing moment over Earth's limb */}
-          <section className="relative w-full overflow-hidden bg-[#03060e]" aria-label="Sacred Geometry">
-            {/* Deep-space gradient base */}
+          {/* SACRED GEOMETRY — full-bleed closing moment, Earth from above */}
+          <section
+            className="relative w-full overflow-hidden bg-[#02040a] min-h-screen flex flex-col"
+            aria-label="Sacred Geometry"
+          >
+            {/* Earth image — full width, anchored bottom, curve facing up */}
+            <img
+              src={asset("/img/scenes/earth-limb.jpg")}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="absolute inset-x-0 bottom-0 w-full h-auto object-cover pointer-events-none select-none"
+              style={{ zIndex: 0 }}
+            />
+            {/* Top scrim — deepen the upper sky so the text sits cleanly */}
             <div
               aria-hidden="true"
-              className="absolute inset-0"
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(120% 80% at 50% 0%, #0a0f22 0%, #050811 55%, #02040a 100%)",
+                  "linear-gradient(180deg, rgba(2,4,10,0.55) 0%, rgba(2,4,10,0.15) 38%, rgba(2,4,10,0) 65%)",
+                zIndex: 1,
               }}
             />
 
-            {/* Starfield — three layered radial-gradient tiles */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 opacity-90"
-              style={{
-                backgroundImage: [
-                  "radial-gradient(1.4px 1.4px at 23px 41px, rgba(255,250,235,0.95), transparent 60%)",
-                  "radial-gradient(1px 1px at 87px 19px, rgba(220,210,255,0.85), transparent 60%)",
-                  "radial-gradient(1.2px 1.2px at 153px 117px, rgba(255,245,220,0.7), transparent 60%)",
-                  "radial-gradient(0.8px 0.8px at 211px 53px, rgba(255,255,255,0.7), transparent 60%)",
-                  "radial-gradient(1px 1px at 49px 187px, rgba(255,240,210,0.6), transparent 60%)",
-                  "radial-gradient(0.7px 0.7px at 121px 233px, rgba(255,255,255,0.5), transparent 60%)",
-                  "radial-gradient(1.1px 1.1px at 263px 161px, rgba(200,220,255,0.7), transparent 60%)",
-                  "radial-gradient(0.9px 0.9px at 31px 91px, rgba(255,250,240,0.55), transparent 60%)",
-                  "radial-gradient(0.6px 0.6px at 191px 271px, rgba(255,255,255,0.45), transparent 60%)",
-                ].join(", "),
-                backgroundSize: "320px 320px",
-                backgroundRepeat: "repeat",
-              }}
-            />
-            {/* Sparser, larger stars */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 opacity-80"
-              style={{
-                backgroundImage: [
-                  "radial-gradient(2px 2px at 137px 67px, rgba(255,240,210,0.95), transparent 55%)",
-                  "radial-gradient(1.6px 1.6px at 433px 247px, rgba(220,235,255,0.9), transparent 55%)",
-                  "radial-gradient(1.8px 1.8px at 277px 391px, rgba(255,255,255,0.85), transparent 55%)",
-                ].join(", "),
-                backgroundSize: "560px 480px",
-                backgroundRepeat: "repeat",
-              }}
-            />
-
-            {/* Earth — large sphere anchored to bottom, only top arc visible, curve facing up */}
-            <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[55%] pointer-events-none">
-              <div
-                className="absolute left-1/2 -translate-x-1/2"
-                style={{
-                  bottom: "-130%",
-                  width: "240%",
-                  aspectRatio: "1 / 1",
-                  borderRadius: "9999px",
-                  background:
-                    "radial-gradient(circle at 50% 35%, #0a162e 0%, #060c1c 55%, #02050e 100%)",
-                  boxShadow: [
-                    "0 0 0 1.5px rgba(140, 190, 240, 0.55)",
-                    "0 0 36px 4px rgba(110, 170, 235, 0.45)",
-                    "0 0 120px 18px rgba(80, 150, 225, 0.28)",
-                    "0 0 260px 60px rgba(60, 130, 215, 0.14)",
-                    "0 0 480px 120px rgba(40, 110, 200, 0.08)",
-                  ].join(", "),
-                }}
-              />
-            </div>
-
-            {/* Soft scrim so text reads cleanly */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(70% 50% at 50% 38%, rgba(2,4,10,0.55) 0%, rgba(2,4,10,0) 70%)",
-              }}
-            />
-
-            {/* Text */}
-            <div className="relative z-10 mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 pt-28 md:pt-40 pb-[42vw] md:pb-[34vw] text-center">
+            {/* Headline — fills the screen, dramatic and impactful */}
+            <div className="relative z-10 flex-1 flex items-center justify-center px-2 md:px-4 pt-[14vh] md:pt-[12vh] pb-[34vh] md:pb-[40vh]">
               <Reveal>
-                <p
-                  className="font-sans text-[11px] md:text-[12px] font-bold tracking-[0.42em] uppercase m-0 mb-6 md:mb-8"
-                  style={{
-                    color: "rgba(220, 168, 76, 0.92)",
-                    textShadow: "0 2px 18px rgba(0,0,0,0.6)",
-                  }}
-                >
-                  In Memoriam
-                </p>
                 <h2
-                  className="font-display font-bold tracking-[-0.05em] text-[clamp(72px,16vw,240px)] leading-[0.86] m-0"
+                  className="font-display font-bold tracking-[-0.055em] text-[clamp(96px,24vw,420px)] leading-[0.84] m-0 text-center"
                   style={{
-                    backgroundImage:
-                      "linear-gradient(180deg, #f5ecd6 0%, #efe6cf 40%, #d9b984 100%)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                    color: "transparent",
-                    textShadow: "0 6px 60px rgba(220, 168, 76, 0.18)",
-                    filter: "drop-shadow(0 4px 30px rgba(0, 0, 0, 0.55))",
+                    color: "#f5ecd6",
+                    textShadow:
+                      "0 4px 50px rgba(0,0,0,0.7), 0 2px 18px rgba(0,0,0,0.5)",
                   }}
                 >
-                  Sacred Geometry.
+                  Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
                 </h2>
               </Reveal>
             </div>
