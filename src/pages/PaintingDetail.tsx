@@ -43,19 +43,21 @@ export const PaintingDetail = () => {
 
   return (
     <div className="relative overflow-hidden">
-      {/* Ambient backdrop — selected colourway HEX as a glowing wash so the
-          aura colour accurately matches the swatch the user clicked. */}
+      {/* Ambient backdrop — selected colourway painting blurred behind the
+          page, matching the Collections-page backdrop style: blur(12px)
+          saturate(1.15) brightness(0.92). Crossfades seamlessly between
+          colourways as the user switches swatches. */}
       <div className="painting-detail__ambient" aria-hidden>
         <AnimatePresence mode="sync">
           <motion.div
-            key={selected.hex}
+            key={selected.image}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
-            className="painting-detail__ambient-wash"
+            className="painting-detail__ambient-bg"
             style={{
-              background: `radial-gradient(70% 55% at 50% 38%, ${selected.hex} 0%, ${selected.hex}cc 25%, ${selected.hex}55 55%, transparent 80%)`,
+              backgroundImage: `url("${asset(selected.image)}")`,
             }}
           />
         </AnimatePresence>
