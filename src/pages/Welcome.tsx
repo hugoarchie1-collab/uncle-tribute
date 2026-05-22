@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -10,8 +11,29 @@ import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
+// Four Peacock colourways used as the home page's seamlessly-blending
+// backdrop layer. Same filter treatment as Collections.tsx ScrollBackdrop.
+const PEACOCK_BACKDROPS = [
+  { url: "/img/paintings/peacock-persian-indigo.jpg", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red.jpg", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-sahara-sand-yellow.jpg", name: "Sahara Sand Yellow" },
+  { url: "/img/paintings/peacock-moroccan-purple.jpg", name: "Moroccan Purple" },
+];
+
 export const Welcome = () => {
   usePageTitle();
+
+  // Whole-page scroll progress drives the four peacock backdrops
+  // crossfading in turn — same Collections-page blur recipe applied to
+  // the live painting JPGs so the home page reads as one continuous
+  // colour journey through Persian Indigo → Blood Moon Red → Sahara
+  // Sand Yellow → Moroccan Purple.
+  const { scrollYProgress } = useScroll();
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.04, 0.22, 0.30], [0, 1, 1, 0]);
+  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
+  const yellowOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
+  const purpleOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.96, 1], [0, 1, 1, 1]);
+  const backdropOpacities = [indigoOpacity, redOpacity, yellowOpacity, purpleOpacity];
 
   // Featured pairs: painting id + specific colourway to show as the cover.
   const featuredPicks: { id: string; colourway?: string }[] = [
@@ -36,9 +58,39 @@ export const Welcome = () => {
       <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
+        {/* PEACOCK BACKDROP LAYER — four colourways crossfading on
+            page-scroll, identical blur/saturation/brightness recipe to
+            the Collections ScrollBackdrop. Sits behind all content. */}
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+        >
+          {PEACOCK_BACKDROPS.map((bd, i) => (
+            <motion.div
+              key={bd.url}
+              className="absolute inset-0 bg-cover bg-center will-change-[opacity]"
+              style={{
+                opacity: backdropOpacities[i],
+                backgroundImage: `url("${asset(bd.url)}")`,
+                filter: "blur(12px) saturate(1.15) brightness(0.92)",
+              }}
+            />
+          ))}
+          {/* Shared scrim — dark veil so the blurred painting reads
+              atmospheric while text on top stays crisp. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.78) 100%)",
+            }}
+          />
+        </div>
+
         <Nav />
 
-        <main className="relative">
+        <main className="relative z-10">
           {/* HERO — Ovalen pattern: text LEFT, image RIGHT */}
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-12 md:pt-16 pb-8 md:pb-14">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-stretch">
