@@ -103,14 +103,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
-                {/* Eyebrow with accent rule beside it, matching Kaya's
-                    "BEAN TO BAR ____" treatment. */}
-                <div className="flex items-center gap-4 mb-7">
-                  <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0">
-                    In memoriam · 1966 — {PASSING_DATE}
-                  </p>
-                  <span aria-hidden="true" className="block h-px w-12 bg-accent/60" />
-                </div>
+                {/* Eyebrow in the display font, no decorative rule. */}
+                <p className="font-display italic text-[clamp(15px,1.4vw,18px)] tracking-[-0.01em] text-accent m-0 mb-6">
+                  In memoriam · 1966 — {PASSING_DATE}
+                </p>
 
                 {/* Headline split into two visual treatments: heavy display
                     for the declarative first part, italic for the lyrical
@@ -159,18 +155,15 @@ export const Welcome = () => {
                   objectPosition="center"
                   shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                 />
-                {/* Featured tag on the right side of the image, like Kaya's
-                    'Featured Flavor — Fig, Pistachio & Sea Salt' marker. */}
-                <div className="hidden lg:flex absolute top-1/2 -right-2 translate-x-full -translate-y-1/2 items-center gap-3 whitespace-nowrap">
-                  <span aria-hidden="true" className="block h-px w-10 bg-accent/70" />
-                  <div>
-                    <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-1">
-                      Pictured
-                    </p>
-                    <p className="font-display italic text-[15px] leading-[1.2] text-ink m-0">
-                      Mandala of Wild Rose
-                    </p>
-                  </div>
+                {/* Featured tag on the right side of the image — no
+                    decorative line, just the label in the display font. */}
+                <div className="hidden lg:block absolute top-1/2 -right-2 translate-x-full -translate-y-1/2 whitespace-nowrap">
+                  <p className="font-display italic text-[13px] text-accent m-0 mb-1">
+                    Pictured
+                  </p>
+                  <p className="font-display italic text-[16px] leading-[1.2] text-ink m-0">
+                    Mandala of Wild Rose
+                  </p>
                 </div>
               </Reveal>
             </div>
