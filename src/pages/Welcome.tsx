@@ -132,16 +132,30 @@ export const Welcome = () => {
                   Explore the collections <span aria-hidden="true" className="ml-2">→</span>
                 </MagneticLink>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6">
+              <Reveal as="figure" className="m-0 md:col-span-6 relative">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen at his drafting table"
                   eager
-                  aspect="aspect-[3/2]"
+                  aspect="aspect-[4/5]"
                   edges="none"
                   parallax={0.12}
+                  objectPosition="center"
                   shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                 />
+                {/* Featured tag on the right side of the image, like Kaya's
+                    'Featured Flavor — Fig, Pistachio & Sea Salt' marker. */}
+                <div className="hidden lg:flex absolute top-1/2 -right-2 translate-x-full -translate-y-1/2 items-center gap-3 whitespace-nowrap">
+                  <span aria-hidden="true" className="block h-px w-10 bg-accent/70" />
+                  <div>
+                    <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-1">
+                      Pictured
+                    </p>
+                    <p className="font-display italic text-[15px] leading-[1.2] text-ink m-0">
+                      Mandala of Wild Rose
+                    </p>
+                  </div>
+                </div>
               </Reveal>
             </div>
           </section>
