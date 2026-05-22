@@ -19,8 +19,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         // Two families only.
-        // Display — Bodoni Moda (bold editorial serif, ALET reference vibe)
-        display: ['"Bodoni Moda"', "Georgia", "serif"],
+        // Display — Playfair Display (high-contrast Didone w/ flowing italic,
+        // matching the Kaya hero inspiration)
+        display: ['"Playfair Display"', "Georgia", "serif"],
         // Body — Inter, refined sans
         sans: [
           "Inter",
