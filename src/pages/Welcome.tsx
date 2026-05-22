@@ -228,62 +228,53 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* IN MEMORIAM — Aiya 3-card pattern with split header. */}
+          {/* IN MEMORIAM — Hridoy Trust&Elegance about-us composition:
+              left column = big italic-prefixed display headline +
+              supporting paragraph + CTA pill at the bottom; right
+              column = one large rectangular image (no boxing, no
+              cropped cards). Single image, no repeats of the
+              portrait already used in the hero. Lots of vertical
+              room in the body block for future copy. */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mb-12 md:mb-14">
-              <Reveal as="div" className="md:col-span-7">
-                <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
-                  <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.96]">
-                    Steve passed away
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+              <Reveal as="div" className="md:col-span-6 flex flex-col">
+                <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 hero-text-shadow">
+                  <span className="block font-black text-[clamp(40px,5.8vw,84px)] leading-[0.96]">
+                    — Steve passed away
                   </span>
-                  <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
+                  <span className="block font-medium italic text-[clamp(30px,4.6vw,64px)] leading-[1.06] mt-2 text-ink/90">
                     in {PASSING_DATE}.
                   </span>
                 </h2>
-              </Reveal>
-              <Reveal as="div" className="md:col-span-5 md:pt-6">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
+
+                <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink/85 m-0 mb-6 max-w-[560px]">
                   On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
                 </p>
+
+                <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.8] text-ink/70 m-0 mb-9 max-w-[560px]">
+                  News, releases and the continuing life of the estate are shared from the Foundation; print enquiries, visits to Phoenix Place and Foundation contact are below.
+                </p>
+
+                <MagneticLink
+                  to="/about"
+                  className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                  ariaLabel="About Stephen and the Foundation"
+                >
+                  About the Foundation <span aria-hidden="true" className="ml-2">→</span>
+                </MagneticLink>
+              </Reveal>
+
+              <Reveal as="figure" className="m-0 md:col-span-6">
+                <div className="aspect-[4/5] overflow-hidden">
+                  <img
+                    src={asset("/img/welcome/04-paintings-collection.jpg")}
+                    alt="Stephen's mandala paintings collection"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </Reveal>
             </div>
-
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-              {[
-                {
-                  title: "The Mandala Company",
-                  body: "Carrying Stephen's work forward, on behalf of his immediate family. News, releases, and the continuing life of the estate.",
-                  image: "/img/welcome/02-portrait-denim.jpg",
-                },
-                {
-                  title: "Exhibited Worldwide",
-                  body: "Majlis Gallery, Dubai · Trinity Art, London · Unique Arts, Brighton · Farmacy, Notting Hill · Sahara Force India F1 · The Tree of Wellbeing.",
-                  image: "/img/welcome/04-paintings-collection.jpg",
-                },
-                {
-                  title: "Arista SunStar, 3.6m",
-                  body: "Notting Hill, 2016. Commissioned by Camilla Al Fayed for the Farmacy restaurant — Stephen's largest single work.",
-                  image: "/img/welcome/05-arista-sunstar.jpg",
-                },
-              ].map((card) => (
-                <article key={card.title} className="m-0 group">
-                  <div className="aspect-[4/5] overflow-hidden mb-6 ring-1 ring-white/8">
-                    <img
-                      src={asset(card.image)}
-                      alt={card.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    />
-                  </div>
-                  <h3 className="font-display font-black tracking-[-0.025em] text-[clamp(22px,2.4vw,32px)] leading-[1.1] text-ink m-0 mb-3 hero-text-shadow">
-                    {card.title}
-                  </h3>
-                  <p className="font-sans font-normal text-[14.5px] leading-[1.65] text-ink/80 m-0">
-                    {card.body}
-                  </p>
-                </article>
-              ))}
-            </Reveal>
           </section>
 
           {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
