@@ -39,12 +39,15 @@ export const Welcome = () => {
   const purpleOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.96, 1], [0, 1, 1, 1]);
   const backdropOpacities = [indigoOpacity, redOpacity, yellowOpacity, purpleOpacity];
 
-  // Featured pairs: painting id + specific colourway to show as the cover.
+  // Six featured paintings shown in a 3×2 grid, mirroring the
+  // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
   const featuredPicks: { id: string; colourway?: string }[] = [
     { id: "peacock-minerva", colourway: "Blood Moon Red" },
     { id: "ophiuchus" },
     { id: "enneagon-swans", colourway: "Glacier Blue" },
     { id: "tridecagon-moon-star", colourway: "Supernova Violet" },
+    { id: "wild-rose" },
+    { id: "english-bluebells" },
   ];
   const featured = featuredPicks
     .map((pick) => {
@@ -173,35 +176,45 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* FEATURED 4 — product-strip pattern */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.03em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
-                Featured works
-              </h2>
-              <Link
-                to="/collections"
-                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
-              >
-                View all 11 →
-              </Link>
+          {/* FEATURED WORKS — Aiya/Marconi grid pattern: split header
+              (heavy + italic display headline left, supporting paragraph
+              right), 3×2 painting card grid, outlined CTA pill below. */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-14 md:mb-16">
+              <Reveal as="div" className="md:col-span-7">
+                <h2 className="font-display tracking-[-0.03em] text-ink m-0">
+                  <span className="block font-black text-[clamp(36px,5.2vw,76px)] leading-[0.96]">
+                    His latest creations
+                  </span>
+                  <span className="block font-medium italic text-[clamp(28px,4.2vw,58px)] leading-[1.05] mt-1 text-ink/85">
+                    crafted by hand.
+                  </span>
+                </h2>
+              </Reveal>
+              <Reveal as="div" className="md:col-span-5">
+                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/75 m-0">
+                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
+                </p>
+              </Reveal>
             </div>
-            <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+
+            <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => (
                 <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
-                  <ImageReveal
-                    src={cover.image}
-                    alt={`${painting.title} — ${cover.name}`}
-                    aspect="aspect-square"
-                    parallax={0.06}
-                    shadow="shadow-[0_16px_40px_rgba(0,0,0,0.45)] group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.65)] transition-shadow duration-500"
-                  />
-                  <div className="pt-3">
-                    <p className="font-display text-[14px] md:text-[16px] font-bold tracking-tight text-ink m-0 leading-[1.2]">
+                  <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                    <img
+                      src={asset(cover.image)}
+                      alt={`${painting.title} — ${cover.name}`}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                    />
+                  </div>
+                  <div className="pt-5">
+                    <h3 className="font-display font-bold text-[16px] md:text-[18px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
                       {painting.title}
-                    </p>
+                    </h3>
                     {painting.year && painting.year !== "[ DATE ]" && (
-                      <p className="font-sans text-[10px] font-bold tracking-[0.22em] uppercase text-ink/55 mt-1 m-0">
+                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-2 m-0">
                         {painting.year}
                       </p>
                     )}
@@ -209,35 +222,86 @@ export const Welcome = () => {
                 </Link>
               ))}
             </Reveal>
+
+            <Reveal as="div" className="text-center">
+              <MagneticLink
+                to="/collections"
+                className="inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                ariaLabel="View all collections"
+              >
+                View all collections <span aria-hidden="true" className="ml-1">↗</span>
+              </MagneticLink>
+            </Reveal>
           </section>
 
-          {/* PRESS STRIP + PASSING NOTE — unified atmospheric block */}
-          <section className="relative mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
-            <Reveal as="div" className="text-center">
-              <p className="font-sans text-[10px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-6">
-                Exhibited at
-              </p>
-              <ul className="list-none p-0 m-0 flex flex-wrap items-center justify-center gap-x-6 md:gap-x-8 gap-y-3 font-sans text-[12px] md:text-[13px] font-medium tracking-[0.18em] uppercase text-ink/75">
-                <li>Majlis Gallery, Dubai</li>
-                <li aria-hidden="true" className="text-accent/50">·</li>
-                <li>Trinity Art Gallery, London</li>
-                <li aria-hidden="true" className="text-accent/50">·</li>
-                <li>Unique Arts, Brighton</li>
-                <li aria-hidden="true" className="text-accent/50">·</li>
-                <li>Farmacy, Notting Hill</li>
-                <li aria-hidden="true" className="text-accent/50">·</li>
-                <li>Sahara Force India F1</li>
-                <li aria-hidden="true" className="text-accent/50">·</li>
-                <li>The Tree of Wellbeing</li>
-              </ul>
-            </Reveal>
+          {/* IN MEMORIAM — Aiya 3-card pattern. Header split (heavy +
+              italic display title left, supporting paragraph right) then
+              a 3-card grid: Foundation · Exhibitions · Commission. Ready
+              to accept the longer copy on Stephen's passing, the
+              Foundation, and accolades when Hugo adds it. */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mb-14 md:mb-16">
+              <Reveal as="div" className="md:col-span-7">
+                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
+                  In remembrance
+                </p>
+                <h2 className="font-display tracking-[-0.03em] text-ink m-0">
+                  <span className="block font-black text-[clamp(34px,4.6vw,66px)] leading-[1.0]">
+                    Steve passed away
+                  </span>
+                  <span className="block font-medium italic text-[clamp(26px,3.8vw,52px)] leading-[1.1] mt-1 text-ink/85">
+                    in {PASSING_DATE}.
+                  </span>
+                </h2>
+              </Reveal>
+              <Reveal as="div" className="md:col-span-5 md:pt-6">
+                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/80 m-0">
+                  On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
+                </p>
+              </Reveal>
+            </div>
 
-            <Reveal as="div" className="mt-12 md:mt-16 text-center">
-              <span aria-hidden="true" className="block h-px w-24 mx-auto bg-gradient-to-r from-transparent via-accent/70 to-transparent mb-8" />
-              <p className="font-display font-medium text-[clamp(22px,2.6vw,32px)] leading-[1.2] tracking-[-0.02em] text-ink m-0">
-                {WELCOME.passingNote}
-              </p>
-              <span aria-hidden="true" className="block h-px w-24 mx-auto bg-gradient-to-r from-transparent via-accent/70 to-transparent mt-8" />
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+              {[
+                {
+                  eyebrow: "The Foundation",
+                  title: "The Mandala Company",
+                  body: "Carrying Stephen's work forward, on behalf of his immediate family. News, releases, and the continuing life of the estate.",
+                  image: "/img/welcome/02-portrait-denim.jpg",
+                },
+                {
+                  eyebrow: "Exhibited at",
+                  title: "Worldwide.",
+                  body: "Majlis Gallery, Dubai · Trinity Art, London · Unique Arts, Brighton · Farmacy, Notting Hill · Sahara Force India F1 · The Tree of Wellbeing.",
+                  image: "/img/welcome/04-paintings-collection.jpg",
+                },
+                {
+                  eyebrow: "Major commission",
+                  title: "Arista SunStar, 3.6m",
+                  body: "Notting Hill, 2016. Commissioned by Camilla Al Fayed for the Farmacy restaurant — Stephen's largest single work.",
+                  image: "/img/welcome/05-arista-sunstar.jpg",
+                },
+              ].map((card) => (
+                <article key={card.title} className="m-0 group">
+                  <div className="aspect-[4/5] overflow-hidden mb-6 ring-1 ring-white/8">
+                    <img
+                      src={asset(card.image)}
+                      alt={card.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                    />
+                  </div>
+                  <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-3">
+                    {card.eyebrow}
+                  </p>
+                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,2.2vw,28px)] leading-[1.15] text-ink m-0 mb-3">
+                    {card.title}
+                  </h3>
+                  <p className="font-sans font-normal text-[14.5px] leading-[1.65] text-ink/75 m-0">
+                    {card.body}
+                  </p>
+                </article>
+              ))}
             </Reveal>
           </section>
 
