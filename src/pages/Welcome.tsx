@@ -125,21 +125,23 @@ export const Welcome = () => {
                   {WELCOME.reminder}
                 </p>
                 {/* Two CTAs side-by-side, mirroring Kaya's
-                    "Explore Flavors" + "Our Story" pairing. */}
+                    "Explore Flavors" + "Our Story" pairing.
+                    Smaller padding + shorter primary label so both pills
+                    sit on one row at the narrower hero column width. */}
                 <div className="flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="inline-flex w-fit items-center bg-ink text-bg px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                    className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="Explore the collections"
                   >
-                    Explore the collections <span aria-hidden="true" className="ml-2">→</span>
+                    Explore collections <span aria-hidden="true" className="ml-2">→</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="inline-flex w-fit items-center text-ink ring-1 ring-ink/30 px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-all duration-300 hover:ring-accent hover:text-accent"
+                    className="inline-flex w-fit items-center text-ink ring-1 ring-ink/30 px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-300 hover:ring-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
-                    About Stephen
+                    Our story
                   </MagneticLink>
                 </div>
               </Reveal>
