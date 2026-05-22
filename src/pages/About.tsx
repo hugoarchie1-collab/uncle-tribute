@@ -106,14 +106,6 @@ const ChapterIntro = ({
         </h2>
       </div>
     </Reveal>
-    <div
-      aria-hidden="true"
-      className="mt-12 md:mt-16 h-px"
-      style={{
-        background:
-          "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 50%, transparent 100%)",
-      }}
-    />
   </section>
 );
 
@@ -326,29 +318,11 @@ const AnegadaSpread = () => {
 
   return (
     <>
-      {/* Loud divider so the eye registers a chapter change */}
-      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-2">
-        <div className="flex items-center gap-5 md:gap-7">
-          <span
-            aria-hidden="true"
-            className="block h-px flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 100%)",
-            }}
-          />
-          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-accent m-0 whitespace-nowrap">
-            Interlude · The turning point
-          </p>
-          <span
-            aria-hidden="true"
-            className="block h-px flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(201,120,68,0.55) 0%, transparent 100%)",
-            }}
-          />
-        </div>
+      {/* Chapter break label, no rules */}
+      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-24 pb-2 text-center">
+        <p className="font-display italic text-[clamp(15px,1.4vw,18px)] text-accent m-0">
+          Interlude · the turning point
+        </p>
       </Reveal>
 
       <section
@@ -476,29 +450,11 @@ const AnegadaSpread = () => {
         </div>
       </section>
 
-      {/* Closing divider */}
-      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-2">
-        <div className="flex items-center gap-5 md:gap-7">
-          <span
-            aria-hidden="true"
-            className="block h-px flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent 0%, rgba(201,120,68,0.55) 100%)",
-            }}
-          />
-          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.48em] uppercase text-ink/55 m-0 whitespace-nowrap">
-            Return to the work
-          </p>
-          <span
-            aria-hidden="true"
-            className="block h-px flex-1"
-            style={{
-              background:
-                "linear-gradient(90deg, rgba(201,120,68,0.55) 0%, transparent 100%)",
-            }}
-          />
-        </div>
+      {/* Closing label, no rules */}
+      <Reveal as="div" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-2 text-center">
+        <p className="font-display italic text-[clamp(15px,1.4vw,18px)] text-ink/60 m-0">
+          Return to the work
+        </p>
       </Reveal>
     </>
   );
