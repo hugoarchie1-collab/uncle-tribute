@@ -124,13 +124,24 @@ export const Welcome = () => {
                 <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[520px]">
                   {WELCOME.reminder}
                 </p>
-                <MagneticLink
-                  to="/collections"
-                  className="inline-flex w-fit items-center bg-ink text-bg px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
-                  ariaLabel="Explore the collections"
-                >
-                  Explore the collections <span aria-hidden="true" className="ml-2">→</span>
-                </MagneticLink>
+                {/* Two CTAs side-by-side, mirroring Kaya's
+                    "Explore Flavors" + "Our Story" pairing. */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <MagneticLink
+                    to="/collections"
+                    className="inline-flex w-fit items-center bg-ink text-bg px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                    ariaLabel="Explore the collections"
+                  >
+                    Explore the collections <span aria-hidden="true" className="ml-2">→</span>
+                  </MagneticLink>
+                  <MagneticLink
+                    to="/about"
+                    className="inline-flex w-fit items-center text-ink ring-1 ring-ink/30 px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-all duration-300 hover:ring-accent hover:text-accent"
+                    ariaLabel="About Stephen"
+                  >
+                    About Stephen
+                  </MagneticLink>
+                </div>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-6 relative">
                 <ImageReveal
