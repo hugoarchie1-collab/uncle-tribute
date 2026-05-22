@@ -36,6 +36,15 @@
 
   ::selection { @apply bg-accent; color: #0a0908; }
 
+  /* Drop-shadow utility for large display headlines so they lift
+     off the blurred peacock backdrop and stay legible regardless
+     of which colourway is showing through behind them. */
+  .hero-text-shadow {
+    text-shadow:
+      0 4px 28px rgba(0, 0, 0, 0.75),
+      0 2px 8px rgba(0, 0, 0, 0.55);
+  }
+
   /* Soft-edge image utility — fades all four edges to transparent so
      full-bleed images don't end on hard block borders. Keeps the
      spiritual, airy feel the design calls for. */
