@@ -76,14 +76,14 @@ export const Welcome = () => {
               }}
             />
           ))}
-          {/* Shared scrim — dark veil so the blurred painting reads
-              atmospheric while text on top stays crisp. */}
+          {/* Shared scrim — identical to Collections.tsx so the backdrop
+              shows through at the same visibility level. */}
           <div
             aria-hidden="true"
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.78) 100%)",
+                "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
             }}
           />
         </div>
