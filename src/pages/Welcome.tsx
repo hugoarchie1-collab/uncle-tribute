@@ -94,28 +94,42 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative z-10">
-          {/* HERO — Ovalen pattern: text LEFT, image RIGHT.
-              Content aligns to top of column (no flex-justify-center) so
-              the eyebrow appears immediately under the nav, no dead gap
-              after the video intro fades out. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-6 md:pt-8 pb-12 md:pb-20">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-start">
-              <Reveal as="div" className="md:col-span-6 md:pt-2">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
-                  In memoriam · 1966 — {PASSING_DATE}
-                </p>
-                <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,6vw,84px)] leading-[0.98] text-ink m-0 mb-6 text-balance">
-                  {WELCOME.openingQuote}
+          {/* HERO — Kaya-inspired composition:
+              text LEFT (eyebrow + accent rule, two-style headline, body, CTA),
+              image RIGHT, well-framed and uncropped. */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
+              <Reveal as="div" className="md:col-span-6">
+                {/* Eyebrow with accent rule beside it, matching Kaya's
+                    "BEAN TO BAR ____" treatment. */}
+                <div className="flex items-center gap-4 mb-7">
+                  <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0">
+                    In memoriam · 1966 — {PASSING_DATE}
+                  </p>
+                  <span aria-hidden="true" className="block h-px w-12 bg-accent/60" />
+                </div>
+
+                {/* Headline split into two visual treatments: heavy display
+                    for the declarative first part, italic for the lyrical
+                    continuation after the em-dash. */}
+                <h1 className="font-display tracking-[-0.04em] text-ink m-0 mb-8 text-balance">
+                  <span className="block font-black text-[clamp(40px,6.2vw,86px)] leading-[0.96]">
+                    So here we are on Earth
+                  </span>
+                  <span className="block font-medium italic text-[clamp(32px,5vw,68px)] leading-[1.05] mt-2 text-ink/85">
+                    — orbiting a Sun Star at about 67,062 miles an hour.
+                  </span>
                 </h1>
-                <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.7] text-ink/80 m-0 mb-7 max-w-[480px]">
+
+                <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[520px]">
                   {WELCOME.reminder}
                 </p>
                 <MagneticLink
                   to="/collections"
-                  className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                  className="inline-flex w-fit items-center bg-ink text-bg px-8 py-4 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
                   ariaLabel="Explore the collections"
                 >
-                  Explore the collections <span aria-hidden="true">→</span>
+                  Explore the collections <span aria-hidden="true" className="ml-2">→</span>
                 </MagneticLink>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-6">
@@ -124,9 +138,9 @@ export const Welcome = () => {
                   alt="Stephen at his drafting table"
                   eager
                   aspect="aspect-[3/2]"
-                  edges="all"
-                  parallax={0.16}
-                  shadow="shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
+                  edges="none"
+                  parallax={0.12}
+                  shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                 />
               </Reveal>
             </div>
