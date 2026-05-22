@@ -12,12 +12,16 @@ import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
 // Four Peacock colourways used as the home page's seamlessly-blending
-// backdrop layer. Same filter treatment as Collections.tsx ScrollBackdrop.
+// backdrop layer. Pre-blurred 800px JPGs (~17KB each) — same visual
+// recipe as Collections.tsx ScrollBackdrop but the blur / saturate /
+// brightness are baked into the file offline, so the runtime filter
+// cost is zero. That fixes the scroll lag caused by applying CSS
+// filter blur to four 1+ MB images every frame.
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo.jpg", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red.jpg", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-sahara-sand-yellow.jpg", name: "Sahara Sand Yellow" },
-  { url: "/img/paintings/peacock-moroccan-purple.jpg", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur.jpg", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur.jpg", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-sahara-sand-yellow-blur.jpg", name: "Sahara Sand Yellow" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur.jpg", name: "Moroccan Purple" },
 ];
 
 export const Welcome = () => {
@@ -68,11 +72,10 @@ export const Welcome = () => {
           {PEACOCK_BACKDROPS.map((bd, i) => (
             <motion.div
               key={bd.url}
-              className="absolute inset-0 bg-cover bg-center will-change-[opacity]"
+              className="absolute inset-0 bg-cover bg-center"
               style={{
                 opacity: backdropOpacities[i],
                 backgroundImage: `url("${asset(bd.url)}")`,
-                filter: "blur(12px) saturate(1.15) brightness(0.92)",
               }}
             />
           ))}
