@@ -94,10 +94,13 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative z-10">
-          {/* HERO — Ovalen pattern: text LEFT, image RIGHT */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 sm:pt-12 md:pt-16 pb-8 md:pb-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-stretch">
-              <Reveal as="div" className="md:col-span-6 flex flex-col justify-center">
+          {/* HERO — Ovalen pattern: text LEFT, image RIGHT.
+              Content aligns to top of column (no flex-justify-center) so
+              the eyebrow appears immediately under the nav, no dead gap
+              after the video intro fades out. */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-6 md:pt-8 pb-12 md:pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-start">
+              <Reveal as="div" className="md:col-span-6 md:pt-2">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   In memoriam · 1966 — {PASSING_DATE}
                 </p>
@@ -115,7 +118,7 @@ export const Welcome = () => {
                   Explore the collections <span aria-hidden="true">→</span>
                 </MagneticLink>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 min-h-[60vh]">
+              <Reveal as="figure" className="m-0 md:col-span-6 min-h-[55vh] md:min-h-[60vh]">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen at his drafting table"
