@@ -170,11 +170,11 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* FEATURED WORKS — Aiya/Marconi grid pattern: split header
-              (heavy + italic display headline left, supporting paragraph
-              right), 3×2 painting card grid, outlined CTA pill below. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-12 md:mb-14">
+          {/* FEATURED WORKS — Aiya/Marconi grid pattern. Header split is
+              vertically centred so the paragraph sits beside the
+              headline, not at the bottom of the column. */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center mb-10 md:mb-12">
               <Reveal as="div" className="md:col-span-7">
                 <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
                   <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.94]">
@@ -228,10 +228,10 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* IN MEMORIAM — Aiya 3-card pattern. Header split, no orange
-              eyebrow, headline bumped to hero size with drop shadow. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mb-12 md:mb-14">
+          {/* IN MEMORIAM — Aiya 3-card pattern. Header vertically
+              centred — paragraph sits beside the headline, not below. */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center mb-10 md:mb-12">
               <Reveal as="div" className="md:col-span-7">
                 <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
                   <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.96]">
@@ -242,7 +242,7 @@ export const Welcome = () => {
                   </span>
                 </h2>
               </Reveal>
-              <Reveal as="div" className="md:col-span-5 md:pt-6">
+              <Reveal as="div" className="md:col-span-5">
                 <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
                   On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
                 </p>
