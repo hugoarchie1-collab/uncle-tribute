@@ -228,62 +228,31 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* IN MEMORIAM — Aiya 3-card pattern. Header vertically
-              centred — paragraph sits beside the headline, not below. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center mb-10 md:mb-12">
-              <Reveal as="div" className="md:col-span-7">
-                <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
-                  <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.96]">
-                    Steve passed away
-                  </span>
-                  <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
-                    in {PASSING_DATE}.
-                  </span>
-                </h2>
-              </Reveal>
-              <Reveal as="div" className="md:col-span-5">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
-                  On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
-                </p>
-              </Reveal>
-            </div>
+          {/* PRESS STRIP + PASSING NOTE — original unified centred block. */}
+          <section className="relative mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+            <Reveal as="div" className="text-center">
+              <p className="font-sans text-[10px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-6">
+                Exhibited at
+              </p>
+              <ul className="list-none p-0 m-0 flex flex-wrap items-center justify-center gap-x-6 md:gap-x-8 gap-y-3 font-sans text-[12px] md:text-[13px] font-medium tracking-[0.18em] uppercase text-ink/75">
+                <li>Majlis Gallery, Dubai</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Trinity Art Gallery, London</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Unique Arts, Brighton</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Farmacy, Notting Hill</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>Sahara Force India F1</li>
+                <li aria-hidden="true" className="text-accent/50">·</li>
+                <li>The Tree of Wellbeing</li>
+              </ul>
+            </Reveal>
 
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
-              {[
-                {
-                  title: "The Mandala Company",
-                  body: "Carrying Stephen's work forward, on behalf of his immediate family. News, releases, and the continuing life of the estate.",
-                  image: "/img/welcome/02-portrait-denim.jpg",
-                },
-                {
-                  title: "Exhibited Worldwide",
-                  body: "Majlis Gallery, Dubai · Trinity Art, London · Unique Arts, Brighton · Farmacy, Notting Hill · Sahara Force India F1 · The Tree of Wellbeing.",
-                  image: "/img/welcome/04-paintings-collection.jpg",
-                },
-                {
-                  title: "Arista SunStar, 3.6m",
-                  body: "Notting Hill, 2016. Commissioned by Camilla Al Fayed for the Farmacy restaurant — Stephen's largest single work.",
-                  image: "/img/welcome/05-arista-sunstar.jpg",
-                },
-              ].map((card) => (
-                <article key={card.title} className="m-0 group">
-                  <div className="aspect-[4/5] overflow-hidden mb-6 ring-1 ring-white/8">
-                    <img
-                      src={asset(card.image)}
-                      alt={card.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                    />
-                  </div>
-                  <h3 className="font-display font-black tracking-[-0.025em] text-[clamp(22px,2.4vw,32px)] leading-[1.1] text-ink m-0 mb-3 hero-text-shadow">
-                    {card.title}
-                  </h3>
-                  <p className="font-sans font-normal text-[14.5px] leading-[1.65] text-ink/80 m-0">
-                    {card.body}
-                  </p>
-                </article>
-              ))}
+            <Reveal as="div" className="mt-12 md:mt-16 text-center">
+              <p className="font-display font-medium text-[clamp(22px,2.6vw,32px)] leading-[1.2] tracking-[-0.02em] text-ink m-0">
+                {WELCOME.passingNote}
+              </p>
             </Reveal>
           </section>
 
