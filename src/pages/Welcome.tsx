@@ -118,14 +118,15 @@ export const Welcome = () => {
                   Explore the collections <span aria-hidden="true">→</span>
                 </MagneticLink>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 min-h-[55vh] md:min-h-[60vh]">
+              <Reveal as="figure" className="m-0 md:col-span-6">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen at his drafting table"
                   eager
-                  fill
+                  aspect="aspect-[3/2]"
                   edges="all"
-                  parallax={0.22}
+                  parallax={0.16}
+                  shadow="shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
                 />
               </Reveal>
             </div>
