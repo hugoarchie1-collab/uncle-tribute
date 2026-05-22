@@ -103,19 +103,20 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
-                {/* Eyebrow in the display font, no decorative rule. */}
-                <p className="font-display italic text-[clamp(15px,1.4vw,18px)] tracking-[-0.01em] text-accent m-0 mb-6">
-                  In memoriam · 1966 — {PASSING_DATE}
+                {/* Date moved to a small cream label above the headline,
+                    no orange italic eyebrow. */}
+                <p className="font-sans text-[12px] tracking-[0.18em] text-ink/55 m-0 mb-5">
+                  1966 — {PASSING_DATE}
                 </p>
 
-                {/* Headline split into two visual treatments: heavy display
-                    for the declarative first part, italic for the lyrical
-                    continuation after the em-dash. */}
-                <h1 className="font-display tracking-[-0.04em] text-ink m-0 mb-8 text-balance">
-                  <span className="block font-black text-[clamp(40px,6.2vw,86px)] leading-[0.96]">
+                {/* Headline split into two visual treatments — bigger,
+                    bolder, with a drop shadow so the type lifts off the
+                    blurred peacock backdrop. */}
+                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
+                  <span className="block font-black text-[clamp(46px,7vw,102px)] leading-[0.94]">
                     So here we are on Earth
                   </span>
-                  <span className="block font-medium italic text-[clamp(32px,5vw,68px)] leading-[1.05] mt-2 text-ink/85">
+                  <span className="block font-medium italic text-[clamp(36px,5.6vw,76px)] leading-[1.05] mt-2 text-ink/90">
                     — orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
@@ -172,20 +173,20 @@ export const Welcome = () => {
           {/* FEATURED WORKS — Aiya/Marconi grid pattern: split header
               (heavy + italic display headline left, supporting paragraph
               right), 3×2 painting card grid, outlined CTA pill below. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-14 md:mb-16">
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-end mb-12 md:mb-14">
               <Reveal as="div" className="md:col-span-7">
-                <h2 className="font-display tracking-[-0.03em] text-ink m-0">
-                  <span className="block font-black text-[clamp(36px,5.2vw,76px)] leading-[0.96]">
+                <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
+                  <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.94]">
                     His latest creations
                   </span>
-                  <span className="block font-medium italic text-[clamp(28px,4.2vw,58px)] leading-[1.05] mt-1 text-ink/85">
+                  <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
                     crafted by hand.
                   </span>
                 </h2>
               </Reveal>
               <Reveal as="div" className="md:col-span-5">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/75 m-0">
+                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -227,28 +228,22 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* IN MEMORIAM — Aiya 3-card pattern. Header split (heavy +
-              italic display title left, supporting paragraph right) then
-              a 3-card grid: Foundation · Exhibitions · Commission. Ready
-              to accept the longer copy on Stephen's passing, the
-              Foundation, and accolades when Hugo adds it. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-20 md:py-28">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mb-14 md:mb-16">
+          {/* IN MEMORIAM — Aiya 3-card pattern. Header split, no orange
+              eyebrow, headline bumped to hero size with drop shadow. */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start mb-12 md:mb-14">
               <Reveal as="div" className="md:col-span-7">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
-                  In remembrance
-                </p>
-                <h2 className="font-display tracking-[-0.03em] text-ink m-0">
-                  <span className="block font-black text-[clamp(34px,4.6vw,66px)] leading-[1.0]">
+                <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
+                  <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.96]">
                     Steve passed away
                   </span>
-                  <span className="block font-medium italic text-[clamp(26px,3.8vw,52px)] leading-[1.1] mt-1 text-ink/85">
+                  <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
                     in {PASSING_DATE}.
                   </span>
                 </h2>
               </Reveal>
               <Reveal as="div" className="md:col-span-5 md:pt-6">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/80 m-0">
+                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
                   On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
                 </p>
               </Reveal>
@@ -257,19 +252,16 @@ export const Welcome = () => {
             <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
               {[
                 {
-                  eyebrow: "The Foundation",
                   title: "The Mandala Company",
                   body: "Carrying Stephen's work forward, on behalf of his immediate family. News, releases, and the continuing life of the estate.",
                   image: "/img/welcome/02-portrait-denim.jpg",
                 },
                 {
-                  eyebrow: "Exhibited at",
-                  title: "Worldwide.",
+                  title: "Exhibited Worldwide",
                   body: "Majlis Gallery, Dubai · Trinity Art, London · Unique Arts, Brighton · Farmacy, Notting Hill · Sahara Force India F1 · The Tree of Wellbeing.",
                   image: "/img/welcome/04-paintings-collection.jpg",
                 },
                 {
-                  eyebrow: "Major commission",
                   title: "Arista SunStar, 3.6m",
                   body: "Notting Hill, 2016. Commissioned by Camilla Al Fayed for the Farmacy restaurant — Stephen's largest single work.",
                   image: "/img/welcome/05-arista-sunstar.jpg",
@@ -284,13 +276,10 @@ export const Welcome = () => {
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                   </div>
-                  <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-3">
-                    {card.eyebrow}
-                  </p>
-                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,2.2vw,28px)] leading-[1.15] text-ink m-0 mb-3">
+                  <h3 className="font-display font-black tracking-[-0.025em] text-[clamp(22px,2.4vw,32px)] leading-[1.1] text-ink m-0 mb-3 hero-text-shadow">
                     {card.title}
                   </h3>
-                  <p className="font-sans font-normal text-[14.5px] leading-[1.65] text-ink/75 m-0">
+                  <p className="font-sans font-normal text-[14.5px] leading-[1.65] text-ink/80 m-0">
                     {card.body}
                   </p>
                 </article>
