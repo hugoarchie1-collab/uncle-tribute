@@ -409,14 +409,16 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* SUNSTAR IMAGE — full-bleed cinematic strip */}
-          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
+          {/* SUNSTAR IMAGE — prominent feature, contained (the source is
+              the lowest-res image on the site so don't push it edge-to-
+              edge or it pixellates). */}
+          <Reveal as="figure" className="m-0 mx-auto max-w-[1200px] px-4 md:px-8 lg:px-12 py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/05-arista-sunstar.jpg"
               alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-              className="h-[55vh] md:h-[72vh] w-full"
-              parallax={0.3}
-              edges="y"
+              className="h-[42vh] md:h-[52vh] w-full"
+              parallax={0.15}
+              edges="all"
               shadow=""
             />
           </Reveal>
