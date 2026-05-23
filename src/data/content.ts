@@ -9,7 +9,7 @@
 // PASSING DATE — placeholder until family confirms
 // -----------------------------------------------------------------------------
 
-export const PASSING_DATE = "[ DATE ]"; // [TBD] e.g. "March 2024"
+export const PASSING_DATE = "2021";
 
 // -----------------------------------------------------------------------------
 // WELCOME PAGE  — first page of the site, shown after the cinematic intro

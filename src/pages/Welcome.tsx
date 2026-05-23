@@ -103,12 +103,6 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
-                {/* Date moved to a small cream label above the headline,
-                    no orange italic eyebrow. */}
-                <p className="font-sans text-[12px] tracking-[0.18em] text-ink/55 m-0 mb-5">
-                  1966 — {PASSING_DATE}
-                </p>
-
                 {/* Headline split into two visual treatments — bigger,
                     bolder, with a drop shadow so the type lifts off the
                     blurred peacock backdrop. */}
@@ -145,7 +139,7 @@ export const Welcome = () => {
                   </MagneticLink>
                 </div>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 relative">
+              <Reveal as="figure" className="m-0 md:col-span-6">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen at his drafting table"
@@ -156,16 +150,6 @@ export const Welcome = () => {
                   objectPosition="center"
                   shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
                 />
-                {/* Featured tag on the right side of the image — no
-                    decorative line, just the label in the display font. */}
-                <div className="hidden lg:block absolute top-1/2 -right-2 translate-x-full -translate-y-1/2 whitespace-nowrap">
-                  <p className="font-display italic text-[13px] text-accent m-0 mb-1">
-                    Pictured
-                  </p>
-                  <p className="font-display italic text-[16px] leading-[1.2] text-ink m-0">
-                    Mandala of Wild Rose
-                  </p>
-                </div>
               </Reveal>
             </div>
           </section>
@@ -228,53 +212,49 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* IN MEMORIAM — Hridoy Trust&Elegance about-us composition:
-              left column = big italic-prefixed display headline +
-              supporting paragraph + CTA pill at the bottom; right
-              column = one large rectangular image (no boxing, no
-              cropped cards). Single image, no repeats of the
-              portrait already used in the hero. Lots of vertical
-              room in the body block for future copy. */}
+          {/* IN MEMORIAM — centred editorial moment, NOT the same
+              text-left/image-right layout as the hero. A wide cinematic
+              image strip sits at the top, then the headline + body +
+              CTA all centred below it. Different composition,
+              different read. */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
-              <Reveal as="div" className="md:col-span-6 flex flex-col">
-                <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 hero-text-shadow">
-                  <span className="block font-black text-[clamp(40px,5.8vw,84px)] leading-[0.96]">
-                    — Steve passed away
-                  </span>
-                  <span className="block font-medium italic text-[clamp(30px,4.6vw,64px)] leading-[1.06] mt-2 text-ink/90">
-                    in {PASSING_DATE}.
-                  </span>
-                </h2>
+            <Reveal as="figure" className="m-0 mb-14 md:mb-20">
+              <div className="aspect-[21/9] overflow-hidden">
+                <img
+                  src={asset("/img/welcome/04-paintings-collection.jpg")}
+                  alt="Stephen's mandala paintings collection"
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </Reveal>
 
-                <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink/85 m-0 mb-6 max-w-[560px]">
-                  On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
-                </p>
+            <Reveal as="div" className="max-w-[880px] mx-auto text-center">
+              <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-9 hero-text-shadow">
+                <span className="block font-black text-[clamp(44px,6.4vw,98px)] leading-[0.94]">
+                  Steve passed away
+                </span>
+                <span className="block font-medium italic text-[clamp(34px,5vw,72px)] leading-[1.05] mt-2 text-ink/90">
+                  in {PASSING_DATE}.
+                </span>
+              </h2>
 
-                <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.8] text-ink/70 m-0 mb-9 max-w-[560px]">
-                  News, releases and the continuing life of the estate are shared from the Foundation; print enquiries, visits to Phoenix Place and Foundation contact are below.
-                </p>
+              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mb-6 max-w-[680px] mx-auto">
+                On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
+              </p>
 
-                <MagneticLink
-                  to="/about"
-                  className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
-                  ariaLabel="About Stephen and the Foundation"
-                >
-                  About the Foundation <span aria-hidden="true" className="ml-2">→</span>
-                </MagneticLink>
-              </Reveal>
+              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.8] text-ink/70 m-0 mb-10 max-w-[680px] mx-auto">
+                News, releases and the continuing life of the estate are shared from the Foundation.
+              </p>
 
-              <Reveal as="figure" className="m-0 md:col-span-6">
-                <div className="aspect-[4/5] overflow-hidden">
-                  <img
-                    src={asset("/img/welcome/04-paintings-collection.jpg")}
-                    alt="Stephen's mandala paintings collection"
-                    loading="lazy"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </Reveal>
-            </div>
+              <MagneticLink
+                to="/about"
+                className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                ariaLabel="About Stephen and the Foundation"
+              >
+                About the Foundation <span aria-hidden="true" className="ml-2">→</span>
+              </MagneticLink>
+            </Reveal>
           </section>
 
           {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
