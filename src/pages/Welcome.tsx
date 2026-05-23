@@ -11,33 +11,27 @@ import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
-// Four Peacock colourways used as the home page's seamlessly-blending
-// backdrop layer. Pre-blurred 800px JPGs (~17KB each) — same visual
-// recipe as Collections.tsx ScrollBackdrop but the blur / saturate /
-// brightness are baked into the file offline, so the runtime filter
-// cost is zero. That fixes the scroll lag caused by applying CSS
-// filter blur to four 1+ MB images every frame.
+// Three Peacock colourways used as the home page's seamlessly-blending
+// backdrop layer (yellow removed — text was unreadable against it).
+// Pre-blurred 800px JPGs (~17KB each) — blur / saturate / brightness
+// baked into the file offline, zero runtime filter cost.
 const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-persian-indigo-blur.jpg", name: "Persian Indigo" },
   { url: "/img/paintings/peacock-blood-moon-red-blur.jpg", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-sahara-sand-yellow-blur.jpg", name: "Sahara Sand Yellow" },
   { url: "/img/paintings/peacock-moroccan-purple-blur.jpg", name: "Moroccan Purple" },
 ];
 
 export const Welcome = () => {
   usePageTitle();
 
-  // Whole-page scroll progress drives the four peacock backdrops
-  // crossfading in turn — same Collections-page blur recipe applied to
-  // the live painting JPGs so the home page reads as one continuous
-  // colour journey through Persian Indigo → Blood Moon Red → Sahara
-  // Sand Yellow → Moroccan Purple.
+  // Whole-page scroll drives three peacock backdrops crossfading in turn.
+  // 0 → 38% Indigo · 33 → 70% Red · 65 → 100% Purple. Stretches the
+  // three colours evenly down the page.
   const { scrollYProgress } = useScroll();
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.04, 0.22, 0.30], [0, 1, 1, 0]);
-  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
-  const yellowOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
-  const purpleOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.96, 1], [0, 1, 1, 1]);
-  const backdropOpacities = [indigoOpacity, redOpacity, yellowOpacity, purpleOpacity];
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.30, 0.40], [0, 1, 1, 0]);
+  const redOpacity = useTransform(scrollYProgress, [0.30, 0.40, 0.62, 0.72], [0, 1, 1, 0]);
+  const purpleOpacity = useTransform(scrollYProgress, [0.62, 0.72, 0.96, 1], [0, 1, 1, 1]);
+  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity];
 
   // Six featured paintings shown in a 3×2 grid, mirroring the
   // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
@@ -252,7 +246,7 @@ export const Welcome = () => {
                 className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
                 ariaLabel="About Stephen and the Foundation"
               >
-                About the Foundation <span aria-hidden="true" className="ml-2">→</span>
+                About Steve's life <span aria-hidden="true" className="ml-2">→</span>
               </MagneticLink>
             </Reveal>
           </section>
@@ -349,50 +343,51 @@ export const Welcome = () => {
             />
           </Reveal>
 
-          {/* PROCESS / CRAFT — drafting-table image + materials & method */}
+          {/* PROCESS / CRAFT — wrapped in a dark scrim card so the text
+              reads clearly regardless of which peacock backdrop is
+              bleeding through behind it. */}
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <Reveal as="div" className="text-center mb-10 md:mb-14">
-              <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
-                The Craft
-              </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,5vw,68px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance">
-                Each painting is a ritual.
-              </h2>
-            </Reveal>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 md:items-stretch">
-              <Reveal as="figure" className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
-                <ImageReveal
-                  src="/img/about/02-painting-table.jpg"
-                  alt="Stephen at his drafting table, drawing the underlying geometry"
-                  fill
-                  edges="all"
-                  parallax={0.14}
-                  tilt
-                />
+            <div className="relative bg-[rgba(10,9,8,0.78)] backdrop-blur-sm px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
+              <Reveal as="div" className="text-center mb-10 md:mb-14">
+                <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                  Each painting is a ritual.
+                </h2>
               </Reveal>
-              <Reveal as="div" className="md:col-span-5 flex flex-col justify-center gap-5">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/90 m-0">
-                  Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                </p>
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/90 m-0">
-                  When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                </p>
-                <ul className="grid grid-cols-2 gap-x-6 gap-y-4 mt-2 list-none p-0">
-                  {[
-                    ["Surface", "350gsm archival canvas"],
-                    ["Frame", "Hand-stretched, deep wooden"],
-                    ["Tools", "Compass · rule · brush"],
-                    ["Pigment", "Hand-pressed oils + pigment inks"],
-                    ["Time", "Hundreds of hours per canvas"],
-                    ["Edition", "Individually made to order"],
-                  ].map(([label, value]) => (
-                    <li key={label} className="m-0">
-                      <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-accent m-0 mb-1">{label}</p>
-                      <p className="font-sans font-normal text-[13.5px] leading-[1.45] text-ink/90 m-0">{value}</p>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
+                <Reveal as="figure" className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
+                  <ImageReveal
+                    src="/img/about/02-painting-table.jpg"
+                    alt="Stephen at his drafting table, drawing the underlying geometry"
+                    fill
+                    edges="all"
+                    parallax={0.14}
+                    tilt
+                  />
+                </Reveal>
+                <Reveal as="div" className="md:col-span-5 flex flex-col justify-center gap-5">
+                  <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink m-0">
+                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                  </p>
+                  <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink m-0">
+                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                  </p>
+                  <ul className="grid grid-cols-2 gap-x-6 gap-y-4 mt-2 list-none p-0">
+                    {[
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                    ].map(([label, value]) => (
+                      <li key={label} className="m-0">
+                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1">{label}</p>
+                        <p className="font-sans font-normal text-[13.5px] leading-[1.45] text-ink m-0">{value}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+              </div>
             </div>
           </section>
 
