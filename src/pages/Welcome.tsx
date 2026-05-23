@@ -442,7 +442,7 @@ export const Welcome = () => {
                     {coll.backdropImage && (
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
-                          src={asset(coll.backdropImage)}
+                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
                           alt={coll.title}
                           loading="lazy"
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
