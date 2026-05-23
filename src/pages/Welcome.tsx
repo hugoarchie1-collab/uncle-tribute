@@ -202,6 +202,32 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
+          {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
+              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
+                <ImageReveal
+                  src="/img/welcome/02-portrait-denim.jpg"
+                  alt="Stephen Meakin"
+                  fill
+                  edges="all"
+                  parallax={0.16}
+                />
+              </Reveal>
+              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
+                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+                  {WELCOME.invocation}
+                </p>
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
+                  The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
+                </h2>
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
+                  {WELCOME.bio[0]}
+                </p>
+              </Reveal>
+            </div>
+          </section>
+
           {/* IN MEMORIAM — centred editorial moment, NOT the same
               text-left/image-right layout as the hero. A wide cinematic
               image strip sits at the top, then the headline + body +
@@ -245,32 +271,6 @@ export const Welcome = () => {
                 About Steve's life <span aria-hidden="true" className="ml-2">→</span>
               </MagneticLink>
             </Reveal>
-          </section>
-
-          {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
-              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
-                <ImageReveal
-                  src="/img/welcome/02-portrait-denim.jpg"
-                  alt="Stephen Meakin"
-                  fill
-                  edges="all"
-                  parallax={0.16}
-                />
-              </Reveal>
-              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
-                  {WELCOME.invocation}
-                </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
-                  The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
-                </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
-                  {WELCOME.bio[0]}
-                </p>
-              </Reveal>
-            </div>
           </section>
 
           {/* STUDIO full-bleed cinematic, parallax + soft top/bottom */}
