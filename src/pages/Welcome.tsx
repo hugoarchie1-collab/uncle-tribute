@@ -280,7 +280,7 @@ export const Welcome = () => {
               alt="Stephen painting in the studio"
               className="h-[60vh] md:h-[78vh] w-full"
               edges="y"
-              parallax={0.3}
+              parallax={0.18}
               shadow=""
             />
           </Reveal>
@@ -334,7 +334,7 @@ export const Welcome = () => {
               alt="A wall of Stephen's mandalas"
               className="h-[55vh] md:h-[72vh] w-full"
               edges="y"
-              parallax={0.3}
+              parallax={0.18}
               shadow=""
             />
           </Reveal>
@@ -343,7 +343,7 @@ export const Welcome = () => {
               reads clearly regardless of which peacock backdrop is
               bleeding through behind it. */}
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="relative bg-[rgba(10,9,8,0.78)] backdrop-blur-sm px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
+            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
@@ -409,15 +409,13 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* SUNSTAR IMAGE — prominent feature, contained (the source is
-              the lowest-res image on the site so don't push it edge-to-
-              edge or it pixellates). */}
-          <Reveal as="figure" className="m-0 mx-auto max-w-[1200px] px-4 md:px-8 lg:px-12 py-3 md:py-5">
+          {/* SUNSTAR IMAGE — small contained feature (source is low-res). */}
+          <Reveal as="figure" className="m-0 mx-auto max-w-[900px] px-4 md:px-8 lg:px-12 py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/05-arista-sunstar.jpg"
               alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-              className="h-[42vh] md:h-[52vh] w-full"
-              parallax={0.15}
+              className="h-[32vh] md:h-[42vh] w-full"
+              parallax={0.08}
               edges="all"
               shadow=""
             />
