@@ -349,42 +349,44 @@ export const Welcome = () => {
                   Each painting is a ritual.
                 </h2>
               </Reveal>
-              {/* Image full-width centred, body + materials stacked
-                  beneath — single-column centred composition. */}
-              <Reveal as="figure" className="m-0 mb-10 md:mb-14 max-w-[1000px] mx-auto">
-                <ImageReveal
-                  src="/img/about/02-painting-table.jpg"
-                  alt="Stephen at his drafting table, drawing the underlying geometry"
-                  aspect="aspect-[16/10]"
-                  edges="all"
-                  parallax={0.12}
-                />
-              </Reveal>
+              {/* Horizontal 2-col: image left fills the column tall,
+                  text + materials grid stacked on the right. Reads
+                  side-by-side rather than scrolling top-to-bottom. */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                <Reveal as="figure" className="m-0 md:col-span-6">
+                  <ImageReveal
+                    src="/img/about/02-painting-table.jpg"
+                    alt="Stephen at his drafting table, drawing the underlying geometry"
+                    aspect="aspect-[4/5]"
+                    edges="all"
+                    parallax={0.1}
+                  />
+                </Reveal>
 
-              <Reveal as="div" className="text-center max-w-[760px] mx-auto flex flex-col gap-6 mb-12 md:mb-14">
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink m-0">
-                  Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                </p>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink m-0">
-                  When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                </p>
-              </Reveal>
-
-              <Reveal as="ul" className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-8 list-none p-0 max-w-[920px] mx-auto text-center">
-                {[
-                  ["Surface", "350gsm archival canvas"],
-                  ["Frame", "Hand-stretched, deep wooden"],
-                  ["Tools", "Compass · rule · brush"],
-                  ["Pigment", "Hand-pressed oils + pigment inks"],
-                  ["Time", "Hundreds of hours per canvas"],
-                  ["Edition", "Individually made to order"],
-                ].map(([label, value]) => (
-                  <li key={label} className="m-0">
-                    <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-2">{label}</p>
-                    <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink m-0">{value}</p>
-                  </li>
-                ))}
-              </Reveal>
+                <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
+                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                  </p>
+                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                  </p>
+                  <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
+                    {[
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                    ].map(([label, value]) => (
+                      <li key={label} className="m-0">
+                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
+                        <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+              </div>
             </div>
           </section>
 
@@ -407,15 +409,15 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* SUNSTAR IMAGE — small, centered, no caption */}
-          <Reveal as="figure" className="m-0 mx-auto max-w-[480px] px-4 pb-8 pt-4 text-center">
+          {/* SUNSTAR IMAGE — full-bleed cinematic strip */}
+          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/05-arista-sunstar.jpg"
               alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-              aspect="aspect-[16/9]"
-              parallax={0.08}
-              edges="all"
-              shadow="shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
+              className="h-[55vh] md:h-[72vh] w-full"
+              parallax={0.3}
+              edges="y"
+              shadow=""
             />
           </Reveal>
 
