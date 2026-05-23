@@ -139,7 +139,7 @@ export const Welcome = () => {
                   alt="Stephen at his drafting table"
                   eager
                   aspect="aspect-[4/5]"
-                  edges="none"
+                  edges="all"
                   parallax={0.12}
                   objectPosition="center"
                   shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
@@ -152,23 +152,19 @@ export const Welcome = () => {
               vertically centred so the paragraph sits beside the
               headline, not at the bottom of the column. */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center mb-10 md:mb-12">
-              <Reveal as="div" className="md:col-span-7">
-                <h2 className="font-display tracking-[-0.045em] text-ink m-0 hero-text-shadow">
-                  <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.94]">
-                    His latest creations
-                  </span>
-                  <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
-                    crafted by hand.
-                  </span>
-                </h2>
-              </Reveal>
-              <Reveal as="div" className="md:col-span-5">
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/85 m-0">
-                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
-                </p>
-              </Reveal>
-            </div>
+            <Reveal as="div" className="text-center max-w-[920px] mx-auto mb-12 md:mb-16">
+              <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-7 hero-text-shadow">
+                <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.94]">
+                  His latest creations
+                </span>
+                <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
+                  crafted by hand.
+                </span>
+              </h2>
+              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 max-w-[640px] mx-auto">
+                Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
+              </p>
+            </Reveal>
 
             <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => (
@@ -213,14 +209,14 @@ export const Welcome = () => {
               different read. */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
             <Reveal as="figure" className="m-0 mb-14 md:mb-20">
-              <div className="aspect-[21/9] overflow-hidden">
-                <img
-                  src={asset("/img/welcome/04-paintings-collection.jpg")}
-                  alt="Stephen's mandala paintings collection"
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              <ImageReveal
+                src="/img/welcome/04-paintings-collection.jpg"
+                alt="Stephen's mandala paintings collection"
+                aspect="aspect-[21/9]"
+                edges="all"
+                parallax={0.1}
+                shadow=""
+              />
             </Reveal>
 
             <Reveal as="div" className="max-w-[880px] mx-auto text-center">
@@ -353,41 +349,42 @@ export const Welcome = () => {
                   Each painting is a ritual.
                 </h2>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
-                <Reveal as="figure" className="m-0 md:col-span-7 min-h-[50vh] md:min-h-[60vh]">
-                  <ImageReveal
-                    src="/img/about/02-painting-table.jpg"
-                    alt="Stephen at his drafting table, drawing the underlying geometry"
-                    fill
-                    edges="all"
-                    parallax={0.14}
-                    tilt
-                  />
-                </Reveal>
-                <Reveal as="div" className="md:col-span-5 flex flex-col justify-center gap-5">
-                  <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink m-0">
-                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                  </p>
-                  <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink m-0">
-                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                  </p>
-                  <ul className="grid grid-cols-2 gap-x-6 gap-y-4 mt-2 list-none p-0">
-                    {[
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                    ].map(([label, value]) => (
-                      <li key={label} className="m-0">
-                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1">{label}</p>
-                        <p className="font-sans font-normal text-[13.5px] leading-[1.45] text-ink m-0">{value}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-              </div>
+              {/* Image full-width centred, body + materials stacked
+                  beneath — single-column centred composition. */}
+              <Reveal as="figure" className="m-0 mb-10 md:mb-14 max-w-[1000px] mx-auto">
+                <ImageReveal
+                  src="/img/about/02-painting-table.jpg"
+                  alt="Stephen at his drafting table, drawing the underlying geometry"
+                  aspect="aspect-[16/10]"
+                  edges="all"
+                  parallax={0.12}
+                />
+              </Reveal>
+
+              <Reveal as="div" className="text-center max-w-[760px] mx-auto flex flex-col gap-6 mb-12 md:mb-14">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink m-0">
+                  Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                </p>
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink m-0">
+                  When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                </p>
+              </Reveal>
+
+              <Reveal as="ul" className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-8 list-none p-0 max-w-[920px] mx-auto text-center">
+                {[
+                  ["Surface", "350gsm archival canvas"],
+                  ["Frame", "Hand-stretched, deep wooden"],
+                  ["Tools", "Compass · rule · brush"],
+                  ["Pigment", "Hand-pressed oils + pigment inks"],
+                  ["Time", "Hundreds of hours per canvas"],
+                  ["Edition", "Individually made to order"],
+                ].map(([label, value]) => (
+                  <li key={label} className="m-0">
+                    <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-2">{label}</p>
+                    <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink m-0">{value}</p>
+                  </li>
+                ))}
+              </Reveal>
             </div>
           </section>
 
