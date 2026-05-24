@@ -460,25 +460,15 @@ export const Welcome = () => {
             style={{ height: "100vh" }}
             aria-label="Sacred Geometry"
           >
-            {/* Earth — source image pre-cropped to drop the black sky
-                band above the curve. Use bg-position: center top so the
-                curve sits at the very top of the band, brushing the
-                bottom of "Geometry.". Bottom 42vh of the section. */}
-            <div
+            {/* Earth — chroma-key cutout PNG (sky removed, transparent
+                around the Earth). Anchored to the bottom of the
+                section, full width, natural aspect, no mask needed. */}
+            <img
+              src={asset("/img/scenes/earth-cutout.png")}
+              alt=""
               aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 w-full pointer-events-none"
-              style={{
-                height: "42vh",
-                zIndex: 0,
-                backgroundImage: `url("${asset("/img/scenes/earth-limb.jpg")}")`,
-                backgroundSize: "cover",
-                backgroundPosition: "center top",
-                backgroundRepeat: "no-repeat",
-                WebkitMaskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 3%, #000 100%)",
-                maskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 3%, #000 100%)",
-              }}
+              className="absolute inset-x-0 bottom-0 w-full h-auto pointer-events-none select-none"
+              style={{ zIndex: 0 }}
             />
 
             {/* Headline — fills viewport vertically, overlaps Earth at bottom */}
