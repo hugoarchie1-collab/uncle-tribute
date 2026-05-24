@@ -506,14 +506,14 @@ export const Welcome = () => {
                   title: "Print enquiries",
                   body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
                   cta: "Enquire",
-                  href: "mailto:enquiries@example.com",
+                  href: "mailto:info@themandalacompany.com?subject=Print%20enquiry",
                 },
                 {
                   eyebrow: "Foundation",
                   title: "The Mandala Company",
                   body: "News and releases from the estate, on behalf of Steve's immediate family.",
                   cta: "Subscribe",
-                  href: "mailto:foundation@example.com",
+                  href: "mailto:info@themandalacompany.com?subject=Subscribe%20%E2%80%94%20Mandala%20Company",
                 },
               ].map((item) => (
                 <a
