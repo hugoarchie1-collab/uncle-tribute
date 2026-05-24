@@ -141,19 +141,23 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 2 · MEET STEPHEN — portrait + invocation + opening bio */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
-              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
+          {/* 2 · MEET STEPHEN — portrait + invocation + opening bio.
+              Same container, gap and items-center alignment as the Hero
+              above so the image edges and text column align cleanly with
+              the section above instead of stretching to viewport height. */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
+              <Reveal as="figure" className="m-0 md:col-span-6">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  fill
+                  aspect="aspect-[4/5]"
                   edges="all"
                   parallax={0.16}
+                  objectPosition="center"
                 />
               </Reveal>
-              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
+              <Reveal as="div" className="md:col-span-6">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                   {WELCOME.invocation}
                 </p>
