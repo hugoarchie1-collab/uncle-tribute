@@ -460,24 +460,24 @@ export const Welcome = () => {
             style={{ height: "100vh" }}
             aria-label="Sacred Geometry"
           >
-            {/* Earth — fills the bottom ~58vh of the section so it
-                reaches all the way to the section divider, with the
-                curve positioned near the top of the band so it brushes
-                the bottom of "Geometry." */}
+            {/* Earth — source image pre-cropped to drop the black sky
+                band above the curve. Use bg-position: center top so the
+                curve sits at the very top of the band, brushing the
+                bottom of "Geometry.". Bottom 42vh of the section. */}
             <div
               aria-hidden="true"
               className="absolute inset-x-0 bottom-0 w-full pointer-events-none"
               style={{
-                height: "58vh",
+                height: "42vh",
                 zIndex: 0,
                 backgroundImage: `url("${asset("/img/scenes/earth-limb.jpg")}")`,
                 backgroundSize: "cover",
-                backgroundPosition: "center 72%",
+                backgroundPosition: "center top",
                 backgroundRepeat: "no-repeat",
                 WebkitMaskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 10%, #000 100%)",
+                  "linear-gradient(180deg, transparent 0%, #000 3%, #000 100%)",
                 maskImage:
-                  "linear-gradient(180deg, transparent 0%, #000 10%, #000 100%)",
+                  "linear-gradient(180deg, transparent 0%, #000 3%, #000 100%)",
               }}
             />
 
