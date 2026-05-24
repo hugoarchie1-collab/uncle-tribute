@@ -469,7 +469,7 @@ export const Welcome = () => {
               src={asset("/img/scenes/earth-cutout.png")}
               alt=""
               aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 w-full h-auto pointer-events-none select-none"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] max-w-none h-auto pointer-events-none select-none"
               style={{ zIndex: 0 }}
             />
 
