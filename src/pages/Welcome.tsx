@@ -91,15 +91,12 @@ export const Welcome = () => {
         <Nav />
 
         <main className="relative z-10">
-          {/* HERO — Kaya-inspired composition:
-              text LEFT (eyebrow + accent rule, two-style headline, body, CTA),
+          {/* 1 · HERO — Kaya-inspired composition:
+              text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
-                {/* Headline split into two visual treatments — bigger,
-                    bolder, with a drop shadow so the type lifts off the
-                    blurred peacock backdrop. */}
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
                   <span className="block font-black text-[clamp(46px,7vw,102px)] leading-[0.94]">
                     So here we are on Earth
@@ -112,10 +109,6 @@ export const Welcome = () => {
                 <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[520px]">
                   {WELCOME.reminder}
                 </p>
-                {/* Two CTAs side-by-side, mirroring Kaya's
-                    "Explore Flavors" + "Our Story" pairing.
-                    Smaller padding + shorter primary label so both pills
-                    sit on one row at the narrower hero column width. */}
                 <div className="flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
@@ -148,10 +141,54 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* FEATURED WORKS — Aiya/Marconi grid pattern. Header split is
-              vertically centred so the paragraph sits beside the
-              headline, not at the bottom of the column. */}
+          {/* 2 · MEET STEPHEN — portrait + invocation + opening bio */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
+              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
+                <ImageReveal
+                  src="/img/welcome/02-portrait-denim.jpg"
+                  alt="Stephen Meakin"
+                  fill
+                  edges="all"
+                  parallax={0.16}
+                />
+              </Reveal>
+              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
+                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+                  {WELCOME.invocation}
+                </p>
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
+                  The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
+                </h2>
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
+                  {WELCOME.bio[0]}
+                </p>
+              </Reveal>
+            </div>
+          </section>
+
+          {/* 3 · STUDIO — full-bleed cinematic break */}
+          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
+            <ImageReveal
+              src="/img/welcome/03-painting-in-studio.jpg"
+              alt="Stephen painting in the studio"
+              className="h-[60vh] md:h-[78vh] w-full"
+              edges="y"
+              parallax={0.18}
+              shadow=""
+            />
+          </Reveal>
+
+          {/* 4 · FEATURED WORKS — 3×2 grid of signature paintings */}
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+            <Reveal as="div" className="text-center mb-10 md:mb-12">
+              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+                Selected Works
+              </p>
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+                Six paintings from a lifetime at the compass.
+              </h2>
+            </Reveal>
             <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => (
                 <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
@@ -188,87 +225,56 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* PORTRAIT + INVOCATION + BIO 1 — items-stretch so no bottom gap */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-stretch">
-              <Reveal as="figure" className="m-0 md:col-span-5 min-h-[60vh] md:min-h-0">
-                <ImageReveal
-                  src="/img/welcome/02-portrait-denim.jpg"
-                  alt="Stephen Meakin"
-                  fill
-                  edges="all"
-                  parallax={0.16}
-                />
-              </Reveal>
-              <Reveal as="div" className="md:col-span-7 flex flex-col justify-center md:py-6">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
-                  {WELCOME.invocation}
-                </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
-                  The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
+          {/* 5 · CRAFT — Each painting is a ritual (scrim card) */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
+            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
+              <Reveal as="div" className="text-center mb-10 md:mb-14">
+                <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                  Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
-                  {WELCOME.bio[0]}
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
+                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                <Reveal as="figure" className="m-0 md:col-span-6">
+                  <ImageReveal
+                    src="/img/about/02-painting-table.jpg"
+                    alt="Stephen at his drafting table, drawing the underlying geometry"
+                    aspect="aspect-[4/5]"
+                    edges="all"
+                    parallax={0.1}
+                  />
+                </Reveal>
+
+                <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
+                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                  </p>
+                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                  </p>
+                  <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
+                    {[
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                    ].map(([label, value]) => (
+                      <li key={label} className="m-0">
+                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
+                        <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+              </div>
             </div>
           </section>
 
-          {/* COLLECTIONS PROMO — 3-card grid */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
-                Three collections
-              </h2>
-              <Link
-                to="/collections"
-                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
-              >
-                Explore all →
-              </Link>
-            </div>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-              {COLLECTIONS.map((coll) => {
-                const items = PAINTINGS.filter((p) => p.collection === coll.id);
-                return (
-                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
-                    {coll.backdropImage && (
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img
-                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
-                          alt={coll.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5 md:p-6">
-                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
-                        {items.length} {items.length === 1 ? "Painting" : "Paintings"}
-                      </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
-                        {coll.title}
-                      </h3>
-                    </div>
-                  </Link>
-                );
-              })}
-            </Reveal>
-          </section>
-
-          {/* STUDIO full-bleed cinematic, parallax + soft top/bottom */}
-          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
-            <ImageReveal
-              src="/img/welcome/03-painting-in-studio.jpg"
-              alt="Stephen painting in the studio"
-              className="h-[60vh] md:h-[78vh] w-full"
-              edges="y"
-              parallax={0.18}
-              shadow=""
-            />
-          </Reveal>
-
-          {/* SACRED GEOMETRY — 4-card grid */}
+          {/* 6 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
@@ -310,7 +316,7 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* MANDALAS WALL — full-bleed cinematic */}
+          {/* 7 · MANDALAS WALL — full-bleed cinematic break */}
           <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/04-paintings-collection.jpg"
@@ -322,92 +328,83 @@ export const Welcome = () => {
             />
           </Reveal>
 
-          {/* PROCESS / CRAFT — wrapped in a dark scrim card so the text
-              reads clearly regardless of which peacock backdrop is
-              bleeding through behind it. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
-              <Reveal as="div" className="text-center mb-10 md:mb-14">
-                <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
-                  Each painting is a ritual.
-                </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
-                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
-                </p>
-              </Reveal>
-              {/* Horizontal 2-col: image left fills the column tall,
-                  text + materials grid stacked on the right. Reads
-                  side-by-side rather than scrolling top-to-bottom. */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
-                <Reveal as="figure" className="m-0 md:col-span-6">
-                  <ImageReveal
-                    src="/img/about/02-painting-table.jpg"
-                    alt="Stephen at his drafting table, drawing the underlying geometry"
-                    aspect="aspect-[4/5]"
-                    edges="all"
-                    parallax={0.1}
-                  />
-                </Reveal>
-
-                <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
-                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
-                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                  </p>
-                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
-                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                  </p>
-                  <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
-                    {[
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                    ].map(([label, value]) => (
-                      <li key={label} className="m-0">
-                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
-                        <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-              </div>
-            </div>
-          </section>
-
-          {/* SUNSTAR — text split */}
-          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start">
-              <Reveal as="div" className="md:col-span-5">
+          {/* 8 · ARISTA SUNSTAR — text left, smaller framed image right.
+              Single section (no longer split). Image is intentionally
+              contained inside a dark mat + ring frame because the source
+              photograph is low-res, and the frame lifts it into a
+              gallery object instead of a stretched full-bleed. */}
+          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+              <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   Arista SunStar · 2016
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.2vw,56px)] leading-[0.98] text-ink m-0">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.8vw,52px)] leading-[1.0] text-ink m-0 mb-6">
                   A 3.6&#8209;metre commission for Notting Hill.
                 </h2>
-              </Reveal>
-              <Reveal as="div" className="md:col-span-7 md:pt-3">
-                <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.75] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[2]}
                 </p>
+              </Reveal>
+              <Reveal as="figure" className="m-0 md:col-span-5">
+                <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
+                  <img
+                    src={asset("/img/welcome/05-arista-sunstar.jpg")}
+                    alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
+                    loading="lazy"
+                    className="block w-full h-auto"
+                  />
+                </div>
+                <figcaption className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-4 text-center">
+                  Farmacy · Notting Hill · London
+                </figcaption>
               </Reveal>
             </div>
           </section>
 
-          {/* SUNSTAR IMAGE — small contained feature (source is low-res). */}
-          <Reveal as="figure" className="m-0 mx-auto max-w-[900px] px-4 md:px-8 lg:px-12 py-3 md:py-5">
-            <ImageReveal
-              src="/img/welcome/05-arista-sunstar.jpg"
-              alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-              className="h-[32vh] md:h-[42vh] w-full"
-              parallax={0.08}
-              edges="all"
-              shadow=""
-            />
-          </Reveal>
+          {/* 9 · THREE COLLECTIONS — browse-all bridge before the CTAs */}
+          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
+                Three collections
+              </h2>
+              <Link
+                to="/collections"
+                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
+              >
+                Explore all →
+              </Link>
+            </div>
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+              {COLLECTIONS.map((coll) => {
+                const items = PAINTINGS.filter((p) => p.collection === coll.id);
+                return (
+                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
+                    {coll.backdropImage && (
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <img
+                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
+                          alt={coll.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 md:p-6">
+                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
+                        {items.length} {items.length === 1 ? "Painting" : "Paintings"}
+                      </p>
+                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
+                        {coll.title}
+                      </h3>
+                    </div>
+                  </Link>
+                );
+              })}
+            </Reveal>
+          </section>
 
-          {/* PRINTS + FOUNDATION — two engagement cards */}
+          {/* 10 · THE ESTATE — Prints + Foundation engagement cards */}
           <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
             <Reveal as="div" className="text-center mb-10 md:mb-14">
               <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
@@ -456,10 +453,9 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* SACRED GEOMETRY — closing moment, sits flush above the
-              footer's white rule. Text dominates the viewport
-              top-to-near-bottom; Earth's curve overlaps the bottom of
-              "Geometry." with no dead space anywhere. */}
+          {/* 11 · SACRED GEOMETRY (EARTH) — final viewport. Earth's curve
+              sits flush above the footer's top rule with the giant
+              "Sacred Geometry." display type filling the viewport top. */}
           <section
             className="relative w-full overflow-hidden"
             style={{ height: "100vh" }}
