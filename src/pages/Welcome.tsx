@@ -6,7 +6,7 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { MagneticLink } from "../components/MagneticLink";
-import { WELCOME, PASSING_DATE } from "../data/content";
+import { WELCOME } from "../data/content";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -214,48 +214,45 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* IN MEMORIAM — centred editorial moment, NOT the same
-              text-left/image-right layout as the hero. A wide cinematic
-              image strip sits at the top, then the headline + body +
-              CTA all centred below it. Different composition,
-              different read. */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-14 md:py-20">
-            <Reveal as="figure" className="m-0 mb-14 md:mb-20">
-              <ImageReveal
-                src="/img/welcome/04-paintings-collection.jpg"
-                alt="Stephen's mandala paintings collection"
-                aspect="aspect-[21/9]"
-                edges="all"
-                parallax={0.1}
-                shadow=""
-              />
-            </Reveal>
-
-            <Reveal as="div" className="max-w-[880px] mx-auto text-center">
-              <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-9 hero-text-shadow">
-                <span className="block font-black text-[clamp(44px,6.4vw,98px)] leading-[0.94]">
-                  Steve passed away
-                </span>
-                <span className="block font-medium italic text-[clamp(34px,5vw,72px)] leading-[1.05] mt-2 text-ink/90">
-                  in {PASSING_DATE}.
-                </span>
+          {/* COLLECTIONS PROMO — 3-card grid */}
+          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
+                Three collections
               </h2>
-
-              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mb-6 max-w-[680px] mx-auto">
-                On behalf of his immediate family, The Mandala Company Foundation continues to share Stephen's work — exhibitions across Europe, the Academy at Phoenix Place, and the global community of geometers he taught.
-              </p>
-
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.8] text-ink/70 m-0 mb-10 max-w-[680px] mx-auto">
-                News, releases and the continuing life of the estate are shared from the Foundation.
-              </p>
-
-              <MagneticLink
-                to="/about"
-                className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
-                ariaLabel="About Stephen and the Foundation"
+              <Link
+                to="/collections"
+                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
               >
-                About Steve's life <span aria-hidden="true" className="ml-2">→</span>
-              </MagneticLink>
+                Explore all →
+              </Link>
+            </div>
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+              {COLLECTIONS.map((coll) => {
+                const items = PAINTINGS.filter((p) => p.collection === coll.id);
+                return (
+                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
+                    {coll.backdropImage && (
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <img
+                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
+                          alt={coll.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 md:p-6">
+                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
+                        {items.length} {items.length === 1 ? "Painting" : "Paintings"}
+                      </p>
+                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
+                        {coll.title}
+                      </h3>
+                    </div>
+                  </Link>
+                );
+              })}
             </Reveal>
           </section>
 
@@ -410,85 +407,6 @@ export const Welcome = () => {
             />
           </Reveal>
 
-          {/* COLLECTIONS PROMO — 3-card grid */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
-                Three collections
-              </h2>
-              <Link
-                to="/collections"
-                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
-              >
-                Explore all →
-              </Link>
-            </div>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-              {COLLECTIONS.map((coll) => {
-                const items = PAINTINGS.filter((p) => p.collection === coll.id);
-                return (
-                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
-                    {coll.backdropImage && (
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img
-                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
-                          alt={coll.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5 md:p-6">
-                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
-                        {items.length} {items.length === 1 ? "Painting" : "Paintings"}
-                      </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
-                        {coll.title}
-                      </h3>
-                    </div>
-                  </Link>
-                );
-              })}
-            </Reveal>
-          </section>
-
-          {/* SACRED GEOMETRY — closing moment: text dominates the viewport
-              top-to-near-bottom; Earth's curve overlaps the bottom of
-              "Geometry." with no dead space anywhere. */}
-          <section
-            className="relative w-full overflow-hidden"
-            style={{ height: "100vh" }}
-            aria-label="Sacred Geometry"
-          >
-            {/* Earth — chroma-key cutout PNG (sky removed, transparent
-                around the Earth). Anchored to the bottom of the
-                section, full width, natural aspect, no mask needed. */}
-            <img
-              src={asset("/img/scenes/earth-cutout.png")}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 w-full h-auto pointer-events-none select-none"
-              style={{ zIndex: 0 }}
-            />
-
-            {/* Headline — fills viewport vertically, overlaps Earth at bottom */}
-            <div className="absolute inset-x-0 top-0 z-10 pt-[3vh] md:pt-[2vh] px-2 md:px-4 text-center">
-              <Reveal>
-                <h2
-                  className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0"
-                  style={{
-                    fontSize: "clamp(96px, 24vw, 540px)",
-                    color: "#f5ecd6",
-                    textShadow:
-                      "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
-                  }}
-                >
-                  Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
-                </h2>
-              </Reveal>
-            </div>
-          </section>
-
           {/* PRINTS + FOUNDATION — two engagement cards */}
           <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
             <Reveal as="div" className="text-center mb-10 md:mb-14">
@@ -506,14 +424,14 @@ export const Welcome = () => {
                   title: "Print enquiries",
                   body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
                   cta: "Enquire",
-                  href: "mailto:enquiries@example.com",
+                  href: "mailto:info@themandalacompany.com?subject=Print%20enquiry",
                 },
                 {
                   eyebrow: "Foundation",
                   title: "The Mandala Company",
                   body: "News and releases from the estate, on behalf of Steve's immediate family.",
                   cta: "Subscribe",
-                  href: "mailto:foundation@example.com",
+                  href: "mailto:info@themandalacompany.com?subject=Subscribe%20%E2%80%94%20Mandala%20Company",
                 },
               ].map((item) => (
                 <a
@@ -536,6 +454,40 @@ export const Welcome = () => {
                 </a>
               ))}
             </Reveal>
+          </section>
+
+          {/* SACRED GEOMETRY — closing moment, sits flush above the
+              footer's white rule. Text dominates the viewport
+              top-to-near-bottom; Earth's curve overlaps the bottom of
+              "Geometry." with no dead space anywhere. */}
+          <section
+            className="relative w-full overflow-hidden"
+            style={{ height: "100vh" }}
+            aria-label="Sacred Geometry"
+          >
+            <img
+              src={asset("/img/scenes/earth-cutout.png")}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-x-0 bottom-0 w-full h-auto pointer-events-none select-none"
+              style={{ zIndex: 0 }}
+            />
+
+            <div className="absolute inset-x-0 top-0 z-10 pt-[3vh] md:pt-[2vh] px-2 md:px-4 text-center">
+              <Reveal>
+                <h2
+                  className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0"
+                  style={{
+                    fontSize: "clamp(96px, 24vw, 540px)",
+                    color: "#f5ecd6",
+                    textShadow:
+                      "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
+                  }}
+                >
+                  Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
+                </h2>
+              </Reveal>
+            </div>
           </section>
         </main>
 

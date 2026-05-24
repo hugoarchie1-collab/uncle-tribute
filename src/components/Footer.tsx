@@ -38,6 +38,14 @@ export const Footer = () => (
           <li>Phoenix Place</li>
           <li>Lewes, East Sussex</li>
           <li>United Kingdom</li>
+          <li>
+            <a
+              href="mailto:info@themandalacompany.com"
+              className="transition-colors hover:text-ink"
+            >
+              info@themandalacompany.com
+            </a>
+          </li>
         </ul>
       </div>
     </div>
