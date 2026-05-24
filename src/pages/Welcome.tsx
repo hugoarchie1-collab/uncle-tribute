@@ -152,20 +152,6 @@ export const Welcome = () => {
               vertically centred so the paragraph sits beside the
               headline, not at the bottom of the column. */}
           <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
-            <Reveal as="div" className="text-center max-w-[920px] mx-auto mb-12 md:mb-16">
-              <h2 className="font-display tracking-[-0.045em] text-ink m-0 mb-7 hero-text-shadow">
-                <span className="block font-black text-[clamp(42px,6.4vw,92px)] leading-[0.94]">
-                  His latest creations
-                </span>
-                <span className="block font-medium italic text-[clamp(32px,5.2vw,72px)] leading-[1.05] mt-2 text-ink/90">
-                  crafted by hand.
-                </span>
-              </h2>
-              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 max-w-[640px] mx-auto">
-                Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
-              </p>
-            </Reveal>
-
             <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => (
                 <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
@@ -348,6 +334,9 @@ export const Welcome = () => {
                 <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
+                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
+                </p>
               </Reveal>
               {/* Horizontal 2-col: image left fills the column tall,
                   text + materials grid stacked on the right. Reads
