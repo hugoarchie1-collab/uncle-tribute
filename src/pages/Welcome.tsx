@@ -499,7 +499,7 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* VISIT / CONNECT / FOUNDATION — three engagement cards */}
+          {/* PRINTS + FOUNDATION — two engagement cards */}
           <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
             <Reveal as="div" className="text-center mb-10 md:mb-14">
               <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
@@ -509,7 +509,7 @@ export const Welcome = () => {
                 Continue Stephen's work.
               </h2>
             </Reveal>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7">
               {[
                 {
                   eyebrow: "Prints",
@@ -517,13 +517,6 @@ export const Welcome = () => {
                   body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
                   cta: "Enquire",
                   href: "mailto:enquiries@example.com",
-                },
-                {
-                  eyebrow: "Visit",
-                  title: "Phoenix Place, Lewes",
-                  body: "Stephen's studio and TAGA — The Art of Geometry Academy — in East Sussex.",
-                  cta: "Plan a visit",
-                  href: "mailto:visit@example.com",
                 },
                 {
                   eyebrow: "Foundation",
@@ -536,18 +529,18 @@ export const Welcome = () => {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-6 md:p-7"
+                  className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10"
                 >
-                  <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-4">
+                  <p className="font-sans text-[11px] font-bold tracking-[0.34em] uppercase text-accent m-0 mb-5">
                     {item.eyebrow}
                   </p>
-                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.9vw,26px)] leading-[1.15] text-ink m-0 mb-3">
+                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(24px,2.4vw,34px)] leading-[1.15] text-ink m-0 mb-4">
                     {item.title}
                   </h3>
-                  <p className="font-sans font-normal text-[14px] leading-[1.6] text-ink/75 m-0 mb-6">
+                  <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-8">
                     {item.body}
                   </p>
-                  <span className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
+                  <span className="inline-flex items-center gap-2 font-sans text-[12px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
                     {item.cta} <span aria-hidden="true">→</span>
                   </span>
                 </a>
