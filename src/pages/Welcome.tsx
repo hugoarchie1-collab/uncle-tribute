@@ -90,7 +90,7 @@ export const Welcome = () => {
 
         <Nav />
 
-        <main className="relative z-10">
+        <main className="relative isolate z-10">
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
@@ -464,14 +464,24 @@ export const Welcome = () => {
               which keeps the overlap at ~25% of the text height on
               every screen — no flood on widescreen, no gap on
               portrait/tablet. Earth's bottom still sits flush above
-              the footer's top rule. */}
+              the footer's top rule.
+
+              `isolate` forces a stacking context on the section so the
+              z-index ordering between the Reveal-wrapped headline and
+              the sibling Earth img is locked — without it, Framer
+              Motion's per-frame transform on Reveal can briefly
+              reorder GPU layers on scroll and flicker the text behind
+              the Earth. z-10 sits on the Reveal wrapper itself, not
+              on the h2 inside, because the transform on the wrapper
+              creates its own stacking context that swallows any
+              z-index applied to its children. */}
           <section
-            className="relative w-full overflow-hidden"
+            className="relative isolate w-full overflow-hidden"
             aria-label="Sacred Geometry"
           >
-            <Reveal>
+            <Reveal className="relative z-10">
               <h2
-                className="relative z-10 font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
+                className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
                 style={{
                   fontSize: "clamp(96px, 24vw, 540px)",
                   color: "#f5ecd6",
