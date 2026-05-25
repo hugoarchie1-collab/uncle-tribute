@@ -457,37 +457,41 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 11 · SACRED GEOMETRY (EARTH) — final viewport. Earth's curve
-              sits flush above the footer's top rule with the giant
-              "Sacred Geometry." display type filling the viewport top. */}
+          {/* 11 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
+              in normal flow so the section auto-sizes to its content
+              and adapts cleanly across viewports. Earth is pulled up by
+              a negative margin tied to the SAME clamp() the text uses,
+              which keeps the overlap at ~25% of the text height on
+              every screen — no flood on widescreen, no gap on
+              portrait/tablet. Earth's bottom still sits flush above
+              the footer's top rule. */}
           <section
             className="relative w-full overflow-hidden"
-            style={{ height: "100vh" }}
             aria-label="Sacred Geometry"
           >
+            <Reveal>
+              <h2
+                className="relative z-10 font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
+                style={{
+                  fontSize: "clamp(96px, 24vw, 540px)",
+                  color: "#f5ecd6",
+                  textShadow:
+                    "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
+                }}
+              >
+                Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
+              </h2>
+            </Reveal>
+
             <img
               src={asset("/img/scenes/earth-cutout.png")}
               alt=""
               aria-hidden="true"
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] max-w-none h-auto pointer-events-none select-none"
-              style={{ zIndex: 0 }}
+              className="relative z-0 block w-[112%] max-w-none mx-auto pointer-events-none select-none"
+              style={{
+                marginTop: "calc(clamp(96px, 24vw, 540px) * -0.4)",
+              }}
             />
-
-            <div className="absolute inset-x-0 top-0 z-10 pt-[3vh] md:pt-[2vh] px-2 md:px-4 text-center">
-              <Reveal>
-                <h2
-                  className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0"
-                  style={{
-                    fontSize: "clamp(96px, 24vw, 540px)",
-                    color: "#f5ecd6",
-                    textShadow:
-                      "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
-                  }}
-                >
-                  Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
-                </h2>
-              </Reveal>
-            </div>
           </section>
         </main>
 
