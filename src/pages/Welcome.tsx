@@ -429,7 +429,7 @@ export const Welcome = () => {
               <h2
                 className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
                 style={{
-                  fontSize: "clamp(96px, 24vw, 540px)",
+                  fontSize: "clamp(60px, 20vw, 520px)",
                   color: "#f5ecd6",
                   textShadow:
                     "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
@@ -439,13 +439,17 @@ export const Welcome = () => {
               </h2>
             </Reveal>
 
+            {/* Earth widens at narrow viewports so its curve still reads
+                as a horizon under the smaller mobile headline. Beyond
+                the viewport edges is fine — the section's
+                overflow-hidden clips the side wings. */}
             <img
               src={asset("/img/scenes/earth-cutout.png")}
               alt=""
               aria-hidden="true"
-              className="relative z-0 block w-[112%] max-w-none mx-auto pointer-events-none select-none"
+              className="relative z-0 block w-[160%] sm:w-[140%] md:w-[120%] lg:w-[112%] max-w-none mx-auto pointer-events-none select-none"
               style={{
-                marginTop: "calc(clamp(96px, 24vw, 540px) * -0.4)",
+                marginTop: "calc(clamp(60px, 20vw, 520px) * -0.42)",
               }}
             />
           </section>
