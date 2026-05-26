@@ -7,7 +7,7 @@ import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
-import { COLLECTIONS, PAINTINGS } from "../data/paintings";
+import { PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -145,7 +145,7 @@ export const Welcome = () => {
               Same container, gap and items-center alignment as the Hero
               above so the image edges and text column align cleanly with
               the section above instead of stretching to viewport height. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="figure" className="m-0 md:col-span-6">
                 <ImageReveal
@@ -176,7 +176,7 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              className="h-[60vh] md:h-[78vh] w-full"
+              className="h-[50vh] md:h-[60vh] w-full"
               edges="y"
               parallax={0.18}
               shadow=""
@@ -184,7 +184,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 4 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Selected Works
@@ -230,8 +230,8 @@ export const Welcome = () => {
           </section>
 
           {/* 5 · CRAFT — Each painting is a ritual (scrim card) */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-12 md:py-16 ring-1 ring-white/8">
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
+            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 ring-1 ring-white/8">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
@@ -279,7 +279,7 @@ export const Welcome = () => {
           </section>
 
           {/* 6 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-10 md:py-14">
+          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
@@ -320,24 +320,12 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 7 · MANDALAS WALL — full-bleed cinematic break */}
-          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
-            <ImageReveal
-              src="/img/welcome/04-paintings-collection.jpg"
-              alt="A wall of Stephen's mandalas"
-              className="h-[55vh] md:h-[72vh] w-full"
-              edges="y"
-              parallax={0.18}
-              shadow=""
-            />
-          </Reveal>
-
-          {/* 8 · ARISTA SUNSTAR — text left, smaller framed image right.
+          {/* 7 · ARISTA SUNSTAR — text left, smaller framed image right.
               Single section (no longer split). Image is intentionally
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
               gallery object instead of a stretched full-bleed. */}
-          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
+          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
@@ -366,50 +354,8 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 9 · THREE COLLECTIONS — browse-all bridge before the CTAs */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-12 md:py-16">
-            <div className="flex items-end justify-between mb-7 md:mb-10 flex-wrap gap-4">
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.4vw,44px)] leading-[1.0] text-ink m-0">
-                Three collections
-              </h2>
-              <Link
-                to="/collections"
-                className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hover:text-accent transition-colors"
-              >
-                Explore all →
-              </Link>
-            </div>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-              {COLLECTIONS.map((coll) => {
-                const items = PAINTINGS.filter((p) => p.collection === coll.id);
-                return (
-                  <Link key={coll.id} to={`/collections#collection-${coll.id}`} className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1">
-                    {coll.backdropImage && (
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img
-                          src={asset(coll.backdropImage.replace("-blur.jpg", ".jpg"))}
-                          alt={coll.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5 md:p-6">
-                      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-3">
-                        {items.length} {items.length === 1 ? "Painting" : "Paintings"}
-                      </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(20px,1.8vw,24px)] leading-[1.1] text-ink m-0">
-                        {coll.title}
-                      </h3>
-                    </div>
-                  </Link>
-                );
-              })}
-            </Reveal>
-          </section>
-
-          {/* 10 · THE ESTATE — Prints + Foundation engagement cards */}
-          <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
+          {/* 8 · THE ESTATE — Prints + Foundation engagement cards */}
+          <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-14">
               <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
                 The Estate
@@ -457,7 +403,7 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 11 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
+          {/* 9 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
               in normal flow so the section auto-sizes to its content
               and adapts cleanly across viewports. Earth is pulled up by
               a negative margin tied to the SAME clamp() the text uses,
