@@ -45,6 +45,22 @@
       0 2px 8px rgba(0, 0, 0, 0.55);
   }
 
+  /* Film-grain texture overlay — fixed-position SVG noise applied across
+     the whole site at very low opacity. Adds the printed/painted feel
+     that the editorial Awwwards-tier sites use. The pattern itself is
+     a fractal-noise SVG embedded as a data-URI to avoid any extra
+     network request. */
+  .film-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
+  }
+
   /* Soft-edge image utility — fades all four edges to transparent so
      full-bleed images don't end on hard block borders. Keeps the
      spiritual, airy feel the design calls for. */

@@ -6,6 +6,7 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
+import { SplitReveal } from "../components/SplitReveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
 import { PAINTINGS } from "../data/paintings";
@@ -430,19 +431,27 @@ export const Welcome = () => {
             className="relative isolate w-full overflow-hidden"
             aria-label="Sacred Geometry"
           >
-            <Reveal className="relative z-10">
-              <h2
-                className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
-                style={{
-                  fontSize: "clamp(60px, 20vw, 520px)",
-                  color: "#f5ecd6",
-                  textShadow:
-                    "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
-                }}
-              >
-                Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
-              </h2>
-            </Reveal>
+            {/* Character-by-character reveal — letters slide up out of an
+                overflow-hidden line box as the section enters the viewport.
+                This is the same cinematic reveal pattern used on most
+                Awwwards Site-of-the-Day entries; honours
+                prefers-reduced-motion. */}
+            <h2
+              className="relative z-10 font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
+              style={{
+                fontSize: "clamp(60px, 20vw, 520px)",
+                color: "#f5ecd6",
+                textShadow:
+                  "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
+              }}
+            >
+              <SplitReveal
+                text={"Sacred\nGeometry"}
+                multiline
+                trailing={{ char: ".", color: "#dca84c" }}
+                stagger={0.045}
+              />
+            </h2>
 
             {/* Earth widens at narrow viewports so its curve still reads
                 as a horizon under the smaller mobile headline. Beyond
