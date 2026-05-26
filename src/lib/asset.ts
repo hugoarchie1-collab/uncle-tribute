@@ -13,3 +13,14 @@ export const asset = (path: string): string => {
   const clean = path.replace(/^\//, "");
   return base.endsWith("/") ? `${base}${clean}` : `${base}/${clean}`;
 };
+
+/**
+ * Mirror of a .jpg asset path to its .webp sibling. A parallel WebP file is
+ * generated for every painting / welcome / about JPG at build time (see
+ * scripts in /public/img/*), so this helper just rewrites the extension.
+ *
+ * Use inside a <picture> with the .webp as <source> and the .jpg as the
+ * <img> fallback — browsers that don't support WebP load the JPG.
+ */
+export const webp = (jpgPath: string): string =>
+  jpgPath.replace(/\.jpe?g$/i, ".webp");

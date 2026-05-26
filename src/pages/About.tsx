@@ -10,6 +10,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
+import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { ABOUT, PASSING_DATE } from "../data/content";
 import { asset } from "../lib/asset";
@@ -338,14 +339,14 @@ const AnegadaSpread = () => {
             style={
               reduceMotion
                 ? {
-                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.webp")}")`,
                     backgroundSize: "cover",
                     backgroundPosition: "center 30%",
                   }
                 : {
                     y: imgY,
                     scale: imgScale,
-                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.webp")}")`,
                     backgroundSize: "cover",
                     backgroundPosition: "center 30%",
                   }
@@ -472,10 +473,12 @@ export const About = () => {
         {/* HERO */}
         <section className="relative">
           <div className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden">
-            <img
-              src={asset("/img/about/01-stephen-at-gallery.jpg")}
+            <AssetImage
+              src="/img/about/01-stephen-at-gallery.jpg"
               alt="Stephen Meakin"
               loading="eager"
+              decoding="sync"
+              fetchPriority="high"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
             <div

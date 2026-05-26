@@ -50,11 +50,16 @@ export const VideoIntro = () => {
         }}
       >
         {prefersReducedMotion ? (
-          <img
-            src={`${base}video/poster.jpg`}
-            alt="The Wild Rose mandala on an easel in Stephen's garden"
-            className="video-intro__poster"
-          />
+          <picture style={{ display: "contents" }}>
+            <source srcSet={`${base}video/poster.webp`} type="image/webp" />
+            <img
+              src={`${base}video/poster.jpg`}
+              alt="The Wild Rose mandala on an easel in Stephen's garden"
+              className="video-intro__poster"
+              decoding="sync"
+              fetchPriority="high"
+            />
+          </picture>
         ) : (
           <video
             ref={videoRef}

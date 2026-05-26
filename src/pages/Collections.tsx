@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal, RevealStagger } from "../components/Reveal";
+import { AssetImage } from "../components/AssetImage";
 import { COLLECTIONS, PAINTINGS } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -147,10 +148,11 @@ export const Collections = () => {
                           aria-label={`View ${painting.title}`}
                         >
                           <div className="aspect-square overflow-hidden shadow-[0_22px_50px_rgba(0,0,0,0.6)] transition-all duration-500 group-hover:shadow-[0_30px_70px_rgba(0,0,0,0.75)]">
-                            <img
-                              src={asset(cover.image)}
+                            <AssetImage
+                              src={cover.image}
                               alt={painting.title}
                               loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                             />
                           </div>

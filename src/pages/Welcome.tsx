@@ -5,6 +5,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
+import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
 import { PAINTINGS } from "../data/paintings";
@@ -15,10 +16,12 @@ import { usePageTitle } from "../lib/usePageTitle";
 // backdrop layer (yellow removed — text was unreadable against it).
 // Pre-blurred 800px JPGs (~17KB each) — blur / saturate / brightness
 // baked into the file offline, zero runtime filter cost.
+// Pre-blurred WebP backdrops (~7-12KB each) — even smaller than the JPG
+// originals while keeping identical visual softness baked into the file.
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-blur.jpg", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur.jpg", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur.jpg", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
 ];
 
 export const Welcome = () => {
@@ -197,10 +200,11 @@ export const Welcome = () => {
               {featured.map(({ painting, cover }) => (
                 <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
                   <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                    <img
-                      src={asset(cover.image)}
+                    <AssetImage
+                      src={cover.image}
                       alt={`${painting.title} — ${cover.name}`}
                       loading="lazy"
+                      decoding="async"
                       className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                     />
                   </div>
@@ -340,10 +344,11 @@ export const Welcome = () => {
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-5">
                 <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
-                  <img
-                    src={asset("/img/welcome/05-arista-sunstar.jpg")}
+                  <AssetImage
+                    src="/img/welcome/05-arista-sunstar.jpg"
                     alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
                     loading="lazy"
+                    decoding="async"
                     className="block w-full h-auto"
                   />
                 </div>

@@ -1,6 +1,6 @@
 import { useRef, useState, type CSSProperties } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { asset } from "../lib/asset";
+import { asset, webp } from "../lib/asset";
 
 interface ImageRevealProps {
   src: string;
@@ -85,15 +85,20 @@ export const ImageReveal = ({
       onMouseMove={tilt ? onMouseMove : undefined}
       onMouseLeave={tilt ? onMouseLeave : undefined}
     >
-      <motion.img
-        src={asset(src)}
-        alt={alt}
-        loading={eager ? "eager" : "lazy"}
-        style={{ y, objectPosition }}
-        animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
-        transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}
-        className="w-full h-full object-cover scale-[1.04]"
-      />
+      <picture style={{ display: "contents" }}>
+        <source srcSet={asset(webp(src))} type="image/webp" />
+        <motion.img
+          src={asset(src)}
+          alt={alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding={eager ? "sync" : "async"}
+          fetchPriority={eager ? "high" : "auto"}
+          style={{ y, objectPosition }}
+          animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
+          transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}
+          className="w-full h-full object-cover scale-[1.04]"
+        />
+      </picture>
     </div>
   );
 };
