@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
@@ -7,6 +8,7 @@ import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { SplitReveal } from "../components/SplitReveal";
+import { EnquireModal } from "../components/EnquireModal";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
 import { PAINTINGS } from "../data/paintings";
@@ -25,8 +27,36 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
 ];
 
+// The Estate engagement cards — same data drives both the card buttons
+// and the enquiry modals so the eyebrow / title / subject stay in sync.
+const estateCards = [
+  {
+    id: "prints",
+    eyebrow: "Prints",
+    title: "Print enquiries",
+    body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
+    cta: "Enquire",
+    subject: "Print enquiry",
+    intro:
+      "Tell us which painting and which colourway interests you. We respond to every enquiry personally.",
+  },
+  {
+    id: "foundation",
+    eyebrow: "Foundation",
+    title: "The Mandala Company",
+    body: "News and releases from the estate, on behalf of Steve's immediate family.",
+    cta: "Subscribe",
+    subject: "Subscribe — Mandala Company",
+    intro:
+      "Leave your name and email and we'll add you to the list. Occasional updates only — exhibitions, new releases, news from the estate.",
+  },
+] as const;
+
 export const Welcome = () => {
   usePageTitle();
+
+  // Which Estate-card modal is currently open (null = closed).
+  const [enquireOpen, setEnquireOpen] = useState<string | null>(null);
 
   // Whole-page scroll drives three peacock backdrops crossfading in turn.
   // 0 → 38% Indigo · 33 → 70% Red · 65 → 100% Purple. Stretches the
@@ -371,26 +401,12 @@ export const Welcome = () => {
               </h2>
             </Reveal>
             <Reveal as="div" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7">
-              {[
-                {
-                  eyebrow: "Prints",
-                  title: "Print enquiries",
-                  body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
-                  cta: "Enquire",
-                  href: "mailto:info@themandalacompany.com?subject=Print%20enquiry",
-                },
-                {
-                  eyebrow: "Foundation",
-                  title: "The Mandala Company",
-                  body: "News and releases from the estate, on behalf of Steve's immediate family.",
-                  cta: "Subscribe",
-                  href: "mailto:info@themandalacompany.com?subject=Subscribe%20%E2%80%94%20Mandala%20Company",
-                },
-              ].map((item) => (
-                <a
+              {estateCards.map((item) => (
+                <button
                   key={item.title}
-                  href={item.href}
-                  className="group block bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10"
+                  type="button"
+                  onClick={() => setEnquireOpen(item.id)}
+                  className="group block text-left bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10 focus:outline-none focus-visible:ring-accent"
                 >
                   <p className="font-sans text-[11px] font-bold tracking-[0.34em] uppercase text-accent m-0 mb-5">
                     {item.eyebrow}
@@ -404,10 +420,25 @@ export const Welcome = () => {
                   <span className="inline-flex items-center gap-2 font-sans text-[12px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
                     {item.cta} <span aria-hidden="true">→</span>
                   </span>
-                </a>
+                </button>
               ))}
             </Reveal>
           </section>
+
+          {/* Enquiry modals — opened by the Estate buttons above. One
+              instance per card so the eyebrow / title / subject can
+              be pre-filled per CTA. */}
+          {estateCards.map((item) => (
+            <EnquireModal
+              key={item.id}
+              open={enquireOpen === item.id}
+              onClose={() => setEnquireOpen(null)}
+              eyebrow={item.eyebrow}
+              title={item.title}
+              subject={item.subject}
+              intro={item.intro}
+            />
+          ))}
 
           {/* 9 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
               in normal flow so the section auto-sizes to its content
