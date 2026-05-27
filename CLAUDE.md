@@ -22,6 +22,50 @@ This document is the project's running source of truth — paste it at the start
 
 ---
 
+## ⚠️ Current live state (read this first)
+
+The Stripe **Order Print** button is in active debug as of this handoff:
+
+- PR #57 added the integration (deployed)
+- PR #59 fixed TypeScript compile errors (deployed)
+- PR #60 made the function self-contained and removed the `product_data.images` fetch that was probably hanging the call (deployed but **not yet verified by the owner**)
+
+**First task for any continuing AI:** ask Hugo to hard-refresh a painting page and try clicking *Order print*. If it redirects to Stripe Checkout in 1-2 seconds, the integration works. If it still hangs on "Opening checkout…" or shows a network error, check Vercel function logs (Vercel dashboard → Deployments → latest → Functions → /api/checkout → Logs) for the actual error message.
+
+Everything else on the site is shipped and working.
+
+---
+
+## Commands
+
+```bash
+npm install            # install deps (first time / after lockfile changes)
+npm run dev            # local dev server at http://localhost:5173
+npm run build          # tsc + vite build → outputs to dist/
+npm run lint           # ESLint
+npm run preview        # preview the production build locally
+```
+
+Vercel auto-deploys on push to `main`. Preview deployments fire for every PR.
+
+To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — not currently set up.
+
+---
+
+## Quick-reference dashboards
+
+| Tool | URL |
+|---|---|
+| Vercel project | https://vercel.com/the-mandala-company/uncle-tribute |
+| Stripe dashboard | https://dashboard.stripe.com |
+| Tide app | https://www.tide.co (mobile app for sort code / account number) |
+| Point 101 (print fulfilment) | https://point101.com |
+| GitHub repo | https://github.com/hugoarchie1-collab/uncle-tribute |
+| Web3Forms (optional, for real form POST backend) | https://web3forms.com |
+| IONOS (custom domain registrar) | https://my.ionos.co.uk |
+
+---
+
 ## Tech stack
 
 | Layer | Choice |
