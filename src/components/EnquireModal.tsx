@@ -44,9 +44,18 @@ export const EnquireModal = ({
   const firstFieldRef = useRef<HTMLInputElement>(null);
 
   // Close on Escape, lock body scroll while open, focus first field on open.
+  // onClose is read via a ref so the effect doesn't re-run (and reset the
+  // form mid-submit) when the parent re-creates its arrow function.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    if (!open) {
+      // Open transitioned to false — reset to idle so the next open is fresh.
+      setStatus("idle");
+      setErrorMsg("");
+      return;
+    }
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onCloseRef.current();
     window.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -55,11 +64,8 @@ export const EnquireModal = ({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
-      // Reset to idle when the modal closes so reopening gives a fresh form.
-      setStatus("idle");
-      setErrorMsg("");
     };
-  }, [open, onClose]);
+  }, [open]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -15,12 +15,15 @@ export const asset = (path: string): string => {
 };
 
 /**
- * Mirror of a .jpg asset path to its .webp sibling. A parallel WebP file is
- * generated for every painting / welcome / about JPG at build time (see
- * scripts in /public/img/*), so this helper just rewrites the extension.
+ * Mirror of a .jpg asset path to its .webp sibling. A parallel WebP file
+ * lives next to every painting / welcome / about JPG under /public/img.
  *
  * Use inside a <picture> with the .webp as <source> and the .jpg as the
  * <img> fallback — browsers that don't support WebP load the JPG.
+ *
+ * Inputs MUST end in `.jpg`. Other extensions are returned unchanged so a
+ * misuse 404s loudly during dev rather than silently advertising the wrong
+ * MIME type to the browser.
  */
 export const webp = (jpgPath: string): string =>
-  jpgPath.replace(/\.jpe?g$/i, ".webp");
+  jpgPath.endsWith(".jpg") ? jpgPath.slice(0, -4) + ".webp" : jpgPath;

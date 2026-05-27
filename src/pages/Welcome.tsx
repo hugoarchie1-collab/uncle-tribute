@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
@@ -7,7 +7,6 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
-import { SplitReveal } from "../components/SplitReveal";
 import { EnquireModal } from "../components/EnquireModal";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
@@ -57,6 +56,12 @@ export const Welcome = () => {
 
   // Which Estate-card modal is currently open (null = closed).
   const [enquireOpen, setEnquireOpen] = useState<string | null>(null);
+  // Stable identity — passing a fresh arrow function each render would
+  // re-trigger EnquireModal's effect cleanup on every parent re-render
+  // (peacock backdrop scroll updates Welcome continually) and reset the
+  // form mid-submit.
+  const closeEnquire = useCallback(() => setEnquireOpen(null), []);
+  const activeCard = estateCards.find((c) => c.id === enquireOpen);
 
   // Whole-page scroll drives three peacock backdrops crossfading in turn.
   // 0 → 38% Indigo · 33 → 70% Red · 65 → 100% Purple. Stretches the
@@ -425,20 +430,18 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* Enquiry modals — opened by the Estate buttons above. One
-              instance per card so the eyebrow / title / subject can
-              be pre-filled per CTA. */}
-          {estateCards.map((item) => (
-            <EnquireModal
-              key={item.id}
-              open={enquireOpen === item.id}
-              onClose={() => setEnquireOpen(null)}
-              eyebrow={item.eyebrow}
-              title={item.title}
-              subject={item.subject}
-              intro={item.intro}
-            />
-          ))}
+          {/* Single enquiry modal — driven by whichever Estate card is
+              currently open. One instance avoids duplicating keydown
+              listeners, body-scroll-lock effects, and AnimatePresence
+              subtrees per card. */}
+          <EnquireModal
+            open={activeCard != null}
+            onClose={closeEnquire}
+            eyebrow={activeCard?.eyebrow ?? ""}
+            title={activeCard?.title ?? ""}
+            subject={activeCard?.subject ?? ""}
+            intro={activeCard?.intro}
+          />
 
           {/* 9 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
               in normal flow so the section auto-sizes to its content
@@ -462,27 +465,24 @@ export const Welcome = () => {
             className="relative isolate w-full overflow-hidden"
             aria-label="Sacred Geometry"
           >
-            {/* Character-by-character reveal — letters slide up out of an
-                overflow-hidden line box as the section enters the viewport.
-                This is the same cinematic reveal pattern used on most
-                Awwwards Site-of-the-Day entries; honours
-                prefers-reduced-motion. */}
-            <h2
-              className="relative z-10 font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
-              style={{
-                fontSize: "clamp(60px, 20vw, 520px)",
-                color: "#f5ecd6",
-                textShadow:
-                  "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
-              }}
-            >
-              <SplitReveal
-                text={"Sacred\nGeometry"}
-                multiline
-                trailing={{ char: ".", color: "#dca84c" }}
-                stagger={0.045}
-              />
-            </h2>
+            {/* Headline fades up as a whole. The earlier per-character
+                SplitReveal wrapped each glyph in `overflow-hidden`,
+                which clipped the h2's huge text-shadow into a black
+                rectangle per character (the "blocky" artifact). Whole-
+                element reveal renders the shadow cleanly. */}
+            <Reveal className="relative z-10">
+              <h2
+                className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
+                style={{
+                  fontSize: "clamp(60px, 20vw, 520px)",
+                  color: "#f5ecd6",
+                  textShadow:
+                    "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
+                }}
+              >
+                Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
+              </h2>
+            </Reveal>
 
             {/* Earth widens at narrow viewports so its curve still reads
                 as a horizon under the smaller mobile headline. Beyond
