@@ -347,4 +347,29 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 
 ---
 
+## Keeping this document in sync — rule for future sessions
+
+**This document is treated as source-of-truth, not after-the-fact documentation.** When you make a change that affects the architecture, you update CLAUDE.md in the same commit / PR — never as a follow-up.
+
+A `PostToolUse` hook at `.claude/hooks/claude-md-sync-reminder.sh` prints a nudge whenever Claude edits one of these files:
+
+| File touched | CLAUDE.md section to update |
+|---|---|
+| `api/*` | "Stripe print sales — architecture" |
+| `src/data/*` | "Data files (single source of truth)" |
+| `src/App.tsx` | "Routes" table |
+| `src/pages/Welcome.tsx` | "Welcome page sections (in scroll order)" |
+| `src/components/*` | "Components" table |
+| `vercel.json` | "Required Vercel env vars" / rewrite gotcha |
+| `package.json` | "Tech stack" table |
+| `tailwind.config.ts` | "Brand & design system" |
+
+The hook is advisory — it doesn't block edits. The expectation is that Claude reads its output and updates CLAUDE.md if the change is architectural. Cosmetic fixes and line-level bug fixes don't need updates here.
+
+A `SessionStart` hook at `.claude/hooks/session-start.sh` runs `npm install` (idempotent) and prints a one-line confirmation that CLAUDE.md is loaded as project context. Native Claude Code already auto-loads root-level CLAUDE.md, so this is belt-and-braces.
+
+Run **`/read-context`** at any point to have Claude re-read CLAUDE.md plus the live data files (`src/data/paintings.ts`, `src/data/content.ts`, `api/checkout.ts`, `api/stripe-webhook.ts`) and summarise the current state of the project including recent commits.
+
+---
+
 _Last updated: 2026-05-27 (handoff document creation). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
