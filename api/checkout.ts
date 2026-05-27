@@ -2,30 +2,62 @@
  * POST /api/checkout
  *
  * Creates a Stripe Checkout session for a single print order and returns
- * its URL. The browser redirects to Stripe's hosted checkout where the
- * buyer enters card + shipping address; on success they bounce back to
- * /order/success and the /api/stripe-webhook handler records the order.
+ * its URL. The browser redirects to Stripe's hosted checkout; on success
+ * the buyer bounces back to /order/success and Stripe pings
+ * /api/stripe-webhook so we can record the order.
  *
- * Request body (JSON):
- *   { paintingId: string, colourwayName?: string }
+ * Request body: { paintingId: string, colourwayName?: string }
+ * Response 200: { url: string }      — redirect the browser here
+ *          400: { error: string }    — validation failure
+ *          500: { error: string }    — server / Stripe failure
  *
- * Response (JSON):
- *   200 { url: string }    – redirect the browser here
- *   400 { error: string }  – validation failure (unknown painting etc.)
- *   500 { error: string }  – Stripe API failure
+ * Required env vars on Vercel:
+ *   STRIPE_SECRET_KEY   – sk_live_…
+ *   SITE_URL            – e.g. https://uncle-tribute.vercel.app (no trailing slash)
  *
- * Required env vars on the Vercel project:
- *   STRIPE_SECRET_KEY   – sk_live_… (Stripe dashboard → Developers → API keys)
- *   SITE_URL            – e.g. https://uncle-tribute.vercel.app  (no trailing slash)
+ * This file is intentionally self-contained — no cross-directory imports
+ * — so Vercel's serverless bundler doesn't need to chase TS files outside
+ * /api at build or runtime. Painting metadata is duplicated here from
+ * src/data/paintings.ts; keep the two in sync when adding paintings.
  */
 
 import Stripe from "stripe";
-import {
-  PAINTINGS,
-  DEFAULT_PRINT,
-  getPrintPricePence,
-  getPrintSize,
-} from "../src/data/paintings.js";
+
+// Default print spec — kept in sync with src/data/paintings.ts DEFAULT_PRINT.
+const DEFAULT_PRICE_PENCE = 18000; // £180
+const DEFAULT_SIZE = "Limited edition giclée print, A2 (42 × 59 cm)";
+const PRINT_SPEC =
+  "Printed on 350gsm archival canvas using pigment inks, hand-stretched on a deep wooden frame. Individually made to order.";
+
+// Allowlist of valid painting IDs so a malicious caller can't create a
+// checkout for an arbitrary string. If you add a painting in
+// src/data/paintings.ts, add its id here too.
+const VALID_PAINTING_IDS = new Set<string>([
+  "wild-rose",
+  "english-bluebells",
+  "orchis-7",
+  "flower-of-life",
+  "slipper-orchids",
+  "peacock-minerva",
+  "ophiuchus",
+  "tridecagon-moon-star",
+  "lulin",
+  "enneagon-swans",
+]);
+
+// Pretty titles for the Stripe line-item. Falls back to the ID if missing.
+const PAINTING_TITLES: Record<string, string> = {
+  "wild-rose": "Mandala of Wild Rose",
+  "english-bluebells": "Mandala of English Bluebells",
+  "orchis-7": "Orchis 7",
+  "flower-of-life": "Flower of Life",
+  "slipper-orchids": "Slipper Orchids",
+  "peacock-minerva": "Peacock Minerva",
+  "ophiuchus": "Ophiuchus",
+  "tridecagon-moon-star": "Tridecagon Moon Star",
+  "lulin": "Lulin",
+  "enneagon-swans": "Enneagon — The Swans",
+};
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,12 +77,8 @@ export default async function handler(req: Request) {
 
   const secret = process.env.STRIPE_SECRET_KEY;
   const siteUrl = process.env.SITE_URL;
-  if (!secret || !siteUrl) {
-    return json(500, {
-      error:
-        "Server is missing STRIPE_SECRET_KEY or SITE_URL env vars. See repo README → Stripe setup.",
-    });
-  }
+  if (!secret) return json(500, { error: "Server missing STRIPE_SECRET_KEY." });
+  if (!siteUrl) return json(500, { error: "Server missing SITE_URL." });
 
   let body: { paintingId?: string; colourwayName?: string };
   try {
@@ -59,45 +87,38 @@ export default async function handler(req: Request) {
     return json(400, { error: "Invalid JSON body." });
   }
 
-  const painting = PAINTINGS.find((p) => p.id === body.paintingId);
-  if (!painting) return json(400, { error: "Unknown painting." });
+  const paintingId = body.paintingId;
+  if (!paintingId || !VALID_PAINTING_IDS.has(paintingId)) {
+    return json(400, { error: `Unknown painting "${paintingId ?? ""}".` });
+  }
+  const colourway = body.colourwayName?.trim() || "Original";
 
-  const colourway = body.colourwayName
-    ? painting.colourways.find((c) => c.name === body.colourwayName)
-    : painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
-  if (!colourway) return json(400, { error: "Painting has no available colourway." });
+  const title = PAINTING_TITLES[paintingId] ?? paintingId;
+  const productName = `${title} — ${colourway}`;
+  const productDesc = `${DEFAULT_SIZE}. ${PRINT_SPEC}`;
 
-  const pricePence = getPrintPricePence(painting);
-  const sizeLabel = getPrintSize(painting);
-  const productName = `${painting.title} — ${colourway.name}`;
-  const productDesc = `${sizeLabel}. ${DEFAULT_PRINT.spec}`;
-
-  // Absolute URL so Stripe can use it as the product image in checkout.
-  const productImage = `${siteUrl}${colourway.image.startsWith("/") ? "" : "/"}${colourway.image}`;
-
-  // Let the SDK use its pinned default apiVersion — passing a literal
-  // here would require it to be in the SDK's own valid-versions union.
   const stripe = new Stripe(secret);
 
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
       line_items: [
         {
           quantity: 1,
           price_data: {
             currency: "gbp",
-            unit_amount: pricePence,
+            unit_amount: DEFAULT_PRICE_PENCE,
             product_data: {
               name: productName,
               description: productDesc,
-              images: [productImage],
+              // No product_data.images — Stripe synchronously fetches each
+              // image URL when creating the session, and an unreachable /
+              // slow image can hang the call. We can add the painting cover
+              // back as a hosted Stripe product image later.
             },
           },
         },
       ],
-      // Stripe handles address entry — fulfilment uses what the buyer enters.
       shipping_address_collection: {
         allowed_countries: [
           "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU",
@@ -110,54 +131,44 @@ export default async function handler(req: Request) {
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: { amount: 1500, currency: "gbp" },
-            display_name: "United Kingdom — tracked, 5-7 working days",
-            delivery_estimate: {
-              minimum: { unit: "business_day", value: 5 },
-              maximum: { unit: "business_day", value: 7 },
-            },
+            display_name: "United Kingdom (5-7 working days)",
           },
         },
         {
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: { amount: 3500, currency: "gbp" },
-            display_name: "Europe — tracked, 7-10 working days",
-            delivery_estimate: {
-              minimum: { unit: "business_day", value: 7 },
-              maximum: { unit: "business_day", value: 10 },
-            },
+            display_name: "Europe (7-10 working days)",
           },
         },
         {
           shipping_rate_data: {
             type: "fixed_amount",
             fixed_amount: { amount: 6000, currency: "gbp" },
-            display_name: "Worldwide — tracked, 10-14 working days",
-            delivery_estimate: {
-              minimum: { unit: "business_day", value: 10 },
-              maximum: { unit: "business_day", value: 14 },
-            },
+            display_name: "Worldwide (10-14 working days)",
           },
         },
       ],
-      // Buyer's email + receipt
-      phone_number_collection: { enabled: false },
-      // Metadata is echoed back to us on the webhook — used to know which
-      // print to send to Point101 without re-parsing the line item name.
       metadata: {
-        painting_id: painting.id,
-        painting_title: painting.title,
-        colourway_name: colourway.name,
-        size: sizeLabel,
+        painting_id: paintingId,
+        painting_title: title,
+        colourway_name: colourway,
+        size: DEFAULT_SIZE,
       },
       success_url: `${siteUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/order/cancel`,
     });
 
-    if (!session.url) return json(500, { error: "Stripe didn't return a checkout URL." });
+    if (!session.url) {
+      console.error("[/api/checkout] Stripe returned session without URL", session.id);
+      return json(500, { error: "Stripe didn't return a checkout URL." });
+    }
+
+    console.log("[/api/checkout] session created", { id: session.id, painting: paintingId });
     return json(200, { url: session.url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Stripe checkout failed.";
+    console.error("[/api/checkout] Stripe error:", message);
     return json(500, { error: message });
   }
 }
