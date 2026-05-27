@@ -34,6 +34,12 @@ export interface Painting {
   artistQuote?: string;    // Stephen's own words, if a quote exists for this piece
   location?: string;       // e.g. "Ditchling, Sussex"
   colourways: Colourway[];
+  /**
+   * Optional per-painting overrides. If unset, DEFAULT_PRINT applies.
+   * pricePence is integer pence (e.g. 25000 for £250) — never floats.
+   */
+  printPricePence?: number;
+  printSize?: string;
 }
 
 /**
@@ -45,6 +51,31 @@ export const ORIGINAL_PRINT_SPEC =
 
 export const COLOURWAY_NOTE =
   "Each colourway was created by Stephen himself and discovered on his computer in his studio. These are his own colour variations of the work, exactly as he left them.";
+
+/**
+ * Default print spec used when a painting doesn't override. Edit these two
+ * values to change every print across the catalogue at once. Add a
+ * `printPricePence` / `printSize` override on individual Painting entries
+ * if a single piece sells at a different price (e.g. larger format).
+ *
+ * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
+ * in integers and there are no rounding bugs at checkout.
+ */
+export const DEFAULT_PRINT = {
+  pricePence: 18000, // £180 — placeholder until the spreadsheet lands
+  size: "Limited edition giclée print, A2 (42 × 59 cm)",
+  spec: ORIGINAL_PRINT_SPEC,
+};
+
+export const getPrintPricePence = (painting: Painting): number =>
+  painting.printPricePence ?? DEFAULT_PRINT.pricePence;
+
+export const getPrintSize = (painting: Painting): string =>
+  painting.printSize ?? DEFAULT_PRINT.size;
+
+/** £180 → "£180.00" */
+export const formatGBP = (pence: number): string =>
+  new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(pence / 100);
 
 export interface Collection {
   id: "habundia" | "genesis" | "born-in-the-sky";

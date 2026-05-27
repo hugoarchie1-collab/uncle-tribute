@@ -11,10 +11,90 @@ import {
   getPaintingById,
   ORIGINAL_PRINT_SPEC,
   COLOURWAY_NOTE,
+  formatGBP,
+  getPrintPricePence,
+  getPrintSize,
+  type Painting,
 } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 import { cn } from "../lib/cn";
+
+/**
+ * Order-print block — price, size, and the "Order print" button that
+ * POSTs to /api/checkout and redirects the browser to Stripe Checkout.
+ *
+ * If the user clicks before STRIPE_SECRET_KEY is set in Vercel env vars,
+ * the API returns a 500 with a clear message which we surface inline.
+ */
+const OrderPrintBlock = ({
+  painting,
+  colourwayName,
+}: {
+  painting: Painting;
+  colourwayName: string;
+}) => {
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const pricePence = getPrintPricePence(painting);
+  const size = getPrintSize(painting);
+
+  const onClick = async () => {
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paintingId: painting.id, colourwayName }),
+      });
+      const body = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !body.url) {
+        setStatus("error");
+        setErrorMsg(body.error ?? "Couldn't start checkout. Please try again.");
+        return;
+      }
+      // Hand off to Stripe-hosted checkout
+      window.location.href = body.url;
+    } catch {
+      setStatus("error");
+      setErrorMsg("Network error. Please try again.");
+    }
+  };
+
+  return (
+    <>
+      <Separator className="bg-white/10 mb-8" />
+      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-3">
+        Order a print
+      </p>
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 mb-5">
+        <p className="font-display font-bold tracking-[-0.02em] text-[clamp(28px,3vw,40px)] text-ink m-0">
+          {formatGBP(pricePence)}
+        </p>
+        <p className="font-sans font-normal text-[13.5px] leading-[1.6] text-ink/65 m-0">
+          {size}
+        </p>
+      </div>
+      <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink/65 m-0 mb-6">
+        Shipping calculated at checkout. UK £15 · Europe £35 · Worldwide £60.
+        Each print is individually made to order and ships within 7–10 working days.
+      </p>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={status === "loading"}
+        className="inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+      >
+        {status === "loading" ? "Opening checkout…" : "Order print"}
+        <span aria-hidden="true" className="ml-2">→</span>
+      </button>
+      {status === "error" && (
+        <p className="mt-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+      )}
+    </>
+  );
+};
 
 export const PaintingDetail = () => {
   const { id } = useParams();
@@ -210,6 +290,16 @@ export const PaintingDetail = () => {
                 </span>
               )}
             </p>
+          </Reveal>
+
+          {/* ORDER PRINT — Stripe Checkout. Price + size pulled from the
+              painting's print spec (DEFAULT_PRINT unless the painting
+              overrides). Button opens Stripe-hosted checkout where the
+              buyer enters card + shipping; on success they bounce to
+              /order/success and Stripe pays out to the linked Tide
+              account on its normal schedule. */}
+          <Reveal as="div" className="mt-10 md:mt-14 max-w-[640px] mx-auto">
+            <OrderPrintBlock painting={painting} colourwayName={selected.name} />
           </Reveal>
         </main>
         <Footer />

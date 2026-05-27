@@ -4,6 +4,7 @@ import { Welcome } from "./pages/Welcome";
 import { Collections } from "./pages/Collections";
 import { PaintingDetail } from "./pages/PaintingDetail";
 import { About } from "./pages/About";
+import { OrderSuccess, OrderCancel } from "./pages/OrderResult";
 import { NotFound } from "./pages/NotFound";
 import { Privacy, Terms } from "./pages/Legal";
 import "./styles/global.css";
@@ -69,6 +70,8 @@ export default function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/collections/:id" element={<PaintingDetail />} />
         <Route path="/about" element={<About />} />
+        <Route path="/order/success" element={<OrderSuccess />} />
+        <Route path="/order/cancel" element={<OrderCancel />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="*" element={<NotFound />} />
