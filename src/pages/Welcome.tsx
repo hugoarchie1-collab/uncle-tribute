@@ -133,7 +133,7 @@ export const Welcome = () => {
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-12 pb-16 md:pb-24">
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-6 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">

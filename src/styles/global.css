@@ -105,10 +105,11 @@
   height: 100vh;
   overflow: hidden;
   will-change: opacity, transform;
-  /* Feather the bottom 22% so the video dissolves into the page bg
-     instead of ending on a hard horizontal seam. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+  /* Just a 5% feather at the bottom — enough to avoid a hard horizontal
+     seam against the Welcome page below, without leaving the giant blank
+     gap the previous 22% fade created. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
 }
 .video-intro__video,
 .video-intro__poster {
