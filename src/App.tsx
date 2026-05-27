@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from "react-router-dom";
 import { useEffect } from "react";
-import Lenis from "lenis";
 import { Welcome } from "./pages/Welcome";
 import { Collections } from "./pages/Collections";
 import { PaintingDetail } from "./pages/PaintingDetail";
@@ -58,50 +57,12 @@ const ScrollToTop = () => {
   return null;
 };
 
-/**
- * Lenis smooth scroll. Buttery momentum scrolling — the silky scroll
- * feel that every Awwwards Site of the Day uses. Respects
- * prefers-reduced-motion (skip if user opted out). Auto-syncs with
- * the window scroll event so anchor links and Framer Motion's
- * useScroll() still receive scroll updates.
- */
-const SmoothScroll = () => {
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-
-    const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // expo-out
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.4,
-    });
-
-    let raf = 0;
-    const tick = (time: number) => {
-      lenis.raf(time);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      lenis.destroy();
-    };
-  }, []);
-  return null;
-};
-
 export default function App() {
   return (
     <BrowserRouter basename={basename}>
-      <SmoothScroll />
       <ScrollToTop />
-      {/* Sitewide film-grain texture — sits above content at z-100 with
-          mix-blend-mode overlay so it textures everything underneath
-          without obscuring it. pointer-events none so it never catches
-          clicks. */}
+      {/* Sitewide film-grain texture — sits above content at z-100,
+          opacity tuned low so it textures without obscuring. */}
       <div aria-hidden="true" className="film-grain" />
       <Routes>
         <Route path="/" element={<Welcome />} />
@@ -115,3 +76,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
