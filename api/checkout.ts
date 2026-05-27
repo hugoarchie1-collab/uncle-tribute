@@ -25,7 +25,7 @@ import {
   DEFAULT_PRINT,
   getPrintPricePence,
   getPrintSize,
-} from "../src/data/paintings";
+} from "../src/data/paintings.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,7 +75,9 @@ export default async function handler(req: Request) {
   // Absolute URL so Stripe can use it as the product image in checkout.
   const productImage = `${siteUrl}${colourway.image.startsWith("/") ? "" : "/"}${colourway.image}`;
 
-  const stripe = new Stripe(secret, { apiVersion: "2025-09-30.clover" });
+  // Let the SDK use its pinned default apiVersion — passing a literal
+  // here would require it to be in the SDK's own valid-versions union.
+  const stripe = new Stripe(secret);
 
   try {
     const session = await stripe.checkout.sessions.create({

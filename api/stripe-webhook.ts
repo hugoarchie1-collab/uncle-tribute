@@ -40,7 +40,7 @@ export default async function handler(req: Request) {
   const sig = req.headers.get("stripe-signature");
   if (!sig) return bad("Missing stripe-signature header.");
 
-  const stripe = new Stripe(secret, { apiVersion: "2025-09-30.clover" });
+  const stripe = new Stripe(secret);
 
   // Raw body for signature verification
   const rawBody = await req.text();
@@ -59,10 +59,14 @@ export default async function handler(req: Request) {
       // Pull both the metadata we set when creating the session and the
       // shipping address Stripe captured during checkout.
       const m = session.metadata ?? {};
+      // shipping_details was renamed/restructured across Stripe API
+      // versions. Read it loosely so the log captures whatever the
+      // current API returns without depending on a specific SDK type
+      // namespace.
       const shipping =
-        // shipping_details is the modern field (Stripe API v2024+)
-        (session as unknown as { shipping_details?: Stripe.Checkout.Session.ShippingDetails })
-          .shipping_details ?? null;
+        (session as unknown as {
+          shipping_details?: { name?: string | null; address?: unknown };
+        }).shipping_details ?? null;
 
       // Log structured so the entry is searchable in Vercel function logs.
       console.log("[checkout.session.completed]", {
