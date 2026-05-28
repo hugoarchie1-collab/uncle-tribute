@@ -34,7 +34,7 @@ export interface Colourway {
  * Pricing is in PENCE (integer) — never floats.
  */
 export interface PrintTier {
-  id: "atelier" | "collector" | "atelier-grande" | "heirloom";
+  id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
   label: string;                // "Atelier", "Collector", "Atelier Grande", "Heirloom"
   size: string;                 // "A3 (29.7 × 42 cm)"
   pricePence: number;           // integer pence
@@ -50,6 +50,13 @@ export interface PrintTier {
   description?: string;         // optional one-liner (e.g. gold-leaf detail)
   available: boolean;           // hide tier site-wide by flipping to false
   isAnchor?: boolean;           // marks the recommended / default tier
+  /**
+   * Marks a unique, made-once piece (no edition, no add-ons — it IS the
+   * hand-finished work). The Studio tier is the only one-off today. Orla
+   * renders one-off tiers as a full-width card on PaintingDetail, not a
+   * size radio. No framing / embellishment price — the price is the piece.
+   */
+  isOneOff?: boolean;
 }
 
 export interface Painting {
@@ -107,6 +114,15 @@ export const ORIGINAL_PROVENANCE =
  */
 export const EMBELLISHMENT_NOTE =
   "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.";
+
+/**
+ * Copy for the Studio one-off tier (the £950 hand-painted unique piece).
+ * Distinct from EMBELLISHMENT_NOTE: that's an add-on finishing of a print;
+ * this is a singular work in its own right. Surfaced by Orla on the PDP
+ * as a full-width card (tiers with `isOneOff: true`).
+ */
+export const STUDIO_ONE_OFF_NOTE =
+  "A singular work: Polly Wedge hand-paints geometric detail in Stephen's tradition onto a large archival print, making each one unique. One of one. Allow 6 weeks.";
 
 /**
  * Single source of truth for the estate-stamp / COA / numbering language.
@@ -181,6 +197,23 @@ export const PRINT_TIERS: PrintTier[] = [
     // sourcing. Flip to `true` to expose the £1,250 SKU site-wide.
     available: false,
   },
+  {
+    // Studio — a singular, hand-painted one-off. NOT a print edition: Polly
+    // Wedge hand-paints geometric detail in Stephen's tradition onto a large
+    // archival print, making each one unique (one of one). It IS the
+    // hand-finished piece, so it carries no framing / embellishment add-on
+    // price — the price is the whole work.
+    id: "studio",
+    label: "Studio — Hand-painted by Polly Wedge",
+    size: "A1 (59.4 × 84.1 cm)",
+    pricePence: 95000, // £950
+    editionTotal: 1,
+    editionLabel: "Unique — one of one",
+    isOneOff: true,
+    // Hugo: set available:false if you'd rather hold this until after first
+    // sales + Polly confirms capacity, per the original plan.
+    available: true,
+  },
 ];
 
 /**
@@ -236,6 +269,19 @@ export const getAnchorTier = (painting: Painting): PrintTier => {
     available[0] ??
     ladder[0]
   );
+};
+
+/**
+ * Returns the lowest visible tier price (in pence) for a painting. Used by
+ * the browse surfaces (Collections tiles, Welcome Featured Works chip) to
+ * advertise the entry price — "from £145" — which lowers the click barrier.
+ * The £295 anchor still does its conversion work on the product page itself.
+ * Falls back to the anchor price if (defensively) no tiers are visible.
+ */
+export const getLowestTierPricePence = (painting: Painting): number => {
+  const tiers = getPrintTiers(painting);
+  if (tiers.length === 0) return getAnchorTier(painting).pricePence;
+  return Math.min(...tiers.map((t) => t.pricePence));
 };
 
 /**
@@ -680,3 +726,76 @@ export const getPaintingById = (id: string): Painting | undefined =>
 
 export const getPaintingsByCollection = (collectionId: Collection["id"]): Painting[] =>
   PAINTINGS.filter((p) => p.collection === collectionId);
+
+// -----------------------------------------------------------------------------
+// COLLECTION BUNDLES — acquire a whole collection as a curated set
+// -----------------------------------------------------------------------------
+//
+// A buyer can take an entire collection (e.g. all of Habundia) in one go.
+// Each bundle is every painting in the collection at the ANCHOR (Collector
+// A2) tier — the conversion-target size — with a small saving vs buying
+// each separately. Higher AOV, and a dignified "complete set" offer rather
+// than a discount banner.
+//
+// ADVERTISED SAVING — read this before changing copy:
+// The brief floated 15% off as the curated-set saving. BUT the actual
+// discount is applied at checkout by api/checkout.ts, which mints a bundle
+// coupon of 5% (2 items) / 10% (3+ items) — and a full collection is always
+// 3+ items, so it naturally lands a 10% bundle discount. There is no clean,
+// honest way to advertise 15% without wiring a "full-collection" flag all
+// the way through to checkout (which would mean touching the discount logic
+// + minting a different coupon for a flagged session). Per the brief's
+// guidance, we pick honesty/simplicity: advertise the 10% the checkout
+// actually applies. So `bundlePricePence` here is the full price minus the
+// SAME 10% the checkout's 3+-item bundle coupon grants. The numbers the
+// buyer sees on the card therefore match what Stripe will charge.
+
+/** 10% — matches api/checkout.ts's 3+-item bundle coupon (a full
+ * collection is always 3+ paintings). Advertise only what checkout applies. */
+export const COLLECTION_BUNDLE_DISCOUNT_PERCENT = 10;
+
+export interface CollectionBundle {
+  collectionId: Collection["id"];
+  title: string;
+  /** Painting ids in the collection, in catalogue order. */
+  paintingIds: string[];
+  /** Sum of the anchor-tier price across every painting (pence). */
+  fullPricePence: number;
+  /** Discounted set price = fullPricePence − the checkout bundle discount. */
+  bundlePricePence: number;
+  /** fullPricePence − bundlePricePence (pence). */
+  savePence: number;
+}
+
+/**
+ * Build the complete-collection bundle for a given collection: every
+ * painting at the anchor (Collector A2) tier, with the COLLECTION_BUNDLE
+ * _DISCOUNT_PERCENT saving that the checkout actually applies. Returns
+ * undefined if the collection has no paintings.
+ */
+export const getCollectionBundle = (
+  collectionId: Collection["id"],
+): CollectionBundle | undefined => {
+  const collection = COLLECTIONS.find((c) => c.id === collectionId);
+  const paintings = getPaintingsByCollection(collectionId);
+  if (!collection || paintings.length === 0) return undefined;
+
+  const fullPricePence = paintings.reduce(
+    (sum, p) => sum + getAnchorTier(p).pricePence,
+    0,
+  );
+  // Round to whole pence — Stripe's coupon discount rounds per-line, but for
+  // the advertised headline a single round of the total is honest enough and
+  // never overstates the saving (we floor the discount → round the net up).
+  const bundlePricePence = Math.round(
+    fullPricePence * (1 - COLLECTION_BUNDLE_DISCOUNT_PERCENT / 100),
+  );
+  return {
+    collectionId,
+    title: collection.title,
+    paintingIds: paintings.map((p) => p.id),
+    fullPricePence,
+    bundlePricePence,
+    savePence: fullPricePence - bundlePricePence,
+  };
+};

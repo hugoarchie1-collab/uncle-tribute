@@ -6,7 +6,14 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
-import { COLLECTIONS, PAINTINGS, getAnchorTier, formatGBP } from "../data/paintings";
+import {
+  COLLECTIONS,
+  PAINTINGS,
+  getLowestTierPricePence,
+  getCollectionBundle,
+  formatGBP,
+} from "../data/paintings";
+import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -120,6 +127,22 @@ export const Collections = () => {
 
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
+          const bundle = getCollectionBundle(coll.id);
+          // Short collection name for the CTA copy ("the complete Habundia"),
+          // dropping the long subtitle after the em-dash.
+          const shortName = coll.title.split(" — ")[0];
+          // Add every painting in the collection to the basket at the anchor
+          // (Collector A2) tier, preserving each painting's original
+          // colourway. basket.ts is the single source of truth for the store.
+          const acquireCollection = () => {
+            items.forEach((p) => {
+              const original =
+                p.colourways.find((c) => c.isOriginal && c.available) ??
+                p.colourways.find((c) => c.available) ??
+                p.colourways[0];
+              if (original) addItem(p.id, original.name, "collector");
+            });
+          };
           return (
             <section
               key={coll.id}
@@ -202,14 +225,15 @@ export const Collections = () => {
                             )}
                             {/* Price floor — sits under every tile so a
                                 browsing buyer never needs to click into a
-                                painting to learn there is a price. Uses
-                                the painting's anchor tier (A2 Collector
-                                £295) — not the legacy £180. */}
+                                painting to learn there is a price. Advertises
+                                the LOWEST visible tier (A3 Atelier £145) to
+                                lower the click barrier — the £295 anchor still
+                                does its conversion work on the product page. */}
                             <p
                               className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-white/85 m-0"
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
-                              Signed giclée · from {formatGBP(getAnchorTier(painting).pricePence).replace(".00", "")}
+                              Signed giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
                             </p>
                           </figcaption>
                         </Link>
@@ -217,6 +241,56 @@ export const Collections = () => {
                     );
                   })}
                 </RevealStagger>
+
+                {/* COMPLETE-COLLECTION CARD — offer the whole collection as a
+                    curated set. Dignified estate register: "offered as a set",
+                    not a sale. The saving advertised here (10%) is exactly what
+                    the checkout's 3+-item bundle coupon applies — a full
+                    collection is always 3+ paintings — so the number is honest.
+                    Clicking adds every painting (anchor A2 tier) to the basket;
+                    the buyer reviews + completes on /basket. */}
+                {bundle && items.length > 1 && (
+                  <Reveal
+                    as="div"
+                    className="mt-12 md:mt-16 mx-auto max-w-[720px]"
+                  >
+                    <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-white/12 px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
+                      <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-4">
+                        The complete collection
+                      </p>
+                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,32px)] leading-[1.15] text-white m-0 mb-3">
+                        Acquire the complete {shortName}
+                      </h3>
+                      <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.65] text-white/80 m-0 mb-2 max-w-[520px] mx-auto">
+                        All {bundle.paintingIds.length} paintings, offered as a
+                        set at the Collector edition (A2) — a single, complete
+                        body of Stephen's work for one home.
+                      </p>
+                      <p className="font-sans text-[13px] tracking-[0.02em] text-white/70 m-0 mb-7">
+                        <span className="text-white/45 line-through mr-2">
+                          {formatGBP(bundle.fullPricePence).replace(".00", "")}
+                        </span>
+                        <span className="font-semibold text-white">
+                          {formatGBP(bundle.bundlePricePence).replace(".00", "")}
+                        </span>
+                        <span className="mx-2 text-white/35">·</span>
+                        save {formatGBP(bundle.savePence).replace(".00", "")} as
+                        the complete set
+                      </p>
+                      <button
+                        type="button"
+                        onClick={acquireCollection}
+                        className="inline-flex items-center gap-2 bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                      >
+                        Add the complete collection to basket
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <p className="font-sans text-[11px] tracking-[0.03em] text-white/45 m-0 mt-4">
+                        The set discount is applied automatically at checkout.
+                      </p>
+                    </div>
+                  </Reveal>
+                )}
               </div>
             </section>
           );

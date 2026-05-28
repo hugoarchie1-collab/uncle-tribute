@@ -12,7 +12,7 @@ import { EnquireModal } from "../components/EnquireModal";
 import { MagneticLink } from "../components/MagneticLink";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { WELCOME } from "../data/content";
-import { PAINTINGS, COLLECTIONS, formatGBP, getAnchorTier } from "../data/paintings";
+import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -263,7 +263,7 @@ export const Welcome = () => {
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
-                const anchorPrice = getAnchorTier(painting).pricePence;
+                const fromPrice = getLowestTierPricePence(painting);
                 return (
                   <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
@@ -276,8 +276,9 @@ export const Welcome = () => {
                       />
                       {/* Price chip — scroll-revealed (visible on mobile,
                           where there's no hover, and on desktop as soon as
-                          the tile enters view). Uses the painting's anchor
-                          tier (Collector A2 £295) — not the legacy £180. */}
+                          the tile enters view). Advertises the LOWEST visible
+                          tier (A3 Atelier £145) to lower the click barrier —
+                          the £295 anchor still converts on the product page. */}
                       <motion.span
                         aria-hidden="true"
                         initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
@@ -290,7 +291,7 @@ export const Welcome = () => {
                         }}
                         className="absolute bottom-3 right-3 inline-flex items-center bg-bg/85 backdrop-blur-sm px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
                       >
-                        From {formatGBP(anchorPrice).replace(".00", "")}
+                        From {formatGBP(fromPrice).replace(".00", "")}
                       </motion.span>
                     </div>
                     <div className="pt-5">
