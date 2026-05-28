@@ -99,7 +99,7 @@ export const Contact = () => {
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
             Contact the estate
           </p>
-          <h1 className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
+          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
             Get in touch.
           </h1>
           <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-7 m-0 max-w-[600px]">

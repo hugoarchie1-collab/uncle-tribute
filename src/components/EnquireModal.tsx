@@ -42,6 +42,7 @@ export const EnquireModal = ({
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const firstFieldRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on Escape, lock body scroll while open, focus first field on open.
   // onClose is read via a ref so the effect doesn't re-run (and reset the
@@ -55,7 +56,33 @@ export const EnquireModal = ({
       setErrorMsg("");
       return;
     }
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onCloseRef.current();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onCloseRef.current();
+        return;
+      }
+      // Trap Tab within the panel so keyboard / screen-reader users can't
+      // tab out into the page behind the dialog.
+      if (e.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusables = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea, input:not([type="hidden"]):not([tabindex="-1"]), select, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey) {
+        if (active === first || !panel.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !panel.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -153,6 +180,7 @@ export const EnquireModal = ({
 
           {/* Modal panel */}
           <motion.div
+            ref={panelRef}
             className="relative w-full max-w-[560px] bg-bg-soft ring-1 ring-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
