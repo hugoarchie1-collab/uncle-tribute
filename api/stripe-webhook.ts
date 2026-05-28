@@ -39,14 +39,51 @@
  * keeps them out of the public route table.
  */
 
+import type { IncomingMessage } from "node:http";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { OrderConfirmation } from "./_lib/emails/OrderConfirmation.js";
 import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode.js";
 
-const ok = (msg = "ok") => new Response(msg, { status: 200 });
-const bad = (msg: string) => new Response(msg, { status: 400 });
+// CRITICAL: disable Vercel's automatic body parsing. Stripe webhook signature
+// verification must run against the EXACT raw bytes Stripe signed; the Node
+// runtime's auto JSON-parse rewrites those bytes (key ordering, whitespace)
+// and the signature check fails. With bodyParser off, req.body is undefined
+// and we read the raw stream ourselves via readRawBody() below.
+export const config = { api: { bodyParser: false } };
+
+// Minimal structural types for Vercel's Node (req, res) handler signature.
+// We use the Node signature — NOT the Web Request/Response one — because the
+// Web handler's returned Response was not being delivered in this project's
+// Vercel runtime: requests hung with a "default export return" warning and
+// never replied (status "-"). The Node signature with res.json()/res.send()
+// always delivers. Typed inline to keep the file self-contained (gotcha #5);
+// the type-only IncomingMessage import is a Node built-in (not a /src import),
+// so gotcha #5 is respected. We intersect with IncomingMessage so the handler
+// req is async-iterable for the raw-body read. Node lowercases header names.
+interface VercelReqBase {
+  method?: string;
+  headers: Record<string, string | string[] | undefined>;
+}
+type VercelReq = VercelReqBase & IncomingMessage;
+interface VercelRes {
+  status: (code: number) => VercelRes;
+  json: (body: unknown) => void;
+  send: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
+
+// Read the raw, unparsed request body off the Node stream. Stripe's
+// constructEvent needs these exact bytes to verify the signature.
+async function readRawBody(req: IncomingMessage): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  return Buffer.concat(chunks);
+}
 
 // ---------------------------------------------------------------------------
 // In-memory event-id deduplication
@@ -195,25 +232,41 @@ const linesFromMetadata = (
 // Handler
 // ---------------------------------------------------------------------------
 
-export default async function handler(req: Request) {
-  if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+export default async function handler(req: VercelReq, res: VercelRes) {
+  // Local response helpers — write to res so the Node runtime actually
+  // delivers the reply (a returned Response was not being delivered here).
+  // Stripe only needs a 2xx body; a 4xx/5xx triggers retries.
+  const ok = (msg: unknown = { received: true }) => {
+    if (typeof msg === "string") res.status(200).send(msg);
+    else res.status(200).json(msg);
+  };
+  const bad = (msg: string) => res.status(400).send(msg);
+
+  if (req.method !== "POST") {
+    res.status(405).send("Method not allowed");
+    return;
+  }
 
   const secret = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret || !webhookSecret) {
     // 500, not 400 — server config issue. Stripe stops retrying 5xxs faster
     // than it stops retrying 400s, so we don't spam the log forever.
-    return new Response(
-      "Server is missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET.",
-      { status: 500 },
-    );
+    res
+      .status(500)
+      .send("Server is missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET.");
+    return;
   }
 
-  const sig = req.headers.get("stripe-signature");
+  // Node lowercases header names; the value is string | string[] | undefined.
+  const sigHeader = req.headers["stripe-signature"];
+  const sig = Array.isArray(sigHeader) ? sigHeader[0] : sigHeader;
   if (!sig) return bad("Missing stripe-signature header.");
 
   const stripe = new Stripe(secret);
-  const rawBody = await req.text();
+  // Read the RAW bytes Stripe signed — bodyParser is disabled (see config
+  // above) so req.body is unavailable and would have been corrupted anyway.
+  const rawBody = await readRawBody(req);
 
   let event: Stripe.Event;
   try {

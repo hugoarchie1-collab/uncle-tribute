@@ -167,11 +167,26 @@ const corsHeaders = (origin: string | null): Record<string, string> => {
   return base;
 };
 
-const json = (status: number, body: unknown, origin: string | null) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-  });
+// Minimal structural types for Vercel's Node (req, res) handler signature.
+// We use the Node signature — NOT the Web Request/Response one — because the
+// Web handler's returned Response was not being delivered in this project's
+// Vercel runtime: requests hung with a "default export return" warning and
+// never replied (status "-"), tripping the client's timeout. The Node
+// signature with res.json() always delivers. Typed inline to keep the file
+// self-contained (gotcha #5) — no @vercel/node import; Vercel supplies the
+// real objects at runtime. Node lowercases header names, so we read
+// req.headers.origin (not get("origin")).
+interface VercelReq {
+  method?: string;
+  body?: unknown;
+  headers: Record<string, string | string[] | undefined>;
+}
+interface VercelRes {
+  status: (code: number) => VercelRes;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 const formatGBP = (pence: number): string =>
   new Intl.NumberFormat("en-GB", {
@@ -195,11 +210,28 @@ const throttleClean = () => {
   }
 };
 
-export default async function handler(req: Request) {
-  const origin = req.headers.get("origin");
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders(origin) });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" }, origin);
+export default async function handler(req: VercelReq, res: VercelRes) {
+  const originHeader = req.headers.origin;
+  const origin = typeof originHeader === "string" ? originHeader : null;
 
+  // Apply origin-aware CORS to every response via res.setHeader.
+  for (const [key, value] of Object.entries(corsHeaders(origin))) {
+    res.setHeader(key, value);
+  }
+  // Local send helper — writes to res so the Node runtime actually delivers
+  // the response (the old Response-returning json() helper did not).
+  const send = (status: number, payload: unknown) => {
+    res.status(status).json(payload);
+  };
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  if (req.method !== "POST") return send(405, { error: "Method not allowed" });
+
+  // Vercel's Node runtime parses a JSON request body into req.body. Handle
+  // both the parsed-object case and a raw-string fallback defensively.
   let body: {
     email?: string;
     name?: string;
@@ -212,23 +244,26 @@ export default async function handler(req: Request) {
     }>;
   };
   try {
-    body = await req.json();
+    body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : ((req.body ?? {}) as typeof body);
   } catch {
-    return json(400, { error: "Invalid JSON body." }, origin);
+    return send(400, { error: "Invalid JSON body." });
   }
 
   const email = (body.email ?? "").toString().trim().toLowerCase();
   const name = (body.name ?? "").toString().trim().slice(0, 120);
   if (!email || !isValidEmail(email)) {
-    return json(400, { error: "Please provide a valid email." }, origin);
+    return send(400, { error: "Please provide a valid email." });
   }
 
   const rawItems = Array.isArray(body.items) ? body.items : [];
   if (rawItems.length === 0) {
-    return json(400, { error: "Your basket is empty." }, origin);
+    return send(400, { error: "Your basket is empty." });
   }
   if (rawItems.length > MAX_ITEMS) {
-    return json(400, { error: `Too many items (max ${MAX_ITEMS}).` }, origin);
+    return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
   }
 
   const lines: Array<{
@@ -241,7 +276,7 @@ export default async function handler(req: Request) {
   for (const raw of rawItems) {
     const id = (raw?.paintingId ?? "").toString();
     if (!VALID_PAINTING_IDS.has(id)) {
-      return json(400, { error: `Unknown painting "${id}".` }, origin);
+      return send(400, { error: `Unknown painting "${id}".` });
     }
     const colourway = (raw?.colourwayName ?? "").toString().trim() || "Original";
     // Tier resolution: prefer the buyer's choice, fall back to the anchor
@@ -278,11 +313,7 @@ export default async function handler(req: Request) {
   throttleClean();
   const lastSent = recentSends.get(email);
   if (lastSent && Date.now() - lastSent < THROTTLE_MS) {
-    return json(
-      429,
-      { error: "We just sent that — please check your inbox." },
-      origin,
-    );
+    return send(429, { error: "We just sent that — please check your inbox." });
   }
 
   console.log("[email-basket] request", { email, name, itemCount: lines.length });
@@ -292,7 +323,7 @@ export default async function handler(req: Request) {
     console.warn("[email-basket] RESEND_API_KEY missing — skipping send.");
     // Soft-success so the UI doesn't leak infra state to the buyer.
     recentSends.set(email, Date.now());
-    return json(200, { ok: true }, origin);
+    return send(200, { ok: true });
   }
 
   try {
@@ -333,11 +364,11 @@ export default async function handler(req: Request) {
       });
     }
     recentSends.set(email, Date.now());
-    return json(200, { ok: true }, origin);
+    return send(200, { ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[email-basket] failed:", message);
     // Still 200 — UI shouldn't reveal infra failures.
-    return json(200, { ok: true }, origin);
+    return send(200, { ok: true });
   }
 }

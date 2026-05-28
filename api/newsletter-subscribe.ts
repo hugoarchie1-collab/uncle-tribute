@@ -91,11 +91,26 @@ const corsHeaders = (origin: string | null): Record<string, string> => {
   return base;
 };
 
-const json = (status: number, body: unknown, origin: string | null) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
-  });
+// Minimal structural types for Vercel's Node (req, res) handler signature.
+// We use the Node signature — NOT the Web Request/Response one — because the
+// Web handler's returned Response was not being delivered in this project's
+// Vercel runtime: requests hung with a "default export return" warning and
+// never replied (status "-"), tripping the client's timeout. The Node
+// signature with res.json() always delivers. Typed inline to keep the file
+// self-contained (gotcha #5) — no @vercel/node import; Vercel supplies the
+// real objects at runtime. Node lowercases header names, so we read
+// req.headers.origin (not get("origin")).
+interface VercelReq {
+  method?: string;
+  body?: unknown;
+  headers: Record<string, string | string[] | undefined>;
+}
+interface VercelRes {
+  status: (code: number) => VercelRes;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 // Same dignified register as the post-purchase code: prefix + unguessable
 // suffix from a no-ambiguous-glyphs alphabet (no 0/O/1/I).
@@ -193,16 +208,36 @@ const mintSubscriberCode = async (
 const isValidEmail = (email: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 
-export default async function handler(req: Request) {
-  const origin = req.headers.get("origin");
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders(origin) });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" }, origin);
+export default async function handler(req: VercelReq, res: VercelRes) {
+  const originHeader = req.headers.origin;
+  const origin = typeof originHeader === "string" ? originHeader : null;
 
+  // Apply origin-aware CORS to every response via res.setHeader.
+  for (const [key, value] of Object.entries(corsHeaders(origin))) {
+    res.setHeader(key, value);
+  }
+  // Local send helper — writes to res so the Node runtime actually delivers
+  // the response (the old Response-returning json() helper did not).
+  const send = (status: number, payload: unknown) => {
+    res.status(status).json(payload);
+  };
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  if (req.method !== "POST") return send(405, { error: "Method not allowed" });
+
+  // Vercel's Node runtime parses a JSON request body into req.body. Handle
+  // both the parsed-object case and a raw-string fallback defensively.
   let body: { name?: string; email?: string; source?: string };
   try {
-    body = await req.json();
+    body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : ((req.body ?? {}) as typeof body);
   } catch {
-    return json(400, { error: "Invalid JSON body." }, origin);
+    return send(400, { error: "Invalid JSON body." });
   }
 
   const name = (body.name ?? "").toString().trim().slice(0, 120);
@@ -210,7 +245,7 @@ export default async function handler(req: Request) {
   const source = (body.source ?? "panel").toString().trim().slice(0, 32);
 
   if (!email || !isValidEmail(email)) {
-    return json(400, { error: "Please provide a valid email." }, origin);
+    return send(400, { error: "Please provide a valid email." });
   }
 
   // Audit trail — always log even if downstream sends are skipped. Hugo can
@@ -260,7 +295,7 @@ export default async function handler(req: Request) {
     console.warn(
       "[newsletter-subscribe] RESEND_API_KEY missing — skipping welcome email.",
     );
-    return json(200, { ok: true }, origin);
+    return send(200, { ok: true });
   }
 
   try {
@@ -305,5 +340,5 @@ export default async function handler(req: Request) {
     console.error("[newsletter-subscribe] welcome email failed:", message);
   }
 
-  return json(200, { ok: true }, origin);
+  return send(200, { ok: true });
 }
