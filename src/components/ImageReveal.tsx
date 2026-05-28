@@ -93,7 +93,15 @@ export const ImageReveal = ({
           loading={eager ? "eager" : "lazy"}
           decoding={eager ? "sync" : "async"}
           fetchPriority={eager ? "high" : "auto"}
-          style={{ y, objectPosition }}
+          // `will-change: transform` only when the image actually parallaxes —
+          // promotes it to its own GPU layer so the scroll-driven `y` composites
+          // instead of repainting against the soft-edge mask. Omitted under
+          // reduced motion to avoid needless layers.
+          style={{
+            y,
+            objectPosition,
+            willChange: reduceMotion ? undefined : "transform",
+          }}
           animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
           transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}
           className="w-full h-full object-cover scale-[1.04]"

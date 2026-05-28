@@ -51,7 +51,7 @@ import Stripe from "stripe";
 // ---- Tier ladder (mirror of src/data/paintings.ts PRINT_TIERS) ----------
 // IMPORTANT: keep prices in sync with src/data/paintings.ts PRINT_TIERS.
 // Gotcha #9 in CLAUDE.md — pricing lives in two places.
-type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom";
+type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
 
 interface TierDef {
   id: TierId;
@@ -62,6 +62,9 @@ interface TierDef {
   framingPricePence?: number;
   embellishmentPricePence?: number;
   available: boolean;
+  // True for the Studio one-off — it IS the hand-finished piece, so it
+  // never carries framing / embellishment add-on line items.
+  isOneOff?: boolean;
 }
 
 const TIERS: Record<TierId, TierDef> = {
@@ -101,6 +104,18 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Limited edition of 25",
     // Hidden site-wide until Hugo confirms Point 101 A0 fulfilment.
     available: false,
+  },
+  studio: {
+    // Studio one-off — £950 unique hand-painted piece by Polly Wedge. No
+    // framing / embellishment price: it IS the hand-finished work, so a
+    // "studio" tierId produces a single £950 line item with no add-ons.
+    id: "studio",
+    label: "Studio — Hand-painted by Polly Wedge",
+    size: "A1 (59.4 × 84.1 cm)",
+    pricePence: 95000,
+    editionLabel: "Unique — one of one",
+    isOneOff: true,
+    available: true,
   },
 };
 
@@ -161,7 +176,11 @@ const json = (status: number, body: unknown) =>
   });
 
 const isTierId = (v: unknown): v is TierId =>
-  v === "atelier" || v === "collector" || v === "atelier-grande" || v === "heirloom";
+  v === "atelier" ||
+  v === "collector" ||
+  v === "atelier-grande" ||
+  v === "heirloom" ||
+  v === "studio";
 
 interface NormalisedItem {
   paintingId: string;

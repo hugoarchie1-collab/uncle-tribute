@@ -37,14 +37,14 @@
 
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { BasketSavedEmail } from "./_lib/emails/BasketSaved";
+import { BasketSavedEmail } from "./_lib/emails/BasketSaved.js";
 
 // ---- Catalogue duplicated from src/data/paintings.ts + api/checkout.ts ----
 // Keep in sync with PRINT_TIERS in src/data/paintings.ts AND the inline TIERS
 // map in api/checkout.ts. Gotcha #5 (api self-contained) + new gotcha #9
 // (pricing mirror across three files). Update all three in the same commit
 // when tier prices, add-on prices or labels change.
-type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom";
+type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
 interface EmailTier {
   label: string;
   size: string;
@@ -53,6 +53,8 @@ interface EmailTier {
   framingPricePence?: number;
   embellishmentPricePence?: number;
   available: boolean;
+  // Studio one-off — no add-ons; it IS the hand-finished piece.
+  isOneOff?: boolean;
 }
 const TIERS: Record<TierId, EmailTier> = {
   atelier: {
@@ -86,6 +88,15 @@ const TIERS: Record<TierId, EmailTier> = {
     editionLabel: "Edition of 25",
     pricePence: 125000,
     available: false,
+  },
+  studio: {
+    // £950 unique hand-painted one-off by Polly Wedge — no add-ons.
+    label: "Studio — Hand-painted by Polly Wedge",
+    size: "A1 (59.4 × 84.1 cm)",
+    editionLabel: "Unique — one of one",
+    pricePence: 95000,
+    isOneOff: true,
+    available: true,
   },
 };
 const ANCHOR_TIER_ID: TierId = "collector";

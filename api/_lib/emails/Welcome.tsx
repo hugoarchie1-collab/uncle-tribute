@@ -15,7 +15,7 @@
  * contained — no imports outside /api (gotcha #5 in CLAUDE.md).
  */
 
-import { palette, styles } from "./styles";
+import { palette, styles } from "./styles.js";
 
 export interface WelcomeEmailProps {
   /** Optional first name from the sign-up form. */
