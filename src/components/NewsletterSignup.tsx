@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 
 /**
- * Newsletter signup ("Estate friends" list).
+ * Newsletter signup ("Friends & Family" list).
  *
  * Estate-register sign-up: name + email, POSTed to /api/newsletter-subscribe,
  * which sends a Resend-backed Welcome email and (optionally) mints a single-
@@ -32,7 +32,7 @@ interface NewsletterSignupProps {
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-const DEFAULT_EYEBROW = "The Estate friends list";
+const DEFAULT_EYEBROW = "Friends & Family";
 const DEFAULT_TITLE = "Quarterly notes from the estate.";
 const DEFAULT_INTRO =
   "The Mandala Company sends a quiet quarterly note when a new edition is released or a Stephen Meakin painting goes on view. Leave your name to be told first.";
@@ -106,7 +106,7 @@ export const NewsletterSignup = ({
     return (
       <div>
         <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
-          Friends of the estate
+          Friends &amp; Family
         </h3>
         {status === "success" ? (
           <p className="font-sans text-[13px] leading-[1.65] text-ink/70 m-0">
@@ -171,7 +171,7 @@ export const NewsletterSignup = ({
         </p>
         {status === "success" ? (
           <p className="font-sans text-[14.5px] leading-[1.7] text-ink/75 m-0 max-w-[520px]">
-            Thank you. Your name has been added to the friends list. We'll write when
+            Thank you. Your name has been added to Friends &amp; Family. We'll write when
             the next edition is released.
           </p>
         ) : (
@@ -242,7 +242,7 @@ export const NewsletterSignup = ({
       {status === "success" ? (
         <div>
           <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] leading-[1.7] text-ink/80 m-0 mb-2">
-            Thank you. Your name has been added to the friends list.
+            Thank you. Your name has been added to Friends &amp; Family.
           </p>
           <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/65 m-0">
             A short welcome from the estate is on its way to your inbox.

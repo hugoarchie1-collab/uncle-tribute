@@ -98,8 +98,8 @@ export const Nav = () => {
           </NavLink>
         ))}
         {/* Returning-subscriber recognition — quiet hairline text that
-            appears once per session if the visitor previously joined the
-            friends list. Self-hiding. */}
+            appears once per session if the visitor previously joined
+            Friends & Family. Self-hiding. */}
         <ReturningVisitorChip />
         {/* Basket — icon + count badge (count appears only when ≥ 1). No
             wordmark; the glyph + number is enough at the estate register. */}

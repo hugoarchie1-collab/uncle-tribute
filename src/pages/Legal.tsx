@@ -60,7 +60,7 @@ const PRIVACY: Section[] = [
         kind: "ul",
         items: [
           <><strong>Order details</strong> — your name, email and postal address, captured by Stripe at checkout and passed to us so we can send your print.</>,
-          <><strong>Newsletter sign-up</strong> — your name (optional) and email, if you join the friends-of-the-estate list.</>,
+          <><strong>Newsletter sign-up</strong> — your name (optional) and email, if you join the Friends &amp; Family list.</>,
           <><strong>Enquiries</strong> — your name, email and message, when you write to us through the contact form.</>,
           <><strong>Saved basket</strong> — the painting / colourway / tier you've added is stored in your own browser only (<code>localStorage</code> key <code>tasm.basket.v2</code>). It never leaves your device unless you choose to email it to yourself, in which case your email address is also stored (briefly) to send the basket.</>,
           <><strong>Server logs</strong> — basic request information (IP address, browser type, timestamps) is held in our hosting provider's logs for security and abuse-prevention purposes.</>,
@@ -98,7 +98,7 @@ const PRIVACY: Section[] = [
           <><strong>Stripe</strong> — payment processing (US / EU).{" "}
             <a href="https://stripe.com/gb/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Stripe Privacy Policy</a>
           </>,
-          <><strong>Resend</strong> — transactional and friends-list email delivery (US / EU).{" "}
+          <><strong>Resend</strong> — transactional and newsletter email delivery (US / EU).{" "}
             <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Resend Privacy Policy</a>
           </>,
           <><strong>Vercel</strong> — site hosting and serverless functions (US / EU).{" "}

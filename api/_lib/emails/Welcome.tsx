@@ -55,7 +55,7 @@ export const WelcomeEmail = ({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="color-scheme" content="dark only" />
         <meta name="supported-color-schemes" content="dark only" />
-        <title>Welcome to the friends list — The Art of Stephen Meakin</title>
+        <title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Inter:wght@400;600&display=swap"
@@ -67,7 +67,7 @@ export const WelcomeEmail = ({
           <p style={styles.eyebrow}>The Mandala Company · The estate of Stephen Meakin</p>
           <h1 style={styles.heading}>Thank you, {firstName(subscriberName)}.</h1>
           <p style={styles.body}>
-            You've been added to the friends of the estate — a small list the
+            You've been added to Friends &amp; Family — a small list the
             family keeps for quarterly notes on new editions of{" "}
             <em>The Art of Stephen Meakin</em>, exhibitions, and the occasional
             piece of writing from the archive. No more than four notes a year,
