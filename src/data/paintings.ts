@@ -461,7 +461,7 @@ export const PAINTINGS: Painting[] = [
   {
     id: "flower-of-life",
     title: "Mandala of Transformation — Flower of Life",
-    year: "Y2K (2000)",
+    year: "2000",
     collection: "genesis",
     size: "75 × 75 cm (approx. 30 × 30 in)",
     description:
@@ -740,19 +740,23 @@ export const getPaintingsByCollection = (collectionId: Collection["id"]): Painti
 // ADVERTISED SAVING — read this before changing copy:
 // The brief floated 15% off as the curated-set saving. BUT the actual
 // discount is applied at checkout by api/checkout.ts, which mints a bundle
-// coupon of 5% (2 items) / 10% (3+ items) — and a full collection is always
-// 3+ items, so it naturally lands a 10% bundle discount. There is no clean,
-// honest way to advertise 15% without wiring a "full-collection" flag all
-// the way through to checkout (which would mean touching the discount logic
-// + minting a different coupon for a flagged session). Per the brief's
-// guidance, we pick honesty/simplicity: advertise the 10% the checkout
-// actually applies. So `bundlePricePence` here is the full price minus the
-// SAME 10% the checkout's 3+-item bundle coupon grants. The numbers the
-// buyer sees on the card therefore match what Stripe will charge.
+// coupon of 5% (2 items) / 10% (3+ items). There is no clean, honest way to
+// advertise 15% without wiring a "full-collection" flag all the way through
+// to checkout (which would mean touching the discount logic + minting a
+// different coupon for a flagged session). Per the brief's guidance, we pick
+// honesty/simplicity: advertise EXACTLY the percent the checkout will apply
+// for that collection's item count. Habundia has 2 paintings → 5%; Genesis
+// (3) and Born in the Sky (5) → 10%. So the numbers the buyer sees on the
+// card always match what Stripe charges.
 
-/** 10% — matches api/checkout.ts's 3+-item bundle coupon (a full
- * collection is always 3+ paintings). Advertise only what checkout applies. */
-export const COLLECTION_BUNDLE_DISCOUNT_PERCENT = 10;
+/**
+ * Returns the bundle discount percent the checkout will actually apply for a
+ * given item count — MUST mirror api/checkout.ts: 5% off at 2 items, 10% at
+ * 3+. A 2-painting collection (Habundia) therefore advertises 5%, not 10%,
+ * so the card's save / net figure equals the Stripe charge (gotcha #9).
+ */
+export const bundleDiscountPercentForCount = (count: number): number =>
+  count >= 3 ? 10 : 5;
 
 export interface CollectionBundle {
   collectionId: Collection["id"];
@@ -769,9 +773,9 @@ export interface CollectionBundle {
 
 /**
  * Build the complete-collection bundle for a given collection: every
- * painting at the anchor (Collector A2) tier, with the COLLECTION_BUNDLE
- * _DISCOUNT_PERCENT saving that the checkout actually applies. Returns
- * undefined if the collection has no paintings.
+ * painting at the anchor (Collector A2) tier, with the SAME bundle saving the
+ * checkout actually applies for that item count (5% at 2 items, 10% at 3+).
+ * Returns undefined if the collection has no paintings.
  */
 export const getCollectionBundle = (
   collectionId: Collection["id"],
@@ -784,11 +788,14 @@ export const getCollectionBundle = (
     (sum, p) => sum + getAnchorTier(p).pricePence,
     0,
   );
-  // Round to whole pence — Stripe's coupon discount rounds per-line, but for
-  // the advertised headline a single round of the total is honest enough and
-  // never overstates the saving (we floor the discount → round the net up).
+  // Derive the percent from the painting count so the advertised figure
+  // matches api/checkout.ts exactly — a 2-painting collection gets 5%, not
+  // 10% (gotcha #9). Round to whole pence — Stripe's coupon discount rounds
+  // per-line, but for the advertised headline a single round of the total is
+  // honest enough and never overstates the saving.
+  const discountPercent = bundleDiscountPercentForCount(paintings.length);
   const bundlePricePence = Math.round(
-    fullPricePence * (1 - COLLECTION_BUNDLE_DISCOUNT_PERCENT / 100),
+    fullPricePence * (1 - discountPercent / 100),
   );
   return {
     collectionId,

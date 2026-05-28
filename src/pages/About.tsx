@@ -17,7 +17,7 @@ import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
 import { ABOUT, PASSING_DATE } from "../data/content";
 import { asset } from "../lib/asset";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 const earlyLife = ABOUT.earlyLife;
 
@@ -487,7 +487,7 @@ const AnegadaSpread = () => {
                   color: "rgba(220,168,76,0.95)",
                 }}
               >
-                "At the exact moment I completed the circle, I felt something touch me that was inexplicable."
+                “At the exact moment I completed the circle, I felt something touch me that was inexplicable.”
               </p>
             </aside>
           </Reveal>
@@ -676,8 +676,6 @@ const InMemoriamSpacer = () => {
 };
 
 export const About = () => {
-  usePageTitle("Stephen Meakin");
-
   // Friends & Family enquiry modal — opened from the closing CTA so a
   // reader moved by the biography can subscribe without leaving the page.
   const [friendsOpen, setFriendsOpen] = useState(false);
@@ -686,6 +684,11 @@ export const About = () => {
 
   return (
     <div className="relative">
+      <Seo
+        title="About Stephen Meakin — the life and work"
+        description="The life of Stephen Meakin (1966–2021), British mandala artist and sacred geometer — from Anegada to the studio in Lewes, and a practice devoted to the idea that everything is connected."
+        url="/about"
+      />
       <Nav />
       <main>
         {/* HERO — scroll-scrubbed scale + opacity on image, slight upward
@@ -764,7 +767,7 @@ export const About = () => {
 
         <MilestoneText
           year="1996"
-          place="Brighton University"
+          place="University of Brighton"
           title="Architecture & Interior Design."
         >
           <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.8] text-ink/85 m-0">

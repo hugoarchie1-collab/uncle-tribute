@@ -3,7 +3,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 /**
  * /faq — frequently asked questions.
@@ -141,9 +141,13 @@ const FAQS: QA[] = [
 ];
 
 export const FAQ = () => {
-  usePageTitle("Frequently asked");
   return (
     <div className="min-h-screen flex flex-col bg-bg">
+      <Seo
+        title="Frequently asked"
+        description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
+        url="/faq"
+      />
       <Nav />
       <main className="flex-1 mx-auto w-full max-w-[760px] px-6 md:px-10 py-24 md:py-32">
         <Reveal as="header" className="mb-14">

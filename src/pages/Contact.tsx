@@ -3,7 +3,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 /**
  * /contact — full-page version of the EnquireModal form. Same mailto +
@@ -20,7 +20,6 @@ type Status = "idle" | "submitting" | "success" | "error";
 const SUBJECT = "Contact the estate";
 
 export const Contact = () => {
-  usePageTitle("Contact the estate");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const firstFieldRef = useRef<HTMLInputElement>(null);
@@ -89,13 +88,18 @@ export const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-bg">
+      <Seo
+        title="Contact the estate"
+        description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
+        url="/contact"
+      />
       <Nav />
       <main className="flex-1 mx-auto w-full max-w-[720px] px-6 md:px-10 py-24 md:py-32">
         <Reveal as="header" className="mb-10">
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
             Contact the estate
           </p>
-          <h1 className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
+          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
             Get in touch.
           </h1>
           <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-7 m-0 max-w-[600px]">

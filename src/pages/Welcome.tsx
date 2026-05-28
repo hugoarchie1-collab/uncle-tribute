@@ -60,7 +60,7 @@ const estateCards: readonly EstateCard[] = [
   {
     id: "prints",
     eyebrow: "Prints",
-    title: "Signed giclée prints",
+    title: "Estate-stamped giclée prints",
     body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
     cta: "Browse prints",
     to: "/collections",
@@ -231,7 +231,7 @@ export const Welcome = () => {
                   {WELCOME.invocation}
                 </p>
                 <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
-                  The Art of Mandala with internationally renowned mandala artist Stephen Meakin.
+                  The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
                   {WELCOME.bio[0]}

@@ -68,7 +68,7 @@ export const VideoIntro = () => {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             poster={`${base}video/poster.jpg`}
           >
             <source src={`${base}video/intro.mp4`} type="video/mp4" />

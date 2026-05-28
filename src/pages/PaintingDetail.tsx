@@ -22,10 +22,11 @@ import {
   type Painting,
   type PrintTier,
 } from "../data/paintings";
-import { asset } from "../lib/asset";
-import { usePageTitle } from "../lib/usePageTitle";
+import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
+import { Seo } from "../components/Seo";
+import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page (canonical; propagate site-wide later)
@@ -160,8 +161,8 @@ const OneOffCard = ({
     </span>
     <span className={cn(META, "block mb-1.5")}>{tier.size}</span>
     <span className={cn(META, "block")}>
-      A singular work, hand-painted by hand in Stephen&rsquo;s geometric
-      tradition. Once it is taken, it is gone — there is only this one.
+      A singular work, hand-painted in Stephen&rsquo;s geometric tradition.
+      Once it is taken, it is gone — there is only this one.
     </span>
   </button>
 );
@@ -268,7 +269,6 @@ const BuyBox = ({
   oneOffTier,
   selectedTier,
   onSelectTier,
-  anchorTier,
   framing,
   embellished,
   onFramingChange,
@@ -284,7 +284,6 @@ const BuyBox = ({
   oneOffTier?: PrintTier;
   selectedTier: PrintTier;
   onSelectTier: (id: PrintTier["id"]) => void;
-  anchorTier: PrintTier;
   framing: boolean;
   embellished: boolean;
   onFramingChange: (next: boolean) => void;
@@ -310,6 +309,16 @@ const BuyBox = ({
     !isOneOffSelected && typeof selectedTier.embellishmentPricePence === "number";
   // Add-ons only make sense on a multiple (framed / hand-finished print).
   const showAddOns = !isOneOffSelected;
+  // Add-on prices read from the selected tier so they can never drift from
+  // the data source (gotcha #9 — pricing must not be hand-typed).
+  const framingPriceLabel =
+    typeof selectedTier.framingPricePence === "number"
+      ? formatGBP(selectedTier.framingPricePence).replace(".00", "")
+      : null;
+  const embellishPriceLabel =
+    typeof selectedTier.embellishmentPricePence === "number"
+      ? formatGBP(selectedTier.embellishmentPricePence).replace(".00", "")
+      : null;
 
   const showAdded =
     addedFor !== null &&
@@ -425,14 +434,14 @@ const BuyBox = ({
       <div id="order-print" className="scroll-mt-24">
         <div ref={orderSentinelRef} aria-hidden="true" className="h-px w-full" />
 
-        {/* 3 · PRICE (anchor tier) + eyebrow */}
+        {/* 3 · PRICE (tracks the selected size tier) + eyebrow */}
         <p className={cn(EYEBROW, "m-0 mb-3")}>Order a print</p>
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-6">
           <p className="font-display font-bold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
-            {formatGBP(anchorTier.pricePence).replace(".00", "")}
+            {formatGBP(selectedTier.pricePence).replace(".00", "")}
           </p>
           <p className={cn(META, "m-0")}>
-            from · {anchorTier.size}
+            {selectedTier.size}
           </p>
         </div>
 
@@ -483,7 +492,8 @@ const BuyBox = ({
               <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85">
                 <span>
                   <strong className="text-ink">Add a hand-made frame</strong>
-                  {" "}— black-stained oak, cast acrylic glazing for safe transit. +£295 (A2) / +£395 (A1), plus a small framed-shipping surcharge at checkout. Allow 2 weeks.
+                  {" "}— black-stained oak, cast acrylic glazing for safe transit.
+                  {framingPriceLabel ? ` +${framingPriceLabel} for this size, plus a small framed-shipping surcharge at checkout. Allow 2 weeks.` : ""}
                 </span>
                 {!framingOffered && (
                   <span className="font-sans text-[13.5px] text-ink/50">
@@ -512,7 +522,7 @@ const BuyBox = ({
               <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85">
                 <span>
                   <strong className="text-ink">Hand-finished by Polly Wedge</strong>
-                  {" "}— adds £350 (A2) / £495 (A1). Allow 4 weeks.
+                  {embellishPriceLabel ? ` — adds ${embellishPriceLabel} for this size. Allow 4 weeks.` : " — Allow 4 weeks."}
                 </span>
                 <span className="font-sans text-[13.5px] leading-[1.55] text-ink/55">
                   {EMBELLISHMENT_NOTE}
@@ -810,17 +820,22 @@ const HeroLightbox = ({
           >
             Close <span aria-hidden="true">· Esc</span>
           </button>
-          <motion.img
-            src={imageSrc}
-            alt={alt}
+          <motion.picture
             initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
             animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.36, ease: [0.22, 0.61, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="max-w-full max-h-full object-contain block"
-            draggable={false}
-          />
+            className="block max-w-full max-h-full"
+          >
+            <source srcSet={webp(imageSrc)} type="image/webp" />
+            <img
+              src={imageSrc}
+              alt={alt}
+              className="max-w-full max-h-full object-contain block"
+              draggable={false}
+            />
+          </motion.picture>
         </motion.div>
       )}
     </AnimatePresence>
@@ -830,8 +845,6 @@ const HeroLightbox = ({
 export const PaintingDetail = () => {
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
-
-  usePageTitle(painting?.title);
 
   const availableColourways = useMemo(
     () => painting?.colourways.filter((c) => c.available) ?? [],
@@ -901,8 +914,61 @@ export const PaintingDetail = () => {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // ---- SEO: per-painting title / description / OG image + structured data --
+  // OG image is the original-colourway cover so shares look canonical even
+  // while the buyer has a different swatch selected on-page.
+  const ogColourway =
+    painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
+  const metaDescription = firstSentence(painting.description);
+  const paintingPath = `/collections/${painting.id}`;
+  const ogImagePath = ogColourway?.image ?? selected.image;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: painting.title,
+    image: absoluteUrl(ogImagePath),
+    description: metaDescription,
+    brand: { "@type": "Brand", name: "The Art of Stephen Meakin" },
+    offers: {
+      "@type": "Offer",
+      price: (anchorTier.pricePence / 100).toFixed(2),
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      url: absoluteUrl(paintingPath),
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Collections",
+        item: absoluteUrl("/collections"),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: painting.title,
+        item: absoluteUrl(paintingPath),
+      },
+    ],
+  };
+
   return (
     <div className="relative overflow-hidden">
+      <Seo
+        title={painting.title}
+        description={metaDescription}
+        url={paintingPath}
+        image={ogImagePath}
+        type="product"
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
+      />
       {/* Ambient backdrop — selected colourway painting blurred behind the
           page. Crossfades seamlessly between colourways as the user switches
           swatches. (gotcha #8: page carries `isolate` below to keep this
@@ -917,7 +983,7 @@ export const PaintingDetail = () => {
             transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
             className="painting-detail__ambient-bg"
             style={{
-              backgroundImage: `url("${asset(selected.image)}")`,
+              backgroundImage: `url("${asset(webp(selected.image))}")`,
             }}
           />
         </AnimatePresence>
@@ -970,16 +1036,21 @@ export const PaintingDetail = () => {
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
                     <AnimatePresence mode="wait">
-                      <motion.img
+                      <motion.picture
                         key={selected.image}
-                        src={asset(selected.image)}
-                        alt={`${painting.title} — ${selected.name}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
-                        className="w-full h-auto block"
-                      />
+                        className="block w-full"
+                      >
+                        <source srcSet={asset(webp(selected.image))} type="image/webp" />
+                        <img
+                          src={asset(selected.image)}
+                          alt={`${painting.title} — ${selected.name}`}
+                          className="w-full h-auto block"
+                        />
+                      </motion.picture>
                     </AnimatePresence>
                   </button>
                 </div>
@@ -1001,7 +1072,6 @@ export const PaintingDetail = () => {
                 oneOffTier={oneOffTier}
                 selectedTier={selectedTier}
                 onSelectTier={setSelectedTierId}
-                anchorTier={anchorTier}
                 framing={framing}
                 embellished={embellished}
                 onFramingChange={setFraming}

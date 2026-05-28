@@ -147,7 +147,7 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-2 font-sans text-[12px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+            <p className="font-sans text-[11px] italic text-ink/55 mt-2 m-0">
               By subscribing you agree to our{" "}
               <Link to="/privacy" className="underline hover:text-ink/70">
                 Privacy Policy
@@ -192,6 +192,7 @@ export const NewsletterSignup = ({
                 name="name"
                 type="text"
                 autoComplete="name"
+                aria-label="Your name"
                 placeholder="Your name"
                 className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
@@ -200,6 +201,7 @@ export const NewsletterSignup = ({
                 type="email"
                 required
                 autoComplete="email"
+                aria-label="Email address"
                 placeholder="you@example.com"
                 className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
@@ -214,7 +216,7 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-3 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+            <p className="font-sans text-[11px] italic text-ink/55 mt-2 m-0">
               By subscribing you agree to our{" "}
               <Link to="/privacy" className="underline hover:text-ink/70">
                 Privacy Policy
@@ -304,11 +306,11 @@ export const NewsletterSignup = ({
               {status === "submitting" ? "Subscribing…" : "Subscribe"}
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
-            <p className="font-sans text-[11px] leading-[1.5] text-ink/45 m-0">
+            <p className="font-sans text-[11px] leading-[1.5] text-ink/55 m-0">
               No more than four notes a year. Unsubscribe in a click.
             </p>
           </div>
-          <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+          <p className="font-sans text-[11px] italic text-ink/55 mt-2 m-0">
             By subscribing you agree to our{" "}
             <Link to="/privacy" className="underline hover:text-ink/70">
               Privacy Policy
