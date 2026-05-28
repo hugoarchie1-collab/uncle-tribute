@@ -1,6 +1,6 @@
 # The Art of Stephen Meakin — Project Source of Truth
 
-A memorial tribute website and direct-to-buyer print shop for **Stephen Meakin** (SEM, 1966–2021), British mandala artist and sacred geometer. Built by his nephew on behalf of **The Mandala Company Foundation** (the estate, run by Steve's immediate family). Sells signed giclée print reproductions of his paintings direct from the site (via Stripe) and via Etsy.
+A memorial tribute website and direct-to-buyer print shop for **Stephen Meakin** (SEM, 1966–2021), British mandala artist and sacred geometer. Built by his nephew on behalf of **The Mandala Company** (the estate, run by Steve's immediate family — Mandala Company is a trading name, not a registered Foundation or charity). Sells signed giclée print reproductions of his paintings direct from the site (via Stripe) and via Etsy.
 
 This document is the project's running source of truth — paste it at the start of any new AI chat to skip a full re-explanation.
 
@@ -108,10 +108,11 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 ```
 /                            Welcome (9-section home, video intro + scroll experience)
 /collections                 Browse all 3 collections (Habundia, Genesis, Born in the Sky)
-/collections/:id             Painting detail (colourway picker + Order print button)
+/collections/:id             Painting detail (colourway picker + Add to basket / Buy now)
 /about                       Long-form bio (Anegada chapter, TAGA, students letter)
+/basket                      Multi-item basket (localStorage) + Proceed to checkout
 /privacy, /terms             Legal placeholders
-/order/success?session_id=…  Post-checkout confirmation
+/order/success?session_id=…  Post-checkout confirmation (clears basket on mount)
 /order/cancel                Abandoned-checkout landing
 *                            NotFound
 ```
@@ -128,7 +129,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 6. **Each painting is a ritual** — Craft scrim card with process narrative + materials grid
 7. **Sacred Geometry — four traditions** — 4-card grid (Insular Island / Rose Windows / Persian / Tibetan)
 8. **Arista SunStar** — text-left, framed photo right (the 3.6m commission for Farmacy Notting Hill)
-9. **The Estate** — Prints + Foundation engagement cards (open EnquireModal)
+9. **The Estate** — Prints + Friends-of-the-estate engagement cards (open EnquireModal) + `NewsletterSignup variant="panel"` mounted below the cards
 10. **Sacred Geometry (Earth)** — finale: giant display type with Earth horizon brushing the descender of "Geometry"
 
 (Section 7 = Mandalas Wall and section 9 = Three Collections were both cut — kept their assets on disk for future use, e.g. About page.)
@@ -145,8 +146,14 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 ### `src/data/paintings.ts`
 - `PAINTINGS` — array of 10 paintings (id / title / year / collection / description / colourways / optional artistQuote / location)
 - `COLLECTIONS` — 3 collections (habundia, genesis, born-in-the-sky) with backdrop image paths
-- `DEFAULT_PRINT` — placeholder price (£180 = 18000 pence) + size for prints
-- Helpers: `getPaintingById`, `getPrintPricePence`, `getPrintSize`, `formatGBP`, `ORIGINAL_PRINT_SPEC`, `COLOURWAY_NOTE`
+- `PRINT_TIERS` — **canonical four-tier price ladder** (Atelier A3 £145 / Collector A2 £295 anchor / Atelier Grande A1 £595 / Heirloom A0 £1,250 — hidden until A0 fulfilment confirmed). Each A2/A1 tier carries `framingPricePence` (£295/£395) and `embellishmentPricePence` (£350/£495) for the two paid add-ons. Source of truth for site-side pricing.
+- `ESTATE_AUTHENTICATION` — single source for stamp / numbering / COA / printer copy. Surfaces on PaintingDetail, Basket, and the OrderConfirmation email. Updated 2026-05-28: copy says "The Mandala Company" (NOT "The Mandala Company Foundation" — it's a trading name, not a registered Foundation).
+- `ORIGINAL_PROVENANCE` — single dignified line surfaced on PaintingDetail's key-fact dl ("Original · Held privately by the estate — the original is not currently for sale."). The originals are kept in the family's legal name and aren't for sale.
+- `EMBELLISHMENT_NOTE` — copy for the hand-finishing add-on (Polly Wedge finishes A2/A1 prints by hand; allow 4 weeks). Mirrored into `api/_lib/emails/OrderConfirmation.tsx`.
+- `DEFAULT_PRINT` — legacy default (now £295, mirrors the anchor tier). Kept for the home page "from £…" chip and any straggling callers.
+- Helpers: `getPaintingById`, `getPrintTiers`, `getAnchorTier`, `getFramingPricePence`, `getEmbellishmentPricePence`, `getPrintPricePence` (legacy), `getPrintSize` (legacy), `formatGBP`, `ORIGINAL_PRINT_SPEC`, `ORIGINAL_PROVENANCE`, `EMBELLISHMENT_NOTE`, `COLOURWAY_NOTE`
+
+**Pricing mirror**: `api/checkout.ts` carries a `TIERS` map that mirrors `PRINT_TIERS` (gotcha #5 forbids cross-directory imports into `/api`). `api/stripe-webhook.ts` also carries small per-tier label / price / size lookups for the OrderConfirmation email. When updating a tier price, update **all three** in the same commit — see gotcha #9.
 
 **Painting IDs:**
 ```
@@ -162,8 +169,8 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 
 | Component | Purpose |
 |---|---|
-| `Nav` | Sticky header, mobile-responsive padding |
-| `Footer` | 3-col footer with site links + studio info + email |
+| `Nav` | Sticky header, mobile-responsive padding, inline SVG basket icon + count badge, mounts `ReturningVisitorChip` |
+| `Footer` | 4-col footer with site links + studio info + email + `NewsletterSignup variant="footer"` |
 | `Logo` | Rose-mark SVG, wordmark hidden on mobile |
 | `VideoIntro` | Sticky 100vh boomerang, dissolves on scroll |
 | `Reveal` | Framer Motion fade-up on scroll-into-view |
@@ -171,13 +178,29 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 | `AssetImage` | Drop-in `<img>` replacement that wraps in `<picture>` |
 | `MagneticLink` | Cursor-following hover on key links |
 | `EnquireModal` | Cinematic enquiry form (mailto fallback + Web3Forms-ready) |
+| `NewsletterSignup` | "Friends of the estate" signup — three variants (`panel` on Welcome / About, `inline` on empty Basket, `footer` in the Footer column). POSTs to `/api/newsletter-subscribe`. Sets `localStorage.tasm.subscribed` on success. |
+| `EmailMyBasket` | Inline "Save your basket — email it to me" link on the Basket page. POSTs to `/api/email-basket`. Renders nothing on empty basket. |
+| `ExitSaveBasket` | Bottom-right exit-intent toast on the Basket page. Fires once per session on top-edge mouse exit (desktop only). Same endpoint as `EmailMyBasket`. |
+| `ReturningVisitorChip` | "Welcome back, {name}" hairline in the Nav for returning subscribers. Once per session, then self-hides. |
+| `ShareTheEstate` | Quiet post-purchase share row (Copy link · Email · Twitter · Facebook) on OrderSuccess. No referral tracking — just an introduction. |
+| `FooterCatalogue` | 5×2 (mobile) / 10×1 (desktop) grid of every painting, mounted above `<Footer />` on every page (Welcome / Collections / About / PaintingDetail). Lets a reader who scrolled to the bottom step sideways into any other piece without travelling back up to the nav. Whole-grid `whileInView` fade-up; reduced-motion renders statically. |
+
+### Lib utilities
+
+| Module | Purpose |
+|---|---|
+| `lib/asset.ts` | `asset()` URL helper + `webp()` extension swap |
+| `lib/cn.ts` | classnames helper |
+| `lib/usePageTitle.ts` | `document.title` hook |
+| `lib/basket.ts` | localStorage-backed basket store + `useBasket()` hook (no Redux/Zustand) |
 
 ---
 
 ## Stripe print sales — architecture
 
 ```
-Painting page → "Order print" button → fetch POST /api/checkout
+Painting page → "Add to basket"  → localStorage basket  → /basket → "Proceed to checkout"
+                "Buy now"        → /api/checkout (single-item legacy path)
                                        ↓
                   Vercel serverless creates Stripe Checkout session
                                        ↓
@@ -189,15 +212,44 @@ Painting page → "Order print" button → fetch POST /api/checkout
                                        ↓
                   /api/stripe-webhook (signed) logs the order
                                        ↓
+                  /order/success page clears the basket
+                                       ↓
                   Owner manually places print order on Point 101
                                        ↓
                   Stripe payout (weekly Monday) → Tide bank
 ```
 
+### Basket
+
+- **Storage**: `localStorage` key `tasm.basket.v1`, persisted across reloads, synced across tabs via the `storage` event.
+- **Implementation**: `src/lib/basket.ts` — tiny pub/sub + `useSyncExternalStore` `useBasket()` hook. No Redux/Zustand/Context.
+- **Item shape**: `{ paintingId, colourwayName, addedAt }`. Quantity is always 1 per line — buying two of the same print is two separate lines.
+- **Reconciliation**: on every read, lines pointing to a removed painting or an unavailable colourway are silently dropped (then re-persisted).
+- **PaintingDetail buttons**: "Add to basket" (filled ink, primary) + "Buy now" (outlined accent, secondary — preserves the original single-item flow byte-for-byte).
+- **Cleared**: in `OrderSuccess` mount effect (Stripe only redirects there on a successful payment).
+
 ### Serverless functions
 
-- **`api/checkout.ts`** — creates Stripe Checkout Session. **Self-contained** (no cross-directory imports — Vercel's bundler struggles with imports outside `/api`). Allowlist of valid painting IDs + title map embedded. £180 flat default price (placeholder).
-- **`api/stripe-webhook.ts`** — verifies signature with `STRIPE_WEBHOOK_SECRET`, logs `checkout.session.completed` events to Vercel function logs with buyer name + address + painting metadata.
+- **`api/checkout.ts`** — creates Stripe Checkout Session. **Self-contained** (no cross-directory imports — Vercel's bundler struggles with imports outside `/api`). Allowlist of valid painting IDs + title map + **TIERS map mirroring `PRINT_TIERS`** embedded. Tier-aware: `tierId` selects a price ladder rung (defaults to `"collector"` anchor when missing — preserves existing client compat during deploy lag). Accepts two body shapes:
+  - **Single-item** (legacy / "Buy now"): `{ paintingId, colourwayName, tierId?, framing? }`
+  - **Multi-item** (basket): `{ items: [{ paintingId, colourwayName, tierId?, framing? }, ...] }` — up to 20 items per session
+
+  **Framing**: optional `framing: true` on an A2 or A1 item creates a separate Stripe line item priced from the tier's `framingPricePence` (cleaner accounting + buyer sees framing explicitly). Silently ignored on tiers that don't offer framing.
+
+  **Bundle discount**: when items count ≥ 2, programmatically mints a single-use Stripe coupon — 5% off for 2 items, 10% off for 3+, `duration: "once"`, name "Estate bundle thank-you" — applied via `discounts: [{ coupon: id }]`. Wrapped in try/catch; mint failures fall back to the un-discounted session (never block checkout). When a bundle discount is applied, `allow_promotion_codes` is omitted (Stripe disallows both together); without a bundle, promo codes stay enabled so the thank-you code remains redeemable.
+
+  Single-item metadata keys preserved + extended with `tier_id`, `tier_label`, `framing`. Multi-item metadata adds `tier_ids`, `tier_labels`, `framing_flags` (comma-joined, truncated to Stripe's 500-char per-value cap).
+- **`api/stripe-webhook.ts`** — verifies signature with `STRIPE_WEBHOOK_SECRET`. On `checkout.session.completed`: (1) logs the order to Vercel function logs, (2) mints a single-use Stripe coupon + promotion code (10% off, 1-year validity, prefix `FRIENDS-`), (3) sends the buyer the estate-branded `OrderConfirmation` email via Resend (BCC info@themandalacompany.com). **Always returns 200** even if email / coupon creation fail — Stripe must not retry on downstream errors. Imports email templates from `api/_lib/emails/` (same Vercel bundle — gotcha #5 OK).
+- **`api/_lib/emails/OrderConfirmation.tsx`** — React Email template, inline-styled in cream/ink/accent palette, Playfair Display + Inter via Google Fonts. Includes order summary, estate-voice thank-you, gift card showing the thank-you code, dispatch expectations, contact line. Rendered server-side by `@react-email/render`.
+- **`api/_lib/emails/OrderShipped.tsx`** — SCAFFOLD only. Not yet triggered — Hugo sends shipping notifications manually for now. Will be wired to a future `POST /api/admin/order-shipped` admin endpoint.
+- **`api/_lib/emails/styles.ts`** — shared inline-style objects (palette mirrors `tailwind.config.ts`).
+- **`api/_lib/thankYouCode.ts`** — creates the per-order Stripe Coupon + PromotionCode pair. 10% off, single use, 365-day validity. Suffix is 6 random chars from an unambiguous alphabet (no 0/O/1/I).
+
+### Thank-you discount — the dignified register
+
+The estate sends a **single-use 10% promotion code** to every first-time buyer inside the order confirmation email — NOT a banner, popup, or "10% OFF" badge on the site. Framing: *"In thanks for being among the first to take one of Steve's prints into your home, please accept 10% towards a future print, with our warmth."* Valid for one year. Code shape: `FRIENDS-AB12CD`.
+
+**Fallback**: if the dynamic coupon mint fails, the webhook falls back to a static reusable code (env var `THANK_YOU_CODE_FALLBACK`, default `FRIENDS`). For the fallback to actually grant a discount, Hugo must create a matching promotion code in the Stripe dashboard: Dashboard → Products → Coupons → New (10% off, "Once", no expiry) → attach a promotion code with that name. Otherwise leave the fallback unused — the dynamic path is the production design.
 
 ### Shipping (flat rates hardcoded in `api/checkout.ts`)
 - UK: £15
@@ -207,11 +259,23 @@ Painting page → "Order print" button → fetch POST /api/checkout
 ### Required Vercel env vars
 (Settings → Environment Variables, all for Production + Preview, Sensitive ON for secrets)
 
-| Key | Value |
-|---|---|
-| `STRIPE_SECRET_KEY` | `sk_live_…` |
-| `STRIPE_WEBHOOK_SECRET` | `whsec_…` |
-| `SITE_URL` | `https://uncle-tribute.vercel.app` |
+| Key | Required | Value |
+|---|---|---|
+| `STRIPE_SECRET_KEY` | yes | `sk_live_…` |
+| `STRIPE_WEBHOOK_SECRET` | yes | `whsec_…` |
+| `SITE_URL` | yes | `https://uncle-tribute.vercel.app` |
+| `RESEND_API_KEY` | optional | `re_…` — without it, confirmation emails are skipped silently (Stripe still sends its own receipt) |
+| `ESTATE_FROM_EMAIL` | optional | sender address (default `info@themandalacompany.com`); must be on a Resend-verified domain |
+| `ESTATE_BCC_EMAIL` | optional | BCC for the paper trail (default `info@themandalacompany.com`); auto-skipped if same as `from` |
+| `THANK_YOU_CODE_FALLBACK` | optional | static code used if dynamic coupon mint fails (default `FRIENDS`) |
+
+### Resend setup (Hugo — before going live with emails)
+
+1. Create a free Resend account at https://resend.com (3,000 emails/month free).
+2. **Verify the domain** `themandalacompany.com` in Resend → Domains → Add — copy the SPF/DKIM TXT records into IONOS DNS. Allow ~15 min for DNS propagation. Without domain verification, Resend will only let you send from `onboarding@resend.dev` (fine for testing, never for production — Gmail will junk it).
+3. Create an API key (Resend → API Keys → Create), copy the `re_…` value once (Resend won't show it again).
+4. Add `RESEND_API_KEY` to Vercel env vars for Production + Preview.
+5. Optionally create the sender alias `info@themandalacompany.com` in your mail host (IONOS) so replies route somewhere — Resend itself only sends, it doesn't receive.
 
 ### Stripe dashboard config (already done)
 - Account activated, Mandala Company entity
@@ -265,11 +329,13 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 1. **Verify Stripe Checkout works end-to-end** — last action was deploying a self-contained `api/checkout.ts` rewrite to fix an "Opening checkout…" button hang
 2. **IONOS → Vercel custom domain setup** for `themandalacompany.com`
 3. **Update `SITE_URL` env var + Stripe webhook endpoint URL** to the new domain once DNS works
-4. **Real print prices** from Hugo's spreadsheet (currently £180 placeholder in `DEFAULT_PRINT` + `api/checkout.ts DEFAULT_PRICE_PENCE`)
-5. **Point 101 account** + upload Stephen's high-res files
-6. **Etsy → Tide payout** (set bank in Etsy Finances)
-7. **About page polish** — `/public/img/welcome/04-paintings-collection.jpg` is kept on disk specifically for an About-page section we discussed but haven't built
-8. **Optional: Web3Forms backend for EnquireModal** — currently falls back to mailto + clipboard; add `VITE_WEB3FORMS_KEY` env var to enable real POSTed form submission
+4. **Resend domain verification** for `themandalacompany.com` — required before order confirmation / newsletter welcome emails will land in inboxes (Gmail will junk anything from `onboarding@resend.dev` in production). See the Resend setup recipe above.
+5. **A0 enablement (needs Agent K research outcome)** — confirm Point 101 fulfilment capability + optional gold-leaf detail sourcing. When ready, flip `available: true` on the `heirloom` tier in `src/data/paintings.ts PRINT_TIERS` AND in `api/checkout.ts TIERS["heirloom"]`. Agent K is researching framed-shipping math in parallel — outcome may affect shipping rates on A1 framed items.
+6. **Point 101 account** + upload Stephen's high-res files
+7. **Etsy → Tide payout** (set bank in Etsy Finances)
+8. **About page polish** — `/public/img/welcome/04-paintings-collection.jpg` is kept on disk specifically for an About-page section we discussed but haven't built
+9. **Optional: Web3Forms backend for EnquireModal** — currently falls back to mailto + clipboard; add `VITE_WEB3FORMS_KEY` env var to enable real POSTed form submission
+10. **Update `api/email-basket.ts` to be tier-aware** — currently still references the legacy £180 / A2 spec for rendering the saved-basket email. Low priority — the basket page no longer surfaces a mis-priced number, but the saved-basket email will read £180 until updated.
 
 ---
 
@@ -322,6 +388,8 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 - **Image paths always reference `.jpg`** in code — the `<picture>` wrapper swaps to `.webp` automatically. Don't reference `.webp` directly in `<img src>`.
 - **Section comments are numbered** in `Welcome.tsx` (e.g. `{/* 4 · FEATURED WORKS */}`) — renumber if reordering sections.
 - **Sensitive Vercel env vars** are write-only after save. Keep a copy of `sk_live_…` and `whsec_…` in 1Password / a secure note.
+- **Scroll-driven visibility uses sentinel divs + IntersectionObserver, not scroll listeners.** Pattern lives in `PaintingDetail.tsx` (the sticky "Add to basket" bar): a zero-height `<div ref={...} className="h-px w-full" />` is placed at the start and end of the region where the affordance should be visible, and two IntersectionObservers track when the user has scrolled past the start sentinel and not yet reached the end sentinel. Cheaper than `useScroll` for boolean visibility, and survives layout reflow without re-measuring.
+- **Scroll-driven animations use Framer Motion only** — `useScroll` / `useTransform` / `useInView` / `useMotionValue` / `useMotionValueEvent` / `useMotionTemplate`. No Lenis, GSAP, or ScrollMagic (gotcha #1). Every scroll-driven animation must short-circuit on `useReducedMotion()` — either skip the transform entirely or render a static fallback. Keep scroll-driven properties to `transform` / `opacity` for GPU compositing — the only exceptions in the repo today are the ChapterIntro gradient string (`useMotionTemplate`) and the Nav basket badge `boxShadow` pulse, both confined to tiny paint areas.
 
 ---
 
@@ -335,6 +403,7 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 6. **Stripe API version literals** like `"2025-09-30.clover"` may not match the installed SDK's exported type union. Omit `apiVersion` and let the SDK use its pinned default.
 7. **Sacred Geometry headline** uses `clamp(60px, 20vw, 520px)` for the font size. Earth image uses a negative margin tied to the *same* clamp expression so overlap stays proportional at every viewport. If editing one, edit the other.
 8. **Z-stacking on the home page** — `<main>` carries `isolate` and Sacred Geometry section also carries `isolate` to prevent Framer Motion transforms from re-ordering the peacock backdrop into the foreground during scroll.
+9. **Pricing lives in two places** — `src/data/paintings.ts PRINT_TIERS` is the canonical ladder, AND `api/checkout.ts TIERS` map mirrors it inline (gotcha #5 forbids cross-directory imports into `/api`). When updating a tier price (or adding / removing a tier), edit **both** in the same commit. `api/stripe-webhook.ts` also carries small per-tier lookups (TIER_LABEL / TIER_SIZE / TIER_EDITION / TIER_PRICE_PENCE) for rendering the OrderConfirmation email — those need updating too if labels / sizes change.
 
 ---
 

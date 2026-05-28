@@ -1,9 +1,12 @@
+import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
+import { ShareTheEstate } from "../components/ShareTheEstate";
 import { usePageTitle } from "../lib/usePageTitle";
+import { clearBasket } from "../lib/basket";
 
 /**
  * Post-checkout confirmation page. Stripe redirects here on a successful
@@ -14,6 +17,12 @@ export const OrderSuccess = () => {
   usePageTitle("Order confirmed — The Art of Stephen Meakin");
   const [params] = useSearchParams();
   const sessionId = params.get("session_id");
+
+  // Clear the basket once on mount. Stripe only redirects here after a
+  // successful payment, so it's safe to wipe local state at this point.
+  useEffect(() => {
+    clearBasket();
+  }, []);
 
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -54,6 +63,9 @@ export const OrderSuccess = () => {
               Contact us
             </a>
           </div>
+          {/* Share the estate — quiet post-purchase share affordance.
+              Framed as an introduction to Stephen's work, not a referral. */}
+          <ShareTheEstate align="center" />
         </Reveal>
       </main>
       <Footer />
