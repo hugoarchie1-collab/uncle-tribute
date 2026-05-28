@@ -24,7 +24,7 @@
  * management later, swap to Resend Audiences or wire a database.
  *
  * Resend Audiences (optional next step for Hugo):
- *   Resend Dashboard → Audiences → create one called "Friends of the estate"
+ *   Resend Dashboard → Audiences → create one called "Friends & Family"
  *   → copy its audience id → set RESEND_AUDIENCE_ID env var. This file will
  *   then ALSO add the contact to the audience via resend.contacts.create()
  *   so unsubscribes flow back through Resend's link headers. Optional — the
@@ -147,7 +147,7 @@ const mintSubscriberCode = async (
     duration: "once",
     max_redemptions: 1,
     redeem_by: expiresUnix,
-    name: `Estate friends — ${email.slice(0, 32)}`,
+    name: `Friends & Family — ${email.slice(0, 32)}`,
     metadata: {
       kind: "newsletter_welcome",
       subscriber_email: email,
@@ -288,7 +288,7 @@ export default async function handler(req: Request) {
           ? [bccEmail]
           : undefined,
       replyTo: DEFAULT_FROM,
-      subject: "Welcome to the friends of the estate",
+      subject: "Welcome to Friends & Family",
       html,
     });
 

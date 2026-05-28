@@ -4,11 +4,16 @@ import { AssetImage } from "./AssetImage";
 import { PAINTINGS } from "../data/paintings";
 
 /**
- * FooterCatalogue — a quiet 5×2 (mobile) / 10×1 (desktop) row of every
- * painting in the catalogue, mounted above the Footer on every page. Lets a
- * reader who has scrolled to the bottom step sideways into any other piece
- * without travelling back up to the nav. Each tile uses the painting's
- * original-colourway cover image.
+ * FooterCatalogue — a quiet 10×1 row of every painting in the catalogue,
+ * mounted above the Footer on every page. Lets a reader who has scrolled to
+ * the bottom step sideways into any other piece without travelling back up to
+ * the nav. Each tile uses the painting's original-colourway cover image.
+ *
+ * Desktop-only (`hidden md:block`): on mobile a 10-thumbnail grid is a heavy
+ * tail that the reader scrolls past on every page. The best art / editorial
+ * footers (Aesop, Hermès, Studio Olafur Eliasson) keep the mobile footer tight
+ * and don't bury a thumbnail wall in it — so we drop the grid below `md` and
+ * keep the richer affordance for the larger viewports it suits.
  *
  * Animation: a single `whileInView` fade + slide-up for the whole grid (no
  * per-tile stagger — at 10 tiles the cumulative delay would feel slow). On
@@ -42,7 +47,7 @@ export const FooterCatalogue = () => {
   return (
     <section
       aria-label="All paintings"
-      className="relative border-t border-white/8 bg-bg px-4 sm:px-6 md:px-10 lg:px-16 pt-10 md:pt-14 pb-2"
+      className="relative hidden md:block border-t border-white/8 bg-bg px-4 sm:px-6 md:px-10 lg:px-16 pt-10 md:pt-14 pb-2"
     >
       <div className="mx-auto max-w-[1320px]">
         <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-5 text-center">
@@ -53,7 +58,7 @@ export const FooterCatalogue = () => {
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
           variants={variants}
-          className="grid grid-cols-5 md:grid-cols-10 gap-2 md:gap-2.5 list-none p-0 m-0"
+          className="grid grid-cols-10 gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
             <li key={t.id} className="m-0">

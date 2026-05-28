@@ -67,13 +67,13 @@ const estateCards: readonly EstateCard[] = [
   },
   {
     id: "friends",
-    eyebrow: "Friends of the estate",
+    eyebrow: "Friends & Family",
     title: "The Mandala Company",
     body: "News and releases from the estate, on behalf of Steve's immediate family.",
     cta: "Subscribe",
     subject: "Subscribe — Mandala Company",
     intro:
-      "Leave your name and email and we'll add you to the friends of the estate list. Occasional updates only — exhibitions, new releases, news from the estate.",
+      "Leave your name and email and we'll add you to Friends & Family. Occasional updates only — exhibitions, new releases, news from the estate.",
   },
 ] as const;
 
@@ -513,7 +513,7 @@ export const Welcome = () => {
               })}
             </Reveal>
 
-            {/* Friends of the estate — quiet newsletter signup, mounted
+            {/* Friends & Family — quiet newsletter signup, mounted
                 below the engagement cards so the estate's "stay in
                 touch" funnel sits alongside the Prints + Friends
                 CTAs without competing for attention. */}

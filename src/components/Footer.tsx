@@ -7,27 +7,30 @@ const YEAR = new Date().getFullYear();
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-12 md:pt-14 pb-10"
+    className="relative border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-10 md:pt-14 pb-8 md:pb-10"
   >
-    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-4 gap-y-8 gap-x-10 mb-10 items-start">
-      <div>
+    <div className="mx-auto max-w-[1200px] grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-y-8 gap-x-8 md:gap-x-10 mb-8 md:mb-10 items-start">
+      <div className="col-span-2 md:col-span-1">
         <Logo size={32} wordmark />
-        <p className="mt-5 max-w-[280px] font-sans font-normal text-[14px] leading-[1.65] text-ink/70 m-0">
+        <p className="mt-4 md:mt-5 max-w-[280px] font-sans font-normal text-[13.5px] md:text-[14px] leading-[1.6] md:leading-[1.65] text-ink/70 m-0">
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
         <p className="mt-3 max-w-[280px] font-sans font-medium text-[13px] leading-[1.6] text-ink/60 m-0">
           The estate of Stephen Meakin · The Mandala Company — Steve's immediate family.
         </p>
-        <p className="mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink/45 m-0">
+        {/* Author credit — desktop only. On mobile it lengthens the footer
+            tail with detail a phone reader rarely needs; the estate line
+            above already carries attribution. */}
+        <p className="hidden md:block mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink/45 m-0">
           Written for The Mandala Company by Archie Hugo Charles Wedge (Stephen's nephew). Stephen's words are his own, drawn from his notebooks, interviews and the writings he left.
         </p>
       </div>
 
       <div>
-        <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
+        <h3 className="mb-4 md:mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
           Site
         </h3>
-        <ul className="flex flex-col gap-3 text-sm text-ink/70">
+        <ul className="flex flex-col gap-2.5 md:gap-3 text-sm text-ink/70">
           <li><Link to="/" className="transition-colors hover:text-ink">Home</Link></li>
           <li><Link to="/collections" className="transition-colors hover:text-ink">Collections</Link></li>
           <li><Link to="/about" className="transition-colors hover:text-ink">About</Link></li>
@@ -38,31 +41,32 @@ export const Footer = () => (
       </div>
 
       <div>
-        <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
-          Studio
+        <h3 className="mb-4 md:mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
+          Enquiries
         </h3>
-        <ul className="flex flex-col gap-3 text-sm text-ink/70">
-          <li>Phoenix Place</li>
-          <li>Lewes, East Sussex</li>
-          <li>United Kingdom</li>
+        <ul className="flex flex-col gap-2.5 md:gap-3 text-sm text-ink/70">
           <li>
             <a
               href="mailto:info@themandalacompany.com"
-              className="transition-colors hover:text-ink"
+              className="break-words transition-colors hover:text-ink"
             >
               info@themandalacompany.com
             </a>
           </li>
+          <li><Link to="/contact" className="transition-colors hover:text-ink">Send an enquiry</Link></li>
         </ul>
       </div>
 
-      {/* Friends of the estate — quiet newsletter signup. Posts to
+      {/* Friends & Family — quiet newsletter signup. Posts to
           /api/newsletter-subscribe. Same surface as the home / basket /
-          About variants; different markup register for the footer column. */}
-      <NewsletterSignup variant="footer" />
+          About variants; different markup register for the footer column.
+          Spans both columns on mobile so the input isn't cramped. */}
+      <div className="col-span-2 md:col-span-1">
+        <NewsletterSignup variant="footer" />
+      </div>
     </div>
 
-    <div className="mx-auto max-w-[1200px] pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-ink/45">
+    <div className="mx-auto max-w-[1200px] pt-6 md:pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-ink/45">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>

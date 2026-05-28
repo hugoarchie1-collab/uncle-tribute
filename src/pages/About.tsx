@@ -636,7 +636,7 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
         onClick={onJoinFriends}
         className="inline-flex items-center font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/70 border-b border-ink/30 pb-1 transition-colors duration-300 hover:text-accent hover:border-accent"
       >
-        Join the friends of the estate
+        Join Friends &amp; Family
       </button>
     </motion.div>
   );
@@ -678,7 +678,7 @@ const InMemoriamSpacer = () => {
 export const About = () => {
   usePageTitle("Stephen Meakin");
 
-  // Friends-of-the-estate enquiry modal — opened from the closing CTA so a
+  // Friends & Family enquiry modal — opened from the closing CTA so a
   // reader moved by the biography can subscribe without leaving the page.
   const [friendsOpen, setFriendsOpen] = useState(false);
   const closeFriends = useCallback(() => setFriendsOpen(false), []);
@@ -896,8 +896,8 @@ export const About = () => {
             />
           </Reveal>
           {/* Dual closing path — a buyer ready to acquire goes straight
-              to the collections; a reader moved by the bio joins the
-              friends of the estate list. Both are reachable without
+              to the collections; a reader moved by the bio joins
+              Friends & Family. Both are reachable without
               scrolling. The cluster scales up gently on scroll-in (Item 8). */}
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
@@ -905,10 +905,10 @@ export const About = () => {
       <EnquireModal
         open={friendsOpen}
         onClose={closeFriends}
-        eyebrow="Friends of the estate"
+        eyebrow="Friends & Family"
         title="The Mandala Company"
         subject="Subscribe — Mandala Company"
-        intro="Leave your name and email and we'll add you to the friends of the estate list. Occasional updates only — exhibitions, new releases, news from the estate."
+        intro="Leave your name and email and we'll add you to Friends & Family. Occasional updates only — exhibitions, new releases, news from the estate."
       />
       <FooterCatalogue />
       <Footer />
