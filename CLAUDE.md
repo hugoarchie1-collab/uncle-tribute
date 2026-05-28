@@ -462,4 +462,3 @@ Run **`/read-context`** at any point to have Claude re-read CLAUDE.md plus the l
 ---
 
 _Last updated: 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
-_Last updated: 2026-05-27 (handoff document creation). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
