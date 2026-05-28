@@ -111,7 +111,11 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 /collections/:id             Painting detail (colourway picker + Add to basket / Buy now)
 /about                       Long-form bio (Anegada chapter, TAGA, students letter)
 /basket                      Multi-item basket (localStorage) + Proceed to checkout
-/privacy, /terms             Legal placeholders
+/contact                     Full-page contact form (same submission path as EnquireModal)
+/faq                         8-section frequently asked
+/privacy                     UK GDPR Art 13–14 privacy policy (updated 2026-05-28)
+/terms                       Terms of sale (UK CCR 2013 reg 28 made-to-order exemption)
+/returns                     Returns, refunds & damages (plain-English summary)
 /order/success?session_id=…  Post-checkout confirmation (clears basket on mount)
 /order/cancel                Abandoned-checkout landing
 *                            NotFound
@@ -241,7 +245,14 @@ Painting page → "Add to basket"  → localStorage basket  → /basket → "Pro
   Single-item metadata keys preserved + extended with `tier_id`, `tier_label`, `framing`. Multi-item metadata adds `tier_ids`, `tier_labels`, `framing_flags` (comma-joined, truncated to Stripe's 500-char per-value cap).
 - **`api/stripe-webhook.ts`** — verifies signature with `STRIPE_WEBHOOK_SECRET`. On `checkout.session.completed`: (1) logs the order to Vercel function logs, (2) mints a single-use Stripe coupon + promotion code (10% off, 1-year validity, prefix `FRIENDS-`), (3) sends the buyer the estate-branded `OrderConfirmation` email via Resend (BCC info@themandalacompany.com). **Always returns 200** even if email / coupon creation fail — Stripe must not retry on downstream errors. Imports email templates from `api/_lib/emails/` (same Vercel bundle — gotcha #5 OK).
 - **`api/_lib/emails/OrderConfirmation.tsx`** — React Email template, inline-styled in cream/ink/accent palette, Playfair Display + Inter via Google Fonts. Includes order summary, estate-voice thank-you, gift card showing the thank-you code, dispatch expectations, contact line. Rendered server-side by `@react-email/render`.
-- **`api/_lib/emails/OrderShipped.tsx`** — SCAFFOLD only. Not yet triggered — Hugo sends shipping notifications manually for now. Will be wired to a future `POST /api/admin/order-shipped` admin endpoint.
+- **`api/_lib/emails/OrderShipped.tsx`** — wired to `POST /api/admin/order-shipped` (below). Sent when Hugo posts a tracking number for a dispatched session.
+- **`api/admin/order-shipped.ts`** — manual admin endpoint Hugo hits when a Point 101 dispatch goes out. Authenticated with `ADMIN_API_KEY` (Vercel env var). Body: `{ sessionId, trackingUrl, carrier, secret }`. Looks up the Stripe session (for buyer email + per-line metadata), renders `OrderShipped` and sends via Resend (BCC the estate inbox). Example:
+  ```bash
+  curl -X POST https://uncle-tribute.vercel.app/api/admin/order-shipped \
+    -H "Content-Type: application/json" \
+    -d '{ "sessionId": "cs_live_…", "trackingUrl": "https://…", "carrier": "Royal Mail Tracked 48", "secret": "$ADMIN_API_KEY" }'
+  ```
+  A tiny one-page HTML admin form on top of this would be a small future lift.
 - **`api/_lib/emails/styles.ts`** — shared inline-style objects (palette mirrors `tailwind.config.ts`).
 - **`api/_lib/thankYouCode.ts`** — creates the per-order Stripe Coupon + PromotionCode pair. 10% off, single use, 365-day validity. Suffix is 6 random chars from an unambiguous alphabet (no 0/O/1/I).
 
@@ -268,6 +279,7 @@ The estate sends a **single-use 10% promotion code** to every first-time buyer i
 | `ESTATE_FROM_EMAIL` | optional | sender address (default `info@themandalacompany.com`); must be on a Resend-verified domain |
 | `ESTATE_BCC_EMAIL` | optional | BCC for the paper trail (default `info@themandalacompany.com`); auto-skipped if same as `from` |
 | `THANK_YOU_CODE_FALLBACK` | optional | static code used if dynamic coupon mint fails (default `FRIENDS`) |
+| `ADMIN_API_KEY` | required for `/api/admin/order-shipped` | shared secret Hugo passes in the request body to authenticate the shipped-email admin endpoint |
 
 ### Resend setup (Hugo — before going live with emails)
 
@@ -336,6 +348,7 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 8. **About page polish** — `/public/img/welcome/04-paintings-collection.jpg` is kept on disk specifically for an About-page section we discussed but haven't built
 9. **Optional: Web3Forms backend for EnquireModal** — currently falls back to mailto + clipboard; add `VITE_WEB3FORMS_KEY` env var to enable real POSTed form submission
 10. **Update `api/email-basket.ts` to be tier-aware** — currently still references the legacy £180 / A2 spec for rendering the saved-basket email. Low priority — the basket page no longer surfaces a mis-priced number, but the saved-basket email will read £180 until updated.
+11. **P2 — webhook dedup needs Vercel KV.** `api/stripe-webhook.ts` deduplicates Stripe event ids in-memory (24h TTL, 5000-entry cap). This catches the common case (network blip retry while the warm instance is still in memory) but won't survive cold starts or cross-region replication. Full fix: move to Vercel KV or a tiny DB keyed by `event.id`.
 
 ---
 
@@ -344,7 +357,14 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 ```
 /api                          Vercel serverless functions
   checkout.ts                 Stripe Checkout session creator (SELF-CONTAINED)
-  stripe-webhook.ts           Stripe webhook receiver (signed)
+  stripe-webhook.ts           Stripe webhook receiver (signed, in-memory dedup)
+  newsletter-subscribe.ts     Friends-of-the-estate sign-up (CORS-allowlisted)
+  email-basket.ts             Save-your-basket email (CORS-allowlisted)
+  /admin
+    order-shipped.ts          Manual shipped-email trigger (ADMIN_API_KEY auth)
+  /_lib
+    emails/                   React-Email templates (OrderConfirmation, OrderShipped, Welcome, BasketSaved)
+    thankYouCode.ts           Stripe coupon + promo-code minting
 
 /public
   /img
@@ -441,4 +461,4 @@ Run **`/read-context`** at any point to have Claude re-read CLAUDE.md plus the l
 
 ---
 
-_Last updated: 2026-05-27 (handoff document creation). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
+_Last updated: 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._

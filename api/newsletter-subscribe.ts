@@ -56,16 +56,45 @@ const DEFAULT_BCC = "info@themandalacompany.com";
 const FROM_NAME = "The Mandala Company";
 const DEFAULT_SITE_URL = "https://uncle-tribute.vercel.app";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+// ---- Origin allowlist ----------------------------------------------------
+// Echo the request's `Origin` back only if it's one of our known surfaces or
+// a Vercel preview. Anything else gets the canonical production origin so
+// browser-side fetches from random domains are rejected cleanly. The
+// underlying handler still runs (Stripe Webhook etc. don't honour CORS),
+// but cross-origin browser POSTs from a hostile site won't be accepted by
+// the user's browser.
+const ALLOWED_ORIGINS = new Set([
+  "https://uncle-tribute.vercel.app",
+  "https://themandalacompany.com",
+  "https://www.themandalacompany.com",
+]);
+const isAllowedOrigin = (origin: string | null): boolean => {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  try {
+    return new URL(origin).hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+};
+const corsHeaders = (origin: string | null): Record<string, string> => {
+  const base: Record<string, string> = {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    Vary: "Origin",
+  };
+  if (isAllowedOrigin(origin)) {
+    base["Access-Control-Allow-Origin"] = origin as string;
+  } else {
+    base["Access-Control-Allow-Origin"] = "https://uncle-tribute.vercel.app";
+  }
+  return base;
 };
 
-const json = (status: number, body: unknown) =>
+const json = (status: number, body: unknown, origin: string | null) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+    headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
   });
 
 // Same dignified register as the post-purchase code: prefix + unguessable
@@ -165,14 +194,15 @@ const isValidEmail = (email: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 
 export default async function handler(req: Request) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+  const origin = req.headers.get("origin");
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders(origin) });
+  if (req.method !== "POST") return json(405, { error: "Method not allowed" }, origin);
 
   let body: { name?: string; email?: string; source?: string };
   try {
     body = await req.json();
   } catch {
-    return json(400, { error: "Invalid JSON body." });
+    return json(400, { error: "Invalid JSON body." }, origin);
   }
 
   const name = (body.name ?? "").toString().trim().slice(0, 120);
@@ -180,7 +210,7 @@ export default async function handler(req: Request) {
   const source = (body.source ?? "panel").toString().trim().slice(0, 32);
 
   if (!email || !isValidEmail(email)) {
-    return json(400, { error: "Please provide a valid email." });
+    return json(400, { error: "Please provide a valid email." }, origin);
   }
 
   // Audit trail — always log even if downstream sends are skipped. Hugo can
@@ -230,7 +260,7 @@ export default async function handler(req: Request) {
     console.warn(
       "[newsletter-subscribe] RESEND_API_KEY missing — skipping welcome email.",
     );
-    return json(200, { ok: true });
+    return json(200, { ok: true }, origin);
   }
 
   try {
@@ -275,5 +305,5 @@ export default async function handler(req: Request) {
     console.error("[newsletter-subscribe] welcome email failed:", message);
   }
 
-  return json(200, { ok: true });
+  return json(200, { ok: true }, origin);
 }

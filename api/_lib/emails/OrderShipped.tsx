@@ -1,19 +1,10 @@
 /**
- * Order shipped email — sent MANUALLY by Hugo once the print leaves Point 101.
+ * Order shipped email — sent by Hugo via POST /api/admin/order-shipped
+ * once the print leaves Point 101 with a tracking number.
  *
- * STATUS: SCAFFOLD.
- * This template is wired enough to render but is NOT triggered automatically.
- * The intended trigger is a small admin endpoint (TODO below) that Hugo hits
- * with the order reference + tracking URL + carrier, e.g.:
- *
- *   POST /api/admin/order-shipped
- *     { sessionId, trackingUrl, carrier, dispatchedAt }
- *
- * That endpoint isn't built yet — for the initial launch Hugo sends shipping
- * notifications by hand from his own inbox. Building it later is a small lift:
- * fetch the Stripe session by id (for buyer email + line items), render this
- * template with the tracking info, send via Resend. See the matching TODO in
- * api/stripe-webhook.ts and the "What's pending / next" list in CLAUDE.md.
+ * The admin endpoint fetches the Stripe session by id, pulls the buyer email
+ * and per-line painting / colourway metadata, then renders + sends this
+ * template via Resend. See api/admin/order-shipped.ts.
  */
 
 import { palette, styles } from "./styles";
@@ -99,9 +90,11 @@ export const OrderShipped = ({
 
           <p style={styles.body}>
             Each print is packed in archival tissue and shipped in a rigid mailer
-            for protection. Once it lands, the colourway will settle into the
-            paper over the first few days — give it light, air, and a wall it'll
-            be loved on.
+            for protection. UK orders typically arrive within 2–3 working days,
+            European orders within 5–7, and rest-of-world within 7–14 — your
+            tracking link above will show the carrier's own ETA. Once it
+            lands, the colourway will settle into the paper over the first few
+            days — give it light, air, and a wall it'll be loved on.
           </p>
 
           <p style={styles.signoff}>With warmth,</p>

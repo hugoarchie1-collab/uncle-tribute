@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Newsletter signup ("Estate friends" list).
@@ -146,6 +147,13 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-2 font-sans text-[12px] text-accent m-0">{errorMsg}</p>
             )}
+            <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+              By subscribing you agree to our{" "}
+              <Link to="/privacy" className="underline hover:text-ink/70">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
         )}
       </div>
@@ -206,6 +214,13 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-3 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
             )}
+            <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+              By subscribing you agree to our{" "}
+              <Link to="/privacy" className="underline hover:text-ink/70">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
         )}
       </div>
@@ -293,6 +308,13 @@ export const NewsletterSignup = ({
               No more than four notes a year. Unsubscribe in a click.
             </p>
           </div>
+          <p className="font-sans text-[11px] italic text-ink/45 mt-2 m-0">
+            By subscribing you agree to our{" "}
+            <Link to="/privacy" className="underline hover:text-ink/70">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </form>
       )}
     </div>

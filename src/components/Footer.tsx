@@ -31,6 +31,9 @@ export const Footer = () => (
           <li><Link to="/" className="transition-colors hover:text-ink">Home</Link></li>
           <li><Link to="/collections" className="transition-colors hover:text-ink">Collections</Link></li>
           <li><Link to="/about" className="transition-colors hover:text-ink">About</Link></li>
+          <li><Link to="/contact" className="transition-colors hover:text-ink">Contact</Link></li>
+          <li><Link to="/faq" className="transition-colors hover:text-ink">FAQ</Link></li>
+          <li><Link to="/returns" className="transition-colors hover:text-ink">Returns</Link></li>
         </ul>
       </div>
 
@@ -67,6 +70,8 @@ export const Footer = () => (
         <Link to="/privacy" className="text-ink/70 transition-colors hover:text-ink">Privacy</Link>
         <span aria-hidden="true">·</span>
         <Link to="/terms" className="text-ink/70 transition-colors hover:text-ink">Terms</Link>
+        <span aria-hidden="true">·</span>
+        <Link to="/returns" className="text-ink/70 transition-colors hover:text-ink">Returns</Link>
       </p>
     </div>
   </footer>

@@ -123,16 +123,43 @@ const DEFAULT_BCC = "info@themandalacompany.com";
 const FROM_NAME = "The Mandala Company";
 const DEFAULT_SITE_URL = "https://uncle-tribute.vercel.app";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+// ---- Origin allowlist ----------------------------------------------------
+// Mirror of api/newsletter-subscribe.ts — echoes the request's `Origin` only
+// if it matches our known surfaces or a *.vercel.app preview. Anything else
+// gets the canonical production origin so cross-origin browser POSTs from
+// random domains are rejected by the browser.
+const ALLOWED_ORIGINS = new Set([
+  "https://uncle-tribute.vercel.app",
+  "https://themandalacompany.com",
+  "https://www.themandalacompany.com",
+]);
+const isAllowedOrigin = (origin: string | null): boolean => {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  try {
+    return new URL(origin).hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+};
+const corsHeaders = (origin: string | null): Record<string, string> => {
+  const base: Record<string, string> = {
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    Vary: "Origin",
+  };
+  if (isAllowedOrigin(origin)) {
+    base["Access-Control-Allow-Origin"] = origin as string;
+  } else {
+    base["Access-Control-Allow-Origin"] = "https://uncle-tribute.vercel.app";
+  }
+  return base;
 };
 
-const json = (status: number, body: unknown) =>
+const json = (status: number, body: unknown, origin: string | null) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+    headers: { "Content-Type": "application/json", ...corsHeaders(origin) },
   });
 
 const formatGBP = (pence: number): string =>
@@ -158,8 +185,9 @@ const throttleClean = () => {
 };
 
 export default async function handler(req: Request) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+  const origin = req.headers.get("origin");
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders(origin) });
+  if (req.method !== "POST") return json(405, { error: "Method not allowed" }, origin);
 
   let body: {
     email?: string;
@@ -175,21 +203,21 @@ export default async function handler(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return json(400, { error: "Invalid JSON body." });
+    return json(400, { error: "Invalid JSON body." }, origin);
   }
 
   const email = (body.email ?? "").toString().trim().toLowerCase();
   const name = (body.name ?? "").toString().trim().slice(0, 120);
   if (!email || !isValidEmail(email)) {
-    return json(400, { error: "Please provide a valid email." });
+    return json(400, { error: "Please provide a valid email." }, origin);
   }
 
   const rawItems = Array.isArray(body.items) ? body.items : [];
   if (rawItems.length === 0) {
-    return json(400, { error: "Your basket is empty." });
+    return json(400, { error: "Your basket is empty." }, origin);
   }
   if (rawItems.length > MAX_ITEMS) {
-    return json(400, { error: `Too many items (max ${MAX_ITEMS}).` });
+    return json(400, { error: `Too many items (max ${MAX_ITEMS}).` }, origin);
   }
 
   const lines: Array<{
@@ -202,7 +230,7 @@ export default async function handler(req: Request) {
   for (const raw of rawItems) {
     const id = (raw?.paintingId ?? "").toString();
     if (!VALID_PAINTING_IDS.has(id)) {
-      return json(400, { error: `Unknown painting "${id}".` });
+      return json(400, { error: `Unknown painting "${id}".` }, origin);
     }
     const colourway = (raw?.colourwayName ?? "").toString().trim() || "Original";
     // Tier resolution: prefer the buyer's choice, fall back to the anchor
@@ -239,9 +267,11 @@ export default async function handler(req: Request) {
   throttleClean();
   const lastSent = recentSends.get(email);
   if (lastSent && Date.now() - lastSent < THROTTLE_MS) {
-    return json(429, {
-      error: "We just sent that — please check your inbox.",
-    });
+    return json(
+      429,
+      { error: "We just sent that — please check your inbox." },
+      origin,
+    );
   }
 
   console.log("[email-basket] request", { email, name, itemCount: lines.length });
@@ -251,7 +281,7 @@ export default async function handler(req: Request) {
     console.warn("[email-basket] RESEND_API_KEY missing — skipping send.");
     // Soft-success so the UI doesn't leak infra state to the buyer.
     recentSends.set(email, Date.now());
-    return json(200, { ok: true });
+    return json(200, { ok: true }, origin);
   }
 
   try {
@@ -292,11 +322,11 @@ export default async function handler(req: Request) {
       });
     }
     recentSends.set(email, Date.now());
-    return json(200, { ok: true });
+    return json(200, { ok: true }, origin);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[email-basket] failed:", message);
     // Still 200 — UI shouldn't reveal infra failures.
-    return json(200, { ok: true });
+    return json(200, { ok: true }, origin);
   }
 }

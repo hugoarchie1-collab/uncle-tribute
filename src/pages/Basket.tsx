@@ -247,9 +247,12 @@ export const Basket = () => {
                   {formatGBP(subtotalPence)}
                 </p>
               </div>
-              <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink/65 m-0 mb-8">
+              <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink/65 m-0 mb-2">
                 Shipping calculated at checkout. UK £15 · Europe £35 · Worldwide £60.
                 Each print ships within 7–10 working days.
+              </p>
+              <p className="font-sans italic text-[12px] leading-[1.6] text-ink/50 m-0 mb-8">
+                International buyers may be charged local import duties on delivery.
               </p>
               <div className="flex flex-wrap items-center gap-4">
                 <button

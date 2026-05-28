@@ -48,6 +48,38 @@ import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode";
 const ok = (msg = "ok") => new Response(msg, { status: 200 });
 const bad = (msg: string) => new Response(msg, { status: 400 });
 
+// ---------------------------------------------------------------------------
+// In-memory event-id deduplication
+// ---------------------------------------------------------------------------
+// Vercel serverless functions are short-lived (warm instances last minutes,
+// not hours) and may be replicated across regions — so this is BEST-EFFORT
+// only. It catches the common case where Stripe retries the same event
+// within seconds of a network blip, while a warm instance is still in
+// memory. The complete fix needs a shared store (Vercel KV or Stripe's own
+// idempotency keys logged to a DB) — flagged as P2 in CLAUDE.md.
+//
+// We bound the set's size + age so a long-running warm instance can't grow
+// the set unboundedly under attack.
+const SEEN_EVENT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+const SEEN_EVENT_MAX = 5000;
+const seenEvents = new Map<string, number>();
+const cleanSeenEvents = () => {
+  const cutoff = Date.now() - SEEN_EVENT_TTL_MS;
+  for (const [id, t] of seenEvents) {
+    if (t < cutoff) seenEvents.delete(id);
+  }
+  // Hard cap: if we somehow still have too many, drop the oldest insertions.
+  if (seenEvents.size > SEEN_EVENT_MAX) {
+    const drop = seenEvents.size - SEEN_EVENT_MAX;
+    let i = 0;
+    for (const id of seenEvents.keys()) {
+      if (i >= drop) break;
+      seenEvents.delete(id);
+      i += 1;
+    }
+  }
+};
+
 // Defaults — kept in code (not env) so missing env vars don't break the
 // happy path. Hugo can override either via Vercel env vars if desired.
 const DEFAULT_FROM = "info@themandalacompany.com";
@@ -190,6 +222,20 @@ export default async function handler(req: Request) {
     const message = err instanceof Error ? err.message : "Signature verification failed.";
     return bad(`Webhook signature verification failed: ${message}`);
   }
+
+  // ---- Event-id deduplication ---------------------------------------------
+  // If we've already seen this exact Stripe event id on this warm instance,
+  // return 200 immediately without re-running side effects (Resend send,
+  // coupon mint). Stripe will stop retrying once it gets a 200.
+  cleanSeenEvents();
+  if (seenEvents.has(event.id)) {
+    console.log("[stripe-webhook] duplicate event id, skipping", {
+      event_id: event.id,
+      type: event.type,
+    });
+    return ok();
+  }
+  seenEvents.set(event.id, Date.now());
 
   switch (event.type) {
     case "checkout.session.completed": {

@@ -240,6 +240,14 @@ export const OrderConfirmation = ({
               {estateEmail}
             </a>
             <br />
+            Returns, refunds &amp; damages —{" "}
+            <a
+              href="https://uncle-tribute.vercel.app/returns"
+              style={styles.link}
+            >
+              uncle-tribute.vercel.app/returns
+            </a>
+            <br />
             Reference: {orderRef}
             <br />
             The Art of Stephen Meakin · Lewes, East Sussex

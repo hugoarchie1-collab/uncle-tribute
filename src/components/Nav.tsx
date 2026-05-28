@@ -78,6 +78,7 @@ export const Nav = () => {
           { to: "/", label: "Home", end: true },
           { to: "/collections", label: "Collections" },
           { to: "/about", label: "About" },
+          { to: "/contact", label: "Contact" },
         ].map((l) => (
           <NavLink
             key={l.to}
