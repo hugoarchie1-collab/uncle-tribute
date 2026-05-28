@@ -5,7 +5,6 @@ import {
   useTransform,
   useReducedMotion,
   useMotionValueEvent,
-  useMotionTemplate,
   type Variants,
 } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -99,10 +98,25 @@ const ChapterIntro = ({
     target: ref,
     offset: ["start end", "center center"],
   });
-  // Top stop alpha scrubs 0.2 → 0.95. Bottom stop ramps 0.4 → 0.7.
-  const topAlpha = useTransform(scrollYProgress, [0, 1], [0.2, 0.95]);
-  const bottomAlpha = useTransform(scrollYProgress, [0, 1], [0.4, 0.7]);
-  const gradient = useMotionTemplate`linear-gradient(180deg, rgba(220,168,76,${topAlpha}) 0%, rgba(201,120,68,${bottomAlpha}) 100%)`;
+  // The colour wipe used to animate the gradient STRING via useMotionTemplate,
+  // which repaints the background-clip:text numeral every scroll frame. Instead
+  // we stack two static gradient layers — a dim "pre" and a bright "lit" — and
+  // crossfade the dim layer's OPACITY out as the section enters. Opacity is
+  // GPU-composited, so the wipe reads identically with zero per-frame paint.
+  const dimOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+
+  // Final (lit) gradient — what the numeral settles to. Matches the old
+  // top 0.95 / bottom 0.7 end stops.
+  const litGradient =
+    "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.7) 100%)";
+  // Initial (dim) gradient — the old start stops (top 0.2 / bottom 0.4).
+  const dimGradient =
+    "linear-gradient(180deg, rgba(220,168,76,0.2) 0%, rgba(201,120,68,0.4) 100%)";
+  const clipText = {
+    WebkitBackgroundClip: "text" as const,
+    backgroundClip: "text" as const,
+    color: "transparent",
+  };
 
   return (
     <section
@@ -110,27 +124,33 @@ const ChapterIntro = ({
       className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10"
     >
       <Reveal as="div" className="grid grid-cols-12 gap-4 md:gap-8 items-end">
-        <motion.p
-          className="col-span-12 md:col-span-3 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
-          style={
-            reduceMotion
-              ? {
-                  background:
-                    "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.7) 100%)",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  color: "transparent",
-                }
-              : {
-                  backgroundImage: gradient,
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  color: "transparent",
-                }
-          }
-        >
-          {numeral}
-        </motion.p>
+        {reduceMotion ? (
+          <p
+            className="col-span-12 md:col-span-3 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+            style={{ backgroundImage: litGradient, ...clipText }}
+          >
+            {numeral}
+          </p>
+        ) : (
+          // Lit numeral on the bottom; dim numeral stacked on top fading out.
+          // The grid cell positions the lit copy; the dim copy is absolutely
+          // overlaid so both share the same box.
+          <div className="relative col-span-12 md:col-span-3">
+            <p
+              className="font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+              style={{ backgroundImage: litGradient, ...clipText }}
+            >
+              {numeral}
+            </p>
+            <motion.p
+              aria-hidden="true"
+              className="absolute inset-0 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums pointer-events-none"
+              style={{ backgroundImage: dimGradient, opacity: dimOpacity, ...clipText }}
+            >
+              {numeral}
+            </motion.p>
+          </div>
+        )}
         <div className="col-span-12 md:col-span-9 md:pl-6 md:pb-3">
           <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-4">
             {label} · {years}

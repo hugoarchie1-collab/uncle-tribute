@@ -53,6 +53,10 @@ const ScrollBackdrop = ({
         y,
         scale,
         backgroundImage: `url("${photoUrl}")`,
+        // Promote each backdrop to its own GPU layer so the scroll-driven
+        // opacity/y/scale composite cleanly instead of repainting the large
+        // background image every frame as the user scrolls past.
+        willChange: "transform, opacity",
       }}
       className="absolute inset-0 bg-cover bg-center"
       aria-hidden="true"
@@ -97,10 +101,9 @@ export const Collections = () => {
       </div>
 
       <main className="relative z-10">
-        {/* PAGE INTRO — a buyer arriving from the nav lands on a curated
-            opener rather than mid-stream at "I · 4 Paintings". Sets the
-            scope (three collections) and gives the eye a moment of frame
-            before the first collection begins. */}
+        {/* PAGE INTRO — generic, future-proof opener. Deliberately does NOT
+            name or count the collections, so it never goes stale as new
+            collections / colourways are released. */}
         <Reveal
           as="header"
           className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-6 md:pb-10 text-center"
@@ -109,19 +112,19 @@ export const Collections = () => {
             className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            Three Collections
+            The Collections
           </p>
           <h1
             className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.2vw,72px)] leading-[0.98] text-white m-0 mb-6 text-balance"
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Habundia, Genesis, Born in the Sky.
+            Signed editions from the estate.
           </h1>
           <p
             className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 max-w-[640px] mx-auto m-0"
             style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Three bodies of work spanning a life at the compass — from the wild flowers of the British Isles, through the geometry of creation, to the constellations and the night sky. Every painting is offered as a signed giclée print, individually made to order.
+            Each of Stephen's paintings is offered as an estate-stamped giclée print, individually made to order. New collections and colourways are released by the estate over time.
           </p>
         </Reveal>
 

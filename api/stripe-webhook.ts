@@ -42,8 +42,8 @@
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { OrderConfirmation } from "./_lib/emails/OrderConfirmation";
-import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode";
+import { OrderConfirmation } from "./_lib/emails/OrderConfirmation.js";
+import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode.js";
 
 const ok = (msg = "ok") => new Response(msg, { status: 200 });
 const bad = (msg: string) => new Response(msg, { status: 400 });

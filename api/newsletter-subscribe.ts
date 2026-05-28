@@ -49,7 +49,7 @@
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { WelcomeEmail } from "./_lib/emails/Welcome";
+import { WelcomeEmail } from "./_lib/emails/Welcome.js";
 
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";

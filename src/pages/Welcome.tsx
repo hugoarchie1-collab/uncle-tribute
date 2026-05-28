@@ -139,6 +139,9 @@ export const Welcome = () => {
               style={{
                 opacity: backdropOpacities[i],
                 backgroundImage: `url("${asset(bd.url)}")`,
+                // Promote to its own GPU layer so the scroll-driven crossfade
+                // composites the (pre-blurred) image instead of repainting it.
+                willChange: "opacity",
               }}
             />
           ))}

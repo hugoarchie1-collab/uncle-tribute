@@ -37,7 +37,7 @@
 
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { BasketSavedEmail } from "./_lib/emails/BasketSaved";
+import { BasketSavedEmail } from "./_lib/emails/BasketSaved.js";
 
 // ---- Catalogue duplicated from src/data/paintings.ts + api/checkout.ts ----
 // Keep in sync with PRINT_TIERS in src/data/paintings.ts AND the inline TIERS
