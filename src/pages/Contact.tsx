@@ -3,7 +3,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 /**
  * /contact — full-page version of the EnquireModal form. Same mailto +
@@ -20,7 +20,6 @@ type Status = "idle" | "submitting" | "success" | "error";
 const SUBJECT = "Contact the estate";
 
 export const Contact = () => {
-  usePageTitle("Contact the estate");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const firstFieldRef = useRef<HTMLInputElement>(null);
@@ -89,6 +88,11 @@ export const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-bg">
+      <Seo
+        title="Contact the estate"
+        description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
+        url="/contact"
+      />
       <Nav />
       <main className="flex-1 mx-auto w-full max-w-[720px] px-6 md:px-10 py-24 md:py-32">
         <Reveal as="header" className="mb-10">

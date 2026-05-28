@@ -23,9 +23,10 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { asset } from "../lib/asset";
-import { usePageTitle } from "../lib/usePageTitle";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
+import { Seo } from "../components/Seo";
+import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page (canonical; propagate site-wide later)
@@ -160,8 +161,8 @@ const OneOffCard = ({
     </span>
     <span className={cn(META, "block mb-1.5")}>{tier.size}</span>
     <span className={cn(META, "block")}>
-      A singular work, hand-painted by hand in Stephen&rsquo;s geometric
-      tradition. Once it is taken, it is gone — there is only this one.
+      A singular work, hand-painted in Stephen&rsquo;s geometric tradition.
+      Once it is taken, it is gone — there is only this one.
     </span>
   </button>
 );
@@ -831,8 +832,6 @@ export const PaintingDetail = () => {
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
 
-  usePageTitle(painting?.title);
-
   const availableColourways = useMemo(
     () => painting?.colourways.filter((c) => c.available) ?? [],
     [painting],
@@ -901,8 +900,61 @@ export const PaintingDetail = () => {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // ---- SEO: per-painting title / description / OG image + structured data --
+  // OG image is the original-colourway cover so shares look canonical even
+  // while the buyer has a different swatch selected on-page.
+  const ogColourway =
+    painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
+  const metaDescription = firstSentence(painting.description);
+  const paintingPath = `/collections/${painting.id}`;
+  const ogImagePath = ogColourway?.image ?? selected.image;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: painting.title,
+    image: absoluteUrl(ogImagePath),
+    description: metaDescription,
+    brand: { "@type": "Brand", name: "The Art of Stephen Meakin" },
+    offers: {
+      "@type": "Offer",
+      price: (anchorTier.pricePence / 100).toFixed(2),
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      url: absoluteUrl(paintingPath),
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Collections",
+        item: absoluteUrl("/collections"),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: painting.title,
+        item: absoluteUrl(paintingPath),
+      },
+    ],
+  };
+
   return (
     <div className="relative overflow-hidden">
+      <Seo
+        title={painting.title}
+        description={metaDescription}
+        url={paintingPath}
+        image={ogImagePath}
+        type="product"
+        jsonLd={[productJsonLd, breadcrumbJsonLd]}
+      />
       {/* Ambient backdrop — selected colourway painting blurred behind the
           page. Crossfades seamlessly between colourways as the user switches
           swatches. (gotcha #8: page carries `isolate` below to keep this

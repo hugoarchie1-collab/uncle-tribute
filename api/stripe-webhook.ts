@@ -165,24 +165,28 @@ const TIER_PRICE_PENCE: Record<string, number> = {
   collector: 29500,
   "atelier-grande": 59500,
   heirloom: 125000,
+  studio: 95000,
 };
 const TIER_LABEL: Record<string, string> = {
   atelier: "Atelier",
   collector: "Collector",
   "atelier-grande": "Atelier Grande",
   heirloom: "Heirloom",
+  studio: "Studio — Hand-painted by Polly Wedge",
 };
 const TIER_SIZE: Record<string, string> = {
   atelier: "A3 (29.7 × 42 cm)",
   collector: "A2 (42 × 59.4 cm)",
   "atelier-grande": "A1 (59.4 × 84.1 cm)",
   heirloom: "A0 (84.1 × 118.9 cm)",
+  studio: "A1 (59.4 × 84.1 cm)",
 };
 const TIER_EDITION: Record<string, string> = {
   atelier: "Open edition",
   collector: "Limited edition of 100",
   "atelier-grande": "Limited edition of 50",
   heirloom: "Limited edition of 25",
+  studio: "Unique — one of one",
 };
 
 const linesFromMetadata = (

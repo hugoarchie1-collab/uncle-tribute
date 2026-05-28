@@ -15,7 +15,7 @@ import {
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 /**
  * Fixed backdrop layer that cross-fades between collection scenes as the
@@ -65,8 +65,6 @@ const ScrollBackdrop = ({
 };
 
 export const Collections = () => {
-  usePageTitle("The Collections");
-
   // One ref per collection section so each backdrop can track its own visibility
   const sectionRefs = [
     useRef<HTMLElement>(null),
@@ -76,6 +74,11 @@ export const Collections = () => {
 
   return (
     <div className="relative">
+      <Seo
+        title="The Collections"
+        description="Habundia, Genesis and Born in the Sky — three collections of Stephen Meakin's mandala paintings, each offered as an estate-stamped giclée print, individually made to order."
+        url="/collections"
+      />
       <Nav />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
@@ -118,7 +121,7 @@ export const Collections = () => {
             className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.2vw,72px)] leading-[0.98] text-white m-0 mb-6 text-balance"
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Signed editions from the estate.
+            Estate-stamped editions.
           </h1>
           <p
             className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 max-w-[640px] mx-auto m-0"
@@ -236,7 +239,7 @@ export const Collections = () => {
                               className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-white/85 m-0"
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
-                              Signed giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
+                              Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
                             </p>
                           </figcaption>
                         </Link>
@@ -247,9 +250,11 @@ export const Collections = () => {
 
                 {/* COMPLETE-COLLECTION CARD — offer the whole collection as a
                     curated set. Dignified estate register: "offered as a set",
-                    not a sale. The saving advertised here (10%) is exactly what
-                    the checkout's 3+-item bundle coupon applies — a full
-                    collection is always 3+ paintings — so the number is honest.
+                    not a sale. The saving shown (save figure + net price) is
+                    computed by getCollectionBundle to match exactly what the
+                    checkout's bundle coupon applies for this collection's item
+                    count — 5% at 2 paintings (Habundia), 10% at 3+ (Genesis,
+                    Born in the Sky) — so the number is always honest.
                     Clicking adds every painting (anchor A2 tier) to the basket;
                     the buyer reviews + completes on /basket. */}
                 {bundle && items.length > 1 && (

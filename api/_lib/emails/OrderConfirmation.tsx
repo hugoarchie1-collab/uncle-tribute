@@ -61,7 +61,7 @@ export interface OrderConfirmationProps {
   total: string;
   /** Thank-you offer code shown in the gift card (e.g. "FRIENDS-AB12CD"). */
   thankYouCode: string;
-  /** "£18" or "10%" — kept abstract so we can tune copy later. */
+  /** "10%" — kept abstract so we can tune copy later. */
   thankYouValue: string;
   /** ISO date the buyer must redeem by (e.g. "29 May 2027"). */
   thankYouExpiry: string;

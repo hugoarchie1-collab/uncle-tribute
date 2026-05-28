@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from "react-router-dom";
 import { useEffect } from "react";
+import { HelmetProvider } from "react-helmet-async";
+import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { Collections } from "./pages/Collections";
 import { PaintingDetail } from "./pages/PaintingDetail";
@@ -63,27 +65,32 @@ const ScrollToTop = () => {
 
 export default function App() {
   return (
-    <BrowserRouter basename={basename}>
-      <ScrollToTop />
-      {/* Sitewide film-grain texture — sits above content at z-100,
-          opacity tuned low so it textures without obscuring. */}
-      <div aria-hidden="true" className="film-grain" />
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/collections" element={<Collections />} />
-        <Route path="/collections/:id" element={<PaintingDetail />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/basket" element={<Basket />} />
-        <Route path="/order/success" element={<OrderSuccess />} />
-        <Route path="/order/cancel" element={<OrderCancel />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/returns" element={<Returns />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter basename={basename}>
+        <ScrollToTop />
+        {/* Sitewide film-grain texture — sits above content at z-100,
+            opacity tuned low so it textures without obscuring. */}
+        <div aria-hidden="true" className="film-grain" />
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/collections/:id" element={<PaintingDetail />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/basket" element={<Basket />} />
+          <Route path="/order/success" element={<OrderSuccess />} />
+          <Route path="/order/cancel" element={<OrderCancel />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/returns" element={<Returns />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
+            Hugo enables Web Analytics in the Vercel dashboard. */}
+        <Analytics />
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

@@ -159,9 +159,9 @@ export const BasketSavedEmail = ({
 
           <p style={styles.body}>
             Each print is individually made to order at a small UK atelier and
-            hand-signed on behalf of the estate. If a colourway sells out
-            between now and your visit, the basket will quietly drop the line
-            and the rest will be waiting.
+            estate-stamped by The Mandala Company, hand-numbered within its
+            edition. If a colourway sells out between now and your visit, the
+            basket will quietly drop the line and the rest will be waiting.
           </p>
 
           <p style={styles.signoff}>With love from the estate,</p>

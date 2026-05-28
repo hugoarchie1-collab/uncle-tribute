@@ -64,11 +64,12 @@ const PRIVACY: Section[] = [
           <><strong>Enquiries</strong> — your name, email and message, when you write to us through the contact form.</>,
           <><strong>Saved basket</strong> — the painting / colourway / tier you've added is stored in your own browser only (<code>localStorage</code> key <code>tasm.basket.v2</code>). It never leaves your device unless you choose to email it to yourself, in which case your email address is also stored (briefly) to send the basket.</>,
           <><strong>Server logs</strong> — basic request information (IP address, browser type, timestamps) is held in our hosting provider's logs for security and abuse-prevention purposes.</>,
+          <><strong>Aggregate analytics</strong> — we use Vercel Web Analytics to understand which pages are visited and roughly where visitors come from. It is privacy-friendly and cookieless: no cookies are set, no cross-site tracking takes place, and no individual is identified or profiled. Only anonymous, aggregate page-view counts are recorded.</>,
         ],
       },
       {
         kind: "p",
-        text: "We do not run third-party advertising trackers, fingerprinting libraries, or analytics that profile individuals.",
+        text: "We do not run third-party advertising trackers, fingerprinting libraries, or any analytics that profile individuals. Our only analytics is Vercel's cookieless, aggregate Web Analytics described above.",
       },
     ],
   },
@@ -101,7 +102,7 @@ const PRIVACY: Section[] = [
           <><strong>Resend</strong> — transactional and newsletter email delivery (US / EU).{" "}
             <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Resend Privacy Policy</a>
           </>,
-          <><strong>Vercel</strong> — site hosting and serverless functions (US / EU).{" "}
+          <><strong>Vercel</strong> — site hosting, serverless functions and cookieless, aggregate Web Analytics (US / EU).{" "}
             <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Vercel Privacy Policy</a>
           </>,
           <><strong>Point 101</strong> — print fulfilment (UK). Your name and shipping address are shared so they can post the print.</>,
@@ -187,7 +188,7 @@ const PRIVACY: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "This site sets no third-party tracking cookies and no advertising cookies. It uses your browser's localStorage for one thing only — remembering the items in your basket between visits. You can clear it any time from your browser's site-settings.",
+        text: "This site sets no third-party tracking cookies and no advertising cookies. Our analytics (Vercel Web Analytics) is cookieless, so it sets no cookies at all. The site uses your browser's localStorage for one thing only — remembering the items in your basket between visits. You can clear it any time from your browser's site-settings.",
       },
     ],
   },

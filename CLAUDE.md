@@ -79,6 +79,8 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 | Hosting | Vercel (static SPA + serverless functions in `/api`) |
 | Payments | Stripe Checkout (hosted) + Stripe Webhooks |
 | Images | WebP with JPG fallback via `<picture>` (60+ JPGs all pre-converted) |
+| SEO / meta | `react-helmet-async` (`<HelmetProvider>` in App.tsx) — per-route `<title>` + meta + per-painting OG + Product/Breadcrumb JSON-LD via `src/components/Seo.tsx` |
+| Analytics | `@vercel/analytics` — `<Analytics />` mounted once in App.tsx; cookieless, GDPR-friendly, no-ops until Web Analytics is enabled in the Vercel dashboard |
 | Smooth scroll | Native browser only — **don't add Lenis** (tried, removed, broke things) |
 
 ---
@@ -157,7 +159,9 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 - `DEFAULT_PRINT` — legacy default (now £295, mirrors the anchor tier). Kept for the home page "from £…" chip and any straggling callers.
 - Helpers: `getPaintingById`, `getPrintTiers`, `getAnchorTier`, `getFramingPricePence`, `getEmbellishmentPricePence`, `getPrintPricePence` (legacy), `getPrintSize` (legacy), `formatGBP`, `ORIGINAL_PRINT_SPEC`, `ORIGINAL_PROVENANCE`, `EMBELLISHMENT_NOTE`, `COLOURWAY_NOTE`
 
-**Pricing mirror**: `api/checkout.ts` carries a `TIERS` map that mirrors `PRINT_TIERS` (gotcha #5 forbids cross-directory imports into `/api`). `api/stripe-webhook.ts` also carries small per-tier label / price / size lookups for the OrderConfirmation email. When updating a tier price, update **all three** in the same commit — see gotcha #9.
+**Pricing mirror**: `api/checkout.ts` carries a `TIERS` map that mirrors `PRINT_TIERS` (gotcha #5 forbids cross-directory imports into `/api`). `api/stripe-webhook.ts` also carries small per-tier label / price / size / edition lookups for the OrderConfirmation email — these now include the `studio` row (£950 one-off) so a Studio purchase renders the correct label/size/edition/price. When updating a tier price, update **all three** in the same commit — see gotcha #9.
+
+**Collection-bundle discount mirror**: `getCollectionBundle` in `paintings.ts` advertises the SAME discount the checkout applies, derived from the painting count via `bundleDiscountPercentForCount(count)` = `count >= 3 ? 10 : 5` — mirroring `api/checkout.ts`'s coupon (5% at 2 items, 10% at 3+). So a 2-painting collection (Habundia) advertises 5% (NOT a flat 10%) and the card's save/net equals the Stripe charge. Keep the two in sync (part of gotcha #9).
 
 **Painting IDs:**
 ```
@@ -187,6 +191,7 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 | `ExitSaveBasket` | Bottom-right exit-intent toast on the Basket page. Fires once per session on top-edge mouse exit (desktop only). Same endpoint as `EmailMyBasket`. |
 | `ReturningVisitorChip` | "Welcome back, {name}" hairline in the Nav for returning subscribers. Once per session, then self-hides. |
 | `ShareTheEstate` | Quiet post-purchase share row (Copy link · Email · Twitter · Facebook) on OrderSuccess. No referral tracking — just an introduction. |
+| `Seo` | Per-route `<title>` + `<meta name="description">` + OG/Twitter overrides + optional `jsonLd` (schema.org) via `react-helmet-async`. PaintingDetail passes per-painting OG image (original colourway, absolute URL) + Product & BreadcrumbList JSON-LD. Title logic mirrors `usePageTitle` so output is identical. |
 | `FooterCatalogue` | 5×2 (mobile) / 10×1 (desktop) grid of every painting, mounted above `<Footer />` on every page (Welcome / Collections / About / PaintingDetail). Lets a reader who scrolled to the bottom step sideways into any other piece without travelling back up to the nav. Whole-grid `whileInView` fade-up; reduced-motion renders statically. |
 
 ### Lib utilities
@@ -195,7 +200,8 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 |---|---|
 | `lib/asset.ts` | `asset()` URL helper + `webp()` extension swap |
 | `lib/cn.ts` | classnames helper |
-| `lib/usePageTitle.ts` | `document.title` hook |
+| `lib/usePageTitle.ts` | `document.title` hook — still used by Welcome / Basket / OrderResult / Legal / NotFound. Pages with richer SEO needs (PaintingDetail / Collections / About / FAQ / Contact) use `<Seo>` instead — **don't double-set titles** (a page uses one OR the other, never both) |
+| `lib/seo.ts` | `SITE_URL` constant + `absoluteUrl()` / `pageTitle()` / `firstSentence()` helpers for the meta system |
 | `lib/basket.ts` | localStorage-backed basket store + `useBasket()` hook (no Redux/Zustand) |
 
 ---
@@ -396,7 +402,8 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 /index.html                   Meta tags + font preload + JSON-LD
 /vercel.json                  Rewrite + cache headers (api/* EXCLUDED from SPA rewrite)
 /tailwind.config.ts           Custom palette, fonts, clamp() text sizes
-/package.json                 Deps: react 19, vite 8, framer-motion 12, stripe, tailwind 3
+/package.json                 Deps: react 19, vite 8, framer-motion 12, stripe, tailwind 3, react-helmet-async (SEO), @vercel/analytics. (gsap + lucide-react removed — were unused.)
+/.npmrc                        legacy-peer-deps=true — react-helmet-async@2 declares a React 16–18 peer range but works on React 19; this lets npm + Vercel install it without ERESOLVE
 ```
 
 ---
