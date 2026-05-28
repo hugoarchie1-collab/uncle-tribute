@@ -169,11 +169,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
-  });
+// Minimal structural types for Vercel's Node (req, res) handler signature.
+// We use the Node signature — NOT the Web Request/Response one — because the
+// Web handler's returned Response was not being delivered in this project's
+// Vercel runtime: requests hung with a "default export return" warning and
+// never replied (status "-"), tripping the client's 15s timeout. The Node
+// signature with res.json() always delivers. Typed inline to keep the file
+// self-contained (gotcha #5) — no @vercel/node import; Vercel supplies the
+// real objects at runtime.
+interface VercelReq {
+  method?: string;
+  body?: unknown;
+}
+interface VercelRes {
+  status: (code: number) => VercelRes;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 const isTierId = (v: unknown): v is TierId =>
   v === "atelier" ||
@@ -292,15 +305,30 @@ const buildShippingOptions = (items: NormalisedItem[]) => {
   ];
 };
 
-export default async function handler(req: Request) {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+export default async function handler(req: VercelReq, res: VercelRes) {
+  // CORS on every response.
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    res.setHeader(key, value);
+  }
+  // Local send helper — writes to res so the Node runtime actually delivers
+  // the response (the old Response-returning json() helper did not).
+  const send = (status: number, payload: unknown) => {
+    res.status(status).json(payload);
+  };
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+  if (req.method !== "POST") return send(405, { error: "Method not allowed" });
 
   const secret = process.env.STRIPE_SECRET_KEY;
   const siteUrl = process.env.SITE_URL;
-  if (!secret) return json(500, { error: "Server missing STRIPE_SECRET_KEY." });
-  if (!siteUrl) return json(500, { error: "Server missing SITE_URL." });
+  if (!secret) return send(500, { error: "Server missing STRIPE_SECRET_KEY." });
+  if (!siteUrl) return send(500, { error: "Server missing SITE_URL." });
 
+  // Vercel's Node runtime parses a JSON request body into req.body. Handle
+  // both the parsed-object case and a raw-string fallback defensively.
   let body: {
     paintingId?: string;
     colourwayName?: string;
@@ -316,9 +344,12 @@ export default async function handler(req: Request) {
     }>;
   };
   try {
-    body = await req.json();
+    body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : ((req.body ?? {}) as typeof body);
   } catch {
-    return json(400, { error: "Invalid JSON body." });
+    return send(400, { error: "Invalid JSON body." });
   }
 
   // ---- Normalise items ----------------------------------------------------
@@ -336,10 +367,10 @@ export default async function handler(req: Request) {
       ];
 
   if (rawItems.length === 0) {
-    return json(400, { error: "Basket is empty." });
+    return send(400, { error: "Basket is empty." });
   }
   if (rawItems.length > MAX_ITEMS) {
-    return json(400, { error: `Too many items (max ${MAX_ITEMS}).` });
+    return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
   }
 
   const normalised: NormalisedItem[] = [];
@@ -351,7 +382,7 @@ export default async function handler(req: Request) {
       raw?.framing,
       raw?.embellished,
     );
-    if ("error" in result) return json(400, result);
+    if ("error" in result) return send(400, result);
     normalised.push(result);
   }
 
@@ -508,7 +539,7 @@ export default async function handler(req: Request) {
 
     if (!session.url) {
       console.error("[/api/checkout] Stripe returned session without URL", session.id);
-      return json(500, { error: "Stripe didn't return a checkout URL." });
+      return send(500, { error: "Stripe didn't return a checkout URL." });
     }
 
     console.log("[/api/checkout] session created", {
@@ -520,10 +551,10 @@ export default async function handler(req: Request) {
       embellished: normalised.filter((i) => i.embellished).length,
       bundleDiscount: discounts ? "yes" : "no",
     });
-    return json(200, { url: session.url });
+    return send(200, { url: session.url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Stripe checkout failed.";
     console.error("[/api/checkout] Stripe error:", message);
-    return json(500, { error: message });
+    return send(500, { error: message });
   }
 }
