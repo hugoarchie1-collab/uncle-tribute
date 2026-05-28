@@ -52,11 +52,24 @@ const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";
 const FROM_NAME = "The Mandala Company";
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+// Minimal structural types for Vercel's Node (req, res) handler signature.
+// We use the Node signature — NOT the Web Request/Response one — because the
+// Web handler's returned Response was not being delivered in this project's
+// Vercel runtime: requests hung with a "default export return" warning and
+// never replied (status "-"), tripping the client's timeout. The Node
+// signature with res.json() always delivers. Typed inline to keep the file
+// self-contained (gotcha #5) — no @vercel/node import; Vercel supplies the
+// real objects at runtime.
+interface VercelReq {
+  method?: string;
+  body?: unknown;
+}
+interface VercelRes {
+  status: (code: number) => VercelRes;
+  json: (body: unknown) => void;
+  setHeader: (name: string, value: string) => void;
+  end: () => void;
+}
 
 // Constant-time-ish string compare to discourage timing attacks. (Vercel's
 // edge isn't strictly constant-time anyway — node's crypto.timingSafeEqual
@@ -109,19 +122,27 @@ const linesFromMetadata = (m: Stripe.Metadata | null): ShippedLine[] => {
   }));
 };
 
-export default async function handler(req: Request) {
-  if (req.method !== "POST") return json(405, { error: "Method not allowed" });
+export default async function handler(req: VercelReq, res: VercelRes) {
+  // Local send helper — writes to res so the Node runtime actually delivers
+  // the response (the old Response-returning json() helper did not).
+  const send = (status: number, payload: unknown) => {
+    res.status(status).json(payload);
+  };
+
+  if (req.method !== "POST") return send(405, { error: "Method not allowed" });
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   const resendKey = process.env.RESEND_API_KEY;
   const adminKey = process.env.ADMIN_API_KEY;
   if (!stripeKey || !resendKey || !adminKey) {
-    return json(500, {
+    return send(500, {
       error:
         "Server is missing STRIPE_SECRET_KEY, RESEND_API_KEY or ADMIN_API_KEY.",
     });
   }
 
+  // Vercel's Node runtime parses a JSON request body into req.body. Handle
+  // both the parsed-object case and a raw-string fallback defensively.
   let body: {
     sessionId?: string;
     trackingUrl?: string;
@@ -129,9 +150,12 @@ export default async function handler(req: Request) {
     secret?: string;
   };
   try {
-    body = await req.json();
+    body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : ((req.body ?? {}) as typeof body);
   } catch {
-    return json(400, { error: "Invalid JSON body." });
+    return send(400, { error: "Invalid JSON body." });
   }
 
   const sessionId = (body.sessionId ?? "").toString().trim();
@@ -142,17 +166,17 @@ export default async function handler(req: Request) {
   // Auth — 401 (not 403) so it's obvious what went wrong if Hugo's curl
   // typo'd the secret.
   if (!secret || !safeEqual(secret, adminKey)) {
-    return json(401, { error: "Unauthorised." });
+    return send(401, { error: "Unauthorised." });
   }
 
   if (!sessionId.startsWith("cs_")) {
-    return json(400, { error: "sessionId must be a Stripe Checkout session id (cs_…)." });
+    return send(400, { error: "sessionId must be a Stripe Checkout session id (cs_…)." });
   }
   if (!trackingUrl || !/^https?:\/\//.test(trackingUrl)) {
-    return json(400, { error: "trackingUrl must be a http(s) URL." });
+    return send(400, { error: "trackingUrl must be a http(s) URL." });
   }
   if (!carrier) {
-    return json(400, { error: "carrier is required (e.g. 'Royal Mail Tracked 48')." });
+    return send(400, { error: "carrier is required (e.g. 'Royal Mail Tracked 48')." });
   }
 
   // ---- Retrieve the session from Stripe ----------------------------------
@@ -165,7 +189,7 @@ export default async function handler(req: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[admin/order-shipped] stripe retrieve failed:", message);
-    return json(404, { error: `Couldn't retrieve session: ${message}` });
+    return send(404, { error: `Couldn't retrieve session: ${message}` });
   }
 
   const buyerEmail = session.customer_details?.email ?? null;
@@ -176,7 +200,7 @@ export default async function handler(req: Request) {
     null;
 
   if (!buyerEmail) {
-    return json(400, {
+    return send(400, {
       error: "Session has no customer email — cannot send shipped notification.",
     });
   }
@@ -217,7 +241,7 @@ export default async function handler(req: Request) {
 
     if (sendResult.error) {
       console.error("[admin/order-shipped] Resend send error:", sendResult.error);
-      return json(500, { error: "Email send failed — see Vercel logs." });
+      return send(500, { error: "Email send failed — see Vercel logs." });
     }
 
     console.log("[admin/order-shipped] shipped email sent", {
@@ -227,10 +251,10 @@ export default async function handler(req: Request) {
       resend_id: sendResult.data?.id,
     });
 
-    return json(200, { ok: true, sent_to: buyerEmail });
+    return send(200, { ok: true, sent_to: buyerEmail });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[admin/order-shipped] failed:", message);
-    return json(500, { error: message });
+    return send(500, { error: message });
   }
 }
