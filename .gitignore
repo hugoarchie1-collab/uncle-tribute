@@ -25,3 +25,6 @@ dist-ssr
 
 # Raw extracted PDF assets (already copied into public/img/)
 # Keep these in source for re-extraction if needed but optional
+
+# Environment / secrets — never commit these to git.
+.env*

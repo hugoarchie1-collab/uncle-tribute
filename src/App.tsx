@@ -5,8 +5,11 @@ import { Collections } from "./pages/Collections";
 import { PaintingDetail } from "./pages/PaintingDetail";
 import { About } from "./pages/About";
 import { OrderSuccess, OrderCancel } from "./pages/OrderResult";
+import { Basket } from "./pages/Basket";
 import { NotFound } from "./pages/NotFound";
-import { Privacy, Terms } from "./pages/Legal";
+import { Privacy, Terms, Returns } from "./pages/Legal";
+import { Contact } from "./pages/Contact";
+import { FAQ } from "./pages/FAQ";
 import "./styles/global.css";
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
@@ -70,10 +73,14 @@ export default function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/collections/:id" element={<PaintingDetail />} />
         <Route path="/about" element={<About />} />
+        <Route path="/basket" element={<Basket />} />
         <Route path="/order/success" element={<OrderSuccess />} />
         <Route path="/order/cancel" element={<OrderCancel />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        <Route path="/returns" element={<Returns />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

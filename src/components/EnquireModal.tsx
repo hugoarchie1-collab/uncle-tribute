@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface EnquireModalProps {
   open: boolean;
   onClose: () => void;
-  /** Eyebrow above the modal title — e.g. "Prints", "Foundation". */
+  /** Eyebrow above the modal title — e.g. "Prints", "Friends of the estate". */
   eyebrow: string;
   /** Big title — e.g. "Print enquiries". */
   title: string;

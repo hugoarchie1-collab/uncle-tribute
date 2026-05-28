@@ -1,17 +1,21 @@
-import { useRef, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useScroll,
   useTransform,
   useReducedMotion,
+  useMotionValueEvent,
+  useMotionTemplate,
   type Variants,
 } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
+import { EnquireModal } from "../components/EnquireModal";
 import { ABOUT, PASSING_DATE } from "../data/content";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -74,7 +78,10 @@ const WordReveal = ({
 };
 
 // ─── ChapterIntro ──────────────────────────────────────────────────────────
-// Editorial chapter break: large Roman numeral + label + title.
+// Editorial chapter break: large Roman numeral + label + title. The numeral
+// gradient's top alpha scrubs from 0.2 → 0.95 as the section enters viewport
+// — a colour wipe synchronised to scroll. The h2 keeps the per-word
+// WordReveal entrance.
 const ChapterIntro = ({
   numeral,
   label,
@@ -85,30 +92,57 @@ const ChapterIntro = ({
   label: string;
   years: string;
   title: string;
-}) => (
-  <section className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10">
-    <Reveal as="div" className="grid grid-cols-12 gap-4 md:gap-8 items-end">
-      <p className="col-span-12 md:col-span-3 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
-         style={{
-           background: "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.7) 100%)",
-           WebkitBackgroundClip: "text",
-           backgroundClip: "text",
-           color: "transparent",
-         }}
-      >
-        {numeral}
-      </p>
-      <div className="col-span-12 md:col-span-9 md:pl-6 md:pb-3">
-        <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-4">
-          {label} · {years}
-        </p>
-        <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,62px)] leading-[1.02] text-ink m-0 max-w-[820px]">
-          <WordReveal text={title} stagger={0.06} />
-        </h2>
-      </div>
-    </Reveal>
-  </section>
-);
+}) => {
+  const ref = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "center center"],
+  });
+  // Top stop alpha scrubs 0.2 → 0.95. Bottom stop ramps 0.4 → 0.7.
+  const topAlpha = useTransform(scrollYProgress, [0, 1], [0.2, 0.95]);
+  const bottomAlpha = useTransform(scrollYProgress, [0, 1], [0.4, 0.7]);
+  const gradient = useMotionTemplate`linear-gradient(180deg, rgba(220,168,76,${topAlpha}) 0%, rgba(201,120,68,${bottomAlpha}) 100%)`;
+
+  return (
+    <section
+      ref={ref}
+      className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10"
+    >
+      <Reveal as="div" className="grid grid-cols-12 gap-4 md:gap-8 items-end">
+        <motion.p
+          className="col-span-12 md:col-span-3 font-display font-bold text-[clamp(86px,13vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+          style={
+            reduceMotion
+              ? {
+                  background:
+                    "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.7) 100%)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }
+              : {
+                  backgroundImage: gradient,
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }
+          }
+        >
+          {numeral}
+        </motion.p>
+        <div className="col-span-12 md:col-span-9 md:pl-6 md:pb-3">
+          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-4">
+            {label} · {years}
+          </p>
+          <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,62px)] leading-[1.02] text-ink m-0 max-w-[820px]">
+            <WordReveal text={title} stagger={0.06} />
+          </h2>
+        </div>
+      </Reveal>
+    </section>
+  );
+};
 
 // ─── YearTag ────────────────────────────────────────────────────────────────
 const YearTag = ({ year, place }: { year: string; place?: string }) => (
@@ -219,7 +253,9 @@ const MilestoneImageLeft = ({
   </Reveal>
 );
 
-// D — massive year as design element, text right
+// D — massive year as design element, text right. The numeral scrub-counts
+// from `year - 1` → `year` as the section enters the viewport. Numeric
+// years only; falls back to a static render for anything non-numeric.
 const MilestoneBigYear = ({
   year,
   place,
@@ -230,35 +266,56 @@ const MilestoneBigYear = ({
   place?: string;
   title: string;
   children: ReactNode;
-}) => (
-  <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-28">
-    <div className="grid grid-cols-12 gap-4 md:gap-12 items-start">
-      <div className="col-span-12 md:col-span-5">
-        <p className="font-display font-bold text-[clamp(82px,11.5vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
-           style={{
-             background: "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.6) 100%)",
-             WebkitBackgroundClip: "text",
-             backgroundClip: "text",
-             color: "transparent",
-           }}
-        >
-          {year}
-        </p>
-        {place && (
-          <p className="mt-4 font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0">
-            {place}
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const targetYear = Number.parseInt(year, 10);
+  const isCountable = Number.isFinite(targetYear) && !reduceMotion;
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "center center"],
+  });
+  const counted = useTransform(scrollYProgress, [0, 1], [targetYear - 1, targetYear]);
+  const [display, setDisplay] = useState<number>(targetYear - 1);
+  useMotionValueEvent(counted, "change", (v) => {
+    const rounded = Math.round(v);
+    setDisplay((prev) => (prev === rounded ? prev : rounded));
+  });
+
+  return (
+    <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-28">
+      <div ref={ref} className="grid grid-cols-12 gap-4 md:gap-12 items-start">
+        <div className="col-span-12 md:col-span-5">
+          <p
+            className="font-display font-bold text-[clamp(82px,11.5vw,200px)] leading-[0.84] m-0 tracking-[-0.05em] tabular-nums"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(220,168,76,0.95) 0%, rgba(201,120,68,0.6) 100%)",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+            aria-label={year}
+          >
+            {isCountable ? display : year}
           </p>
-        )}
+          {place && (
+            <p className="mt-4 font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0">
+              {place}
+            </p>
+          )}
+        </div>
+        <div className="col-span-12 md:col-span-7 md:pt-4">
+          <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(26px,3.4vw,48px)] leading-[1.05] text-ink m-0 mb-6">
+            {title}
+          </h3>
+          <div className="flex flex-col gap-5">{children}</div>
+        </div>
       </div>
-      <div className="col-span-12 md:col-span-7 md:pt-4">
-        <h3 className="font-display font-bold tracking-[-0.035em] text-[clamp(26px,3.4vw,48px)] leading-[1.05] text-ink m-0 mb-6">
-          {title}
-        </h3>
-        <div className="flex flex-col gap-5">{children}</div>
-      </div>
-    </div>
-  </Reveal>
-);
+    </Reveal>
+  );
+};
 
 // E — quote callout with portrait image
 const MilestoneQuote = ({
@@ -314,7 +371,7 @@ const AnegadaSpread = () => {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-14%", "14%"]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const imgScale = useTransform(scrollYProgress, [0, 1], [1.14, 1.0]);
 
   return (
@@ -339,14 +396,14 @@ const AnegadaSpread = () => {
             style={
               reduceMotion
                 ? {
-                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.webp")}")`,
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
                     backgroundSize: "cover",
                     backgroundPosition: "center 30%",
                   }
                 : {
                     y: imgY,
                     scale: imgScale,
-                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.webp")}")`,
+                    backgroundImage: `url("${asset("/img/about/03-stephen-on-cairn.jpg")}")`,
                     backgroundSize: "cover",
                     backgroundPosition: "center 30%",
                   }
@@ -463,52 +520,162 @@ const AnegadaSpread = () => {
 
 // ─── About ─────────────────────────────────────────────────────────────────
 
+// ─── AboutHero ─────────────────────────────────────────────────────────────
+// Hero with a scroll-scrubbed scale + opacity on the backdrop image and a
+// gentle upward translate on the title. Scrub feels like a slow deepening
+// rather than parallax. Reduced-motion short-circuits all transforms.
+const AboutHero = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const imgScale = useTransform(scrollYProgress, [0, 1], [1.0, 1.08]);
+  const imgOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.55]);
+  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
+
+  return (
+    <section className="relative">
+      <div
+        ref={ref}
+        className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden"
+      >
+        <motion.div
+          className="absolute inset-0 will-change-transform"
+          style={reduceMotion ? undefined : { scale: imgScale, opacity: imgOpacity }}
+        >
+          <AssetImage
+            src="/img/about/01-stephen-at-gallery.jpg"
+            alt="Stephen Meakin"
+            loading="eager"
+            decoding="sync"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        </motion.div>
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.6) 100%)",
+          }}
+        />
+        <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
+          <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/85 m-0">
+            In memoriam · 1966 — {PASSING_DATE}
+          </p>
+        </Reveal>
+        <motion.div
+          style={reduceMotion ? undefined : { y: titleY }}
+          className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4"
+        >
+          <Reveal as="div">
+            <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0">
+              Stephen<br />Meakin
+            </h1>
+            <p className="mt-4 md:mt-5 font-sans text-[11px] sm:text-[12px] font-bold tracking-[0.34em] uppercase text-ink/75 m-0">
+              SEM · Mandala Artist &amp; Sacred Geometer
+            </p>
+          </Reveal>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// ─── ClosingCTA ────────────────────────────────────────────────────────────
+// Most-engaged readers convert here. Scrub a gentle scale + opacity as the
+// CTA cluster enters the viewport — a deliberate "moment of arrival" beat.
+const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "center center"],
+  });
+  const scale = useTransform(scrollYProgress, [0, 1], [0.94, 1.04]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.4, 1]);
+
+  return (
+    <motion.div
+      ref={ref}
+      style={reduceMotion ? undefined : { scale, opacity }}
+      className="flex flex-col items-center gap-4 will-change-transform"
+    >
+      <MagneticLink
+        to="/collections"
+        className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+        ariaLabel="Browse the prints"
+      >
+        Browse prints →
+      </MagneticLink>
+      <button
+        type="button"
+        onClick={onJoinFriends}
+        className="inline-flex items-center font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/70 border-b border-ink/30 pb-1 transition-colors duration-300 hover:text-accent hover:border-accent"
+      >
+        Join the friends of the estate
+      </button>
+    </motion.div>
+  );
+};
+
+// ─── InMemoriamSpacer ──────────────────────────────────────────────────────
+// Deliberate scroll slowdown above the passing milestone. Reduced motion
+// collapses the spacer to ~20vh and renders the italic line statically.
+const InMemoriamSpacer = () => {
+  const reduceMotion = useReducedMotion();
+  return (
+    <div
+      className={
+        reduceMotion
+          ? "relative h-[20vh] flex items-center justify-center"
+          : "relative h-[60vh] flex items-center justify-center"
+      }
+      aria-hidden={false}
+    >
+      {reduceMotion ? (
+        <p className="font-display italic text-[clamp(18px,2vw,26px)] text-ink/70 m-0 text-center px-4">
+          In memoriam
+        </p>
+      ) : (
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.78 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 1.6, ease: [0.22, 0.61, 0.36, 1] }}
+          className="font-display italic text-[clamp(18px,2vw,26px)] text-ink m-0 text-center px-4"
+        >
+          In memoriam
+        </motion.p>
+      )}
+    </div>
+  );
+};
+
 export const About = () => {
   usePageTitle("Stephen Meakin");
+
+  // Friends-of-the-estate enquiry modal — opened from the closing CTA so a
+  // reader moved by the biography can subscribe without leaving the page.
+  const [friendsOpen, setFriendsOpen] = useState(false);
+  const closeFriends = useCallback(() => setFriendsOpen(false), []);
+  const openFriends = useCallback(() => setFriendsOpen(true), []);
 
   return (
     <div className="relative">
       <Nav />
       <main>
-        {/* HERO */}
-        <section className="relative">
-          <div className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden">
-            <AssetImage
-              src="/img/about/01-stephen-at-gallery.jpg"
-              alt="Stephen Meakin"
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
-              className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.6) 100%)",
-              }}
-            />
-            <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
-              <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/85 m-0">
-                In memoriam · 1966 — {PASSING_DATE}
-              </p>
-            </Reveal>
-            <Reveal as="div" className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4">
-              <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0">
-                Stephen<br />Meakin
-              </h1>
-              <p className="mt-4 md:mt-5 font-sans text-[11px] sm:text-[12px] font-bold tracking-[0.34em] uppercase text-ink/75 m-0">
-                SEM · Mandala Artist &amp; Sacred Geometer
-              </p>
-            </Reveal>
-          </div>
-        </section>
+        {/* HERO — scroll-scrubbed scale + opacity on image, slight upward
+            translate on title. See AboutHero. */}
+        <AboutHero />
 
         {/* OPENING */}
         <section className="mx-auto max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 text-center">
           <Reveal>
-            <p className="font-display font-medium tracking-[-0.02em] text-[clamp(22px,2.8vw,36px)] leading-[1.3] text-ink m-0 max-w-[940px] mx-auto">
+            <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.8vw,36px)] leading-[1.3] text-ink m-0 max-w-[940px] mx-auto">
               {ABOUT.opening[0]}
             </p>
           </Reveal>
@@ -646,15 +813,23 @@ export const About = () => {
           </p>
         </MilestoneBigYear>
 
-        <MilestoneText
-          year={PASSING_DATE}
-          place="The estate continues"
-          title="A life devoted to the geometry of light."
-        >
-          <p className="font-display font-medium text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
-            Stephen passed away in {PASSING_DATE}. The Mandala Company Foundation, on behalf of his immediate family, continues to carry his work forward.
-          </p>
-        </MilestoneText>
+        {/* Visual coda for the passing — a thin rule above and a softer
+            background tone separate this milestone from the regular
+            timeline beats so the year doesn't land as just-another-entry.
+            The 60vh "In memoriam" spacer (Item 6) creates a deliberate
+            scroll-slowdown moment before the year lands. */}
+        <div className="relative w-full bg-bg-soft border-t border-white/8 mt-10 md:mt-16">
+          <InMemoriamSpacer />
+          <MilestoneText
+            year={PASSING_DATE}
+            place="The estate continues"
+            title="A life devoted to the geometry of light."
+          >
+            <p className="font-display font-medium text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
+              Stephen passed away in {PASSING_DATE}. The Mandala Company, on behalf of his immediate family, continues to carry his work forward.
+            </p>
+          </MilestoneText>
+        </div>
 
         {/* STUDENT LETTER */}
         <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20">
@@ -700,17 +875,22 @@ export const About = () => {
               shadow=""
             />
           </Reveal>
-          <Reveal as="div" className="text-center">
-            <MagneticLink
-              to="/collections"
-              className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
-              ariaLabel="Explore the collections"
-            >
-              Explore the collections →
-            </MagneticLink>
-          </Reveal>
+          {/* Dual closing path — a buyer ready to acquire goes straight
+              to the collections; a reader moved by the bio joins the
+              friends of the estate list. Both are reachable without
+              scrolling. The cluster scales up gently on scroll-in (Item 8). */}
+          <ClosingCTA onJoinFriends={openFriends} />
         </section>
       </main>
+      <EnquireModal
+        open={friendsOpen}
+        onClose={closeFriends}
+        eyebrow="Friends of the estate"
+        title="The Mandala Company"
+        subject="Subscribe — Mandala Company"
+        intro="Leave your name and email and we'll add you to the friends of the estate list. Occasional updates only — exhibitions, new releases, news from the estate."
+      />
+      <FooterCatalogue />
       <Footer />
     </div>
   );

@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
-import { COLLECTIONS, PAINTINGS } from "../data/paintings";
+import { COLLECTIONS, PAINTINGS, getAnchorTier, formatGBP } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -89,6 +90,34 @@ export const Collections = () => {
       </div>
 
       <main className="relative z-10">
+        {/* PAGE INTRO — a buyer arriving from the nav lands on a curated
+            opener rather than mid-stream at "I · 4 Paintings". Sets the
+            scope (three collections) and gives the eye a moment of frame
+            before the first collection begins. */}
+        <Reveal
+          as="header"
+          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-6 md:pb-10 text-center"
+        >
+          <p
+            className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
+            Three Collections
+          </p>
+          <h1
+            className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.2vw,72px)] leading-[0.98] text-white m-0 mb-6 text-balance"
+            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
+            Habundia, Genesis, Born in the Sky.
+          </h1>
+          <p
+            className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 max-w-[640px] mx-auto m-0"
+            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
+            Three bodies of work spanning a life at the compass — from the wild flowers of the British Isles, through the geometry of creation, to the constellations and the night sky. Every painting is offered as a signed giclée print, individually made to order.
+          </p>
+        </Reveal>
+
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
           return (
@@ -147,7 +176,7 @@ export const Collections = () => {
                           className="group block"
                           aria-label={`View ${painting.title}`}
                         >
-                          <div className="aspect-square overflow-hidden shadow-[0_22px_50px_rgba(0,0,0,0.6)] transition-all duration-500 group-hover:shadow-[0_30px_70px_rgba(0,0,0,0.75)]">
+                          <div className="aspect-square overflow-hidden shadow-[0_-6px_36px_rgba(0,0,0,0.35),0_20px_44px_rgba(0,0,0,0.45)] transition-all duration-500 group-hover:shadow-[0_-6px_36px_rgba(0,0,0,0.4),0_26px_60px_rgba(0,0,0,0.6)]">
                             <AssetImage
                               src={cover.image}
                               alt={painting.title}
@@ -171,6 +200,17 @@ export const Collections = () => {
                                 {painting.year}
                               </p>
                             )}
+                            {/* Price floor — sits under every tile so a
+                                browsing buyer never needs to click into a
+                                painting to learn there is a price. Uses
+                                the painting's anchor tier (A2 Collector
+                                £295) — not the legacy £180. */}
+                            <p
+                              className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-white/85 m-0"
+                              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                            >
+                              Signed giclée · from {formatGBP(getAnchorTier(painting).pricePence).replace(".00", "")}
+                            </p>
                           </figcaption>
                         </Link>
                       </motion.figure>
@@ -183,6 +223,7 @@ export const Collections = () => {
         })}
       </main>
 
+      <FooterCatalogue />
       <Footer />
     </div>
   );

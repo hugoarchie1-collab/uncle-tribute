@@ -24,6 +24,34 @@ export interface Colourway {
   colourwayNote?: string; // [TBD] the story of why this colourway exists (Stephen's studio files)
 }
 
+/**
+ * A single rung on the print ladder. Stephen is deceased — every print is
+ * authenticated by The Mandala Company (the estate) via an estate stamp
+ * (debossed "SEM · The Mandala Company" + serial), NOT a hand signature.
+ * Picasso Estate / Hepworth Estate precedent. Every tier ships with a
+ * Certificate of Authenticity on estate letterhead.
+ *
+ * Pricing is in PENCE (integer) — never floats.
+ */
+export interface PrintTier {
+  id: "atelier" | "collector" | "atelier-grande" | "heirloom";
+  label: string;                // "Atelier", "Collector", "Atelier Grande", "Heirloom"
+  size: string;                 // "A3 (29.7 × 42 cm)"
+  pricePence: number;           // integer pence
+  editionTotal: number | null;  // null = open edition
+  editionLabel: string;         // "Open edition" / "Edition of 100" / etc
+  framingPricePence?: number;   // optional framing surcharge (A2 + A1 only)
+  /**
+   * Optional hand-embellishment add-on surcharge. Polly Wedge finishes the
+   * print by hand in Stephen's geometric tradition. Only meaningful on A2
+   * + A1 (the sizes worth her time); A3 / A0 omit.
+   */
+  embellishmentPricePence?: number;
+  description?: string;         // optional one-liner (e.g. gold-leaf detail)
+  available: boolean;           // hide tier site-wide by flipping to false
+  isAnchor?: boolean;           // marks the recommended / default tier
+}
+
 export interface Painting {
   id: string;
   title: string;
@@ -40,17 +68,120 @@ export interface Painting {
    */
   printPricePence?: number;
   printSize?: string;
+  /**
+   * Optional per-painting tier override. If unset, the canonical PRINT_TIERS
+   * ladder applies uniformly. Future-proofing — not used by any painting
+   * today, the four-tier ladder is uniform across the catalogue.
+   */
+  printTiers?: PrintTier[];
 }
 
 /**
  * Boilerplate from the source PDFs, identical for every painting.
  * Centralised here so editing once propagates to every painting page.
+ *
+ * Updated 2026-05-28: reflects estate-stamped reality (Stephen deceased,
+ * authentication via estate stamp + COA, not hand signature). Printer
+ * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm archival canvas using pigment inks, hand-stretched on a deep wooden frame. Individually made to order.";
+  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each edition is estate-stamped by The Mandala Company, hand-numbered, and ships with a Certificate of Authenticity. Individually made to order in Lewes, East Sussex.";
 
 export const COLOURWAY_NOTE =
   "Each colourway was created by Stephen himself and discovered on his computer in his studio. These are his own colour variations of the work, exactly as he left them.";
+
+/**
+ * Provenance line for the originals. Surfaced quietly on PaintingDetail so a
+ * serious collector reads it without it being shouted. Hugo's verbatim brief:
+ * the originals are held in the family's legal name in a safe garage and are
+ * not currently for sale.
+ */
+export const ORIGINAL_PROVENANCE =
+  "Held privately by the estate — the original is not currently for sale.";
+
+/**
+ * Hand-embellishment add-on copy. Polly Wedge (estate) hand-finishes selected
+ * prints in Stephen's geometric tradition. This is the constraint, not the
+ * print format — so it's priced as a separate add-on (mirroring framing's
+ * plumbing) rather than as its own tier.
+ */
+export const EMBELLISHMENT_NOTE =
+  "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.";
+
+/**
+ * Single source of truth for the estate-stamp / COA / numbering language.
+ * Consumed by PaintingDetail, Basket, and the OrderConfirmation email so
+ * the authentication story reads identically everywhere.
+ */
+export const ESTATE_AUTHENTICATION = {
+  stamp: "Estate-stamped by The Mandala Company",
+  numbering: "Hand-numbered within the edition",
+  coa: "Ships with a Certificate of Authenticity on estate letterhead",
+  printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
+};
+
+/**
+ * The canonical print tier ladder. Applies uniformly across every painting.
+ * Researched 2026-05-28: the prior £180 flat price was below market for a
+ * deceased British artist estate selling estate-stamped editions to a
+ * culturally-discerning audience. Ladder anchors on the A2 Collector tier
+ * — that's the conversion target; Atelier is the entry, Atelier Grande
+ * the upsell, Heirloom the statement piece.
+ *
+ * Heirloom (A0) is hidden behind `available: false` for now — Hugo needs
+ * to confirm Point 101 fulfilment capability + optional gold-leaf detail
+ * sourcing before exposing the £1,250 SKU. Flip to `true` to surface it.
+ */
+export const PRINT_TIERS: PrintTier[] = [
+  {
+    id: "atelier",
+    label: "Atelier",
+    size: "A3 (29.7 × 42 cm)",
+    pricePence: 14500, // £145
+    editionTotal: null,
+    editionLabel: "Open edition",
+    description: "Estate-stamped, open edition, COA card",
+    available: true,
+  },
+  {
+    id: "collector",
+    label: "Collector",
+    size: "A2 (42 × 59.4 cm)",
+    pricePence: 29500, // £295
+    editionTotal: 100,
+    editionLabel: "Limited edition of 100",
+    framingPricePence: 29500, // £295 framing add-on
+    embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
+    description: "Limited edition of 100, estate-stamped, hand-numbered, COA",
+    available: true,
+    isAnchor: true,
+  },
+  {
+    id: "atelier-grande",
+    label: "Atelier Grande",
+    size: "A1 (59.4 × 84.1 cm)",
+    pricePence: 59500, // £595
+    editionTotal: 50,
+    editionLabel: "Limited edition of 50",
+    framingPricePence: 39500, // £395 framing add-on
+    embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
+    description: "Limited edition of 50, estate-stamped, hand-numbered, COA",
+    available: true,
+  },
+  {
+    id: "heirloom",
+    label: "Heirloom",
+    size: "A0 (84.1 × 118.9 cm)",
+    pricePence: 125000, // £1,250
+    editionTotal: 25,
+    editionLabel: "Limited edition of 25",
+    description:
+      "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
+    // Hidden until Hugo confirms fulfilment capability + optional gold-leaf
+    // sourcing. Flip to `true` to expose the £1,250 SKU site-wide.
+    available: false,
+  },
+];
 
 /**
  * Default print spec used when a painting doesn't override. Edit these two
@@ -60,10 +191,16 @@ export const COLOURWAY_NOTE =
  *
  * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
  * in integers and there are no rounding bugs at checkout.
+ *
+ * Points at the ANCHOR tier (A2 Collector, £295, edition of 100) for
+ * backwards compatibility with `getPrintPricePence` / `getPrintSize`
+ * (still consumed by PaintingDetail + api/checkout.ts until the size-aware
+ * wire-up lands in the synthesis round). Keep the api/checkout.ts
+ * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 18000, // £180 — placeholder until the spreadsheet lands
-  size: "Limited edition giclée print, A2 (42 × 59 cm)",
+  pricePence: 29500, // £295 — anchor tier (A2 Collector)
+  size: "Limited edition giclée, A2 (42 × 59.4 cm), edition of 100, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
 
@@ -72,6 +209,49 @@ export const getPrintPricePence = (painting: Painting): number =>
 
 export const getPrintSize = (painting: Painting): string =>
   painting.printSize ?? DEFAULT_PRINT.size;
+
+/**
+ * Returns the visible print tiers for a given painting. Honours the
+ * per-painting `printTiers` override if present, otherwise falls back to
+ * the canonical PRINT_TIERS ladder. Either way, only tiers with
+ * `available: true` are returned (Heirloom is hidden by default).
+ */
+export const getPrintTiers = (painting: Painting): PrintTier[] => {
+  const ladder = painting.printTiers ?? PRINT_TIERS;
+  return ladder.filter((t) => t.available);
+};
+
+/**
+ * Returns the anchor tier for a painting — the recommended default that
+ * the size picker should preselect and the floating price strip should
+ * display. Falls back to the first available tier if no tier is anchored,
+ * and to the first tier (even if unavailable) as a last resort so this
+ * never returns undefined.
+ */
+export const getAnchorTier = (painting: Painting): PrintTier => {
+  const ladder = painting.printTiers ?? PRINT_TIERS;
+  const available = ladder.filter((t) => t.available);
+  return (
+    available.find((t) => t.isAnchor) ??
+    available[0] ??
+    ladder[0]
+  );
+};
+
+/**
+ * Returns the framing surcharge for a tier, or null if framing isn't
+ * offered at that size. Framing is currently A2 + A1 only.
+ */
+export const getFramingPricePence = (tier: PrintTier): number | null =>
+  tier.framingPricePence ?? null;
+
+/**
+ * Returns the hand-embellishment surcharge for a tier, or null if Polly
+ * doesn't hand-finish at that size. Currently A2 + A1 only — A3 is too
+ * small to justify her time, A0 is hidden behind the Heirloom tier.
+ */
+export const getEmbellishmentPricePence = (tier: PrintTier): number | null =>
+  tier.embellishmentPricePence ?? null;
 
 /** £180 → "£180.00" */
 export const formatGBP = (pence: number): string =>

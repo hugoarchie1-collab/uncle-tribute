@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
+import { NewsletterSignup } from "./NewsletterSignup";
 
 const YEAR = new Date().getFullYear();
 
@@ -8,14 +9,17 @@ export const Footer = () => (
     role="contentinfo"
     className="relative border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-12 md:pt-14 pb-10"
   >
-    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-10 mb-10 items-start">
+    <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-4 gap-y-8 gap-x-10 mb-10 items-start">
       <div>
         <Logo size={32} wordmark />
         <p className="mt-5 max-w-[280px] font-sans font-normal text-[14px] leading-[1.65] text-ink/70 m-0">
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
         <p className="mt-3 max-w-[280px] font-sans font-medium text-[13px] leading-[1.6] text-ink/60 m-0">
-          On behalf of The Mandala Company Foundation — Steve's Immediate Family.
+          The estate of Stephen Meakin · The Mandala Company — Steve's immediate family.
+        </p>
+        <p className="mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink/45 m-0">
+          Written for The Mandala Company by Archie Hugo Charles Wedge (Stephen's nephew). Stephen's words are his own, drawn from his notebooks, interviews and the writings he left.
         </p>
       </div>
 
@@ -27,6 +31,9 @@ export const Footer = () => (
           <li><Link to="/" className="transition-colors hover:text-ink">Home</Link></li>
           <li><Link to="/collections" className="transition-colors hover:text-ink">Collections</Link></li>
           <li><Link to="/about" className="transition-colors hover:text-ink">About</Link></li>
+          <li><Link to="/contact" className="transition-colors hover:text-ink">Contact</Link></li>
+          <li><Link to="/faq" className="transition-colors hover:text-ink">FAQ</Link></li>
+          <li><Link to="/returns" className="transition-colors hover:text-ink">Returns</Link></li>
         </ul>
       </div>
 
@@ -48,6 +55,11 @@ export const Footer = () => (
           </li>
         </ul>
       </div>
+
+      {/* Friends of the estate — quiet newsletter signup. Posts to
+          /api/newsletter-subscribe. Same surface as the home / basket /
+          About variants; different markup register for the footer column. */}
+      <NewsletterSignup variant="footer" />
     </div>
 
     <div className="mx-auto max-w-[1200px] pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-ink/45">
@@ -58,6 +70,8 @@ export const Footer = () => (
         <Link to="/privacy" className="text-ink/70 transition-colors hover:text-ink">Privacy</Link>
         <span aria-hidden="true">·</span>
         <Link to="/terms" className="text-ink/70 transition-colors hover:text-ink">Terms</Link>
+        <span aria-hidden="true">·</span>
+        <Link to="/returns" className="text-ink/70 transition-colors hover:text-ink">Returns</Link>
       </p>
     </div>
   </footer>

@@ -1,16 +1,18 @@
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { EnquireModal } from "../components/EnquireModal";
 import { MagneticLink } from "../components/MagneticLink";
+import { NewsletterSignup } from "../components/NewsletterSignup";
 import { WELCOME } from "../data/content";
-import { PAINTINGS } from "../data/paintings";
+import { PAINTINGS, COLLECTIONS, formatGBP, getAnchorTier } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
@@ -28,31 +30,56 @@ const PEACOCK_BACKDROPS = [
 
 // The Estate engagement cards — same data drives both the card buttons
 // and the enquiry modals so the eyebrow / title / subject stay in sync.
-const estateCards = [
+// The Estate engagement cards. The Prints card sends buyers straight to
+// the Collections page (the actual purchase path is per-painting); the
+// Friends card opens the EnquireModal for subscription. Cards with
+// `to` route via <Link>, cards with `subject` open the modal.
+type EstateCard =
+  | {
+      id: string;
+      eyebrow: string;
+      title: string;
+      body: string;
+      cta: string;
+      to: string;
+      subject?: undefined;
+      intro?: undefined;
+    }
+  | {
+      id: string;
+      eyebrow: string;
+      title: string;
+      body: string;
+      cta: string;
+      subject: string;
+      intro: string;
+      to?: undefined;
+    };
+
+const estateCards: readonly EstateCard[] = [
   {
     id: "prints",
     eyebrow: "Prints",
-    title: "Print enquiries",
+    title: "Signed giclée prints",
     body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
-    cta: "Enquire",
-    subject: "Print enquiry",
-    intro:
-      "Tell us which painting and which colourway interests you. We respond to every enquiry personally.",
+    cta: "Browse prints",
+    to: "/collections",
   },
   {
-    id: "foundation",
-    eyebrow: "Foundation",
+    id: "friends",
+    eyebrow: "Friends of the estate",
     title: "The Mandala Company",
     body: "News and releases from the estate, on behalf of Steve's immediate family.",
     cta: "Subscribe",
     subject: "Subscribe — Mandala Company",
     intro:
-      "Leave your name and email and we'll add you to the list. Occasional updates only — exhibitions, new releases, news from the estate.",
+      "Leave your name and email and we'll add you to the friends of the estate list. Occasional updates only — exhibitions, new releases, news from the estate.",
   },
 ] as const;
 
 export const Welcome = () => {
   usePageTitle();
+  const reduceMotion = useReducedMotion();
 
   // Which Estate-card modal is currently open (null = closed).
   const [enquireOpen, setEnquireOpen] = useState<string | null>(null);
@@ -140,7 +167,7 @@ export const Welcome = () => {
                   <span className="block font-black text-[clamp(46px,7vw,102px)] leading-[0.94]">
                     So here we are on Earth
                   </span>
-                  <span className="block font-medium italic text-[clamp(36px,5.6vw,76px)] leading-[1.05] mt-2 text-ink/90">
+                  <span className="block font-medium italic text-[clamp(36px,5.6vw,76px)] leading-[1.15] sm:leading-[1.05] mt-3 sm:mt-2 text-ink/90">
                     — orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
@@ -168,7 +195,7 @@ export const Welcome = () => {
               <Reveal as="figure" className="m-0 md:col-span-6">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
-                  alt="Stephen at his drafting table"
+                  alt="Wild Rose — from the Habundia collection"
                   eager
                   aspect="aspect-[4/5]"
                   edges="all"
@@ -233,29 +260,50 @@ export const Welcome = () => {
               </h2>
             </Reveal>
             <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
-              {featured.map(({ painting, cover }) => (
-                <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
-                  <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                    <AssetImage
-                      src={cover.image}
-                      alt={`${painting.title} — ${cover.name}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                    />
-                  </div>
-                  <div className="pt-5">
-                    <h3 className="font-display font-bold text-[16px] md:text-[18px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
-                      {painting.title}
-                    </h3>
-                    {painting.year && painting.year !== "[ DATE ]" && (
+              {featured.map(({ painting, cover }) => {
+                const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
+                const hasYear = painting.year && painting.year !== "[ DATE ]";
+                const anchorPrice = getAnchorTier(painting).pricePence;
+                return (
+                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
+                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                      <AssetImage
+                        src={cover.image}
+                        alt={`${painting.title} — ${cover.name}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                      />
+                      {/* Price chip — scroll-revealed (visible on mobile,
+                          where there's no hover, and on desktop as soon as
+                          the tile enters view). Uses the painting's anchor
+                          tier (Collector A2 £295) — not the legacy £180. */}
+                      <motion.span
+                        aria-hidden="true"
+                        initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{
+                          duration: 0.55,
+                          delay: 0.15,
+                          ease: [0.22, 0.61, 0.36, 1],
+                        }}
+                        className="absolute bottom-3 right-3 inline-flex items-center bg-bg/85 backdrop-blur-sm px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
+                      >
+                        From {formatGBP(anchorPrice).replace(".00", "")}
+                      </motion.span>
+                    </div>
+                    <div className="pt-5">
+                      <h3 className="font-display font-bold text-[16px] md:text-[18px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
+                        {painting.title}
+                      </h3>
                       <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-2 m-0">
-                        {painting.year}
+                        {hasYear ? painting.year : collectionTitle}
                       </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
+                    </div>
+                  </Link>
+                );
+              })}
             </Reveal>
 
             <Reveal as="div" className="text-center">
@@ -273,7 +321,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
             <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 ring-1 ring-white/8">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
-                <h2 className="font-display font-black tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
                 <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
@@ -299,17 +347,25 @@ export const Welcome = () => {
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                   <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
+                    {/* Provenance-card hierarchy: Time + Edition lead as
+                        bold-italic display lines (the headline facts a
+                        collector wants), then the supporting material spec
+                        follows in the original eyebrow + body register. */}
                     {[
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                    ].map(([label, value]) => (
-                      <li key={label} className="m-0">
+                      ["Time", "Hundreds of hours per canvas", true],
+                      ["Edition", "Individually made to order", true],
+                      ["Surface", "350gsm archival canvas", false],
+                      ["Frame", "Hand-stretched, deep wooden", false],
+                      ["Tools", "Compass · rule · brush", false],
+                      ["Pigment", "Hand-pressed oils + pigment inks", false],
+                    ].map(([label, value, lead]) => (
+                      <li key={label as string} className="m-0">
                         <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
-                        <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
+                        {lead ? (
+                          <p className="font-display font-bold italic tracking-[-0.01em] text-[15px] md:text-[16px] leading-[1.35] text-ink m-0">{value}</p>
+                        ) : (
+                          <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -340,7 +396,7 @@ export const Welcome = () => {
                   key={item.tag}
                   className="bg-bg-soft ring-1 ring-white/8 p-6 md:p-7 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
                 >
-                  <p className="font-display font-bold text-accent text-[clamp(32px,3.4vw,44px)] leading-none m-0 mb-4 tracking-tight">
+                  <p className="font-display font-bold text-ink/45 text-[clamp(32px,3.4vw,44px)] leading-none m-0 mb-4 tracking-tight">
                     {item.tag}
                   </p>
                   <p className="font-sans text-[14px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
@@ -371,9 +427,14 @@ export const Welcome = () => {
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   Arista SunStar · 2016
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.8vw,52px)] leading-[1.0] text-ink m-0 mb-6">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.8vw,52px)] leading-[1.0] text-ink m-0 mb-5">
                   A 3.6&#8209;metre commission for Notting Hill.
                 </h2>
+                {/* Key-fact strip — surfaces the commission's
+                    provenance up front instead of burying it in prose. */}
+                <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
+                  Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Mixed media on board <span className="text-ink/35 mx-1">·</span> Commissioned 2016
+                </p>
                 <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[2]}
                 </p>
@@ -391,42 +452,69 @@ export const Welcome = () => {
                 <figcaption className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-4 text-center">
                   Farmacy · Notting Hill · London
                 </figcaption>
+                <p className="font-display italic text-[12px] leading-[1.55] text-ink/45 mt-2 text-center">
+                  Photograph from Stephen's archive, c. 2016.
+                </p>
               </Reveal>
             </div>
           </section>
 
-          {/* 8 · THE ESTATE — Prints + Foundation engagement cards */}
+          {/* 8 · THE ESTATE — Prints + Friends engagement cards */}
           <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-14">
-              <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
+              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 The Estate
               </p>
               <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,4vw,52px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Continue Stephen's work.
               </h2>
             </Reveal>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7">
-              {estateCards.map((item) => (
-                <button
-                  key={item.title}
-                  type="button"
-                  onClick={() => setEnquireOpen(item.id)}
-                  className="group block text-left bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10 focus:outline-none focus-visible:ring-accent"
-                >
-                  <p className="font-sans text-[11px] font-bold tracking-[0.34em] uppercase text-accent m-0 mb-5">
-                    {item.eyebrow}
-                  </p>
-                  <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(24px,2.4vw,34px)] leading-[1.15] text-ink m-0 mb-4">
-                    {item.title}
-                  </h3>
-                  <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-8">
-                    {item.body}
-                  </p>
-                  <span className="inline-flex items-center gap-2 font-sans text-[12px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
-                    {item.cta} <span aria-hidden="true">→</span>
-                  </span>
-                </button>
-              ))}
+            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 mb-16 md:mb-20">
+              {estateCards.map((item) => {
+                const cardClass =
+                  "group block text-left bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10 focus:outline-none focus-visible:ring-accent";
+                const inner = (
+                  <>
+                    <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
+                      {item.eyebrow}
+                    </p>
+                    <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(24px,2.4vw,34px)] leading-[1.15] text-ink m-0 mb-4">
+                      {item.title}
+                    </h3>
+                    <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-8">
+                      {item.body}
+                    </p>
+                    <span className="inline-flex items-center gap-2 font-sans text-[12px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
+                      {item.cta} <span aria-hidden="true">→</span>
+                    </span>
+                  </>
+                );
+                if (item.to) {
+                  return (
+                    <Link key={item.title} to={item.to} className={cardClass}>
+                      {inner}
+                    </Link>
+                  );
+                }
+                return (
+                  <button
+                    key={item.title}
+                    type="button"
+                    onClick={() => setEnquireOpen(item.id)}
+                    className={cardClass}
+                  >
+                    {inner}
+                  </button>
+                );
+              })}
+            </Reveal>
+
+            {/* Friends of the estate — quiet newsletter signup, mounted
+                below the engagement cards so the estate's "stay in
+                touch" funnel sits alongside the Prints + Friends
+                CTAs without competing for attention. */}
+            <Reveal as="div" className="flex justify-center mt-16 md:mt-20">
+              <NewsletterSignup variant="panel" />
             </Reveal>
           </section>
 
@@ -487,19 +575,31 @@ export const Welcome = () => {
             {/* Earth widens at narrow viewports so its curve still reads
                 as a horizon under the smaller mobile headline. Beyond
                 the viewport edges is fine — the section's
-                overflow-hidden clips the side wings. */}
+                overflow-hidden clips the side wings.
+
+                Width coupling per CLAUDE.md gotcha #7: at lg+/xl+ the
+                Earth widens (120% / 128%) so the curvature still reads as
+                a horizon on wide monitors — previously at 1920px+ the
+                112% width rendered as a thin brown band. The negative
+                margin is tied to the SAME clamp() as the headline
+                font-size so the overlap stays proportional. The
+                multiplier (-0.44) is a touch heavier than before to keep
+                the horizon flush above the footer once the Earth widens
+                at lg+/xl+. If you re-tune width, re-tune the multiplier
+                in tandem. */}
             <img
               src={asset("/img/scenes/earth-cutout.png")}
               alt=""
               aria-hidden="true"
-              className="relative z-0 block w-[160%] sm:w-[140%] md:w-[120%] lg:w-[112%] max-w-none mx-auto pointer-events-none select-none"
+              className="relative z-0 block w-[160%] sm:w-[140%] md:w-[120%] lg:w-[120%] xl:w-[128%] max-w-none mx-auto pointer-events-none select-none"
               style={{
-                marginTop: "calc(clamp(60px, 20vw, 520px) * -0.42)",
+                marginTop: "calc(clamp(60px, 20vw, 520px) * -0.44)",
               }}
             />
           </section>
         </main>
 
+        <FooterCatalogue />
         <Footer />
       </div>
     </>
