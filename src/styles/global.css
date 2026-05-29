@@ -104,6 +104,27 @@
     outline-offset: 3px;
     border-radius: 2px;
   }
+
+  /* Browser-chrome theming — kill the blue tap flash, theme the scrollbar to
+     the brand line/bg, give text inputs an accent caret. Small details that
+     read as premium. */
+  * { -webkit-tap-highlight-color: transparent; }
+  :root { scrollbar-color: theme(colors.line.strong) theme(colors.bg.DEFAULT); scrollbar-width: thin; }
+  input, textarea, select { caret-color: theme(colors.accent.DEFAULT); }
+}
+
+/* Themed WebKit scrollbar + numeric / text-wrap utilities. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0a0908; }
+::-webkit-scrollbar-thumb { background: #34302a; border-radius: 6px; border: 2px solid #0a0908; }
+::-webkit-scrollbar-thumb:hover { background: #4a443c; }
+
+@layer utilities {
+  /* Tabular, lining figures for prices/totals so columns of numbers align;
+     old-style figures for numerals set inside running prose. */
+  .nums-tabular { font-variant-numeric: tabular-nums lining-nums; }
+  .nums-old { font-variant-numeric: oldstyle-nums proportional-nums; }
+  .text-pretty { text-wrap: pretty; }
 }
 
 /* =============================================================================
