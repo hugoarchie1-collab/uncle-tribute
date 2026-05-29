@@ -195,7 +195,7 @@ export const Welcome = () => {
                   </MagneticLink>
                 </div>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto">
+              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Wild Rose — from the Habundia collection"
@@ -216,7 +216,7 @@ export const Welcome = () => {
               the section above instead of stretching to viewport height. */}
           <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
-              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto">
+              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
@@ -333,7 +333,7 @@ export const Welcome = () => {
                 </p>
               </Reveal>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
-                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto">
+                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
                     alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -443,7 +443,7 @@ export const Welcome = () => {
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto">
+              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0">
                 <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
                   <AssetImage
                     src="/img/welcome/05-arista-sunstar.jpg"
