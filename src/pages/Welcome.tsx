@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
@@ -8,9 +7,7 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
-import { EnquireModal } from "../components/EnquireModal";
 import { MagneticLink } from "../components/MagneticLink";
-import { NewsletterSignup } from "../components/NewsletterSignup";
 import { WELCOME } from "../data/content";
 import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
 import { asset } from "../lib/asset";
@@ -28,57 +25,9 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
 ];
 
-// The Estate engagement cards — same data drives both the card buttons
-// and the enquiry modals so the eyebrow / title / subject stay in sync.
-// The Estate engagement cards. The Prints card sends buyers straight to
-// the Collections page (the actual purchase path is per-painting); the
-// Friends card opens the EnquireModal for subscription. Cards with
-// `to` route via <Link>, cards with `subject` open the modal.
-type EstateCard =
-  | {
-      id: string;
-      eyebrow: string;
-      title: string;
-      body: string;
-      cta: string;
-      to: string;
-      subject?: undefined;
-      intro?: undefined;
-    }
-  | {
-      id: string;
-      eyebrow: string;
-      title: string;
-      body: string;
-      cta: string;
-      subject: string;
-      intro: string;
-      to?: undefined;
-    };
-
-const estateCards: readonly EstateCard[] = [
-  {
-    id: "prints",
-    eyebrow: "Prints",
-    title: "Estate-stamped giclée prints",
-    body: "Individually made-to-order giclée prints of every painting, estate-stamped on 350gsm archival paper.",
-    cta: "Browse prints",
-    to: "/collections",
-  },
-] as const;
-
 export const Welcome = () => {
   usePageTitle();
   const reduceMotion = useReducedMotion();
-
-  // Which Estate-card modal is currently open (null = closed).
-  const [enquireOpen, setEnquireOpen] = useState<string | null>(null);
-  // Stable identity — passing a fresh arrow function each render would
-  // re-trigger EnquireModal's effect cleanup on every parent re-render
-  // (peacock backdrop scroll updates Welcome continually) and reset the
-  // form mid-submit.
-  const closeEnquire = useCallback(() => setEnquireOpen(null), []);
-  const activeCard = estateCards.find((c) => c.id === enquireOpen);
 
   // Whole-page scroll drives three peacock backdrops crossfading in turn.
   // 0 → 38% Indigo · 33 → 70% Red · 65 → 100% Purple. Stretches the
@@ -288,7 +237,7 @@ export const Welcome = () => {
                           delay: 0.15,
                           ease: [0.22, 0.61, 0.36, 1],
                         }}
-                        className="absolute bottom-3 right-3 inline-flex items-center bg-bg/85 backdrop-blur-sm px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
+                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/85 backdrop-blur-sm px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
                       >
                         From {formatGBP(fromPrice).replace(".00", "")}
                       </motion.span>
@@ -458,78 +407,6 @@ export const Welcome = () => {
               </Reveal>
             </div>
           </section>
-
-          {/* 8 · THE ESTATE — Prints + Friends engagement cards */}
-          <section className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
-            <Reveal as="div" className="text-center mb-10 md:mb-14">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
-                The Estate
-              </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,4vw,52px)] leading-[1.0] text-ink m-0 max-w-[820px] mx-auto text-balance">
-                Continue Stephen's work.
-              </h2>
-            </Reveal>
-            <Reveal as="div" className="mx-auto max-w-[680px] mb-12 md:mb-16">
-              {estateCards.map((item) => {
-                const cardClass =
-                  "group block text-left bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10 focus:outline-none focus-visible:ring-accent";
-                const inner = (
-                  <>
-                    <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
-                      {item.eyebrow}
-                    </p>
-                    <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(24px,2.4vw,34px)] leading-[1.15] text-ink m-0 mb-4">
-                      {item.title}
-                    </h3>
-                    <p className="font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-8">
-                      {item.body}
-                    </p>
-                    <span className="inline-flex items-center gap-2 font-sans text-[12px] font-bold tracking-[0.22em] uppercase text-ink group-hover:text-accent transition-colors">
-                      {item.cta} <span aria-hidden="true">→</span>
-                    </span>
-                  </>
-                );
-                if (item.to) {
-                  return (
-                    <Link key={item.title} to={item.to} className={cardClass}>
-                      {inner}
-                    </Link>
-                  );
-                }
-                return (
-                  <button
-                    key={item.title}
-                    type="button"
-                    onClick={() => setEnquireOpen(item.id)}
-                    className={cardClass}
-                  >
-                    {inner}
-                  </button>
-                );
-              })}
-            </Reveal>
-
-            {/* Friends & Family — quiet newsletter signup, mounted
-                below the engagement cards so the estate's "stay in
-                touch" funnel sits alongside the Prints + Friends
-                CTAs without competing for attention. */}
-            <Reveal as="div" className="flex justify-center mt-16 md:mt-20">
-              <NewsletterSignup variant="panel" />
-            </Reveal>
-          </section>
-
-          {/* Single enquiry modal — driven by whichever Estate card is
-              currently open. One instance avoids duplicating keydown
-              listeners, body-scroll-lock effects, and AnimatePresence
-              subtrees per card. */}
-          <EnquireModal
-            open={activeCard != null}
-            onClose={closeEnquire}
-            eyebrow={activeCard?.eyebrow ?? ""}
-            title={activeCard?.title ?? ""}
-            subject={activeCard?.subject ?? ""}
-            intro={activeCard?.intro}
-          />
 
           {/* 9 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
               in normal flow so the section auto-sizes to its content
