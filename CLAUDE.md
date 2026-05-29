@@ -10,7 +10,7 @@ This document is the project's running source of truth — paste it at the start
 
 | | |
 |---|---|
-| **Live URL** | https://uncle-tribute.vercel.app (migrating to https://themandalacompany.com once IONOS DNS is set up) |
+| **Live URL** | https://themandalacompany.com (canonical, live on IONOS→Vercel DNS) — https://uncle-tribute.vercel.app still resolves as the Vercel fallback |
 | **Repo** | https://github.com/hugoarchie1-collab/uncle-tribute |
 | **Production branch** | `main` (auto-deploys to Vercel on push) |
 | **Working branch** | `claude/memorial-website-scroll-intro-a8VOZ` |
@@ -280,7 +280,7 @@ The estate sends a **single-use 10% promotion code** to every first-time buyer i
 |---|---|---|
 | `STRIPE_SECRET_KEY` | yes | `sk_live_…` |
 | `STRIPE_WEBHOOK_SECRET` | yes | `whsec_…` |
-| `SITE_URL` | yes | `https://uncle-tribute.vercel.app` |
+| `SITE_URL` | yes | `https://themandalacompany.com` |
 | `RESEND_API_KEY` | optional | `re_…` — without it, confirmation emails are skipped silently (Stripe still sends its own receipt) |
 | `ESTATE_FROM_EMAIL` | optional | sender address (default `info@themandalacompany.com`); must be on a Resend-verified domain |
 | `ESTATE_BCC_EMAIL` | optional | BCC for the paper trail (default `info@themandalacompany.com`); auto-skipped if same as `from` |

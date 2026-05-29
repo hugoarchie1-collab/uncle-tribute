@@ -242,10 +242,10 @@ export const OrderConfirmation = ({
             <br />
             Returns, refunds &amp; damages —{" "}
             <a
-              href="https://uncle-tribute.vercel.app/returns"
+              href="https://themandalacompany.com/returns"
               style={styles.link}
             >
-              uncle-tribute.vercel.app/returns
+              themandalacompany.com/returns
             </a>
             <br />
             Reference: {orderRef}

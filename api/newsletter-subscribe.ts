@@ -54,7 +54,7 @@ import { WelcomeEmail } from "./_lib/emails/Welcome.js";
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";
 const FROM_NAME = "The Mandala Company";
-const DEFAULT_SITE_URL = "https://uncle-tribute.vercel.app";
+const DEFAULT_SITE_URL = "https://themandalacompany.com";
 
 // ---- Origin allowlist ----------------------------------------------------
 // Echo the request's `Origin` back only if it's one of our known surfaces or
@@ -86,7 +86,7 @@ const corsHeaders = (origin: string | null): Record<string, string> => {
   if (isAllowedOrigin(origin)) {
     base["Access-Control-Allow-Origin"] = origin as string;
   } else {
-    base["Access-Control-Allow-Origin"] = "https://uncle-tribute.vercel.app";
+    base["Access-Control-Allow-Origin"] = "https://themandalacompany.com";
   }
   return base;
 };

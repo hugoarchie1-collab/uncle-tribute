@@ -3,10 +3,10 @@
  * and the per-painting Product JSON-LD on PaintingDetail.
  *
  * SITE_URL is the canonical production origin. Keep it in sync with the
- * Vercel `SITE_URL` env var and public/sitemap.xml. When the custom domain
- * (themandalacompany.com) goes live, update this one constant + the sitemap.
+ * Vercel `SITE_URL` env var and public/sitemap.xml. The custom domain
+ * (themandalacompany.com) is now live and is the canonical origin.
  */
-export const SITE_URL = "https://uncle-tribute.vercel.app";
+export const SITE_URL = "https://themandalacompany.com";
 
 const BRAND = "The Art of Stephen Meakin";
 

@@ -37,7 +37,7 @@
  *
  * Required env vars on Vercel:
  *   STRIPE_SECRET_KEY   – sk_live_…
- *   SITE_URL            – e.g. https://uncle-tribute.vercel.app (no trailing slash)
+ *   SITE_URL            – e.g. https://themandalacompany.com (no trailing slash)
  *
  * This file is intentionally self-contained — no cross-directory imports
  * — so Vercel's serverless bundler doesn't need to chase TS files outside

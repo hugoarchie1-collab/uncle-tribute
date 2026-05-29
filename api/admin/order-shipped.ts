@@ -33,7 +33,7 @@
  * Self-contained per gotcha #5 — imports only from /api/_lib and npm.
  *
  * Usage (curl):
- *   curl -X POST https://uncle-tribute.vercel.app/api/admin/order-shipped \
+ *   curl -X POST https://themandalacompany.com/api/admin/order-shipped \
  *     -H "Content-Type: application/json" \
  *     -d '{
  *       "sessionId":   "cs_live_…",
