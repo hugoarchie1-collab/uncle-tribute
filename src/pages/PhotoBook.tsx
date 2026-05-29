@@ -8,6 +8,11 @@ import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
 import { PHOTOBOOK } from "../data/photobook";
+import { TRIBUTE } from "../data/content";
+
+/** Canonical body paragraph recipe — matches About.tsx's reading register. */
+const BODY =
+  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0";
 
 /**
  * /photo-book — "Steve's Photo Book by Polly Wedge". A gallery of personal
@@ -43,6 +48,27 @@ export const PhotoBook = () => {
             small moments in between the work.
           </p>
           <Separator className="bg-ink/15 mt-10" />
+        </Reveal>
+
+        {/* IN LOVING MEMORY — Polly Wedge's funeral tribute opens the book.
+            Reproduced VERBATIM from src/data/content.ts (TRIBUTE) — four phrases
+            are kept exactly as written, pending Polly's confirmation. */}
+        <Reveal as="section" className="mb-16 md:mb-20" aria-label="In loving memory">
+          <div className="text-center mb-9 md:mb-12">
+            <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
+            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4vw,48px)] leading-[1.05] text-ink m-0">
+              Stephen, we will love you forever.
+            </h2>
+          </div>
+          <div className="max-w-[720px] mx-auto">
+            {TRIBUTE.paragraphs.map((p, i) => (
+              <p key={i} className={cn(BODY, i > 0 && "mt-5")}>
+                {p}
+              </p>
+            ))}
+            <p className={cn(EYEBROW_MUTED, "mt-8")}>{TRIBUTE.attribution}</p>
+          </div>
+          <Separator className="bg-ink/15 mt-14 md:mt-16" />
         </Reveal>
 
         {photos.length > 0 ? (
