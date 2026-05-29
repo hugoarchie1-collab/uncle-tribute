@@ -11,6 +11,7 @@ import {
   PAINTINGS,
   getLowestTierPricePence,
   getCollectionBundle,
+  getCompleteCatalogueBundle,
   formatGBP,
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
@@ -73,6 +74,16 @@ export const Collections = () => {
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
   ];
+
+  // Flagship "complete catalogue" set — one A2 print of every painting at the
+  // deepest bundle (15%). Adding pushes every painting (original colourway,
+  // anchor tier) to the basket; the matching 15% is applied at checkout.
+  const catalogue = getCompleteCatalogueBundle();
+  const acquireCatalogue = () => {
+    catalogue.items.forEach((it) =>
+      addItem(it.paintingId, it.colourwayName, "collector"),
+    );
+  };
 
   return (
     <div className="relative">
@@ -311,6 +322,53 @@ export const Collections = () => {
             </section>
           );
         })}
+
+        {/* COMPLETE CATALOGUE — the flagship set: one estate-stamped print of
+            every painting. Deepest bundle (15%), framed as a dignified
+            "complete works" set price with the individual total shown small as
+            an anchor and the saving in absolute £ (never a "% OFF" badge — per
+            the 2026-05-29 pricing research). getCompleteCatalogueBundle
+            computes the figure; api/checkout.ts applies the matching 15% when
+            the basket holds one line of every painting. */}
+        <Reveal
+          as="section"
+          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+        >
+          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-accent/25 px-6 sm:px-10 md:px-14 py-10 md:py-14 text-center">
+            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
+              The complete catalogue
+            </p>
+            <h2 className="font-display font-bold tracking-[-0.03em] text-[clamp(28px,3.6vw,46px)] leading-[1.08] text-ink m-0 mb-4">
+              The complete works, together.
+            </h2>
+            <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-6 max-w-[560px] mx-auto">
+              One estate-stamped Collector print (A2) of all{" "}
+              {catalogue.paintingCount} of Stephen's paintings — the entire,
+              finite body of his work, offered as a single set for one home.
+            </p>
+            <p className="font-sans text-[14px] leading-[1.6] tracking-[0.02em] text-ink/75 m-0 mb-8">
+              <span className="font-display font-bold text-[22px] md:text-[26px] text-ink align-middle">
+                {formatGBP(catalogue.bundlePricePence).replace(".00", "")}
+              </span>
+              <span className="mx-3 text-ink/30">·</span>
+              <span className="text-ink/55">
+                individually {formatGBP(catalogue.fullPricePence).replace(".00", "")} —
+                a saving of {formatGBP(catalogue.savePence).replace(".00", "")}
+              </span>
+            </p>
+            <button
+              type="button"
+              onClick={acquireCatalogue}
+              className={cn(BTN_PRIMARY, "gap-2")}
+            >
+              Add the complete catalogue to basket
+              <span aria-hidden="true">→</span>
+            </button>
+            <p className="font-sans text-[11px] tracking-[0.03em] text-ink/45 m-0 mt-4">
+              The complete-set saving is applied automatically at checkout.
+            </p>
+          </div>
+        </Reveal>
       </main>
 
       <FooterCatalogue />

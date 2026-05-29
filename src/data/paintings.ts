@@ -554,6 +554,18 @@ export const PAINTINGS: Painting[] = [
         isOriginal: false,
         available: true,
       },
+      {
+        // Mary Pink — Stephen's pink colourway of the Peacock / Shield of
+        // Minerva. PRIMED but HIDDEN: awaiting Hugo's JPG. When it lands, save
+        // it to /public/img/paintings/peacock-mary-pink.jpg (+ a .webp
+        // sibling), confirm the swatch hex below, and flip available:true —
+        // it then appears on PaintingDetail and joins the colourway set.
+        name: "Mary Pink",
+        image: "/img/paintings/peacock-mary-pink.jpg",
+        hex: "#e6a9c0", // provisional swatch — adjust to the artwork once the file is in
+        isOriginal: false,
+        available: false,
+      },
     ],
   },
   {
@@ -724,6 +736,22 @@ export const getPaintingsByCollection = (collectionId: Collection["id"]): Painti
 export const bundleDiscountPercentForCount = (count: number): number =>
   count >= 3 ? 10 : 5;
 
+/**
+ * Deeper, FLAGGED bundle discounts the checkout derives from the basket
+ * CONTENTS (not item count alone). Researched 2026-05-29 as the profit-
+ * maximising depths for high-margin estate prints: COGS is only ~10–12% of
+ * retail, so the discount is a demand lever, not cost recovery — set as the
+ * shallowest cut that still triggers the set purchase, kept prestige-safe at
+ * ≤15%, and escalating with set size:
+ *   • complete colourway set (every colourway of ONE painting) → 12%
+ *   • complete catalogue (one print of EVERY painting)        → 15%
+ * MIRRORED in api/checkout.ts `bundlePercentOff` — keep the two percentages in
+ * sync (gotcha #9). The count-based ladder above (5% / 10%) still governs
+ * ordinary multi-painting baskets and the per-collection bundles.
+ */
+export const COLOURWAY_SET_DISCOUNT_PERCENT = 12;
+export const COMPLETE_CATALOGUE_DISCOUNT_PERCENT = 15;
+
 export interface CollectionBundle {
   collectionId: Collection["id"];
   title: string;
@@ -779,25 +807,23 @@ export const getCollectionBundle = (
 //
 // Stephen made several colour variants of many paintings. A buyer can take the
 // COMPLETE set of a painting's colourways in one go — every available colourway
-// as an anchor-tier (A2) print. The saving is the SAME count-based discount the
-// checkout actually applies (5% at 2 items, 10% at 3+), derived via
-// bundleDiscountPercentForCount — the same helper getCollectionBundle trusts —
-// so the advertised figure equals the Stripe charge BY CONSTRUCTION (gotcha #9).
+// as an anchor-tier (A2) print, at COLOURWAY_SET_DISCOUNT_PERCENT (12%).
 //
-// There is nothing to mirror into /api: the discount keys purely off the number
-// of basket lines, and the "add the set" action pushes exactly one A2 line per
-// available colourway, so the basket that reaches checkout already triggers the
-// existing coupon. (Decided by the colourway-bundle-pricing workflow: reuse the
-// count-based discount — a deeper per-painting "complete set" discount would
-// need a colourway-COUNT mirror in /api, a brand-new desync surface that the
-// recently-trimmed colourway lists would make go stale.)
+// MIRROR (gotcha #9): api/checkout.ts `bundlePercentOff` detects a basket whose
+// lines are ALL one painting and applies the same 12% — so the advertised set
+// price equals the Stripe charge by construction. The "add the set" action
+// pushes exactly one A2 line per available colourway; that single-painting
+// basket is what triggers the 12% server-side. (This previously reused the
+// plain 5/10% count ladder to dodge an /api desync surface; the 2026-05-29
+// pricing research found a deeper set discount is profit-maximising, so the
+// flag was wired through. Keep the 12% in sync here AND in /api.)
 
 export interface ColourwaySetBundle {
   paintingId: string;
   title: string;
   /** Names of the available colourways included, in catalogue order. */
   colourwayNames: string[];
-  /** The count-derived discount percent (mirrors checkout): 5% at 2, 10% at 3+. */
+  /** The complete-set discount percent (mirrors checkout's single-painting rule): 12%. */
   discountPercent: number;
   /** Sum of the anchor-tier price across every available colourway (pence). */
   fullPricePence: number;
@@ -809,11 +835,12 @@ export interface ColourwaySetBundle {
 
 /**
  * Build the complete-colourway-set bundle for a painting: every AVAILABLE
- * colourway at the anchor (Collector A2) tier, with the SAME saving the
- * checkout applies for that line count. Returns undefined for a painting with
- * fewer than 2 available colourways (no set to offer). The count + price both
- * derive from the same `available` filter + `getAnchorTier` the add-to-basket
- * action uses, so the advertised figure equals the Stripe charge to the penny.
+ * colourway at the anchor (Collector A2) tier, at COLOURWAY_SET_DISCOUNT_PERCENT
+ * (12%) — the same the checkout applies to a single-painting basket. Returns
+ * undefined for a painting with fewer than 2 available colourways (no set to
+ * offer). The count + price both derive from the same `available` filter +
+ * `getAnchorTier` the add-to-basket action uses, so the advertised figure
+ * equals the Stripe charge to the penny.
  */
 export const getColourwaySetBundle = (
   paintingId: string,
@@ -825,9 +852,9 @@ export const getColourwaySetBundle = (
 
   const anchor = getAnchorTier(painting);
   const fullPricePence = anchor.pricePence * available.length;
-  const discountPercent = bundleDiscountPercentForCount(available.length);
+  const discountPercent = COLOURWAY_SET_DISCOUNT_PERCENT;
   // A single round on the uniform total agrees with Stripe's per-line
-  // percent_off summing for a clean 5/10% on equal-priced lines (same reasoning
+  // percent_off summing for a clean 12% on equal-priced lines (same reasoning
   // as getCollectionBundle), so the headline is exact, never overstated.
   const bundlePricePence = Math.round(
     fullPricePence * (1 - discountPercent / 100),
@@ -836,6 +863,77 @@ export const getColourwaySetBundle = (
     paintingId,
     title: painting.title,
     colourwayNames: available.map((c) => c.name),
+    discountPercent,
+    fullPricePence,
+    bundlePricePence,
+    savePence: fullPricePence - bundlePricePence,
+  };
+};
+
+// -----------------------------------------------------------------------------
+// COMPLETE CATALOGUE BUNDLE — one print of EVERY painting, as a single set
+// -----------------------------------------------------------------------------
+//
+// The flagship offer: the complete, finite body of Stephen's work, together —
+// one anchor-tier (A2) print of every painting in the catalogue, at
+// COMPLETE_CATALOGUE_DISCOUNT_PERCENT (15%). This is the deepest bundle (the
+// biggest commitment earns the best rate), framed as a dignified "complete
+// works" set price, never a sale.
+//
+// MIRROR (gotcha #9): api/checkout.ts `bundlePercentOff` applies 15% when a
+// basket contains at least one line of EVERY painting (distinct painting ids ===
+// the full catalogue). The "add the complete catalogue" action pushes exactly
+// one A2 line per painting (each painting's original colourway), so the basket
+// that reaches checkout triggers the 15% server-side. Keep the 15% in sync here
+// AND in /api.
+
+export interface CompleteCatalogueBundle {
+  title: string;
+  /** Every painting id, in catalogue order. */
+  paintingIds: string[];
+  /** One representative (original) colourway per painting — what the add-to-basket action pushes. */
+  items: { paintingId: string; colourwayName: string }[];
+  paintingCount: number;
+  /** The complete-catalogue discount percent (mirrors checkout's all-paintings rule): 15%. */
+  discountPercent: number;
+  /** Sum of the anchor-tier price across every painting (pence). */
+  fullPricePence: number;
+  /** Discounted set price = fullPricePence − 15%. */
+  bundlePricePence: number;
+  /** fullPricePence − bundlePricePence (pence). */
+  savePence: number;
+}
+
+/**
+ * Build the complete-catalogue bundle: one anchor (Collector A2) print of every
+ * painting, at COMPLETE_CATALOGUE_DISCOUNT_PERCENT (15%). Each item carries the
+ * painting's original (or first available) colourway, so the add-to-basket
+ * action and the price both derive from the same source — the advertised set
+ * price equals the Stripe charge to the penny (uniform A2 lines → Stripe's
+ * per-line percent_off sums exactly to a single round of the total).
+ */
+export const getCompleteCatalogueBundle = (): CompleteCatalogueBundle => {
+  const paintings = PAINTINGS;
+  const items = paintings.map((p) => {
+    const colourway =
+      p.colourways.find((c) => c.isOriginal && c.available) ??
+      p.colourways.find((c) => c.available) ??
+      p.colourways[0];
+    return { paintingId: p.id, colourwayName: colourway.name };
+  });
+  const fullPricePence = paintings.reduce(
+    (sum, p) => sum + getAnchorTier(p).pricePence,
+    0,
+  );
+  const discountPercent = COMPLETE_CATALOGUE_DISCOUNT_PERCENT;
+  const bundlePricePence = Math.round(
+    fullPricePence * (1 - discountPercent / 100),
+  );
+  return {
+    title: "The Complete Catalogue",
+    paintingIds: paintings.map((p) => p.id),
+    items,
+    paintingCount: paintings.length,
     discountPercent,
     fullPricePence,
     bundlePricePence,

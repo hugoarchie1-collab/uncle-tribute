@@ -26,10 +26,15 @@
  * `embellished` — Polly Wedge hand-finishes A2 + A1 only at
  * `embellishmentPricePence` (£350 / £495); ignored on A3 / A0.
  *
- * Bundle discount: when normalised items count ≥ 2, we mint a Stripe
- * coupon programmatically and apply it via `discounts`. 5% off on 2
- * items, 10% off on 3+. Failures are swallowed — never block checkout
- * on a discount mint failure.
+ * Bundle discount: when the basket holds ≥ 2 lines we mint a single-use
+ * Stripe coupon and apply it via `discounts`. The percent is derived from
+ * the basket CONTENTS, server-side, by `bundlePercentOff`:
+ *   • one print of EVERY painting (complete catalogue)     → 15%
+ *   • all lines a SINGLE painting (complete colourway set) → 12%
+ *   • 3+ mixed paintings → 10%; 2 mixed → 5%.
+ * Mirrors src/data/paintings.ts (COMPLETE_CATALOGUE_DISCOUNT_PERCENT 15,
+ * COLOURWAY_SET_DISCOUNT_PERCENT 12, bundleDiscountPercentForCount 5/10) —
+ * gotcha #9. Failures are swallowed — never block checkout on a mint failure.
  *
  * Response 200: { url: string }      — redirect the browser here
  *          400: { error: string }    — validation failure
@@ -149,6 +154,11 @@ const VALID_PAINTING_IDS = new Set<string>([
   "enneagon-swans",
 ]);
 
+// Distinct paintings in the catalogue. A basket containing at least one line of
+// every painting qualifies as the "complete catalogue" set (15% — see
+// bundlePercentOff). Derived so it tracks the allowlist automatically.
+const CATALOGUE_PAINTING_COUNT = VALID_PAINTING_IDS.size;
+
 // Pretty titles for the Stripe line-item. Falls back to the ID if missing.
 const PAINTING_TITLES: Record<string, string> = {
   "wild-rose": "Mandala of Wild Rose",
@@ -251,6 +261,23 @@ const truncateMetadata = (parts: string[]): string => {
     used += 1;
   }
   return acc;
+};
+
+/**
+ * The bundle discount percent for a basket, derived from its CONTENTS (never
+ * trusted from the client). Mirrors src/data/paintings.ts (gotcha #9):
+ *   • every painting present (distinct ids === whole catalogue) → 15%
+ *   • all lines one painting (a complete colourway set)         → 12%
+ *   • 3+ mixed paintings → 10%; 2 → 5%; fewer → 0 (no bundle).
+ * Returns the single best-qualifying percent.
+ */
+const bundlePercentOff = (items: NormalisedItem[]): number => {
+  const count = items.length;
+  if (count < 2) return 0;
+  const distinct = new Set(items.map((i) => i.paintingId)).size;
+  if (distinct >= CATALOGUE_PAINTING_COUNT) return 15; // complete catalogue
+  if (distinct === 1) return 12;                       // complete colourway set
+  return count >= 3 ? 10 : 5;                           // general / collection bundle
 };
 
 /**
@@ -487,11 +514,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const stripe = new Stripe(secret);
 
   // ---- Bundle discount (programmatic coupon mint) ------------------------
-  // 2 items → 5% off; 3+ → 10% off. Single line of "Estate bundle thank-you"
-  // copy. Failures are swallowed — never block checkout on a discount mint.
+  // Percent derived from the basket CONTENTS by bundlePercentOff (15% complete
+  // catalogue / 12% colourway set / 10% on 3+ / 5% on 2). Mirrors paintings.ts
+  // (gotcha #9). Failures are swallowed — never block checkout on a mint fail.
   let discounts: Array<{ coupon: string }> | undefined;
-  if (normalised.length >= 2) {
-    const percentOff = normalised.length >= 3 ? 10 : 5;
+  const percentOff = bundlePercentOff(normalised);
+  if (percentOff > 0) {
     try {
       const coupon = await stripe.coupons.create({
         percent_off: percentOff,
@@ -500,6 +528,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         metadata: {
           source: "bundle_discount",
           item_count: String(normalised.length),
+          percent_off: String(percentOff),
         },
       });
       discounts = [{ coupon: coupon.id }];
@@ -549,7 +578,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tiers: normalised.map((i) => i.tier.id).join(","),
       framed: normalised.filter((i) => i.framing).length,
       embellished: normalised.filter((i) => i.embellished).length,
-      bundleDiscount: discounts ? "yes" : "no",
+      bundleDiscount: discounts ? `${percentOff}%` : "no",
     });
     return send(200, { url: session.url });
   } catch (err) {
