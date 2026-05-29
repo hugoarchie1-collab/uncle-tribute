@@ -97,8 +97,11 @@ export const Collections = () => {
           aria-hidden="true"
           className="absolute inset-0"
           style={{
+            // Stronger, even darkening so the cream (text-ink) copy stays
+            // legible over the bright collection photos while the photo
+            // remains as a subdued, moody texture (matches the dark brand).
             background:
-              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.82) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
           }}
         />
       </div>
@@ -112,19 +115,19 @@ export const Collections = () => {
           className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-6 md:pb-10 text-center"
         >
           <p
-            className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
+            className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
             The Collections
           </p>
           <h1
-            className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.2vw,72px)] leading-[0.98] text-white m-0 mb-6 text-balance"
+            className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5vw,64px)] leading-[0.98] text-ink m-0 mb-6 text-balance"
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
             Estate-stamped editions.
           </h1>
           <p
-            className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 max-w-[640px] mx-auto m-0"
+            className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/95 max-w-[640px] mx-auto m-0"
             style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
             Each of Stephen's paintings is offered as an estate-stamped giclée print, individually made to order. New collections and colourways are released by the estate over time.
@@ -159,19 +162,19 @@ export const Collections = () => {
               <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
                   <p
-                    className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5"
+                    className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5"
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                   >
                     {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6.4vw,84px)] leading-[0.96] text-white m-0 mb-6 text-balance"
+                    className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.6vw,60px)] leading-[1.0] text-ink m-0 mb-6 text-balance"
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-white/95 flex flex-col gap-4 max-w-[640px] mx-auto"
+                    className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/95 flex flex-col gap-4 max-w-[640px] mx-auto"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -216,14 +219,14 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-4 text-center">
                             <h3
-                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.2] tracking-[-0.015em] text-white m-0"
+                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.2] tracking-[-0.015em] text-ink m-0"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}
                             </h3>
                             {painting.year && painting.year !== "[ DATE ]" && (
                               <p
-                                className="mt-1.5 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-white/85 m-0"
+                                className="mt-1.5 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/65 m-0"
                                 style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                               >
                                 {painting.year}
@@ -236,7 +239,7 @@ export const Collections = () => {
                                 lower the click barrier — the £295 anchor still
                                 does its conversion work on the product page. */}
                             <p
-                              className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-white/85 m-0"
+                              className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-ink/85 m-0"
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
                               Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
@@ -266,22 +269,22 @@ export const Collections = () => {
                       <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-4">
                         The complete collection
                       </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,32px)] leading-[1.15] text-white m-0 mb-3">
+                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,32px)] leading-[1.15] text-ink m-0 mb-3">
                         Acquire the complete {shortName}
                       </h3>
-                      <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.65] text-white/80 m-0 mb-2 max-w-[520px] mx-auto">
+                      <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.65] text-ink/80 m-0 mb-2 max-w-[520px] mx-auto">
                         All {bundle.paintingIds.length} paintings, offered as a
                         set at the Collector edition (A2) — a single, complete
                         body of Stephen's work for one home.
                       </p>
-                      <p className="font-sans text-[13px] tracking-[0.02em] text-white/70 m-0 mb-7">
-                        <span className="text-white/45 line-through mr-2">
+                      <p className="font-sans text-[13px] tracking-[0.02em] text-ink/70 m-0 mb-7">
+                        <span className="text-ink/45 line-through mr-2">
                           {formatGBP(bundle.fullPricePence).replace(".00", "")}
                         </span>
-                        <span className="font-semibold text-white">
+                        <span className="font-bold text-ink">
                           {formatGBP(bundle.bundlePricePence).replace(".00", "")}
                         </span>
-                        <span className="mx-2 text-white/35">·</span>
+                        <span className="mx-2 text-ink/35">·</span>
                         save {formatGBP(bundle.savePence).replace(".00", "")} as
                         the complete set
                       </p>
@@ -293,8 +296,8 @@ export const Collections = () => {
                         Add the complete collection to basket
                         <span aria-hidden="true">→</span>
                       </button>
-                      <p className="font-sans text-[11px] tracking-[0.03em] text-white/45 m-0 mt-4">
-                        The set discount is applied automatically at checkout.
+                      <p className="font-sans text-[11px] tracking-[0.03em] text-ink/45 m-0 mt-4">
+                        The complete-set saving is applied automatically at checkout.
                       </p>
                     </div>
                   </Reveal>
