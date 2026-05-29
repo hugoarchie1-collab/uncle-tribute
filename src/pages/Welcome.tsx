@@ -65,16 +65,6 @@ const estateCards: readonly EstateCard[] = [
     cta: "Browse prints",
     to: "/collections",
   },
-  {
-    id: "friends",
-    eyebrow: "Friends & Family",
-    title: "The Mandala Company",
-    body: "News and releases from the estate, on behalf of Steve's immediate family.",
-    cta: "Subscribe",
-    subject: "Subscribe — Mandala Company",
-    intro:
-      "Leave your name and email and we'll add you to Friends & Family. Occasional updates only — exhibitions, new releases, news from the estate.",
-  },
 ] as const;
 
 export const Welcome = () => {
@@ -122,6 +112,11 @@ export const Welcome = () => {
 
   return (
     <>
+      {/* Nav overlays the intro video (fixed) so the logo + links stay pinned
+          to the top of the screen from the very first frame — and remain there
+          when scrolling back up from anywhere on the page. Every other page
+          uses the in-flow sticky Nav. */}
+      <Nav overlay />
       <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
@@ -157,13 +152,14 @@ export const Welcome = () => {
           />
         </div>
 
-        <Nav />
-
         <main className="relative isolate z-10">
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-2 sm:pt-3 md:pt-6 pb-16 md:pb-24">
+          {/* Top padding clears the now-fixed overlay Nav (it no longer
+              reserves layout space), reproducing the gap the in-flow sticky
+              nav used to give the hero. */}
+          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-16 md:pb-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
@@ -473,7 +469,7 @@ export const Welcome = () => {
                 Continue Stephen's work.
               </h2>
             </Reveal>
-            <Reveal as="div" className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 mb-16 md:mb-20">
+            <Reveal as="div" className="mx-auto max-w-[680px] mb-12 md:mb-16">
               {estateCards.map((item) => {
                 const cardClass =
                   "group block text-left bg-bg-soft ring-1 ring-white/8 hover:ring-accent/50 transition-all duration-500 hover:-translate-y-1 p-8 md:p-10 focus:outline-none focus-visible:ring-accent";

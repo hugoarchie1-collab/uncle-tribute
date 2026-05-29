@@ -6,10 +6,58 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// PASSING DATE — placeholder until family confirms
+// LIFE DATES — Stephen's birth + death. PASSING_DATE stays the YEAR, used by the
+// "1966–2021" in-memoriam ranges in the footer / hero. BIRTH_DATE / DEATH_DATE
+// carry the full dates, surfaced where a full date belongs (the memorial).
 // -----------------------------------------------------------------------------
 
 export const PASSING_DATE = "2021";
+export const BIRTH_DATE = "2 March 1966";
+export const DEATH_DATE = "12 December 2021";
+export const LIFE_DATES = `${BIRTH_DATE} – ${DEATH_DATE}`;
+
+// -----------------------------------------------------------------------------
+// MEMORIAL — Stephen's "everything is connected" words (surfaced as a pull-quote
+// in the In-memoriam section), and Polly Wedge's tribute, written for Stephen's
+// funeral.
+//
+// ⚠️ The tribute is reproduced FAITHFULLY from Polly's words. Only unambiguous
+// transcription slips were corrected (e.g. "fight your corn" → "fight your
+// corner"). Four phrases look like transcription errors and are kept verbatim,
+// pending Polly's confirmation of the exact wording — see SESSION notes:
+//   1. opening "For other like no other"
+//   2. "He was so fascinated with." (sentence reads cut off)
+//   3. "we can't have him that but longer"
+//   4. "the caged bird sing, but the world once fly"
+// Do not invent replacements — only Polly should set these.
+// -----------------------------------------------------------------------------
+
+export const MEMORIAL_QUOTE =
+  "At that moment of heartbreak and acute sensitivity, I realised that everything is connected. I returned to England as an artist with a mission, and decided to commit to finding a way to express and illuminate this interconnectedness — not in some abstract way, but in a way that was concrete, that everybody could understand.";
+
+export const TRIBUTE = {
+  eyebrow: "In loving memory",
+  attribution: "Written by Polly Wedge for Stephen's funeral.",
+  paragraphs: [
+    "For other like no other, Steve was all or nothing. He was immensely proud of his family, and can understand why we were happy with normal lives when you could have a life of drama, passion, and out of the ordinary. He was fiercely loyal and would fight your corner regardless of the trouble he might get into. He was a true rock star, always planning the next unforgettable party. He was impulsive, thinking nothing of getting you up in the middle of the night to watch the stars and the moon. Even when you were cross with him, he would charm you into loving him again. He would always leave little messages of love everywhere.",
+    "He was almost arrogantly confident, but at the same time would ask for your opinion — self-doubt and confidence intersecting. He loved Mike like a brother, who must have helped him more than a dozen times. Steve was always optimistic and infectious. Steve dominated our thoughts. We worried for him, wondered how he was doing, and wished with all our hearts that his dreams would come true.",
+    "There was no one like Steve. He loved people but chose solitude. He felt absence in recent years, but at the same time present and engaging. He tried everything known. He tried every known religion to help fill the voids and discontentment and to expand his knowledge of the universe. He was so fascinated with. He lived by his heart, quite literally, and certainly gave it a run for its money.",
+    "His moods, his passion, were intense; but when we think of Steve, we smile, we cry, we laugh, we get cross that we can't have him that but longer — as the happy, contented person we knew he so deeply wanted to be. The caged bird sing, but the world once fly. Steve, we will love you forever.",
+  ],
+};
+
+// -----------------------------------------------------------------------------
+// CREDENTIALS — documented exhibitions & commissions (factual provenance).
+// Surfaced by <CredentialsStrip>. Real, verifiable items only — never "as seen in".
+// -----------------------------------------------------------------------------
+export const CREDENTIALS: readonly string[] = [
+  "Majlis Gallery, Dubai",
+  "Trinity Gallery, London",
+  "Unique Arts, Brighton",
+  "Arista SunStar · Farmacy, Notting Hill",
+  "Sahara Force India F1",
+  "Tree of Wellbeing · 1,200 UK hospices & hospitals",
+];
 
 // -----------------------------------------------------------------------------
 // WELCOME PAGE  — first page of the site, shown after the cinematic intro

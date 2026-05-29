@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
-import { Nav } from "../components/Nav";
+import { IntroFilmHeader } from "../components/IntroFilmHeader";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
+import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { ScrollProgress } from "../components/ScrollProgress";
+import { EYEBROW } from "../components/ui/tokens";
+import { cn } from "../lib/cn";
 
 /**
  * /faq — frequently asked questions.
@@ -142,14 +146,16 @@ const FAQS: QA[] = [
 
 export const FAQ = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
+    <div className="relative min-h-screen flex flex-col">
+      <AmbientBackdrop opacity={0.4} />
+      <ScrollProgress />
       <Seo
         title="Frequently asked"
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
         url="/faq"
       />
-      <Nav />
-      <main className="flex-1 mx-auto w-full max-w-[760px] px-6 md:px-10 py-24 md:py-32">
+      <IntroFilmHeader />
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-14">
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
             The Mandala Company
@@ -175,13 +181,13 @@ export const FAQ = () => {
         <Reveal as="div" className="flex flex-col gap-14">
           {FAQS.map((qa, i) => (
             <section key={i} className="flex flex-col gap-4">
-              <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent/85 m-0">
+              <p className={cn(EYEBROW, "m-0")}>
                 {qa.eyebrow}
               </p>
               <h2 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.2] text-ink m-0">
                 {qa.question}
               </h2>
-              <div className="font-sans font-light text-[15.5px] leading-[1.8] text-ink/85">
+              <div className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85">
                 {qa.answer}
               </div>
             </section>

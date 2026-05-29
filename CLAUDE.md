@@ -24,13 +24,12 @@ This document is the project's running source of truth — paste it at the start
 
 ## ⚠️ Current live state (read this first)
 
-The Stripe **Order Print** button is in active debug as of this handoff:
+The Stripe **Order Print** → Checkout flow is **verified working** (Hugo confirmed the live redirect on 2026-05-29). The earlier `product_data.images` hang (PRs #57/#59/#60) is resolved — don't re-add raw image URLs to the checkout session (gotcha #3).
 
-- PR #57 added the integration (deployed)
-- PR #59 fixed TypeScript compile errors (deployed)
-- PR #60 made the function self-contained and removed the `product_data.images` fetch that was probably hanging the call (deployed but **not yet verified by the owner**)
-
-**First task for any continuing AI:** ask Hugo to hard-refresh a painting page and try clicking *Order print*. If it redirects to Stripe Checkout in 1-2 seconds, the integration works. If it still hangs on "Opening checkout…" or shows a network error, check Vercel function logs (Vercel dashboard → Deployments → latest → Functions → /api/checkout → Logs) for the actual error message.
+**In-flight, uncommitted on the working tree as of 2026-05-29** (deliberately NOT pushed — there was concurrent `/collections/find` "Find a print" work in the tree that mustn't be swept into a commit):
+- Book of Memories (`/memories`) — built & browser-verified
+- Journal (`/journal`, `/journal/:slug`) — built & browser-verified
+- Admin "mark as shipped" form (`/admin/order-shipped.html`) — built & verified
 
 Everything else on the site is shipped and working.
 
@@ -112,6 +111,9 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 /collections                 Browse all 3 collections (Habundia, Genesis, Born in the Sky)
 /collections/:id             Painting detail (colourway picker + Add to basket / Buy now)
 /about                       Long-form bio (Anegada chapter, TAGA, students letter)
+/memories                    Book of Memories — moderated wall of memories + "leave a memory" form
+/journal                     Journal index — writings archive (real indexable content; Blog JSON-LD)
+/journal/:slug               Journal article (per-article meta + Article/Breadcrumb JSON-LD; drafts 404)
 /basket                      Multi-item basket (localStorage) + Proceed to checkout
 /contact                     Full-page contact form (same submission path as EnquireModal)
 /faq                         8-section frequently asked
@@ -149,6 +151,12 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 - `ABOUT` — full About page (opening, earlyLife, anegada, legacy, academyQuote, palestine, studentsIntro, studentsLetter)
 - `PASSING_DATE` `"2021"`
 
+### `src/data/memories.ts`
+- `MEMORIES` — array of approved Book-of-Memories entries (`id` / `name` / optional `relationship` / optional `location` / `message`; `Memory` type exported alongside). **Moderated by deploy**: a memory appears on `/memories` only once it's added to this array and pushed, so the live wall can never be spammed. Submissions reach the estate via `/api/memories-submit`, whose notification email contains a ready-to-paste entry shaped exactly like these objects. Newest at the top. Seeded with two clearly-commented SAMPLE entries — remove or keep before the first public push.
+
+### `src/data/journal.ts`
+- `JOURNAL` — array of writings-archive articles (`slug` / `title` / `excerpt` / optional `kind` / `date` / `isoDate` / `author` / `body: string[]` / `pullQuote` / `coverImage` / `draft`; `JournalArticle` type exported). Newest first. **The SEO layer**: each article is a real indexable page (`/journal/:slug`) with its own meta + Article JSON-LD — the fix for the SPA being near-invisible to crawlers. `draft: true` hides an article from the index AND 404s its route, for safe staging. Helpers: `publishedArticles`, `getPublishedArticle`, `articleAuthor` (defaults byline to the estate), `readingMinutes`. File header carries a paste-ready authoring template. Seeded with one estate-written intro + one draft template.
+
 ### `src/data/paintings.ts`
 - `PAINTINGS` — array of 10 paintings (id / title / year / collection / description / colourways / optional artistQuote / location)
 - `COLLECTIONS` — 3 collections (habundia, genesis, born-in-the-sky) with backdrop image paths
@@ -177,10 +185,11 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 
 | Component | Purpose |
 |---|---|
-| `Nav` | Sticky header, mobile-responsive padding, inline SVG basket icon + count badge, mounts `ReturningVisitorChip` |
+| `Nav` | Header with logo + 6 links (Home · Collections · About · Journal · Memories · Contact) + basket badge, mounts `ReturningVisitorChip`. `sticky top-0` by default; pass `overlay` to make it `fixed` (floats over the intro film, with a top scrim for legibility — used via `IntroFilmHeader`). Inline links show at `lg`+ (6 links + wordmark overflow narrower widths); hamburger menu below `lg`. |
+| `IntroFilmHeader` | The cinematic intro film (`VideoIntro`) as a page header + the overlay `Nav` floating above it. Drop-in replacement for a bare `<Nav />` on content pages so the intro can be reached by scrolling up from anywhere — used on Welcome, Collections, About, Journal, JournalArticle, Memories, Contact, FAQ. NOT on transactional/utility pages (Basket, Order result, Legal, 404) or PaintingDetail. |
 | `Footer` | 4-col footer with site links + studio info + email + `NewsletterSignup variant="footer"` |
 | `Logo` | Rose-mark SVG, wordmark hidden on mobile |
-| `VideoIntro` | Sticky 100vh boomerang, dissolves on scroll |
+| `VideoIntro` | Sticky 100vh boomerang, dissolves on scroll. Originally Welcome-only; now also the shared header element behind `IntroFilmHeader` on every content page. |
 | `Reveal` | Framer Motion fade-up on scroll-into-view |
 | `ImageReveal` | Parallax + soft-edge image, wraps in `<picture>` for WebP |
 | `AssetImage` | Drop-in `<img>` replacement that wraps in `<picture>` |
@@ -258,7 +267,7 @@ Painting page → "Add to basket"  → localStorage basket  → /basket → "Pro
     -H "Content-Type: application/json" \
     -d '{ "sessionId": "cs_live_…", "trackingUrl": "https://…", "carrier": "Royal Mail Tracked 48", "secret": "$ADMIN_API_KEY" }'
   ```
-  A tiny one-page HTML admin form on top of this would be a small future lift.
+  A one-page HTML admin form now sits on top of this at **`/admin/order-shipped.html`** (static file in `public/admin/`, served outside the SPA — same-origin so the endpoint needs no CORS; `noindex` + `Disallow: /admin/` in robots.txt). Fields: session id, tracking URL, carrier, admin key (optionally remembered in localStorage). POSTs the same body the curl example shows.
 - **`api/_lib/emails/styles.ts`** — shared inline-style objects (palette mirrors `tailwind.config.ts`).
 - **`api/_lib/thankYouCode.ts`** — creates the per-order Stripe Coupon + PromotionCode pair. 10% off, single use, 365-day validity. Suffix is 6 random chars from an unambiguous alphabet (no 0/O/1/I).
 
@@ -366,10 +375,11 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
   stripe-webhook.ts           Stripe webhook receiver (signed, in-memory dedup)
   newsletter-subscribe.ts     Friends-of-the-estate sign-up (CORS-allowlisted)
   email-basket.ts             Save-your-basket email (CORS-allowlisted)
+  memories-submit.ts          Book-of-Memories submission → estate notification email (CORS-allowlisted, honeypot, no DB)
   /admin
     order-shipped.ts          Manual shipped-email trigger (ADMIN_API_KEY auth)
   /_lib
-    emails/                   React-Email templates (OrderConfirmation, OrderShipped, Welcome, BasketSaved)
+    emails/                   React-Email templates (OrderConfirmation, OrderShipped, Welcome, BasketSaved, MemorySubmitted)
     thankYouCode.ts           Stripe coupon + promo-code minting
 
 /public
@@ -381,6 +391,8 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
     /art                      Misc art assets
   /logo                       Rose-mark SVGs + PNG renders (6 variants)
   /video                      intro.mp4 + poster.jpg / poster.webp
+  /admin
+    order-shipped.html        Static estate tool — posts to /api/admin/order-shipped (noindex)
   favicon.svg
   og-image.jpg
   robots.txt
@@ -468,4 +480,4 @@ Run **`/read-context`** at any point to have Claude re-read CLAUDE.md plus the l
 
 ---
 
-_Last updated: 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
+_Last updated: 2026-05-29 (Book of Memories: new /memories route + Memories page, src/data/memories.ts single-source-of-truth wall, /api/memories-submit notification endpoint + MemorySubmitted email, Nav + Footer "Memories" links. Moderated by deploy — no database, same ethos as the newsletter endpoint. Journal: /journal + /journal/:slug routes, Journal + JournalArticle pages, src/data/journal.ts writings archive with draft support + Article/Blog JSON-LD for SEO, Nav + Footer "Journal" links. Admin: public/admin/order-shipped.html one-page form over /api/admin/order-shipped, robots Disallow /admin/. Stripe checkout confirmed working — gift flow now unblocked. Intro film as a global header: new `IntroFilmHeader` (VideoIntro + overlay Nav) on Welcome + all content pages (Collections, About, Journal, JournalArticle, Memories, Contact, FAQ) so the video is reachable by scrolling up from anywhere; Nav gained an `overlay` (fixed) mode + a top scrim, and its inline links now switch to the hamburger below `lg` (six links overflowed tablets). Colourways trimmed in src/data/paintings.ts: removed Deep Forest Red (Wild Rose); Amethyst Purple / Vespa Violet / Citrine Neon (Orchis 7); Phoenix Orange / Jade Green / Pearl Pink (Flower of Life); Rose Quartz (Tridecagon) — originals untouched. NOT on transactional pages (Basket, Order, Legal, 404) or PaintingDetail). Previously 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._

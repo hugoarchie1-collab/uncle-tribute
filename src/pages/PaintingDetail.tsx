@@ -7,9 +7,15 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
+import { AuthenticationCard } from "../components/AuthenticationCard";
+import { ReassuranceRow } from "../components/ReassuranceRow";
+import { ProvenancePanel } from "../components/ProvenancePanel";
+import { CredentialsStrip } from "../components/CredentialsStrip";
+import { DimensionChip } from "../components/DimensionChip";
+import { ScaleViewer } from "../components/ScaleViewer";
+import { ScrollProgress } from "../components/ScrollProgress";
 import {
   COLLECTIONS,
-  ESTATE_AUTHENTICATION,
   EMBELLISHMENT_NOTE,
   getAnchorTier,
   getPaintingById,
@@ -113,6 +119,12 @@ const SizePicker = ({
           <span className="font-display font-bold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
             {formatGBP(tier.pricePence).replace(".00", "")}
           </span>
+          {isSelected && !tier.isOneOff && (
+            <span className={cn(META, "col-span-2 mt-3 text-ink/60")}>
+              {tier.editionLabel} · estate-stamped &amp; hand-numbered
+              {tier.editionPromise ? ` · ${tier.editionPromise}` : ""}
+            </span>
+          )}
         </button>
       );
     })}
@@ -445,6 +457,11 @@ const BuyBox = ({
           </p>
         </div>
 
+        {/* Dimension chip — instant size reassurance, updates with the tier */}
+        <div className="mb-6 -mt-2">
+          <DimensionChip tier={selectedTier} />
+        </div>
+
         {/* 4 · SIZE PICKER — standard tiers only */}
         <SizePicker tiers={sizeTiers} selectedTier={selectedTier} onSelectTier={onSelectTier} />
 
@@ -581,20 +598,15 @@ const BuyBox = ({
           <p className="mt-2 font-sans text-[13.5px] text-accent m-0">{errorMsg}</p>
         )}
 
-        {/* 8 · AUTHENTICATION + SHIPPING — single source ESTATE_AUTHENTICATION */}
+        {/* 8 · AUTHENTICATION + REASSURANCE — structured trust cluster. All
+            copy from single-source ESTATE_AUTHENTICATION (inside the card).
+            Full provenance + shipping detail live in the ProvenancePanel
+            below the Story so the buy box stays tight. */}
         <Separator className="bg-white/10 mt-7 mb-6" />
-        <p className={cn(META, "m-0 mb-4")}>
-          {ESTATE_AUTHENTICATION.stamp}
-          <span className="text-accent/80 mx-2" aria-hidden="true">·</span>
-          {ESTATE_AUTHENTICATION.numbering}
-          <span className="text-accent/80 mx-2" aria-hidden="true">·</span>
-          {ESTATE_AUTHENTICATION.coa}
-        </p>
-        <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
-          <li className={cn(META, "m-0")}>{ESTATE_AUTHENTICATION.printer}</li>
-          <li className={cn(META, "m-0")}>Ships in 7–10 working days</li>
-          <li className={cn(META, "m-0")}>UK £15 · Europe £35 · Worldwide £60 (unframed)</li>
-        </ul>
+        <AuthenticationCard />
+        <div className="mt-5">
+          <ReassuranceRow />
+        </div>
       </div>
     </div>
   );
@@ -890,6 +902,8 @@ export const PaintingDetail = () => {
   // Fullscreen lightbox state for the hero image.
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+  // Left-column view: the artwork itself, or an honest to-scale diagram.
+  const [view, setView] = useState<"art" | "scale">("art");
 
   // Sticky bar sentinels — see StickyAddBar.
   const heroSentinelRef = useRef<HTMLDivElement>(null);
@@ -960,7 +974,12 @@ export const PaintingDetail = () => {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    // overflow-x-clip (NOT overflow-hidden): clips horizontal overflow without
+    // creating a scroll container, so the sticky painting (below) still works.
+    // overflow-hidden here silently disabled position:sticky and left a large
+    // dark void beside the buy box on desktop. html/body already clip the X axis.
+    <div className="relative overflow-x-clip">
+      <ScrollProgress />
       <Seo
         title={painting.title}
         description={metaDescription}
@@ -1027,6 +1046,30 @@ export const PaintingDetail = () => {
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[88px]">
+              {/* View toggle — the artwork, or an honest to-scale diagram. */}
+              <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-white/15 rounded-full">
+                {(["art", "scale"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setView(v)}
+                    aria-pressed={view === v}
+                    className={cn(
+                      "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
+                      view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
+                    )}
+                  >
+                    {v === "art" ? "Painting" : "To scale"}
+                  </button>
+                ))}
+              </div>
+              {view === "scale" ? (
+                <ScaleViewer
+                  tier={selectedTier}
+                  imageSrc={selected.image}
+                  alt={`${painting.title} — ${selected.name}`}
+                />
+              ) : (
               <Reveal>
                 <div className="overflow-hidden">
                   <button
@@ -1045,16 +1088,23 @@ export const PaintingDetail = () => {
                         className="block w-full"
                       >
                         <source srcSet={asset(webp(selected.image))} type="image/webp" />
+                        {/* Height-capped + centred so a square/portrait painting
+                            never exceeds ~78% of the viewport. Without the cap a
+                            square painting rendered full-width was ~940px tall on
+                            tablet/half-screen widths — taller than the viewport —
+                            pushing the price + buy controls 2+ screens down. On
+                            lg+ the image sits in its ~600px column unchanged. */}
                         <img
                           src={asset(selected.image)}
                           alt={`${painting.title} — ${selected.name}`}
-                          className="w-full h-auto block"
+                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[82vh]"
                         />
                       </motion.picture>
                     </AnimatePresence>
                   </button>
                 </div>
               </Reveal>
+              )}
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
               <div ref={heroSentinelRef} aria-hidden="true" className="h-px w-full" />
@@ -1083,11 +1133,13 @@ export const PaintingDetail = () => {
 
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
-          <div className="mt-16 md:mt-24">
-            <Separator className="bg-white/10 mb-12 md:mb-16 max-w-[720px] mx-auto" />
+          <div className="mt-10 md:mt-20">
+            <Separator className="bg-white/10 mb-10 md:mb-14 max-w-[720px] mx-auto" />
             <Story painting={painting} />
+            <ProvenancePanel />
           </div>
         </main>
+        <CredentialsStrip />
         <FooterCatalogue />
         <Footer />
       </div>

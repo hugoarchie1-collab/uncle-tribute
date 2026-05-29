@@ -19,6 +19,9 @@ import {
 } from "../data/paintings";
 import { useBasket, removeItem, type BasketItem } from "../lib/basket";
 import { usePageTitle } from "../lib/usePageTitle";
+import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { cn } from "../lib/cn";
+import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 
 /**
  * Hydrated basket line — joins a stored item against the live catalogue so
@@ -134,13 +137,14 @@ export const Basket = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
+      <AmbientBackdrop opacity={0.4} />
       <Nav />
-      <main className="flex-1 mx-auto w-full max-w-[820px] px-4 md:px-8 lg:px-12 pt-6 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal>
-          <p className="font-sans text-[10px] font-bold tracking-[0.34em] uppercase text-ink/60 m-0 mb-5">
+          <p className={cn(EYEBROW, "m-0 mb-5")}>
             The Estate
           </p>
-          <h1 className="font-display font-bold tracking-[-0.04em] leading-[1.02] text-[clamp(36px,5vw,64px)] text-ink m-0 mb-10">
+          <h1 className="font-display font-bold tracking-[-0.04em] leading-[0.98] text-[clamp(36px,5vw,64px)] text-ink m-0 mb-10 hero-text-shadow">
             Your Basket
           </h1>
         </Reveal>
@@ -152,10 +156,7 @@ export const Basket = () => {
               Your basket is empty. Each print is individually made to order by a UK atelier,
               estate-stamped on behalf of The Mandala Company.
             </p>
-            <Link
-              to="/collections"
-              className="inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors"
-            >
+            <Link to="/collections" className={cn(BTN_PRIMARY, "w-fit")}>
               Browse the collections <span aria-hidden="true" className="ml-2">→</span>
             </Link>
             <NewsletterSignup variant="inline" />
@@ -177,7 +178,7 @@ export const Basket = () => {
                     <div className="flex gap-5 sm:gap-7 items-start">
                       <Link
                         to={`/collections/${line.paintingId}`}
-                        className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] overflow-hidden"
+                        className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] overflow-hidden ring-1 ring-white/8"
                         aria-label={`${line.title} — view painting`}
                       >
                         <AssetImage
@@ -197,13 +198,13 @@ export const Basket = () => {
                         )}
                         <Link
                           to={`/collections/${line.paintingId}`}
-                          className="font-display font-bold tracking-[-0.02em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
+                          className="font-display font-bold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
                         >
                           {line.title}
                         </Link>
                         {/* Tier eyebrow — same register as the collection
                             badge above. Surfaces label · size · edition. */}
-                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-accent/80 m-0 mt-2">
+                        <p className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-accent/80 m-0 mt-2">
                           {line.tier.label} · {line.tier.size.split(" ")[0]} · {line.tier.editionLabel}
                         </p>
                         <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink/65 m-0 mt-1.5">
@@ -218,7 +219,7 @@ export const Basket = () => {
                         <button
                           type="button"
                           onClick={() => removeItem(line.item.addedAt)}
-                          className="mt-3 inline-flex items-center font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                          className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -240,7 +241,7 @@ export const Basket = () => {
                 </p>
               )}
               <div className="flex items-baseline justify-between gap-6 mb-3">
-                <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0">
+                <p className={cn(EYEBROW_MUTED, "m-0")}>
                   Subtotal
                 </p>
                 <p className="font-display font-bold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0">
@@ -259,20 +260,17 @@ export const Basket = () => {
                   type="button"
                   onClick={onCheckout}
                   disabled={status === "loading"}
-                  className="inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                  className={BTN_PRIMARY}
                 >
                   {status === "loading" ? "Opening checkout…" : "Proceed to checkout"}
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
-                <Link
-                  to="/collections"
-                  className="inline-flex items-center text-ink ring-1 ring-ink/30 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:ring-accent hover:text-accent transition-all"
-                >
+                <Link to="/collections" className={BTN_SECONDARY}>
                   Continue browsing
                 </Link>
               </div>
               {status === "error" && (
-                <p className="mt-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
               )}
               {/* Inline "save your basket" affordance — quiet link below
                   the subtotal block. Renders nothing when the basket is

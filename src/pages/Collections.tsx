@@ -1,7 +1,7 @@
 import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { IntroFilmHeader } from "../components/IntroFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal, RevealStagger } from "../components/Reveal";
@@ -16,6 +16,8 @@ import {
 import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
 import { Seo } from "../components/Seo";
+import { cn } from "../lib/cn";
+import { BTN_PRIMARY } from "../components/ui/tokens";
 
 /**
  * Fixed backdrop layer that cross-fades between collection scenes as the
@@ -79,7 +81,7 @@ export const Collections = () => {
         description="Habundia, Genesis and Born in the Sky — three collections of Stephen Meakin's mandala paintings, each offered as an estate-stamped giclée print, individually made to order."
         url="/collections"
       />
-      <Nav />
+      <IntroFilmHeader />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -132,6 +134,13 @@ export const Collections = () => {
           >
             Each of Stephen's paintings is offered as an estate-stamped giclée print, individually made to order. New collections and colourways are released by the estate over time.
           </p>
+          <Link
+            to="/collections/find"
+            className="inline-flex items-center gap-1.5 mt-6 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/75 hover:text-accent transition-colors"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
+            Not sure where to begin? Find a print <span aria-hidden="true">→</span>
+          </Link>
         </Reveal>
 
         {COLLECTIONS.map((coll, collIndex) => {
@@ -159,7 +168,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
+              <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
                   <p
                     className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5"
@@ -185,7 +194,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
                 >
                   {items.map((painting) => {
                     const cover =
@@ -194,7 +203,7 @@ export const Collections = () => {
                     return (
                       <motion.figure
                         key={painting.id}
-                        className="m-0 w-full sm:w-[calc(50%-0.625rem)] md:w-[calc(50%-0.875rem)] lg:w-[calc(33.333%-1.167rem)]"
+                        className="m-0"
                         variants={{
                           hidden: { opacity: 0, y: 14 },
                           show: {
@@ -208,7 +217,7 @@ export const Collections = () => {
                           className="group block"
                           aria-label={`View ${painting.title}`}
                         >
-                          <div className="aspect-square overflow-hidden shadow-[0_-6px_36px_rgba(0,0,0,0.35),0_20px_44px_rgba(0,0,0,0.45)] transition-all duration-500 group-hover:shadow-[0_-6px_36px_rgba(0,0,0,0.4),0_26px_60px_rgba(0,0,0,0.6)]">
+                          <div className="aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                             <AssetImage
                               src={cover.image}
                               alt={painting.title}
@@ -277,21 +286,17 @@ export const Collections = () => {
                         set at the Collector edition (A2) — a single, complete
                         body of Stephen's work for one home.
                       </p>
-                      <p className="font-sans text-[13px] tracking-[0.02em] text-ink/70 m-0 mb-7">
-                        <span className="text-ink/45 line-through mr-2">
-                          {formatGBP(bundle.fullPricePence).replace(".00", "")}
-                        </span>
+                      <p className="font-sans text-[13.5px] leading-[1.6] tracking-[0.02em] text-ink/70 m-0 mb-7">
                         <span className="font-bold text-ink">
                           {formatGBP(bundle.bundlePricePence).replace(".00", "")}
                         </span>
                         <span className="mx-2 text-ink/35">·</span>
-                        save {formatGBP(bundle.savePence).replace(".00", "")} as
-                        the complete set
+                        the complete set, offered together
                       </p>
                       <button
                         type="button"
                         onClick={acquireCollection}
-                        className="inline-flex items-center gap-2 bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                        className={cn(BTN_PRIMARY, "gap-2")}
                       >
                         Add the complete collection to basket
                         <span aria-hidden="true">→</span>

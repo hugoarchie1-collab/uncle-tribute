@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
+import { cn } from "../lib/cn";
+import { EYEBROW_MUTED } from "./ui/tokens";
 
 const YEAR = new Date().getFullYear();
 
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-white/8 bg-bg text-ink-soft px-6 md:px-10 lg:px-16 pt-10 md:pt-14 pb-8 md:pb-10"
+    className="relative border-t border-white/8 bg-bg text-ink-soft px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-8 md:pb-10"
   >
-    <div className="mx-auto max-w-[1200px] grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-y-8 gap-x-8 md:gap-x-10 mb-8 md:mb-10 items-start">
+    <div className="mx-auto max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-y-8 gap-x-8 md:gap-x-10 mb-8 md:mb-10 items-start">
       <div className="col-span-2 md:col-span-1">
         <Logo size={32} wordmark />
         <p className="mt-4 md:mt-5 max-w-[280px] font-sans font-normal text-[13.5px] md:text-[14px] leading-[1.6] md:leading-[1.65] text-ink/70 m-0">
@@ -21,19 +23,21 @@ export const Footer = () => (
         {/* Author credit — desktop only. On mobile it lengthens the footer
             tail with detail a phone reader rarely needs; the estate line
             above already carries attribution. */}
-        <p className="hidden md:block mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink/45 m-0">
+        <p className="hidden md:block mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink/55 m-0">
           Written for The Mandala Company by Archie Hugo Charles Wedge (Stephen's nephew). Stephen's words are his own, drawn from his notebooks, interviews and the writings he left.
         </p>
       </div>
 
       <div>
-        <h3 className="mb-4 md:mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
+        <h3 className={cn(EYEBROW_MUTED, "mb-4 md:mb-5")}>
           Site
         </h3>
-        <ul className="flex flex-col gap-2.5 md:gap-3 text-sm text-ink/70">
+        <ul className="flex flex-col gap-2.5 md:gap-3 text-[14px] text-ink/70">
           <li><Link to="/" className="transition-colors hover:text-ink">Home</Link></li>
           <li><Link to="/collections" className="transition-colors hover:text-ink">Collections</Link></li>
           <li><Link to="/about" className="transition-colors hover:text-ink">About</Link></li>
+          <li><Link to="/journal" className="transition-colors hover:text-ink">Journal</Link></li>
+          <li><Link to="/memories" className="transition-colors hover:text-ink">Memories</Link></li>
           <li><Link to="/contact" className="transition-colors hover:text-ink">Contact</Link></li>
           <li><Link to="/faq" className="transition-colors hover:text-ink">FAQ</Link></li>
           <li><Link to="/returns" className="transition-colors hover:text-ink">Returns</Link></li>
@@ -41,10 +45,10 @@ export const Footer = () => (
       </div>
 
       <div>
-        <h3 className="mb-4 md:mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
+        <h3 className={cn(EYEBROW_MUTED, "mb-4 md:mb-5")}>
           Enquiries
         </h3>
-        <ul className="flex flex-col gap-2.5 md:gap-3 text-sm text-ink/70">
+        <ul className="flex flex-col gap-2.5 md:gap-3 text-[14px] text-ink/70">
           <li>
             <a
               href="mailto:info@themandalacompany.com"
@@ -66,7 +70,7 @@ export const Footer = () => (
       </div>
     </div>
 
-    <div className="mx-auto max-w-[1200px] pt-6 md:pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-ink/45">
+    <div className="mx-auto max-w-[1400px] pt-6 md:pt-8 border-t border-white/8 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[12px] text-ink/55">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>

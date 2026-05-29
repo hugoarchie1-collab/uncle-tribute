@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
+import { motion, MotionConfig } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
@@ -11,6 +12,9 @@ import "./styles/global.css";
 const Collections = lazy(() => import("./pages/Collections").then((m) => ({ default: m.Collections })));
 const PaintingDetail = lazy(() => import("./pages/PaintingDetail").then((m) => ({ default: m.PaintingDetail })));
 const About = lazy(() => import("./pages/About").then((m) => ({ default: m.About })));
+const Memories = lazy(() => import("./pages/Memories").then((m) => ({ default: m.Memories })));
+const Journal = lazy(() => import("./pages/Journal").then((m) => ({ default: m.Journal })));
+const JournalArticle = lazy(() => import("./pages/JournalArticle").then((m) => ({ default: m.JournalArticle })));
 const Basket = lazy(() => import("./pages/Basket").then((m) => ({ default: m.Basket })));
 const OrderSuccess = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderSuccess })));
 const OrderCancel = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderCancel })));
@@ -20,6 +24,7 @@ const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms
 const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Returns })));
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
+const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -70,45 +75,71 @@ const ScrollToTop = () => {
   return null;
 };
 
+const LoadingFallback = () => (
+  <div
+    className="min-h-screen bg-bg flex items-center justify-center"
+    role="status"
+    aria-label="Loading"
+  >
+    <span className="h-6 w-6 rounded-full border-2 border-ink/20 border-t-accent animate-spin" />
+  </div>
+);
+
+/**
+ * Routes wrapped in a gentle per-route fade, keyed on pathname so each
+ * navigation eases in. OPACITY ONLY — never a transform on this wrapper: a
+ * transformed ancestor re-bases every page's position:fixed backdrop and would
+ * break it. MotionConfig reducedMotion="user" disables it for those who ask.
+ */
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/collections/find" element={<FindAPrint />} />
+          <Route path="/collections/:id" element={<PaintingDetail />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/memories" element={<Memories />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/journal/:slug" element={<JournalArticle />} />
+          <Route path="/basket" element={<Basket />} />
+          <Route path="/order/success" element={<OrderSuccess />} />
+          <Route path="/order/cancel" element={<OrderCancel />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/returns" element={<Returns />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </Suspense>
+  );
+};
+
 export default function App() {
   return (
     <HelmetProvider>
-      <BrowserRouter basename={basename}>
-        <ScrollToTop />
-        {/* Sitewide film-grain texture — sits above content at z-100,
-            opacity tuned low so it textures without obscuring. */}
-        <div aria-hidden="true" className="film-grain" />
-        <Suspense
-          fallback={
-            <div
-              className="min-h-screen bg-bg flex items-center justify-center"
-              role="status"
-              aria-label="Loading"
-            >
-              <span className="h-6 w-6 rounded-full border-2 border-ink/20 border-t-accent animate-spin" />
-            </div>
-          }
-        >
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/collections" element={<Collections />} />
-            <Route path="/collections/:id" element={<PaintingDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/basket" element={<Basket />} />
-            <Route path="/order/success" element={<OrderSuccess />} />
-            <Route path="/order/cancel" element={<OrderCancel />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/returns" element={<Returns />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-        {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
-            Hugo enables Web Analytics in the Vercel dashboard. */}
-        <Analytics />
-      </BrowserRouter>
+      <MotionConfig reducedMotion="user">
+        <BrowserRouter basename={basename}>
+          <ScrollToTop />
+          {/* Sitewide film-grain texture — sits above content at z-100,
+              opacity tuned low so it textures without obscuring. */}
+          <div aria-hidden="true" className="film-grain" />
+          <AnimatedRoutes />
+          {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
+              Hugo enables Web Analytics in the Vercel dashboard. */}
+          <Analytics />
+        </BrowserRouter>
+      </MotionConfig>
     </HelmetProvider>
   );
 }

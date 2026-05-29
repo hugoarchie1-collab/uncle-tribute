@@ -10,6 +10,8 @@ const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/collections", label: "Collections" },
   { to: "/about", label: "About" },
+  { to: "/journal", label: "Journal" },
+  { to: "/memories", label: "Memories" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -33,7 +35,14 @@ const BasketIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export const Nav = () => {
+/**
+ * `overlay` — pin the nav with `fixed` instead of `sticky` so it floats over
+ * full-bleed content (the home intro video) from the very top, without
+ * reserving layout space. Used by the Welcome page; every other page leaves it
+ * off and gets the normal in-flow sticky header. When overlaying and not yet
+ * scrolled, a soft top scrim keeps the cream logo + links legible over video.
+ */
+export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const [scrolled, setScrolled] = useState(false);
   const basket = useBasket();
   const basketCount = basket.length;
@@ -69,28 +78,36 @@ export const Nav = () => {
     return () => window.removeEventListener("scroll", handle);
   }, []);
 
-  // Close the mobile menu whenever the route changes.
+  // Close the mobile menu whenever the route changes. Synchronising a
+  // transient UI flag to a navigation event is a legitimate effect; the rule's
+  // cascading-render concern doesn't apply to this one-shot close.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [location.pathname]);
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 md:px-10 lg:px-16 transition-all duration-300 text-ink relative",
+        overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
+        "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
         scrolled
           ? "py-3 bg-bg/92 backdrop-blur-md border-b border-white/5"
-          : "py-5 bg-transparent border-b border-transparent",
+          : overlay
+            ? "py-5 bg-gradient-to-b from-bg/70 via-bg/25 to-transparent border-b border-transparent"
+            : "py-5 bg-transparent border-b border-transparent",
       )}
     >
+      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 sm:gap-6">
       <Link to="/" aria-label="The Art of Stephen Meakin — home" className="inline-flex items-center">
         <Logo size={32} wordmark />
       </Link>
 
       <div className="flex items-center gap-5 sm:gap-7 md:gap-10">
-        {/* Primary links — inline from `sm` up; collapsed into the hamburger
-            menu below `sm`. */}
-        <nav className="hidden sm:flex items-center gap-7 md:gap-10" aria-label="Primary">
+        {/* Primary links — inline from `lg` up; collapsed into the hamburger
+            menu below `lg`. (Six links + the wordmark overflow narrower
+            widths, so tablets get the menu.) */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-9" aria-label="Primary">
           {NAV_LINKS.map((l) => (
             <NavLink
               key={l.to}
@@ -126,7 +143,7 @@ export const Nav = () => {
           }
           className={({ isActive }) =>
             cn(
-              "relative inline-flex items-center justify-center transition-colors duration-300",
+              "relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
               isActive ? "text-ink" : "text-ink/55 hover:text-accent",
             )
           }
@@ -170,7 +187,7 @@ export const Nav = () => {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((o) => !o)}
-          className="sm:hidden inline-flex items-center justify-center w-9 h-9 -mr-1 text-ink/70 hover:text-ink transition-colors"
+          className="lg:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             {menuOpen ? (
@@ -185,6 +202,7 @@ export const Nav = () => {
           </svg>
         </button>
       </div>
+      </div>
 
       {/* Mobile dropdown menu */}
       <AnimatePresence>
@@ -196,7 +214,7 @@ export const Nav = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className="sm:hidden absolute top-full left-0 right-0 bg-bg/97 backdrop-blur-md border-b border-white/10 px-4 flex flex-col"
+            className="lg:hidden absolute top-full left-0 right-0 bg-bg/97 backdrop-blur-md border-b border-white/10 px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
           >
             {NAV_LINKS.map((l) => (
               <NavLink
@@ -205,7 +223,7 @@ export const Nav = () => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "py-3.5 font-sans text-[12px] font-medium tracking-[0.22em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
+                    "py-3.5 font-sans text-[11px] font-medium tracking-[0.22em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
                     isActive ? "text-accent" : "text-ink/70 hover:text-ink",
                   )
                 }

@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
   type Variants,
 } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { IntroFilmHeader } from "../components/IntroFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -15,9 +15,13 @@ import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
-import { ABOUT, PASSING_DATE } from "../data/content";
+import { ABOUT, PASSING_DATE, TRIBUTE, MEMORIAL_QUOTE, LIFE_DATES } from "../data/content";
 import { asset } from "../lib/asset";
 import { Seo } from "../components/Seo";
+import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { ScrollProgress } from "../components/ScrollProgress";
+import { cn } from "../lib/cn";
+import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 
 const earlyLife = ABOUT.earlyLife;
 
@@ -152,7 +156,7 @@ const ChapterIntro = ({
           </div>
         )}
         <div className="col-span-12 md:col-span-9 md:pl-6 md:pb-3">
-          <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.46em] uppercase text-accent m-0 mb-4">
+          <p className={cn(EYEBROW, "m-0 mb-4")}>
             {label} · {years}
           </p>
           <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,62px)] leading-[1.02] text-ink m-0 max-w-[820px]">
@@ -171,7 +175,7 @@ const YearTag = ({ year, place }: { year: string; place?: string }) => (
       {year}
     </p>
     {place && (
-      <p className="font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55 m-0">
+      <p className={cn(EYEBROW_MUTED, "m-0")}>
         {place}
       </p>
     )}
@@ -233,7 +237,7 @@ const MilestoneImageRight = ({
         <div className="flex flex-col gap-4">{children}</div>
       </div>
       <figure className="col-span-12 md:col-span-7 order-1 md:order-2 m-0">
-        <ImageReveal src={image} alt={alt} aspect="aspect-[4/3]" edges="all" parallax={0.14} tilt />
+        <ImageReveal src={image} alt={alt} aspect="aspect-[4/3]" edges="all" parallax={0.14} />
       </figure>
     </div>
   </Reveal>
@@ -260,7 +264,7 @@ const MilestoneImageLeft = ({
   <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-20">
     <div className="grid grid-cols-12 gap-5 md:gap-12 items-center">
       <figure className="col-span-12 md:col-span-7 m-0">
-        <ImageReveal src={image} alt={alt} aspect={aspect} edges="all" parallax={0.14} tilt />
+        <ImageReveal src={image} alt={alt} aspect={aspect} edges="all" parallax={0.14} />
       </figure>
       <div className="col-span-12 md:col-span-5">
         <YearTag year={year} place={place} />
@@ -321,7 +325,7 @@ const MilestoneBigYear = ({
             {isCountable ? display : year}
           </p>
           {place && (
-            <p className="mt-4 font-sans text-[10px] font-bold tracking-[0.42em] uppercase text-ink/55 m-0">
+            <p className={cn(EYEBROW_MUTED, "mt-4")}>
               {place}
             </p>
           )}
@@ -358,7 +362,7 @@ const MilestoneQuote = ({
   <Reveal as="section" className="relative mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-20">
     <div className="grid grid-cols-12 gap-5 md:gap-12 items-stretch md:items-center">
       <figure className="col-span-12 md:col-span-6 m-0">
-        <ImageReveal src={image} alt={alt} aspect="aspect-[4/5]" edges="all" parallax={0.16} tilt />
+        <ImageReveal src={image} alt={alt} aspect="aspect-[4/5]" edges="all" parallax={0.16} />
       </figure>
       <div className="col-span-12 md:col-span-6">
         <YearTag year={year} place={place} />
@@ -370,7 +374,7 @@ const MilestoneQuote = ({
             {quote}
           </p>
           {attribution && (
-            <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.36em] uppercase text-ink/55">
+            <cite className={cn(EYEBROW_MUTED, "not-italic")}>
               — {attribution}
             </cite>
           )}
@@ -409,8 +413,10 @@ const AnegadaSpread = () => {
         style={{ backgroundColor: "#0e0a08" }}
         aria-label="Anegada — 1995, Stephen's turning point"
       >
-        {/* HERO — full-screen */}
-        <div className="relative w-full h-screen overflow-hidden">
+        {/* HERO — capped below the viewport (was h-screen, which violated the
+            'media must not exceed viewport height' rule and pushed the timeline
+            an extra screen down). */}
+        <div className="relative w-full h-[80vh] md:h-[86vh] overflow-hidden">
           <motion.div
             className="absolute inset-0 will-change-transform"
             style={
@@ -439,13 +445,15 @@ const AnegadaSpread = () => {
           />
           {/* Top eyebrow */}
           <Reveal as="div" className="absolute top-10 md:top-14 left-1/2 -translate-x-1/2 text-center px-4">
-            <p className="font-sans text-[10px] md:text-[11px] font-bold tracking-[0.5em] uppercase text-ink/85 m-0">
+            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/85 m-0 hero-text-shadow">
               1995 · Anegada · Caribbean Sea
             </p>
           </Reveal>
 
-          {/* Big year stamp at bottom-left */}
-          <Reveal as="div" className="absolute bottom-[6vh] md:bottom-[7vh] left-4 sm:left-6 md:left-10 lg:left-14">
+          {/* Big year stamp — top-left on mobile (clears the bottom headline,
+              which would otherwise collide with it at ~390px), bottom-left from
+              md up as originally designed. */}
+          <Reveal as="div" className="absolute top-[14vh] md:top-auto md:bottom-[7vh] left-4 sm:left-6 md:left-10 lg:left-14">
             <p
               className="font-display font-bold m-0 tabular-nums tracking-[-0.05em] leading-[0.84]"
               style={{
@@ -464,7 +472,7 @@ const AnegadaSpread = () => {
           {/* Headline — bottom right, dominating */}
           <div className="absolute inset-x-0 bottom-[6vh] md:bottom-[8vh] px-4 md:px-10 lg:px-14 text-right">
             <h2
-              className="font-display font-bold tracking-[-0.05em] leading-[0.9] text-ink m-0"
+              className="font-display font-bold tracking-[-0.05em] leading-[0.9] text-ink m-0 hero-text-shadow"
               style={{ fontSize: "clamp(48px, 8.8vw, 138px)" }}
             >
               <WordReveal text="Everything is connected." stagger={0.11} duration={1.0} />
@@ -521,7 +529,7 @@ const AnegadaSpread = () => {
           </Reveal>
 
           <Reveal as="div" className="mt-14 md:mt-20 text-right">
-            <p className="font-sans text-[10px] font-bold tracking-[0.48em] uppercase text-accent m-0">
+            <p className={cn(EYEBROW, "m-0")}>
               — Stephen Meakin, in his own words
             </p>
           </Reveal>
@@ -583,7 +591,7 @@ const AboutHero = () => {
           }}
         />
         <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
-          <p className="font-sans text-[10px] sm:text-[11px] font-bold tracking-[0.42em] uppercase text-ink/85 m-0">
+          <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/85 m-0 hero-text-shadow">
             In memoriam · 1966 — {PASSING_DATE}
           </p>
         </Reveal>
@@ -595,7 +603,7 @@ const AboutHero = () => {
             <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0">
               Stephen<br />Meakin
             </h1>
-            <p className="mt-4 md:mt-5 font-sans text-[11px] sm:text-[12px] font-bold tracking-[0.34em] uppercase text-ink/75 m-0">
+            <p className="mt-4 md:mt-5 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hero-text-shadow">
               SEM · Mandala Artist &amp; Sacred Geometer
             </p>
           </Reveal>
@@ -626,16 +634,12 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
     >
       <MagneticLink
         to="/collections"
-        className="inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[12px] font-bold tracking-[0.18em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+        className={cn(BTN_PRIMARY, "w-fit")}
         ariaLabel="Browse the prints"
       >
         Browse prints →
       </MagneticLink>
-      <button
-        type="button"
-        onClick={onJoinFriends}
-        className="inline-flex items-center font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/70 border-b border-ink/30 pb-1 transition-colors duration-300 hover:text-accent hover:border-accent"
-      >
+      <button type="button" onClick={onJoinFriends} className={BTN_SECONDARY}>
         Join Friends &amp; Family
       </button>
     </motion.div>
@@ -684,13 +688,18 @@ export const About = () => {
 
   return (
     <div className="relative">
+      {/* Canonical atmospheric backdrop — kept subtle so it never competes
+          with the photo-heavy timeline, but ends the flat-black feel that made
+          About read as a different site. */}
+      <AmbientBackdrop opacity={0.42} />
+      <ScrollProgress />
       <Seo
         title="About Stephen Meakin — the life and work"
         description="The life of Stephen Meakin (1966–2021), British mandala artist and sacred geometer — from Anegada to the studio in Lewes, and a practice devoted to the idea that everything is connected."
         url="/about"
       />
-      <Nav />
-      <main>
+      <IntroFilmHeader />
+      <main className="relative z-10">
         {/* HERO — scroll-scrubbed scale + opacity on image, slight upward
             translate on title. See AboutHero. */}
         <AboutHero />
@@ -854,10 +863,50 @@ export const About = () => {
           </MilestoneText>
         </div>
 
+        {/* IN MEMORIAM — the family's farewell. Polly Wedge's funeral tribute,
+            opened by Stephen's own "everything is connected" words. The full
+            life dates are surfaced here (years elsewhere read as the 1966–2021
+            range). */}
+        <section className="mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24">
+          <Reveal as="div" className="text-center mb-10 md:mb-14">
+            <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
+            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4vw,48px)] leading-[1.05] text-ink m-0">
+              Stephen Meakin
+            </h2>
+            <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
+          </Reveal>
+
+          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l-2 border-accent/60 pl-6 md:pl-8">
+            <blockquote className="m-0">
+              <p className="font-display italic text-[clamp(20px,2.6vw,28px)] leading-[1.45] text-ink m-0">
+                “{MEMORIAL_QUOTE}”
+              </p>
+            </blockquote>
+            <figcaption className={cn(EYEBROW_MUTED, "not-italic mt-5")}>
+              — Stephen Meakin
+            </figcaption>
+          </Reveal>
+
+          <Reveal as="div" className="max-w-[680px] mx-auto">
+            {TRIBUTE.paragraphs.map((p, i) => (
+              <p
+                key={i}
+                className={cn(
+                  "font-sans font-normal text-[15.5px] md:text-[16px] leading-[1.85] text-ink/85 m-0",
+                  i > 0 && "mt-5",
+                )}
+              >
+                {p}
+              </p>
+            ))}
+            <p className={cn(EYEBROW_MUTED, "mt-8")}>{TRIBUTE.attribution}</p>
+          </Reveal>
+        </section>
+
         {/* STUDENT LETTER */}
         <section className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20">
           <Reveal as="div" className="text-center mb-8 md:mb-10">
-            <p className="font-sans text-[11px] font-bold tracking-[0.42em] uppercase text-accent m-0 mb-4">
+            <p className={cn(EYEBROW, "m-0 mb-4")}>
               To every student
             </p>
             <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,4vw,52px)] leading-[1.0] text-ink m-0 max-w-[920px] mx-auto">
@@ -869,18 +918,17 @@ export const About = () => {
               <p className="font-sans font-medium text-[14.5px] md:text-[15.5px] leading-[1.85] text-ink m-0 mb-5">
                 {ABOUT.studentsLetter}
               </p>
-              <cite className="not-italic font-sans text-[10px] font-bold tracking-[0.38em] uppercase text-ink/65">
+              <cite className={cn(EYEBROW_MUTED, "not-italic")}>
                 — Stephen Meakin
               </cite>
             </blockquote>
-            <figure className="m-0 md:col-span-5 min-h-[55vh] md:min-h-0">
+            <figure className="m-0 md:col-span-5">
               <ImageReveal
                 src="/img/about/08-taga-group.jpg"
                 alt="A group at TAGA with their paintings"
-                fill
+                aspect="aspect-[4/5]"
                 edges="all"
                 parallax={0.14}
-                tilt
               />
             </figure>
           </Reveal>

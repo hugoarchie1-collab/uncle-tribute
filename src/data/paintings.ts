@@ -40,6 +40,8 @@ export interface PrintTier {
   pricePence: number;           // integer pence
   editionTotal: number | null;  // null = open edition
   editionLabel: string;         // "Open edition" / "Edition of 100" / etc
+  /** Provenance promise shown on the SELECTED tier — descriptive, never scarcity. */
+  editionPromise?: string;
   framingPricePence?: number;   // optional framing surcharge (A2 + A1 only)
   /**
    * Optional hand-embellishment add-on surcharge. Polly Wedge finishes the
@@ -131,9 +133,13 @@ export const STUDIO_ONE_OFF_NOTE =
  */
 export const ESTATE_AUTHENTICATION = {
   stamp: "Estate-stamped by The Mandala Company",
+  stampLabel: "Estate stamp",
   numbering: "Hand-numbered within the edition",
+  numberingLabel: "Hand-numbered",
   coa: "Ships with a Certificate of Authenticity on estate letterhead",
+  coaLabel: "Certificate of Authenticity",
   printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
+  printerLabel: "Printed at Point 101",
 };
 
 /**
@@ -156,6 +162,7 @@ export const PRINT_TIERS: PrintTier[] = [
     pricePence: 14500, // £145
     editionTotal: null,
     editionLabel: "Open edition",
+    editionPromise: "made to order",
     description: "Estate-stamped, open edition, COA card",
     available: true,
   },
@@ -166,6 +173,7 @@ export const PRINT_TIERS: PrintTier[] = [
     pricePence: 29500, // £295
     editionTotal: 100,
     editionLabel: "Limited edition of 100",
+    editionPromise: "the edition will never be reopened",
     framingPricePence: 29500, // £295 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
     description: "Limited edition of 100, estate-stamped, hand-numbered, COA",
@@ -179,6 +187,7 @@ export const PRINT_TIERS: PrintTier[] = [
     pricePence: 59500, // £595
     editionTotal: 50,
     editionLabel: "Limited edition of 50",
+    editionPromise: "the edition will never be reopened",
     framingPricePence: 39500, // £395 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
     description: "Limited edition of 50, estate-stamped, hand-numbered, COA",
@@ -191,6 +200,7 @@ export const PRINT_TIERS: PrintTier[] = [
     pricePence: 125000, // £1,250
     editionTotal: 25,
     editionLabel: "Limited edition of 25",
+    editionPromise: "the edition will never be reopened",
     description:
       "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
     // Hidden until Hugo confirms fulfilment capability + optional gold-leaf
@@ -303,6 +313,18 @@ export const getEmbellishmentPricePence = (tier: PrintTier): number | null =>
 export const formatGBP = (pence: number): string =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(pence / 100);
 
+/**
+ * Parse the cm dimensions out of a tier `size` string, e.g.
+ * "A2 (42 × 59.4 cm)" → { w: 42, h: 59.4 }. Returns null if absent.
+ * Lets the scale viewer + dimension chip draw the print honestly from its
+ * catalogued size with zero new data entry.
+ */
+export const parseSizeCm = (size: string): { w: number; h: number } | null => {
+  const m = size.match(/\(([\d.]+)\s*[×x]\s*([\d.]+)\s*cm\)/);
+  if (!m) return null;
+  return { w: Number.parseFloat(m[1]), h: Number.parseFloat(m[2]) };
+};
+
 export interface Collection {
   id: "habundia" | "genesis" | "born-in-the-sky";
   title: string;
@@ -377,13 +399,6 @@ export const PAINTINGS: Painting[] = [
         isOriginal: true,
         available: true,
       },
-      {
-        name: "Deep Forest Red",
-        image: "/img/paintings/wild-rose-deep-forest-red.jpg",
-        hex: "#5a2a23",
-        isOriginal: false,
-        available: true,
-      },
     ],
   },
   {
@@ -435,27 +450,6 @@ export const PAINTINGS: Painting[] = [
         isOriginal: true,
         available: true,
       },
-      {
-        name: "Amethyst Purple",
-        image: "/img/paintings/orchis7-amethyst-purple.jpg",
-        hex: "#9b88c8",
-        isOriginal: false,
-        available: true,
-      },
-      {
-        name: "Vespa Violet",
-        image: "/img/paintings/orchis7-vespa-violet.jpg",
-        hex: "#7d6da3",
-        isOriginal: false,
-        available: true,
-      },
-      {
-        name: "Citrine Neon",
-        image: "/img/paintings/orchis7-citrine-neon.jpg",
-        hex: "#c9d970",
-        isOriginal: false,
-        available: true,
-      },
     ],
   },
   {
@@ -474,27 +468,6 @@ export const PAINTINGS: Painting[] = [
         image: "/img/paintings/fol-kaleidoscope.jpg",
         hex: "#4a3a78",
         isOriginal: true,
-        available: true,
-      },
-      {
-        name: "Phoenix Orange",
-        image: "/img/paintings/fol-phoenix-orange.jpg",
-        hex: "#c97844",
-        isOriginal: false,
-        available: true,
-      },
-      {
-        name: "Jade Green",
-        image: "/img/paintings/fol-jade-green.jpg",
-        hex: "#88a37d",
-        isOriginal: false,
-        available: true,
-      },
-      {
-        name: "Pearl Pink",
-        image: "/img/paintings/fol-pearl-pink.jpg",
-        hex: "#b598a8",
-        isOriginal: false,
         available: true,
       },
     ],
@@ -623,13 +596,6 @@ export const PAINTINGS: Painting[] = [
         name: "Moonstone Blue",
         image: "/img/paintings/tridecagon-moonstone-blue.jpg",
         hex: "#b8c7d1",
-        isOriginal: false,
-        available: true,
-      },
-      {
-        name: "Rose Quartz",
-        image: "/img/paintings/tridecagon-rose-quartz.jpg",
-        hex: "#d2a8a8",
         isOriginal: false,
         available: true,
       },

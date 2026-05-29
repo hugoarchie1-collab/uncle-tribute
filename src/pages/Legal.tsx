@@ -3,6 +3,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
+import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
 
 /**
@@ -509,18 +510,19 @@ const LegalPage = ({
   const plainTitle = title.replace(/&amp;/g, "&");
   usePageTitle(plainTitle);
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
+    <div className="relative min-h-screen flex flex-col">
+      <AmbientBackdrop opacity={0.36} />
       <Nav />
-      <main className="flex-1 mx-auto w-full max-w-[720px] px-6 md:px-10 py-24 md:py-32">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-12">
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
             The Mandala Company
           </p>
           <h1
-            className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0"
+            className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0 hero-text-shadow"
             dangerouslySetInnerHTML={{ __html: title }}
           />
-          <p className="font-sans text-[12px] tracking-[0.04em] text-ink/45 mt-4 m-0">
+          <p className="font-sans text-[12px] tracking-[0.04em] text-ink/55 mt-4 m-0">
             Last updated {updated}
           </p>
           <Separator className="bg-ink/15 mt-8" />
@@ -528,7 +530,7 @@ const LegalPage = ({
         <Reveal as="article" className="flex flex-col gap-12">
           {sections.map((section, i) => (
             <section key={i} className="flex flex-col gap-4">
-              <h2 className="font-display font-bold tracking-[-0.02em] text-[clamp(22px,2.6vw,28px)] leading-[1.2] text-ink m-0">
+              <h2 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,28px)] leading-[1.2] text-ink m-0">
                 {section.heading}
               </h2>
               {section.blocks.map((block, j) => {
@@ -536,7 +538,7 @@ const LegalPage = ({
                   return (
                     <p
                       key={j}
-                      className="font-sans font-light text-[15.5px] leading-[1.8] text-ink/85 m-0"
+                      className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85 m-0"
                     >
                       {block.text}
                     </p>
@@ -545,7 +547,7 @@ const LegalPage = ({
                 return (
                   <ul
                     key={j}
-                    className="font-sans font-light text-[15.5px] leading-[1.8] text-ink/85 list-disc pl-6 flex flex-col gap-2 m-0"
+                    className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85 list-disc pl-6 flex flex-col gap-2 m-0"
                   >
                     {block.items.map((item, k) => (
                       <li key={k}>{item}</li>

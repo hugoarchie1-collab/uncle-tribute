@@ -1,9 +1,12 @@
 import { useRef, useState, type FormEvent } from "react";
-import { Nav } from "../components/Nav";
+import { IntroFilmHeader } from "../components/IntroFilmHeader";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
+import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
+import { cn } from "../lib/cn";
 
 /**
  * /contact — full-page version of the EnquireModal form. Same mailto +
@@ -87,14 +90,15 @@ export const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg">
+    <div className="relative min-h-screen flex flex-col">
+      <AmbientBackdrop opacity={0.4} />
       <Seo
         title="Contact the estate"
         description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
         url="/contact"
       />
-      <Nav />
-      <main className="flex-1 mx-auto w-full max-w-[720px] px-6 md:px-10 py-24 md:py-32">
+      <IntroFilmHeader />
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-10">
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
             Contact the estate
@@ -136,7 +140,7 @@ export const Contact = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <label className="block">
-                  <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                  <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                     Name
                   </span>
                   <input
@@ -144,12 +148,12 @@ export const Contact = () => {
                     name="name"
                     required
                     autoComplete="name"
-                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                     placeholder="Jane Smith"
                   />
                 </label>
                 <label className="block">
-                  <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                  <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                     Email
                   </span>
                   <input
@@ -157,7 +161,7 @@ export const Contact = () => {
                     type="email"
                     required
                     autoComplete="email"
-                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                     placeholder="jane@example.com"
                   />
                 </label>
@@ -171,7 +175,7 @@ export const Contact = () => {
                   name="message"
                   required
                   rows={7}
-                  className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                  className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                   placeholder="A few lines about what you're after."
                 />
               </label>
@@ -184,14 +188,14 @@ export const Contact = () => {
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                  className={BTN_PRIMARY}
                 >
                   {status === "submitting" ? "Sending…" : "Send"}
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
                 <a
                   href="mailto:info@themandalacompany.com"
-                  className="font-sans text-[12px] tracking-[0.06em] text-ink/55 hover:text-ink transition-colors"
+                  className="inline-flex items-center min-h-[44px] font-sans text-[12px] tracking-[0.06em] text-ink/55 hover:text-ink transition-colors"
                 >
                   Or write directly →
                 </a>
