@@ -78,7 +78,17 @@ export default function App() {
         {/* Sitewide film-grain texture — sits above content at z-100,
             opacity tuned low so it textures without obscuring. */}
         <div aria-hidden="true" className="film-grain" />
-        <Suspense fallback={<div className="min-h-screen bg-bg" />}>
+        <Suspense
+          fallback={
+            <div
+              className="min-h-screen bg-bg flex items-center justify-center"
+              role="status"
+              aria-label="Loading"
+            >
+              <span className="h-6 w-6 rounded-full border-2 border-ink/20 border-t-accent animate-spin" />
+            </div>
+          }
+        >
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/collections" element={<Collections />} />

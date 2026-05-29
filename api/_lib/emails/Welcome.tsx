@@ -76,8 +76,8 @@ export const WelcomeEmail = ({
           <p style={styles.body}>
             Stephen worked for over three decades in Lewes, East Sussex —
             mandalas, sacred geometry, and a lifelong study of pattern. We
-            release a small number of signed giclée prints from the estate so
-            his work can live in homes rather than only in archives. If
+            release a small number of estate-stamped giclée prints so his work
+            can live in homes rather than only in archives. If
             anything catches your eye, the current catalogue is here:
           </p>
 

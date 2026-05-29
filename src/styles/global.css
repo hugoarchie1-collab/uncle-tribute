@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Keyframes referenced by arbitrary `animate-[fadeIn…]` / `animate-[fadeInUp…]`
+   utilities (ReturningVisitorChip, ExitSaveBasket). Without these the elements
+   appeared instantly with no transition. */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* =============================================================================
    Base layer — global defaults
    ============================================================================= */

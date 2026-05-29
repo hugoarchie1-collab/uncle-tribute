@@ -61,7 +61,7 @@ const estateCards: readonly EstateCard[] = [
     id: "prints",
     eyebrow: "Prints",
     title: "Estate-stamped giclée prints",
-    body: "Individually made-to-order prints of every painting, hand-stretched on archival canvas.",
+    body: "Individually made-to-order giclée prints of every painting, estate-stamped on 350gsm archival paper.",
     cta: "Browse prints",
     to: "/collections",
   },
