@@ -795,7 +795,7 @@ const StickyAddBar = ({
           animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
           transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-bg/95 backdrop-blur-md ring-1 ring-white/12 shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
+          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-[#0a0908]/95 backdrop-blur-md ring-1 ring-white/12 shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
           role="region"
           aria-label="Quick add to basket"
         >
@@ -869,7 +869,7 @@ const HeroLightbox = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.32, ease: [0.22, 0.61, 0.36, 1] }}
           onClick={onClose}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-bg/97 backdrop-blur-sm cursor-zoom-out p-4 md:p-10"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0908]/97 backdrop-blur-sm cursor-zoom-out p-4 md:p-10"
         >
           <button
             type="button"
@@ -878,7 +878,7 @@ const HeroLightbox = ({
               onClose();
             }}
             aria-label="Close (Esc)"
-            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/70 hover:text-accent transition-colors duration-300 bg-bg/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-white/10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/70 hover:text-accent transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-white/10"
           >
             Close <span aria-hidden="true">· Esc</span>
           </button>

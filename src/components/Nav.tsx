@@ -93,9 +93,9 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
         "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
         scrolled
-          ? "py-3 bg-bg/92 backdrop-blur-md border-b border-white/5"
+          ? "py-3 bg-[#0a0908]/92 backdrop-blur-md border-b border-white/5"
           : overlay
-            ? "py-5 bg-gradient-to-b from-bg/70 via-bg/25 to-transparent border-b border-transparent"
+            ? "py-5 bg-gradient-to-b from-[#0a0908]/70 via-[#0a0908]/25 to-transparent border-b border-transparent"
             : "py-5 bg-transparent border-b border-transparent",
       )}
     >
@@ -215,7 +215,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className="xl:hidden absolute top-full left-0 right-0 bg-bg/97 backdrop-blur-md border-b border-white/10 px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
+            className="xl:hidden absolute top-full left-0 right-0 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
           >
             {NAV_LINKS.map((l) => (
               <NavLink
