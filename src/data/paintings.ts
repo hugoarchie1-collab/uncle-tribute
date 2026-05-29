@@ -772,3 +772,73 @@ export const getCollectionBundle = (
     savePence: fullPricePence - bundlePricePence,
   };
 };
+
+// -----------------------------------------------------------------------------
+// COLOURWAY SET BUNDLE — acquire every colourway of ONE painting as a set
+// -----------------------------------------------------------------------------
+//
+// Stephen made several colour variants of many paintings. A buyer can take the
+// COMPLETE set of a painting's colourways in one go — every available colourway
+// as an anchor-tier (A2) print. The saving is the SAME count-based discount the
+// checkout actually applies (5% at 2 items, 10% at 3+), derived via
+// bundleDiscountPercentForCount — the same helper getCollectionBundle trusts —
+// so the advertised figure equals the Stripe charge BY CONSTRUCTION (gotcha #9).
+//
+// There is nothing to mirror into /api: the discount keys purely off the number
+// of basket lines, and the "add the set" action pushes exactly one A2 line per
+// available colourway, so the basket that reaches checkout already triggers the
+// existing coupon. (Decided by the colourway-bundle-pricing workflow: reuse the
+// count-based discount — a deeper per-painting "complete set" discount would
+// need a colourway-COUNT mirror in /api, a brand-new desync surface that the
+// recently-trimmed colourway lists would make go stale.)
+
+export interface ColourwaySetBundle {
+  paintingId: string;
+  title: string;
+  /** Names of the available colourways included, in catalogue order. */
+  colourwayNames: string[];
+  /** The count-derived discount percent (mirrors checkout): 5% at 2, 10% at 3+. */
+  discountPercent: number;
+  /** Sum of the anchor-tier price across every available colourway (pence). */
+  fullPricePence: number;
+  /** Discounted set price = fullPricePence − the count-based bundle discount. */
+  bundlePricePence: number;
+  /** fullPricePence − bundlePricePence (pence). */
+  savePence: number;
+}
+
+/**
+ * Build the complete-colourway-set bundle for a painting: every AVAILABLE
+ * colourway at the anchor (Collector A2) tier, with the SAME saving the
+ * checkout applies for that line count. Returns undefined for a painting with
+ * fewer than 2 available colourways (no set to offer). The count + price both
+ * derive from the same `available` filter + `getAnchorTier` the add-to-basket
+ * action uses, so the advertised figure equals the Stripe charge to the penny.
+ */
+export const getColourwaySetBundle = (
+  paintingId: string,
+): ColourwaySetBundle | undefined => {
+  const painting = getPaintingById(paintingId);
+  if (!painting) return undefined;
+  const available = painting.colourways.filter((c) => c.available);
+  if (available.length < 2) return undefined;
+
+  const anchor = getAnchorTier(painting);
+  const fullPricePence = anchor.pricePence * available.length;
+  const discountPercent = bundleDiscountPercentForCount(available.length);
+  // A single round on the uniform total agrees with Stripe's per-line
+  // percent_off summing for a clean 5/10% on equal-priced lines (same reasoning
+  // as getCollectionBundle), so the headline is exact, never overstated.
+  const bundlePricePence = Math.round(
+    fullPricePence * (1 - discountPercent / 100),
+  );
+  return {
+    paintingId,
+    title: painting.title,
+    colourwayNames: available.map((c) => c.name),
+    discountPercent,
+    fullPricePence,
+    bundlePricePence,
+    savePence: fullPricePence - bundlePricePence,
+  };
+};

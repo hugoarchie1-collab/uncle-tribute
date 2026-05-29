@@ -24,6 +24,7 @@ import {
   ORIGINAL_PROVENANCE,
   COLOURWAY_NOTE,
   formatGBP,
+  getColourwaySetBundle,
   type Colourway,
   type Painting,
   type PrintTier,
@@ -332,6 +333,19 @@ const BuyBox = ({
       ? formatGBP(selectedTier.embellishmentPricePence).replace(".00", "")
       : null;
 
+  // Complete colourway set — every available colourway of this painting at the
+  // anchor tier, with the count-based saving the checkout actually applies
+  // (gotcha #9 safe: the figure is derived, never typed). Undefined for
+  // single-colourway works, so the card simply doesn't render for them.
+  const colourwaySet = getColourwaySetBundle(painting.id);
+  const colourwaySetNames = colourwaySet
+    ? colourwaySet.colourwayNames.length <= 1
+      ? colourwaySet.colourwayNames.join("")
+      : `${colourwaySet.colourwayNames.slice(0, -1).join(", ")} and ${
+          colourwaySet.colourwayNames[colourwaySet.colourwayNames.length - 1]
+        }`
+    : "";
+
   const showAdded =
     addedFor !== null &&
     addedFor.paintingId === painting.id &&
@@ -484,6 +498,42 @@ const BuyBox = ({
             onSelect={onSelectColourway}
           />
         </div>
+
+        {/* 5b · COMPLETE COLOURWAY SET — only for paintings with 2+ available
+            colourways. Adds one anchor-A2 line per colourway; the existing
+            count-based checkout coupon applies the advertised saving (no /api
+            change — see getColourwaySetBundle). */}
+        {colourwaySet && (
+          <div className="mt-7 ring-1 ring-accent/45 px-4 py-4">
+            <p className={cn(EYEBROW, "m-0 mb-2")}>The complete colourway set</p>
+            <p className="font-sans text-[13.5px] leading-[1.55] text-ink/80 m-0 mb-3">
+              All {colourwaySet.colourwayNames.length} of Stephen's colourways for
+              this work — {colourwaySetNames} — each an estate-stamped Collector A2
+              print, the colours exactly as he left them in the studio.
+            </p>
+            <p className="font-sans text-[14px] text-ink m-0 mb-3.5">
+              <span className="font-display font-bold tracking-[-0.02em] text-[22px] mr-2.5">
+                {formatGBP(colourwaySet.bundlePricePence).replace(".00", "")}
+              </span>
+              the complete set, offered together
+            </p>
+            <button
+              type="button"
+              onClick={() =>
+                colourwaySet.colourwayNames.forEach((name) =>
+                  addItem(painting.id, name),
+                )
+              }
+              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors"
+            >
+              Add the complete set to basket
+              <span aria-hidden="true" className="ml-2">→</span>
+            </button>
+            <p className="font-sans text-[12px] leading-[1.5] text-ink/50 mt-2.5 m-0">
+              The complete-set saving is applied automatically at checkout.
+            </p>
+          </div>
+        )}
 
         {/* 6 · ADD-ONS — hidden on the one-off original */}
         {showAddOns && (

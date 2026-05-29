@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: "/about", label: "About" },
   { to: "/journal", label: "Journal" },
   { to: "/memories", label: "Memories" },
+  { to: "/photo-book", label: "Photo Book" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -104,10 +105,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       </Link>
 
       <div className="flex items-center gap-5 sm:gap-7 md:gap-10">
-        {/* Primary links — inline from `lg` up; collapsed into the hamburger
-            menu below `lg`. (Six links + the wordmark overflow narrower
-            widths, so tablets get the menu.) */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-9" aria-label="Primary">
+        {/* Primary links — inline from `xl` up; collapsed into the hamburger
+            menu below `xl`. (Seven links + the wordmark overflow below ~1280px,
+            so tablets and smaller laptops get the menu.) */}
+        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8" aria-label="Primary">
           {NAV_LINKS.map((l) => (
             <NavLink
               key={l.to}
@@ -187,7 +188,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((o) => !o)}
-          className="lg:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+          className="xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             {menuOpen ? (
@@ -214,7 +215,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className="lg:hidden absolute top-full left-0 right-0 bg-bg/97 backdrop-blur-md border-b border-white/10 px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
+            className="xl:hidden absolute top-full left-0 right-0 bg-bg/97 backdrop-blur-md border-b border-white/10 px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
           >
             {NAV_LINKS.map((l) => (
               <NavLink

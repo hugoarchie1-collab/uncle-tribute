@@ -23,6 +23,7 @@ const Privacy = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Pri
 const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms })));
 const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Returns })));
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
+const PhotoBook = lazy(() => import("./pages/PhotoBook").then((m) => ({ default: m.PhotoBook })));
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 
@@ -116,6 +117,7 @@ const AnimatedRoutes = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/returns" element={<Returns />} />
+          <Route path="/photo-book" element={<PhotoBook />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<NotFound />} />
