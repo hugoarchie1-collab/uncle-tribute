@@ -166,13 +166,6 @@ export const PAINTINGS: Painting[] = [
         available: true,
       },
       {
-        name: "Amethyst Purple",
-        image: "/img/paintings/orchis7-amethyst-purple.jpg",
-        hex: "#9b88c8",
-        isOriginal: false,
-        available: true,
-      },
-      {
         name: "Vespa Violet",
         image: "/img/paintings/orchis7-vespa-violet.jpg",
         hex: "#7d6da3",
