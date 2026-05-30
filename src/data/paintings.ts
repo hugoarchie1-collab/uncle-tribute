@@ -309,6 +309,13 @@ export const PAINTINGS: Painting[] = [
         isOriginal: false,
         available: true,
       },
+      {
+        name: "Mary Pink",
+        image: "/img/paintings/peacock-mary-pink.jpg",
+        hex: "#d8a5b8",
+        isOriginal: false,
+        available: true,
+      },
     ],
   },
   {
