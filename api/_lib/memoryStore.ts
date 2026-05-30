@@ -159,8 +159,12 @@ export async function moderateMemory(
 const KV_KEY = "memories:published"; // a Redis list, newest pushed to the head
 
 const kvConfig = (): { url: string; token: string } | null => {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  // Accept BOTH the legacy Vercel KV names and the current Upstash Marketplace
+  // names — the integration may inject either, depending on how it's connected.
+  // So whichever way Hugo enables it, this just works (no env renaming needed).
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token =
+    process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return null;
   return { url, token };
 };
