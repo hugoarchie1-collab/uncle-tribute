@@ -34,26 +34,6 @@ export interface Memory {
   message: string;
 }
 
-// -----------------------------------------------------------------------------
-// SAMPLE ENTRIES — so the wall reads as alive in preview. Delete or replace
-// these two before the first public push (or keep them if they ring true). Real
-// approved memories should be pasted ABOVE them, newest first.
-// -----------------------------------------------------------------------------
-export const MEMORIES: Memory[] = [
-  {
-    id: "sample-jan-w",
-    name: "Jan W.",
-    relationship: "Student · Brighton, 2003",
-    location: "Hove, East Sussex",
-    message:
-      "Steve never once made the geometry feel like maths. He'd draw a single arc and tell you the whole universe was already inside it, and somehow you believed him.\n\nI still have the first rose window I drew under his eye. It's crooked. I'll never change it.",
-  },
-  {
-    id: "sample-michael-r",
-    name: "Michael R.",
-    relationship: "Friend",
-    location: "Lewes",
-    message:
-      "We'd sit in the studio late and he'd talk about the Sun Star as if it were an old friend. The world was a smaller, kinder place with Steve drawing in the middle of it.",
-  },
-];
+// Real approved memories — paste new entries above, newest first.
+// Shape: { id, name, relationship?, location?, message }
+export const MEMORIES: Memory[] = [];

@@ -15,7 +15,7 @@ This document is the project's running source of truth — paste it at the start
 | **Production branch** | `main` (auto-deploys to Vercel on push) |
 | **Working branch** | `claude/memorial-website-scroll-intro-a8VOZ` |
 | **Hosting** | Vercel — project `uncle-tribute` |
-| **Bank** | Tide UK — payout via ClearBank 04-06-05 …3798 |
+| **Bank** | Tide UK (sort code + account in Hugo's 1Password) |
 | **Contact** | info@themandalacompany.com |
 | **Owner** | Hugo Archie Wedge (hugoarchie1@gmail.com) |
 | **Stripe account rep** | Polly Wedge (Hove address on file) |
@@ -319,7 +319,7 @@ The estate sends a **single-use 10% promotion code** to every first-time buyer i
 
 ### Stripe dashboard config (already done)
 - Account activated, Mandala Company entity
-- Tide added as payout bank (ClearBank 04-06-05 …3798), weekly Monday payout
+- Tide added as payout bank, weekly Monday payout
 - Webhook endpoint `https://uncle-tribute.vercel.app/api/stripe-webhook` listening for `checkout.session.completed`
 - Statement descriptor: `THE MANDALA COMPANY` / shortened `MANDALA`
 - Customer support phone on file
