@@ -555,16 +555,11 @@ export const PAINTINGS: Painting[] = [
         available: true,
       },
       {
-        // Mary Pink — Stephen's pink colourway of the Peacock / Shield of
-        // Minerva. PRIMED but HIDDEN: awaiting Hugo's JPG. When it lands, save
-        // it to /public/img/paintings/peacock-mary-pink.jpg (+ a .webp
-        // sibling), confirm the swatch hex below, and flip available:true —
-        // it then appears on PaintingDetail and joins the colourway set.
         name: "Mary Pink",
         image: "/img/paintings/peacock-mary-pink.jpg",
-        hex: "#e6a9c0", // provisional swatch — adjust to the artwork once the file is in
+        hex: "#e8a4be",
         isOriginal: false,
-        available: false,
+        available: true,
       },
     ],
   },
