@@ -26,10 +26,12 @@ This document is the project's running source of truth — paste it at the start
 
 The Stripe **Order Print** → Checkout flow is **verified working** (Hugo confirmed the live redirect on 2026-05-29). The earlier `product_data.images` hang (PRs #57/#59/#60) is resolved — don't re-add raw image URLs to the checkout session (gotcha #3).
 
-**In-flight, uncommitted on the working tree as of 2026-05-29** (deliberately NOT pushed — there was concurrent `/collections/find` "Find a print" work in the tree that mustn't be swept into a commit):
-- Book of Memories (`/memories`) — built & browser-verified
-- Journal (`/journal`, `/journal/:slug`) — built & browser-verified
-- Admin "mark as shipped" form (`/admin/order-shipped.html`) — built & verified
+**As of 2026-05-30 the working tree is clean and everything is shipped to `main` (in sync with origin — nothing in-flight, nothing mid-debug).** The features the previous note listed as uncommitted have all landed:
+- Book of Memories (`/memories`) — live, now **auto-publishing** (see below)
+- Journal (`/journal`, `/journal/:slug`) — live
+- Admin "mark as shipped" form (`/admin/order-shipped.html`) — live
+
+**Biggest architecture change since the last sync — Memories is no longer "moderated by deploy".** `/api/memories-submit` now MODERATES each submission (OpenAI omni-moderation, with a built-in slur/spam blocklist fallback when `OPENAI_API_KEY` is absent) and AUTO-PUBLISHES clean, image-free text to **Vercel KV** so the wall updates instantly. Images always HOLD for the family's one-tap OK (emailed as an attachment, placed by hand). The file-based `src/data/memories.ts` array is now a *seed/fallback* the page merges under the KV-published entries. The family is still emailed on every submission. See the `/api/memories-submit` + `api/_lib/memoryStore.ts` entries below.
 
 Everything else on the site is shipped and working.
 
@@ -153,7 +155,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 - `PASSING_DATE` `"2021"`
 
 ### `src/data/memories.ts`
-- `MEMORIES` — array of approved Book-of-Memories entries (`id` / `name` / optional `relationship` / optional `location` / `message`; `Memory` type exported alongside). **Moderated by deploy**: a memory appears on `/memories` only once it's added to this array and pushed, so the live wall can never be spammed. Submissions reach the estate via `/api/memories-submit`, whose notification email contains a ready-to-paste entry shaped exactly like these objects. Newest at the top. Seeded with two clearly-commented SAMPLE entries — remove or keep before the first public push.
+- `MEMORIES` — array of Book-of-Memories entries (`id` / `name` / optional `relationship` / optional `location` / `message`; `Memory` type exported alongside). **No longer the sole gate.** As of 2026-05-30 this array is the *seed / fallback* the `/memories` page renders **underneath** the live KV-published entries it fetches from `GET /api/memories-submit`. Submissions that pass moderation auto-publish to KV and appear instantly (see `/api/memories-submit` below); this file is for permanent / hand-curated entries and as the graceful fallback when KV isn't provisioned. The submission notification email still contains a ready-to-paste entry shaped exactly like these objects, so a held memory can be added here by hand. Newest at the top.
 
 ### `src/data/photobook.ts`
 - `PHOTOBOOK` — array of personal photographs for the `/photo-book` gallery (`src` / `alt` / optional `caption` / `year`; `PhotoBookImage` type). Empty until Hugo pastes the photo-book screenshots under `/public/img/photobook/`; the page shows a dignified coming-soon state meanwhile. The gallery uses a plain lazy `<img>`, so any format (JPG/PNG/WebP) works without a WebP sibling.
@@ -199,7 +201,7 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 | Component | Purpose |
 |---|---|
 | `Nav` | Header with logo + 7 links (Home · Collections · About · Journal · Memories · Photo Book · Contact) + basket badge, mounts `ReturningVisitorChip`. `sticky top-0` by default; pass `overlay` to make it `fixed` (floats over the intro film, with a top scrim for legibility — used via `IntroFilmHeader`). Inline links show at `xl`+ (7 links + wordmark overflow below ~1280px); hamburger menu below `xl`. |
-| `IntroFilmHeader` | The cinematic intro film (`VideoIntro`) as a page header + the overlay `Nav` floating above it. Drop-in replacement for a bare `<Nav />` on content pages so the intro can be reached by scrolling up from anywhere — used on Welcome, Collections, About, Journal, JournalArticle, Memories, Contact, FAQ, PhotoBook. NOT on transactional/utility pages (Basket, Order result, Legal, 404) or PaintingDetail. |
+| `IntroFilmHeader` | The cinematic intro film (`VideoIntro`) as a page header + the overlay `Nav` floating above it. Drop-in replacement for a bare `<Nav />` on content pages so the intro can be reached by scrolling up from anywhere — used on Welcome, Collections, About, Journal, JournalArticle, Memories, Contact, FAQ, PhotoBook. NOT on transactional/utility pages (Basket, Order result, Legal, 404) or PaintingDetail. Collapses the film as the reader scrolls into content, driven by `lib/useHideOnScroll.ts` (reduced-motion safe). |
 | `Footer` | 4-col footer with site links + studio info + email + `NewsletterSignup variant="footer"` |
 | `Logo` | Rose-mark SVG, wordmark hidden on mobile |
 | `VideoIntro` | Sticky 100vh boomerang, dissolves on scroll. Originally Welcome-only; now also the shared header element behind `IntroFilmHeader` on every content page. |
@@ -225,6 +227,7 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 | `lib/usePageTitle.ts` | `document.title` hook — still used by Welcome / Basket / OrderResult / Legal / NotFound. Pages with richer SEO needs (PaintingDetail / Collections / About / FAQ / Contact) use `<Seo>` instead — **don't double-set titles** (a page uses one OR the other, never both) |
 | `lib/seo.ts` | `SITE_URL` constant + `absoluteUrl()` / `pageTitle()` / `firstSentence()` helpers for the meta system |
 | `lib/basket.ts` | localStorage-backed basket store + `useBasket()` hook (no Redux/Zustand) |
+| `lib/useHideOnScroll.ts` | Boolean hook driving the intro film's hide-on-scroll behaviour in `IntroFilmHeader` (collapses the video header as the reader scrolls into content). Reduced-motion safe. |
 
 ---
 
@@ -308,6 +311,8 @@ The estate sends a **single-use 10% promotion code** to every first-time buyer i
 | `ESTATE_BCC_EMAIL` | optional | BCC for the paper trail (default `info@themandalacompany.com`); auto-skipped if same as `from` |
 | `THANK_YOU_CODE_FALLBACK` | optional | static code used if dynamic coupon mint fails (default `FRIENDS`) |
 | `ADMIN_API_KEY` | required for `/api/admin/order-shipped` | shared secret Hugo passes in the request body to authenticate the shipped-email admin endpoint |
+| `OPENAI_API_KEY` | optional (Memories) | `sk-…` for OpenAI omni-moderation of memory submissions. **Absent → fail-safe**: a built-in slur/spam blocklist moderates instead (clean text still auto-publishes; the API path just adds image moderation + nuance). |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | optional (Memories) | Vercel KV / Upstash Redis REST creds for the auto-published memories wall. `UPSTASH_REDIS_REST_URL` / `_TOKEN` are also accepted (the integration may inject either name). Absent → publishing is skipped, the page falls back to the committed `MEMORIES` array, family still emailed. |
 
 ### Resend setup (Hugo — before going live with emails)
 
@@ -358,7 +363,7 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 - Sitemap.xml + robots.txt
 - Film grain texture overlay
 - Email contact wired (info@themandalacompany.com) via mailto + EnquireModal
-- Stripe Checkout serverless integration (currently deployed; debugging the live POST hang)
+- Stripe Checkout serverless integration (deployed + verified working end-to-end 2026-05-29)
 - Privacy/Terms placeholder pages
 - Logo pack (rose emblem) in 6 PNG variants + SVG
 
@@ -366,10 +371,10 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
 
 ## What's pending / next
 
-1. **Verify Stripe Checkout works end-to-end** — last action was deploying a self-contained `api/checkout.ts` rewrite to fix an "Opening checkout…" button hang
-2. **IONOS → Vercel custom domain setup** for `themandalacompany.com`
-3. **Update `SITE_URL` env var + Stripe webhook endpoint URL** to the new domain once DNS works
-4. **Resend domain verification** for `themandalacompany.com` — required before order confirmation / newsletter welcome emails will land in inboxes (Gmail will junk anything from `onboarding@resend.dev` in production). See the Resend setup recipe above.
+1. ✅ **DONE — Stripe Checkout verified end-to-end** (Hugo confirmed the live redirect 2026-05-29; the self-contained `api/checkout.ts` rewrite fixed the "Opening checkout…" hang).
+2. ✅ **DONE — IONOS → Vercel custom domain** is live at `themandalacompany.com`.
+3. **Verify `SITE_URL` env var + Stripe webhook endpoint URL point at the custom domain.** The webhook URL in this doc still shows `uncle-tribute.vercel.app` — confirm in the Stripe + Vercel dashboards whether it was migrated to `themandalacompany.com` (the `.vercel.app` host still resolves, so checkout works either way; this is a tidy-up).
+4. **Resend domain verification** for `themandalacompany.com` — the real next blocker. Required before order-confirmation, memory-notification and newsletter-welcome emails will land in inboxes (Gmail will junk anything from `onboarding@resend.dev` in production). See the Resend setup recipe above.
 5. **A0 enablement (needs Agent K research outcome)** — confirm Point 101 fulfilment capability + optional gold-leaf detail sourcing. When ready, flip `available: true` on the `heirloom` tier in `src/data/paintings.ts PRINT_TIERS` AND in `api/checkout.ts TIERS["heirloom"]`. Agent K is researching framed-shipping math in parallel — outcome may affect shipping rates on A1 framed items.
 6. **Point 101 account** + upload Stephen's high-res files
 7. **Etsy → Tide payout** (set bank in Etsy Finances)
@@ -388,11 +393,12 @@ Etsy is a **parallel** sales channel — completely separate from the website's 
   stripe-webhook.ts           Stripe webhook receiver (signed, in-memory dedup)
   newsletter-subscribe.ts     Friends-of-the-estate sign-up (CORS-allowlisted)
   email-basket.ts             Save-your-basket email (CORS-allowlisted)
-  memories-submit.ts          Book-of-Memories submission → estate notification email (CORS-allowlisted, honeypot, no DB)
+  memories-submit.ts          Book-of-Memories: POST moderates + auto-publishes clean text to KV; GET serves the published wall. Estate emailed on every submission (CORS-allowlisted, honeypot)
   /admin
     order-shipped.ts          Manual shipped-email trigger (ADMIN_API_KEY auth)
   /_lib
     emails/                   React-Email templates (OrderConfirmation, OrderShipped, Welcome, BasketSaved, MemorySubmitted)
+    memoryStore.ts            Memories moderation + KV storage helpers (OpenAI omni-moderation w/ built-in blocklist fallback; Upstash/Vercel KV REST; image→Resend attachment). Self-contained, raw fetch, zero new deps
     thankYouCode.ts           Stripe coupon + promo-code minting
 
 /public
@@ -493,4 +499,4 @@ Run **`/read-context`** at any point to have Claude re-read CLAUDE.md plus the l
 
 ---
 
-_Last updated: 2026-05-29 (Book of Memories: new /memories route + Memories page, src/data/memories.ts single-source-of-truth wall, /api/memories-submit notification endpoint + MemorySubmitted email, Nav + Footer "Memories" links. Moderated by deploy — no database, same ethos as the newsletter endpoint. Journal: /journal + /journal/:slug routes, Journal + JournalArticle pages, src/data/journal.ts writings archive with draft support + Article/Blog JSON-LD for SEO, Nav + Footer "Journal" links. Admin: public/admin/order-shipped.html one-page form over /api/admin/order-shipped, robots Disallow /admin/. Stripe checkout confirmed working — gift flow now unblocked. Intro film as a global header: new `IntroFilmHeader` (VideoIntro + overlay Nav) on Welcome + all content pages (Collections, About, Journal, JournalArticle, Memories, Contact, FAQ) so the video is reachable by scrolling up from anywhere; Nav gained an `overlay` (fixed) mode + a top scrim, and its inline links now switch to the hamburger below `lg` (six links overflowed tablets). Colourways trimmed in src/data/paintings.ts: removed Deep Forest Red (Wild Rose); Amethyst Purple / Vespa Violet / Citrine Neon (Orchis 7); Phoenix Orange / Jade Green / Pearl Pink (Flower of Life); Rose Quartz (Tridecagon) — originals untouched. NOT on transactional pages (Basket, Order, Legal, 404) or PaintingDetail. Nav inline-links breakpoint later raised lg→xl when a 7th link was added. About "In loving memory" section: Polly Wedge's funeral tribute + Stephen's "everything is connected" pull-quote + full life dates (content.ts BIRTH_DATE/DEATH_DATE/LIFE_DATES/MEMORIAL_QUOTE/TRIBUTE) — 4 tribute phrases kept verbatim pending Polly's confirmation. New /photo-book page ("Steve's Photo Book by Polly Wedge") + src/data/photobook.ts (empty, awaiting screenshots) + Nav/Footer "Photo Book" link before Contact. Bundle pricing (2026-05-29 research, "max-profit discount via agents"): complete-catalogue bundle getCompleteCatalogueBundle (15% off — "The complete catalogue" panel at foot of /collections) + colourway-set getColourwaySetBundle deepened to 12% ("complete colourway set" card on PaintingDetail), both now CONTENT-derived + mirrored server-side in api/checkout.ts bundlePercentOff (15% = one line of every painting; 12% = all lines one painting; else 10%/5% count ladder) — supersedes the earlier count-based no-/api-change approach. Depths chosen for max total profit (COGS ~10–12% of retail; ≤15% prestige cap). PENDING ASSETS: Mary Pink colourway for peacock-minerva (awaiting JPG); photo-book images (awaiting Hugo's screenshots)). Previously 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
+_Last updated: 2026-05-30 (Doc-sync pass after the memorial batch shipped to `main`. Everything previously flagged "in-flight / uncommitted" is now live; working tree clean, in sync with origin. **Memories rebuilt from "moderated by deploy" to auto-publish**: POST /api/memories-submit moderates each submission (OpenAI omni-moderation `omni-moderation-latest`, text+image; built-in slur/spam blocklist fallback when OPENAI_API_KEY absent) and auto-publishes clean image-free text to Vercel KV (Upstash REST; accepts KV_REST_API_* OR UPSTASH_REDIS_REST_* names); images always HOLD for the family's one-tap OK (emailed as attachment); GET serves the published wall; src/data/memories.ts MEMORIES is now the seed/fallback rendered under the KV entries; new api/_lib/memoryStore.ts (self-contained, raw fetch, zero new deps). New lib/useHideOnScroll.ts drives the intro-film hide-on-scroll in IntroFilmHeader. Mary Pink colourway added to peacock-minerva (5 colourways now). 3 low-res painting JP/WebPs (enneagon-cygnus-gold, lulin-original, peacock-blood-moon-red) upgraded to 2000px. Pending list updated: checkout + custom domain done; verify SITE_URL/webhook host + Resend domain verification are the live next steps.). Previously 2026-05-29 (Book of Memories: new /memories route + Memories page, src/data/memories.ts single-source-of-truth wall, /api/memories-submit notification endpoint + MemorySubmitted email, Nav + Footer "Memories" links. Moderated by deploy — no database, same ethos as the newsletter endpoint. Journal: /journal + /journal/:slug routes, Journal + JournalArticle pages, src/data/journal.ts writings archive with draft support + Article/Blog JSON-LD for SEO, Nav + Footer "Journal" links. Admin: public/admin/order-shipped.html one-page form over /api/admin/order-shipped, robots Disallow /admin/. Stripe checkout confirmed working — gift flow now unblocked. Intro film as a global header: new `IntroFilmHeader` (VideoIntro + overlay Nav) on Welcome + all content pages (Collections, About, Journal, JournalArticle, Memories, Contact, FAQ) so the video is reachable by scrolling up from anywhere; Nav gained an `overlay` (fixed) mode + a top scrim, and its inline links now switch to the hamburger below `lg` (six links overflowed tablets). Colourways trimmed in src/data/paintings.ts: removed Deep Forest Red (Wild Rose); Amethyst Purple / Vespa Violet / Citrine Neon (Orchis 7); Phoenix Orange / Jade Green / Pearl Pink (Flower of Life); Rose Quartz (Tridecagon) — originals untouched. NOT on transactional pages (Basket, Order, Legal, 404) or PaintingDetail. Nav inline-links breakpoint later raised lg→xl when a 7th link was added. About "In loving memory" section: Polly Wedge's funeral tribute + Stephen's "everything is connected" pull-quote + full life dates (content.ts BIRTH_DATE/DEATH_DATE/LIFE_DATES/MEMORIAL_QUOTE/TRIBUTE) — 4 tribute phrases kept verbatim pending Polly's confirmation. New /photo-book page ("Steve's Photo Book by Polly Wedge") + src/data/photobook.ts (empty, awaiting screenshots) + Nav/Footer "Photo Book" link before Contact. Bundle pricing (2026-05-29 research, "max-profit discount via agents"): complete-catalogue bundle getCompleteCatalogueBundle (15% off — "The complete catalogue" panel at foot of /collections) + colourway-set getColourwaySetBundle deepened to 12% ("complete colourway set" card on PaintingDetail), both now CONTENT-derived + mirrored server-side in api/checkout.ts bundlePercentOff (15% = one line of every painting; 12% = all lines one painting; else 10%/5% count ladder) — supersedes the earlier count-based no-/api-change approach. Depths chosen for max total profit (COGS ~10–12% of retail; ≤15% prestige cap). PENDING ASSETS: photo-book images (awaiting Hugo's screenshots) — Mary Pink colourway has since been added (2026-05-30)). Previously 2026-05-28 (Nathaniel pre-launch cleanup: real Privacy / Terms / Returns pages, /contact + /faq routes, admin shipped-email endpoint, CORS allowlist on newsletter + basket APIs, in-memory webhook event-id dedup, newsletter consent microcopy, customs disclosure on /basket). Keep this file in sync with major architectural changes; line-level bug fixes don't need updates here._
