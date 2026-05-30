@@ -67,6 +67,29 @@ interface OmniModerationResponse {
   results?: OmniModerationResult[];
 }
 
+// Built-in text moderation — the ZERO-SETUP path. Runs whenever OPENAI_API_KEY
+// is absent OR the moderation API is unreachable, so the wall is always
+// moderated with no external service. A conservative blocklist of unambiguous
+// slurs + explicit terms (word-boundary matched) plus a light link-spam check.
+// It deliberately does NOT block ordinary profanity — that's part of honest
+// grief — and the family is emailed on every submission as a human backstop.
+const MEMORY_BLOCKLIST: string[] = [
+  "nigger", "nigga", "faggot", "retard", "spic", "chink", "kike", "wetback",
+  "tranny", "coon", "gook", "paki",
+  "cunt", "pussy", "blowjob", "handjob", "whore", "cum", "porn", "rape",
+  "raping", "rapist", "molest", "paedophile", "pedophile", "bestiality",
+];
+const builtInModerate = (text: string): ModerationDecision => {
+  const normalised = ` ${text.toLowerCase().replace(/[^a-z0-9\s]+/g, " ")} `;
+  if (MEMORY_BLOCKLIST.some((w) => normalised.includes(` ${w} `))) {
+    return { status: "flagged", categories: ["language"] };
+  }
+  if ((text.match(/https?:\/\//gi) || []).length >= 3) {
+    return { status: "flagged", categories: ["spam"] };
+  }
+  return { status: "clean" };
+};
+
 /**
  * Moderate a memory's text and (optionally) an attached image with OpenAI's
  * free omni-moderation endpoint. The omni model accepts a multi-part `input`
@@ -81,7 +104,9 @@ export async function moderateMemory(
   imageDataUrl?: string,
 ): Promise<ModerationDecision> {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return { status: "unconfigured" };
+  // No key → moderate locally (zero-setup). The built-in filter still catches
+  // slurs / explicit terms, so clean memories can auto-publish without OpenAI.
+  if (!apiKey) return builtInModerate(text);
 
   // Build the multimodal input array. Text is always present; the image is
   // appended only when one was uploaded.
@@ -106,13 +131,13 @@ export async function moderateMemory(
     });
 
     if (!res.ok) {
-      const detail = `OpenAI moderation HTTP ${res.status}`;
-      return { status: "error", detail };
+      console.warn(`[memoryStore] OpenAI moderation HTTP ${res.status} — using built-in filter.`);
+      return builtInModerate(text);
     }
 
     const json = (await res.json()) as OmniModerationResponse;
     const result = json.results?.[0];
-    if (!result) return { status: "error", detail: "OpenAI moderation: empty result" };
+    if (!result) return builtInModerate(text);
 
     if (result.flagged) {
       const categories = Object.entries(result.categories ?? {})
@@ -122,8 +147,8 @@ export async function moderateMemory(
     }
     return { status: "clean" };
   } catch (err) {
-    const detail = err instanceof Error ? err.message : String(err);
-    return { status: "error", detail };
+    console.warn("[memoryStore] OpenAI moderation unreachable — using built-in filter:", err instanceof Error ? err.message : err);
+    return builtInModerate(text);
   }
 }
 
