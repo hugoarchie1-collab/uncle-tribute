@@ -43,8 +43,8 @@ import type { IncomingMessage } from "node:http";
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { OrderConfirmation } from "./_lib/emails/OrderConfirmation.js";
-import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode.js";
+import { OrderConfirmation } from "./_lib/emails/OrderConfirmation.tsx";
+import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode.ts";
 
 // CRITICAL: disable Vercel's automatic body parsing. Stripe webhook signature
 // verification must run against the EXACT raw bytes Stripe signed; the Node

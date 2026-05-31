@@ -29,6 +29,16 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": false,
+    // Local imports across /api reference each other by their REAL extension
+    // (./foo.ts / ./bar.tsx). allowImportingTsExtensions lets tsc resolve them;
+    // rewriteRelativeImportExtensions (TS 5.7+) rewrites those specifiers to
+    // ".js" in the emitted output. This is the fix for Vercel's serverless
+    // file-tracer: it can follow the real source file (a ".js" specifier
+    // pointed at a non-existent ".js" sibling, so the .tsx/.ts was never traced
+    // or bundled → ERR_MODULE_NOT_FOUND), while the runtime still imports the
+    // emitted ".js". See CLAUDE.md gotcha #5.
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "types": ["node"]
   },
   "include": ["**/*.ts", "**/*.tsx"]

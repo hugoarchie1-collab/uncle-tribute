@@ -7,7 +7,7 @@
  * template via Resend. See api/admin/order-shipped.ts.
  */
 
-import { palette, styles } from "./styles.js";
+import { palette, styles } from "./styles.ts";
 
 export interface OrderShippedProps {
   /** Buyer first name; falls back to "there". */

@@ -18,7 +18,7 @@
  * Self-contained; inline styles only. Gotcha #5.
  */
 
-import { palette, styles } from "./styles.js";
+import { palette, styles } from "./styles.ts";
 
 export interface BasketSavedEmailProps {
   /** Optional first name from the basket page input. */

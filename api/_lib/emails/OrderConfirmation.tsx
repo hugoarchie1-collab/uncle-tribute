@@ -23,7 +23,7 @@
  * from /src — gotcha #5 in CLAUDE.md. Keep the two in sync when editing.
  */
 
-import { palette, styles } from "./styles.js";
+import { palette, styles } from "./styles.ts";
 
 // Mirror of src/data/paintings.ts ESTATE_AUTHENTICATION — keep in sync.
 const ESTATE_AUTHENTICATION = {

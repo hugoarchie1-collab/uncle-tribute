@@ -45,7 +45,7 @@
 
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { MemorySubmitted } from "./_lib/emails/MemorySubmitted.js";
+import { MemorySubmitted } from "./_lib/emails/MemorySubmitted.tsx";
 import {
   moderateMemory,
   publishMemory,
@@ -53,7 +53,7 @@ import {
   prepareImageAttachment,
   isKvConfigured,
   type StoredMemory,
-} from "./_lib/memoryStore.js";
+} from "./_lib/memoryStore.ts";
 
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";

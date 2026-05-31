@@ -15,7 +15,7 @@
  * (gotcha #5 in CLAUDE.md — no imports outside /api).
  */
 
-import { palette, styles } from "./styles.js";
+import { palette, styles } from "./styles.ts";
 
 export interface MemorySubmittedProps {
   /** Submitter's name. */

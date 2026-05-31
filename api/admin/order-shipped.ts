@@ -46,7 +46,7 @@
 import Stripe from "stripe";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { OrderShipped } from "../_lib/emails/OrderShipped.js";
+import { OrderShipped } from "../_lib/emails/OrderShipped.tsx";
 
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";
