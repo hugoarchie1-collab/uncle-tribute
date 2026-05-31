@@ -14,11 +14,9 @@ import { useEffect, useRef, useState } from "react";
  *  - The scroll-driven fade/scale touches ONLY opacity + transform (GPU
  *    compositing), is rAF-throttled, and never hijacks or blocks native scroll.
  *
- * NOTE (#2 re-encode — still pending): public/video/intro.mp4 is ~38MB. It
- * should be re-encoded (cap 1920px, strip audio, sensible bitrate) and shipped
- * as H.264 .mp4 + a WebM/VP9 fallback. Requires ffmpeg (not available in this
- * environment). Until then the video is desktop-only (mobile uses the poster),
- * which removes the worst of the cost.
+ * Video assets (re-encoded 2026-05-31): intro.webm (VP9, ~3.6MB) + intro.mp4
+ * (H.264 720p, ~4.0MB), audio stripped — down from a 38MB 1440p/25Mbps source.
+ * Desktop streams these (WebM first); mobile/reduced-motion use the 891KB poster.
  */
 
 const prefersReducedMotion = (): boolean =>
@@ -106,8 +104,9 @@ export const VideoIntro = () => {
             preload="metadata"
             poster={`${base}video/poster.jpg`}
           >
-            {/* TODO(#2): once re-encoded, add a smaller H.264 mp4 (≤1920px,
-                audio stripped) + a WebM/VP9 <source> ahead of this. */}
+            {/* WebM/VP9 first (smaller) for browsers that support it; H.264
+                mp4 fallback. Both 720p, audio stripped (re-encoded 2026-05-31). */}
+            <source src={`${base}video/intro.webm`} type="video/webm" />
             <source src={`${base}video/intro.mp4`} type="video/mp4" />
           </video>
         ) : (
