@@ -145,7 +145,7 @@ export const Basket = () => {
             The Estate
           </p>
           <h1 className={cn(TITLE, "m-0 mb-10 hero-text-shadow")}>
-            Your basket
+            Your basket.
           </h1>
         </Reveal>
 

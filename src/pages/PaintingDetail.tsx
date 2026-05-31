@@ -408,7 +408,10 @@ const BuyBox = ({
       {/* 1 · COLLECTION BADGE + TITLE (h1) */}
       {collection && (
         <div className="mb-4">
-          <Badge variant="accent">{collection.title}</Badge>
+          {/* Canonical accent token (#c97844) — override the Badge's lighter
+              accent-soft so this collection tag matches the home page's single
+              resting-accent eyebrow rather than drifting to an off-token orange. */}
+          <Badge variant="accent" className="text-accent">{collection.title}</Badge>
         </div>
       )}
       <h1 className={cn(TITLE, "m-0 mb-5")}>

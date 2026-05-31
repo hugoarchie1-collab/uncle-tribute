@@ -126,19 +126,19 @@ export const NewsletterSignup = ({
               <span className="block font-sans text-[13px] leading-[1.6] text-ink/65 mb-3">
                 Quarterly notes on new editions and exhibitions.
               </span>
-              <div className="flex items-stretch ring-1 ring-white/15 focus-within:ring-accent transition-shadow">
+              <div className="flex w-full items-stretch ring-1 ring-white/15 focus-within:ring-accent transition-shadow">
                 <input
                   name="email"
                   type="email"
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="flex-1 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink/30 focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink/30 focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="px-4 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/70 hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-white/10 cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/70 hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-white/10 cursor-pointer"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
