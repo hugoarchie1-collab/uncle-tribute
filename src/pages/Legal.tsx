@@ -38,7 +38,8 @@ const UPDATED = "31 May 2026";
  * concluded; a town alone is not sufficient, so dropping in this one line is a
  * launch prerequisite.
  */
-const TRADER_POSTAL_ADDRESS: string | null = null;
+const TRADER_POSTAL_ADDRESS: string | null =
+  "213 Elm Drive, Hove, East Sussex, BN3 7JD, United Kingdom";
 
 interface Section {
   heading: string;
@@ -245,7 +246,7 @@ const TERMS: Section[] = [
             is between you (the <em>buyer</em>) and{" "}
             <strong>Hugo Archie Charles Wedge</strong>, trading as{" "}
             <strong>The Mandala Company</strong> (the <em>estate</em>), a sole
-            trader based in Lewes, East Sussex, United Kingdom.
+            trader based in Hove, East Sussex, United Kingdom.
             {TRADER_POSTAL_ADDRESS ? (
               <>
                 {" "}Our postal and correspondence address is{" "}

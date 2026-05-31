@@ -110,6 +110,13 @@ export const Contact = () => {
             estate; every message is read by the family, and answered within a
             day or two.
           </p>
+          <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink-muted mt-8 mb-2">
+            By post
+          </p>
+          <address className="font-sans not-italic text-[14px] leading-[1.7] text-ink-muted m-0">
+            The Mandala Company — 213 Elm Drive, Hove,<br />
+            East Sussex, BN3 7JD, United Kingdom
+          </address>
           <Separator className="bg-line mt-10" />
         </Reveal>
 

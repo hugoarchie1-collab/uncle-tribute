@@ -57,6 +57,9 @@ export const Footer = () => (
             </a>
           </li>
           <li><Link to="/contact" className="transition-colors hover:text-ink">Send an enquiry</Link></li>
+          <li className="not-italic leading-[1.6] text-ink/55 pt-1">
+            213 Elm Drive, Hove<br />East Sussex, BN3 7JD, UK
+          </li>
         </ul>
       </div>
 
