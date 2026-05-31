@@ -172,7 +172,7 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "A2 (42 × 59.4 cm)",
     pricePence: 29500, // £295
     editionTotal: 100,
-    editionLabel: "Limited edition of 100",
+    editionLabel: "Limited edition of 100 per colourway",
     editionPromise: "the edition will never be reopened",
     framingPricePence: 29500, // £295 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
@@ -186,7 +186,7 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "A1 (59.4 × 84.1 cm)",
     pricePence: 59500, // £595
     editionTotal: 50,
-    editionLabel: "Limited edition of 50",
+    editionLabel: "Limited edition of 50 per colourway",
     editionPromise: "the edition will never be reopened",
     framingPricePence: 39500, // £395 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
@@ -199,7 +199,7 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "A0 (84.1 × 118.9 cm)",
     pricePence: 125000, // £1,250
     editionTotal: 25,
-    editionLabel: "Limited edition of 25",
+    editionLabel: "Limited edition of 25 per colourway",
     editionPromise: "the edition will never be reopened",
     description:
       "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
@@ -535,7 +535,7 @@ export const PAINTINGS: Painting[] = [
     collection: "genesis",
     size: "70 × 70 cm (approx. 28 × 28 in)",
     description:
-      "The septagon cannot be drawn perfectly. Unlike every other regular polygon, it cannot be constructed with a compass and straight edge alone. It can only be estimated. Stephen chose it as the foundation of this work.\n\nSeven is the only number between one and ten that neither divides nor multiplies into any other. Every tradition assigned it to the sacred: seven chakras, seven heavens, seven planets. Pythagoras called it three plus four, triangle plus square, heaven plus earth. The number that belongs to neither and therefore stands alone.\n\nThe flower Stephen placed within this geometry is the Lady's Slipper Orchid. It is Britain's rarest native wildflower. There is one wild plant left in England. Its location is secret, guarded by Natural England. Darwin studied the pollination mechanism: the flower's pouch traps an insect, coats it in pollen, and then releases it. Stephen painted thirty of them.\n\nHe gave the rarest flower in England to the polygon that cannot be perfectly drawn. Two things that can only be approximated, held together in gold leaf.\n\nJung documented the mandala emerging spontaneously during individuation, the psyche's own attempt to picture its wholeness. Stephen spent hundreds of hours constructing what the psyche reaches for on its own.",
+      "The septagon cannot be drawn perfectly. Unlike every other regular polygon, it cannot be constructed with a compass and straightedge alone. It can only be estimated. Stephen chose it as the foundation of this work.\n\nSeven is the only number between one and ten that neither divides nor multiplies into any other. Every tradition assigned it to the sacred: seven chakras, seven heavens, seven planets. Pythagoras called it three plus four, triangle plus square, heaven plus earth. The number that belongs to neither and therefore stands alone.\n\nThe flower Stephen placed within this geometry is the Lady's Slipper Orchid. It is Britain's rarest native wildflower. There is one wild plant left in England. Its location is secret, guarded by Natural England. Darwin studied the pollination mechanism: the flower's pouch traps an insect, coats it in pollen, and then releases it. Stephen painted thirty of them.\n\nHe gave the rarest flower in England to the polygon that cannot be perfectly drawn. Two things that can only be approximated, held together in gold leaf.\n\nJung documented the mandala emerging spontaneously during individuation, the psyche's own attempt to picture its wholeness. Stephen spent hundreds of hours constructing what the psyche reaches for on its own.",
     artistQuote:
       "If you see beauty in these paintings, that is because you can see part of yourself, like in a mirror, you see something you know. Something totally cosmic is reflected in you.",
     colourways: [
@@ -691,7 +691,7 @@ export const PAINTINGS: Painting[] = [
     collection: "born-in-the-sky",
     size: "65 × 65 cm (approx. 26 × 26 in)",
     description:
-      "In 1974, scientists pointed the Arecibo radio telescope at Messier 13, the Great Globular Cluster in Hercules, 300,000 stars, 25,000 light-years away, and broadcast the most ambitious message humanity has ever sent into space. It contained our DNA, our form, our solar system, our numbers. The message is still travelling. It will arrive in approximately 24,975 years.\n\nStephen named this painting after that cluster and built it on thirteen.\n\nThere are thirteen full moons in a solar year. The Gregorian calendar erased one.\n\nMutable: the astrological word for signs of transition, for things that change form rather than hold it. Thirteen is the number of the cycle that refuses to stay fixed. It waxes and wanes. It cannot be suppressed by a calendar.",
+      "In 1974, scientists pointed the Arecibo radio telescope at Messier 13, the Great Globular Cluster in Hercules — 300,000 stars, 25,000 light-years away — and broadcast the most ambitious message humanity has ever sent into space. It contained our DNA, our form, our solar system, our numbers. The message is still travelling. It will arrive in approximately 24,975 years.\n\nStephen named this painting after that cluster and built it on thirteen.\n\nThere are thirteen full moons in a solar year. The Gregorian calendar erased one.\n\nMutable: the astrological word for signs of transition, for things that change form rather than hold it. Thirteen is the number of the cycle that refuses to stay fixed. It waxes and wanes. It cannot be suppressed by a calendar.",
     artistQuote:
       "This 13-pointed star (Tridecagon) was painted to celebrate the divine feminine through soft, mutable pastel colours. Reflecting the light of the ever-changing moon. The numerology of 13 is seldom acknowledged in temple architecture.",
     colourways: [

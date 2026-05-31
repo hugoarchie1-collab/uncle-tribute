@@ -373,7 +373,7 @@ const ShareMemoryModal = ({
                     </p>
                     <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
                       {autoPublished
-                        ? "Your memory is now on Steve's wall, and the family has been let know. Thank you for taking the time."
+                        ? "Your memory is now on Steve's wall, and the family has been told. Thank you for taking the time."
                         : "Your memory has reached the family. We read each one with care before it joins the wall — so yours may not appear straight away. Thank you for sharing it."}
                     </p>
                     <button

@@ -16,13 +16,29 @@ import { cn } from "../lib/cn";
  * lists) rather than the original flat-paragraph placeholder. The estate
  * voice is kept — "the estate retains" not "the company shall".
  *
- * Updated: 2026-05-28. Anything written here should be reviewed by a UK
+ * Updated: 2026-05-31. Anything written here should be reviewed by a UK
  * solicitor before the site is heavily promoted; the wording covers UK GDPR
- * Art 13–14, CCR 2013 reg 28 (made-to-order exemption), and standard
- * consumer-sale boilerplate.
+ * Art 13–14, CCR 2013 reg 28 (made-to-order exemption) with the open-edition
+ * A3 granted the standard 14-day right, a complaints/ADR statement, and
+ * standard consumer-sale boilerplate. NB: trader postal address still pending.
  */
 
-const UPDATED = "28 May 2026";
+const UPDATED = "31 May 2026";
+
+/**
+ * Trader's full geographic postal address — LEGALLY REQUIRED before promotion.
+ *
+ * TODO (Hugo): set this to the full postal/correspondence address as ONE line,
+ * e.g. "1 Example Street, Lewes, East Sussex, BN7 0AA, United Kingdom". A paid
+ * mail-forwarding / service address is acceptable if a home address is
+ * undesirable. Once set, the Terms "Who you're buying from" section renders it
+ * automatically. While it is `null`, the copy falls back to the town only —
+ * never a visible "[address]" placeholder. The CCR 2013 (Sch 2) / DMCC 2024
+ * require this geographic address to be available before a distance contract is
+ * concluded; a town alone is not sufficient, so dropping in this one line is a
+ * launch prerequisite.
+ */
+const TRADER_POSTAL_ADDRESS: string | null = null;
 
 interface Section {
   heading: string;
@@ -212,13 +228,31 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
+        // TODO (TRADER IDENTITY — LEGALLY REQUIRED): a full geographic postal
+        // trading address must be inserted before the site is promoted. The
+        // CCR 2013 (Sch 2) / DMCC 2024 require a trader's geographic address to
+        // be given before a distance contract is concluded — a town alone is
+        // not sufficient. Hugo has not yet supplied the address. To complete
+        // this, set TRADER_POSTAL_ADDRESS below to the full postal address
+        // (e.g. "1 Example Street, Lewes, East Sussex, BN7 0AA, United
+        // Kingdom") — a paid mail-forwarding / service address is fine. The
+        // copy below renders the address automatically once that one line is
+        // set, and falls back to the town only while it is null. Do NOT ship a
+        // visible "[address]" placeholder to customers.
         text: (
           <>
             These terms govern any order you place on this site. The contract
             is between you (the <em>buyer</em>) and{" "}
             <strong>Hugo Archie Charles Wedge</strong>, trading as{" "}
-            <strong>The Mandala Company</strong> (the <em>estate</em>), based
-            in Lewes, East Sussex, United Kingdom. We can be reached at{" "}
+            <strong>The Mandala Company</strong> (the <em>estate</em>), a sole
+            trader based in Lewes, East Sussex, United Kingdom.
+            {TRADER_POSTAL_ADDRESS ? (
+              <>
+                {" "}Our postal and correspondence address is{" "}
+                <strong>{TRADER_POSTAL_ADDRESS}</strong>.
+              </>
+            ) : null}
+            {" "}We can be reached at{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
@@ -277,20 +311,14 @@ const TERMS: Section[] = [
     ],
   },
   {
-    heading: "Cancellation and made-to-order exemption",
+    heading: "Your right to cancel",
     blocks: [
       {
         kind: "p",
         text: (
           <>
-            Every print sold on this site is made to your specification — your
-            chosen tier, colourway and add-ons are sent to the atelier for an
-            individual print run, estate-stamped and hand-numbered. Under the{" "}
-            <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>,
-            <em>regulation 28(1)(b)</em>, goods "made to the consumer's
-            specifications or clearly personalised" are exempt from the
-            standard 14-day distance-selling cancellation right. The estate
-            relies on this exemption for all print orders.
+            Your cancellation rights depend on which print you order. We set
+            them out plainly below so you know exactly where you stand.
           </>
         ),
       },
@@ -298,21 +326,66 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Cooling-off window before production.</strong> As a
-            goodwill measure the estate will accept a full cancellation request
-            within <strong>24 hours</strong> of order, provided the print run
-            has not yet been sent to the atelier. Email{" "}
+            <strong>Open-edition A3 "Atelier" prints.</strong> The A3 Atelier
+            print is a standard, unnumbered open-edition print. For this tier
+            you have the full statutory <strong>14-day cancellation right</strong>{" "}
+            under the{" "}
+            <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>.
+            You may cancel for any reason, without giving a reason, from the
+            moment you order until 14 days after the day you receive the print.
+            To cancel, email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
-            {" "}within that window and we'll refund the order in full, less
-            any non-recoverable Stripe processing fees.
+            {" "}— a clear statement that you wish to cancel is enough. Return
+            the print to us (you pay the return postage) and, once we have it
+            back or you show proof of return, we will refund the full price you
+            paid plus the standard delivery cost, with{" "}
+            <strong>no deduction for payment-processing fees</strong>. We make
+            the refund within 14 days using the same payment method you used to
+            pay.
           </>
         ),
       },
       {
         kind: "p",
-        text: "After 24 hours the order is in production and is non-cancellable. Your rights in respect of faulty or damaged goods are unaffected — see the next section.",
+        text: (
+          <>
+            <strong>Limited-edition and made-to-order prints (A2, A1, A0,
+            the hand-painted Studio piece, and any framed or hand-finished
+            order).</strong>{" "}
+            These are made to your specification — your chosen colourway, tier
+            and add-ons are sent to the atelier for an individual,
+            estate-stamped and hand-numbered print run, and the Studio piece is
+            hand-painted uniquely for you. Under the same Regulations,{" "}
+            <em>regulation 28(1)(b)</em>, goods "made to the consumer's
+            specifications or clearly personalised" are exempt from the 14-day
+            distance-selling cancellation right, so the statutory cooling-off
+            period does not apply to these orders.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>Goodwill window on made-to-order prints.</strong> Even
+            though the made-to-order tiers above are exempt, as a goodwill
+            measure the estate will accept a full cancellation request within{" "}
+            <strong>24 hours</strong> of order, provided the print run has not
+            yet been sent to the atelier. Email{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            {" "}within that window and we'll refund the order in full. After
+            those 24 hours a made-to-order print is in production and the
+            goodwill window closes.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: "Your rights in respect of faulty or damaged goods are unaffected by any of the above — see the next section.",
       },
     ],
   },
@@ -376,6 +449,31 @@ const TERMS: Section[] = [
     ],
   },
   {
+    heading: "Complaints",
+    blocks: [
+      {
+        kind: "p",
+        text: (
+          <>
+            If something has gone wrong, we want to put it right. Please email
+            us at{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            {" "}with the details of your order and what's happened. We aim to
+            acknowledge every complaint within <strong>5 working days</strong>{" "}
+            and to resolve it within <strong>30 days</strong>, keeping you
+            updated throughout if it takes longer.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: "We are not currently registered with an alternative dispute resolution (ADR) scheme. If we are unable to resolve a dispute between us, you may pursue it through the courts of England and Wales.",
+      },
+    ],
+  },
+  {
     heading: "Updates to these terms",
     blocks: [
       {
@@ -392,29 +490,56 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Each print is made-to-order — your tier, colourway and any add-ons are sent off to the atelier for an individual print run, estate-stamped and hand-numbered for you. That makes it a personalised item under UK consumer law (Consumer Contracts Regulations 2013, reg 28(1)(b)), and the standard 14-day distance-selling cancellation right doesn't apply. We've made our own goodwill window on top of that — laid out below.",
+        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the open-edition A3 print carries the full 14-day right to change your mind; the larger limited-edition, hand-painted and framed or hand-finished prints are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
       },
     ],
   },
   {
-    heading: "Cancelling an order",
+    heading: "Cancelling an open-edition A3 print",
     blocks: [
       {
         kind: "p",
         text: (
           <>
-            <strong>Within 24 hours of ordering</strong> — email{" "}
+            The A3 Atelier print is a standard open-edition print, so you have
+            the full statutory <strong>14-day cancellation right</strong> under
+            the Consumer Contracts Regulations 2013. You can cancel for any
+            reason from when you order until 14 days after the day it arrives —
+            just email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
-            {" "}and we'll cancel and refund in full, less Stripe's
-            non-recoverable processing fees.
+            .
           </>
         ),
       },
       {
         kind: "p",
-        text: "After 24 hours your order is in production at the atelier and can't be cancelled.",
+        text: "Send the print back to us (you cover the return postage) and, once we've received it or you've shown proof of return, we'll refund the full price plus the standard delivery cost — with no deduction for payment-processing fees — within 14 days, to the card you paid with.",
+      },
+    ],
+  },
+  {
+    heading: "Cancelling a limited-edition, hand-painted or framed print",
+    blocks: [
+      {
+        kind: "p",
+        text: "The A2, A1 and A0 limited editions, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped and hand-numbered print run, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>Goodwill window — within 24 hours of ordering</strong> —
+            email{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            {" "}and, provided the print run hasn't gone to the atelier yet,
+            we'll cancel and refund in full. After those 24 hours the order is
+            in production and can't be cancelled.
+          </>
+        ),
       },
     ],
   },
@@ -451,7 +576,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Because each print is made specifically for you, we can't accept returns simply because you've changed your mind once production has started. We'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
+        text: "For the open-edition A3 print you can change your mind within 14 days of receiving it, as set out above. For the limited-edition, hand-painted and framed or hand-finished prints — which are made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
       },
     ],
   },
