@@ -35,11 +35,20 @@ const BasketIcon = ({ className }: { className?: string }) => (
 );
 
 /**
- * `overlay` — pin the nav with `fixed` instead of `sticky` so it floats over
- * full-bleed content (the home intro video) from the very top, without
- * reserving layout space. Used by the Welcome page; every other page leaves it
- * off and gets the normal in-flow sticky header. When overlaying and not yet
- * scrolled, a soft top scrim keeps the cream logo + links legible over video.
+ * Global site navigation (#4 redesign).
+ *
+ * Desktop (≥lg): a single minimal inline bar — small-caps links, generous
+ * letter-spacing + breathing room, the current page indicated by a quiet accent
+ * underline. With the catalogue trimmed to five links the inline nav now shows
+ * from `lg` (was `xl`), so tablets/laptops get it instead of the menu.
+ *
+ * Mobile (<lg): one accessible menu — a dimmed backdrop + a panel that traps
+ * focus, closes on Escape or backdrop click, locks body scroll while open, and
+ * restores focus to the toggle on close. Keyboard navigable, ARIA-labelled.
+ *
+ * `overlay` — pin with `fixed` (vs `sticky`) so the bar floats over full-bleed
+ * content (the home intro video) from the very top without reserving layout
+ * space. A soft top scrim keeps the cream logo + links legible until scrolled.
  */
 export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const [scrolled, setScrolled] = useState(false);
@@ -48,11 +57,12 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // Track the prior basket count so we can pulse only on increments, and
-  // expose a `pulseKey` to Framer Motion that bumps every time a pulse
-  // should retrigger. Route changes (when the basket is non-empty) also
-  // bump the key as a gentle continuity reminder.
+  // Track the prior basket count so we pulse only on increments, exposing a
+  // `pulseKey` that bumps every time a pulse should retrigger. Route changes
+  // (when the basket is non-empty) also bump the key as a continuity reminder.
   const prevCountRef = useRef(basketCount);
   const prevPathRef = useRef(location.pathname);
   const [pulseKey, setPulseKey] = useState(0);
@@ -62,9 +72,6 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     const pathChanged = location.pathname !== prevPathRef.current;
     prevCountRef.current = basketCount;
     prevPathRef.current = location.pathname;
-    // Only bump the pulse key when we actually want a pulse — gates the
-    // setState so the lint rule (and React) only see it fire on real
-    // increments or genuine route changes with a non-empty basket.
     if (countIncreased || (pathChanged && basketCount > 0)) {
       setPulseKey((k) => k + 1);
     }
@@ -77,13 +84,58 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     return () => window.removeEventListener("scroll", handle);
   }, []);
 
-  // Close the mobile menu whenever the route changes. Synchronising a
-  // transient UI flag to a navigation event is a legitimate effect; the rule's
-  // cascading-render concern doesn't apply to this one-shot close.
+  // Close the mobile menu whenever the route changes.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [location.pathname]);
+
+  // Mobile menu a11y: Escape to close, Tab focus-trap, body-scroll lock, and
+  // focus restored to the toggle on close. Only active while the menu is open.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusables = (): HTMLElement[] =>
+      Array.from(
+        menuRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])',
+        ) ?? [],
+      );
+
+    // Focus the first link once the panel is mounted.
+    const focusTimer = window.setTimeout(() => focusables()[0]?.focus(), 20);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setMenuOpen(false);
+        return;
+      }
+      if (e.key === "Tab") {
+        const items = focusables();
+        if (items.length === 0) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+      menuButtonRef.current?.focus();
+    };
+  }, [menuOpen]);
 
   return (
     <header
@@ -98,122 +150,20 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       )}
     >
       <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 sm:gap-6">
-      <Link to="/" aria-label="The Art of Stephen Meakin — home" className="inline-flex items-center">
-        <Logo size={32} wordmark />
-      </Link>
-
-      <div className="flex items-center gap-5 sm:gap-7 md:gap-10">
-        {/* Primary links — inline from `xl` up; collapsed into the hamburger
-            menu below `xl`. (Seven links + the wordmark overflow below ~1280px,
-            so tablets and smaller laptops get the menu.) */}
-        <nav className="hidden xl:flex items-center gap-6 2xl:gap-8" aria-label="Primary">
-          {NAV_LINKS.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.end}
-              className={({ isActive }) =>
-                cn(
-                  "relative py-2 font-sans text-[11px] font-medium tracking-[0.22em] uppercase transition-colors duration-300",
-                  isActive ? "text-ink" : "text-ink/55 hover:text-ink",
-                  "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-left after:transition-transform after:duration-300",
-                  isActive && "after:scale-x-100",
-                  "hover:after:scale-x-100",
-                )
-              }
-            >
-              {l.label}
-            </NavLink>
-          ))}
-          {/* Returning-subscriber recognition — quiet hairline text that
-              appears once per session if the visitor previously joined
-              Friends & Family. Self-hiding. */}
-          <ReturningVisitorChip />
-        </nav>
-
-        {/* Basket — icon + count badge (count appears only when ≥ 1). Always
-            visible at every width. */}
-        <NavLink
-          to="/basket"
-          aria-label={
-            basketCount > 0
-              ? `Basket, ${basketCount} item${basketCount === 1 ? "" : "s"}`
-              : "Basket, empty"
-          }
-          className={({ isActive }) =>
-            cn(
-              "relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
-              isActive ? "text-ink" : "text-ink/55 hover:text-accent",
-            )
-          }
+        <Link
+          to="/"
+          aria-label="The Art of Stephen Meakin — home"
+          className="inline-flex items-center"
         >
-          <BasketIcon className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
-          {basketCount > 0 && (
-            <motion.span
-              key={reduceMotion ? "static" : `pulse-${pulseKey}`}
-              aria-hidden="true"
-              initial={
-                reduceMotion
-                  ? false
-                  : { scale: 1, boxShadow: "0 0 0 0 rgba(201,120,68,0)" }
-              }
-              animate={
-                reduceMotion
-                  ? undefined
-                  : {
-                      scale: [1, 1.35, 1],
-                      boxShadow: [
-                        "0 0 0 0 rgba(201,120,68,0)",
-                        "0 0 0 6px rgba(201,120,68,0.35)",
-                        "0 0 0 0 rgba(201,120,68,0)",
-                      ],
-                    }
-              }
-              transition={
-                reduceMotion ? undefined : { duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }
-              }
-              className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-[5px] inline-flex items-center justify-center rounded-full bg-accent text-bg font-sans text-[9px] font-bold leading-none"
-            >
-              {basketCount}
-            </motion.span>
-          )}
-        </NavLink>
+          <Logo size={32} wordmark />
+        </Link>
 
-        {/* Hamburger — mobile only. Toggles the dropdown menu below. */}
-        <button
-          type="button"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setMenuOpen((o) => !o)}
-          className="xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-            {menuOpen ? (
-              <path d="M5 5 19 19M19 5 5 19" />
-            ) : (
-              <>
-                <path d="M4 7h16" />
-                <path d="M4 12h16" />
-                <path d="M4 17h16" />
-              </>
-            )}
-          </svg>
-        </button>
-      </div>
-      </div>
-
-      {/* Mobile dropdown menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.nav
-            id="mobile-menu"
-            aria-label="Primary mobile"
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-            className="xl:hidden absolute top-full left-0 right-0 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 flex flex-col max-h-[calc(100vh-64px)] overflow-y-auto"
+        <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">
+          {/* Primary links — inline from `lg` up; collapsed into the accessible
+              menu below `lg`. */}
+          <nav
+            className="hidden lg:flex items-center gap-8 xl:gap-10"
+            aria-label="Primary"
           >
             {NAV_LINKS.map((l) => (
               <NavLink
@@ -222,15 +172,145 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "py-3.5 font-sans text-[11px] font-medium tracking-[0.22em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
-                    isActive ? "text-accent" : "text-ink/70 hover:text-ink",
+                    "relative py-2 font-sans text-[11px] font-medium tracking-[0.26em] uppercase transition-colors duration-300",
+                    isActive ? "text-ink" : "text-ink/55 hover:text-ink",
+                    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-left after:transition-transform after:duration-300",
+                    isActive && "after:scale-x-100",
+                    "hover:after:scale-x-100",
                   )
                 }
               >
                 {l.label}
               </NavLink>
             ))}
-          </motion.nav>
+            <ReturningVisitorChip />
+          </nav>
+
+          {/* Basket — icon + count badge (count appears only when ≥ 1). */}
+          <NavLink
+            to="/basket"
+            aria-label={
+              basketCount > 0
+                ? `Basket, ${basketCount} item${basketCount === 1 ? "" : "s"}`
+                : "Basket, empty"
+            }
+            className={({ isActive }) =>
+              cn(
+                "relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
+                isActive ? "text-ink" : "text-ink/55 hover:text-accent",
+              )
+            }
+          >
+            <BasketIcon className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
+            {basketCount > 0 && (
+              <motion.span
+                key={reduceMotion ? "static" : `pulse-${pulseKey}`}
+                aria-hidden="true"
+                initial={
+                  reduceMotion
+                    ? false
+                    : { scale: 1, boxShadow: "0 0 0 0 rgba(201,120,68,0)" }
+                }
+                animate={
+                  reduceMotion
+                    ? undefined
+                    : {
+                        scale: [1, 1.35, 1],
+                        boxShadow: [
+                          "0 0 0 0 rgba(201,120,68,0)",
+                          "0 0 0 6px rgba(201,120,68,0.35)",
+                          "0 0 0 0 rgba(201,120,68,0)",
+                        ],
+                      }
+                }
+                transition={
+                  reduceMotion
+                    ? undefined
+                    : { duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }
+                }
+                className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-[5px] inline-flex items-center justify-center rounded-full bg-accent text-bg font-sans text-[9px] font-bold leading-none"
+              >
+                {basketCount}
+              </motion.span>
+            )}
+          </NavLink>
+
+          {/* Hamburger — below `lg`. Toggles the accessible menu. */}
+          <button
+            ref={menuButtonRef}
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="lg:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              {menuOpen ? (
+                <path d="M5 5 19 19M19 5 5 19" />
+              ) : (
+                <>
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu: dimmed backdrop (click to close) + focus-trapped panel. */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close menu"
+              tabIndex={-1}
+              onClick={() => setMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden fixed inset-0 z-40 bg-[#0a0908]/70 backdrop-blur-sm"
+            />
+            <motion.nav
+              ref={menuRef}
+              id="mobile-menu"
+              aria-label="Primary"
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+              className="lg:hidden absolute top-full left-0 right-0 z-50 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 sm:px-6 flex flex-col max-h-[calc(100dvh-64px)] overflow-y-auto"
+            >
+              {NAV_LINKS.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  end={l.end}
+                  className={({ isActive }) =>
+                    cn(
+                      "py-4 font-sans text-[12px] font-medium tracking-[0.26em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
+                      isActive ? "text-accent" : "text-ink/70 hover:text-ink",
+                    )
+                  }
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </motion.nav>
+          </>
         )}
       </AnimatePresence>
     </header>
