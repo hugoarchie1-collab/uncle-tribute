@@ -42,14 +42,20 @@
  *   NEWSLETTER_DISCOUNT_PCT   – default 10 (matches post-purchase thank-you)
  *   RESEND_AUDIENCE_ID        – if present, adds contact to Resend Audience
  *
- * Self-contained — imports only from /api/_lib (same Vercel bundle) and
- * top-level node_modules. No /src imports (gotcha #5 in CLAUDE.md).
+ * Self-contained — imports ONLY npm packages + node: builtins, no local
+ * sibling files. Vercel's @vercel/node builder doesn't bundle local /api
+ * imports, so the welcome-email renderer is inlined below (gotcha #5).
  */
 
 import Stripe from "stripe";
 import { Resend } from "resend";
-import { render } from "@react-email/render";
-import { WelcomeEmail } from "./_lib/emails/Welcome.tsx";
+
+// NOTE: this function is intentionally SELF-CONTAINED — no imports from ./_lib
+// or /src. Vercel's @vercel/node builder compiles only the entrypoint and does
+// NOT bundle sibling local .ts/.tsx files into the lambda — they crash at cold
+// start with ERR_MODULE_NOT_FOUND (verified on preview 2026-05-30; gotcha #5 in
+// CLAUDE.md). The welcome-email renderer is therefore inlined below — a mirror
+// of api/_lib/emails/Welcome.tsx (+ ./styles.ts). Keep them in sync.
 
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";
@@ -208,6 +214,73 @@ const mintSubscriberCode = async (
 const isValidEmail = (email: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 
+// ---------------------------------------------------------------------------
+// Inlined welcome email → HTML string (mirror of
+// api/_lib/emails/Welcome.tsx + ./styles.ts — gotcha #5)
+// ---------------------------------------------------------------------------
+const esc = (s: string): string =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
+const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+
+const renderWelcomeHtml = (p: {
+  subscriberName?: string | null;
+  estateEmail: string;
+  collectionsUrl: string;
+  thankYouCode?: string;
+  thankYouValue?: string;
+  thankYouExpiry?: string;
+}): string => {
+  const first = (() => {
+    const t = (p.subscriberName ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : "there";
+  })();
+  const hasGift = !!(p.thankYouCode && p.thankYouValue && p.thankYouExpiry);
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
+    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+    cta: `display:inline-block;background-color:#ede6d6;color:#0a0908;padding:12px 28px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border-radius:999px;`,
+  };
+  const giftHtml = hasGift
+    ? `<div style="${s.giftCard}">`
+      + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A small note from the estate</p>`
+      + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
+      + `<code style="${s.code}">${esc(p.thankYouCode as string)}</code>`
+      + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry as string)}.</p>`
+      + `</div>`
+    : "";
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><meta name="supported-color-schemes" content="dark only"/><title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
+    + `<p style="${s.body}">You've been added to Friends &amp; Family — a small list the family keeps for quarterly notes on new editions of <em>The Art of Stephen Meakin</em>, exhibitions, and the occasional piece of writing from the archive. No more than four notes a year, and never a marketing blast.</p>`
+    + `<p style="${s.body}">Stephen worked for over three decades in Lewes, East Sussex — mandalas, sacred geometry, and a lifelong study of pattern. We release a small number of estate-stamped giclée prints so his work can live in homes rather than only in archives. If anything catches your eye, the current catalogue is here:</p>`
+    + `<p style="text-align:center;margin:28px 0 24px 0;"><a href="${esc(p.collectionsUrl)}" style="${s.cta}">See the collections</a></p>`
+    + giftHtml
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.body}">If at any point you'd rather not hear from us, a single reply to this email saying so is enough — we read everything ourselves.</p>`
+    + `<p style="${s.signoff}">With love from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -304,16 +377,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     const siteUrl = process.env.SITE_URL || DEFAULT_SITE_URL;
     const resend = new Resend(resendKey);
 
-    const html = await render(
-      WelcomeEmail({
-        subscriberName: name || null,
-        estateEmail: DEFAULT_FROM,
-        collectionsUrl: `${siteUrl.replace(/\/$/, "")}/collections`,
-        thankYouCode: subscriberCode?.code,
-        thankYouValue: subscriberCode?.valueLabel,
-        thankYouExpiry: subscriberCode?.expiresLabel,
-      }),
-    );
+    const html = renderWelcomeHtml({
+      subscriberName: name || null,
+      estateEmail: DEFAULT_FROM,
+      collectionsUrl: `${siteUrl.replace(/\/$/, "")}/collections`,
+      thankYouCode: subscriberCode?.code,
+      thankYouValue: subscriberCode?.valueLabel,
+      thankYouExpiry: subscriberCode?.expiresLabel,
+    });
 
     const sendResult = await resend.emails.send({
       from: `${FROM_NAME} <${fromEmail}>`,

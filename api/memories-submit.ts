@@ -39,8 +39,9 @@
  * If neither is provisioned the endpoint still returns 200 and emails the
  * family — see api/_lib/memoryStore.ts for the graceful-degradation details.
  *
- * Self-contained — imports only from /api/_lib and top-level node_modules. No
- * /src imports (gotcha #5 in CLAUDE.md).
+ * Self-contained — imports ONLY npm packages + node: builtins, no local
+ * sibling files (Vercel doesn't bundle local /api imports — gotcha #5). The
+ * moderation + KV store and notification email are inlined below.
  */
 
 import { Resend } from "resend";

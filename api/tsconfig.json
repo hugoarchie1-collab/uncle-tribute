@@ -1,45 +1,25 @@
 {
   // -------------------------------------------------------------------------
-  // Serverless function tsconfig for /api (Vercel @vercel/node builder).
+  // TypeScript config for the Vercel serverless functions in /api.
   //
-  // WHY THIS EXISTS: the project's root tsconfig.json has empty compilerOptions
-  // (it only holds project references for the Vite app), and tsconfig.app.json /
-  // tsconfig.node.json do NOT include /api. So Vercel's function builder was
-  // compiling /api with bare TypeScript defaults — no `jsx`, no NodeNext module
-  // resolution. The result: the .tsx React-Email templates in /api/_lib/emails
-  // failed to transpile/resolve, and every function that imported one crashed at
-  // cold start with ERR_MODULE_NOT_FOUND (only api/checkout.ts — which imports no
-  // local files — survived). See CLAUDE.md gotcha #5.
-  //
-  // module/moduleResolution: NodeNext matches how the code already writes its
-  // relative imports (explicit ".js" extensions that map to sibling .ts/.tsx),
-  // and jsx: react-jsx lets the email templates compile. This is the clean fix
-  // that keeps the shared /api/_lib helpers + email templates as real modules
-  // (no per-function duplication).
+  // Every function here is SELF-CONTAINED — it imports only npm packages and
+  // node: builtins, never a sibling file. That is a hard requirement, not a
+  // style choice: Vercel's @vercel/node builder compiles only each function's
+  // entrypoint and does NOT bundle local sibling files (e.g. a former
+  // api/_lib/), so any local import crashes the function at cold start with
+  // ERR_MODULE_NOT_FOUND. See CLAUDE.md gotcha #5 (verified on preview
+  // 2026-05-30). This config exists mainly so `tsc -p api` type-checks the
+  // functions with the right Node-ESM resolution.
   // -------------------------------------------------------------------------
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "jsx": "react-jsx",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": false,
-    // Local imports across /api reference each other by their REAL extension
-    // (./foo.ts / ./bar.tsx). allowImportingTsExtensions lets tsc resolve them;
-    // rewriteRelativeImportExtensions (TS 5.7+) rewrites those specifiers to
-    // ".js" in the emitted output. This is the fix for Vercel's serverless
-    // file-tracer: it can follow the real source file (a ".js" specifier
-    // pointed at a non-existent ".js" sibling, so the .tsx/.ts was never traced
-    // or bundled → ERR_MODULE_NOT_FOUND), while the runtime still imports the
-    // emitted ".js". See CLAUDE.md gotcha #5.
-    "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
     "types": ["node"]
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts"]
 }

@@ -36,8 +36,13 @@
  */
 
 import { Resend } from "resend";
-import { render } from "@react-email/render";
-import { BasketSavedEmail } from "./_lib/emails/BasketSaved.tsx";
+
+// NOTE: this function is intentionally SELF-CONTAINED — no imports from ./_lib
+// or /src. Vercel's @vercel/node builder compiles only the entrypoint and does
+// NOT bundle sibling local .ts/.tsx files into the lambda — they crash at cold
+// start with ERR_MODULE_NOT_FOUND (verified on preview 2026-05-30; gotcha #5 in
+// CLAUDE.md). The saved-basket email renderer is therefore inlined below — a
+// mirror of api/_lib/emails/BasketSaved.tsx (+ ./styles.ts). Keep them in sync.
 
 // ---- Catalogue duplicated from src/data/paintings.ts + api/checkout.ts ----
 // Keep in sync with PRINT_TIERS in src/data/paintings.ts AND the inline TIERS
@@ -210,6 +215,77 @@ const throttleClean = () => {
   }
 };
 
+// ---------------------------------------------------------------------------
+// Inlined saved-basket email → HTML string (mirror of
+// api/_lib/emails/BasketSaved.tsx + ./styles.ts — gotcha #5)
+// ---------------------------------------------------------------------------
+const esc = (s: string): string =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
+const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+
+const renderBasketSavedHtml = (p: {
+  buyerName?: string | null;
+  lines: Array<{ title: string; colourway: string; size: string; price: string }>;
+  subtotal: string;
+  basketUrl: string;
+  estateEmail: string;
+}): string => {
+  const first = (() => {
+    const t = (p.buyerName ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : "there";
+  })();
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    orderRow: `font-family:${SANS};font-size:14px;line-height:1.55;color:#ede6d6;margin:0 0 4px 0;`,
+    orderMeta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+    button: `display:inline-block;background-color:#ede6d6;color:#0a0908;padding:12px 28px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border-radius:999px;`,
+  };
+  const lineHtml = p.lines
+    .map((line, idx) => {
+      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
+        + `<p style="${s.orderRow}"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`
+        + `<p style="${s.orderMeta}">${esc(line.size)}</p>`
+        + `<p style="${s.orderMeta}margin-top:4px;color:#ede6d6;">${esc(line.price)}</p>`
+        + `</div>`;
+    })
+    .join("");
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><meta name="supported-color-schemes" content="dark only"/><title>Your basket — The Art of Stephen Meakin</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">Your basket, ${first}.</h1>`
+    + `<p style="${s.body}">Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.eyebrow}">Your basket</p>`
+    + `<div style="${s.card}">${lineHtml}`
+    + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
+    + `<p style="${s.orderRow}display:flex;justify-content:space-between;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Subtotal</span> <strong style="color:#ede6d6;font-size:16px;">${esc(p.subtotal)}</strong></p>`
+    + `<p style="${s.small}margin:8px 0 0 0;">Shipping calculated at checkout. UK £15 · Europe £35 · Worldwide £60.</p>`
+    + `</div>`
+    + `<p style="text-align:center;margin:28px 0 24px 0;"><a href="${esc(p.basketUrl)}" style="${s.button}">Open your basket</a></p>`
+    + `<p style="${s.body}">Each print is individually made to order at a small UK atelier and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</p>`
+    + `<p style="${s.signoff}">With love from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -332,15 +408,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     const siteUrl = (process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
     const resend = new Resend(resendKey);
 
-    const html = await render(
-      BasketSavedEmail({
-        buyerName: name || null,
-        lines,
-        subtotal: formatGBP(subtotalPence),
-        basketUrl: `${siteUrl}/basket`,
-        estateEmail: DEFAULT_FROM,
-      }),
-    );
+    const html = renderBasketSavedHtml({
+      buyerName: name || null,
+      lines,
+      subtotal: formatGBP(subtotalPence),
+      basketUrl: `${siteUrl}/basket`,
+      estateEmail: DEFAULT_FROM,
+    });
 
     const sendResult = await resend.emails.send({
       from: `${FROM_NAME} <${fromEmail}>`,
