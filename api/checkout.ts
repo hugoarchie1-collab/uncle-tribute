@@ -126,6 +126,76 @@ const TIERS: Record<TierId, TierDef> = {
 
 const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £295)
 
+// ---- Cost floors (#13) — mirror of src/data/paintings.ts ------------------
+// ⚠️⚠️⚠️ HUGO: EVERY NUMBER HERE IS A RESEARCH ESTIMATE, NOT A REAL INVOICE.
+// These are the CONSERVATIVE (low-end) fully-loaded unit costs from the
+// 2026-05-31 pricing research — deliberately the cheapest-but-still-real cost
+// so a floor can never sit above a true cost. REPLACE with your actual figures
+// (Point 101 print cost per size, framer's frame cost, Polly's real hours ×
+// rate) before trusting the never-below-cost guarantee. At today's ~92% retail
+// margins these floors NEVER bind — the guard below is a safe no-op cap that
+// only ever REDUCES a discount and logs if it would breach; it never raises a
+// price and never blocks checkout. MUST stay in sync with
+// src/data/paintings.ts COST_FLOOR_PENCE / FRAME_COST_FLOOR_PENCE /
+// EMBELLISH_COST_FLOOR_PENCE (gotcha #9 — pricing lives in two places).
+const COST_FLOOR_PENCE: Record<TierId, { printFloor: number }> = {
+  atelier: { printFloor: 1200 }, //  A3 — £12
+  collector: { printFloor: 2200 }, //  A2 — £22
+  "atelier-grande": { printFloor: 4300 }, //  A1 — £43
+  heirloom: { printFloor: 8000 }, //  A0 — £80 [DARK tier]
+  studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder (Polly's real hours)
+};
+const FRAME_COST_FLOOR_PENCE: Partial<Record<TierId, number>> = {
+  collector: 4500, //  A2 frame cost £45 (LOW end)
+  "atelier-grande": 15000, //  A1 frame cost £150 (LOW end)
+};
+const EMBELLISH_COST_FLOOR_PENCE: Partial<Record<TierId, number>> = {
+  collector: 3500, //  A2 hand-finish cost £35 (LOW end)
+  "atelier-grande": 6500, //  A1 hand-finish cost £65 (LOW end)
+};
+
+// Never sell below cost; recommend never below 10% margin. 1.0 = "never below
+// cost" exactly; 1.10 = "never below a 10% margin". Conservatively 1.0 here so
+// the guard is a pure never-below-cost backstop and never trims a legitimate
+// prestige discount at today's margins. ⚠️HUGO: raise toward 1.10 once the
+// floors above are real if you also want a guaranteed minimum margin.
+const FLOOR_SAFETY = 1.0;
+
+/**
+ * Fully-loaded cost floor (pence) for one configured line: print floor for the
+ * tier + frame floor if framed + embellish floor if hand-finished. The hard
+ * "never sell below" total the margin guard checks each discounted line
+ * against. Mirrors lineCostFloorPence in src/data/paintings.ts (gotcha #9).
+ */
+const lineCostFloorPence = (item: NormalisedItem): number => {
+  const print = COST_FLOOR_PENCE[item.tier.id]?.printFloor ?? 0;
+  const frame = item.framing ? FRAME_COST_FLOOR_PENCE[item.tier.id] ?? 0 : 0;
+  const embellish = item.embellished
+    ? EMBELLISH_COST_FLOOR_PENCE[item.tier.id] ?? 0
+    : 0;
+  return print + frame + embellish;
+};
+
+/**
+ * The full retail (undiscounted) price of one configured line (pence): the
+ * tier price plus any add-on line items that ride along under the bundle
+ * coupon's percent_off. Used by the margin-floor guard to compute the
+ * discounted line total.
+ */
+const lineRetailPence = (item: NormalisedItem): number => {
+  let total = item.tier.pricePence;
+  if (item.framing && typeof item.tier.framingPricePence === "number") {
+    total += item.tier.framingPricePence;
+  }
+  if (
+    item.embellished &&
+    typeof item.tier.embellishmentPricePence === "number"
+  ) {
+    total += item.tier.embellishmentPricePence;
+  }
+  return total;
+};
+
 // Boilerplate spec line used in Stripe product description.
 const PRINT_SPEC =
   "Estate-stamped by The Mandala Company, hand-numbered within the edition. Ships with a Certificate of Authenticity. Printed at Point 101, London.";
@@ -518,7 +588,69 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // catalogue / 12% colourway set / 10% on 3+ / 5% on 2). Mirrors paintings.ts
   // (gotcha #9). Failures are swallowed — never block checkout on a mint fail.
   let discounts: Array<{ coupon: string }> | undefined;
-  const percentOff = bundlePercentOff(normalised);
+  const advertisedPercentOff = bundlePercentOff(normalised);
+
+  // ---- #13 MARGIN-FLOOR GUARD --------------------------------------------
+  // A bundle coupon's percent_off applies to the WHOLE line (print + frame +
+  // embellish are separate line items, all caught by the coupon). The danger
+  // case is a deeply-discounted line whose net price dips under that line's
+  // fully-loaded COST FLOOR. This guard makes "never below cost" a HARD
+  // invariant independent of whatever discount logic exists now or later.
+  //
+  // Behaviour (safe no-op cap — only ever REDUCES a discount, never raises a
+  // price, never blocks checkout):
+  //   • For each line compute maxPct = the largest percent that still keeps the
+  //     discounted line ≥ floor × FLOOR_SAFETY (0 if the discount must vanish).
+  //   • Clamp the session percent DOWN to the min across lines. Never up.
+  //   • If it would have breached, log a warning (with ⚠️HUGO context) so a bad
+  //     future price edit is visible — but proceed at the clamped percent.
+  // At today's ~92% margins maxPct is always ≥ the advertised percent, so the
+  // clamp is a no-op and `percentOff === advertisedPercentOff`.
+  let percentOff = advertisedPercentOff;
+  if (advertisedPercentOff > 0) {
+    let maxSafePct = 100;
+    for (const item of normalised) {
+      const retail = lineRetailPence(item);
+      if (retail <= 0) continue;
+      const floor = lineCostFloorPence(item) * FLOOR_SAFETY;
+      // Largest percent that keeps net ≥ floor: pct ≤ (1 − floor/retail) × 100.
+      // Floored to a whole percent because Stripe coupons take integer percents
+      // (rounding DOWN is the safe direction — a shallower discount).
+      const lineMaxPct = Math.max(
+        0,
+        Math.floor((1 - floor / retail) * 100),
+      );
+      if (lineMaxPct < maxSafePct) maxSafePct = lineMaxPct;
+      // Worst case: even at 0% discount the BASE retail is below cost floor —
+      // only possible after a bad manual price edit. Per this task's brief the
+      // guard NEVER blocks checkout, so we log loudly rather than rejecting.
+      // (The spec's stricter "reject the line" option is intentionally NOT
+      // taken here — keep this a safe no-op; surface it to the build-time
+      // assertion / UI agents instead.)
+      if (retail < floor) {
+        console.error(
+          "[/api/checkout] ⚠️HUGO BASE PRICE BELOW COST FLOOR for " +
+            `${item.paintingId} (${item.tier.id}, framing=${item.framing}, ` +
+            `embellished=${item.embellished}): retail ${retail}p < floor ${floor}p. ` +
+            "A tier RETAIL or add-on price is below its (estimated) cost. " +
+            "Checkout PROCEEDS at 0% discount — fix the prices in " +
+            "src/data/paintings.ts AND api/checkout.ts.",
+        );
+      }
+    }
+    if (maxSafePct < advertisedPercentOff) {
+      console.warn(
+        "[/api/checkout] ⚠️ margin-floor guard CLAMPED bundle discount " +
+          `${advertisedPercentOff}% → ${maxSafePct}% to keep every line at or ` +
+          "above its cost floor. This should NEVER happen at normal margins — " +
+          "a tier RETAIL price or add-on price has likely been edited below " +
+          "the (estimated ⚠️HUGO) cost floor. Verify COST_FLOOR_PENCE / tier " +
+          "prices in api/checkout.ts AND src/data/paintings.ts.",
+      );
+      percentOff = maxSafePct;
+    }
+  }
+
   if (percentOff > 0) {
     try {
       const coupon = await stripe.coupons.create({

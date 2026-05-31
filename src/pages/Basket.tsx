@@ -15,6 +15,7 @@ import {
   getPaintingById,
   getPrintTiers,
   COLLECTIONS,
+  PAINTINGS,
   type PrintTier,
 } from "../data/paintings";
 import { useBasket, removeItem, type BasketItem } from "../lib/basket";
@@ -68,27 +69,101 @@ const resolveLines = (items: BasketItem[]): ResolvedLine[] => {
     .filter((line): line is ResolvedLine => line !== null);
 };
 
+// -----------------------------------------------------------------------------
+// PRICING PREVIEW HELPERS — DMCC #13 (no drip-pricing): every figure the buyer
+// sees here is computed the SAME way the server (api/checkout.ts) computes the
+// real Stripe charge, so the basket never under- or over-states what is paid.
+// -----------------------------------------------------------------------------
+
+/** Whether an add-on is actually billable for a line (offered AND selected). */
+const lineFramingPence = (line: ResolvedLine): number =>
+  line.item.framing === true && typeof line.tier.framingPricePence === "number"
+    ? line.tier.framingPricePence
+    : 0;
+
+const lineEmbellishPence = (line: ResolvedLine): number =>
+  line.item.embellished === true &&
+  typeof line.tier.embellishmentPricePence === "number"
+    ? line.tier.embellishmentPricePence
+    : 0;
+
+/** Full pre-discount price of a line = print + framing + hand-finishing. */
+const lineTotalPence = (line: ResolvedLine): number =>
+  line.tier.pricePence + lineFramingPence(line) + lineEmbellishPence(line);
+
+// Distinct-painting count for the complete-catalogue trigger. Mirrors
+// api/checkout.ts CATALOGUE_PAINTING_COUNT (= the painting allowlist size).
+const CATALOGUE_PAINTING_COUNT = PAINTINGS.length;
+
+/**
+ * Bundle discount percent derived from the basket CONTENTS — a byte-for-byte
+ * mirror of api/checkout.ts `bundlePercentOff` (gotcha #9). This REPLACES the
+ * old count-only preview (which displayed 5/10% while Stripe charged 12/15% —
+ * a DMCC misleading-action risk). The previewed % now equals the charged %:
+ *   • one line of EVERY painting (complete catalogue)  → 15%
+ *   • all lines a single painting (complete colourway set) → 12%
+ *   • 3+ mixed paintings → 10%; exactly 2 lines → 5%; fewer → 0%.
+ */
+const bundlePercentOff = (lines: ResolvedLine[]): number => {
+  const count = lines.length;
+  if (count < 2) return 0;
+  const distinct = new Set(lines.map((l) => l.paintingId)).size;
+  if (distinct >= CATALOGUE_PAINTING_COUNT) return 15; // complete catalogue
+  if (distinct === 1) return 12; // complete colourway set
+  return count >= 3 ? 10 : 5; // general / collection bundle
+};
+
+/**
+ * Per-region SHIPPING preview — a mirror of api/checkout.ts
+ * `buildShippingOptions`. Standard delivery is MANDATORY (the estate only
+ * ships; there is no collection / free option), so under DMCC it must be shown
+ * upfront with equal prominence, not first revealed at Stripe. Framed prints
+ * carry a per-item surcharge that ACCUMULATES, which must also be visible the
+ * moment a frame is in the basket:
+ *   base    UK £15 / EU £35 / WW £60
+ *   A2 framed +£15 UK, +£30 EU/WW   (intl surcharge doubles)
+ *   A1 framed +£25 UK, +£50 EU/WW
+ */
+const shippingPreview = (lines: ResolvedLine[]) => {
+  const framedUkSurchargePence = lines.reduce((acc, line) => {
+    if (!line.item.framing) return acc;
+    if (line.tier.id === "collector") return acc + 1500; // A2 framed +£15
+    if (line.tier.id === "atelier-grande") return acc + 2500; // A1 framed +£25
+    return acc;
+  }, 0);
+  const intlSurchargePence = framedUkSurchargePence * 2; // EU + WW double
+  return {
+    hasFramedItem: framedUkSurchargePence > 0,
+    framedUkSurchargePence,
+    intlSurchargePence,
+    ukPence: 1500 + framedUkSurchargePence,
+    euPence: 3500 + intlSurchargePence,
+    wwPence: 6000 + intlSurchargePence,
+  };
+};
+
 export const Basket = () => {
   usePageTitle("Your Basket");
   const items = useBasket();
   const lines = resolveLines(items);
-  // Subtotal includes add-ons (framing + hand-finishing) so the buyer sees
-  // the same number on the basket page as on Stripe Checkout.
-  const subtotalPence = lines.reduce((sum, l) => {
-    let lineTotal = l.tier.pricePence;
-    if (l.item.framing && typeof l.tier.framingPricePence === "number") {
-      lineTotal += l.tier.framingPricePence;
-    }
-    if (l.item.embellished && typeof l.tier.embellishmentPricePence === "number") {
-      lineTotal += l.tier.embellishmentPricePence;
-    }
-    return sum + lineTotal;
-  }, 0);
 
-  // Bundle discount preview — Stripe does the actual math; we only show
-  // the policy line so the buyer knows the discount is coming.
-  const bundleDiscountPercent =
-    lines.length >= 3 ? 10 : lines.length === 2 ? 5 : 0;
+  // Genuine PRE-discount subtotal — print + every selected add-on across all
+  // lines. This is the honest "before any bundle saving" figure (DMCC: show
+  // the real subtotal, then the discount, then the total).
+  const subtotalPence = lines.reduce((sum, l) => sum + lineTotalPence(l), 0);
+
+  // Bundle discount — content-derived percent that EQUALS the Stripe charge,
+  // and the absolute £ saving it produces (rounded the same way the coupon's
+  // percent_off rounds the line total).
+  const bundleDiscountPercent = bundlePercentOff(lines);
+  const bundleDiscountPence =
+    bundleDiscountPercent > 0
+      ? Math.round((subtotalPence * bundleDiscountPercent) / 100)
+      : 0;
+  const discountedSubtotalPence = subtotalPence - bundleDiscountPence;
+
+  // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.
+  const shipping = shippingPreview(lines);
 
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -166,95 +241,215 @@ export const Basket = () => {
             <Reveal as="div">
               <Separator className="bg-line mb-8" />
               <ul className="list-none p-0 m-0 flex flex-col">
-                {lines.map((line, i) => (
-                  <li
-                    key={line.item.addedAt}
-                    className={
-                      i === 0
-                        ? "py-6 first:pt-0"
-                        : "py-6 border-t border-line"
-                    }
-                  >
-                    <div className="flex gap-5 sm:gap-7 items-start">
-                      <Link
-                        to={`/collections/${line.paintingId}`}
-                        className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] overflow-hidden ring-1 ring-white/8"
-                        aria-label={`${line.title} — view painting`}
-                      >
-                        <AssetImage
-                          src={line.image}
-                          alt={`${line.title} — ${line.colourwayName}`}
-                          className="w-full h-full object-cover block"
-                          loading="lazy"
-                        />
-                      </Link>
-                      <div className="flex-1 min-w-0">
-                        {line.collectionTitle && (
-                          <div className="mb-2">
-                            <Badge variant="outline">
-                              {line.collectionTitle.split(" — ")[0]}
-                            </Badge>
-                          </div>
-                        )}
+                {lines.map((line, i) => {
+                  const framingPence = lineFramingPence(line);
+                  const embellishPence = lineEmbellishPence(line);
+                  const hasAddOns = framingPence > 0 || embellishPence > 0;
+                  return (
+                    <li
+                      key={line.item.addedAt}
+                      className={
+                        i === 0
+                          ? "py-6 first:pt-0"
+                          : "py-6 border-t border-line"
+                      }
+                    >
+                      <div className="flex gap-5 sm:gap-7 items-start">
                         <Link
                           to={`/collections/${line.paintingId}`}
-                          className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
+                          className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] overflow-hidden ring-1 ring-white/8"
+                          aria-label={`${line.title} — view painting`}
                         >
-                          {line.title}
+                          <AssetImage
+                            src={line.image}
+                            alt={`${line.title} — ${line.colourwayName}`}
+                            className="w-full h-full object-cover block"
+                            loading="lazy"
+                          />
                         </Link>
-                        {/* Tier label — quiet muted-ink spec line.
-                            Surfaces label · size · edition. */}
-                        <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>
-                          {line.tier.label} · {line.tier.size.split(" ")[0]} · {line.tier.editionLabel}
-                        </p>
-                        <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
-                          {line.colourwayName}
-                          {line.item.framing && (
-                            <span className="ml-2">· framed</span>
+                        <div className="flex-1 min-w-0">
+                          {line.collectionTitle && (
+                            <div className="mb-2">
+                              <Badge variant="outline">
+                                {line.collectionTitle.split(" — ")[0]}
+                              </Badge>
+                            </div>
                           )}
-                          {line.item.embellished && (
-                            <span className="ml-2">· hand-finished by Polly</span>
-                          )}
+                          <Link
+                            to={`/collections/${line.paintingId}`}
+                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
+                          >
+                            {line.title}
+                          </Link>
+                          {/* Tier label — quiet muted-ink spec line.
+                              Surfaces label · size · edition. */}
+                          <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>
+                            {line.tier.label} · {line.tier.size.split(" ")[0]} · {line.tier.editionLabel}
+                          </p>
+                          <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
+                            {line.colourwayName}
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(line.item.addedAt)}
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                        {/* Print price for this size. When add-ons are present
+                            this is the PRINT-ONLY figure and the line subtotal
+                            is shown below — so nothing is hidden (DMCC #13:
+                            no drip-pricing). */}
+                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,20px)] text-ink m-0 flex-shrink-0">
+                          {formatGBP(line.tier.pricePence)}
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => removeItem(line.item.addedAt)}
-                          className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                        >
-                          Remove
-                        </button>
                       </div>
-                      <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,20px)] text-ink m-0 flex-shrink-0">
-                        {formatGBP(line.tier.pricePence)}
-                      </p>
-                    </div>
-                  </li>
-                ))}
+
+                      {/* Add-on line items — each shown explicitly with its
+                          own per-size price, then a line subtotal. Rendered
+                          only when at least one add-on is selected; the plain
+                          print line above is already complete on its own. */}
+                      {hasAddOns && (
+                        <div className="mt-4 ml-[108px] sm:ml-[132px] flex flex-col gap-1.5">
+                          <div className="flex items-baseline justify-between gap-4">
+                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                              {line.tier.label} print ({line.tier.size.split(" ")[0]})
+                            </span>
+                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                              {formatGBP(line.tier.pricePence)}
+                            </span>
+                          </div>
+                          {framingPence > 0 && (
+                            <div className="flex items-baseline justify-between gap-4">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                                Framing (black-stained oak)
+                              </span>
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                                + {formatGBP(framingPence)}
+                              </span>
+                            </div>
+                          )}
+                          {embellishPence > 0 && (
+                            <div className="flex items-baseline justify-between gap-4">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                                Hand-finished by Polly Wedge
+                              </span>
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                                + {formatGBP(embellishPence)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-baseline justify-between gap-4 pt-1.5 mt-0.5 border-t border-line">
+                            <span className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted">
+                              Line total
+                            </span>
+                            <span className="font-sans text-[13px] font-semibold text-ink tabular-nums">
+                              {formatGBP(lineTotalPence(line))}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </Reveal>
 
             <Reveal as="div" className="mt-10">
               <Separator className="bg-line mb-8" />
-              {bundleDiscountPercent > 0 && (
-                <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mb-3">
-                  Estate bundle thank-you: {bundleDiscountPercent}% applied at checkout.
-                </p>
-              )}
+
+              {/* PRICE BREAKDOWN — DMCC #13: the genuine pre-discount subtotal,
+                  the bundle discount (the SAME percent Stripe charges), the
+                  net, then mandatory delivery — all shown upfront with equal
+                  prominence, nothing first revealed at Stripe. */}
+              <dl className="m-0 flex flex-col gap-2.5 mb-5">
+                <div className="flex items-baseline justify-between gap-6">
+                  <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
+                    Subtotal{" "}
+                    <span className="text-[12px]">(prints + selected add-ons)</span>
+                  </dt>
+                  <dd className="font-sans text-[15px] text-ink m-0 tabular-nums">
+                    {formatGBP(subtotalPence)}
+                  </dd>
+                </div>
+                {bundleDiscountPercent > 0 && (
+                  <div className="flex items-baseline justify-between gap-6">
+                    <dt className="font-sans text-[14px] leading-[1.5] text-accent m-0">
+                      Estate bundle thank-you ({bundleDiscountPercent}%)
+                    </dt>
+                    <dd className="font-sans text-[15px] text-accent m-0 tabular-nums">
+                      − {formatGBP(bundleDiscountPence)}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0")}>
-                  Subtotal
+                  {bundleDiscountPercent > 0 ? "Total before delivery" : "Subtotal"}
                 </p>
-                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0">
-                  {formatGBP(subtotalPence)}
+                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0 tabular-nums">
+                  {formatGBP(discountedSubtotalPence)}
                 </p>
               </div>
-              <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink-muted m-0 mb-2">
-                Shipping is calculated at checkout: UK £15 · Europe £35 · Worldwide £60.
-                Each print ships within 7–10 working days.
-              </p>
+
+              {/* MANDATORY DELIVERY — shown in full upfront (the estate only
+                  ships; UK delivery is unavoidable). When a framed print is in
+                  the basket the framed-shipping surcharge is folded into these
+                  figures (and called out), so the rate the buyer sees here is
+                  exactly the rate charged at Stripe. */}
+              <div className="border border-line/70 rounded-2xl p-4 sm:p-5 mb-3">
+                <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>
+                  Delivery — chosen at checkout
+                </p>
+                <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
+                  <li className="flex items-baseline justify-between gap-4">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                      United Kingdom
+                    </span>
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                      {formatGBP(shipping.ukPence)}
+                    </span>
+                  </li>
+                  <li className="flex items-baseline justify-between gap-4">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                      Europe
+                    </span>
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                      {formatGBP(shipping.euPence)}
+                    </span>
+                  </li>
+                  <li className="flex items-baseline justify-between gap-4">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                      Worldwide
+                    </span>
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                      {formatGBP(shipping.wwPence)}
+                    </span>
+                  </li>
+                </ul>
+                {shipping.hasFramedItem ? (
+                  <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
+                    Includes the framed-delivery surcharge for the framed
+                    print{lines.filter((l) => l.item.framing).length > 1 ? "s" : ""}{" "}
+                    in your basket (UK +{formatGBP(shipping.framedUkSurchargePence)} ·
+                    Europe / Worldwide +{formatGBP(shipping.intlSurchargePence)}).
+                    These are the final delivery rates — nothing further is added
+                    at checkout.
+                  </p>
+                ) : (
+                  <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
+                    Flat rates, nothing further added at checkout. Each print
+                    ships within 7–10 working days.
+                  </p>
+                )}
+              </div>
+
               <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-8">
                 International buyers may be charged local import duties on delivery.
               </p>
+
               <div className="flex flex-wrap items-center gap-4">
                 <button
                   type="button"

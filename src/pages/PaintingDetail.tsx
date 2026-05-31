@@ -12,7 +12,6 @@ import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
-import { ScaleViewer } from "../components/ScaleViewer";
 import {
   COLLECTIONS,
   EMBELLISHMENT_NOTE,
@@ -24,6 +23,7 @@ import {
   COLOURWAY_NOTE,
   formatGBP,
   getColourwaySetBundle,
+  parseSizeCm,
   type Colourway,
   type Painting,
   type PrintTier,
@@ -55,6 +55,57 @@ import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
  * hairlines through `border-line` / `ring-line`, and accent (`text-accent`)
  * stays reserved for hover/active + at most one resting eyebrow per section.
  * ========================================================================== */
+
+/* =============================================================================
+ * FRAMED-SHIPPING SURCHARGE — DISPLAY MIRROR of api/checkout.ts
+ * -----------------------------------------------------------------------------
+ * DMCC (Digital Markets, Competition & Consumers Act 2024, Part 4) requires
+ * that any unavoidable charge for the chosen configuration is shown UPFRONT, at
+ * equal prominence, the MOMENT the buyer selects it — not first revealed at the
+ * Stripe checkout. So the instant a frame is ticked we must state the framed-
+ * shipping surcharge here on the product page.
+ *
+ * These figures MIRROR `buildShippingOptions` in api/checkout.ts (the server is
+ * the source of truth — gotcha #9). If the surcharge basis changes there, change
+ * it here too. Read directly from that function on 2026-05-31:
+ *   UK base £15;  framed A2 +£15 / framed A1 +£25
+ *   EU base £35;  framed surcharge DOUBLES vs UK
+ *   WW base £60;  framed surcharge DOUBLES vs UK
+ * Glazing is cast acrylic, so one shipping band per region (no "with glass" tier).
+ * ========================================================================== */
+const SHIP_BASE_PENCE = { uk: 1500, eu: 3500, ww: 6000 } as const;
+/** Per-framed-item UK surcharge by tier (pence). EU/WW double this. A3/A0/Studio = 0. */
+const FRAMED_UK_SURCHARGE_PENCE: Partial<Record<PrintTier["id"], number>> = {
+  collector: 1500, // A2 framed +£15
+  "atelier-grande": 2500, // A1 framed +£25
+};
+
+/**
+ * The framed-shipping totals (per region) for a SINGLE framed item of the given
+ * tier — what the buyer will actually be charged for delivery when this one
+ * framed print is in the basket. Mirrors api/checkout.ts buildShippingOptions.
+ * Returns null when the tier carries no framed surcharge (A3/A0/Studio).
+ */
+const framedShippingForTier = (
+  tierId: PrintTier["id"],
+): { ukPence: number; euPence: number; wwPence: number } | null => {
+  const ukSurcharge = FRAMED_UK_SURCHARGE_PENCE[tierId];
+  if (!ukSurcharge) return null;
+  const intlSurcharge = ukSurcharge * 2; // EU + WW double (api/checkout.ts)
+  return {
+    ukPence: SHIP_BASE_PENCE.uk + ukSurcharge,
+    euPence: SHIP_BASE_PENCE.eu + intlSurcharge,
+    wwPence: SHIP_BASE_PENCE.ww + intlSurcharge,
+  };
+};
+
+/* =============================================================================
+ * ADD-ON LEAD TIMES — the longest selected add-on governs the stated wait.
+ * Frame: 2 weeks. Hand-finishing by Polly Wedge: 4 weeks. Mirrors the copy the
+ * estate quotes elsewhere (EMBELLISHMENT_NOTE = "please allow 4 weeks").
+ * ========================================================================== */
+const FRAME_LEAD_WEEKS = 2;
+const FINISH_LEAD_WEEKS = 4;
 
 /**
  * SizePicker — the standard print tiers as radio cards. One-off tiers
@@ -248,6 +299,187 @@ const Colourways = ({
   );
 };
 
+/* =============================================================================
+ * #11 TRUE SIZE — each painting shown at REAL size on a wall in a room.
+ * -----------------------------------------------------------------------------
+ * Replaces the old vector ScaleViewer ("to scale" diagram beside a doorway).
+ * This is the data-driven version: a size selector swaps a room photograph in
+ * which THIS painting hangs at its true printed size, so a buyer can read the
+ * presence of A2 vs A1 against real furniture / a real wall.
+ *
+ * Images are expected at  /img/truesize/<paintingId>-<sizeSlug>.jpg  (with a
+ * WebP sibling — the <picture> swaps automatically). sizeSlug is the lowercased
+ * A-size token from the tier (a3/a2/a1/a0). Until those photographs exist the
+ * slot shows a dignified coming-soon state with the real dimensions, so the
+ * section keeps its shape and never looks broken.
+ *
+ * Presentational ONLY — it never touches price, the JSON-LD offer, or the
+ * basket. Reduced-motion-safe by construction (a simple crossfade, no scroll
+ * animation). ⚠️HUGO: drop the room photos in /public/img/truesize/ when ready;
+ * confirm each painting's true sheet orientation against the printed file.
+ * ========================================================================== */
+
+/** Lowercased A-size slug from a tier's size string ("A2 (…)" → "a2"). */
+const trueSizeSlug = (tier: PrintTier): string | null => {
+  const token = tier.size.split(" ")[0]; // "A2", "A1", …
+  return /^A\d$/.test(token) ? token.toLowerCase() : null;
+};
+
+const TrueSizeViewer = ({
+  painting,
+  sizeTiers,
+  selectedTier,
+  onSelectTier,
+}: {
+  painting: Painting;
+  sizeTiers: PrintTier[];
+  selectedTier: PrintTier;
+  onSelectTier: (id: PrintTier["id"]) => void;
+}) => {
+  const reduceMotion = useReducedMotion();
+  // Only standard A-size tiers can be shown to scale (a one-off / non-A size
+  // has no room photo slot). Fall back to the first such tier if the currently
+  // selected tier isn't a standard A-size.
+  const scaleTiers = sizeTiers.filter((t) => trueSizeSlug(t) !== null);
+  const activeTier =
+    trueSizeSlug(selectedTier) !== null ? selectedTier : scaleTiers[0];
+  if (!activeTier) return null;
+
+  const slug = trueSizeSlug(activeTier);
+  const dims = parseSizeCm(activeTier.size);
+  // Room photo for this painting at this size. Image-state is tracked per src
+  // so a missing file degrades to the coming-soon placeholder rather than a
+  // broken-image icon.
+  const roomSrc = slug ? `/img/truesize/${painting.id}-${slug}.jpg` : null;
+
+  return (
+    <figure className="m-0">
+      {/* Size selector — swaps the room image. Mirrors the SizePicker's radio
+          semantics but as a compact pill row so it sits cleanly above the
+          photo. Selecting here drives the SAME selectedTier the buy box uses,
+          so the size shown to scale is the size being ordered. */}
+      <div
+        role="radiogroup"
+        aria-label="Show print to scale at size"
+        className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full"
+      >
+        {scaleTiers.map((t) => {
+          const isActive = t.id === activeTier.id;
+          const token = t.size.split(" ")[0];
+          return (
+            <button
+              key={t.id}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              onClick={() => onSelectTier(t.id)}
+              className={cn(
+                "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
+                isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
+              )}
+            >
+              {token}
+            </button>
+          );
+        })}
+      </div>
+
+      <TrueSizeRoom
+        key={roomSrc ?? "no-room"}
+        src={roomSrc}
+        reduceMotion={!!reduceMotion}
+        painting={painting}
+        tier={activeTier}
+      />
+
+      <figcaption className="mt-3 text-center">
+        <span className="block font-sans text-[13.5px] leading-[1.5] text-ink/70">
+          {activeTier.label} · {activeTier.size}
+          {dims ? ` — shown at true size on the wall` : ""}
+        </span>
+        <span className={cn(EYEBROW_TIGHT, "block mt-1.5")}>
+          A guide to real-world presence · screen scale varies by device
+        </span>
+      </figcaption>
+    </figure>
+  );
+};
+
+/**
+ * TrueSizeRoom — one room photograph slot. Attempts to load the dignified room
+ * image; if it's absent (not yet shot) it shows a calm coming-soon panel with
+ * the print's real dimensions, on-brand, never a broken-image glyph.
+ */
+const TrueSizeRoom = ({
+  src,
+  reduceMotion,
+  painting,
+  tier,
+}: {
+  src: string | null;
+  reduceMotion: boolean;
+  painting: Painting;
+  tier: PrintTier;
+}) => {
+  // "ok" once the image loads; "missing" if it errors (file not dropped in
+  // yet) or there's no slug. Start "loading" so we don't flash the placeholder.
+  const [state, setState] = useState<"loading" | "ok" | "missing">(
+    src ? "loading" : "missing",
+  );
+  const dims = parseSizeCm(tier.size);
+  const inW = dims ? (dims.w / 2.54).toFixed(0) : null;
+  const inH = dims ? (dims.h / 2.54).toFixed(0) : null;
+
+  if (state === "missing" || !src) {
+    return (
+      <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
+        {/* Proportional outline of the print, drawn from real cm, centred on a
+            quiet ground — a dignified placeholder until the room photo exists. */}
+        {dims && (
+          <div
+            aria-hidden="true"
+            className="ring-1 ring-ink/25 mb-5"
+            style={{
+              width: `${Math.min(38, (dims.w / dims.h) * 38)}vmin`,
+              height: `${Math.min(38, (dims.h / dims.w) * 38)}vmin`,
+              maxWidth: "180px",
+              maxHeight: "180px",
+            }}
+          />
+        )}
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>To scale · coming soon</p>
+        <p className="font-sans text-[13.5px] leading-[1.6] text-ink/70 m-0 max-w-[320px]">
+          We&rsquo;re photographing {painting.title} on the wall at each size.
+          {dims
+            ? ` ${tier.size.split(" ")[0]} measures ${dims.w} × ${dims.h} cm${
+                inW && inH ? ` (about ${inW} × ${inH} in)` : ""
+              }.`
+            : ""}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full overflow-hidden ring-1 ring-line">
+      <picture>
+        <source srcSet={asset(webp(src))} type="image/webp" />
+        <img
+          src={asset(src)}
+          alt={`${painting.title} shown at ${tier.size} on a wall, for true-size scale`}
+          onLoad={() => setState("ok")}
+          onError={() => setState("missing")}
+          className={cn(
+            "block w-full h-auto",
+            reduceMotion ? "" : "transition-opacity duration-500",
+            state === "ok" ? "opacity-100" : "opacity-0",
+          )}
+        />
+      </picture>
+    </div>
+  );
+};
+
 /**
  * BuyBox — the right-hand purchase column (desktop) / first content block
  * (mobile). Order: title → facts → price → size picker → one-off card →
@@ -308,6 +540,13 @@ const BuyBox = ({
     !isOneOffSelected && typeof selectedTier.embellishmentPricePence === "number";
   // Add-ons only make sense on a multiple (framed / hand-finished print).
   const showAddOns = !isOneOffSelected;
+  // Effective add-on selections — an add-on is only "on" if it's both offered
+  // at this size AND ticked. Switching to a size that doesn't offer an add-on
+  // silently turns it off for pricing/total/lead-time purposes (the box also
+  // disables + unchecks visually).
+  const framingActive = framingOffered && framing;
+  const embellishActive = embellishOffered && embellished;
+
   // Add-on prices read from the selected tier so they can never drift from
   // the data source (gotcha #9 — pricing must not be hand-typed).
   const framingPriceLabel =
@@ -319,11 +558,33 @@ const BuyBox = ({
       ? formatGBP(selectedTier.embellishmentPricePence).replace(".00", "")
       : null;
 
+  // Running line total = print + (frame if active) + (hand-finish if active).
+  // Updates live as the buyer ticks add-ons (DMCC: the running total must
+  // reflect the chosen configuration before they commit).
+  const lineTotalPence =
+    selectedTier.pricePence +
+    (framingActive ? selectedTier.framingPricePence ?? 0 : 0) +
+    (embellishActive ? selectedTier.embellishmentPricePence ?? 0 : 0);
+  const hasAddOnSelected = framingActive || embellishActive;
+
+  // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
+  // hand-finishing 4 wks. Nothing selected → the standard print lead time.
+  const leadWeeks = Math.max(
+    framingActive ? FRAME_LEAD_WEEKS : 0,
+    embellishActive ? FINISH_LEAD_WEEKS : 0,
+  );
+
+  // Framed-shipping surcharge for THIS size — shown upfront the moment the
+  // frame is ticked (DMCC equal-prominence rule; figures mirror
+  // api/checkout.ts buildShippingOptions, see top of file).
+  const framedShipping = framedShippingForTier(selectedTier.id);
+
   // Complete colourway set — every available colourway of this painting at the
-  // anchor tier, with the count-based saving the checkout actually applies
-  // (gotcha #9 safe: the figure is derived, never typed). Undefined for
+  // SELECTED size (gotcha #9 size-tiered deals: pass the selected tier id so the
+  // advertised set price tracks the size the buyer is actually choosing). The
+  // % ladder stays size-independent; only the £ figures recompute. Undefined for
   // single-colourway works, so the card simply doesn't render for them.
-  const colourwaySet = getColourwaySetBundle(painting.id);
+  const colourwaySet = getColourwaySetBundle(painting.id, selectedTier.id);
   const colourwaySetNames = colourwaySet
     ? colourwaySet.colourwayNames.length <= 1
       ? colourwaySet.colourwayNames.join("")
@@ -347,8 +608,8 @@ const BuyBox = ({
       painting.id,
       selected.name,
       selectedTier.id,
-      framingOffered && framing,
-      embellishOffered && embellished,
+      framingActive,
+      embellishActive,
     );
     const stamp = Date.now();
     setAddedFor({
@@ -379,8 +640,8 @@ const BuyBox = ({
           paintingId: painting.id,
           colourwayName: selected.name,
           tierId: selectedTier.id,
-          framing: framingOffered && framing,
-          embellished: embellishOffered && embellished,
+          framing: framingActive,
+          embellished: embellishActive,
         }),
         signal: controller.signal,
       });
@@ -490,28 +751,37 @@ const BuyBox = ({
         </div>
 
         {/* 5b · COMPLETE COLOURWAY SET — only for paintings with 2+ available
-            colourways. Adds one anchor-A2 line per colourway; the existing
-            count-based checkout coupon applies the advertised saving (no /api
-            change — see getColourwaySetBundle). */}
+            colourways. Recomputed for the SELECTED size (#9 size-tiered deals):
+            getColourwaySetBundle is passed selectedTier.id so the advertised set
+            price + saving track whatever size the buyer has chosen. The button
+            pushes one line PER colourway at that SAME tier, so advertised ==
+            Stripe charge by construction. The complete-set 12% the checkout
+            applies to an all-one-painting basket is size-independent. */}
         {colourwaySet && (
           <div className="mt-7 ring-1 ring-line px-4 py-4">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>The complete colourway set</p>
             <p className="font-sans text-[13.5px] leading-[1.55] text-ink-muted m-0 mb-3">
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
-              for this work — {colourwaySetNames} — each an estate-stamped Collector A2
-              print, the colours exactly as he left them.
+              for this work — {colourwaySetNames} — each an estate-stamped{" "}
+              {selectedTier.label} {selectedTier.size.split(" ")[0]} print, the
+              colours exactly as he left them.
             </p>
-            <p className="font-sans text-[14px] text-ink m-0 mb-3.5">
+            <p className="font-sans text-[14px] text-ink m-0 mb-1.5">
               <span className="font-display font-semibold tracking-[-0.02em] text-[22px] mr-2.5">
                 {formatGBP(colourwaySet.bundlePricePence).replace(".00", "")}
               </span>
               the complete set, together
             </p>
+            <p className={cn(META, "m-0 mb-3.5")}>
+              {formatGBP(colourwaySet.fullPricePence).replace(".00", "")} bought
+              singly · a complete-set saving of{" "}
+              {formatGBP(colourwaySet.savePence).replace(".00", "")}
+            </p>
             <button
               type="button"
               onClick={() =>
                 colourwaySet.colourwayNames.forEach((name) =>
-                  addItem(painting.id, name),
+                  addItem(painting.id, name, selectedTier.id),
                 )
               }
               className={BTN_PRIMARY}
@@ -525,15 +795,24 @@ const BuyBox = ({
           </div>
         )}
 
-        {/* 6 · ADD-ONS — hidden on the one-off original */}
+        {/* 6 · ADD-ONS (#12) — hidden on the one-off original. Both add-ons are
+            OPT-IN (NEVER pre-ticked — DMCC no-default-selection rule). Each
+            shows its price, its lead time, a short description; the frame ALSO
+            shows the framed-shipping surcharge UPFRONT the moment it's ticked
+            (DMCC equal-prominence — figures mirror api/checkout.ts). Selecting
+            an add-on updates the running total + stated lead time below. */}
         {showAddOns && (
           <fieldset className="border-0 p-0 m-0 mt-7 flex flex-col gap-2.5">
-            <legend className={cn(EYEBROW_MUTED, "m-0 mb-2 p-0")}>Add-ons</legend>
+            <legend className={cn(EYEBROW_MUTED, "m-0 mb-2 p-0")}>
+              Add-ons · optional
+            </legend>
+
+            {/* FRAME */}
             <label
               className={cn(
                 "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
                 framingOffered
-                  ? framing
+                  ? framingActive
                     ? "ring-ink"
                     : "ring-line hover:ring-ink/40"
                   : "ring-line opacity-55 cursor-not-allowed",
@@ -541,17 +820,36 @@ const BuyBox = ({
             >
               <input
                 type="checkbox"
-                checked={framingOffered && framing}
+                checked={framingActive}
                 disabled={!framingOffered}
                 onChange={(e) => onFramingChange(e.target.checked)}
                 className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer disabled:cursor-not-allowed"
               />
-              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85">
-                <span>
+              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                <span className="flex items-baseline justify-between gap-3">
                   <strong className="text-ink">Add a hand-made frame</strong>
-                  {" "}— black-stained oak, cast acrylic glazing for safe transit.
-                  {framingPriceLabel ? ` +${framingPriceLabel} for this size, plus a small framed-shipping surcharge at checkout. Allow 2 weeks.` : ""}
+                  {framingPriceLabel && (
+                    <span className="font-sans text-[13.5px] font-medium text-ink whitespace-nowrap">
+                      +{framingPriceLabel}
+                    </span>
+                  )}
                 </span>
+                <span>
+                  Black-stained oak with cast-acrylic glazing for safe transit,
+                  ready to hang. Allow {FRAME_LEAD_WEEKS} weeks.
+                </span>
+                {/* DMCC: the framed-shipping surcharge for THIS size, shown the
+                    moment the frame is ticked — exact regional totals, not a
+                    vague "surcharge at checkout". */}
+                {framingActive && framedShipping && (
+                  <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-line/70 px-2.5 py-1.5">
+                    Framed prints ship at this size: UK{" "}
+                    {formatGBP(framedShipping.ukPence).replace(".00", "")} · Europe{" "}
+                    {formatGBP(framedShipping.euPence).replace(".00", "")} · Worldwide{" "}
+                    {formatGBP(framedShipping.wwPence).replace(".00", "")}. Shown
+                    again at checkout before you pay.
+                  </span>
+                )}
                 {!framingOffered && (
                   <span className="font-sans text-[13.5px] text-ink-muted">
                     Framing offered on A2 and A1 sizes only.
@@ -559,11 +857,13 @@ const BuyBox = ({
                 )}
               </span>
             </label>
+
+            {/* HAND-FINISHING by Polly Wedge */}
             <label
               className={cn(
                 "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
                 embellishOffered
-                  ? embellished
+                  ? embellishActive
                     ? "ring-ink"
                     : "ring-line hover:ring-ink/40"
                   : "ring-line opacity-55 cursor-not-allowed",
@@ -571,19 +871,22 @@ const BuyBox = ({
             >
               <input
                 type="checkbox"
-                checked={embellishOffered && embellished}
+                checked={embellishActive}
                 disabled={!embellishOffered}
                 onChange={(e) => onEmbellishedChange(e.target.checked)}
                 className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer disabled:cursor-not-allowed"
               />
-              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85">
-                <span>
+              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                <span className="flex items-baseline justify-between gap-3">
                   <strong className="text-ink">Hand-finished by Polly Wedge</strong>
-                  {embellishPriceLabel ? ` — adds ${embellishPriceLabel} for this size. Allow 4 weeks.` : " — Allow 4 weeks."}
+                  {embellishPriceLabel && (
+                    <span className="font-sans text-[13.5px] font-medium text-ink whitespace-nowrap">
+                      +{embellishPriceLabel}
+                    </span>
+                  )}
                 </span>
-                <span className="font-sans text-[13.5px] leading-[1.55] text-ink/55">
-                  {EMBELLISHMENT_NOTE}
-                </span>
+                <span className="text-ink/55">{EMBELLISHMENT_NOTE}</span>
+                <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
                 {!embellishOffered && (
                   <span className="font-sans text-[13.5px] text-ink-muted">
                     Hand-finishing offered on A2 and A1 sizes only.
@@ -591,6 +894,26 @@ const BuyBox = ({
                 )}
               </span>
             </label>
+
+            {/* RUNNING TOTAL + LEAD TIME — updates live as add-ons are ticked.
+                DMCC: the buyer sees the full configured price (and the longest
+                add-on lead time) before committing. Only shown once an add-on is
+                selected, so the bare-print case stays clean. */}
+            {hasAddOnSelected && (
+              <div className="mt-1 flex items-baseline justify-between gap-3 border-t border-line pt-3">
+                <span className="flex flex-col gap-0.5">
+                  <span className={cn(EYEBROW_TIGHT)}>
+                    Your print · {selectedTier.size.split(" ")[0]}
+                  </span>
+                  <span className={cn(META)}>
+                    Made to order · allow {leadWeeks} weeks
+                  </span>
+                </span>
+                <span className="font-display font-semibold tracking-[-0.02em] text-[22px] text-ink whitespace-nowrap">
+                  {formatGBP(lineTotalPence).replace(".00", "")}
+                </span>
+              </div>
+            )}
           </fieldset>
         )}
 
@@ -942,8 +1265,9 @@ export const PaintingDetail = () => {
   // Fullscreen lightbox state for the hero image.
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const closeLightbox = useCallback(() => setLightboxOpen(false), []);
-  // Left-column view: the artwork itself, or an honest to-scale diagram.
-  const [view, setView] = useState<"art" | "scale">("art");
+  // Left-column view: the artwork itself, or the True Size room view (#11) —
+  // the painting shown at its real printed size on a wall in a room.
+  const [view, setView] = useState<"art" | "true-size">("art");
 
   // Sticky bar sentinels — see StickyAddBar.
   const heroSentinelRef = useRef<HTMLDivElement>(null);
@@ -1085,9 +1409,9 @@ export const PaintingDetail = () => {
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[88px]">
-              {/* View toggle — the artwork, or an honest to-scale diagram. */}
+              {/* View toggle — the artwork, or the True Size room view (#11). */}
               <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full">
-                {(["art", "scale"] as const).map((v) => (
+                {(["art", "true-size"] as const).map((v) => (
                   <button
                     key={v}
                     type="button"
@@ -1098,15 +1422,16 @@ export const PaintingDetail = () => {
                       view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
                     )}
                   >
-                    {v === "art" ? "Painting" : "To scale"}
+                    {v === "art" ? "Painting" : "True size"}
                   </button>
                 ))}
               </div>
-              {view === "scale" ? (
-                <ScaleViewer
-                  tier={selectedTier}
-                  imageSrc={selected.image}
-                  alt={`${painting.title} — ${selected.name}`}
+              {view === "true-size" ? (
+                <TrueSizeViewer
+                  painting={painting}
+                  sizeTiers={sizeTiers}
+                  selectedTier={selectedTier}
+                  onSelectTier={setSelectedTierId}
                 />
               ) : (
               <Reveal>

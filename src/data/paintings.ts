@@ -282,6 +282,20 @@ export const getAnchorTier = (painting: Painting): PrintTier => {
 };
 
 /**
+ * Resolves a tier on a painting's ladder by id, falling back to the painting's
+ * anchor tier if the id isn't present / available. Used by the bundle helpers
+ * so an advertised set price can be computed from ANY size's `pricePence`, not
+ * just the hardcoded anchor (A2). Honours per-painting `printTiers` overrides.
+ */
+export const getTierById = (
+  painting: Painting,
+  tierId: PrintTier["id"],
+): PrintTier => {
+  const ladder = painting.printTiers ?? PRINT_TIERS;
+  return ladder.find((t) => t.id === tierId && t.available) ?? getAnchorTier(painting);
+};
+
+/**
  * Returns the lowest visible tier price (in pence) for a painting. Used by
  * the browse surfaces (Collections tiles, Welcome Featured Works chip) to
  * advertise the entry price — "from £145" — which lowers the click barrier.
@@ -308,6 +322,95 @@ export const getFramingPricePence = (tier: PrintTier): number | null =>
  */
 export const getEmbellishmentPricePence = (tier: PrintTier): number | null =>
   tier.embellishmentPricePence ?? null;
+
+// -----------------------------------------------------------------------------
+// COST FLOORS (#13) — the hard "never sell below cost" line, in PENCE
+// -----------------------------------------------------------------------------
+//
+// ⚠️⚠️⚠️ HUGO: EVERY NUMBER IN THIS BLOCK IS A RESEARCH ESTIMATE, NOT A REAL
+// INVOICE. They are the CONSERVATIVE (low-end) figures from the 2026-05-31
+// pricing research — deliberately the cheapest-but-still-real cost so a floor
+// can never accidentally sit ABOVE a true cost. Before you trust the
+// never-below-cost guarantee, REPLACE each value with your actual figures:
+//   • printFloor   = what Point 101 actually charges you to print that size
+//   • frame floor  = what your framer actually charges you for that frame
+//   • embellish    = Polly's real hours × her rate for that size
+// At today's ~92% retail margins these floors NEVER bind (the §4 guard below is
+// a safe no-op), but they make "never below cost" a hard invariant that
+// survives any future price edit. Mirror of api/checkout.ts (gotcha #9 — keep
+// the two copies of these three constants in sync).
+
+/**
+ * PRINT-ONLY cost floor per tier (pence) — no frame, no hand-finish. The
+ * absolute do-not-cross line for a bare print of that size.
+ * ⚠️HUGO: replace with your real Point 101 per-size costs.
+ */
+export const COST_FLOOR_PENCE: Record<PrintTier["id"], { printFloor: number }> = {
+  atelier: { printFloor: 1200 }, //  A3 — £12  (model £14; range £12–16)
+  collector: { printFloor: 2200 }, //  A2 — £22  (model £27; range £22–31)
+  "atelier-grande": { printFloor: 4300 }, //  A1 — £43  (model £52; range £43–59)
+  heirloom: { printFloor: 8000 }, //  A0 — £80  (model £100; range £80–112) [DARK tier]
+  // ⚠️HUGO — MOST IMPORTANT MANUAL FIGURE: Studio is a UNIQUE hand-painted A1.
+  // Its real cost = A1 print (£43) + frame-if-any + Polly painting it by hand
+  // for many hours (4–10+ hrs at £30–45/hr = £120–£450 labour alone). £160 here
+  // is a LOWER-BOUND placeholder (£43 print + ~£117 labour at a 4hr minimum).
+  // Set this to Polly's REAL time × rate + print + any frame. At £950 retail it
+  // is never at risk, but record the real number for honesty / insurance.
+  studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder
+};
+
+/**
+ * FRAME add-on cost floor per tier (pence) — the cost TO YOU of the physical
+ * frame. Only A2 + A1 are framed. ⚠️HUGO: replace with your framer's real cost.
+ */
+export const FRAME_COST_FLOOR_PENCE: Partial<Record<PrintTier["id"], number>> = {
+  collector: 4500, //  A2 frame cost £45  (LOW end; model £60; range £45–75)
+  "atelier-grande": 15000, //  A1 frame cost £150 (LOW end; model £190; range £150–230)
+};
+
+/**
+ * HAND-FINISH (embellishment) add-on cost floor per tier (pence) — the cost TO
+ * YOU of Polly's labour. Only A2 + A1. ⚠️HUGO: replace with Polly's real
+ * hours × rate per size — labour is the largest true cost here.
+ */
+export const EMBELLISH_COST_FLOOR_PENCE: Partial<Record<PrintTier["id"], number>> = {
+  collector: 3500, //  A2 hand-finish cost £35 (LOW end; model £55; range £35–85)
+  "atelier-grande": 6500, //  A1 hand-finish cost £65 (LOW end; model £100; range £65–150)
+};
+
+/**
+ * Fully-loaded cost floor (pence) for a single configured line: the print
+ * floor for the tier, plus the frame floor if framed, plus the embellish floor
+ * if hand-finished. This is the hard "never sell below" total the §4 margin
+ * guard checks each discounted line against. Mirrors lineCostFloorPence in
+ * api/checkout.ts (gotcha #9). ⚠️HUGO: only as honest as the floors above.
+ */
+export const lineCostFloorPence = (
+  tierId: PrintTier["id"],
+  opts: { framing?: boolean; embellished?: boolean } = {},
+): number => {
+  const print = COST_FLOOR_PENCE[tierId]?.printFloor ?? 0;
+  const frame = opts.framing ? FRAME_COST_FLOOR_PENCE[tierId] ?? 0 : 0;
+  const embellish = opts.embellished ? EMBELLISH_COST_FLOOR_PENCE[tierId] ?? 0 : 0;
+  return print + frame + embellish;
+};
+
+/**
+ * UI helper for the "never sold below cost" guarantee: returns whether a
+ * configured line's price comfortably clears its cost floor, plus the figures.
+ * Purely presentational — the binding guard lives server-side in
+ * api/checkout.ts. At current ~92% margins `clears` is always true.
+ */
+export const checkAboveCostFloor = (
+  tier: PrintTier,
+  opts: { framing?: boolean; embellished?: boolean } = {},
+): { floorPence: number; pricePence: number; clears: boolean } => {
+  let pricePence = tier.pricePence;
+  if (opts.framing) pricePence += tier.framingPricePence ?? 0;
+  if (opts.embellished) pricePence += tier.embellishmentPricePence ?? 0;
+  const floorPence = lineCostFloorPence(tier.id, opts);
+  return { floorPence, pricePence, clears: pricePence >= floorPence };
+};
 
 /** £180 → "£180.00" */
 export const formatGBP = (pence: number): string =>
@@ -761,20 +864,24 @@ export interface CollectionBundle {
 }
 
 /**
- * Build the complete-collection bundle for a given collection: every
- * painting at the anchor (Collector A2) tier, with the SAME bundle saving the
- * checkout actually applies for that item count (5% at 2 items, 10% at 3+).
- * Returns undefined if the collection has no paintings.
+ * Build the complete-collection bundle for a given collection: every painting
+ * at the SELECTED tier (default the anchor Collector A2, preserving the prior
+ * behaviour), with the SAME bundle saving the checkout actually applies for
+ * that item count (5% at 2 items, 10% at 3+). Pass a `tierId` so a card can
+ * advertise the truthful set price at any size — the % ladder is
+ * size-independent, but the £ figures track the actual size being added
+ * (#9 size-tiered deals). Returns undefined if the collection has no paintings.
  */
 export const getCollectionBundle = (
   collectionId: Collection["id"],
+  tierId: PrintTier["id"] = "collector",
 ): CollectionBundle | undefined => {
   const collection = COLLECTIONS.find((c) => c.id === collectionId);
   const paintings = getPaintingsByCollection(collectionId);
   if (!collection || paintings.length === 0) return undefined;
 
   const fullPricePence = paintings.reduce(
-    (sum, p) => sum + getAnchorTier(p).pricePence,
+    (sum, p) => sum + getTierById(p, tierId).pricePence,
     0,
   );
   // Derive the percent from the painting count so the advertised figure
@@ -830,23 +937,27 @@ export interface ColourwaySetBundle {
 
 /**
  * Build the complete-colourway-set bundle for a painting: every AVAILABLE
- * colourway at the anchor (Collector A2) tier, at COLOURWAY_SET_DISCOUNT_PERCENT
- * (12%) — the same the checkout applies to a single-painting basket. Returns
- * undefined for a painting with fewer than 2 available colourways (no set to
- * offer). The count + price both derive from the same `available` filter +
- * `getAnchorTier` the add-to-basket action uses, so the advertised figure
- * equals the Stripe charge to the penny.
+ * colourway at the SELECTED tier (default the anchor Collector A2, preserving
+ * the prior behaviour), at COLOURWAY_SET_DISCOUNT_PERCENT (12%) — the same the
+ * checkout applies to a single-painting basket. Pass a `tierId` so the card can
+ * advertise the truthful set price at any size (#9 size-tiered deals — the 12%
+ * is size-independent, but the £ total tracks the actual size being added).
+ * Returns undefined for a painting with fewer than 2 available colourways (no
+ * set to offer). The count + price both derive from the same `available` filter
+ * the add-to-basket action uses, so the advertised figure equals the Stripe
+ * charge to the penny.
  */
 export const getColourwaySetBundle = (
   paintingId: string,
+  tierId: PrintTier["id"] = "collector",
 ): ColourwaySetBundle | undefined => {
   const painting = getPaintingById(paintingId);
   if (!painting) return undefined;
   const available = painting.colourways.filter((c) => c.available);
   if (available.length < 2) return undefined;
 
-  const anchor = getAnchorTier(painting);
-  const fullPricePence = anchor.pricePence * available.length;
+  const tier = getTierById(painting, tierId);
+  const fullPricePence = tier.pricePence * available.length;
   const discountPercent = COLOURWAY_SET_DISCOUNT_PERCENT;
   // A single round on the uniform total agrees with Stripe's per-line
   // percent_off summing for a clean 12% on equal-priced lines (same reasoning
@@ -900,14 +1011,19 @@ export interface CompleteCatalogueBundle {
 }
 
 /**
- * Build the complete-catalogue bundle: one anchor (Collector A2) print of every
- * painting, at COMPLETE_CATALOGUE_DISCOUNT_PERCENT (15%). Each item carries the
- * painting's original (or first available) colourway, so the add-to-basket
- * action and the price both derive from the same source — the advertised set
- * price equals the Stripe charge to the penny (uniform A2 lines → Stripe's
- * per-line percent_off sums exactly to a single round of the total).
+ * Build the complete-catalogue bundle: one print of every painting at the
+ * SELECTED tier (default the anchor Collector A2, preserving the prior
+ * behaviour), at COMPLETE_CATALOGUE_DISCOUNT_PERCENT (15%). Pass a `tierId` so
+ * the panel can advertise the truthful set price at any size (#9 size-tiered
+ * deals — the 15% is size-independent, but the £ total tracks the actual size).
+ * Each item carries the painting's original (or first available) colourway, so
+ * the add-to-basket action and the price both derive from the same source —
+ * the advertised set price equals the Stripe charge to the penny (uniform lines
+ * → Stripe's per-line percent_off sums exactly to a single round of the total).
  */
-export const getCompleteCatalogueBundle = (): CompleteCatalogueBundle => {
+export const getCompleteCatalogueBundle = (
+  tierId: PrintTier["id"] = "collector",
+): CompleteCatalogueBundle => {
   const paintings = PAINTINGS;
   const items = paintings.map((p) => {
     const colourway =
@@ -917,7 +1033,7 @@ export const getCompleteCatalogueBundle = (): CompleteCatalogueBundle => {
     return { paintingId: p.id, colourwayName: colourway.name };
   });
   const fullPricePence = paintings.reduce(
-    (sum, p) => sum + getAnchorTier(p).pricePence,
+    (sum, p) => sum + getTierById(p, tierId).pricePence,
     0,
   );
   const discountPercent = COMPLETE_CATALOGUE_DISCOUNT_PERCENT;
