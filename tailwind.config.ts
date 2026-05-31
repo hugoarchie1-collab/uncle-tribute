@@ -18,17 +18,17 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        // Two families only.
-        // Display — Playfair Display (high-contrast Didone w/ flowing italic,
-        // matching the Kaya hero inspiration)
-        display: ['"Playfair Display"', "Georgia", "serif"],
-        // Body — Inter, refined sans
+        // Two families only (#10). Newsreader = editorial display serif with a
+        // true italic reserved for quotes; Schibsted Grotesk = quiet body/UI
+        // sans. Two weights each (loaded in index.html). No Playfair/Inter.
+        display: ['"Newsreader"', "Georgia", '"Times New Roman"', "serif"],
         sans: [
-          "Inter",
+          '"Schibsted Grotesk"',
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',
-          "Roboto",
+          "Helvetica",
+          "Arial",
           "sans-serif",
         ],
       },
