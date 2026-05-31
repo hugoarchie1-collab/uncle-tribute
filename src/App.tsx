@@ -13,8 +13,6 @@ const Collections = lazy(() => import("./pages/Collections").then((m) => ({ defa
 const PaintingDetail = lazy(() => import("./pages/PaintingDetail").then((m) => ({ default: m.PaintingDetail })));
 const About = lazy(() => import("./pages/About").then((m) => ({ default: m.About })));
 const Memories = lazy(() => import("./pages/Memories").then((m) => ({ default: m.Memories })));
-const Journal = lazy(() => import("./pages/Journal").then((m) => ({ default: m.Journal })));
-const JournalArticle = lazy(() => import("./pages/JournalArticle").then((m) => ({ default: m.JournalArticle })));
 const Basket = lazy(() => import("./pages/Basket").then((m) => ({ default: m.Basket })));
 const OrderSuccess = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderSuccess })));
 const OrderCancel = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderCancel })));
@@ -23,7 +21,6 @@ const Privacy = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Pri
 const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms })));
 const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Returns })));
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
-const PhotoBook = lazy(() => import("./pages/PhotoBook").then((m) => ({ default: m.PhotoBook })));
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 
@@ -109,15 +106,12 @@ const AnimatedRoutes = () => {
           <Route path="/collections/:id" element={<PaintingDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
-          <Route path="/journal" element={<Journal />} />
-          <Route path="/journal/:slug" element={<JournalArticle />} />
           <Route path="/basket" element={<Basket />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route path="/order/cancel" element={<OrderCancel />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/returns" element={<Returns />} />
-          <Route path="/photo-book" element={<PhotoBook />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<NotFound />} />

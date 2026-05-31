@@ -10,9 +10,7 @@ const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/collections", label: "Collections" },
   { to: "/about", label: "About" },
-  { to: "/journal", label: "Journal" },
   { to: "/memories", label: "Memories" },
-  { to: "/photo-book", label: "Photo Book" },
   { to: "/contact", label: "Contact" },
 ];
 
