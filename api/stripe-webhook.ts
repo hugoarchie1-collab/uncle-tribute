@@ -42,9 +42,14 @@
 import type { IncomingMessage } from "node:http";
 import Stripe from "stripe";
 import { Resend } from "resend";
-import { render } from "@react-email/render";
-import { OrderConfirmation } from "./_lib/emails/OrderConfirmation.tsx";
-import { createThankYouCode, type ThankYouCode } from "./_lib/thankYouCode.ts";
+
+// NOTE: this function is intentionally SELF-CONTAINED — no imports from ./_lib
+// or /src. Vercel's @vercel/node builder compiles only the entrypoint and does
+// NOT bundle sibling local .ts/.tsx files into the lambda — they crash at cold
+// start with ERR_MODULE_NOT_FOUND (verified on preview 2026-05-30; gotcha #5 in
+// CLAUDE.md). The thank-you-code minter and the order-confirmation email
+// renderer are therefore inlined below — mirrors of api/_lib/thankYouCode.ts +
+// api/_lib/emails/OrderConfirmation.tsx (+ ./styles.ts). Keep them in sync.
 
 // CRITICAL: disable Vercel's automatic body parsing. Stripe webhook signature
 // verification must run against the EXACT raw bytes Stripe signed; the Node
@@ -233,6 +238,171 @@ const linesFromMetadata = (
 };
 
 // ---------------------------------------------------------------------------
+// Inlined thank-you-code minter (mirror of api/_lib/thankYouCode.ts — gotcha #5)
+// ---------------------------------------------------------------------------
+interface ThankYouCode {
+  code: string;
+  valueLabel: string;
+  expiresLabel: string;
+}
+const THANKYOU_PERCENT = 10;
+const THANKYOU_VALID_DAYS = 365;
+const THANKYOU_PREFIX = "FRIENDS";
+const THANKYOU_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const thankYouSuffix = (length = 6): string => {
+  let out = "";
+  for (let i = 0; i < length; i += 1) {
+    out += THANKYOU_ALPHABET[Math.floor(Math.random() * THANKYOU_ALPHABET.length)];
+  }
+  return out;
+};
+const createThankYouCode = async (
+  stripe: Stripe,
+  { sessionId, buyerEmail }: { sessionId: string; buyerEmail: string | null },
+): Promise<ThankYouCode> => {
+  const expiresAt = new Date(Date.now() + THANKYOU_VALID_DAYS * 24 * 60 * 60 * 1000);
+  const expiresUnix = Math.floor(expiresAt.getTime() / 1000);
+  const coupon = await stripe.coupons.create({
+    percent_off: THANKYOU_PERCENT,
+    duration: "once",
+    max_redemptions: 1,
+    redeem_by: expiresUnix,
+    name: `Estate thank-you — ${sessionId.slice(0, 14)}`,
+    metadata: { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" },
+  });
+  let promoErr: unknown = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const code = `${THANKYOU_PREFIX}-${thankYouSuffix()}`;
+    try {
+      await stripe.promotionCodes.create({
+        coupon: coupon.id,
+        code,
+        max_redemptions: 1,
+        expires_at: expiresUnix,
+        metadata: { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" },
+      });
+      return {
+        code,
+        valueLabel: `${THANKYOU_PERCENT}%`,
+        expiresLabel: expiresAt.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+      };
+    } catch (err) {
+      promoErr = err;
+      const message = err instanceof Error ? err.message : "";
+      if (!message.includes("code_already_exists") && !message.includes("already exists")) break;
+    }
+  }
+  throw promoErr instanceof Error
+    ? promoErr
+    : new Error("Failed to create thank-you promotion code.");
+};
+
+// ---------------------------------------------------------------------------
+// Inlined order-confirmation email → HTML string (mirror of
+// api/_lib/emails/OrderConfirmation.tsx + ./styles.ts — gotcha #5)
+// ---------------------------------------------------------------------------
+const esc = (s: string): string =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
+const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+
+const renderOrderConfirmationHtml = (p: {
+  buyerName?: string | null;
+  orderRef: string;
+  lines: EmailLine[];
+  total: string;
+  thankYouCode: string;
+  thankYouValue: string;
+  thankYouExpiry: string;
+  estateEmail: string;
+}): string => {
+  const first = (() => {
+    const t = (p.buyerName ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : "there";
+  })();
+  const ESTATE = {
+    stamp: "Estate-stamped by The Mandala Company",
+    numbering: "Hand-numbered within the edition",
+    coa: "Ships with a Certificate of Authenticity on estate letterhead",
+    printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
+  };
+  const EMBELLISH =
+    "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Allow 4 weeks.";
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
+    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
+    meta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const lineHtml = p.lines
+    .map((line, idx) => {
+      const tierBits = [line.tierLabel, line.size.split(" ")[0], line.editionLabel]
+        .filter(Boolean)
+        .join(" · ");
+      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
+        + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`
+        + (tierBits ? `<p style="font-family:${SANS};color:#c97844;letter-spacing:0.18em;text-transform:uppercase;font-size:10px;font-weight:700;margin:4px 0 0 0;">${esc(tierBits)}</p>` : "")
+        + `<p style="${s.meta}margin-top:4px;">${esc(line.size)}</p>`
+        + (line.framing ? `<p style="${s.meta}margin-top:4px;">Framed — hand-finished frame included</p>` : "")
+        + (line.embellished ? `<p style="${s.meta}margin-top:4px;">Hand-finished by Polly Wedge — ${EMBELLISH}</p>` : "")
+        + `<p style="${s.meta}margin-top:4px;color:#ede6d6;">${esc(line.price)}</p>`
+        + `</div>`;
+    })
+    .join("");
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your print is on its way — The Art of Stephen Meakin</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
+    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order at Point 101 in London, the UK's leading giclée print atelier, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.eyebrow}">Your order</p>`
+    + `<div style="${s.card}">${lineHtml}`
+    + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
+    + `<p style="font-family:${SANS};font-size:14px;margin:0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Total (incl. shipping)</span> &nbsp; <strong style="color:#ede6d6;font-size:16px;">${esc(p.total)}</strong></p>`
+    + `</div>`
+    + `<p style="${s.eyebrow}margin-top:28px;">Authentication</p>`
+    + `<div style="${s.card}">`
+    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.stamp}</p>`
+    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.numbering}</p>`
+    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.coa}</p>`
+    + `<p style="${s.meta}color:rgba(237,230,214,0.78);">· ${ESTATE.printer}</p>`
+    + `</div>`
+    + `<div style="${s.giftCard}">`
+    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A note from the estate</p>`
+    + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">In thanks for being among the first to take one of Steve's prints into your home, please accept ${esc(p.thankYouValue)} towards a future print, with our warmth.</p>`
+    + `<code style="${s.code}">${esc(p.thankYouCode)}</code>`
+    + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry)}.</p>`
+    + `</div>`
+    + `<h2 style="${s.subheading}">What happens next</h2>`
+    + `<p style="${s.body}">We'll place your print with Point 101 in the next working day, and notify you the moment it leaves the studio. If anything about the colourway or sizing needs another look, just reply to this email — we read everything ourselves.</p>`
+    + `<p style="${s.signoff}">With love from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Returns, refunds &amp; damages — <a href="https://themandalacompany.com/returns" style="${s.link}">themandalacompany.com/returns</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -380,18 +550,16 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         const resend = new Resend(resendKey);
 
         const lines = linesFromMetadata(m, session.amount_subtotal);
-        const html = await render(
-          OrderConfirmation({
-            buyerName,
-            orderRef: session.id.slice(0, 18) + "…",
-            lines,
-            total: formatGBP(session.amount_total),
-            thankYouCode: thankYou.code,
-            thankYouValue: thankYou.valueLabel,
-            thankYouExpiry: thankYou.expiresLabel,
-            estateEmail: DEFAULT_FROM,
-          }),
-        );
+        const html = renderOrderConfirmationHtml({
+          buyerName,
+          orderRef: session.id.slice(0, 18) + "…",
+          lines,
+          total: formatGBP(session.amount_total),
+          thankYouCode: thankYou.code,
+          thankYouValue: thankYou.valueLabel,
+          thankYouExpiry: thankYou.expiresLabel,
+          estateEmail: DEFAULT_FROM,
+        });
 
         const sendResult = await resend.emails.send({
           from: `${FROM_NAME} <${fromEmail}>`,

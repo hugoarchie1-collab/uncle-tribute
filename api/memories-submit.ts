@@ -44,16 +44,14 @@
  */
 
 import { Resend } from "resend";
-import { render } from "@react-email/render";
-import { MemorySubmitted } from "./_lib/emails/MemorySubmitted.tsx";
-import {
-  moderateMemory,
-  publishMemory,
-  readPublishedMemories,
-  prepareImageAttachment,
-  isKvConfigured,
-  type StoredMemory,
-} from "./_lib/memoryStore.ts";
+
+// SELF-CONTAINED — no imports from ./_lib or /src. Vercel's @vercel/node builder
+// compiles only the entrypoint and does NOT bundle sibling local .ts/.tsx files
+// into the lambda (they crash at cold start with ERR_MODULE_NOT_FOUND — verified
+// on preview 2026-05-30; gotcha #5 in CLAUDE.md). The moderation + Vercel-KV
+// store and the estate notification email are inlined below — mirrors of
+// api/_lib/memoryStore.ts + api/_lib/emails/MemorySubmitted.tsx (+ ./styles.ts).
+// Keep them in sync.
 
 const DEFAULT_FROM = "info@themandalacompany.com";
 const DEFAULT_BCC = "info@themandalacompany.com";
@@ -144,6 +142,233 @@ const buildPasteEntry = (m: {
   if (m.location) lines.push(`    location: ${JSON.stringify(m.location)},`);
   lines.push("    message:", `      ${JSON.stringify(m.message)},`, "  },");
   return lines.join("\n");
+};
+
+// ===========================================================================
+// Inlined moderation + Vercel-KV store (mirror of api/_lib/memoryStore.ts —
+// gotcha #5). Raw fetch against OpenAI + Upstash REST; zero new deps.
+// ===========================================================================
+interface StoredMemory {
+  id: string;
+  name: string;
+  relationship?: string;
+  location?: string;
+  message: string;
+  createdAt: string;
+}
+
+type ModerationDecision =
+  | { status: "clean" }
+  | { status: "flagged"; categories: string[] }
+  | { status: "unconfigured" }
+  | { status: "error"; detail: string };
+
+interface OmniModerationResult {
+  flagged: boolean;
+  categories: Record<string, boolean>;
+}
+interface OmniModerationResponse {
+  results?: OmniModerationResult[];
+}
+
+const MEMORY_BLOCKLIST: string[] = [
+  "nigger", "nigga", "faggot", "retard", "spic", "chink", "kike", "wetback",
+  "tranny", "coon", "gook", "paki",
+  "cunt", "pussy", "blowjob", "handjob", "whore", "cum", "porn", "rape",
+  "raping", "rapist", "molest", "paedophile", "pedophile", "bestiality",
+];
+const builtInModerate = (text: string): ModerationDecision => {
+  const normalised = ` ${text.toLowerCase().replace(/[^a-z0-9\s]+/g, " ")} `;
+  if (MEMORY_BLOCKLIST.some((w) => normalised.includes(` ${w} `))) {
+    return { status: "flagged", categories: ["language"] };
+  }
+  if ((text.match(/https?:\/\//gi) || []).length >= 3) {
+    return { status: "flagged", categories: ["spam"] };
+  }
+  return { status: "clean" };
+};
+
+async function moderateMemory(
+  text: string,
+  imageDataUrl?: string,
+): Promise<ModerationDecision> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return builtInModerate(text);
+  const input: Array<
+    { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }
+  > = [{ type: "text", text: text.slice(0, 8000) }];
+  if (imageDataUrl) input.push({ type: "image_url", image_url: { url: imageDataUrl } });
+  try {
+    const res = await fetch("https://api.openai.com/v1/moderations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: "omni-moderation-latest", input }),
+      signal: AbortSignal.timeout(12_000),
+    });
+    if (!res.ok) {
+      console.warn(`[memories-submit] OpenAI moderation HTTP ${res.status} — using built-in filter.`);
+      return builtInModerate(text);
+    }
+    const json = (await res.json()) as OmniModerationResponse;
+    const result = json.results?.[0];
+    if (!result) return builtInModerate(text);
+    if (result.flagged) {
+      const categories = Object.entries(result.categories ?? {})
+        .filter(([, v]) => v)
+        .map(([k]) => k);
+      return { status: "flagged", categories };
+    }
+    return { status: "clean" };
+  } catch (err) {
+    console.warn(
+      "[memories-submit] OpenAI moderation unreachable — using built-in filter:",
+      err instanceof Error ? err.message : err,
+    );
+    return builtInModerate(text);
+  }
+}
+
+const KV_KEY = "memories:published";
+const kvConfig = (): { url: string; token: string } | null => {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  return { url, token };
+};
+const isKvConfigured = (): boolean => kvConfig() !== null;
+async function kvCommand(command: (string | number)[]): Promise<unknown | null> {
+  const cfg = kvConfig();
+  if (!cfg) return null;
+  try {
+    const res = await fetch(cfg.url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${cfg.token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(command),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) {
+      console.error(`[memories-submit] KV command failed: HTTP ${res.status}`);
+      return null;
+    }
+    const json = (await res.json()) as { result?: unknown; error?: string };
+    if (json.error) {
+      console.error("[memories-submit] KV command error:", json.error);
+      return null;
+    }
+    return json.result ?? null;
+  } catch (err) {
+    console.error("[memories-submit] KV command threw:", err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+async function publishMemory(memory: StoredMemory): Promise<boolean> {
+  if (!isKvConfigured()) return false;
+  const result = await kvCommand(["LPUSH", KV_KEY, JSON.stringify(memory)]);
+  return result !== null;
+}
+async function readPublishedMemories(limit = 200): Promise<StoredMemory[]> {
+  if (!isKvConfigured()) return [];
+  const result = await kvCommand(["LRANGE", KV_KEY, 0, limit - 1]);
+  if (!Array.isArray(result)) return [];
+  const out: StoredMemory[] = [];
+  for (const raw of result) {
+    if (typeof raw !== "string") continue;
+    try {
+      const parsed = JSON.parse(raw) as StoredMemory;
+      if (parsed && typeof parsed.id === "string" && typeof parsed.message === "string") {
+        out.push(parsed);
+      }
+    } catch {
+      // skip a corrupt entry
+    }
+  }
+  return out;
+}
+
+interface EmailAttachment {
+  filename: string;
+  content: string;
+  contentType?: string;
+}
+function prepareImageAttachment(dataUrl: string, idHint: string): EmailAttachment | null {
+  const match = /^data:(image\/(png|jpe?g|webp|gif));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+  if (!match) return null;
+  const subtype = match[2];
+  const ext = subtype === "jpeg" ? "jpg" : subtype;
+  return { filename: `${idHint}.${ext}`, content: match[3], contentType: match[1] };
+}
+
+// ===========================================================================
+// Inlined estate notification email → HTML string (mirror of
+// api/_lib/emails/MemorySubmitted.tsx + ./styles.ts — gotcha #5)
+// ===========================================================================
+const esc = (s: string): string =>
+  s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
+const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+
+const renderMemorySubmittedHtml = (p: {
+  name: string;
+  relationship?: string;
+  location?: string;
+  email?: string;
+  message: string;
+  submittedAt: string;
+  pasteEntry: string;
+  estateEmail: string;
+  published?: boolean;
+  holdReason?: string;
+  hasImage?: boolean;
+  imageAttached?: boolean;
+}): string => {
+  const published = p.published ?? false;
+  const paragraphs = p.message.split(/\n{2,}/).map((x) => x.trim()).filter(Boolean);
+  const meta = [p.relationship, p.location].filter(Boolean).join(" · ");
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const statusCard = published
+    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This memory is now live</strong> on Steve's wall — it passed moderation automatically, so there's nothing you need to do. If you'd ever like to take it down, just let me know.</p></div>`
+    : `<div style="${s.card}border:1px solid rgba(237,230,214,0.18);border-left:3px solid rgba(237,230,214,0.55);margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This memory is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} Review it below, and if you're happy, publish it manually (paste the ready-made entry into <code>src/data/memories.ts</code> and deploy).</p></div>`;
+  const memoryCard =
+    `<div style="${s.card}border-left:2px solid #c97844;">`
+    + paragraphs.map((x) => `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
+    + (p.hasImage
+      ? `<p style="${s.small}margin:0 0 12px 0;color:rgba(237,230,214,0.78);">${p.imageAttached ? "A photo is attached to this email. If you publish this memory, upload the photo and add its URL to the entry below." : "A photo was submitted but couldn't be attached (unsupported format / too large) — check the Vercel logs."}</p>`
+      : "")
+    + `<p style="${s.small}margin:0;color:rgba(237,230,214,0.78);">— ${esc(p.name)}${meta ? ` · ${esc(meta)}` : ""}</p>`
+    + `</div>`;
+  const submittedLine = p.email
+    ? `<p style="${s.small}">Submitted ${esc(p.submittedAt)} · <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a> (reply to thank them)</p>`
+    : `<p style="${s.small}">Submitted ${esc(p.submittedAt)} · no email left</p>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A new memory of Steve</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">Book of Memories · ${published ? "Published" : "Held for review"}</p>`
+    + `<h1 style="${s.heading}">A memory of Steve.</h1>`
+    + statusCard
+    + memoryCard
+    + submittedLine
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.subheading}">${published ? "If you ever need to re-add it manually" : "To publish this"}</p>`
+    + `<p style="${s.small}">Paste this at the top of the <code>MEMORIES</code> array in <code>src/data/memories.ts</code>, then commit &amp; push${published ? " (only needed if you move off auto-publish)" : ""}:</p>`
+    + `<pre style="background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:16px 18px;margin:12px 0 0 0;font-family:'SF Mono','Menlo','Consolas',monospace;font-size:12.5px;line-height:1.6;color:rgba(237,230,214,0.78);white-space:pre-wrap;word-break:break-word;">${esc(p.pasteEntry)}</pre>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Book of Memories · The Art of Stephen Meakin<br/><a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a></p>`
+    + `</div></body></html>`;
 };
 
 export default async function handler(req: VercelReq, res: VercelRes) {
@@ -336,22 +561,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       message,
     });
 
-    const html = await render(
-      MemorySubmitted({
-        name,
-        relationship: relationship || undefined,
-        location: location || undefined,
-        email: email || undefined,
-        message,
-        submittedAt,
-        pasteEntry,
-        estateEmail: DEFAULT_FROM,
-        published,
-        holdReason: holdReason || undefined,
-        hasImage,
-        imageAttached: !!imageAttachment,
-      }),
-    );
+    const html = renderMemorySubmittedHtml({
+      name,
+      relationship: relationship || undefined,
+      location: location || undefined,
+      email: email || undefined,
+      message,
+      submittedAt,
+      pasteEntry,
+      estateEmail: DEFAULT_FROM,
+      published,
+      holdReason: holdReason || undefined,
+      hasImage,
+      imageAttached: !!imageAttachment,
+    });
 
     const subjectPrefix = published ? "Published" : "Held for review";
     const sendResult = await resend.emails.send({
