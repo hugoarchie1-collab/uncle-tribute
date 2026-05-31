@@ -146,7 +146,7 @@ export const Collections = () => {
             Each of Stephen's paintings is offered as an estate-stamped giclée print, individually made to order. New collections and colourways are released by the estate over time.
           </p>
           <Link
-            to="/collections/find"
+            to="/quiz"
             className="inline-flex items-center gap-1.5 mt-6 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/75 hover:text-accent transition-colors"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >

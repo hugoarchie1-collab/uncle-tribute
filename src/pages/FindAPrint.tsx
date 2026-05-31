@@ -15,10 +15,10 @@ import {
   getLowestTierPricePence,
   formatGBP,
 } from "../data/paintings";
-import { COLOUR_FAMILIES, hexToFamily, type ColourFamily } from "../lib/colour";
+import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
 /**
- * /collections/find — a calm "find a print" wayfinder (NOT a quiz, no email
+ * /quiz — a calm "find a print" wayfinder (NOT a quiz, no email
  * gate). The colour lens: Stephen left many colourways of each mandala, so
  * "choose the tones you're drawn to" is the most natural way in. Every number
  * + image is sourced live from paintings.ts. Reverent: "Where to begin", never
@@ -42,7 +42,7 @@ export const FindAPrint = () => {
       PAINTINGS.map((p) => {
         const avail = p.colourways.filter((c) => c.available);
         const original = avail.find((c) => c.isOriginal) ?? avail[0];
-        const families = new Set(avail.map((c) => hexToFamily(c.hex)));
+        const families = new Set(avail.map((c) => colourwayFamily(c.name, c.hex)));
         return { painting: p, avail, original, families };
       }),
     [],
@@ -57,7 +57,7 @@ export const FindAPrint = () => {
       .filter((e) => [...active].some((f) => e.families.has(f)))
       .map((e) => ({
         painting: e.painting,
-        cover: e.avail.find((c) => active.has(hexToFamily(c.hex))) ?? e.original,
+        cover: e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex))) ?? e.original,
       }));
   }, [entries, active]);
 
@@ -67,7 +67,7 @@ export const FindAPrint = () => {
       <Seo
         title="Find a print"
         description="Find a Stephen Meakin print by the colours you're drawn to — each mandala was made in several of his own colourways, estate-stamped and made to order."
-        url="/collections/find"
+        url="/quiz"
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">

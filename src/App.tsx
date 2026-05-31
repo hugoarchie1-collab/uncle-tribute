@@ -102,8 +102,8 @@ const AnimatedRoutes = () => {
         <Routes location={location}>
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
-          <Route path="/collections/find" element={<FindAPrint />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
+          <Route path="/quiz" element={<FindAPrint />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/basket" element={<Basket />} />

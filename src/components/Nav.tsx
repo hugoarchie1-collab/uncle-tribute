@@ -9,6 +9,7 @@ import { useBasket } from "../lib/basket";
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/collections", label: "Collections" },
+  { to: "/quiz", label: "Quiz" },
   { to: "/about", label: "About" },
   { to: "/memories", label: "Memories" },
   { to: "/contact", label: "Contact" },
