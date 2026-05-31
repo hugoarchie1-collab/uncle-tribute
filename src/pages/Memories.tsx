@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
@@ -12,12 +11,15 @@ import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT } from "../data/content";
 
 /**
- * /memories — the Book of Memories. A moderated-but-auto-publishing wall of
- * memories of Stephen, plus a modal form to leave one.
+ * /memories — the Book of Memories, rebuilt as an editorial memorial scroll
+ * rather than a "book". Dark gallery register: generous negative space, the
+ * artist's own words held as a slow full-bleed pull-quote, and visitor
+ * memories rendered as quiet museum wall-labels down one elegant column.
  *
  * Two voices on the wall:
  *   • A PINNED founding entry — Stephen's own words to his students
- *     (ABOUT.studentsLetter), marked "From the artist".
+ *     (ABOUT.studentsLetter), marked "From the artist · Pinned" and given the
+ *     pull-quote treatment as the page's centrepiece.
  *   • Visitor memories — the file-based MEMORIES seed PLUS any memories that
  *     auto-published to Vercel KV, fetched at runtime from
  *     GET /api/memories-submit. If KV isn't configured the fetch returns an
@@ -27,9 +29,13 @@ import { ABOUT } from "../data/content";
  * omni-moderation and auto-publishes clean, image-free memories (an attached
  * image always holds for the family's OK). The family is emailed either way.
  *
- * Register: the quieter routed-page voice (About / Contact / Legal), not the
- * cinematic Welcome. Centred column, eyebrow + h1 + intro, the wall as an
- * accent-bordered masonry of quotes, then the contribution CTA + modal.
+ * The wall is often sparse — sometimes just the pinned letter. It is composed
+ * to read as intentional and moving even then; never empty or broken.
+ *
+ * Typography canon (no bespoke families): font-display = Newsreader (italic
+ * ONLY for genuine quotes), font-sans = Schibsted Grotesk. Eyebrows via the
+ * EYEBROW tokens. Fully fluid — clamp() for type + spacing, no fixed px widths
+ * that can overflow; tested mentally at 360 → 1440.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -47,79 +53,124 @@ const ARTIST_MEMORY: WallMemory = {
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4MB — matches the endpoint's cap
 
-const MemoryCard = ({ memory }: { memory: WallMemory }) => {
-  const paragraphs = memory.message.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
-  const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
+const splitParagraphs = (text: string) =>
+  text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+// ---------------------------------------------------------------------------
+// PinnedQuote — the centrepiece. Stephen's letter to his students, held as a
+// slow, large, full-bleed pull-quote in the display serif (italic, because it
+// is a genuine quote). On the dark field with generous space it reads as a
+// gallery wall text rather than a card. Reveal short-circuits under reduced
+// motion via the shared Reveal component.
+// ---------------------------------------------------------------------------
+const PinnedQuote = ({ memory }: { memory: WallMemory }) => {
+  const paragraphs = splitParagraphs(memory.message);
   return (
-    <figure className="break-inside-avoid mb-6 border-l-2 border-accent/55 pl-5 sm:pl-6 py-1">
-      <blockquote className="m-0">
-        {paragraphs.map((p, i) => (
+    <section
+      aria-labelledby="pinned-memory-heading"
+      className="relative w-full border-t border-b border-ink/10"
+    >
+      {/* A faint accent wash so the artist's voice sits in a slightly warmer
+          pool of light than the visitor wall — sparing, never loud. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-b from-accent/[0.05] via-transparent to-transparent"
+      />
+      <div className="relative mx-auto w-full max-w-[min(100%,860px)] px-[clamp(1rem,5vw,3rem)] py-[clamp(3.5rem,9vw,7rem)]">
+        <Reveal as="div">
           <p
-            key={i}
-            className={cn(
-              "font-sans font-normal text-[15.5px] sm:text-[16px] leading-[1.75] text-ink/85 m-0",
-              i > 0 && "mt-3.5",
-            )}
+            id="pinned-memory-heading"
+            className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,2rem)] flex items-center gap-2.5")}
           >
-            {p}
+            <span
+              aria-hidden="true"
+              className="inline-block h-1.5 w-1.5 rounded-full bg-accent"
+            />
+            From the artist · Pinned
           </p>
-        ))}
-      </blockquote>
-      {memory.imageUrl ? (
-        <img
-          src={memory.imageUrl}
-          alt={`Shared by ${memory.name}`}
-          loading="lazy"
-          className="mt-4 w-full max-w-[420px] rounded-sm ring-1 ring-white/10"
-        />
-      ) : null}
-      <figcaption className="mt-4 font-sans text-[12px] tracking-[0.04em] text-ink/55">
-        <span className="text-ink/80">— {memory.name}</span>
-        {meta ? <span className="text-ink/45">{` · ${meta}`}</span> : null}
-      </figcaption>
-    </figure>
+          <p className="font-sans text-[clamp(13px,1.4vw,15px)] leading-[1.6] text-ink/55 m-0 mb-[clamp(1.75rem,4vw,2.5rem)] max-w-[44ch]">
+            {ABOUT.studentsIntro}
+          </p>
+        </Reveal>
+
+        <Reveal as="figure" className="m-0" delay={0.06}>
+          <blockquote className="m-0">
+            {paragraphs.map((p, i) => (
+              <p
+                key={i}
+                className={cn(
+                  "font-display italic font-normal tracking-[-0.01em] text-[clamp(22px,3.4vw,38px)] leading-[1.42] text-ink/95 m-0 text-balance",
+                  i > 0 && "mt-[1em]",
+                )}
+              >
+                {p}
+              </p>
+            ))}
+          </blockquote>
+          <figcaption className={cn(EYEBROW_MUTED, "not-italic mt-[clamp(1.75rem,4vw,2.5rem)]")}>
+            — {memory.name}
+          </figcaption>
+        </Reveal>
+      </div>
+    </section>
   );
 };
 
-/** The pinned founding entry — visually distinct, marked "From the artist". */
-const ArtistMemoryCard = ({ memory }: { memory: WallMemory }) => {
-  const paragraphs = memory.message.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+// ---------------------------------------------------------------------------
+// WallLabel — a single visitor memory as a quiet museum wall-label. The message
+// in a calm reading register; the attribution as a small uppercase label set
+// off by a hairline accent rule. Down ONE editorial column (not masonry) with
+// generous rhythm. Images, when present, use object-fit so nothing crops badly.
+// ---------------------------------------------------------------------------
+const WallLabel = ({ memory }: { memory: WallMemory }) => {
+  const paragraphs = splitParagraphs(memory.message);
+  const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
   return (
-    <figure className="relative mb-12 border border-accent/35 bg-accent/[0.04] rounded-sm pl-6 sm:pl-8 pr-5 sm:pr-7 py-7 sm:py-8">
-      <p className={cn(EYEBROW, "m-0 mb-5 flex items-center gap-2")}>
-        <span
-          aria-hidden="true"
-          className="inline-block h-1.5 w-1.5 rounded-full bg-accent"
-        />
-        From the artist · Pinned
-      </p>
-      <p className="font-sans text-[13px] tracking-[0.04em] text-ink/55 m-0 mb-5">
-        {ABOUT.studentsIntro}
-      </p>
+    <figure className="m-0">
       <blockquote className="m-0">
         {paragraphs.map((p, i) => (
           <p
             key={i}
             className={cn(
-              "font-display italic text-[18px] sm:text-[20px] leading-[1.6] text-ink/90 m-0",
-              i > 0 && "mt-4",
+              "font-sans font-normal text-[clamp(16px,1.8vw,19px)] leading-[1.75] text-ink/85 m-0",
+              i > 0 && "mt-[0.9em]",
             )}
           >
             {p}
           </p>
         ))}
       </blockquote>
-      <figcaption className="mt-6 font-sans text-[12px] tracking-[0.06em] text-ink/65">
-        — {memory.name}
+
+      {memory.imageUrl ? (
+        <div className="mt-[clamp(1rem,2.5vw,1.5rem)] w-full max-w-[min(100%,460px)] overflow-hidden rounded-sm ring-1 ring-white/10 bg-bg-soft">
+          <img
+            src={memory.imageUrl}
+            alt={`A photograph shared by ${memory.name}`}
+            loading="lazy"
+            decoding="async"
+            className="block w-full h-auto object-contain"
+          />
+        </div>
+      ) : null}
+
+      <figcaption className="mt-[clamp(1.25rem,3vw,1.75rem)] flex items-center gap-3.5">
+        <span aria-hidden="true" className="h-px w-7 bg-accent/60 shrink-0" />
+        <span className="font-sans text-[11px] font-bold tracking-[0.2em] uppercase leading-[1.5]">
+          <span className="text-ink/80">{memory.name}</span>
+          {meta ? <span className="text-ink/45">{` · ${meta}`}</span> : null}
+        </span>
       </figcaption>
     </figure>
   );
 };
 
 // ---------------------------------------------------------------------------
-// Share-a-memory modal — mirrors EnquireModal's pattern (focus trap, Escape,
-// body-scroll lock, honeypot, aria-live status), with the memorial fields +
-// an optional image upload.
+// Share-a-memory modal — preserved from the original implementation (focus
+// trap, Escape, body-scroll lock, honeypot, aria-live status, optional image
+// upload, all fields + validation + success/error states). Behaviour unchanged.
 // ---------------------------------------------------------------------------
 const ShareMemoryModal = ({
   open,
@@ -497,9 +548,10 @@ export const Memories = () => {
     };
   }, []);
 
-  // Wall order: pinned artist memory, then auto-published (newest first from
-  // KV), then the committed file-based seed. De-dupe by id so a memory that
-  // was both auto-published AND later pasted into the file doesn't double up.
+  // Wall order: auto-published first (newest from KV), then the committed
+  // file-based seed. De-dupe by id (and skip the pinned id so it can never
+  // double up) so a memory that was both auto-published AND later pasted into
+  // the file doesn't appear twice.
   const seen = new Set<string>([ARTIST_MEMORY.id]);
   const visitorMemories: WallMemory[] = [];
   for (const m of [...published, ...MEMORIES]) {
@@ -510,89 +562,144 @@ export const Memories = () => {
   const hasVisitorMemories = visitorMemories.length > 0;
 
   return (
-    <div className="relative min-h-screen flex flex-col">
-      <AmbientBackdrop opacity={0.4} />
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+      <AmbientBackdrop opacity={0.35} />
       <Seo
         title="Book of Memories"
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
         url="/memories"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
-        <Reveal as="header" className="mb-12 max-w-[720px]">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Book of Memories</p>
-          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
-            Memories of Steve.
-          </h1>
-          <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-7 m-0">
-            He answered to a few names. Stephen to some, SEM to the art world,
-            Steve to his family, and Semster to the close, hippie friends who knew
-            him deepest. Whichever name you knew him by, he touched a great many
-            lives — students, friends, fellow artists, the people who simply stood
-            in front of his work and felt something shift.
-          </p>
-          <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-5 m-0">
-            If he touched yours, we'd be honoured if you'd leave a memory here. The
-            family reads every one.
-          </p>
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className={BTN_PRIMARY}
-            >
-              Share a memory
-              <span aria-hidden="true" className="ml-2">→</span>
-            </button>
-          </div>
-          <Separator className="bg-ink/15 mt-10" />
-        </Reveal>
 
-        {/* The pinned founding memory — from the man himself. */}
-        <Reveal as="section">
-          <ArtistMemoryCard memory={ARTIST_MEMORY} />
-        </Reveal>
-
-        {/* The wall of visitor memories */}
-        {hasVisitorMemories ? (
-          <Reveal as="section" className="columns-1 lg:columns-2 gap-x-10">
-            {visitorMemories.map((memory) => (
-              <MemoryCard key={memory.id} memory={memory} />
-            ))}
+      <main className="relative z-10 flex-1">
+        {/* 1 · HEADER — the dignified opening. Eyebrow + display title + the
+            "names he answered to" intro + a gentle first invitation. */}
+        <header className="mx-auto w-full max-w-[min(100%,860px)] px-[clamp(1rem,5vw,3rem)] pt-[clamp(7rem,14vw,11rem)] pb-[clamp(3rem,7vw,5rem)]">
+          <Reveal as="div" className="max-w-[42ch]">
+            <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
+              Book of Memories
+            </p>
+            <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,8vw,72px)] leading-[1.04] text-ink m-0">
+              Memories of Steve.
+            </h1>
           </Reveal>
-        ) : (
-          <Reveal as="section" className="py-6">
-            <p className="font-display italic text-[20px] sm:text-[22px] leading-[1.5] text-ink/70 m-0 max-w-[560px]">
-              Steve's wall is waiting for its first visitor memory. If you have one
-              to share, yours could be the first.
+
+          <Reveal as="div" className="mt-[clamp(1.75rem,4vw,2.5rem)] max-w-[58ch]" delay={0.05}>
+            <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 m-0">
+              He answered to a few names. Stephen to some, SEM to the art world,
+              Steve to his family, and Semster to the close, hippie friends who
+              knew him deepest. Whichever name you knew him by, he touched a great
+              many lives — students, friends, fellow artists, the people who simply
+              stood in front of his work and felt something shift.
+            </p>
+            <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 mt-[1em] m-0">
+              If he touched yours, we'd be honoured if you'd leave a memory here.
+              The family reads every one.
+            </p>
+            <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className={BTN_PRIMARY}
+              >
+                Share a memory
+                <span aria-hidden="true" className="ml-2">→</span>
+              </button>
+            </div>
+          </Reveal>
+        </header>
+
+        {/* 2 · THE PINNED QUOTE — the man's own words, as a slow full-bleed
+            pull-quote moment. The centrepiece of the page. */}
+        <PinnedQuote memory={ARTIST_MEMORY} />
+
+        {/* 3 · THE WALL — visitor memories down ONE editorial column as quiet
+            museum wall-labels, generously spaced. Sparse-safe: if there are
+            none yet, an intentional, inviting empty state holds the space. */}
+        <section
+          aria-label="Memories shared by visitors"
+          className="mx-auto w-full max-w-[min(100%,720px)] px-[clamp(1rem,5vw,3rem)] py-[clamp(3.5rem,8vw,6rem)]"
+        >
+          <Reveal as="div" className="mb-[clamp(2.5rem,6vw,4rem)] max-w-[44ch]">
+            <p className={cn(EYEBROW_MUTED, "m-0")}>
+              {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>
           </Reveal>
+
+          {hasVisitorMemories ? (
+            // Each label reveals on its own as it scrolls into view. The shared
+            // Reveal short-circuits under reduced motion; the divider rule below
+            // each (except the last) gives the column its editorial rhythm.
+            <div className="flex flex-col">
+              {visitorMemories.map((memory, i) => (
+                <Reveal
+                  key={memory.id}
+                  as="div"
+                  className={cn(
+                    i > 0 &&
+                      "mt-[clamp(2.75rem,6vw,4.5rem)] pt-[clamp(2.75rem,6vw,4.5rem)] border-t border-ink/10",
+                  )}
+                >
+                  <WallLabel memory={memory} />
+                </Reveal>
+              ))}
+            </div>
+          ) : (
+            <Reveal as="div" className="max-w-[48ch]">
+              <p className="font-display italic font-normal text-[clamp(20px,2.6vw,28px)] leading-[1.5] text-ink/70 m-0 text-balance">
+                Steve's wall is quiet for now. If you carry a memory of him, yours
+                could be the first to rest here.
+              </p>
+              <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(true)}
+                  className={BTN_PRIMARY}
+                >
+                  Leave the first memory
+                  <span aria-hidden="true" className="ml-2">→</span>
+                </button>
+              </div>
+            </Reveal>
+          )}
+        </section>
+
+        {/* 4 · CLOSING INVITATION — a gentle, generous call to add a memory.
+            Hidden when the wall is still empty (the empty state already carries
+            its own CTA, so we don't stack two). */}
+        {hasVisitorMemories && (
+          <section className="mx-auto w-full max-w-[min(100%,720px)] px-[clamp(1rem,5vw,3rem)] pb-[clamp(5rem,11vw,8rem)]">
+            <Reveal as="div" className="border-t border-ink/10 pt-[clamp(3rem,7vw,5rem)] max-w-[52ch]">
+              <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
+                Leave a memory
+              </p>
+              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,5vw,46px)] leading-[1.08] text-ink m-0">
+                Add yours to the wall.
+              </h2>
+              <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 mt-[clamp(1.25rem,3vw,1.75rem)] m-0 max-w-[48ch]">
+                A moment with Steve, something he said, what his work means to you —
+                a line or a page, all of it is welcome. We gently read each memory
+                before it joins the wall.
+              </p>
+              <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(true)}
+                  className={BTN_PRIMARY}
+                >
+                  Share a memory
+                  <span aria-hidden="true" className="ml-2">→</span>
+                </button>
+              </div>
+            </Reveal>
+          </section>
         )}
 
-        {/* Contribution CTA */}
-        <Reveal as="section" className="mt-16 md:mt-20 max-w-[720px]">
-          <Separator className="bg-ink/15 mb-12" />
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Leave a memory</p>
-          <h2 className="font-display font-bold tracking-[-0.03em] text-[clamp(28px,4vw,40px)] leading-[1.1] text-ink m-0">
-            Add yours to the wall.
-          </h2>
-          <p className="font-sans font-normal text-[16px] leading-[1.75] text-ink/75 mt-6 m-0 max-w-[560px]">
-            A moment with Steve, something he said, what his work means to you — a
-            line or a page, all of it is welcome. We gently check each memory before
-            it joins the wall.
-          </p>
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className={BTN_PRIMARY}
-            >
-              Share a memory
-              <span aria-hidden="true" className="ml-2">→</span>
-            </button>
-          </div>
-        </Reveal>
+        {/* A whisper of bottom space when the wall is empty so the footer never
+            hugs the empty-state CTA. */}
+        {!hasVisitorMemories && <div aria-hidden="true" className="h-[clamp(3rem,8vw,6rem)]" />}
       </main>
+
       <Footer />
       <ShareMemoryModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
