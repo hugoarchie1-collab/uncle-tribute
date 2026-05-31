@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
@@ -96,7 +95,7 @@ export const JournalArticle = () => {
         image={article.coverImage}
         jsonLd={jsonLd}
       />
-      <IntroFilmHeader />
+      <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[680px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-10">
           <Link

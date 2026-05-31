@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
@@ -154,7 +154,7 @@ export const FAQ = () => {
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
         url="/faq"
       />
-      <IntroFilmHeader />
+      <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-14">
           <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">

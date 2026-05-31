@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
@@ -517,7 +517,7 @@ export const Memories = () => {
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
         url="/memories"
       />
-      <IntroFilmHeader />
+      <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-12 max-w-[720px]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Book of Memories</p>

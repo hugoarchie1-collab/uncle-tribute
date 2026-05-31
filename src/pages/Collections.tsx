@@ -1,7 +1,7 @@
 import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal, RevealStagger } from "../components/Reveal";
@@ -92,7 +92,7 @@ export const Collections = () => {
         description="Habundia, Genesis and Born in the Sky — three collections of Stephen Meakin's mandala paintings, each offered as an estate-stamped giclée print, individually made to order."
         url="/collections"
       />
-      <IntroFilmHeader />
+      <Nav overlay />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">

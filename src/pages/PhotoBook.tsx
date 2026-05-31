@@ -1,5 +1,5 @@
 import { Footer } from "../components/Footer";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
+import { Nav } from "../components/Nav";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
@@ -34,7 +34,7 @@ export const PhotoBook = () => {
         description="Steve's Photo Book by Polly Wedge — personal photographs of Stephen Meakin through the years, from the family's own album."
         url="/photo-book"
       />
-      <IntroFilmHeader />
+      <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-12 max-w-[720px]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Photo Book</p>

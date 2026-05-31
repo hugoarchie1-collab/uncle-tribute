@@ -6,7 +6,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "framer-motion";
-import { IntroFilmHeader } from "../components/IntroFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -156,7 +156,7 @@ const ContainImage = ({
 // ─── AboutHero ────────────────────────────────────────────────────────────────
 // Scroll-scrubbed scale + opacity on the backdrop image, gentle upward translate
 // on the title. Reduced-motion short-circuits all transforms. (Left as-is in
-// spirit — the IntroFilmHeader sits above it.)
+// spirit — the overlay Nav sits above it.)
 const AboutHero = () => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
@@ -349,7 +349,7 @@ export const About = () => {
         url="/about"
       />
       {/* Intro film header — owned by another task; left exactly as-is. */}
-      <IntroFilmHeader />
+      <Nav overlay />
 
       <main className="relative z-10">
         {/* 1 · HERO */}
