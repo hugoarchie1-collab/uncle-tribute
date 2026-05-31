@@ -5,6 +5,8 @@ import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
+import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../components/ui/tokens";
+import { cn } from "../lib/cn";
 
 /**
  * Legal pages — Privacy / Terms / Returns.
@@ -487,11 +489,26 @@ const RETURNS: Section[] = [
   },
 ];
 
-export const Privacy = () => <LegalPage title="Privacy" sections={PRIVACY} updated={UPDATED} />;
-export const Terms = () => <LegalPage title="Terms" sections={TERMS} updated={UPDATED} />;
+export const Privacy = () => (
+  <LegalPage
+    title="Privacy."
+    lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
+    sections={PRIVACY}
+    updated={UPDATED}
+  />
+);
+export const Terms = () => (
+  <LegalPage
+    title="Terms of sale."
+    lead="The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights."
+    sections={TERMS}
+    updated={UPDATED}
+  />
+);
 export const Returns = () => (
   <LegalPage
-    title="Returns, refunds &amp; damages"
+    title="Returns, refunds &amp; damages."
+    lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
     sections={RETURNS}
     updated={UPDATED}
   />
@@ -499,15 +516,17 @@ export const Returns = () => (
 
 const LegalPage = ({
   title,
+  lead,
   sections,
   updated,
 }: {
   title: string;
+  lead: string;
   sections: Section[];
   updated: string;
 }) => {
-  // Strip HTML entities for the document title.
-  const plainTitle = title.replace(/&amp;/g, "&");
+  // Strip HTML entities + the canonical trailing full stop for the tab title.
+  const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
   usePageTitle(plainTitle);
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -515,22 +534,19 @@ const LegalPage = ({
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-12">
-          <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
-            The Mandala Company
-          </p>
+          <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
           <h1
-            className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0 hero-text-shadow"
+            className={cn(TITLE, "m-0")}
             dangerouslySetInnerHTML={{ __html: title }}
           />
-          <p className="font-sans text-[12px] tracking-[0.04em] text-ink/55 mt-4 m-0">
-            Last updated {updated}
-          </p>
-          <Separator className="bg-ink/15 mt-8" />
+          <p className={cn(SUBTITLE, "mt-7 m-0 max-w-[620px]")}>{lead}</p>
+          <p className={cn(EYEBROW_MUTED, "mt-7 m-0")}>Last updated {updated}</p>
+          <Separator className="bg-line mt-8" />
         </Reveal>
         <Reveal as="article" className="flex flex-col gap-12">
           {sections.map((section, i) => (
             <section key={i} className="flex flex-col gap-4">
-              <h2 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,28px)] leading-[1.2] text-ink m-0">
+              <h2 className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.2] text-ink m-0">
                 {section.heading}
               </h2>
               {section.blocks.map((block, j) => {
@@ -538,7 +554,7 @@ const LegalPage = ({
                   return (
                     <p
                       key={j}
-                      className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85 m-0"
+                      className="font-sans font-normal text-[16px] leading-[1.8] text-ink-muted m-0"
                     >
                       {block.text}
                     </p>
@@ -547,7 +563,7 @@ const LegalPage = ({
                 return (
                   <ul
                     key={j}
-                    className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85 list-disc pl-6 flex flex-col gap-2 m-0"
+                    className="font-sans font-normal text-[16px] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0"
                   >
                     {block.items.map((item, k) => (
                       <li key={k}>{item}</li>

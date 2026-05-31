@@ -18,7 +18,7 @@ import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
 import { Seo } from "../components/Seo";
 import { cn } from "../lib/cn";
-import { BTN_PRIMARY } from "../components/ui/tokens";
+import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../components/ui/tokens";
 
 /**
  * Fixed backdrop layer that cross-fades between collection scenes as the
@@ -128,29 +128,29 @@ export const Collections = () => {
           className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-6 md:pb-10 text-center"
         >
           <p
-            className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5"
+            className={cn(EYEBROW, "m-0 mb-5")}
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
             The Collections
           </p>
           <h1
-            className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5vw,64px)] leading-[0.98] text-ink m-0 mb-6 text-balance"
+            className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6")}
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
             Estate-stamped editions.
           </h1>
           <p
-            className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/95 max-w-[640px] mx-auto m-0"
+            className={cn(SUBTITLE, "max-w-[640px] mx-auto m-0")}
             style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Each of Stephen's paintings is offered as an estate-stamped giclée print, individually made to order. New collections and colourways are released by the estate over time.
+            Every painting Stephen completed, offered as an estate-stamped giclée and made to order. The estate releases further works and colourways over time.
           </p>
           <Link
-            to="/quiz"
-            className="inline-flex items-center gap-1.5 mt-6 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/75 hover:text-accent transition-colors"
+            to="/for-you"
+            className="inline-flex items-center gap-1.5 mt-7 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            Not sure where to begin? Find a print <span aria-hidden="true">→</span>
+            Find the print for you <span aria-hidden="true">→</span>
           </Link>
         </Reveal>
 
@@ -182,19 +182,21 @@ export const Collections = () => {
               <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
                   <p
-                    className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5"
+                    className={cn(EYEBROW, "m-0 mb-5")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                   >
-                    {["I", "II", "III"][collIndex]}  ·  {items.length} {items.length === 1 ? "Painting" : "Paintings"}
+                    {["I", "II", "III"][collIndex]}
+                    <span className="mx-2 text-ink/35" aria-hidden="true">·</span>
+                    {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.6vw,60px)] leading-[1.0] text-ink m-0 mb-6 text-balance"
+                    className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/95 flex flex-col gap-4 max-w-[640px] mx-auto"
+                    className={cn(SUBTITLE, "flex flex-col gap-4 max-w-[640px] mx-auto")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -239,14 +241,14 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-4 text-center">
                             <h3
-                              className="font-display font-bold text-[16px] md:text-[18px] leading-[1.2] tracking-[-0.015em] text-ink m-0"
+                              className="font-display font-semibold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}
                             </h3>
                             {painting.year && painting.year !== "[ DATE ]" && (
                               <p
-                                className="mt-1.5 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/65 m-0"
+                                className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
                                 style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                               >
                                 {painting.year}
@@ -259,7 +261,7 @@ export const Collections = () => {
                                 lower the click barrier — the £295 anchor still
                                 does its conversion work on the product page. */}
                             <p
-                              className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-ink/85 m-0"
+                              className="mt-2 font-sans text-[13px] leading-[1.6] text-ink-muted m-0"
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
                               Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
@@ -285,24 +287,23 @@ export const Collections = () => {
                     as="div"
                     className="mt-12 md:mt-16 mx-auto max-w-[720px]"
                   >
-                    <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-white/12 px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
-                      <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-4">
+                    <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
+                      <p className={cn(EYEBROW, "m-0 mb-4")}>
                         The complete collection
                       </p>
-                      <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,32px)] leading-[1.15] text-ink m-0 mb-3">
-                        Acquire the complete {shortName}
+                      <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,36px)] leading-[1.2] text-ink m-0 mb-3">
+                        The complete {shortName}
                       </h3>
-                      <p className="font-sans font-normal text-[14.5px] md:text-[15.5px] leading-[1.65] text-ink/80 m-0 mb-2 max-w-[520px] mx-auto">
-                        All {bundle.paintingIds.length} paintings, offered as a
-                        set at the Collector edition (A2) — a single, complete
-                        body of Stephen's work for one home.
+                      <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted m-0 mb-2 max-w-[520px] mx-auto">
+                        All {bundle.paintingIds.length} paintings at the Collector
+                        edition (A2) — the collection entire, for one home.
                       </p>
-                      <p className="font-sans text-[13.5px] leading-[1.6] tracking-[0.02em] text-ink/70 m-0 mb-7">
-                        <span className="font-bold text-ink">
+                      <p className="font-sans text-[13.5px] leading-[1.6] text-ink-muted m-0 mb-7">
+                        <span className="font-semibold text-ink">
                           {formatGBP(bundle.bundlePricePence).replace(".00", "")}
                         </span>
                         <span className="mx-2 text-ink/35">·</span>
-                        the complete set, offered together
+                        the set, offered together
                       </p>
                       <button
                         type="button"
@@ -312,8 +313,8 @@ export const Collections = () => {
                         Add the complete collection to basket
                         <span aria-hidden="true">→</span>
                       </button>
-                      <p className="font-sans text-[11px] tracking-[0.03em] text-ink/45 m-0 mt-4">
-                        The complete-set saving is applied automatically at checkout.
+                      <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
+                        The set saving is applied at checkout.
                       </p>
                     </div>
                   </Reveal>
@@ -334,25 +335,25 @@ export const Collections = () => {
           as="section"
           className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
         >
-          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-accent/25 px-6 sm:px-10 md:px-14 py-10 md:py-14 text-center">
-            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
+          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-10 md:px-14 py-10 md:py-14 text-center">
+            <p className={cn(EYEBROW, "m-0 mb-5")}>
               The complete catalogue
             </p>
-            <h2 className="font-display font-bold tracking-[-0.03em] text-[clamp(28px,3.6vw,46px)] leading-[1.08] text-ink m-0 mb-4">
+            <h2 className={cn(TITLE, "max-w-[640px] mx-auto m-0 mb-4")}>
               The complete works, together.
             </h2>
-            <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/80 m-0 mb-6 max-w-[560px] mx-auto">
+            <p className={cn(SUBTITLE, "max-w-[560px] mx-auto m-0 mb-6")}>
               One estate-stamped Collector print (A2) of all{" "}
-              {catalogue.paintingCount} of Stephen's paintings — the entire,
-              finite body of his work, offered as a single set for one home.
+              {catalogue.paintingCount} of Stephen's paintings: the entire,
+              finite body of his work, gathered for one home.
             </p>
-            <p className="font-sans text-[14px] leading-[1.6] tracking-[0.02em] text-ink/75 m-0 mb-8">
-              <span className="font-display font-bold text-[22px] md:text-[26px] text-ink align-middle">
+            <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-8">
+              <span className="font-display font-semibold text-[22px] md:text-[26px] text-ink align-middle">
                 {formatGBP(catalogue.bundlePricePence).replace(".00", "")}
               </span>
-              <span className="mx-3 text-ink/30">·</span>
-              <span className="text-ink/55">
-                individually {formatGBP(catalogue.fullPricePence).replace(".00", "")} —
+              <span className="mx-3 text-ink/35">·</span>
+              <span>
+                individually {formatGBP(catalogue.fullPricePence).replace(".00", "")},
                 a saving of {formatGBP(catalogue.savePence).replace(".00", "")}
               </span>
             </p>
@@ -364,8 +365,8 @@ export const Collections = () => {
               Add the complete catalogue to basket
               <span aria-hidden="true">→</span>
             </button>
-            <p className="font-sans text-[11px] tracking-[0.03em] text-ink/45 m-0 mt-4">
-              The complete-set saving is applied automatically at checkout.
+            <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
+              The set saving is applied at checkout.
             </p>
           </div>
         </Reveal>

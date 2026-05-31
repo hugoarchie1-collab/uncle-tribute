@@ -5,7 +5,7 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT } from "../data/content";
@@ -32,10 +32,13 @@ import { ABOUT } from "../data/content";
  * The wall is often sparse — sometimes just the pinned letter. It is composed
  * to read as intentional and moving even then; never empty or broken.
  *
- * Typography canon (no bespoke families): font-display = Newsreader (italic
- * ONLY for genuine quotes), font-sans = Schibsted Grotesk. Eyebrows via the
- * EYEBROW tokens. Fully fluid — clamp() for type + spacing, no fixed px widths
- * that can overflow; tested mentally at 360 → 1440.
+ * Typography canon (no bespoke families): font-display = Fraunces (true italic
+ * ONLY for genuine quotes), font-sans = Hanken Grotesk. Section headings use the
+ * shared TITLE / SUBTITLE / EYEBROW tokens; muted text routes through the single
+ * text-ink-muted token and hairlines through border-line / ring-line — no
+ * invented greys, no cool white rules. Accent stays to eyebrows + hover/focus
+ * only (never a fill or a wash). Fully fluid — clamp() for type + spacing, no
+ * fixed px widths that can overflow; holds 360 → 1440.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -71,27 +74,17 @@ const PinnedQuote = ({ memory }: { memory: WallMemory }) => {
   return (
     <section
       aria-labelledby="pinned-memory-heading"
-      className="relative w-full border-t border-b border-ink/10"
+      className="relative w-full border-t border-b border-line"
     >
-      {/* A faint accent wash so the artist's voice sits in a slightly warmer
-          pool of light than the visitor wall — sparing, never loud. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-accent/[0.05] via-transparent to-transparent"
-      />
       <div className="relative mx-auto w-full max-w-[min(100%,860px)] px-[clamp(1rem,5vw,3rem)] py-[clamp(3.5rem,9vw,7rem)]">
         <Reveal as="div">
           <p
             id="pinned-memory-heading"
-            className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,2rem)] flex items-center gap-2.5")}
+            className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,2rem)]")}
           >
-            <span
-              aria-hidden="true"
-              className="inline-block h-1.5 w-1.5 rounded-full bg-accent"
-            />
             From the artist · Pinned
           </p>
-          <p className="font-sans text-[clamp(13px,1.4vw,15px)] leading-[1.6] text-ink/55 m-0 mb-[clamp(1.75rem,4vw,2.5rem)] max-w-[44ch]">
+          <p className="font-sans text-[clamp(13px,1.4vw,15px)] leading-[1.6] text-ink-muted m-0 mb-[clamp(1.75rem,4vw,2.5rem)] max-w-[44ch]">
             {ABOUT.studentsIntro}
           </p>
         </Reveal>
@@ -102,7 +95,7 @@ const PinnedQuote = ({ memory }: { memory: WallMemory }) => {
               <p
                 key={i}
                 className={cn(
-                  "font-display italic font-normal tracking-[-0.01em] text-[clamp(22px,3.4vw,38px)] leading-[1.42] text-ink/95 m-0 text-balance",
+                  "font-display italic font-normal tracking-[-0.01em] text-[clamp(22px,3.4vw,38px)] leading-[1.42] text-ink m-0 text-balance",
                   i > 0 && "mt-[1em]",
                 )}
               >
@@ -122,8 +115,9 @@ const PinnedQuote = ({ memory }: { memory: WallMemory }) => {
 // ---------------------------------------------------------------------------
 // WallLabel — a single visitor memory as a quiet museum wall-label. The message
 // in a calm reading register; the attribution as a small uppercase label set
-// off by a hairline accent rule. Down ONE editorial column (not masonry) with
-// generous rhythm. Images, when present, use object-fit so nothing crops badly.
+// off by a short hairline rule (the warm line token — accent is reserved for
+// eyebrows + hover/focus). Down ONE editorial column (not masonry) with generous
+// rhythm. Images, when present, use object-fit so nothing crops badly.
 // ---------------------------------------------------------------------------
 const WallLabel = ({ memory }: { memory: WallMemory }) => {
   const paragraphs = splitParagraphs(memory.message);
@@ -145,7 +139,7 @@ const WallLabel = ({ memory }: { memory: WallMemory }) => {
       </blockquote>
 
       {memory.imageUrl ? (
-        <div className="mt-[clamp(1rem,2.5vw,1.5rem)] w-full max-w-[min(100%,460px)] overflow-hidden rounded-sm ring-1 ring-white/10 bg-bg-soft">
+        <div className="mt-[clamp(1rem,2.5vw,1.5rem)] w-full max-w-[min(100%,460px)] overflow-hidden ring-1 ring-line bg-bg-soft">
           <img
             src={memory.imageUrl}
             alt={`A photograph shared by ${memory.name}`}
@@ -157,10 +151,10 @@ const WallLabel = ({ memory }: { memory: WallMemory }) => {
       ) : null}
 
       <figcaption className="mt-[clamp(1.25rem,3vw,1.75rem)] flex items-center gap-3.5">
-        <span aria-hidden="true" className="h-px w-7 bg-accent/60 shrink-0" />
+        <span aria-hidden="true" className="h-px w-7 bg-line shrink-0" />
         <span className="font-sans text-[11px] font-bold tracking-[0.2em] uppercase leading-[1.5]">
-          <span className="text-ink/80">{memory.name}</span>
-          {meta ? <span className="text-ink/45">{` · ${meta}`}</span> : null}
+          <span className="text-ink">{memory.name}</span>
+          {meta ? <span className="text-ink-muted">{` · ${meta}`}</span> : null}
         </span>
       </figcaption>
     </figure>
@@ -342,7 +336,7 @@ const ShareMemoryModal = ({
 
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[600px] bg-bg-soft ring-1 ring-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[600px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -354,7 +348,7 @@ const ShareMemoryModal = ({
                   <p className={cn(EYEBROW, "m-0 mb-3")}>Leave a memory</p>
                   <h2
                     id="share-memory-title"
-                    className="font-display font-bold tracking-[-0.025em] text-[clamp(24px,3vw,32px)] leading-[1.15] text-ink m-0"
+                    className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,32px)] leading-[1.15] text-ink m-0"
                   >
                     Share something of Steve.
                   </h2>
@@ -363,7 +357,7 @@ const ShareMemoryModal = ({
                   type="button"
                   onClick={onClose}
                   aria-label="Close"
-                  className="shrink-0 text-ink/55 hover:text-ink transition-colors w-9 h-9 -mr-2 -mt-2 inline-flex items-center justify-center rounded-full hover:bg-white/5"
+                  className="shrink-0 text-ink-muted hover:text-accent transition-colors w-9 h-9 -mr-2 -mt-2 inline-flex items-center justify-center rounded-full hover:bg-white/5"
                 >
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
                     <path d="M3 3 15 15M15 3 3 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -374,10 +368,10 @@ const ShareMemoryModal = ({
               <div aria-live="polite">
                 {status === "success" ? (
                   <div className="py-4">
-                    <p className="font-display font-bold text-[24px] text-ink m-0 mb-3">
+                    <p className="font-display font-semibold text-[24px] text-ink m-0 mb-3">
                       Thank you.
                     </p>
-                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink/75 m-0 max-w-[480px]">
+                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
                       {autoPublished
                         ? "Your memory is now on Steve's wall, and the family has been let know. Thank you for taking the time."
                         : "Your memory has reached the family. We read each one with care before it joins the wall — so yours may not appear straight away. Thank you for sharing it."}
@@ -410,7 +404,7 @@ const ShareMemoryModal = ({
                           name="name"
                           required
                           autoComplete="name"
-                          className="w-full bg-bg ring-1 ring-white/10 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Jane Smith"
                         />
                       </label>
@@ -421,7 +415,7 @@ const ShareMemoryModal = ({
                         <input
                           name="relationship"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-white/10 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Student, friend, collector…"
                         />
                       </label>
@@ -431,48 +425,48 @@ const ShareMemoryModal = ({
                       <label className="block">
                         <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                           Where from{" "}
-                          <span className="normal-case tracking-normal text-ink/35">(optional)</span>
+                          <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                         </span>
                         <input
                           name="location"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-white/10 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Lewes, East Sussex"
                         />
                       </label>
                       <label className="block">
                         <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                           Email{" "}
-                          <span className="normal-case tracking-normal text-ink/35">(optional, never shown)</span>
+                          <span className="normal-case tracking-normal text-ink-muted">(optional, never shown)</span>
                         </span>
                         <input
                           name="email"
                           type="email"
                           autoComplete="email"
-                          className="w-full bg-bg ring-1 ring-white/10 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="So the family can thank you"
                         />
                       </label>
                     </div>
 
                     <label className="block mb-4">
-                      <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                      <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                         Your memory
                       </span>
                       <textarea
                         name="message"
                         required
                         rows={6}
-                        className="w-full bg-bg ring-1 ring-white/10 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                         placeholder="A moment with Steve, something he said, what his work means to you…"
                       />
                     </label>
 
                     {/* Optional image upload */}
                     <div className="mb-5">
-                      <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                      <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                         A photo{" "}
-                        <span className="normal-case tracking-normal text-ink/35">(optional)</span>
+                        <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
                         <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full hover:ring-accent hover:text-accent transition-all">
@@ -485,13 +479,13 @@ const ShareMemoryModal = ({
                           onChange={handleImageChange}
                           className="sr-only"
                         />
-                        <span className="font-sans text-[13px] text-ink/55 truncate max-w-[200px]">
+                        <span className="font-sans text-[13px] text-ink-muted truncate max-w-[200px]">
                           {imageName || "No file chosen"}
                         </span>
                       </label>
-                      <p className="mt-2 font-sans text-[12px] leading-[1.55] text-ink/40 m-0">
-                        Memories with a photo are held for the family to OK before they
-                        appear.
+                      <p className="mt-2 font-sans text-[12px] leading-[1.55] text-ink-muted m-0">
+                        Memories with a photo are held for the family to approve before
+                        they appear.
                       </p>
                       {imageError && (
                         <p className="mt-2 font-sans text-[13px] text-accent m-0">{imageError}</p>
@@ -511,7 +505,7 @@ const ShareMemoryModal = ({
                         {status === "submitting" ? "Sending…" : "Share this memory"}
                         <span aria-hidden="true" className="ml-2">→</span>
                       </button>
-                      <p className="font-sans text-[12px] leading-[1.55] text-ink/45 m-0 max-w-[240px]">
+                      <p className="font-sans text-[12px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
                         Your email stays private — it's only so the family can thank you.
                       </p>
                     </div>
@@ -579,22 +573,20 @@ export const Memories = () => {
             <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
               Book of Memories
             </p>
-            <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,8vw,72px)] leading-[1.04] text-ink m-0">
+            <h1 className={cn(TITLE, "m-0")}>
               Memories of Steve.
             </h1>
           </Reveal>
 
           <Reveal as="div" className="mt-[clamp(1.75rem,4vw,2.5rem)] max-w-[58ch]" delay={0.05}>
-            <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 m-0">
-              He answered to a few names. Stephen to some, SEM to the art world,
-              Steve to his family, and Semster to the close, hippie friends who
-              knew him deepest. Whichever name you knew him by, he touched a great
-              many lives — students, friends, fellow artists, the people who simply
-              stood in front of his work and felt something shift.
+            <p className={cn(SUBTITLE, "m-0 max-w-[58ch]")}>
+              Stephen to some, SEM to the art world, Steve to his family, Semster
+              to the friends who knew him longest. He taught, he painted, he sat
+              across the table from a great many people — students, fellow artists,
+              and those who simply stood before a canvas and felt something move.
             </p>
-            <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 mt-[1em] m-0">
-              If he touched yours, we'd be honoured if you'd leave a memory here.
-              The family reads every one.
+            <p className={cn(SUBTITLE, "mt-[1em] m-0 max-w-[58ch]")}>
+              If he touched your life, leave a memory here. The family reads every one.
             </p>
             <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
               <button
@@ -637,7 +629,7 @@ export const Memories = () => {
                   as="div"
                   className={cn(
                     i > 0 &&
-                      "mt-[clamp(2.75rem,6vw,4.5rem)] pt-[clamp(2.75rem,6vw,4.5rem)] border-t border-ink/10",
+                      "mt-[clamp(2.75rem,6vw,4.5rem)] pt-[clamp(2.75rem,6vw,4.5rem)] border-t border-line",
                   )}
                 >
                   <WallLabel memory={memory} />
@@ -646,9 +638,9 @@ export const Memories = () => {
             </div>
           ) : (
             <Reveal as="div" className="max-w-[48ch]">
-              <p className="font-display italic font-normal text-[clamp(20px,2.6vw,28px)] leading-[1.5] text-ink/70 m-0 text-balance">
-                Steve's wall is quiet for now. If you carry a memory of him, yours
-                could be the first to rest here.
+              <p className="font-display italic font-normal text-[clamp(20px,2.6vw,28px)] leading-[1.5] text-ink-muted m-0 text-balance">
+                This wall is quiet for now. Yours could be the first memory to
+                rest here.
               </p>
               <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
                 <button
@@ -669,17 +661,17 @@ export const Memories = () => {
             its own CTA, so we don't stack two). */}
         {hasVisitorMemories && (
           <section className="mx-auto w-full max-w-[min(100%,720px)] px-[clamp(1rem,5vw,3rem)] pb-[clamp(5rem,11vw,8rem)]">
-            <Reveal as="div" className="border-t border-ink/10 pt-[clamp(3rem,7vw,5rem)] max-w-[52ch]">
+            <Reveal as="div" className="border-t border-line pt-[clamp(3rem,7vw,5rem)] max-w-[52ch]">
               <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
                 Leave a memory
               </p>
-              <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,5vw,46px)] leading-[1.08] text-ink m-0">
+              <h2 className={cn(TITLE, "m-0")}>
                 Add yours to the wall.
               </h2>
-              <p className="font-sans font-normal text-[clamp(16px,1.9vw,19px)] leading-[1.75] text-ink/75 mt-[clamp(1.25rem,3vw,1.75rem)] m-0 max-w-[48ch]">
-                A moment with Steve, something he said, what his work means to you —
-                a line or a page, all of it is welcome. We gently read each memory
-                before it joins the wall.
+              <p className={cn(SUBTITLE, "mt-[clamp(1.25rem,3vw,1.75rem)] m-0 max-w-[48ch]")}>
+                A moment with Steve, something he said, what his work has come to
+                mean to you. A line or a page, all of it is welcome. Each memory
+                is read before it joins the wall.
               </p>
               <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
                 <button

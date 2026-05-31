@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
 import { motion, MotionConfig } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
@@ -103,7 +103,9 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
-          <Route path="/quiz" element={<FindAPrint />} />
+          <Route path="/for-you" element={<FindAPrint />} />
+          {/* Old /quiz URL preserved so existing links never 404. */}
+          <Route path="/quiz" element={<Navigate to="/for-you" replace />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/basket" element={<Basket />} />

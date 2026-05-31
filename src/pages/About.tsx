@@ -17,19 +17,23 @@ import { EnquireModal } from "../components/EnquireModal";
 import { ABOUT, PASSING_DATE, TRIBUTE, MEMORIAL_QUOTE, LIFE_DATES } from "../data/content";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { ScrollProgress } from "../components/ScrollProgress";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 
 // =============================================================================
 // ABOUT — the long-form biography, paced like the owner's layout PDF and built
 // on the home page's design system (Welcome.tsx / tokens.ts).
 //
-// Type canon (no bespoke sizes/weights/trackings anywhere below):
-//   · Eyebrow   → EYEBROW / EYEBROW_MUTED (0.32em)
-//   · Heading   → font-display font-bold tracking-[-0.04em] + clamp() sizes
-//   · Body      → BODY const: Inter, normal, 16/17px, leading-1.7, ink/85,
-//                 ~68ch measure (max-w-[720px])
+// Type canon (no bespoke sizes/weights/trackings anywhere below — every title
+// is the shared TITLE token, every lead the SUBTITLE token, every eyebrow the
+// EYEBROW token, exactly as the home page):
+//   · Eyebrow   → EYEBROW / EYEBROW_MUTED (0.32em accent / muted)
+//   · Title     → TITLE token (font-display, clamp 32→60, ls -0.04em, lh 0.98)
+//   · Lead/body → SUBTITLE token / BODY const (Hanken Grotesk, muted-ink token)
+//
+// Palette canon: dark shell, cream ink, ONE muted-ink token (text-ink-muted),
+// ONE warm hairline token (ring-line / border-line). Accent appears only on
+// eyebrows + hover/selection — never as a quote bar, fill, or body colour.
 //
 // No-crop rule: every photo lives in a defined aspect container so there is no
 // layout shift. Landscape documentary shots whose crop is clearly safe use
@@ -38,9 +42,11 @@ import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, BTN_SECONDARY } from "../component
 // the full frame always shows.
 // =============================================================================
 
-/** Canonical body paragraph recipe — one measure, one register, used everywhere. */
+/** Canonical body paragraph recipe — one measure, one register, used everywhere.
+ *  Mirrors the home section prose: Hanken Grotesk, 16/17px, leading 1.7, routed
+ *  through the single muted-ink token (never a bespoke /85 alpha). */
 const BODY =
-  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0";
+  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-muted m-0";
 
 const SECTION = "mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12";
 
@@ -133,7 +139,7 @@ const ContainImage = ({
     <div
       ref={ref}
       className={cn(
-        "relative w-full overflow-hidden bg-[rgba(14,12,10,0.9)] ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]",
+        "relative w-full overflow-hidden bg-bg-soft ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]",
         aspect,
       )}
     >
@@ -154,9 +160,14 @@ const ContainImage = ({
 };
 
 // ─── AboutHero ────────────────────────────────────────────────────────────────
-// Scroll-scrubbed scale + opacity on the backdrop image, gentle upward translate
-// on the title. Reduced-motion short-circuits all transforms. (Left as-is in
-// spirit — the overlay Nav sits above it.)
+// Full-bleed cover image with the SAME atmosphere as the home page: object-cover
+// (never crops/distorts at any width), the shared radial scrim used site-wide,
+// plus a soft top+bottom gradient so the cream type and the overlay Nav stay
+// legible over any part of the photograph. Type is the canonical home register —
+// font-display headline (not 700, which isn't loaded), accent-free eyebrows in
+// the muted-ink token, `.hero-text-shadow` for legibility. Scroll-scrubbed scale
+// + opacity on the image and a gentle upward translate on the title; reduced-
+// motion short-circuits every transform.
 const AboutHero = () => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
@@ -172,7 +183,7 @@ const AboutHero = () => {
     <section className="relative">
       <div
         ref={ref}
-        className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden"
+        className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden bg-bg"
       >
         <motion.div
           className="absolute inset-0 will-change-transform"
@@ -187,16 +198,30 @@ const AboutHero = () => {
             className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
           />
         </motion.div>
+        {/* Shared radial scrim — the EXACT focal recipe used on Welcome /
+            Collections / the AmbientBackdrop, so the hero reads as the same
+            world rather than a bolted-on banner. */}
         <div
           aria-hidden
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.25) 35%, rgba(10,9,8,0.6) 100%)",
+              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
           }}
         />
-        <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center">
-          <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/85 m-0 hero-text-shadow">
+        {/* Edge feathering — darkens under the overlay Nav and beneath the
+            title so cream type holds at any viewport without crushing the
+            mid-image. */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(10,9,8,0.6) 0%, rgba(10,9,8,0) 30%, rgba(10,9,8,0) 60%, rgba(10,9,8,0.72) 100%)",
+          }}
+        />
+        <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center px-4">
+          <p className={cn(EYEBROW_MUTED, "m-0 hero-text-shadow")}>
             In memoriam · 1966 — {PASSING_DATE}
           </p>
         </Reveal>
@@ -205,11 +230,11 @@ const AboutHero = () => {
           className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4"
         >
           <Reveal as="div">
-            <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0">
+            <h1 className="font-display font-semibold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0 hero-text-shadow">
               Stephen<br />Meakin
             </h1>
-            <p className="mt-4 md:mt-5 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/75 hero-text-shadow">
-              SEM · Mandala Artist &amp; Sacred Geometer
+            <p className={cn(EYEBROW_MUTED, "mt-4 md:mt-5 hero-text-shadow")}>
+              SEM · Mandala artist &amp; sacred geometer
             </p>
           </Reveal>
         </motion.div>
@@ -233,8 +258,7 @@ const AnegadaSpread = () => {
 
   return (
     <section
-      className="relative w-full overflow-hidden"
-      style={{ backgroundColor: "#0e0a08" }}
+      className="relative w-full overflow-hidden bg-bg-soft"
       aria-label="The turning point"
     >
       <div className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-28">
@@ -244,7 +268,7 @@ const AnegadaSpread = () => {
             ref={ref}
             className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full"
           >
-            <div className="relative w-full aspect-[3/4] overflow-hidden bg-[rgba(8,7,6,0.9)] ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
+            <div className="relative w-full aspect-[3/4] overflow-hidden bg-bg ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
               <motion.div
                 className="absolute inset-0 will-change-transform"
                 style={reduceMotion ? undefined : { y: imgY }}
@@ -263,17 +287,15 @@ const AnegadaSpread = () => {
           {/* The realisation */}
           <div className="md:col-span-7">
             <Reveal as="div">
-              <p className="font-display italic text-[clamp(15px,1.4vw,18px)] text-accent m-0 mb-5">
-                Interlude · the turning point
-              </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,96px)] leading-[0.92] text-ink m-0 mb-8">
+              <p className={cn(EYEBROW, "m-0 mb-5")}>Anegada · 1995</p>
+              <h2 className="font-display font-semibold tracking-[-0.04em] text-[clamp(40px,6vw,96px)] leading-[0.92] text-ink m-0 mb-8 text-balance">
                 <WordReveal text="Everything is connected." stagger={0.1} duration={1.0} />
               </h2>
             </Reveal>
             <Reveal as="div" className="max-w-[720px] flex flex-col gap-6">
               <p className={BODY}>{ABOUT.anegada[0]}</p>
-              <blockquote className="m-0 pl-5 border-l-2 border-accent">
-                <p className="font-display font-medium italic tracking-[-0.01em] text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink/95 m-0">
+              <blockquote className="m-0 pl-5 border-l border-line">
+                <p className="font-display italic tracking-[-0.01em] text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
                   “At the exact moment I completed the circle, I felt something touch me that was
                   inexplicable.”
                 </p>
@@ -310,16 +332,16 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
         <MagneticLink
           to="/collections"
           className={cn(BTN_PRIMARY, "w-fit")}
-          ariaLabel="Browse the prints"
+          ariaLabel="View the prints"
         >
-          Browse prints →
+          View the prints <span aria-hidden="true" className="ml-2">→</span>
         </MagneticLink>
         <MagneticLink
           to="/collections"
           className={cn(BTN_SECONDARY, "w-fit")}
-          ariaLabel="View the collections"
+          ariaLabel="Browse the collections"
         >
-          Our collections
+          The collections
         </MagneticLink>
       </div>
       <button type="button" onClick={onJoinFriends} className={cn(EYEBROW_MUTED, "mt-2 hover:text-accent transition-colors")}>
@@ -342,10 +364,9 @@ export const About = () => {
       {/* Canonical atmospheric backdrop — kept subtle so it never competes with
           the photo-led biography, but ends the flat-black feel. */}
       <AmbientBackdrop opacity={0.42} />
-      <ScrollProgress />
       <Seo
         title="About Stephen Meakin — the life and work"
-        description="The life of Stephen Meakin (1966–2021), British mandala artist and sacred geometer — from Anegada to the studio in Lewes, and a practice devoted to the idea that everything is connected."
+        description="The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected."
         url="/about"
       />
       {/* Intro film header — owned by another task; left exactly as-is. */}
@@ -355,14 +376,16 @@ export const About = () => {
         {/* 1 · HERO */}
         <AboutHero />
 
-        {/* 2 · ABOUT THE ARTIST — opening statement, generous measure, centred */}
+        {/* 2 · ABOUT THE ARTIST — opening statement, generous measure, centred.
+            A display-serif lead (loaded weight, full-opacity ink) over the
+            canonical SUBTITLE body. */}
         <section className={cn(SECTION, "py-16 md:py-24 text-center")}>
           <Reveal as="div" className="max-w-[860px] mx-auto">
-            <SectionLabel>About the artist</SectionLabel>
-            <p className="font-display font-medium tracking-[-0.02em] text-[clamp(24px,3vw,38px)] leading-[1.3] text-ink m-0 mb-8 text-balance">
+            <SectionLabel>The artist</SectionLabel>
+            <p className="font-display font-normal tracking-[-0.02em] text-[clamp(24px,3vw,38px)] leading-[1.3] text-ink m-0 mb-8 text-balance">
               {ABOUT.opening[0]}
             </p>
-            <p className={cn(BODY, "max-w-[720px] mx-auto")}>{ABOUT.opening[1]}</p>
+            <p className={cn(SUBTITLE, "mx-auto")}>{ABOUT.opening[1]}</p>
           </Reveal>
         </section>
 
@@ -371,8 +394,8 @@ export const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center">
             <Reveal as="div" className="md:col-span-6">
               <SectionLabel>Beginnings · 1966 → 1995</SectionLabel>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,58px)] leading-[1.02] text-ink m-0 mb-7 max-w-[640px]">
-                A search for a different aesthetic.
+              <h2 className={cn(TITLE, "m-0 mb-7 max-w-[640px]")}>
+                The search for a different aesthetic.
               </h2>
               <div className="max-w-[720px] flex flex-col gap-5">
                 <p className={BODY}>{ABOUT.earlyLife[0]}</p>
@@ -419,7 +442,7 @@ export const About = () => {
             </Reveal>
             <Reveal as="div" className="md:col-span-6 order-2">
               <SectionLabel>Practice · Lewes, East Sussex</SectionLabel>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,58px)] leading-[1.02] text-ink m-0 mb-7 max-w-[640px]">
+              <h2 className={cn(TITLE, "m-0 mb-7 max-w-[640px]")}>
                 A studio at Phoenix Place.
               </h2>
               <div className="max-w-[720px] flex flex-col gap-5">
@@ -436,8 +459,8 @@ export const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center">
             <Reveal as="div" className="md:col-span-6">
               <SectionLabel>Exhibitions &amp; commissions</SectionLabel>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.8vw,52px)] leading-[1.04] text-ink m-0 mb-7 max-w-[600px]">
-                From Majlis Dubai to a Formula One mandala.
+              <h2 className={cn(TITLE, "m-0 mb-7 max-w-[600px]")}>
+                From the Majlis in Dubai to a Formula One car.
               </h2>
               <p className={cn(BODY, "max-w-[720px]")}>{ABOUT.legacy[1]}</p>
               <ul className="grid grid-cols-2 gap-x-6 gap-y-4 list-none p-0 mt-8 max-w-[520px]">
@@ -456,7 +479,7 @@ export const About = () => {
               </ul>
             </Reveal>
             <Reveal as="figure" className="m-0 md:col-span-6">
-              <div className="bg-[rgba(245,243,238,0.96)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
+              <div className="bg-cream p-3 md:p-4 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
                 <AssetImage
                   src="/img/about/06-force-india-final.jpg"
                   alt="Stephen's mandala design for the Sahara Force India Formula One car"
@@ -478,10 +501,10 @@ export const About = () => {
         <section className={cn(SECTION, "py-16 md:py-24")}>
           <Reveal as="div" className="text-center max-w-[860px] mx-auto mb-10 md:mb-14">
             <SectionLabel>The Academy · 2010 → · Phoenix Place, Lewes</SectionLabel>
-            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4.4vw,60px)] leading-[1.0] text-ink m-0 mb-7 text-balance">
-              TAGA — The Art of Geometry Academy.
+            <h2 className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-7")}>
+              The Art of Geometry Academy.
             </h2>
-            <p className={cn(BODY, "max-w-[720px] mx-auto")}>{ABOUT.legacy[2]}</p>
+            <p className={cn(SUBTITLE, "mx-auto")}>{ABOUT.legacy[2]}</p>
           </Reveal>
 
           <Reveal as="figure" className="m-0 max-w-[1040px] mx-auto">
@@ -497,8 +520,8 @@ export const About = () => {
           </Reveal>
 
           <Reveal as="div" className="max-w-[720px] mx-auto mt-12 md:mt-16">
-            <blockquote className="m-0 pl-6 border-l-2 border-accent/60">
-              <p className="font-display font-medium italic tracking-[-0.01em] text-[clamp(17px,1.8vw,22px)] leading-[1.55] text-ink/95 m-0 mb-4">
+            <blockquote className="m-0 pl-6 border-l border-line">
+              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.8vw,22px)] leading-[1.55] text-ink m-0 mb-4">
                 {ABOUT.academyQuote}
               </p>
               <cite className={cn(EYEBROW_MUTED, "not-italic")}>— On the founding of TAGA</cite>
@@ -521,8 +544,8 @@ export const About = () => {
             </Reveal>
             <Reveal as="div" className="md:col-span-6">
               <SectionLabel>Az-Zarqa, Jordan</SectionLabel>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.8vw,52px)] leading-[1.04] text-ink m-0 mb-7 max-w-[600px]">
-                The same geometry, taught to children who'd lost everything.
+              <h2 className={cn(TITLE, "m-0 mb-7 max-w-[600px]")}>
+                The same geometry, taught to children who had lost everything.
               </h2>
               <p className={cn(BODY, "max-w-[720px]")}>{ABOUT.palestine}</p>
             </Reveal>
@@ -547,16 +570,16 @@ export const About = () => {
 
         {/* 11 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
             tribute, opened by Stephen's own "everything is connected" words. */}
-        <section className="mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-white/8">
+        <section className="mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
-            <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,4vw,48px)] leading-[1.05] text-ink m-0">
+            <h2 className={cn(TITLE, "max-w-[820px] mx-auto m-0")}>
               Stephen Meakin
             </h2>
             <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
           </Reveal>
 
-          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l-2 border-accent/60 pl-6 md:pl-8">
+          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
             <blockquote className="m-0">
               <p className="font-display italic text-[clamp(20px,2.6vw,28px)] leading-[1.45] text-ink m-0">
                 “{MEMORIAL_QUOTE}”

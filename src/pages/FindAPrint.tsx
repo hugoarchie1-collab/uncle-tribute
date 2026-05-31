@@ -7,7 +7,7 @@ import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import {
   PAINTINGS,
@@ -18,12 +18,13 @@ import {
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
 /**
- * /quiz — a calm "find a print" wayfinder (NOT a quiz, no email
- * gate). The colour lens: Stephen left many colourways of each mandala, so
- * "choose the tones you're drawn to" is the most natural way in. Every number
- * + image is sourced live from paintings.ts. Reverent: "Where to begin", never
- * "find YOUR perfect print"; edition counts stay as provenance on the product
- * page, never weaponised here.
+ * /for-you — a calm "find a piece that's right for you, by colour" wayfinder
+ * (NOT a quiz, no email gate, no right or wrong answer). The colour lens:
+ * Stephen left many colourways of each mandala, so "the tones you're drawn to"
+ * is the most natural way in. Every number + image is sourced live from
+ * paintings.ts. Reverent register: "Where to begin", never "find YOUR perfect
+ * print"; edition counts stay as provenance on the product page, never
+ * weaponised here.
  */
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
@@ -62,24 +63,28 @@ export const FindAPrint = () => {
   }, [entries, active]);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <AmbientBackdrop opacity={0.45} />
       <Seo
-        title="Find a print"
-        description="Find a Stephen Meakin print by the colours you're drawn to — each mandala was made in several of his own colourways, estate-stamped and made to order."
-        url="/quiz"
+        title="Find a piece for you"
+        description="Find a Stephen Meakin print by the colours you're drawn to. Each mandala was made in several of his own colourways, estate-stamped and made to order."
+        url="/for-you"
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Where to begin</p>
-          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5vw,64px)] leading-[1.0] text-ink m-0 mb-6 text-balance hero-text-shadow">
-            Find a print by colour.
+          <h1 className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6 hero-text-shadow")}>
+            Find a piece by colour.
           </h1>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink/85 max-w-[620px] mx-auto m-0">
-            Choose the tones you&rsquo;re drawn to — Stephen left many colourways
-            of each mandala. Or{" "}
-            <Link to="/collections" className="text-accent underline underline-offset-4 hover:text-ink transition-colors">
+          <p className={cn(SUBTITLE, "mx-auto m-0")}>
+            Stephen left several colourways of each mandala. Choose the tones you
+            are drawn to, and the pieces that hold them rise to the top. There is
+            no wrong answer. You can also{" "}
+            <Link
+              to="/collections"
+              className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
+            >
               browse by collection
             </Link>
             .
@@ -98,15 +103,15 @@ export const FindAPrint = () => {
                 onClick={() => toggle(f.key)}
                 className={cn(
                   "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 ring-1 transition-all duration-300",
-                  on ? "ring-ink bg-ink/5" : "ring-white/15 hover:ring-white/40",
+                  on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
                 )}
               >
                 <span
                   aria-hidden="true"
-                  className="block w-7 h-7 rounded-full ring-1 ring-white/20"
+                  className="block w-7 h-7 rounded-full ring-1 ring-line"
                   style={{ background: f.swatch }}
                 />
-                <span className={cn(EYEBROW_TIGHT, on ? "text-ink" : "text-ink/55")}>
+                <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>
                   {f.label}
                 </span>
               </button>
@@ -114,7 +119,7 @@ export const FindAPrint = () => {
           })}
         </Reveal>
 
-        <p className="text-center font-sans text-[13.5px] leading-[1.6] text-ink/55 max-w-[560px] mx-auto m-0 mb-4">
+        <p className={cn("text-center mx-auto m-0 mb-4 max-w-[560px]", "font-sans text-[13.5px] leading-[1.6] text-ink-muted")}>
           {COLOURWAY_NOTE}
         </p>
 
@@ -128,12 +133,12 @@ export const FindAPrint = () => {
               onClick={() => setActive(new Set())}
               className={cn(BTN_SECONDARY, "px-4 py-2 text-[10px]")}
             >
-              Show all ten
+              Show all {PAINTINGS.length}
             </button>
           )}
         </div>
 
-        {/* Grid — reuses the collection-tile language */}
+        {/* Grid — reuses the home Featured-Works tile language */}
         <div
           aria-live="polite"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
@@ -141,7 +146,7 @@ export const FindAPrint = () => {
           {filtered.map(({ painting, cover }) => (
             <figure key={painting.id} className="m-0">
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
-                <div className="aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                   <AssetImage
                     src={cover.image}
                     alt={`${painting.title} — ${cover.name}`}
@@ -150,17 +155,11 @@ export const FindAPrint = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                   />
                 </div>
-                <figcaption className="pt-4 text-center">
-                  <h3
-                    className="font-display font-bold text-[16px] md:text-[18px] leading-[1.2] tracking-[-0.015em] text-ink m-0"
-                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
-                  >
+                <figcaption className="pt-5 text-center">
+                  <h3 className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300">
                     {painting.title}
                   </h3>
-                  <p
-                    className="mt-2 font-sans text-[11px] font-medium tracking-[0.04em] text-ink/85 m-0"
-                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-                  >
+                  <p className="mt-2 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0">
                     Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
                   </p>
                 </figcaption>
@@ -170,14 +169,14 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center font-sans text-[16px] leading-[1.7] text-ink/70 mt-10">
-            Nothing matches those tones at once —{" "}
+          <p className="text-center font-sans text-[16px] leading-[1.7] text-ink-muted mt-10">
+            Nothing holds those tones at once.{" "}
             <button
               type="button"
               onClick={() => setActive(new Set())}
               className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
             >
-              show all ten
+              Show all {PAINTINGS.length}
             </button>
             .
           </p>

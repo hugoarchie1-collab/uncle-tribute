@@ -7,20 +7,37 @@
 // cn(); never re-type the recipe inline.
 // =============================================================================
 
-/** Section / chapter label — accent tone (Welcome's section eyebrow). */
+/** Section / chapter label — accent tone (Welcome's section eyebrow).
+ *  The signature element: 11px bold uppercase, 0.32em tracking, accent-toned.
+ *  Sits ABOVE a TITLE (gap mb-4/mb-5). This is the canonical home value. */
 export const EYEBROW =
   "font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent";
 
-/** Quiet / meta eyebrow — cream-fade tone (captions, cites, place tags). */
+/** Section TITLE (h2) — the one display-serif heading treatment every page
+ *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
+ *  clamp 32→60px, line-height 0.98, tracking -0.04em, balanced wrapping. Apply
+ *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
+ *  or leave left-aligned. End the copy with a full stop, sentence-case. */
+export const TITLE =
+  "font-display font-semibold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink text-balance";
+
+/** Section SUBTITLE / lead body — the one running-prose treatment under a
+ *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token,
+ *  17px / 1.8, capped + centered for the centered header (add mx-auto). */
+export const SUBTITLE =
+  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted max-w-[680px]";
+
+/** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
+ *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55";
+  "font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55";
+  "font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[13.5px] leading-[1.6] text-ink/70";
+export const META = "font-sans text-[13.5px] leading-[1.6] text-ink-muted";
 
 /** Primary CTA pill — filled ink → accent on hover. */
 export const BTN_PRIMARY =

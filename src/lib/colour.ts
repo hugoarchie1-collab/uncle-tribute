@@ -56,8 +56,14 @@ const rgbToHsl = (r: number, g: number, b: number): { h: number; s: number; l: n
 export const hexToFamily = (hex: string): ColourFamily => {
   const { r, g, b } = hexToRgb(hex);
   const { h, s, l } = rgbToHsl(r, g, b);
+  // Genuinely dark tones (any hue) read as "dark & indigo".
   if (l < 0.2) return "dark";
-  if (s < 0.18) return l > 0.62 ? "neutrals" : "dark";
+  // Near-greyscale: only the truly dark end is "dark"; a light wash is a
+  // neutral. A *mid*-lightness, low-saturation tone (e.g. Lulin's muted
+  // sage-green #7da383, S≈0.17 L≈0.57) is NOT dark — it still carries a
+  // legible hue, so let it fall through to the hue buckets below rather than
+  // dumping it into "dark". (Threshold 0.12 keeps true greys here.)
+  if (s < 0.12) return l > 0.6 ? "neutrals" : "dark";
   if (h < 18 || h >= 330) return "reds";
   if (h < 45) return "oranges";
   if (h < 70) return "yellows";

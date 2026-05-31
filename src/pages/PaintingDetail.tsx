@@ -13,7 +13,6 @@ import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { ScaleViewer } from "../components/ScaleViewer";
-import { ScrollProgress } from "../components/ScrollProgress";
 import {
   COLLECTIONS,
   EMBELLISHMENT_NOTE,
@@ -32,43 +31,30 @@ import {
 import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
+import {
+  EYEBROW,
+  EYEBROW_MUTED,
+  EYEBROW_TIGHT,
+  META,
+  TITLE,
+  BTN_PRIMARY,
+  BTN_SECONDARY,
+} from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 
 /* =============================================================================
- * TYPE SCALE — Painting Detail page (canonical; propagate site-wide later)
+ * TYPE SCALE — Painting Detail page
  * -----------------------------------------------------------------------------
- * Hugo's note: "the type looks messy — too many different fonts." This page
- * now uses ONE tight scale. Anything not on this list shouldn't appear.
- *
- *   DISPLAY (font-display, Playfair) — used in EXACTLY two places:
- *     · Painting title (h1):  font-display font-bold tracking-[-0.04em]
- *                             text-[clamp(34px,4.4vw,52px)]
- *     · Price (the £ figure):  font-display font-bold tracking-[-0.02em]
- *                             text-[clamp(30px,3.4vw,40px)]
- *     (+ ONE deliberate exception: the artist quote, italic Playfair — a
- *      voice moment, see QUOTE below. Nothing else is big Playfair.)
- *
- *   EYEBROW (one treatment everywhere — "Order a print", "Colourways",
- *            "Add-ons", "Original print", collection-back link, section labels):
- *       font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55
- *     · A tighter micro variant (only where space is cramped — tier-card and
- *       fact labels) keeps the SAME size/weight, only the tracking eases:
- *       font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55
- *
- *   BODY (font-sans, Inter):
- *     · Long-form description:  text-[16px] md:text-[17px] leading-[1.75]
- *     · Meta / spec / facts:    text-[13.5px] leading-[1.6]   (one value weight)
- *
- *   QUOTE (the one allowed extra display treatment — deliberate voice):
- *       font-display italic text-[clamp(18px,1.9vw,22px)] leading-[1.45]
- *
- *   CTA buttons:  font-sans text-[11px] font-bold tracking-[0.18em] uppercase
+ * Conformed to the home design system. The recurring recipes (EYEBROW /
+ * EYEBROW_MUTED / EYEBROW_TIGHT / META / TITLE / BTN_*) are imported from
+ * `components/ui/tokens.ts` — never re-typed here. Fonts are the two house
+ * families only: `font-display` (Fraunces) for the title, price figure and the
+ * one deliberate italic artist-quote voice moment; `font-sans` (Hanken
+ * Grotesk) for everything else. Muted text routes through `text-ink-muted`,
+ * hairlines through `border-line` / `ring-line`, and accent (`text-accent`)
+ * stays reserved for hover/active + at most one resting eyebrow per section.
  * ========================================================================== */
-
-const EYEBROW = "font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55";
-const EYEBROW_TIGHT = "font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55";
-const META = "font-sans text-[13.5px] leading-[1.6] text-ink/70";
 
 /**
  * SizePicker — the standard print tiers as radio cards. One-off tiers
@@ -99,13 +85,13 @@ const SizePicker = ({
             "relative grid grid-cols-[1fr_auto] items-center gap-x-4 text-left bg-transparent border-0 px-4 py-3.5 cursor-pointer transition-all duration-300 ring-1",
             isSelected
               ? "ring-ink shadow-[0_4px_18px_rgba(0,0,0,0.35)]"
-              : "ring-white/15 hover:ring-white/40",
+              : "ring-line hover:ring-ink/40",
           )}
         >
           {tier.isAnchor && (
             <span
               aria-hidden="true"
-              className="absolute -top-2 left-4 inline-flex items-center bg-bg px-2 py-0.5 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-accent rounded-full ring-1 ring-accent/40"
+              className="absolute -top-2 left-4 inline-flex items-center bg-bg px-2 py-0.5 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-accent rounded-full ring-1 ring-line"
             >
               Most chosen
             </span>
@@ -117,11 +103,11 @@ const SizePicker = ({
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
-          <span className="font-display font-bold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
+          <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
             {formatGBP(tier.pricePence).replace(".00", "")}
           </span>
           {isSelected && !tier.isOneOff && (
-            <span className={cn(META, "col-span-2 mt-3 text-ink/60")}>
+            <span className={cn(META, "col-span-2 mt-3")}>
               {tier.editionLabel} · estate-stamped &amp; hand-numbered
               {tier.editionPromise ? ` · ${tier.editionPromise}` : ""}
             </span>
@@ -157,15 +143,15 @@ const OneOffCard = ({
     className={cn(
       "relative w-full text-left bg-transparent p-5 cursor-pointer transition-all duration-300 ring-1",
       isSelected
-        ? "ring-accent shadow-[0_4px_22px_rgba(0,0,0,0.4)]"
-        : "ring-accent/35 hover:ring-accent/70",
+        ? "ring-ink shadow-[0_4px_22px_rgba(0,0,0,0.4)]"
+        : "ring-line hover:ring-ink/40",
     )}
   >
     <span className="flex items-baseline justify-between gap-4 mb-2">
       <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent">
         Unique · one of one
       </span>
-      <span className="font-display font-bold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
+      <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
         {formatGBP(tier.pricePence).replace(".00", "")}
       </span>
     </span>
@@ -175,7 +161,7 @@ const OneOffCard = ({
     <span className={cn(META, "block mb-1.5")}>{tier.size}</span>
     <span className={cn(META, "block")}>
       A singular work, hand-painted in Stephen&rsquo;s geometric tradition.
-      Once it is taken, it is gone — there is only this one.
+      There is only this one.
     </span>
   </button>
 );
@@ -198,7 +184,7 @@ const Colourways = ({
   const hasAlternates = availableColourways.length > 1;
   return (
     <div>
-      <p className={cn(EYEBROW, "m-0 mb-3")}>
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
         {hasAlternates ? `Colourways · ${availableColourways.length}` : "Original colourway"}
       </p>
 
@@ -227,13 +213,13 @@ const Colourways = ({
                   "group relative block w-11 h-11 rounded-full cursor-pointer border-0 p-0 transition-shadow duration-300",
                   isSelected
                     ? "ring-2 ring-ink ring-offset-2 ring-offset-bg shadow-[0_6px_22px_rgba(0,0,0,0.55)]"
-                    : "ring-1 ring-white/25 hover:ring-white/55 shadow-[0_3px_14px_rgba(0,0,0,0.4)]",
+                    : "ring-1 ring-line hover:ring-ink/40 shadow-[0_3px_14px_rgba(0,0,0,0.4)]",
                 )}
                 style={{ background: c.hex, backgroundColor: c.hex }}
               >
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink rounded-full ring-1 ring-white/10 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -244,7 +230,7 @@ const Colourways = ({
       ) : (
         <div aria-hidden="true" className="flex mb-4">
           <span
-            className="block w-11 h-11 rounded-full ring-1 ring-white/25 shadow-[0_3px_14px_rgba(0,0,0,0.4)]"
+            className="block w-11 h-11 rounded-full ring-1 ring-line shadow-[0_3px_14px_rgba(0,0,0,0.4)]"
             style={{ background: selected.hex, backgroundColor: selected.hex }}
           />
         </div>
@@ -425,7 +411,7 @@ const BuyBox = ({
           <Badge variant="accent">{collection.title}</Badge>
         </div>
       )}
-      <h1 className="font-display font-bold tracking-[-0.04em] leading-[1.04] text-[clamp(34px,4.4vw,52px)] text-ink m-0 mb-5">
+      <h1 className={cn(TITLE, "m-0 mb-5")}>
         {painting.title}
       </h1>
 
@@ -450,20 +436,21 @@ const BuyBox = ({
           </>
         )}
         <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Original</dt>
-        <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink/75">{ORIGINAL_PROVENANCE}</dd>
+        <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
       </dl>
 
-      <Separator className="bg-white/10 mb-6" />
+      <Separator className="bg-line mb-6" />
 
       {/* #order-print anchor + sentinel — StickyAddBar's IntersectionObserver
           tracks this element, so it must stay with the buy controls. */}
       <div id="order-print" className="scroll-mt-24">
         <div ref={orderSentinelRef} aria-hidden="true" className="h-px w-full" />
 
-        {/* 3 · PRICE (tracks the selected size tier) + eyebrow */}
+        {/* 3 · PRICE (tracks the selected size tier) + eyebrow. The one resting
+            accent on this purchase section — every other label stays muted. */}
         <p className={cn(EYEBROW, "m-0 mb-3")}>Order a print</p>
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-6">
-          <p className="font-display font-bold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
+          <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
             {formatGBP(selectedTier.pricePence).replace(".00", "")}
           </p>
           <p className={cn(META, "m-0")}>
@@ -504,18 +491,18 @@ const BuyBox = ({
             count-based checkout coupon applies the advertised saving (no /api
             change — see getColourwaySetBundle). */}
         {colourwaySet && (
-          <div className="mt-7 ring-1 ring-accent/45 px-4 py-4">
-            <p className={cn(EYEBROW, "m-0 mb-2")}>The complete colourway set</p>
-            <p className="font-sans text-[13.5px] leading-[1.55] text-ink/80 m-0 mb-3">
-              All {colourwaySet.colourwayNames.length} of Stephen's colourways for
-              this work — {colourwaySetNames} — each an estate-stamped Collector A2
-              print, the colours exactly as he left them in the studio.
+          <div className="mt-7 ring-1 ring-line px-4 py-4">
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>The complete colourway set</p>
+            <p className="font-sans text-[13.5px] leading-[1.55] text-ink-muted m-0 mb-3">
+              Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
+              for this work — {colourwaySetNames} — each an estate-stamped Collector A2
+              print, the colours exactly as he left them.
             </p>
             <p className="font-sans text-[14px] text-ink m-0 mb-3.5">
-              <span className="font-display font-bold tracking-[-0.02em] text-[22px] mr-2.5">
+              <span className="font-display font-semibold tracking-[-0.02em] text-[22px] mr-2.5">
                 {formatGBP(colourwaySet.bundlePricePence).replace(".00", "")}
               </span>
-              the complete set, offered together
+              the complete set, together
             </p>
             <button
               type="button"
@@ -524,12 +511,12 @@ const BuyBox = ({
                   addItem(painting.id, name),
                 )
               }
-              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors"
+              className={BTN_PRIMARY}
             >
-              Add the complete set to basket
+              Add the complete set
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
-            <p className="font-sans text-[12px] leading-[1.5] text-ink/50 mt-2.5 m-0">
+            <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
               The complete-set saving is applied automatically at checkout.
             </p>
           </div>
@@ -538,15 +525,15 @@ const BuyBox = ({
         {/* 6 · ADD-ONS — hidden on the one-off original */}
         {showAddOns && (
           <fieldset className="border-0 p-0 m-0 mt-7 flex flex-col gap-2.5">
-            <legend className={cn(EYEBROW, "m-0 mb-2 p-0")}>Add-ons</legend>
+            <legend className={cn(EYEBROW_MUTED, "m-0 mb-2 p-0")}>Add-ons</legend>
             <label
               className={cn(
                 "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
                 framingOffered
                   ? framing
                     ? "ring-ink"
-                    : "ring-white/15 hover:ring-white/40"
-                  : "ring-white/8 opacity-55 cursor-not-allowed",
+                    : "ring-line hover:ring-ink/40"
+                  : "ring-line opacity-55 cursor-not-allowed",
               )}
             >
               <input
@@ -563,7 +550,7 @@ const BuyBox = ({
                   {framingPriceLabel ? ` +${framingPriceLabel} for this size, plus a small framed-shipping surcharge at checkout. Allow 2 weeks.` : ""}
                 </span>
                 {!framingOffered && (
-                  <span className="font-sans text-[13.5px] text-ink/50">
+                  <span className="font-sans text-[13.5px] text-ink-muted">
                     Framing offered on A2 and A1 sizes only.
                   </span>
                 )}
@@ -575,8 +562,8 @@ const BuyBox = ({
                 embellishOffered
                   ? embellished
                     ? "ring-ink"
-                    : "ring-white/15 hover:ring-white/40"
-                  : "ring-white/8 opacity-55 cursor-not-allowed",
+                    : "ring-line hover:ring-ink/40"
+                  : "ring-line opacity-55 cursor-not-allowed",
               )}
             >
               <input
@@ -595,7 +582,7 @@ const BuyBox = ({
                   {EMBELLISHMENT_NOTE}
                 </span>
                 {!embellishOffered && (
-                  <span className="font-sans text-[13.5px] text-ink/50">
+                  <span className="font-sans text-[13.5px] text-ink-muted">
                     Hand-finishing offered on A2 and A1 sizes only.
                   </span>
                 )}
@@ -610,7 +597,7 @@ const BuyBox = ({
             type="button"
             onClick={onAdd}
             disabled={status === "loading"}
-            className="inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+            className={BTN_PRIMARY}
           >
             Add to basket
           </button>
@@ -618,7 +605,7 @@ const BuyBox = ({
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            className="inline-flex items-center text-ink ring-1 ring-accent/70 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:ring-accent hover:text-accent transition-all disabled:opacity-60"
+            className={cn(BTN_SECONDARY, "disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
             <span aria-hidden="true" className="ml-2">→</span>
@@ -629,7 +616,7 @@ const BuyBox = ({
         <p
           aria-live="polite"
           className={cn(
-            "mt-3 font-sans text-[13.5px] tracking-[0.04em] text-ink/65 m-0 transition-opacity duration-500",
+            "mt-3 font-sans text-[13.5px] tracking-[0.04em] text-ink-muted m-0 transition-opacity duration-500",
             showAdded ? "opacity-100" : "opacity-0",
           )}
         >
@@ -652,7 +639,7 @@ const BuyBox = ({
             copy from single-source ESTATE_AUTHENTICATION (inside the card).
             Full provenance + shipping detail live in the ProvenancePanel
             below the Story so the buy box stays tight. */}
-        <Separator className="bg-white/10 mt-7 mb-6" />
+        <Separator className="bg-line mt-7 mb-6" />
         <AuthenticationCard />
         <div className="mt-5">
           <ReassuranceRow />
@@ -672,18 +659,18 @@ const Story = ({ painting }: { painting: Painting }) => (
   <div className="max-w-[720px] mx-auto">
     {painting.artistQuote && (
       <Reveal as="div">
-        <blockquote className="m-0 pl-6 border-l-2 border-accent py-2">
+        <blockquote className="m-0 pl-6 border-l-2 border-line py-2">
           <p className="font-display italic text-[clamp(18px,1.9vw,22px)] leading-[1.45] text-ink m-0 mb-3">
             &ldquo;{painting.artistQuote}&rdquo;
           </p>
-          <cite className={cn(EYEBROW, "not-italic")}>— Stephen Meakin</cite>
+          <cite className={cn(EYEBROW_MUTED, "not-italic")}>— Stephen Meakin</cite>
         </blockquote>
       </Reveal>
     )}
 
     <Reveal
       as="div"
-      className="mt-12 md:mt-14 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/90"
+      className="mt-12 md:mt-14 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
@@ -691,8 +678,8 @@ const Story = ({ painting }: { painting: Painting }) => (
     </Reveal>
 
     <Reveal as="div" className="mt-12 md:mt-16">
-      <Separator className="bg-white/10 mb-7" />
-      <p className={cn(EYEBROW, "m-0 mb-4")}>Original print</p>
+      <Separator className="bg-line mb-7" />
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Original print</p>
       <p className="font-sans font-normal text-[16px] leading-[1.75] text-ink/85 m-0">
         {ORIGINAL_PRINT_SPEC}
       </p>
@@ -795,20 +782,20 @@ const StickyAddBar = ({
           animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
           transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-[#0a0908]/95 backdrop-blur-md ring-1 ring-white/12 shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
+          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-[#0a0908]/95 backdrop-blur-md ring-1 ring-line shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
           role="region"
           aria-label="Quick add to basket"
         >
           <span
             aria-hidden="true"
-            className="block w-7 h-7 rounded-full ring-1 ring-white/20 shrink-0"
+            className="block w-7 h-7 rounded-full ring-1 ring-line shrink-0"
             style={{ background: selected.hex }}
           />
           <span className="flex flex-col leading-tight">
             <span className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55">
               {selected.name}
             </span>
-            <span className="font-display font-bold tracking-[-0.01em] text-[15px] text-ink">
+            <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
               {formatGBP(selectedTier.pricePence).replace(".00", "")}
             </span>
           </span>
@@ -878,7 +865,7 @@ const HeroLightbox = ({
               onClose();
             }}
             aria-label="Close (Esc)"
-            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/70 hover:text-accent transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-white/10"
+            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted hover:text-accent transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-line"
           >
             Close <span aria-hidden="true">· Esc</span>
           </button>
@@ -1029,7 +1016,6 @@ export const PaintingDetail = () => {
     // overflow-hidden here silently disabled position:sticky and left a large
     // dark void beside the buy box on desktop. html/body already clip the X axis.
     <div className="relative overflow-x-clip">
-      <ScrollProgress />
       <Seo
         title={painting.title}
         description={metaDescription}
@@ -1069,17 +1055,17 @@ export const PaintingDetail = () => {
           <div className="flex items-center justify-between gap-4 mb-8 md:mb-10">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
-              className={cn(EYEBROW, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-accent")}
+              className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-accent")}
             >
               ← {collection?.title ?? "All collections"}
             </Link>
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/75 hover:text-accent transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink-muted hover:text-accent transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
-              <span className="font-display font-bold tracking-[-0.01em] text-ink normal-case text-[14px]">
+              <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
                 {formatGBP(pricePence).replace(".00", "")}
               </span>
               <span aria-hidden="true" className="text-ink/35">·</span>
@@ -1097,7 +1083,7 @@ export const PaintingDetail = () => {
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[88px]">
               {/* View toggle — the artwork, or an honest to-scale diagram. */}
-              <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-white/15 rounded-full">
+              <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full">
                 {(["art", "scale"] as const).map((v) => (
                   <button
                     key={v}
@@ -1184,7 +1170,7 @@ export const PaintingDetail = () => {
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
           <div className="mt-10 md:mt-20">
-            <Separator className="bg-white/10 mb-10 md:mb-14 max-w-[720px] mx-auto" />
+            <Separator className="bg-line mb-10 md:mb-14 max-w-[720px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

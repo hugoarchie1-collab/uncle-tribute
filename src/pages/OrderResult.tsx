@@ -6,7 +6,7 @@ import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { usePageTitle } from "../lib/usePageTitle";
 import { clearBasket } from "../lib/basket";
@@ -36,19 +36,19 @@ export const OrderSuccess = () => {
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order confirmed
           </p>
-          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,80px)] leading-[0.98] text-ink m-0 mb-7 hero-text-shadow">
+          <h1 className={cn(TITLE, "m-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
             Thank you.
           </h1>
-          <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.75] text-ink/85 m-0 mb-5 max-w-[640px] mx-auto">
-            Your payment has gone through and a receipt is on its way to your inbox from Stripe.
+          <p className={cn(SUBTITLE, "m-0 mb-5 mx-auto text-center max-w-[640px]")}>
+            Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink/70 m-0 mb-10 max-w-[640px] mx-auto">
-            Each print is individually made to order. We'll place the print with our atelier
-            (Point 101, London) within two working days and ship to the address you entered at
-            checkout. You'll receive a tracking link as soon as it leaves the studio.
+          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mb-10 mx-auto max-w-[640px]">
+            Each print is made to order. We place yours with our atelier, Point 101 in London,
+            within two working days, then ship to the address you gave at checkout. A tracking
+            link follows the moment it leaves the studio.
           </p>
           {sessionId && (
-            <p className="font-sans text-[13px] leading-[1.6] text-ink/55 m-0 mb-10">
+            <p className="font-sans text-[13px] leading-[1.6] text-ink-muted m-0 mb-10">
               Reference: {sessionId.slice(0, 18)}…
             </p>
           )}
@@ -89,12 +89,12 @@ export const OrderCancel = () => {
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order cancelled
           </p>
-          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,80px)] leading-[0.98] text-ink m-0 mb-7 hero-text-shadow">
+          <h1 className={cn(TITLE, "m-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
             No charge taken.
           </h1>
-          <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.75] text-ink/85 m-0 mb-10 max-w-[640px] mx-auto">
-            You backed out of checkout before completing your order. Nothing was charged.
-            If anything was unclear or you'd like help choosing a colourway, write to us.
+          <p className={cn(SUBTITLE, "m-0 mb-10 mx-auto text-center max-w-[640px]")}>
+            You left checkout before completing the order, so nothing was charged. If a detail
+            was unclear, or you would like help choosing a colourway, write to us.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <MagneticLink

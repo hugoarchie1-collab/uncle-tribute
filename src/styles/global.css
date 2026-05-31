@@ -19,7 +19,31 @@
    ============================================================================= */
 
 @layer base {
-  :root { color-scheme: dark; }
+  /* ===========================================================================
+     CANONICAL PALETTE — single source of truth (derived from the HOME page).
+     Four roles only: canvas background, primary cream ink, ONE muted ink, and
+     the sole chromatic accent. Tailwind's `bg` / `ink` / `accent` tokens
+     (tailwind.config.ts) reference these same hex values, so a colour only
+     ever needs changing in ONE conceptual place. Introduce NO new colours —
+     "muted text" is ALWAYS --ink-muted (or a Tailwind opacity step of --ink),
+     never a fresh grey, and the accent is used as sparingly as the home page
+     (eyebrows + hover/active + selection/focus only).
+     =========================================================================== */
+  :root {
+    color-scheme: dark;
+
+    /* Canvas — deep near-black. */
+    --bg: #0a0908;
+    /* Primary text — warm cream. THE text colour on dark. */
+    --ink: #ede6d6;
+    /* The ONE muted/secondary ink (cream at reduced alpha). Use this single
+       token everywhere "quieter text" is wanted instead of inventing greys. */
+    --ink-muted: rgba(237, 230, 214, 0.7);
+    /* Hairline / divider — warm cream-alpha (NOT a cool white/N grey). */
+    --line: rgba(237, 230, 214, 0.12);
+    /* Sole chromatic accent — warm terracotta. Used sparingly. */
+    --accent: #c97844;
+  }
   html, body, #root { margin: 0; padding: 0; }
   html { scroll-behavior: smooth; overflow-x: clip; }
 
@@ -31,7 +55,8 @@
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #08070a;
+    /* Canvas — matches --bg / the <meta theme-color>. Was a stray #08070a. */
+    background-color: var(--bg);
   }
 
   h1, h2, h3, h4 {
@@ -46,7 +71,7 @@
   a { color: inherit; text-decoration: none; }
   button { font: inherit; cursor: pointer; }
 
-  ::selection { @apply bg-accent; color: #0a0908; }
+  ::selection { @apply bg-accent; color: var(--bg); }
 
   /* Drop-shadow utility for large display headlines so they lift
      off the blurred peacock backdrop and stay legible regardless

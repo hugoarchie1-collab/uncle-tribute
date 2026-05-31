@@ -21,7 +21,7 @@ import { useBasket, removeItem, type BasketItem } from "../lib/basket";
 import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 
 /**
  * Hydrated basket line — joins a stored item against the live catalogue so
@@ -144,27 +144,27 @@ export const Basket = () => {
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             The Estate
           </p>
-          <h1 className="font-display font-bold tracking-[-0.04em] leading-[0.98] text-[clamp(36px,5vw,64px)] text-ink m-0 mb-10 hero-text-shadow">
-            Your Basket
+          <h1 className={cn(TITLE, "m-0 mb-10 hero-text-shadow")}>
+            Your basket
           </h1>
         </Reveal>
 
         {lines.length === 0 ? (
           <Reveal as="div" className="max-w-[640px]">
-            <Separator className="bg-white/10 mb-8" />
-            <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0 mb-8">
-              Your basket is empty. Each print is individually made to order by a UK atelier,
+            <Separator className="bg-line mb-8" />
+            <p className={cn(SUBTITLE, "m-0 mb-8")}>
+              Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
             </p>
             <Link to="/collections" className={cn(BTN_PRIMARY, "w-fit")}>
-              Browse the collections <span aria-hidden="true" className="ml-2">→</span>
+              View the collections <span aria-hidden="true" className="ml-2">→</span>
             </Link>
             <NewsletterSignup variant="inline" />
           </Reveal>
         ) : (
           <>
             <Reveal as="div">
-              <Separator className="bg-white/10 mb-8" />
+              <Separator className="bg-line mb-8" />
               <ul className="list-none p-0 m-0 flex flex-col">
                 {lines.map((line, i) => (
                   <li
@@ -172,7 +172,7 @@ export const Basket = () => {
                     className={
                       i === 0
                         ? "py-6 first:pt-0"
-                        : "py-6 border-t border-white/10"
+                        : "py-6 border-t border-line"
                     }
                   >
                     <div className="flex gap-5 sm:gap-7 items-start">
@@ -198,33 +198,33 @@ export const Basket = () => {
                         )}
                         <Link
                           to={`/collections/${line.paintingId}`}
-                          className="font-display font-bold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
+                          className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
                         >
                           {line.title}
                         </Link>
-                        {/* Tier eyebrow — same register as the collection
-                            badge above. Surfaces label · size · edition. */}
-                        <p className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-accent/80 m-0 mt-2">
+                        {/* Tier label — quiet muted-ink spec line.
+                            Surfaces label · size · edition. */}
+                        <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>
                           {line.tier.label} · {line.tier.size.split(" ")[0]} · {line.tier.editionLabel}
                         </p>
-                        <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink/65 m-0 mt-1.5">
+                        <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
                           {line.colourwayName}
                           {line.item.framing && (
-                            <span className="ml-2 text-ink/55">· framed</span>
+                            <span className="ml-2">· framed</span>
                           )}
                           {line.item.embellished && (
-                            <span className="ml-2 text-ink/55">· hand-finished by Polly</span>
+                            <span className="ml-2">· hand-finished by Polly</span>
                           )}
                         </p>
                         <button
                           type="button"
                           onClick={() => removeItem(line.item.addedAt)}
-                          className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                          className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                         >
                           Remove
                         </button>
                       </div>
-                      <p className="font-display font-bold tracking-[-0.02em] text-[clamp(16px,1.6vw,20px)] text-ink m-0 flex-shrink-0">
+                      <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,20px)] text-ink m-0 flex-shrink-0">
                         {formatGBP(line.tier.pricePence)}
                       </p>
                     </div>
@@ -234,25 +234,25 @@ export const Basket = () => {
             </Reveal>
 
             <Reveal as="div" className="mt-10">
-              <Separator className="bg-white/10 mb-8" />
+              <Separator className="bg-line mb-8" />
               {bundleDiscountPercent > 0 && (
-                <p className="font-sans italic text-[13px] leading-[1.6] text-accent/80 m-0 mb-3">
-                  Estate bundle thank-you — {bundleDiscountPercent}% applied at checkout.
+                <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mb-3">
+                  Estate bundle thank-you: {bundleDiscountPercent}% applied at checkout.
                 </p>
               )}
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0")}>
                   Subtotal
                 </p>
-                <p className="font-display font-bold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0">
+                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0">
                   {formatGBP(subtotalPence)}
                 </p>
               </div>
-              <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink/65 m-0 mb-2">
-                Shipping calculated at checkout. UK £15 · Europe £35 · Worldwide £60.
+              <p className="font-sans font-normal text-[13.5px] leading-[1.65] text-ink-muted m-0 mb-2">
+                Shipping is calculated at checkout: UK £15 · Europe £35 · Worldwide £60.
                 Each print ships within 7–10 working days.
               </p>
-              <p className="font-sans italic text-[12px] leading-[1.6] text-ink/50 m-0 mb-8">
+              <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-8">
                 International buyers may be charged local import duties on delivery.
               </p>
               <div className="flex flex-wrap items-center gap-4">

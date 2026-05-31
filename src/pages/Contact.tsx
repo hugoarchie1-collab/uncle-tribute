@@ -5,7 +5,7 @@ import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -14,8 +14,10 @@ import { cn } from "../lib/cn";
  * page so it shows in the Nav / Footer and can be deep-linked from press,
  * partnerships, and customer enquiries.
  *
- * Visual register: centred 720px column, eyebrow + h1 + intro, then the
- * form. Tone matches About / Legal pages, not the cinematic Welcome.
+ * Visual register: centred 720px column on the shared dark shell — the
+ * canonical EYEBROW / TITLE / SUBTITLE header stack, then the form. Matches
+ * the home design system (Fraunces + Hanken Grotesk, cream-on-near-black,
+ * accent reserved for eyebrow + focus/hover).
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -100,30 +102,26 @@ export const Contact = () => {
       <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-10">
-          <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
-            Contact the estate
-          </p>
-          <h1 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
-            Get in touch.
-          </h1>
-          <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-7 m-0 max-w-[600px]">
-            Write to The Mandala Company about a commission, a partnership,
-            press, or simply to ask a question about a piece. We're a small
-            estate and we read every message ourselves — usually back within a
+          <p className={cn(EYEBROW, "m-0 mb-5")}>Contact the estate</p>
+          <h1 className={cn(TITLE, "m-0")}>Get in touch.</h1>
+          <p className={cn(SUBTITLE, "mt-7 m-0 max-w-[600px]")}>
+            For commissions, partnerships, press, or a question about a
+            particular work, write to The Mandala Company. We are a small
+            estate; every message is read by the family, and answered within a
             day or two.
           </p>
-          <Separator className="bg-ink/15 mt-10" />
+          <Separator className="bg-line mt-10" />
         </Reveal>
 
         <Reveal as="section" className="mt-2">
           {status === "success" ? (
             <div className="py-8">
-              <p className="font-display font-bold text-[26px] text-ink m-0 mb-3">Thank you.</p>
-              <p className="font-sans font-normal text-[15.5px] leading-[1.75] text-ink/75 m-0 max-w-[560px]">
-                Your message has been sent on its way to{" "}
+              <p className={cn(TITLE, "m-0 mb-4")}>Thank you.</p>
+              <p className={cn(SUBTITLE, "m-0 max-w-[560px]")}>
+                Your message is on its way to{" "}
                 <span className="text-ink">info@themandalacompany.com</span>.
-                If your mail client didn't open, the message has been copied to
-                your clipboard — paste it into a new email from anywhere.
+                If your mail client did not open, we have copied the message to
+                your clipboard; paste it into a new email from anywhere.
               </p>
             </div>
           ) : (
@@ -148,7 +146,7 @@ export const Contact = () => {
                     name="name"
                     required
                     autoComplete="name"
-                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                    className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/35 transition-shadow"
                     placeholder="Jane Smith"
                   />
                 </label>
@@ -161,22 +159,22 @@ export const Contact = () => {
                     type="email"
                     required
                     autoComplete="email"
-                    className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                    className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/35 transition-shadow"
                     placeholder="jane@example.com"
                   />
                 </label>
               </div>
 
               <label className="block mb-5">
-                <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                   Message
                 </span>
                 <textarea
                   name="message"
                   required
                   rows={7}
-                  className="w-full bg-bg-soft/40 ring-1 ring-white/12 focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
-                  placeholder="A few lines about what you're after."
+                  className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/35 transition-shadow resize-none"
+                  placeholder="A few lines about the work or enquiry."
                 />
               </label>
 
@@ -195,9 +193,10 @@ export const Contact = () => {
                 </button>
                 <a
                   href="mailto:info@themandalacompany.com"
-                  className="inline-flex items-center min-h-[44px] font-sans text-[12px] tracking-[0.06em] text-ink/55 hover:text-ink transition-colors"
+                  className="inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
                 >
-                  Or write directly →
+                  Or write directly
+                  <span aria-hidden="true" className="ml-1.5">→</span>
                 </a>
               </div>
             </form>

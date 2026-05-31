@@ -5,17 +5,17 @@ import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { ScrollProgress } from "../components/ScrollProgress";
-import { EYEBROW } from "../components/ui/tokens";
+import { EYEBROW, TITLE, SUBTITLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
  * /faq — frequently asked questions.
  *
- * Eight sections, each with an editorial eyebrow + question (Playfair) +
- * answer (sans). Visual register sits between About and Legal — readable
- * long-form copy, not cinematic. Designed to be the first place a curious
- * buyer lands when they want to know "is this real?".
+ * Eight sections, each with an editorial eyebrow + question (font-display
+ * serif, via the shared TITLE token) + answer (font-sans, muted ink). Visual
+ * register sits between About and Legal — readable long-form copy, not
+ * cinematic. Designed to be the first place a curious buyer lands when they
+ * want to know "is this real?".
  */
 
 interface QA {
@@ -148,7 +148,6 @@ export const FAQ = () => {
   return (
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.4} />
-      <ScrollProgress />
       <Seo
         title="Frequently asked"
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
@@ -157,25 +156,24 @@ export const FAQ = () => {
       <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-14">
-          <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-5">
-            The Mandala Company
-          </p>
-          <h1 className="font-display font-bold tracking-tightest text-[clamp(40px,6vw,64px)] leading-[1.05] text-ink m-0">
-            Frequently asked.
-          </h1>
-          <p className="font-sans font-normal text-[16px] sm:text-[17px] leading-[1.75] text-ink/75 mt-7 m-0 max-w-[620px]">
-            The questions we hear most often about the prints, the editions,
-            the framing, and how the estate handles a sale. If yours isn't
-            here, write to us at{" "}
+          <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
+          <h1 className={cn(TITLE, "m-0")}>Questions, answered.</h1>
+          <p className={cn(SUBTITLE, "mt-7 m-0")}>
+            On provenance, paper, editions, framing, hand-finishing, shipping
+            and after-sale care. For anything not covered here, write to{" "}
             <a
               href="mailto:info@themandalacompany.com"
               className="text-accent hover:underline"
             >
               info@themandalacompany.com
             </a>
-            {" "}or via the <Link to="/contact" className="text-accent hover:underline">contact page</Link>.
+            {" "}or use the{" "}
+            <Link to="/contact" className="text-accent hover:underline">
+              contact page
+            </Link>
+            .
           </p>
-          <Separator className="bg-ink/15 mt-10" />
+          <Separator className="bg-line mt-10" />
         </Reveal>
 
         <Reveal as="div" className="flex flex-col gap-14">
@@ -184,10 +182,10 @@ export const FAQ = () => {
               <p className={cn(EYEBROW, "m-0")}>
                 {qa.eyebrow}
               </p>
-              <h2 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.2] text-ink m-0">
+              <h2 className={cn(TITLE, "m-0 text-[clamp(24px,2.8vw,34px)] leading-[1.1]")}>
                 {qa.question}
               </h2>
-              <div className="font-sans font-normal text-[16px] leading-[1.8] text-ink/85">
+              <div className={cn(SUBTITLE, "max-w-none")}>
                 {qa.answer}
               </div>
             </section>

@@ -18,12 +18,13 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        // Two families only (#10). Newsreader = editorial display serif with a
-        // true italic reserved for quotes; Schibsted Grotesk = quiet body/UI
-        // sans. Two weights each (loaded in index.html). No Playfair/Inter.
-        display: ['"Newsreader"', "Georgia", '"Times New Roman"', "serif"],
+        // Two families only (#10). Fraunces = editorial display serif with a
+        // true italic reserved for quotes; Hanken Grotesk = quiet body/UI
+        // sans. Two weights each (loaded in index.html). No Newsreader/
+        // Schibsted, no Playfair/Inter.
+        display: ['"Fraunces"', "Georgia", '"Times New Roman"', "serif"],
         sans: [
-          '"Schibsted Grotesk"',
+          '"Hanken Grotesk"',
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',
@@ -58,14 +59,20 @@ const config: Config = {
         label: ["12px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {
-        // Hybrid theme — dark shell + cream cards
+        // Hybrid theme — dark shell + cream cards.
+        // The four CANONICAL roles (bg / ink / ink.muted / accent + the warm
+        // hairline) reference the CSS variables defined in global.css :root, so
+        // the palette has ONE source of truth. The soft/elevated surface steps
+        // and the ink alpha steps stay as literals (on-palette cream-alpha).
         bg: {
-          DEFAULT: "#0a0908",
+          DEFAULT: "var(--bg)",
           soft: "#14120f",
           elevated: "#1a1815",
         },
         ink: {
-          DEFAULT: "#ede6d6",
+          DEFAULT: "var(--ink)",
+          // The ONE muted ink — use `text-ink-muted` instead of inventing greys.
+          muted: "var(--ink-muted)",
           soft: "rgba(237, 230, 214, 0.85)",
           fade: "rgba(237, 230, 214, 0.55)",
           faint: "rgba(237, 230, 214, 0.35)",
@@ -78,11 +85,13 @@ const config: Config = {
           "ink-soft": "#5a544a",
         },
         line: {
-          DEFAULT: "#221f1b",
+          // Warm cream-alpha hairline (the single divider token). Cool white/N
+          // rules should migrate to `border-line` / `ring-line`.
+          DEFAULT: "var(--line)",
           strong: "#34302a",
         },
         accent: {
-          DEFAULT: "#c97844",
+          DEFAULT: "var(--accent)",
           soft: "#d99466",
         },
       },

@@ -61,7 +61,7 @@ export const ScaleViewer = ({
 
         {/* Doorway */}
         <rect x={doorX} y={doorY} width={doorW} height={doorH} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-ink/25" />
-        <text x={doorX + doorW / 2} y={doorY - 12} textAnchor="middle" fill="currentColor" className="text-ink/45" style={{ font: '600 11px "Schibsted Grotesk", sans-serif', letterSpacing: "0.14em", textTransform: "uppercase" }}>
+        <text x={doorX + doorW / 2} y={doorY - 12} textAnchor="middle" fill="currentColor" className="text-ink/45" style={{ font: '600 11px "Hanken Grotesk", sans-serif', letterSpacing: "0.14em", textTransform: "uppercase" }}>
           Doorway · 2.0 m
         </text>
 
