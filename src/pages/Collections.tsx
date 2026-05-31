@@ -205,7 +205,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+                  className="grid justify-center grid-cols-[repeat(auto-fit,minmax(min(100%,300px),420px))] gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
                 >
                   {items.map((painting) => {
                     const cover =
