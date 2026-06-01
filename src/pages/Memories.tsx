@@ -104,9 +104,9 @@ const initialsOf = (name: string) => {
 const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
   <span
     aria-hidden="true"
-    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(38px,9vw,46px)] w-[clamp(38px,9vw,46px)]"
+    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)]"
   >
-    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(14px,3.4vw,16px)]">
+    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(12.5px,3vw,14px)]">
       {initialsOf(name)}
     </span>
   </span>
@@ -133,7 +133,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.65] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(14px,1.6vw,15px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: boolean }) => {
   const [expanded, setExpanded] = useState(false);
@@ -145,7 +145,7 @@ const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: b
   const plain = pinned ? memory.message.replace(/\s+/g, " ").trim() : "";
   const needsFold = pinned && plain.length > 280;
   return (
-    <article className="group flex gap-[clamp(0.625rem,2.5vw,0.875rem)] py-[clamp(1rem,3.2vw,1.4rem)]">
+    <article className="group flex gap-[clamp(0.625rem,2vw,0.8rem)] py-[clamp(0.7rem,2vw,0.95rem)]">
       {/* AVATAR GUTTER — same monogram + scale for everyone, pinned NOT enlarged */}
       <Monogram name={memory.name} />
       {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
@@ -616,27 +616,22 @@ export const Memories = () => {
       <main className="relative z-10 flex-1">
         {/* 1 · HEADER — the dignified opening. Eyebrow + display title + the
             "names he answered to" intro + a gentle first invitation. */}
-        <header className="mx-auto w-full max-w-[min(100%,860px)] px-[clamp(1rem,5vw,3rem)] pt-[clamp(7rem,14vw,11rem)] pb-[clamp(3rem,7vw,5rem)]">
+        <header className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
           <Reveal as="div" className="max-w-[42ch]">
-            <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
+            <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
               Book of Memories
             </p>
-            <h1 className={cn(TITLE, "m-0")}>
+            <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,36px)] !leading-[1.05]")}>
               Memories of Steve.
             </h1>
           </Reveal>
 
-          <Reveal as="div" className="mt-[clamp(1.75rem,4vw,2.5rem)] max-w-[58ch]" delay={0.05}>
-            <p className={cn(SUBTITLE, "m-0 max-w-[58ch]")}>
-              Stephen to some, SEM to the art world, Steve to his family, Semster
-              to the friends who knew him longest. He taught, he painted, he sat
-              across the table from a great many people — students, fellow artists,
-              and those who simply stood before a canvas and felt something move.
+          <Reveal as="div" className="mt-[clamp(0.75rem,2vw,1.1rem)] max-w-[60ch]" delay={0.05}>
+            <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0">
+              Stephen to some, SEM to the art world, Steve to his family. If he
+              touched your life, add a memory below — the family reads every one.
             </p>
-            <p className={cn(SUBTITLE, "mt-[1em] m-0 max-w-[58ch]")}>
-              If he touched your life, leave a memory here. The family reads every one.
-            </p>
-            <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
+            <div className="mt-[clamp(0.875rem,2.5vw,1.25rem)]">
               <button
                 type="button"
                 onClick={() => setModalOpen(true)}
@@ -658,18 +653,19 @@ export const Memories = () => {
             into "feed". */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(5rem,11vw,8rem)]"
+          className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
         >
           {/* a · the pinned artist comment — always rendered, the page is never empty */}
           <Reveal as="div" delay={0}>
             <CommentRow memory={ARTIST_MEMORY} pinned />
           </Reveal>
 
-          {/* b · quiet section eyebrow */}
+          {/* b · quiet section eyebrow — a hairline under the pinned comment, like
+              a thread divider, then the label */}
           <Reveal
             as="div"
             delay={0.04}
-            className="mt-[clamp(2rem,5vw,3rem)] mb-[clamp(0.5rem,2vw,1rem)]"
+            className="mt-[clamp(0.9rem,2.5vw,1.25rem)] mb-[clamp(0.3rem,1.2vw,0.5rem)] border-t border-line pt-[clamp(0.9rem,2.5vw,1.25rem)]"
           >
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
@@ -684,7 +680,7 @@ export const Memories = () => {
               feed never accumulates visible lag; Reveal short-circuits under
               reduced motion. */}
           {hasVisitorMemories ? (
-            <div className="divide-y divide-line border-t border-line">
+            <div className="divide-y divide-line">
               {visitorMemories.map((memory, i) => (
                 <Reveal key={memory.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
                   <CommentRow memory={memory} />
@@ -696,13 +692,13 @@ export const Memories = () => {
             // a dashed-ring "+" avatar + a SANS invitation (no italic). Composed,
             // not broken.
             <Reveal as="div" delay={0.08}>
-              <div className="border-t border-line">
-                <article className="flex gap-[clamp(0.625rem,2.5vw,0.875rem)] py-[clamp(1rem,3.2vw,1.4rem)]">
+              <div>
+                <article className="flex gap-[clamp(0.625rem,2vw,0.8rem)] py-[clamp(0.7rem,2vw,0.95rem)]">
                   <span
                     aria-hidden="true"
-                    className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(38px,9vw,46px)] w-[clamp(38px,9vw,46px)] border border-dashed border-line bg-bg-elevated"
+                    className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] border border-dashed border-line bg-bg-elevated"
                   >
-                    <span className="font-display not-italic text-ink-faint text-[clamp(14px,3.4vw,16px)] leading-none">
+                    <span className="font-display not-italic text-ink-faint text-[clamp(12.5px,3vw,14px)] leading-none">
                       +
                     </span>
                   </span>
