@@ -5,50 +5,57 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT } from "../data/content";
 
 /**
- * /memories — the Book of Memories, rebuilt as "The Stream": a clean, modern,
- * card-based feed rather than a "book". A single centred ~640px channel (the
- * page deliberately steps IN from the 860px header band) carries a stack of
- * discrete, self-contained memory cards — each a monogram avatar, a bold name
- * with quiet meta beside it, the message at a comfortable reading size, an
- * optional image, and a hairline footer. Dignified, never social: no counts,
- * no follow, no reactions, no icons.
+ * /memories — the Book of Memories, built as a modern COMMENTS FEED in the
+ * idiom of X (Twitter) replies / YouTube comments / a community discussion —
+ * not a "book", not boxed editorial cards. A single centred ~640px channel
+ * (the page deliberately steps IN from the 860px header band) carries a flat
+ * stream of COMMENT ROWS separated by hairline dividers. Each row is one shared
+ * <CommentRow>: a circular monogram avatar in a left gutter, then a header line
+ * (bold NAME + a quieter relationship/location meta on the same baseline), then
+ * the message BODY, then an optional inline image. Dense, scannable, dignified —
+ * no card chrome, no rings on rows, no shadows, no fabricated engagement (no
+ * like/reply/share counts, no fake timestamps).
  *
- * Two voices in the feed:
- *   • A PINNED founding entry — Stephen's own words to his students
- *     (ABOUT.studentsLetter), shown as the FEATURED lead card: elevated surface
- *     + stronger ring + larger lift, the only true italic on the page, with the
- *     letter's tail folded behind an instant (reduced-motion-safe) read-more.
- *   • Visitor memories — the file-based MEMORIES seed PLUS any memories that
+ * Two voices in one feed, SAME row format:
+ *   • A PINNED founding comment — Stephen's own words to his students
+ *     (ABOUT.studentsLetter), rendered by the identical <CommentRow> with a
+ *     small "Pinned" badge (YouTube's "Pinned by …" idiom). It is privileged
+ *     ONLY by position (first) + the badge — never by type. The letter is ONE
+ *     long (~1632-char) paragraph, so it is line-clamped to ~4 lines on load
+ *     with an inline "Read more" that expands IN PLACE (a layout slice swap,
+ *     inherently reduced-motion safe). It is NEVER a wall on load.
+ *   • Visitor comments — the file-based MEMORIES seed PLUS any memories that
  *     auto-published to Vercel KV, fetched at runtime from
  *     GET /api/memories-submit. If KV isn't configured the fetch returns an
  *     empty list and the page shows only the committed entries. Each renders as
- *     a calm bg-soft card with a cream monogram.
+ *     the same comment row, in full (visitor messages are short).
  *
  * Submitting POSTs to /api/memories-submit, which moderates with OpenAI's free
  * omni-moderation and auto-publishes clean, image-free memories (an attached
  * image always holds for the family's OK). The family is emailed either way.
  *
- * The feed is often sparse — sometimes just the pinned card. A dignified ghost
- * card (dashed-ring monogram + an italic invitation) holds the empty state so
- * the live page reads as composed, not broken.
+ * The feed is often sparse — sometimes just the pinned comment. A dignified
+ * empty-state row (dashed-ring "+" avatar + a sans invitation, NO italic) holds
+ * the empty state so the live page reads as composed, not broken.
  *
- * Typography canon (no bespoke families): font-display = Fraunces (true italic
- * ONLY for genuine quotes + the empty-state aside; non-italic for the page
- * title, monograms and card names), font-sans = Hanken Grotesk for all running
- * prose. Hierarchy inside a card brightest→quietest: NAME (text-ink) > MESSAGE
- * (text-ink-soft) > META + footer (text-ink-muted). Accent appears as TEXT in
- * exactly two earned spots — the page header eyebrow and the pinned eyebrow;
- * everywhere else accent is hover/focus only (the monogram warms on hover, the
- * card ring strengthens). Hairlines route through border-line / ring-line — no
- * invented greys. Fully fluid — clamp() type + spacing, no fixed px that can
- * overflow; holds 320 → 1920 with zero horizontal scroll. Reduced-motion safe
- * via the shared <Reveal>.
+ * NO ITALIC, NO SERIF on any body. Every comment body — the artist's letter and
+ * every visitor message alike — is font-sans (Hanken Grotesk), UPRIGHT, normal
+ * weight, comfortable comment size (~14–16px). Fraunces (font-display) survives
+ * ONLY on the page H1/H2 furniture and inside the monogram initials (a glyph in
+ * an avatar, exactly like YouTube's avatar letter — never a body). Hierarchy per
+ * row brightest→quietest: NAME (text-ink) > BODY (text-ink-soft) > META
+ * (text-ink-muted). Accent (rust) appears at rest ONLY on the "Pinned" badge;
+ * everywhere else it is hover/focus only (the monogram warms, "Read more"
+ * brightens). Hairlines route through divide-line / border-line — no invented
+ * greys. Fully fluid — clamp() type + spacing, every body column min-w-0 so long
+ * words never overflow the flex track; holds 320 → 1920 with zero horizontal
+ * scroll. Reduced-motion safe via the shared <Reveal>.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -85,196 +92,118 @@ const initialsOf = (name: string) => {
 };
 
 // ---------------------------------------------------------------------------
-// Monogram — the avatar of the card system (no real photos exist). A calm
+// Monogram — the avatar of the comment row (no real photos exist). A calm
 // cream-on-near-black circle holding the person's initials in the display
-// serif. It NEVER carries an accent fill; it only WARMS (ring + initials →
-// accent) on the card's group-hover / focus-within. Sized via prop: `md` for
-// visitor cards, `lg` for the featured pinned card.
+// serif — the ONE sanctioned in-row Fraunces use, a glyph in an avatar exactly
+// like YouTube's avatar letter, never a body. It NEVER carries an accent fill;
+// it only WARMS (ring + initials → accent) on the row's group-hover /
+// focus-within. Comment scale, ONE size for everyone — the pinned avatar is NOT
+// enlarged (rank is the "Pinned" chip, per real YouTube/X). The size prop is
+// kept in the signature for safety but no caller passes it.
 // ---------------------------------------------------------------------------
-const Monogram = ({ name, size = "md" }: { name: string; size?: "md" | "lg" }) => (
+const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
   <span
     aria-hidden="true"
-    className={cn(
-      "shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent",
-      size === "lg"
-        ? "h-[clamp(52px,7vw,64px)] w-[clamp(52px,7vw,64px)]"
-        : "h-[clamp(40px,9vw,52px)] w-[clamp(40px,9vw,52px)]",
-    )}
+    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(38px,9vw,46px)] w-[clamp(38px,9vw,46px)]"
   >
-    <span
-      className={cn(
-        "font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent",
-        size === "lg" ? "text-[clamp(18px,2.4vw,22px)]" : "text-[clamp(15px,3.5vw,18px)]",
-      )}
-    >
+    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(14px,3.4vw,16px)]">
       {initialsOf(name)}
     </span>
   </span>
 );
 
 // ---------------------------------------------------------------------------
-// PinnedCard — the FEATURED lead of the feed. Same card grammar as a visitor
-// card, elevated three ways (brighter bg-bg-elevated surface, ring-line-strong,
-// shadow-liftLg) so the artist visibly outranks "those who knew him". Stephen's
-// letter is the only true italic on the page, tamed to clamp(18,24) with the
-// tail past the third paragraph folded behind an instant read-more (a layout
-// slice swap — inherently reduced-motion safe). This is the fix for the old
-// "giant italic wall": his words still LEAD the feed, contained.
+// CommentRow — the ONE shared row of the comments feed. `pinned` makes it the
+// artist's row (a "Pinned" badge, YouTube-style); otherwise it is a visitor
+// comment. Identical grammar either way: a monogram avatar in a left gutter,
+// then a header line (bold NAME + quiet inline relationship/location meta on one
+// wrapping baseline), then the BODY, then an optional inline image attachment.
+//
+// EVERY body — the artist's letter and every visitor message alike — uses
+// BODY_CLASS: font-sans (Hanken Grotesk), UPRIGHT, normal weight, comfortable
+// comment size. NEVER italic, NEVER font-display/serif, NEVER a <blockquote>.
+// The letter is privileged only by position + the badge, never by type.
+//
+// FLAT row — no card chrome: no ring on the row, no rounded surface, no shadow,
+// no bg fill. Rows are separated solely by the divide-y hairlines of the list.
+// The min-w-0 on the body column is MANDATORY so long words can't overflow the
+// flex track. Only the pinned row folds (line-clamp-4 + inline Read more, a
+// layout slice swap, reduced-motion safe); visitor messages render in full.
+// No per-row footer, no "A memory of Steve" label, no metrics / icons / reply /
+// share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
-const PinnedCard = ({ memory }: { memory: WallMemory }) => {
-  const paragraphs = splitParagraphs(memory.message);
+const BODY_CLASS =
+  "font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.65] text-ink-soft [overflow-wrap:anywhere] m-0";
+
+const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: boolean }) => {
   const [expanded, setExpanded] = useState(false);
-  // The letter is often a SINGLE long paragraph (no blank-line breaks), so we
-  // cannot fold on paragraph COUNT (the old guard never fired → the whole letter
-  // showed → the "giant italic wall" the redesign had to kill). Instead build a
-  // short collapsed PREVIEW from the running text (~2–3 sentences, trimmed to a
-  // word boundary) and reveal the full formatted letter on demand. Guarantees a
-  // CONTAINED pinned card for any letter, single- or multi-paragraph.
-  const plain = memory.message.replace(/\s+/g, " ").trim();
-  const PREVIEW_CHARS = 240;
-  const needsFold = plain.length > PREVIEW_CHARS + 60;
-  const previewText =
-    plain.slice(0, PREVIEW_CHARS).replace(/\s+\S*$/, "").replace(/[\s,;:.—-]+$/, "") + "…";
-  const showFull = expanded || !needsFold;
-  const shown = showFull ? paragraphs : [previewText];
+  const paragraphs = splitParagraphs(memory.message);
+  const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
+  // The letter is ONE ~1632-char paragraph (zero newlines) so paragraph-count
+  // folding never fires. Use line-clamp on the collapsed body for a true ~4-line
+  // YouTube-style fold that reflows at every width.
+  const plain = pinned ? memory.message.replace(/\s+/g, " ").trim() : "";
+  const needsFold = pinned && plain.length > 280;
   return (
-    <Reveal as="div" delay={0}>
-      <article
-        aria-labelledby="pinned-memory-heading"
-        className="group bg-bg-elevated ring-1 ring-line-strong rounded-2xl shadow-liftLg p-[clamp(1.5rem,5vw,2.5rem)]"
-      >
-        {/* eyebrow — the ONE earned accent text on the card */}
-        <p id="pinned-memory-heading" className={cn(EYEBROW, "m-0 mb-[clamp(1rem,2.5vw,1.25rem)]")}>
-          From the artist · Pinned
-        </p>
-
-        {/* header row with LARGE monogram */}
-        <div className="flex items-start gap-[clamp(0.75rem,2vw,1rem)]">
-          <Monogram name={memory.name} size="lg" />
-          <div className="min-w-0 flex-1">
-            <h2 className="font-display font-semibold not-italic tracking-[-0.02em] leading-[1.2] text-[clamp(19px,2.6vw,24px)] text-ink m-0 break-words">
-              {memory.name}
-            </h2>
-            <p className="mt-1 font-sans text-[clamp(12px,1.4vw,13.5px)] leading-[1.5] text-ink-muted m-0">
-              In his own words, to his students
-            </p>
-          </div>
+    <article className="group flex gap-[clamp(0.625rem,2.5vw,0.875rem)] py-[clamp(1rem,3.2vw,1.4rem)]">
+      {/* AVATAR GUTTER — same monogram + scale for everyone, pinned NOT enlarged */}
+      <Monogram name={memory.name} />
+      {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
+      <div className="min-w-0 flex-1">
+        {pinned ? (
+          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[10.5px] font-bold tracking-[0.18em] uppercase text-accent">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
+            </svg>
+            Pinned
+          </span>
+        ) : null}
+        {/* HEADER LINE — bold name + quiet inline meta on one wrapping baseline */}
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,15.5px)] leading-[1.3] text-ink break-words">
+            {memory.name}
+          </span>
+          {meta ? (
+            <span className="font-sans font-normal text-[clamp(12.5px,1.5vw,13px)] leading-[1.3] text-ink-muted break-words">
+              {meta}
+            </span>
+          ) : null}
         </div>
-
-        {/* framing note */}
-        <p className="mt-[clamp(1rem,2.5vw,1.25rem)] font-sans text-[clamp(13px,1.5vw,14.5px)] leading-[1.6] text-ink-muted m-0 max-w-[52ch]">
-          {ABOUT.studentsIntro}
-        </p>
-
-        {/* THE LETTER — genuine quote, TRUE ITALIC, but tamed in size */}
-        <blockquote className="mt-[clamp(1.25rem,3vw,1.5rem)] m-0">
-          {shown.map((p, i) => (
-            <p
-              key={i}
-              className={cn(
-                "font-display italic font-normal tracking-[-0.01em] text-[clamp(18px,2.2vw,24px)] leading-[1.5] text-ink m-0 text-balance",
-                i > 0 && "mt-[0.85em]",
-              )}
-            >
-              {p}
-            </p>
-          ))}
-        </blockquote>
-
-        {/* read-more disclosure — shown whenever the letter is long enough to
-            fold (keyed on content length, not paragraph count). */}
+        {/* BODY — upright sans for EVERY row incl. the letter. NEVER italic / serif */}
+        <div className="mt-1">
+          {needsFold && !expanded ? (
+            <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
+          ) : (
+            paragraphs.map((p, i) => (
+              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-[0.6em]")}>
+                {p}
+              </p>
+            ))
+          )}
+        </div>
         {needsFold ? (
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className={cn(
-              EYEBROW_TIGHT,
-              "mt-[clamp(1rem,2.5vw,1.25rem)] inline-flex items-center gap-2 hover:text-accent transition-colors",
-            )}
+            className="mt-1.5 font-sans text-[clamp(13px,1.5vw,13.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
-            {expanded ? "Show less" : "Read the rest of Steve's letter"}
+            {expanded ? "Show less" : "Read more"}
           </button>
         ) : null}
-
-        {/* quiet hairline footer */}
-        <div className="mt-[clamp(1.25rem,3vw,1.5rem)] pt-[clamp(0.75rem,2vw,1rem)] border-t border-line flex items-center gap-2.5">
-          <span aria-hidden="true" className="h-px w-5 bg-line shrink-0" />
-          <span className={cn(EYEBROW_TIGHT, "leading-none")}>Pinned · From the artist</span>
-        </div>
-      </article>
-    </Reveal>
-  );
-};
-
-// ---------------------------------------------------------------------------
-// MemoryCard — a single visitor memory as a self-contained card in the stream.
-// Header row: monogram + bold name with quiet meta beneath. Body: the message
-// as calm sans prose (NOT italic — italic is reserved for the artist's genuine
-// quote). Optional image is object-cover with a clamped max-height so a portrait
-// can't tower. A hairline footer carries one quiet "A memory of Steve" label —
-// no counts, no icons. Hover is colour + shadow by default (dignified, reduced-
-// motion-trivial); the single 2px lift is gated behind motion-safe.
-// ---------------------------------------------------------------------------
-const MemoryCard = ({ memory }: { memory: WallMemory }) => {
-  const paragraphs = splitParagraphs(memory.message);
-  const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
-  return (
-    <article
-      className={cn(
-        "group bg-bg-soft ring-1 ring-line rounded-2xl shadow-lift p-[clamp(1.25rem,4vw,2rem)]",
-        "transition-[box-shadow,transform,border-color] duration-300 ease-smooth",
-        "hover:ring-line-strong hover:shadow-liftLg focus-within:ring-line-strong",
-        "motion-safe:hover:-translate-y-0.5",
-      )}
-    >
-      {/* HEADER ROW */}
-      <div className="flex items-start gap-[clamp(0.75rem,2vw,1rem)]">
-        <Monogram name={memory.name} />
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display font-semibold not-italic tracking-[-0.02em] leading-[1.25] text-[clamp(17px,2.4vw,20px)] text-ink m-0 break-words">
-            {memory.name}
-          </h3>
-          {meta ? (
-            <p className="mt-1 font-sans text-[clamp(12px,1.4vw,13.5px)] leading-[1.5] text-ink-muted m-0 break-words">
-              {meta}
-            </p>
-          ) : null}
-        </div>
-      </div>
-
-      {/* MESSAGE — plain prose, NOT italic */}
-      <div className="mt-[clamp(1rem,2.5vw,1.25rem)]">
-        {paragraphs.map((p, i) => (
-          <p
-            key={i}
-            className={cn(
-              "font-sans font-normal text-[clamp(15px,1.8vw,17px)] leading-[1.7] text-ink-soft m-0 [overflow-wrap:anywhere]",
-              i > 0 && "mt-[0.85em]",
-            )}
-          >
-            {p}
-          </p>
-        ))}
-      </div>
-
-      {/* OPTIONAL IMAGE — object-cover + clamped max-height so a portrait can't tower */}
-      {memory.imageUrl ? (
-        <div className="mt-[clamp(1rem,2.5vw,1.25rem)] w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
-          <img
-            src={memory.imageUrl}
-            alt={`A photograph shared by ${memory.name}`}
-            loading="lazy"
-            decoding="async"
-            className="block w-full h-auto object-cover max-h-[clamp(240px,46vw,420px)]"
-          />
-        </div>
-      ) : null}
-
-      {/* QUIET HAIRLINE FOOTER — NO metrics, NO icons */}
-      <div className="mt-[clamp(1rem,2.5vw,1.25rem)] pt-[clamp(0.75rem,2vw,1rem)] border-t border-line flex items-center gap-2.5">
-        <span aria-hidden="true" className="h-px w-5 bg-line shrink-0" />
-        <span className={cn(EYEBROW_TIGHT, "leading-none")}>A memory of Steve</span>
+        {/* OPTIONAL IMAGE — inline comment attachment scale, not a hero. The one
+            allowed ring (on the image, never on the row). */}
+        {memory.imageUrl ? (
+          <div className="mt-2.5 inline-block overflow-hidden rounded-xl ring-1 ring-line bg-bg max-w-[clamp(200px,60%,400px)]">
+            <img
+              src={memory.imageUrl}
+              alt={`A photograph shared by ${memory.name}`}
+              loading="lazy"
+              decoding="async"
+              className="block w-full h-auto object-cover max-h-[clamp(220px,42vw,380px)]"
+            />
+          </div>
+        ) : null}
       </div>
     </article>
   );
@@ -720,61 +649,69 @@ export const Memories = () => {
           </Reveal>
         </header>
 
-        {/* 2 · THE STREAM — a single centred ~640px channel the page steps INTO
+        {/* 2 · THE FEED — a single centred ~640px channel the page steps INTO
             (narrower than the 860px header band) so the feed reads as a focused
-            stream. The pinned artist card always leads; visitor cards (or a
-            dignified empty-state ghost card) follow under a quiet eyebrow. */}
+            single-thread comments section (the comfortable width X/YouTube use).
+            The pinned artist comment always leads; visitor comments (or a
+            dignified empty-state row) follow under a quiet eyebrow. Spacing is
+            per-row padding + divide-y hairlines — what turns "stack of cards"
+            into "feed". */}
         <section
           aria-label="Memories of Steve"
           className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(5rem,11vw,8rem)]"
         >
-          {/* a · the featured pinned card — always rendered, the page is never empty */}
-          <PinnedCard memory={ARTIST_MEMORY} />
+          {/* a · the pinned artist comment — always rendered, the page is never empty */}
+          <Reveal as="div" delay={0}>
+            <CommentRow memory={ARTIST_MEMORY} pinned />
+          </Reveal>
 
-          {/* b · section eyebrow */}
+          {/* b · quiet section eyebrow */}
           <Reveal
             as="div"
             delay={0.04}
-            className="mt-[clamp(2.5rem,6vw,4rem)] mb-[clamp(1.25rem,3vw,2rem)]"
+            className="mt-[clamp(2rem,5vw,3rem)] mb-[clamp(0.5rem,2vw,1rem)]"
           >
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>
           </Reveal>
 
-          {/* c · the card list, or the empty-state ghost card */}
+          {/* c · visitor comments as a hairline-divided feed. divide-y sits on
+              the .map container so the rule falls BETWEEN the Reveal wrappers
+              (no per-row border-b — that would double up); border-t opens the
+              list under the pinned comment so the pinned row reads anchored.
+              Each reveals with a small staggered delay capped at 0.2s so a long
+              feed never accumulates visible lag; Reveal short-circuits under
+              reduced motion. */}
           {hasVisitorMemories ? (
-            // Discrete cards separated by the bg-soft fill + dark gutter (not
-            // dividers). Each reveals with a small staggered delay capped at
-            // 0.2s so a long wall never accumulates visible lag; Reveal
-            // short-circuits under reduced motion.
-            <div className="space-y-[clamp(1.25rem,3vw,2rem)]">
+            <div className="divide-y divide-line border-t border-line">
               {visitorMemories.map((memory, i) => (
                 <Reveal key={memory.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
-                  <MemoryCard memory={memory} />
+                  <CommentRow memory={memory} />
                 </Reveal>
               ))}
             </div>
           ) : (
-            // Empty state: a ghost card matching the visitor-card chrome, with a
-            // dashed-ring monogram and an italic invitation. Composed, not broken.
+            // Empty state recast in the feed idiom — one row in the same grammar,
+            // a dashed-ring "+" avatar + a SANS invitation (no italic). Composed,
+            // not broken.
             <Reveal as="div" delay={0.08}>
-              <article className="bg-bg-soft ring-1 ring-line rounded-2xl shadow-lift p-[clamp(1.5rem,5vw,2.5rem)]">
-                <div className="flex items-start gap-[clamp(0.75rem,2vw,1rem)]">
+              <div className="border-t border-line">
+                <article className="flex gap-[clamp(0.625rem,2.5vw,0.875rem)] py-[clamp(1rem,3.2vw,1.4rem)]">
                   <span
                     aria-hidden="true"
-                    className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(40px,9vw,52px)] w-[clamp(40px,9vw,52px)] border border-dashed border-line bg-bg-elevated"
+                    className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(38px,9vw,46px)] w-[clamp(38px,9vw,46px)] border border-dashed border-line bg-bg-elevated"
                   >
-                    <span className="font-display text-ink-faint text-[clamp(15px,3.5vw,18px)] leading-none">
+                    <span className="font-display not-italic text-ink-faint text-[clamp(14px,3.4vw,16px)] leading-none">
                       +
                     </span>
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display italic font-normal text-[clamp(18px,2.4vw,24px)] leading-[1.45] text-ink-muted m-0 text-balance">
-                      This wall is quiet for now. Yours could be the first memory
-                      to rest here.
+                    <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.6] text-ink-muted m-0">
+                      No memories have been shared yet. Be the first to leave one
+                      for Steve.
                     </p>
-                    <div className="mt-[clamp(1.25rem,3vw,1.75rem)]">
+                    <div className="mt-3">
                       <button
                         type="button"
                         onClick={() => setModalOpen(true)}
@@ -785,8 +722,8 @@ export const Memories = () => {
                       </button>
                     </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </div>
             </Reveal>
           )}
         </section>
