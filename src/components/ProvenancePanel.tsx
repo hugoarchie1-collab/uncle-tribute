@@ -5,7 +5,7 @@ import {
   ORIGINAL_PROVENANCE,
   ORIGINAL_PRINT_SPEC,
 } from "../data/paintings";
-import { EYEBROW, META } from "./ui/tokens";
+import { EYEBROW_MUTED, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -18,14 +18,14 @@ const Disclosure = ({ summary, children }: { summary: string; children: ReactNod
   <details className="group border-b border-white/8">
     <summary
       className={cn(
-        EYEBROW,
+        EYEBROW_MUTED,
         "cursor-pointer list-none flex items-center justify-between py-4 [&::-webkit-details-marker]:hidden",
       )}
     >
       {summary}
       <span
         aria-hidden="true"
-        className="text-accent/60 text-[18px] leading-none transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
+        className="text-ink/40 text-[18px] leading-none transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
       >
         ⌄
       </span>
@@ -54,7 +54,7 @@ export const ProvenancePanel = () => (
         <li className={META}>UK £15 · Europe £35 · Worldwide £60 (unframed; framed orders carry a small surcharge).</li>
         <li className={META}>
           Damaged or lost in transit? See{" "}
-          <Link to="/returns" className="underline underline-offset-4 hover:text-accent transition-colors">
+          <Link to="/returns" className="underline underline-offset-4 hover:text-ink transition-colors">
             returns &amp; damages
           </Link>
           .
