@@ -145,7 +145,7 @@ export const Collections = () => {
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-6 md:pb-10 text-center"
+          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10 text-center"
         >
           <p
             className={cn(EYEBROW, "m-0 mb-5")}
