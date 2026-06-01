@@ -75,7 +75,7 @@ interface TierDef {
 const TIERS: Record<TierId, TierDef> = {
   atelier: {
     id: "atelier",
-    label: "Atelier",
+    label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
     pricePence: 14500,
     editionLabel: "Open edition",
@@ -83,7 +83,7 @@ const TIERS: Record<TierId, TierDef> = {
   },
   collector: {
     id: "collector",
-    label: "Collector",
+    label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
     pricePence: 29500,
     editionLabel: "Limited edition of 100",
@@ -93,7 +93,7 @@ const TIERS: Record<TierId, TierDef> = {
   },
   "atelier-grande": {
     id: "atelier-grande",
-    label: "Atelier Grande",
+    label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
     pricePence: 59500,
     editionLabel: "Limited edition of 50",
@@ -103,7 +103,7 @@ const TIERS: Record<TierId, TierDef> = {
   },
   heirloom: {
     id: "heirloom",
-    label: "Heirloom",
+    label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
     pricePence: 125000,
     editionLabel: "Limited edition of 25",
@@ -115,7 +115,7 @@ const TIERS: Record<TierId, TierDef> = {
     // framing / embellishment price: it IS the hand-finished work, so a
     // "studio" tierId produces a single £950 line item with no add-ons.
     id: "studio",
-    label: "Studio — Hand-painted by Polly Wedge",
+    label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
     pricePence: 95000,
     editionLabel: "Unique — one of one",

@@ -154,7 +154,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"
-          className="inline-flex items-center"
+          className="inline-flex items-center shrink-0"
         >
           <Logo size={32} wordmark />
         </Link>

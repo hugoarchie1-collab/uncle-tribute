@@ -35,7 +35,7 @@ export interface Colourway {
  */
 export interface PrintTier {
   id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
-  label: string;                // "Atelier", "Collector", "Atelier Grande", "Heirloom"
+  label: string;                // "Gallery Edition", "Collector's Edition", "Atelier Edition", "Heirloom Edition", "Original — One of One"
   size: string;                 // "A3 (29.7 × 42 cm)"
   pricePence: number;           // integer pence
   editionTotal: number | null;  // null = open edition
@@ -157,7 +157,7 @@ export const ESTATE_AUTHENTICATION = {
 export const PRINT_TIERS: PrintTier[] = [
   {
     id: "atelier",
-    label: "Atelier",
+    label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
     pricePence: 14500, // £145
     editionTotal: null,
@@ -168,7 +168,7 @@ export const PRINT_TIERS: PrintTier[] = [
   },
   {
     id: "collector",
-    label: "Collector",
+    label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
     pricePence: 29500, // £295
     editionTotal: 100,
@@ -182,7 +182,7 @@ export const PRINT_TIERS: PrintTier[] = [
   },
   {
     id: "atelier-grande",
-    label: "Atelier Grande",
+    label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
     pricePence: 59500, // £595
     editionTotal: 50,
@@ -195,7 +195,7 @@ export const PRINT_TIERS: PrintTier[] = [
   },
   {
     id: "heirloom",
-    label: "Heirloom",
+    label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
     pricePence: 125000, // £1,250
     editionTotal: 25,
@@ -214,11 +214,12 @@ export const PRINT_TIERS: PrintTier[] = [
     // hand-finished piece, so it carries no framing / embellishment add-on
     // price — the price is the whole work.
     id: "studio",
-    label: "Studio — Hand-painted by Polly Wedge",
+    label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
     pricePence: 95000, // £950
     editionTotal: 1,
     editionLabel: "Unique — one of one",
+    description: "Hand-painted by Polly Wedge, one of one",
     isOneOff: true,
     // Hugo: set available:false if you'd rather hold this until after first
     // sales + Polly confirms capacity, per the original plan.

@@ -53,15 +53,22 @@ export const FooterCatalogue = () => {
         <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-5 text-center">
           The Catalogue · {tiles.length}
         </p>
+        {/* flex-wrap + justify-center so any partial trailing row (if the
+            catalogue count ever stops being a clean multiple of the per-row
+            count) centres instead of leaving a left-aligned orphan. Each tile
+            is flex: 0 1 calc(10% - 9px): the 9px subtracts this row's share of
+            the nine 10px gaps so 10 tiles still fit one row (10×(10%−9px) +
+            9×10px = 100%), preserving the desktop 10-up. min-w-0 lets a tile
+            shrink so the row can never push past the container. */}
         <motion.ul
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
           variants={variants}
-          className="grid grid-cols-10 gap-2.5 list-none p-0 m-0"
+          className="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
-            <li key={t.id} className="m-0">
+            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(10%-9px)]">
               <Link
                 to={`/collections/${t.id}`}
                 aria-label={t.title}

@@ -45,6 +45,13 @@
     --accent: #c97844;
   }
   html, body, #root { margin: 0; padding: 0; }
+  /* `overflow-x: clip` (not `hidden`) is the no-scrollbar, no-scroll-container
+     guard against ANY descendant painting past the viewport edge — it does NOT
+     create a scroll container, so position:sticky / 100dvh children keep
+     working. Set on BOTH html and body for cross-browser certainty.
+     NOTE on viewport units: prefer `100dvh` (dynamic viewport height) over raw
+     `100vh` for any full-height element — on mobile the collapsing URL bar
+     makes `100vh` taller than the visible area, leaving a dead band. */
   html { scroll-behavior: smooth; overflow-x: clip; }
 
   body {
@@ -57,6 +64,17 @@
     -moz-osx-font-smoothing: grayscale;
     /* Canvas — matches --bg / the <meta theme-color>. Was a stray #08070a. */
     background-color: var(--bg);
+  }
+
+  /* Long unbroken tokens (URLs, long words, pasted strings) must wrap instead
+     of forcing a horizontal scroll. `overflow-wrap: anywhere` breaks them only
+     as a last resort; combined with the overflow-x:clip guard above this means
+     no single token can ever widen the page. Headings keep `text-pretty`
+     balancing where applied; this is the safety net for body + UI text. */
+  body, p, li, dd, dt, blockquote, figcaption, h1, h2, h3, h4, h5, h6,
+  a, span, button, label, input, textarea {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   h1, h2, h3, h4 {
@@ -92,16 +110,31 @@
     inset: 0;
     z-index: 100;
     pointer-events: none;
-    opacity: 0.045;
-    mix-blend-mode: overlay;
+    /* PERF (#6): the grain used `mix-blend-mode: overlay`, which is a
+       NON-isolated blend — the compositor had to read back the entire
+       composited backdrop (every parallax image / crossfade beneath it) and
+       re-run the overlay blend over the WHOLE viewport on EVERY scroll frame
+       the backdrop changed. That is the dominant cause of the scroll jank.
+       `translateZ(0)` does NOT help a blend mode. Fix: drop the blend entirely
+       and render the grain as a cheap plain overlay — a static, GPU-promoted
+       fixed layer the compositor never has to re-read the page to draw. Pushed
+       the opacity up a touch (0.045 → 0.06) so the texture still reads now that
+       it's no longer multiplying against the backdrop. */
+    opacity: 0.06;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     background-size: 240px 240px;
-    /* Promote to its own GPU layer. Without this the fixed full-screen
-       `overlay` blend forces a whole-viewport recomposite on every scroll
-       frame (everything beneath it moves); on its own layer the blend is
-       composited cheaply instead of repainted. */
+    /* Isolate so this layer is composited on its own and never blends with /
+       reads back the page behind it. Promote to its own GPU layer so it's
+       rasterised once and simply composited over the scrolling page. */
+    isolation: isolate;
     transform: translateZ(0);
     will-change: transform;
+  }
+  /* On touch / small viewports (lowest-power devices) drop the grain entirely —
+     it's a subtle texture, not load-bearing, and one fewer full-viewport
+     promoted layer on phones is a clean smoothness win. */
+  @media (hover: none), (max-width: 640px) {
+    .film-grain { display: none; }
   }
 
   /* Soft-edge image utility — fades all four edges to transparent so
@@ -159,7 +192,12 @@
 .video-intro {
   position: relative;
   width: 100%;
+  /* `100dvh` (dynamic viewport height) not raw `100vh`: on mobile the
+     collapsing browser URL bar makes `100vh` taller than the visible area,
+     leaving a dead band under the video (compounds the #3 gap). dvh tracks
+     the live visible height. `100vh` kept as the fallback for old engines. */
   height: 100vh;
+  height: 100dvh;
   background: #0a0908;
 }
 .video-intro__stage {
@@ -167,6 +205,7 @@
   top: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   will-change: opacity, transform;
   /* Just a 5% feather at the bottom — enough to avoid a hard horizontal
@@ -220,7 +259,13 @@
   background-size: cover;
   background-position: center 38%;
   background-repeat: no-repeat;
-  filter: blur(20px) saturate(1.15) brightness(0.92);
+  /* PERF (#6): blur radius trimmed 20px → 14px. A large-area Gaussian blur is
+     O(radius) per pixel to rasterise; 14px keeps the same atmospheric halo at
+     a meaningfully lower one-time raster cost. It's rasterised once into the
+     parent's promoted layer (translateZ(0) above) and only re-runs on a
+     user-triggered colourway crossfade — never on scroll — so this is purely a
+     cheaper first paint / crossfade, not a per-frame saving. */
+  filter: blur(14px) saturate(1.15) brightness(0.92);
   transform: translateZ(0);
 }
 .painting-detail__ambient-veil {
@@ -259,6 +304,15 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  /* Static, calm fallbacks for users who asked for reduced motion: drop the
+     film grain entirely and release the GPU-layer promotions that only exist
+     to make MOTION cheap (no motion → no need to keep extra compositor
+     layers alive). The static visuals remain. */
+  .film-grain { display: none !important; }
+  .video-intro__stage,
+  .painting-detail__ambient,
+  .painting-detail__ambient-bg,
+  .collection-backdrop { will-change: auto !important; }
 }
 
 @media print {

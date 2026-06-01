@@ -32,28 +32,47 @@ import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
 import {
-  EYEBROW,
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
   META,
   TITLE,
-  BTN_PRIMARY,
-  BTN_SECONDARY,
 } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 
 /* =============================================================================
+ * MONOCHROME CTAs (#7) — local, accent-free button recipes.
+ * -----------------------------------------------------------------------------
+ * The shared BTN_PRIMARY / BTN_SECONDARY tokens resolve their hover to the
+ * orange accent (bg-accent / ring-accent / text-accent). This product page is
+ * strictly monochrome, so it uses these local ink-only variants instead of the
+ * shared tokens — same geometry/typography, hover expressed as an ink wash, no
+ * colour. (The shared tokens stay accent-toned for the rest of the site.)
+ * ========================================================================== */
+const BTN_PRIMARY =
+  "inline-flex items-center justify-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-ink/85 disabled:opacity-60";
+const BTN_SECONDARY =
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-300 hover:ring-ink/60";
+
+/* =============================================================================
  * TYPE SCALE — Painting Detail page
  * -----------------------------------------------------------------------------
- * Conformed to the home design system. The recurring recipes (EYEBROW /
- * EYEBROW_MUTED / EYEBROW_TIGHT / META / TITLE / BTN_*) are imported from
+ * Conformed to the home design system. The recurring recipes
+ * (EYEBROW_MUTED / EYEBROW_TIGHT / META / TITLE / BTN_*) are imported from
  * `components/ui/tokens.ts` — never re-typed here. Fonts are the two house
  * families only: `font-display` (Fraunces) for the title, price figure and the
  * one deliberate italic artist-quote voice moment; `font-sans` (Hanken
- * Grotesk) for everything else. Muted text routes through `text-ink-muted`,
- * hairlines through `border-line` / `ring-line`, and accent (`text-accent`)
- * stays reserved for hover/active + at most one resting eyebrow per section.
+ * Grotesk) for everything else.
+ *
+ * MONOCHROME (#7): this product page carries NO coloured/orange/rust text.
+ * Hierarchy is conveyed by SIZE / WEIGHT / LETTER-SPACING only, on exactly two
+ * tones — `text-ink` (the one primary) and `text-ink-muted` (the one muted
+ * secondary), with hairlines via `border-line` / `ring-line`. There is no
+ * resting accent and no accent on hover anywhere on this page; the shared
+ * accent-carrying EYEBROW token is therefore NOT used here (EYEBROW_MUTED is
+ * the monochrome eyebrow). The "Most chosen" indicator is kept but rendered in
+ * ink, not orange. Tier names render straight from the data layer — never
+ * hardcoded.
  * ========================================================================== */
 
 /* =============================================================================
@@ -142,7 +161,7 @@ const SizePicker = ({
           {tier.isAnchor && (
             <span
               aria-hidden="true"
-              className="absolute -top-2 left-4 inline-flex items-center bg-bg px-2 py-0.5 font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-accent rounded-full ring-1 ring-line"
+              className="absolute -top-2 left-4 inline-flex items-center bg-ink text-bg px-2.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.24em] uppercase rounded-full"
             >
               Most chosen
             </span>
@@ -199,7 +218,7 @@ const OneOffCard = ({
     )}
   >
     <span className="flex items-baseline justify-between gap-4 mb-2">
-      <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent">
+      <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
         Unique · one of one
       </span>
       <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
@@ -290,7 +309,7 @@ const Colourways = ({
       <p className="font-sans text-[15px] font-medium text-ink m-0">
         {selected.name}
         {selected.isOriginal && (
-          <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-accent">
+          <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-ink-muted">
             · original
           </span>
         )}
@@ -669,10 +688,10 @@ const BuyBox = ({
       {/* 1 · COLLECTION BADGE + TITLE (h1) */}
       {collection && (
         <div className="mb-4">
-          {/* Canonical accent token (#c97844) — override the Badge's lighter
-              accent-soft so this collection tag matches the home page's single
-              resting-accent eyebrow rather than drifting to an off-token orange. */}
-          <Badge variant="accent" className="text-accent">{collection.title}</Badge>
+          {/* Monochrome (#7): the collection tag is a quiet outlined chip in ink
+              — no accent/orange. Distinguished from the title by size + tracking,
+              not colour. */}
+          <Badge variant="outline">{collection.title}</Badge>
         </div>
       )}
       <h1 className={cn(TITLE, "m-0 mb-5")}>
@@ -710,9 +729,10 @@ const BuyBox = ({
       <div id="order-print" className="scroll-mt-24">
         <div ref={orderSentinelRef} aria-hidden="true" className="h-px w-full" />
 
-        {/* 3 · PRICE (tracks the selected size tier) + eyebrow. The one resting
-            accent on this purchase section — every other label stays muted. */}
-        <p className={cn(EYEBROW, "m-0 mb-3")}>Order a print</p>
+        {/* 3 · PRICE (tracks the selected size tier) + eyebrow. Monochrome (#7):
+            the eyebrow is muted ink, the price is the display-serif figure — the
+            jump in size/weight carries the hierarchy, not colour. */}
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Order a print</p>
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-6">
           <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
             {formatGBP(selectedTier.pricePence).replace(".00", "")}
@@ -949,7 +969,7 @@ const BuyBox = ({
           {showAdded ? (
             <>
               Added —{" "}
-              <Link to="/basket" className="text-accent underline underline-offset-4 hover:text-ink transition-colors">
+              <Link to="/basket" className="text-ink-muted underline underline-offset-4 hover:text-ink transition-colors">
                 view basket
               </Link>
             </>
@@ -958,7 +978,7 @@ const BuyBox = ({
           )}
         </p>
         {status === "error" && (
-          <p className="mt-2 font-sans text-[13.5px] text-accent m-0">{errorMsg}</p>
+          <p className="mt-2 font-sans text-[13.5px] font-medium text-ink m-0">{errorMsg}</p>
         )}
 
         {/* 8 · AUTHENTICATION + REASSURANCE — structured trust cluster. All
@@ -1117,8 +1137,8 @@ const StickyAddBar = ({
             className="block w-7 h-7 rounded-full ring-1 ring-line shrink-0"
             style={{ background: selected.hex }}
           />
-          <span className="flex flex-col leading-tight">
-            <span className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55">
+          <span className="flex flex-col leading-tight min-w-0">
+            <span className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55 truncate">
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
@@ -1128,7 +1148,7 @@ const StickyAddBar = ({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center bg-ink text-bg px-5 py-2.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors whitespace-nowrap"
+            className="inline-flex items-center bg-ink text-bg px-5 py-2.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -1191,7 +1211,7 @@ const HeroLightbox = ({
               onClose();
             }}
             aria-label="Close (Esc)"
-            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted hover:text-accent transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-line"
+            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-line"
           >
             Close <span aria-hidden="true">· Esc</span>
           </button>
@@ -1382,14 +1402,14 @@ export const PaintingDetail = () => {
           <div className="flex items-center justify-between gap-4 mb-8 md:mb-10">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
-              className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-accent")}
+              className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-ink")}
             >
               ← {collection?.title ?? "All collections"}
             </Link>
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink-muted hover:text-accent transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">

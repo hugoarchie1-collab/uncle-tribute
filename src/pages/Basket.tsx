@@ -313,38 +313,38 @@ export const Basket = () => {
                       {hasAddOns && (
                         <div className="mt-4 ml-[108px] sm:ml-[132px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
-                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
                               {line.tier.label} print ({line.tier.size.split(" ")[0]})
                             </span>
-                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                               {formatGBP(line.tier.pricePence)}
                             </span>
                           </div>
                           {framingPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
                                 Framing (black-stained oak)
                               </span>
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {formatGBP(framingPence)}
                               </span>
                             </div>
                           )}
                           {embellishPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
                                 Hand-finished by Polly Wedge
                               </span>
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums">
+                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {formatGBP(embellishPence)}
                               </span>
                             </div>
                           )}
                           <div className="flex items-baseline justify-between gap-4 pt-1.5 mt-0.5 border-t border-line">
-                            <span className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted">
+                            <span className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted min-w-0">
                               Line total
                             </span>
-                            <span className="font-sans text-[13px] font-semibold text-ink tabular-nums">
+                            <span className="font-sans text-[13px] font-semibold text-ink tabular-nums flex-shrink-0">
                               {formatGBP(lineTotalPence(line))}
                             </span>
                           </div>
@@ -365,20 +365,20 @@ export const Basket = () => {
                   prominence, nothing first revealed at Stripe. */}
               <dl className="m-0 flex flex-col gap-2.5 mb-5">
                 <div className="flex items-baseline justify-between gap-6">
-                  <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
+                  <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0 min-w-0">
                     Subtotal{" "}
                     <span className="text-[12px]">(prints + selected add-ons)</span>
                   </dt>
-                  <dd className="font-sans text-[15px] text-ink m-0 tabular-nums">
+                  <dd className="font-sans text-[15px] text-ink m-0 tabular-nums flex-shrink-0">
                     {formatGBP(subtotalPence)}
                   </dd>
                 </div>
                 {bundleDiscountPercent > 0 && (
                   <div className="flex items-baseline justify-between gap-6">
-                    <dt className="font-sans text-[14px] leading-[1.5] text-accent m-0">
+                    <dt className="font-sans text-[14px] leading-[1.5] text-accent m-0 min-w-0">
                       Estate bundle thank-you ({bundleDiscountPercent}%)
                     </dt>
-                    <dd className="font-sans text-[15px] text-accent m-0 tabular-nums">
+                    <dd className="font-sans text-[15px] text-accent m-0 tabular-nums flex-shrink-0">
                       − {formatGBP(bundleDiscountPence)}
                     </dd>
                   </div>
@@ -386,10 +386,10 @@ export const Basket = () => {
               </dl>
 
               <div className="flex items-baseline justify-between gap-6 mb-3">
-                <p className={cn(EYEBROW_MUTED, "m-0")}>
+                <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
                   {bundleDiscountPercent > 0 ? "Total before delivery" : "Subtotal"}
                 </p>
-                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0 tabular-nums">
+                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0 tabular-nums flex-shrink-0">
                   {formatGBP(discountedSubtotalPence)}
                 </p>
               </div>
@@ -405,26 +405,26 @@ export const Basket = () => {
                 </p>
                 <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
                   <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
                       United Kingdom
                     </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
                       {formatGBP(shipping.ukPence)}
                     </span>
                   </li>
                   <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
                       Europe
                     </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
                       {formatGBP(shipping.euPence)}
                     </span>
                   </li>
                   <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
                       Worldwide
                     </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums">
+                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
                       {formatGBP(shipping.wwPence)}
                     </span>
                   </li>

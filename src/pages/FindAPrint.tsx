@@ -138,13 +138,21 @@ export const FindAPrint = () => {
           )}
         </div>
 
-        {/* Grid — reuses the home Featured-Works tile language */}
+        {/* Results — flex-wrap + justify-center so a partial last row (e.g. 10
+            paintings → 3+3+3+1, or a colour-filtered 5 → 3+2) centres at every
+            width instead of leaving a left-aligned orphan. Each tile is
+            flex: 0 1 clamp(MIN, BASIS, MAX) so it tracks the old 1/2/3-up feel
+            (≈1 col on phones, ≈2 on small, ≈3 from md) while min-w-0 lets a
+            tile shrink rather than push the row past the viewport. */}
         <div
           aria-live="polite"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+          className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
         >
           {filtered.map(({ painting, cover }) => (
-            <figure key={painting.id} className="m-0">
+            <figure
+              key={painting.id}
+              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+            >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                   <AssetImage

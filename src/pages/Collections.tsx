@@ -1,6 +1,6 @@
 import { useRef, type RefObject } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -34,6 +34,7 @@ const ScrollBackdrop = ({
   photoUrl: string;
   sectionRef: RefObject<HTMLElement | null>;
 }) => {
+  const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -49,6 +50,23 @@ const ScrollBackdrop = ({
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
   const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.0]);
 
+  // Reduced-motion: drop the parallax/scale entirely, hold the backdrop at a
+  // calm static opacity, and release the GPU layer (will-change:auto) so we
+  // don't keep a promoted compositing layer alive for motion that never runs.
+  if (reduceMotion) {
+    return (
+      <div
+        style={{
+          opacity: 0.5,
+          backgroundImage: `url("${photoUrl}")`,
+          willChange: "auto",
+        }}
+        className="absolute inset-0 bg-cover bg-center"
+        aria-hidden="true"
+      />
+    );
+  }
+
   return (
     <motion.div
       style={{
@@ -57,8 +75,10 @@ const ScrollBackdrop = ({
         scale,
         backgroundImage: `url("${photoUrl}")`,
         // Promote each backdrop to its own GPU layer so the scroll-driven
-        // opacity/y/scale composite cleanly instead of repainting the large
-        // background image every frame as the user scrolls past.
+        // opacity/y/scale composite cleanly (GPU transform + opacity only —
+        // no background-attachment:fixed, no layout-triggering props) instead
+        // of repainting the large background image every frame as the user
+        // scrolls past.
         willChange: "transform, opacity",
       }}
       className="absolute inset-0 bg-cover bg-center"
@@ -207,7 +227,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="grid justify-center grid-cols-[repeat(auto-fit,minmax(min(100%,300px),420px))] gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
                 >
                   {items.map((painting) => {
                     const cover =
@@ -216,7 +236,12 @@ export const Collections = () => {
                     return (
                       <motion.figure
                         key={painting.id}
-                        className="m-0"
+                        // flex-wrap + justify-center + a clamped flex-basis so a
+                        // partial last row CENTRES at every width (no left-aligned
+                        // orphan). min-w-0 lets the basis shrink below content on
+                        // narrow viewports so a long title can never widen the row
+                        // past the viewport.
+                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                         variants={{
                           hidden: { opacity: 0, y: 14 },
                           show: {
