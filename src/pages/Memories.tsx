@@ -5,7 +5,7 @@ import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT } from "../data/content";
@@ -631,16 +631,6 @@ export const Memories = () => {
               Stephen to some, SEM to the art world, Steve to his family. If he
               touched your life, add a memory below — the family reads every one.
             </p>
-            <div className="mt-[clamp(0.875rem,2.5vw,1.25rem)]">
-              <button
-                type="button"
-                onClick={() => setModalOpen(true)}
-                className={BTN_PRIMARY}
-              >
-                Share a memory
-                <span aria-hidden="true" className="ml-2">→</span>
-              </button>
-            </div>
           </Reveal>
         </header>
 
@@ -655,8 +645,31 @@ export const Memories = () => {
           aria-label="Memories of Steve"
           className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
         >
+          {/* composer — the "add a comment" box (X / YouTube idiom): a generic
+              avatar + a rounded input placeholder that opens the share modal. It
+              leads the feed like YouTube's "Add a comment…", and is the single
+              share affordance on the page. */}
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left border-b border-line pb-[clamp(0.8rem,2.2vw,1rem)]"
+          >
+            <span
+              aria-hidden="true"
+              className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] bg-bg-elevated ring-1 ring-line text-ink-muted transition-colors group-hover:ring-accent group-hover:text-accent"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+            </span>
+            <span className="min-w-0 flex-1 rounded-full bg-bg-soft ring-1 ring-line px-[clamp(0.875rem,3vw,1.1rem)] py-[clamp(0.5rem,1.8vw,0.7rem)] font-sans text-[clamp(13.5px,1.6vw,14.5px)] text-ink-muted transition-colors group-hover:text-ink group-hover:ring-line-strong">
+              Share a memory of Steve…
+            </span>
+          </button>
+
           {/* a · the pinned artist comment — always rendered, the page is never empty */}
-          <Reveal as="div" delay={0}>
+          <Reveal as="div" delay={0} className="pt-[clamp(0.7rem,2vw,0.95rem)]">
             <CommentRow memory={ARTIST_MEMORY} pinned />
           </Reveal>
 
@@ -703,20 +716,10 @@ export const Memories = () => {
                     </span>
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.6] text-ink-muted m-0">
-                      No memories have been shared yet. Be the first to leave one
-                      for Steve.
+                    <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.55] text-ink-muted m-0">
+                      No memories have been shared yet — be the first to leave one
+                      for Steve, using the box above.
                     </p>
-                    <div className="mt-3">
-                      <button
-                        type="button"
-                        onClick={() => setModalOpen(true)}
-                        className={BTN_PRIMARY}
-                      >
-                        Leave the first memory
-                        <span aria-hidden="true" className="ml-2">→</span>
-                      </button>
-                    </div>
                   </div>
                 </article>
               </div>
@@ -724,37 +727,6 @@ export const Memories = () => {
           )}
         </section>
 
-        {/* 3 · CLOSING INVITATION — a gentle, generous call to add a memory.
-            Matches the stream's 640px channel. Hidden when the wall is still
-            empty (the empty-state ghost card already carries its own CTA, so we
-            don't stack two on a sparse page). */}
-        {hasVisitorMemories && (
-          <section className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(5rem,11vw,8rem)]">
-            <Reveal as="div" className="border-t border-line pt-[clamp(3rem,7vw,5rem)] max-w-[52ch]">
-              <p className={cn(EYEBROW, "m-0 mb-[clamp(1.25rem,3vw,1.75rem)]")}>
-                Leave a memory
-              </p>
-              <h2 className={cn(TITLE, "m-0")}>
-                Add yours to the wall.
-              </h2>
-              <p className={cn(SUBTITLE, "mt-[clamp(1.25rem,3vw,1.75rem)] m-0 max-w-[48ch]")}>
-                A moment with Steve, something he said, what his work has come to
-                mean to you. A line or a page, all of it is welcome. Each memory
-                is read before it joins the wall.
-              </p>
-              <div className="mt-[clamp(1.75rem,4vw,2.5rem)]">
-                <button
-                  type="button"
-                  onClick={() => setModalOpen(true)}
-                  className={BTN_PRIMARY}
-                >
-                  Share a memory
-                  <span aria-hidden="true" className="ml-2">→</span>
-                </button>
-              </div>
-            </Reveal>
-          </section>
-        )}
       </main>
 
       <Footer />
