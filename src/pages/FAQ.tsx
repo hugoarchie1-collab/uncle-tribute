@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
@@ -192,6 +193,7 @@ export const FAQ = () => {
           ))}
         </Reveal>
       </main>
+      <FooterCatalogue />
       <Footer />
     </div>
   );

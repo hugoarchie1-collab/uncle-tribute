@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import {
@@ -39,6 +40,7 @@ export const NotFound = () => {
           </div>
         </Reveal>
       </main>
+      <FooterCatalogue />
       <Footer />
     </div>
   );

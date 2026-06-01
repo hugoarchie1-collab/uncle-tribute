@@ -8,9 +8,10 @@ import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
+import { EYEBROW } from "../components/ui/tokens";
 import { WELCOME } from "../data/content";
 import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
-import { asset } from "../lib/asset";
+import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
 // Three Peacock colourways used as the home page's seamlessly-blending
@@ -427,103 +428,192 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 9 · SACRED GEOMETRY (EARTH) — finale. Text + Earth stacked
-              in normal flow so the section auto-sizes to its content
-              and adapts cleanly across viewports. Earth is pulled up by
-              a negative margin tied to the SAME clamp() the text uses,
-              which keeps the overlap at ~25% of the text height on
-              every screen — no flood on widescreen, no gap on
-              portrait/tablet. Earth's bottom still sits flush above
-              the footer's top rule.
+          {/* 10 · SACRED GEOMETRY — closing colophon.
 
-              `isolate` forces a stacking context on the section so the
-              z-index ordering between the Reveal-wrapped headline and
-              the sibling Earth img is locked — without it, Framer
-              Motion's per-frame transform on Reveal can briefly
-              reorder GPU layers on scroll and flicker the text behind
-              the Earth. z-10 sits on the Reveal wrapper itself, not
-              on the h2 inside, because the transform on the wrapper
-              creates its own stacking context that swallows any
-              z-index applied to its children. */}
+              REDESIGNED (2026-06-01). The old finale set two viewport-
+              filling words in Fraunces opsz 144 at clamp(64px,22vw,560px)
+              over a literal half-Earth photo — at that scale the hairline-
+              to-stem contrast + swashy terminals read as ornate / scribbly,
+              and the negative-margin Earth overlap was coupled to the head-
+              line clamp (the old gotcha #7). Both are retired.
+
+              The craft is now in the SETTING, never the SCALE: one
+              impeccably-set serif line (opsz 40 = text-grade, even strokes)
+              at clamp(34px,6vw,74px), real editorial hierarchy (eyebrow →
+              statement → Stephen's own words → a quiet exit), a whisper
+              mandala-ring ground, and the Earth demoted to a faded, masked
+              horizon ATMOSPHERE behind the words — never a photo the type
+              sits on. Type lives in normal centered flow; the Earth is an
+              absolute bottom-pinned layer with a fixed opacity/mask and ZERO
+              reference to the headline size, so the two can never drift or
+              break each other across viewports (gotcha #7 RETIRED, not
+              re-tuned). isolate + overflow-hidden retained (gotcha #8 +
+              clips the wide Earth wings). */}
           <section
             className="relative isolate w-full overflow-hidden"
             aria-label="Sacred Geometry"
           >
-            {/* Headline fades up as a whole. The earlier per-character
-                SplitReveal wrapped each glyph in `overflow-hidden`,
-                which clipped the h2's huge text-shadow into a black
-                rectangle per character (the "blocky" artifact). Whole-
-                element reveal renders the shadow cleanly. */}
-            <Reveal className="relative z-10">
-              <h2
-                className="font-display tracking-[-0.04em] leading-[0.9] m-0 text-center pt-[4vh] px-2 md:px-4"
-                style={{
-                  fontSize: "clamp(64px, 22vw, 560px)",
-                  fontWeight: 600,
-                  // opsz 144 = Fraunces' most dramatic optical-size cut (high
-                  // thick/thin stroke contrast). Genuine wght 600 — NOT the old
-                  // `font-black` (900), which the browser FAUX-bolded because
-                  // only 400/600 are loaded, muddying the serifs (the "weak/
-                  // off" look Hugo flagged). The monumental, carved read now
-                  // comes from the cut + scale + the shadow stack, not synthetic
-                  // weight.
-                  fontVariationSettings: '"opsz" 144, "wght" 600',
-                  color: "#f3ead7",
-                  // "Carved horizon": a crisp dark contact edge cuts the
-                  // letterforms from the dark, a deep drop gives monumental
-                  // depth, and a faint rust UP-light (negative-y offset) reads
-                  // as warm horizon glow catching the underside of the type —
-                  // lit from the Earth rising below.
-                  textShadow:
-                    "0 2px 0 rgba(10,9,8,0.55), 0 0 2px rgba(10,9,8,0.5), 0 22px 60px rgba(0,0,0,0.85), 0 -8px 34px rgba(201,120,68,0.20)",
-                }}
-              >
-                Sacred<br />Geometry<span style={{ color: "#c97844" }}>.</span>
-              </h2>
+            {/* Mandala ring ground — the one grafted flourish, dialled to a
+                whisper. Concentric hairline circles echo Stephen's compass-
+                drawn first circle "in the sand". strokeOpacity 0.05 is the
+                whisper threshold: above ~0.07 the rings start to read busy
+                and become the very decorative noise this redesign removes.
+                No spokes (spokes pushed it toward a lattice-busy read).
+                Pure SVG → razor-sharp at every DPI, zero payload. */}
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 600 600"
+              className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 w-[min(116vw,820px)]"
+            >
+              {[120, 180, 240, 300].map((r) => (
+                <circle
+                  key={r}
+                  cx={300}
+                  cy={300}
+                  r={r}
+                  fill="none"
+                  stroke="#ede6d6"
+                  strokeOpacity={0.05}
+                  strokeWidth={1}
+                />
+              ))}
+            </svg>
+
+            {/* Earth = atmosphere, not a stage. The lightweight earth-limb
+                (34KB webp / 175KB jpg) replaces the 861KB earth-cutout.png.
+                Pinned absolute to the section foot, decoupled from the head-
+                line entirely. Faded (opacity 0.34) + darkened (brightness
+                0.72) + edge-dissolved UP into #0a0908 via a mask so there is
+                NO hard photographic horizon — the type sits in calm dark
+                space the faded curve only brushes. Settles in like a slow
+                dawn (Reveal delay 0.1). */}
+            <Reveal
+              as="figure"
+              delay={0.1}
+              className="m-0 absolute inset-x-0 bottom-0 z-0 pointer-events-none"
+            >
+              <picture aria-hidden="true">
+                <source
+                  srcSet={asset(webp("/img/scenes/earth-limb.jpg"))}
+                  type="image/webp"
+                />
+                <img
+                  src={asset("/img/scenes/earth-limb.jpg")}
+                  alt=""
+                  className="block w-[170%] sm:w-[140%] md:w-[124%] max-w-none mx-auto select-none"
+                  style={{
+                    opacity: 0.34,
+                    filter: "brightness(0.72) saturate(0.9) blur(1px)",
+                    WebkitMaskImage:
+                      "linear-gradient(to top, #000 0%, #000 30%, transparent 92%)",
+                    maskImage:
+                      "linear-gradient(to top, #000 0%, #000 30%, transparent 92%)",
+                  }}
+                />
+              </picture>
             </Reveal>
 
-            {/* Rust horizon glow — the warm atmospheric band on the Earth's
-                limb. Anchored to the section foot (not pinned to the dynamic
-                text/Earth seam, so it can't drift across viewports) and held
-                at z-[1]: above the Earth (z-0), always behind the headline
-                (z-10). This is the "horizon" the type is carved upon. */}
+            {/* Rust horizon glow — kept, halved (0.24→0.13 peak): a whisper
+                of warm atmosphere where the limb meets the void, the one
+                warm seam tying type + image. Above the Earth (z-0), below
+                the content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
               style={{
-                height: "46%",
+                height: "42%",
                 background:
-                  "radial-gradient(125% 78% at 50% 100%, rgba(201,120,68,0.24) 0%, rgba(201,120,68,0.11) 30%, rgba(201,120,68,0) 62%)",
+                  "radial-gradient(120% 76% at 50% 100%, rgba(201,120,68,0.13) 0%, rgba(201,120,68,0.06) 34%, rgba(201,120,68,0) 64%)",
               }}
             />
 
-            {/* Earth widens at narrow viewports so its curve still reads
-                as a horizon under the smaller mobile headline. Beyond
-                the viewport edges is fine — the section's
-                overflow-hidden clips the side wings.
+            {/* Content column — normal centered flow. The tall symmetric
+                padding (NOT a negative margin) opens the lower negative
+                space the faded Earth simply fills; the type lives in the
+                upper-middle calm. Layer order: SVG + Earth (z-0) → rust
+                glow (z-1) → content (z-10). Calm staggered Reveals read as
+                a slow settle; whole-element only (gotcha #2). */}
+            <div className="relative z-10 mx-auto max-w-[760px] px-6 text-center pt-[12vh] pb-[16vh] md:pt-[18vh] md:pb-[24vh]">
+              <Reveal delay={0}>
+                <p className={`${EYEBROW} m-0 mb-7`}>
+                  The thread through every piece
+                </p>
+              </Reveal>
 
-                Width coupling per CLAUDE.md gotcha #7: at lg+/xl+ the
-                Earth widens (120% / 128%) so the curvature still reads as
-                a horizon on wide monitors — previously at 1920px+ the
-                112% width rendered as a thin brown band. The negative
-                margin is tied to the SAME clamp() as the headline
-                font-size so the overlap stays proportional. When the
-                headline grew (clamp 60→64 / 20vw→22vw / 520→560 for the
-                carved-horizon finale) the multiplier was re-tuned -0.44→
-                -0.40 IN TANDEM so the absolute overlap is preserved at
-                every width (22vw × 0.40 == 20vw × 0.44 == 8.8vw) and the
-                horizon stays flush above the footer. If you re-tune the
-                headline clamp OR width, re-tune this multiplier with it
-                (gotcha #7). */}
-            <img
-              src={asset("/img/scenes/earth-cutout.png")}
-              alt=""
-              aria-hidden="true"
-              className="relative z-0 block w-[160%] sm:w-[140%] md:w-[120%] lg:w-[120%] xl:w-[128%] max-w-none mx-auto pointer-events-none select-none"
-              style={{
-                marginTop: "calc(clamp(64px, 22vw, 560px) * -0.40)",
-              }}
-            />
+              <Reveal delay={0.08}>
+                <h2
+                  className="font-display text-balance m-0"
+                  style={{
+                    // opsz 40 = Fraunces' TEXT-grade cut (even strokes, calm
+                    // terminals) — the root fix for the "scribble" read; NOT
+                    // 144. Capped at 74px so it can never fill the viewport:
+                    // one confident line of brand copy, not a banner.
+                    fontVariationSettings: '"opsz" 40, "wght" 400',
+                    fontSize: "clamp(34px, 6vw, 74px)",
+                    letterSpacing: "-0.018em",
+                    lineHeight: 1.06,
+                    color: "#ede6d6",
+                    // ONE hairline pass for legibility over the faded Earth —
+                    // never the old 4-layer carved stack.
+                    textShadow: "0 1px 24px rgba(10,9,8,0.6)",
+                  }}
+                >
+                  Sacred{" "}
+                  <em
+                    style={{
+                      fontStyle: "italic",
+                      fontVariationSettings: '"opsz" 40, "wght" 400',
+                    }}
+                  >
+                    geometry
+                  </em>{" "}
+                  &mdash; the order beneath all things
+                  <span style={{ color: "#c97844" }}>.</span>
+                </h2>
+              </Reveal>
+
+              {/* Hairline rule — one breath between the estate's statement
+                  and Stephen's own voice. */}
+              <Reveal delay={0.16}>
+                <div aria-hidden="true" className="mx-auto my-10 h-px w-12 bg-ink/15" />
+              </Reveal>
+
+              {/* Stephen's voice — VERBATIM register. His documented words are
+                  "everything is connected" (content.ts MEMORIAL_QUOTE); never
+                  an invented near-quote. True Fraunces italic, opsz 24. */}
+              <Reveal delay={0.22}>
+                <p
+                  className="font-display text-ink-muted text-balance m-0 mb-8"
+                  style={{
+                    fontStyle: "italic",
+                    fontVariationSettings: '"opsz" 24, "wght" 400',
+                    fontSize: "clamp(17px, 2vw, 19px)",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  &ldquo;I realised that everything is connected.&rdquo;
+                  <span
+                    style={{ fontStyle: "normal" }}
+                    className="font-sans text-[11px] tracking-[0.32em] uppercase text-ink-muted ml-3 align-middle"
+                  >
+                    SEM
+                  </span>
+                </p>
+              </Reveal>
+
+              {/* Quiet exit — a text link, never a pill. The colophon ends on a
+                  soft door into the shop. OPTIONAL: drop this single element
+                  for a purer memorial close if desired. */}
+              <Reveal delay={0.3}>
+                <Link
+                  to="/collections"
+                  className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted transition-colors hover:text-accent"
+                >
+                  Explore the collection{" "}
+                  <span aria-hidden="true">&rarr;</span>
+                </Link>
+              </Reveal>
+            </div>
           </section>
         </main>
 

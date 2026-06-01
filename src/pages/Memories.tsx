@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
@@ -729,6 +730,7 @@ export const Memories = () => {
 
       </main>
 
+      <FooterCatalogue />
       <Footer />
       <ShareMemoryModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>

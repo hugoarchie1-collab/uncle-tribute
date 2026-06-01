@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
@@ -701,6 +702,7 @@ const LegalPage = ({
           ))}
         </Reveal>
       </main>
+      <FooterCatalogue />
       <Footer />
     </div>
   );

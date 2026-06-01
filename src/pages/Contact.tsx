@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
@@ -210,6 +211,7 @@ export const Contact = () => {
           )}
         </Reveal>
       </main>
+      <FooterCatalogue />
       <Footer />
     </div>
   );
