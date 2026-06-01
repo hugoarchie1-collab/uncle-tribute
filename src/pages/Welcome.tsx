@@ -105,10 +105,16 @@ export const Welcome = () => {
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
-          {/* Top padding clears the now-fixed overlay Nav (it no longer
-              reserves layout space), reproducing the gap the in-flow sticky
-              nav used to give the hero. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-16 md:pb-24">
+          {/* Top padding clears the now-fixed overlay Nav (~56-72px tall) — and
+              no more. The old pt-24/md:pt-28 (96px/112px) was ~double the nav
+              height, reading as a dead band directly beneath the full-screen
+              video. A single fluid clamp() (~70px → ~96px) scales the clearance
+              with the viewport while staying close to the nav height at every
+              width, so the video-to-hero seam reads tight. */}
+          <section
+            className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+            style={{ paddingTop: "clamp(4.375rem, 6vw, 6rem)" }}
+          >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
@@ -141,11 +147,17 @@ export const Welcome = () => {
                 </div>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
+                {/* Source 01-painting-wild-rose.jpg is 1200x800 (3:2 landscape).
+                    The frame's aspect MUST match the source ratio so object-cover
+                    neither hard-crops the sides nor squishes the circular mandala
+                    (the "skew" bug). aspect-[3/2] renders the easel photo
+                    undistorted + uncropped at every width; soft-edge mask +
+                    gentle parallax preserved by ImageReveal. */}
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Wild Rose — from the Habundia collection"
                   eager
-                  aspect="aspect-[4/5]"
+                  aspect="aspect-[3/2]"
                   edges="all"
                   parallax={0.12}
                   objectPosition="center"
@@ -207,13 +219,20 @@ export const Welcome = () => {
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
-            <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-7 mb-12 md:mb-14">
+            {/* Orphan-centring pattern: flex-wrap + justify-center, each card
+                flex:0 1 clamp(MIN,BASIS,MAX). With 6 picks this matches the old
+                2-up (mobile) / 3-up (desktop) rhythm, but if the featured count
+                ever becomes odd / not a multiple of the column count, the
+                leftover tile(s) centre on the last row at every breakpoint
+                instead of left-aligning. min-w-0 on each card stops a long
+                title token from widening the row past the viewport. */}
+            <Reveal as="div" className="flex flex-wrap justify-center gap-5 md:gap-7 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
                 return (
-                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block">
+                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block min-w-0 flex-[0_1_clamp(150px,30%,420px)]">
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                       <AssetImage
                         src={cover.image}
@@ -437,17 +456,46 @@ export const Welcome = () => {
                 element reveal renders the shadow cleanly. */}
             <Reveal className="relative z-10">
               <h2
-                className="font-display font-black tracking-[-0.06em] leading-[0.84] m-0 text-center pt-[4vh] px-2 md:px-4"
+                className="font-display tracking-[-0.04em] leading-[0.9] m-0 text-center pt-[4vh] px-2 md:px-4"
                 style={{
-                  fontSize: "clamp(60px, 20vw, 520px)",
-                  color: "#f5ecd6",
+                  fontSize: "clamp(64px, 22vw, 560px)",
+                  fontWeight: 600,
+                  // opsz 144 = Fraunces' most dramatic optical-size cut (high
+                  // thick/thin stroke contrast). Genuine wght 600 — NOT the old
+                  // `font-black` (900), which the browser FAUX-bolded because
+                  // only 400/600 are loaded, muddying the serifs (the "weak/
+                  // off" look Hugo flagged). The monumental, carved read now
+                  // comes from the cut + scale + the shadow stack, not synthetic
+                  // weight.
+                  fontVariationSettings: '"opsz" 144, "wght" 600',
+                  color: "#f3ead7",
+                  // "Carved horizon": a crisp dark contact edge cuts the
+                  // letterforms from the dark, a deep drop gives monumental
+                  // depth, and a faint rust UP-light (negative-y offset) reads
+                  // as warm horizon glow catching the underside of the type —
+                  // lit from the Earth rising below.
                   textShadow:
-                    "0 6px 80px rgba(0,0,0,0.9), 0 3px 28px rgba(0,0,0,0.75)",
+                    "0 2px 0 rgba(10,9,8,0.55), 0 0 2px rgba(10,9,8,0.5), 0 22px 60px rgba(0,0,0,0.85), 0 -8px 34px rgba(201,120,68,0.20)",
                 }}
               >
-                Sacred<br />Geometry<span style={{ color: "#dca84c" }}>.</span>
+                Sacred<br />Geometry<span style={{ color: "#c97844" }}>.</span>
               </h2>
             </Reveal>
+
+            {/* Rust horizon glow — the warm atmospheric band on the Earth's
+                limb. Anchored to the section foot (not pinned to the dynamic
+                text/Earth seam, so it can't drift across viewports) and held
+                at z-[1]: above the Earth (z-0), always behind the headline
+                (z-10). This is the "horizon" the type is carved upon. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
+              style={{
+                height: "46%",
+                background:
+                  "radial-gradient(125% 78% at 50% 100%, rgba(201,120,68,0.24) 0%, rgba(201,120,68,0.11) 30%, rgba(201,120,68,0) 62%)",
+              }}
+            />
 
             {/* Earth widens at narrow viewports so its curve still reads
                 as a horizon under the smaller mobile headline. Beyond
@@ -459,18 +507,21 @@ export const Welcome = () => {
                 a horizon on wide monitors — previously at 1920px+ the
                 112% width rendered as a thin brown band. The negative
                 margin is tied to the SAME clamp() as the headline
-                font-size so the overlap stays proportional. The
-                multiplier (-0.44) is a touch heavier than before to keep
-                the horizon flush above the footer once the Earth widens
-                at lg+/xl+. If you re-tune width, re-tune the multiplier
-                in tandem. */}
+                font-size so the overlap stays proportional. When the
+                headline grew (clamp 60→64 / 20vw→22vw / 520→560 for the
+                carved-horizon finale) the multiplier was re-tuned -0.44→
+                -0.40 IN TANDEM so the absolute overlap is preserved at
+                every width (22vw × 0.40 == 20vw × 0.44 == 8.8vw) and the
+                horizon stays flush above the footer. If you re-tune the
+                headline clamp OR width, re-tune this multiplier with it
+                (gotcha #7). */}
             <img
               src={asset("/img/scenes/earth-cutout.png")}
               alt=""
               aria-hidden="true"
               className="relative z-0 block w-[160%] sm:w-[140%] md:w-[120%] lg:w-[120%] xl:w-[128%] max-w-none mx-auto pointer-events-none select-none"
               style={{
-                marginTop: "calc(clamp(60px, 20vw, 520px) * -0.44)",
+                marginTop: "calc(clamp(64px, 22vw, 560px) * -0.40)",
               }}
             />
           </section>
