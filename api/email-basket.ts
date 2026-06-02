@@ -61,45 +61,48 @@ interface EmailTier {
   // Studio one-off — no add-ons; it IS the hand-finished piece.
   isOneOff?: boolean;
 }
+// Mirror of PRINT_TIERS in src/data/paintings.ts (gotcha #9 — pricing lives in
+// several places; keep this in sync with paintings.ts + api/checkout.ts +
+// api/stripe-webhook.ts). Updated 2026-06-02 to the rethought ladder.
 const TIERS: Record<TierId, EmailTier> = {
   atelier: {
-    label: "Atelier",
+    label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
-    editionLabel: "Open edition",
-    pricePence: 14500,
+    editionLabel: "Limited edition of 150",
+    pricePence: 24500,
     available: true,
   },
   collector: {
-    label: "Collector",
+    label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
-    editionLabel: "Edition of 100",
-    pricePence: 29500,
+    editionLabel: "Limited edition of 100",
+    pricePence: 45000,
     framingPricePence: 29500,
     embellishmentPricePence: 35000,
     available: true,
   },
   "atelier-grande": {
-    label: "Atelier Grande",
+    label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
-    editionLabel: "Edition of 50",
-    pricePence: 59500,
+    editionLabel: "Limited edition of 50",
+    pricePence: 85000,
     framingPricePence: 39500,
     embellishmentPricePence: 49500,
     available: true,
   },
   heirloom: {
-    label: "Heirloom",
+    label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
-    editionLabel: "Edition of 25",
-    pricePence: 125000,
+    editionLabel: "Limited edition of 25",
+    pricePence: 175000,
     available: false,
   },
   studio: {
-    // £950 unique hand-painted one-off by Polly Wedge — no add-ons.
-    label: "Studio — Hand-painted by Polly Wedge",
+    // £2,450 unique hand-painted one-off by Polly Wedge — no add-ons.
+    label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
     editionLabel: "Unique — one of one",
-    pricePence: 95000,
+    pricePence: 245000,
     isOneOff: true,
     available: true,
   },

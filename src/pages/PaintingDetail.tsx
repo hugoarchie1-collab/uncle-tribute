@@ -810,7 +810,7 @@ const BuyBox = ({
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
             <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
-              The complete-set saving is applied automatically at checkout.
+              The set price is honoured at checkout.
             </p>
           </div>
         )}
@@ -1293,7 +1293,7 @@ export const PaintingDetail = () => {
     [painting],
   );
   // Split the ladder: standard size tiers feed the radio grid; a one-off tier
-  // (Percival's optional `isOneOff: true` £950 piece) is rendered separately.
+  // (the optional `isOneOff: true` £2,450 piece) is rendered separately.
   // Defensive — if no one-off tier exists, oneOffTier is undefined and the
   // feature card never mounts.
   const sizeTiers = useMemo(

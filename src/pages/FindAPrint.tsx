@@ -75,7 +75,7 @@ export const FindAPrint = () => {
         <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Where to begin</p>
           <h1 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6 hero-text-shadow")}>
-            Find a piece by colour.
+            Begin with a colour.
           </h1>
           <p className={cn(SUBTITLE, "mx-auto my-0")}>
             Stephen left several colourways of each mandala. Choose the tones you

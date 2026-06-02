@@ -19,7 +19,7 @@
  *
  * Pricing: `tierId` selects a rung on the canonical PRINT_TIERS ladder
  * (mirrored inline below — gotcha #5). Missing `tierId` defaults to the
- * anchor ("collector" = A2 £295). Framing is an OPTIONAL separate Stripe
+ * anchor ("collector" = A2 £450). Framing is an OPTIONAL separate Stripe
  * line item priced from the tier's `framingPricePence` — only A2 + A1
  * carry a framing price; passing `framing: true` on a tier that doesn't
  * offer framing is silently ignored. The same pattern applies to
@@ -77,15 +77,15 @@ const TIERS: Record<TierId, TierDef> = {
     id: "atelier",
     label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
-    pricePence: 14500,
-    editionLabel: "Open edition",
+    pricePence: 24500,
+    editionLabel: "Limited edition of 150",
     available: true,
   },
   collector: {
     id: "collector",
     label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
-    pricePence: 29500,
+    pricePence: 45000,
     editionLabel: "Limited edition of 100",
     framingPricePence: 29500,
     embellishmentPricePence: 35000,
@@ -95,7 +95,7 @@ const TIERS: Record<TierId, TierDef> = {
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 59500,
+    pricePence: 85000,
     editionLabel: "Limited edition of 50",
     framingPricePence: 39500,
     embellishmentPricePence: 49500,
@@ -105,26 +105,26 @@ const TIERS: Record<TierId, TierDef> = {
     id: "heirloom",
     label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
-    pricePence: 125000,
+    pricePence: 175000,
     editionLabel: "Limited edition of 25",
     // Hidden site-wide until Hugo confirms Point 101 A0 fulfilment.
     available: false,
   },
   studio: {
-    // Studio one-off — £950 unique hand-painted piece by Polly Wedge. No
+    // Studio one-off — £2,450 unique hand-painted piece by Polly Wedge. No
     // framing / embellishment price: it IS the hand-finished work, so a
-    // "studio" tierId produces a single £950 line item with no add-ons.
+    // "studio" tierId produces a single £2,450 line item with no add-ons.
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 95000,
+    pricePence: 245000,
     editionLabel: "Unique — one of one",
     isOneOff: true,
     available: true,
   },
 };
 
-const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £295)
+const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £450)
 
 // ---- Cost floors (#13) — mirror of src/data/paintings.ts ------------------
 // ⚠️⚠️⚠️ HUGO: EVERY NUMBER HERE IS A RESEARCH ESTIMATE, NOT A REAL INVOICE.

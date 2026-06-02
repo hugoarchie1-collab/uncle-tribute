@@ -118,7 +118,7 @@ export const EMBELLISHMENT_NOTE =
   "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.";
 
 /**
- * Copy for the Studio one-off tier (the £950 hand-painted unique piece).
+ * Copy for the Studio one-off tier (the £2,450 hand-painted unique piece).
  * Distinct from EMBELLISHMENT_NOTE: that's an add-on finishing of a print;
  * this is a singular work in its own right. Surfaced by Orla on the PDP
  * as a full-width card (tiers with `isOneOff: true`).
@@ -152,25 +152,25 @@ export const ESTATE_AUTHENTICATION = {
  *
  * Heirloom (A0) is hidden behind `available: false` for now — Hugo needs
  * to confirm Point 101 fulfilment capability + optional gold-leaf detail
- * sourcing before exposing the £1,250 SKU. Flip to `true` to surface it.
+ * sourcing before exposing the £1,750 SKU. Flip to `true` to surface it.
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
     id: "atelier",
     label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
-    pricePence: 14500, // £145
-    editionTotal: null,
-    editionLabel: "Open edition",
-    editionPromise: "made to order",
-    description: "Estate-stamped, open edition, COA card",
+    pricePence: 24500, // £245
+    editionTotal: 150,
+    editionLabel: "Limited edition of 150 per colourway",
+    editionPromise: "the edition will never be reopened",
+    description: "Limited edition of 150, estate-stamped, hand-numbered, COA",
     available: true,
   },
   {
     id: "collector",
     label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
-    pricePence: 29500, // £295
+    pricePence: 45000, // £450
     editionTotal: 100,
     editionLabel: "Limited edition of 100 per colourway",
     editionPromise: "the edition will never be reopened",
@@ -184,7 +184,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 59500, // £595
+    pricePence: 85000, // £850
     editionTotal: 50,
     editionLabel: "Limited edition of 50 per colourway",
     editionPromise: "the edition will never be reopened",
@@ -197,14 +197,14 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "heirloom",
     label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
-    pricePence: 125000, // £1,250
+    pricePence: 175000, // £1,750
     editionTotal: 25,
     editionLabel: "Limited edition of 25 per colourway",
     editionPromise: "the edition will never be reopened",
     description:
       "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
     // Hidden until Hugo confirms fulfilment capability + optional gold-leaf
-    // sourcing. Flip to `true` to expose the £1,250 SKU site-wide.
+    // sourcing. Flip to `true` to expose the £1,750 SKU site-wide.
     available: false,
   },
   {
@@ -216,7 +216,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 95000, // £950
+    pricePence: 245000, // £2,450
     editionTotal: 1,
     editionLabel: "Unique — one of one",
     description: "Hand-painted by Polly Wedge, one of one",
@@ -236,14 +236,14 @@ export const PRINT_TIERS: PrintTier[] = [
  * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
  * in integers and there are no rounding bugs at checkout.
  *
- * Points at the ANCHOR tier (A2 Collector, £295, edition of 100) for
+ * Points at the ANCHOR tier (A2 Collector, £450, edition of 100) for
  * backwards compatibility with `getPrintPricePence` / `getPrintSize`
  * (still consumed by PaintingDetail + api/checkout.ts until the size-aware
  * wire-up lands in the synthesis round). Keep the api/checkout.ts
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 29500, // £295 — anchor tier (A2 Collector)
+  pricePence: 45000, // £450 — anchor tier (A2 Collector)
   size: "Limited edition giclée, A2 (42 × 59.4 cm), edition of 100, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
@@ -299,8 +299,8 @@ export const getTierById = (
 /**
  * Returns the lowest visible tier price (in pence) for a painting. Used by
  * the browse surfaces (Collections tiles, Welcome Featured Works chip) to
- * advertise the entry price — "from £145" — which lowers the click barrier.
- * The £295 anchor still does its conversion work on the product page itself.
+ * advertise the entry price — "from £245" — which lowers the click barrier.
+ * The £450 anchor still does its conversion work on the product page itself.
  * Falls back to the anchor price if (defensively) no tiers are visible.
  */
 export const getLowestTierPricePence = (painting: Painting): number => {
@@ -355,7 +355,7 @@ export const COST_FLOOR_PENCE: Record<PrintTier["id"], { printFloor: number }> =
   // Its real cost = A1 print (£43) + frame-if-any + Polly painting it by hand
   // for many hours (4–10+ hrs at £30–45/hr = £120–£450 labour alone). £160 here
   // is a LOWER-BOUND placeholder (£43 print + ~£117 labour at a 4hr minimum).
-  // Set this to Polly's REAL time × rate + print + any frame. At £950 retail it
+  // Set this to Polly's REAL time × rate + print + any frame. At £2,450 retail it
   // is never at risk, but record the real number for honesty / insurance.
   studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder
 };

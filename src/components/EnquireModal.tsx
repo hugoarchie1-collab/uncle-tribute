@@ -309,7 +309,7 @@ export const EnquireModal = ({
                       disabled={status === "submitting"}
                       className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
                     >
-                      {status === "submitting" ? "Sending…" : "Send"}{" "}
+                      {status === "submitting" ? "Sending…" : "Send your message"}{" "}
                       <span aria-hidden="true" className="ml-2">→</span>
                     </button>
                     <a

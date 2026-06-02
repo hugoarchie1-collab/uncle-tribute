@@ -71,12 +71,14 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four tiers. <strong>Atelier A3</strong> at £145 (open edition).
-        <strong> Collector A2</strong> at £295 (limited edition of 100 per
-        colourway). <strong>Atelier Grande A1</strong> at £595 (limited
-        edition of 50). <strong>Heirloom A0</strong> at £1,250 (limited
-        edition of 25 — currently by request only while we finalise A0
-        fulfilment).
+        Four print editions, each estate-stamped and hand-numbered.
+        <strong> Gallery A3</strong> at £245 (limited edition of 150 per
+        colourway). <strong>Collector's A2</strong> at £450 (limited edition
+        of 100). <strong>Atelier A1</strong> at £850 (limited edition of 50).
+        <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 —
+        currently by request only while we finalise A0 fulfilment). There is
+        also a single <strong>Original — One of One</strong>, hand-painted by
+        Polly Wedge, at £2,450.
       </>
     ),
   },
@@ -157,8 +159,8 @@ export const FAQ = () => {
       <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-14">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
-          <h1 className={cn(TITLE, "m-0")}>Questions, answered.</h1>
+          <p className={cn(EYEBROW, "m-0 mb-5")}>Before you buy</p>
+          <h1 className={cn(TITLE, "m-0")}>What people ask.</h1>
           <p className={cn(SUBTITLE, "mt-7 m-0")}>
             On provenance, paper, editions, framing, hand-finishing, shipping
             and after-sale care. For anything not covered here, write to{" "}

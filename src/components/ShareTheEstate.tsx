@@ -68,7 +68,7 @@ export const ShareTheEstate = ({
   return (
     <div className={`mt-10 ${wrapAlign}`}>
       <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-3">
-        Share the estate
+        Pass it on
       </p>
       <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/65 my-0 mb-5 max-w-[520px] mx-auto">
         If you know someone who'd appreciate Stephen's work, the estate is

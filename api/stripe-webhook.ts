@@ -166,11 +166,11 @@ interface EmailLine {
 // gotcha #9). Used to render per-line prices in the confirmation email
 // without trusting Stripe to split a total across lines.
 const TIER_PRICE_PENCE: Record<string, number> = {
-  atelier: 14500,
-  collector: 29500,
-  "atelier-grande": 59500,
-  heirloom: 125000,
-  studio: 95000,
+  atelier: 24500,
+  collector: 45000,
+  "atelier-grande": 85000,
+  heirloom: 175000,
+  studio: 245000,
 };
 const TIER_LABEL: Record<string, string> = {
   atelier: "Gallery Edition",
@@ -187,7 +187,7 @@ const TIER_SIZE: Record<string, string> = {
   studio: "A1 (59.4 × 84.1 cm)",
 };
 const TIER_EDITION: Record<string, string> = {
-  atelier: "Open edition",
+  atelier: "Limited edition of 150",
   collector: "Limited edition of 100",
   "atelier-grande": "Limited edition of 50",
   heirloom: "Limited edition of 25",
