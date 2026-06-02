@@ -24,20 +24,24 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
   { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
+  // Mary Pink closes the page — the newest colourway, carried into the Sacred
+  // Geometry finale so its backdrop blends seamlessly with the rest of the home.
+  { url: "/img/paintings/peacock-mary-pink-blur.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
   usePageTitle();
   const reduceMotion = useReducedMotion();
 
-  // Whole-page scroll drives three peacock backdrops crossfading in turn.
-  // 0 → 38% Indigo · 33 → 70% Red · 65 → 100% Purple. Stretches the
-  // three colours evenly down the page.
+  // Whole-page scroll drives four peacock backdrops crossfading in turn:
+  // Indigo → Blood-Moon Red → Moroccan Purple → Mary Pink, the last holding
+  // through the Sacred Geometry finale so its sky matches the rest of the home.
   const { scrollYProgress } = useScroll();
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.30, 0.40], [0, 1, 1, 0]);
-  const redOpacity = useTransform(scrollYProgress, [0.30, 0.40, 0.62, 0.72], [0, 1, 1, 0]);
-  const purpleOpacity = useTransform(scrollYProgress, [0.62, 0.72, 0.96, 1], [0, 1, 1, 1]);
-  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity];
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.22, 0.30], [0, 1, 1, 0]);
+  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
+  const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
+  const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
+  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
 
   // Six featured paintings shown in a 3×2 grid, mirroring the
   // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
@@ -113,16 +117,16 @@ export const Welcome = () => {
               with the viewport while staying close to the nav height at every
               width, so the video-to-hero seam reads tight. */}
           <section
-            className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+            className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
             style={{ paddingTop: "clamp(4.375rem, 6vw, 6rem)" }}
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
-                  <span className="block font-black text-[clamp(46px,7vw,102px)] leading-[0.94]">
+                  <span className="block font-semibold text-[clamp(46px,6.2vw,132px)] leading-[1.0]">
                     So here we are on Earth
                   </span>
-                  <span className="block font-medium italic text-[clamp(36px,5.6vw,76px)] leading-[1.15] sm:leading-[1.05] mt-3 sm:mt-2 text-ink/90">
+                  <span className="block font-normal italic text-[clamp(36px,5.6vw,76px)] leading-[1.15] sm:leading-[1.05] mt-4 sm:mt-3 text-ink/90">
                     — orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
@@ -172,7 +176,7 @@ export const Welcome = () => {
               Same container, gap and items-center alignment as the Hero
               above so the image edges and text column align cleanly with
               the section above instead of stretching to viewport height. */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
+          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
                 <ImageReveal
@@ -203,20 +207,21 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              className="h-[50vh] md:h-[60vh] w-full"
+              className="h-[clamp(320px,55vh,720px)] w-full"
               edges="y"
               parallax={0.18}
+              objectPosition="center 40%"
               shadow=""
             />
           </Reveal>
 
           {/* 4 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="mx-auto max-w-[1400px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Selected Works
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -233,7 +238,7 @@ export const Welcome = () => {
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
                 return (
-                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block min-w-0 flex-[0_1_clamp(150px,30%,420px)]">
+                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block min-w-0 flex-[0_1_clamp(132px,30%,420px)]">
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                       <AssetImage
                         src={cover.image}
@@ -287,10 +292,10 @@ export const Welcome = () => {
           </section>
 
           {/* 5 · CRAFT — Each painting is a ritual (scrim card) */}
-          <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
             <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 ring-1 ring-white/8">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
                 <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
@@ -344,12 +349,12 @@ export const Welcome = () => {
           </section>
 
           {/* 6 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="mx-auto max-w-[1320px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
                 Four traditions, woven into one visual language.
               </h2>
             </Reveal>
@@ -390,13 +395,13 @@ export const Welcome = () => {
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
               gallery object instead of a stretched full-bleed. */}
-          <section className="mx-auto max-w-[1280px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="mx-auto max-w-[1280px] 2xl:max-w-[1480px] 3xl:max-w-[1720px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   Arista SunStar · 2016
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.8vw,52px)] leading-[1.0] text-ink m-0 mb-5">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.8vw,52px)] leading-[1.08] text-ink m-0 mb-5">
                   A 3.6&#8209;metre commission for Notting Hill.
                 </h2>
                 {/* Key-fact strip — surfaces the commission's
@@ -428,56 +433,24 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 10 · SACRED GEOMETRY — closing colophon.
+          {/* 10 · SACRED GEOMETRY — the bold closing statement.
 
-              REDESIGNED (2026-06-01). The old finale set two viewport-
-              filling words in Fraunces opsz 144 at clamp(64px,22vw,560px)
-              over a literal half-Earth photo — at that scale the hairline-
-              to-stem contrast + swashy terminals read as ornate / scribbly,
-              and the negative-margin Earth overlap was coupled to the head-
-              line clamp (the old gotcha #7). Both are retired.
-
-              The craft is now in the SETTING, never the SCALE: one
-              impeccably-set serif line (opsz 40 = text-grade, even strokes)
-              at clamp(34px,6vw,74px), real editorial hierarchy (eyebrow →
-              statement → Stephen's own words → a quiet exit), a whisper
-              mandala-ring ground, and the Earth demoted to a faded, masked
-              horizon ATMOSPHERE behind the words — never a photo the type
-              sits on. Type lives in normal centered flow; the Earth is an
-              absolute bottom-pinned layer with a fixed opacity/mask and ZERO
-              reference to the headline size, so the two can never drift or
-              break each other across viewports (gotcha #7 RETIRED, not
-              re-tuned). isolate + overflow-hidden retained (gotcha #8 +
-              clips the wide Earth wings). */}
+              Redesigned 2026-06-02 (Hugo's direction): a confident, screen-
+              filling editorial close, not a restrained colophon. The headline
+              is large and bold in a TRUE Fraunces 700 (loaded; never synthesised
+              now that font-synthesis is off) at a CONTROLLED optical size
+              (opsz 48 — even, heavy strokes). The earlier "scribble" was
+              opsz-144's hairline swash blown up to 560px; a moderate opsz at a
+              capped 132px stays striking AND clean. Background blends the home's
+              own peacock backdrop, now closing on the MARY PINK colourway (the
+              fixed crossfade layer behind the page), with a stronger Earth
+              horizon and NO decorative ring lines. Stephen's words stay verbatim.
+              Section fills the viewport (min-h-100svh) with the content centered;
+              isolate + overflow-hidden retained (gotcha #8). */}
           <section
-            className="relative isolate w-full overflow-hidden"
+            className="relative isolate flex min-h-[100svh] w-full items-center overflow-hidden"
             aria-label="Sacred Geometry"
           >
-            {/* Mandala ring ground — the one grafted flourish, dialled to a
-                whisper. Concentric hairline circles echo Stephen's compass-
-                drawn first circle "in the sand". strokeOpacity 0.05 is the
-                whisper threshold: above ~0.07 the rings start to read busy
-                and become the very decorative noise this redesign removes.
-                No spokes (spokes pushed it toward a lattice-busy read).
-                Pure SVG → razor-sharp at every DPI, zero payload. */}
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 600 600"
-              className="pointer-events-none absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 w-[min(116vw,820px)]"
-            >
-              {[120, 180, 240, 300].map((r) => (
-                <circle
-                  key={r}
-                  cx={300}
-                  cy={300}
-                  r={r}
-                  fill="none"
-                  stroke="#ede6d6"
-                  strokeOpacity={0.05}
-                  strokeWidth={1}
-                />
-              ))}
-            </svg>
 
             {/* Earth = atmosphere, not a stage. The lightweight earth-limb
                 (34KB webp / 175KB jpg) replaces the 861KB earth-cutout.png.
@@ -485,11 +458,11 @@ export const Welcome = () => {
                 line entirely. Faded (opacity 0.34) + darkened (brightness
                 0.72) + edge-dissolved UP into #0a0908 via a mask so there is
                 NO hard photographic horizon — the type sits in calm dark
-                space the faded curve only brushes. Settles in like a slow
-                dawn (Reveal delay 0.1). */}
-            <Reveal
-              as="figure"
-              delay={0.1}
+                space the faded curve only brushes. Rendered statically (no
+                opacity reveal gate) so the faded horizon is always present
+                even on short/landscape viewports where a whileInView
+                threshold could never fire. */}
+            <figure
               className="m-0 absolute inset-x-0 bottom-0 z-0 pointer-events-none"
             >
               <picture aria-hidden="true">
@@ -502,16 +475,18 @@ export const Welcome = () => {
                   alt=""
                   className="block w-[170%] sm:w-[140%] md:w-[124%] max-w-none mx-auto select-none"
                   style={{
-                    opacity: 0.34,
-                    filter: "brightness(0.72) saturate(0.9) blur(1px)",
+                    // Stronger, grounded horizon (Hugo: "less transparent") over
+                    // the Mary Pink peacock sky — present, not a near-invisible wash.
+                    opacity: 0.6,
+                    filter: "brightness(0.92) saturate(1.02)",
                     WebkitMaskImage:
-                      "linear-gradient(to top, #000 0%, #000 30%, transparent 92%)",
+                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
                     maskImage:
-                      "linear-gradient(to top, #000 0%, #000 30%, transparent 92%)",
+                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
                   }}
                 />
               </picture>
-            </Reveal>
+            </figure>
 
             {/* Rust horizon glow — kept, halved (0.24→0.13 peak): a whisper
                 of warm atmosphere where the limb meets the void, the one
@@ -521,9 +496,9 @@ export const Welcome = () => {
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
               style={{
-                height: "42%",
+                height: "46%",
                 background:
-                  "radial-gradient(120% 76% at 50% 100%, rgba(201,120,68,0.13) 0%, rgba(201,120,68,0.06) 34%, rgba(201,120,68,0) 64%)",
+                  "radial-gradient(120% 78% at 50% 100%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0.08) 36%, rgba(201,120,68,0) 66%)",
               }}
             />
 
@@ -533,9 +508,9 @@ export const Welcome = () => {
                 upper-middle calm. Layer order: SVG + Earth (z-0) → rust
                 glow (z-1) → content (z-10). Calm staggered Reveals read as
                 a slow settle; whole-element only (gotcha #2). */}
-            <div className="relative z-10 mx-auto max-w-[760px] px-6 text-center pt-[12vh] pb-[16vh] md:pt-[18vh] md:pb-[24vh]">
+            <div className="relative z-10 mx-auto w-full max-w-[1120px] px-6 text-center py-[12vh] md:py-[14vh]">
               <Reveal delay={0}>
-                <p className={`${EYEBROW} m-0 mb-7`}>
+                <p className={`${EYEBROW} m-0 mb-8`}>
                   The thread through every piece
                 </p>
               </Reveal>
@@ -544,25 +519,26 @@ export const Welcome = () => {
                 <h2
                   className="font-display text-balance m-0"
                   style={{
-                    // opsz 40 = Fraunces' TEXT-grade cut (even strokes, calm
-                    // terminals) — the root fix for the "scribble" read; NOT
-                    // 144. Capped at 74px so it can never fill the viewport:
-                    // one confident line of brand copy, not a banner.
-                    fontVariationSettings: '"opsz" 40, "wght" 400',
-                    fontSize: "clamp(34px, 6vw, 74px)",
-                    letterSpacing: "-0.018em",
-                    lineHeight: 1.06,
+                    // Bold + screen-filling (Hugo's direction) but a CONTROLLED
+                    // optical size: opsz 48 gives even, heavy strokes. The old
+                    // "scribble" was opsz-144's hairline swash at 560px — never
+                    // that again. A TRUE loaded 700 weight (font-synthesis is off,
+                    // so this is real bold, not a faux smear).
+                    fontVariationSettings: '"opsz" 48, "wght" 700',
+                    fontWeight: 700,
+                    fontSize: "clamp(44px, 8.4vw, 132px)",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 0.97,
                     color: "#ede6d6",
-                    // ONE hairline pass for legibility over the faded Earth —
-                    // never the old 4-layer carved stack.
-                    textShadow: "0 1px 24px rgba(10,9,8,0.6)",
+                    textShadow: "0 2px 40px rgba(10,9,8,0.7)",
                   }}
                 >
                   Sacred{" "}
                   <em
                     style={{
                       fontStyle: "italic",
-                      fontVariationSettings: '"opsz" 40, "wght" 400',
+                      fontVariationSettings: '"opsz" 48, "wght" 600',
+                      fontWeight: 600,
                     }}
                   >
                     geometry
@@ -587,8 +563,8 @@ export const Welcome = () => {
                   style={{
                     fontStyle: "italic",
                     fontVariationSettings: '"opsz" 24, "wght" 400',
-                    fontSize: "clamp(17px, 2vw, 19px)",
-                    lineHeight: 1.55,
+                    fontSize: "clamp(18px, 2.2vw, 22px)",
+                    lineHeight: 1.5,
                   }}
                 >
                   &ldquo;I realised that everything is connected.&rdquo;

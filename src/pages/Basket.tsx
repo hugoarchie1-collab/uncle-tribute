@@ -215,7 +215,7 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.4} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             The Estate
@@ -258,13 +258,13 @@ export const Basket = () => {
                       <div className="flex gap-5 sm:gap-7 items-start">
                         <Link
                           to={`/collections/${line.paintingId}`}
-                          className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] overflow-hidden ring-1 ring-white/8"
+                          className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] 2xl:w-[128px] 2xl:h-[128px] overflow-hidden ring-1 ring-white/8"
                           aria-label={`${line.title} — view painting`}
                         >
                           <AssetImage
                             src={line.image}
                             alt={`${line.title} — ${line.colourwayName}`}
-                            className="w-full h-full object-cover block"
+                            className="w-full h-full object-cover object-top block"
                             loading="lazy"
                           />
                         </Link>
@@ -278,14 +278,15 @@ export const Basket = () => {
                           )}
                           <Link
                             to={`/collections/${line.paintingId}`}
-                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,22px)] text-ink leading-tight hover:text-accent transition-colors"
+                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,26px)] text-ink leading-tight hover:text-accent transition-colors"
                           >
                             {line.title}
                           </Link>
                           {/* Tier label — quiet muted-ink spec line.
                               Surfaces label · size · edition. */}
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>
-                            {line.tier.label} · {line.tier.size.split(" ")[0]} · {line.tier.editionLabel}
+                            {line.tier.label} · {line.tier.size.split(" ")[0]}
+                            <span className="hidden sm:inline"> · {line.tier.editionLabel}</span>
                           </p>
                           <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
                             {line.colourwayName}
@@ -302,7 +303,7 @@ export const Basket = () => {
                             this is the PRINT-ONLY figure and the line subtotal
                             is shown below — so nothing is hidden (DMCC #13:
                             no drip-pricing). */}
-                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,20px)] text-ink m-0 flex-shrink-0">
+                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,24px)] text-ink m-0 flex-shrink-0">
                           {formatGBP(line.tier.pricePence)}
                         </p>
                       </div>
@@ -312,7 +313,7 @@ export const Basket = () => {
                           only when at least one add-on is selected; the plain
                           print line above is already complete on its own. */}
                       {hasAddOns && (
-                        <div className="mt-4 ml-[108px] sm:ml-[132px] flex flex-col gap-1.5">
+                        <div className="mt-4 ml-0 sm:ml-[132px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
                               {line.tier.label} print ({line.tier.size.split(" ")[0]})
@@ -390,7 +391,7 @@ export const Basket = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
                   {bundleDiscountPercent > 0 ? "Total before delivery" : "Subtotal"}
                 </p>
-                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,36px)] text-ink m-0 tabular-nums flex-shrink-0">
+                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,44px)] text-ink m-0 tabular-nums flex-shrink-0">
                   {formatGBP(discountedSubtotalPence)}
                 </p>
               </div>

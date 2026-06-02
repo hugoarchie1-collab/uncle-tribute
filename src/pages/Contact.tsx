@@ -6,7 +6,7 @@ import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -15,10 +15,12 @@ import { cn } from "../lib/cn";
  * page so it shows in the Nav / Footer and can be deep-linked from press,
  * partnerships, and customer enquiries.
  *
- * Visual register: centred 720px column on the shared dark shell — the
- * canonical EYEBROW / TITLE / SUBTITLE header stack, then the form. Matches
- * the home design system (Fraunces + Hanken Grotesk, cream-on-near-black,
- * accent reserved for eyebrow + focus/hover).
+ * Visual register: a calm, well-spaced centred 640px column on the shared dark
+ * shell — tuned to match the /memories header (a small display H1 + a compact
+ * muted-sans intro, fluid clamp() rhythm), NOT the loud big-TITLE/large-SUBTITLE
+ * stack. The form fields mirror the /memories share modal (solid bg-bg-soft,
+ * py-3, named-token placeholder). Home design system throughout: Fraunces +
+ * Hanken Grotesk, cream-on-near-black, accent reserved for eyebrow + focus/hover.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -101,31 +103,37 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
-        <Reveal as="header" className="mb-10">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Contact the estate</p>
-          <h1 className={cn(TITLE, "m-0")}>Get in touch.</h1>
-          <p className={cn(SUBTITLE, "mt-7 m-0 max-w-[600px]")}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[640px] 2xl:max-w-[720px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(6rem,11vw,6.5rem)] pb-[clamp(3rem,7vw,4.5rem)]">
+        <Reveal as="header" className="max-w-[60ch]">
+          <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
+            Contact the estate
+          </p>
+          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
+            Get in touch.
+          </h1>
+          <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
             For commissions, partnerships, press, or a question about a
             particular work, write to The Mandala Company. We are a small
             estate; every message is read by the family, and answered within a
             day or two.
           </p>
-          <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink-muted mt-8 mb-2">
+          <p className={cn(EYEBROW_MUTED, "mt-[clamp(1.1rem,3vw,1.5rem)] mb-[clamp(0.4rem,1.2vw,0.55rem)]")}>
             By post
           </p>
-          <address className="font-sans not-italic text-[14px] leading-[1.7] text-ink-muted m-0">
-            The Mandala Company — 213 Elm Drive, Hove,<br />
+          <address className="font-sans font-normal not-italic text-[14px] leading-[1.55] text-ink-muted m-0">
+            The Mandala Company — 213 Elm Drive, Hove,
             East Sussex, BN3 7JD, United Kingdom
           </address>
-          <Separator className="bg-line mt-10" />
+          <Separator className="bg-line mt-[clamp(1.25rem,3.5vw,2rem)]" />
         </Reveal>
 
-        <Reveal as="section" className="mt-2">
+        <Reveal as="section" className="mt-[clamp(1.25rem,3.5vw,2rem)]">
           {status === "success" ? (
-            <div className="py-8">
-              <p className={cn(TITLE, "m-0 mb-4")}>Thank you.</p>
-              <p className={cn(SUBTITLE, "m-0 max-w-[560px]")}>
+            <div className="py-[clamp(0.5rem,2vw,1rem)]">
+              <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,28px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]">
+                Thank you.
+              </p>
+              <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0 max-w-[56ch]">
                 Your message is on its way to{" "}
                 <span className="text-ink">info@themandalacompany.com</span>.
                 If your mail client did not open, we have copied the message to
@@ -140,7 +148,17 @@ export const Contact = () => {
                 name="botcheck"
                 tabIndex={-1}
                 autoComplete="off"
-                style={{ position: "absolute", left: "-9999px" }}
+                style={{
+                  position: "absolute",
+                  width: "1px",
+                  height: "1px",
+                  padding: 0,
+                  margin: "-1px",
+                  overflow: "hidden",
+                  clip: "rect(0,0,0,0)",
+                  whiteSpace: "nowrap",
+                  border: 0,
+                }}
                 aria-hidden="true"
               />
 
@@ -154,7 +172,7 @@ export const Contact = () => {
                     name="name"
                     required
                     autoComplete="name"
-                    className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/35 transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="Jane Smith"
                   />
                 </label>
@@ -167,7 +185,7 @@ export const Contact = () => {
                     type="email"
                     required
                     autoComplete="email"
-                    className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] text-ink placeholder:text-ink/35 transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="jane@example.com"
                   />
                 </label>
@@ -180,8 +198,8 @@ export const Contact = () => {
                 <textarea
                   name="message"
                   required
-                  rows={7}
-                  className="w-full bg-bg-soft/40 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3.5 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/35 transition-shadow resize-none"
+                  rows={6}
+                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                   placeholder="A few lines about the work or enquiry."
                 />
               </label>

@@ -155,7 +155,7 @@ export const FAQ = () => {
         url="/faq"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-14">
           <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
           <h1 className={cn(TITLE, "m-0")}>Questions, answered.</h1>
@@ -183,10 +183,10 @@ export const FAQ = () => {
               <p className={cn(EYEBROW, "m-0")}>
                 {qa.eyebrow}
               </p>
-              <h2 className={cn(TITLE, "m-0 text-[clamp(24px,2.8vw,34px)] leading-[1.1]")}>
+              <h2 className={cn("font-display font-semibold tracking-[-0.04em] text-balance text-ink", "m-0 text-[clamp(24px,2.8vw,40px)] leading-[1.1]")}>
                 {qa.question}
               </h2>
-              <div className={cn(SUBTITLE, "max-w-none")}>
+              <div className={cn(SUBTITLE, "max-w-none 2xl:text-[19px]")}>
                 {qa.answer}
               </div>
             </section>

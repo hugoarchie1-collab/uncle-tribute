@@ -29,7 +29,7 @@ export const OrderSuccess = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
@@ -83,7 +83,7 @@ export const OrderSuccess = () => {
 export const OrderCancel = () => {
   usePageTitle("Order cancelled — The Art of Stephen Meakin");
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">

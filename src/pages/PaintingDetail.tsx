@@ -141,7 +141,7 @@ const SizePicker = ({
   selectedTier: PrintTier;
   onSelectTier: (id: PrintTier["id"]) => void;
 }) => (
-  <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-2.5">
+  <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-2.5 gap-y-4">
     {tiers.map((tier) => {
       const isSelected = tier.id === selectedTier.id;
       return (
@@ -168,7 +168,7 @@ const SizePicker = ({
           )}
           <span className="min-w-0">
             <span className={cn(EYEBROW_TIGHT, "block mb-1")}>{tier.label}</span>
-            <span className="block font-sans text-[15px] font-medium leading-[1.25] text-ink">
+            <span className="block font-sans text-[15px] font-semibold leading-[1.25] text-ink">
               {tier.size}
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
@@ -225,7 +225,7 @@ const OneOffCard = ({
         {formatGBP(tier.pricePence).replace(".00", "")}
       </span>
     </span>
-    <span className="block font-sans text-[15px] font-medium leading-[1.3] text-ink mb-1">
+    <span className="block font-sans text-[15px] font-semibold leading-[1.3] text-ink mb-1">
       {tier.label}
     </span>
     <span className={cn(META, "block mb-1.5")}>{tier.size}</span>
@@ -306,7 +306,7 @@ const Colourways = ({
         </div>
       )}
 
-      <p className="font-sans text-[15px] font-medium text-ink m-0">
+      <p className="font-sans text-[15px] font-semibold text-ink m-0">
         {selected.name}
         {selected.isOriginal && (
           <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-ink-muted">
@@ -451,7 +451,7 @@ const TrueSizeRoom = ({
 
   if (state === "missing" || !src) {
     return (
-      <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
+      <div className="relative w-full min-h-[clamp(300px,60vw,420px)] py-10 overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
         {/* Proportional outline of the print, drawn from real cm, centred on a
             quiet ground — a dignified placeholder until the room photo exists. */}
         {dims && (
@@ -480,7 +480,7 @@ const TrueSizeRoom = ({
   }
 
   return (
-    <div className="relative w-full overflow-hidden ring-1 ring-line">
+    <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line">
       <picture>
         <source srcSet={asset(webp(src))} type="image/webp" />
         <img
@@ -489,7 +489,7 @@ const TrueSizeRoom = ({
           onLoad={() => setState("ok")}
           onError={() => setState("missing")}
           className={cn(
-            "block w-full h-auto",
+            "absolute inset-0 h-full w-full object-contain",
             reduceMotion ? "" : "transition-opacity duration-500",
             state === "ok" ? "opacity-100" : "opacity-0",
           )}
@@ -849,7 +849,7 @@ const BuyBox = ({
                 <span className="flex items-baseline justify-between gap-3">
                   <strong className="text-ink">Add a hand-made frame</strong>
                   {framingPriceLabel && (
-                    <span className="font-sans text-[13.5px] font-medium text-ink whitespace-nowrap">
+                    <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
                       +{framingPriceLabel}
                     </span>
                   )}
@@ -900,7 +900,7 @@ const BuyBox = ({
                 <span className="flex items-baseline justify-between gap-3">
                   <strong className="text-ink">Hand-finished by Polly Wedge</strong>
                   {embellishPriceLabel && (
-                    <span className="font-sans text-[13.5px] font-medium text-ink whitespace-nowrap">
+                    <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
                       +{embellishPriceLabel}
                     </span>
                   )}
@@ -978,7 +978,7 @@ const BuyBox = ({
           )}
         </p>
         {status === "error" && (
-          <p className="mt-2 font-sans text-[13.5px] font-medium text-ink m-0">{errorMsg}</p>
+          <p className="mt-2 font-sans text-[13.5px] font-semibold text-ink m-0">{errorMsg}</p>
         )}
 
         {/* 8 · AUTHENTICATION + REASSURANCE — structured trust cluster. All
@@ -1306,6 +1306,14 @@ export const PaintingDetail = () => {
   // Price strip always reflects the anchor — size picker drives the buttons.
   const pricePence = anchorTier.pricePence;
 
+  // Hero intrinsic aspect — derived from the painting's known cm size so the
+  // browser reserves the image slot's ratio BEFORE the file decodes (#23: kills
+  // the first-paint CLS that pushed the buy box down, and keeps the slot from
+  // collapsing during the colourway crossfade). Only the ratio matters here;
+  // the rendered size is still governed by the h-auto/max-h classes. Falls back
+  // to a square slot when the size string isn't in cm.
+  const heroDims = parseSizeCm(painting.size ?? "") ?? { w: 1, h: 1 };
+
   const scrollToOrder = () => {
     const el = document.getElementById("order-print");
     if (!el) return;
@@ -1395,7 +1403,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1240px] px-4 md:px-8 lg:px-12 pt-6 pb-20 md:pb-28">
+        <main className="mx-auto max-w-[1240px] 2xl:max-w-[1480px] px-4 md:px-8 lg:px-12 pt-6 pb-20 md:pb-28">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
@@ -1462,7 +1470,7 @@ export const PaintingDetail = () => {
                     aria-label={`View ${painting.title} fullscreen`}
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence mode="sync">
                       <motion.picture
                         key={selected.image}
                         initial={{ opacity: 0 }}
@@ -1481,7 +1489,9 @@ export const PaintingDetail = () => {
                         <img
                           src={asset(selected.image)}
                           alt={`${painting.title} — ${selected.name}`}
-                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[82vh]"
+                          width={heroDims.w}
+                          height={heroDims.h}
+                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[calc(100vh-88px-2rem)] 2xl:max-h-[86vh]"
                         />
                       </motion.picture>
                     </AnimatePresence>

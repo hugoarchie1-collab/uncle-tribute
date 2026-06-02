@@ -15,11 +15,13 @@ export const EYEBROW =
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
- *  clamp 32→60px, line-height 0.98, tracking -0.04em, balanced wrapping. Apply
+ *  clamp 32→60px, line-height 1.02 (md+ tightens to 0.98 for the single-line
+ *  large-screen case so wrapped phone titles never touch), tracking -0.04em,
+ *  balanced wrapping. Apply
  *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
  *  or leave left-aligned. End the copy with a full stop, sentence-case. */
 export const TITLE =
-  "font-display font-semibold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[0.98] text-ink text-balance";
+  "font-display font-semibold tracking-[-0.04em] text-[clamp(32px,4.4vw,60px)] leading-[1.02] md:leading-[0.98] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token,

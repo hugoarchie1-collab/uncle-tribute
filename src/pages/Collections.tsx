@@ -199,7 +199,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
+              <div className="relative mx-auto max-w-[1400px] 2xl:max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
                   <p
                     className={cn(EYEBROW, "m-0 mb-5")}
@@ -241,7 +241,19 @@ export const Collections = () => {
                         // orphan). min-w-0 lets the basis shrink below content on
                         // narrow viewports so a long title can never widen the row
                         // past the viewport.
-                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,520px)]"
+                        // Each tile drives its OWN whileInView (not the parent
+                        // RevealStagger orchestration) with amount:0 so ANY sliver
+                        // of visibility commits the reveal. This guarantees tall
+                        // grids on short/landscape heights — and tiles below the
+                        // fold when deep-linking to #collection-<id> — never get
+                        // stranded at opacity:0 (the parent's once:true threshold
+                        // could already be past at mount). The committed "show"
+                        // state is opacity:1, so the worst case is a non-animated
+                        // but fully-visible tile.
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0, margin: "0px 0px -5% 0px" }}
                         variants={{
                           hidden: { opacity: 0, y: 14 },
                           show: {

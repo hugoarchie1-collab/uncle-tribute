@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { cn } from "../lib/cn";
+import { EYEBROW_MUTED } from "./ui/tokens";
 
 /**
  * Newsletter signup ("Friends & Family" list).
@@ -105,11 +107,9 @@ export const NewsletterSignup = ({
   if (variant === "footer") {
     return (
       <div>
-        <h3 className="mb-5 font-sans text-[10px] font-medium tracking-[0.32em] uppercase text-ink/45">
-          Friends &amp; Family
-        </h3>
+        <h3 className={cn(EYEBROW_MUTED, "mb-5")}>Friends &amp; Family</h3>
         {status === "success" ? (
-          <p className="font-sans text-[13px] leading-[1.65] text-ink/70 m-0">
+          <p className="font-sans text-[13px] leading-[1.65] text-ink-muted m-0">
             Thank you. We'll be in touch when the next edition is released.
           </p>
         ) : (
@@ -119,26 +119,36 @@ export const NewsletterSignup = ({
               name="botcheck"
               tabIndex={-1}
               autoComplete="off"
-              style={{ position: "absolute", left: "-9999px" }}
+              style={{
+                position: "absolute",
+                width: "1px",
+                height: "1px",
+                padding: 0,
+                margin: "-1px",
+                overflow: "hidden",
+                clip: "rect(0,0,0,0)",
+                whiteSpace: "nowrap",
+                border: 0,
+              }}
               aria-hidden="true"
             />
             <label className="block">
-              <span className="block font-sans text-[13px] leading-[1.6] text-ink/65 mb-3">
+              <span className="block font-sans text-[13px] leading-[1.6] text-ink-muted mb-3">
                 Quarterly notes on new editions and exhibitions.
               </span>
-              <div className="flex w-full items-stretch ring-1 ring-white/15 focus-within:ring-accent transition-shadow">
+              <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
                 <input
                   name="email"
                   type="email"
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink/30 focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink-faint focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/70 hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-white/10 cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
@@ -147,9 +157,9 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-2 font-sans text-[12px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[11px] italic text-ink/55 mt-2 m-0">
+            <p className="font-sans text-[11px] italic text-ink-fade mt-3 m-0">
               By subscribing you agree to our{" "}
-              <Link to="/privacy" className="underline hover:text-ink/70">
+              <Link to="/privacy" className="underline transition-colors hover:text-ink">
                 Privacy Policy
               </Link>
               .
@@ -181,7 +191,17 @@ export const NewsletterSignup = ({
               name="botcheck"
               tabIndex={-1}
               autoComplete="off"
-              style={{ position: "absolute", left: "-9999px" }}
+              style={{
+                position: "absolute",
+                width: "1px",
+                height: "1px",
+                padding: 0,
+                margin: "-1px",
+                overflow: "hidden",
+                clip: "rect(0,0,0,0)",
+                whiteSpace: "nowrap",
+                border: 0,
+              }}
               aria-hidden="true"
             />
             <p className="font-sans font-normal text-[14.5px] leading-[1.7] text-ink/75 m-0 mb-4">
@@ -257,7 +277,17 @@ export const NewsletterSignup = ({
             name="botcheck"
             tabIndex={-1}
             autoComplete="off"
-            style={{ position: "absolute", left: "-9999px" }}
+            style={{
+              position: "absolute",
+              width: "1px",
+              height: "1px",
+              padding: 0,
+              margin: "-1px",
+              overflow: "hidden",
+              clip: "rect(0,0,0,0)",
+              whiteSpace: "nowrap",
+              border: 0,
+            }}
             aria-hidden="true"
           />
 

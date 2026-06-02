@@ -163,7 +163,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           {/* Primary links — inline from `lg` up; collapsed into the accessible
               menu below `lg`. */}
           <nav
-            className="hidden lg:flex items-center gap-8 xl:gap-10"
+            className="hidden xl:flex items-center gap-8 2xl:gap-10"
             aria-label="Primary"
           >
             {NAV_LINKS.map((l) => (
@@ -173,7 +173,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "relative py-2 font-sans text-[11px] font-medium tracking-[0.26em] uppercase transition-colors duration-300",
+                    "relative py-2 font-sans text-[11px] font-semibold tracking-[0.26em] uppercase transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
                     "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-left after:transition-transform after:duration-300",
                     isActive && "after:scale-x-100",
@@ -244,7 +244,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((o) => !o)}
-            className="lg:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+            className="xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
           >
             <svg
               width="22"
@@ -283,7 +283,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="lg:hidden fixed inset-0 z-40 bg-[#0a0908]/70 backdrop-blur-sm"
+              className="xl:hidden fixed inset-0 z-40 bg-[#0a0908]/70 backdrop-blur-sm"
             />
             <motion.nav
               ref={menuRef}
@@ -293,7 +293,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               animate={{ opacity: 1, y: 0 }}
               exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
               transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-              className="lg:hidden absolute top-full left-0 right-0 z-50 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 sm:px-6 flex flex-col max-h-[calc(100dvh-64px)] overflow-y-auto"
+              className="xl:hidden absolute top-full left-0 right-0 z-50 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 sm:px-6 flex flex-col max-h-[calc(100dvh-64px)] overflow-y-auto"
             >
               {NAV_LINKS.map((l) => (
                 <NavLink
@@ -302,7 +302,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                   end={l.end}
                   className={({ isActive }) =>
                     cn(
-                      "py-4 font-sans text-[12px] font-medium tracking-[0.26em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
+                      "py-4 font-sans text-[12px] font-semibold tracking-[0.26em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
                       isActive ? "text-accent" : "text-ink/70 hover:text-ink",
                     )
                   }

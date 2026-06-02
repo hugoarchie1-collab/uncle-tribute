@@ -46,9 +46,9 @@ import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } f
  *  Mirrors the home section prose: Hanken Grotesk, 16/17px, leading 1.7, routed
  *  through the single muted-ink token (never a bespoke /85 alpha). */
 const BODY =
-  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-muted m-0";
+  "font-sans font-normal text-[16px] md:text-[17px] min-[2560px]:text-[19px] leading-[1.7] text-ink-muted m-0";
 
-const SECTION = "mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12";
+const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ─── WordReveal ────────────────────────────────────────────────────────────
 // Stagger every word into place with a blur-clear. Used on the one cinematic
@@ -183,7 +183,7 @@ const AboutHero = () => {
     <section className="relative">
       <div
         ref={ref}
-        className="relative h-[72vh] sm:h-[80vh] md:h-[86vh] w-full overflow-hidden bg-bg"
+        className="relative h-[68vh] md:h-[78vh] min-h-[560px] max-h-[820px] aspect-[4/3] md:aspect-[3/2] w-full overflow-hidden bg-bg"
       >
         <motion.div
           className="absolute inset-0 will-change-transform"
@@ -230,7 +230,7 @@ const AboutHero = () => {
           className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4"
         >
           <Reveal as="div">
-            <h1 className="font-display font-semibold tracking-[-0.04em] text-[clamp(64px,11vw,160px)] leading-[0.88] text-ink m-0 hero-text-shadow">
+            <h1 className="font-display font-semibold tracking-[-0.04em] text-[clamp(48px,11vw,160px)] leading-[0.88] text-ink m-0 hero-text-shadow">
               Stephen<br />Meakin
             </h1>
             <p className={cn(EYEBROW_MUTED, "mt-4 md:mt-5 hero-text-shadow")}>
@@ -483,6 +483,8 @@ export const About = () => {
                 <AssetImage
                   src="/img/about/06-force-india-final.jpg"
                   alt="Stephen's mandala design for the Sahara Force India Formula One car"
+                  width={904}
+                  height={639}
                   loading="lazy"
                   decoding="async"
                   className="block w-full h-auto"

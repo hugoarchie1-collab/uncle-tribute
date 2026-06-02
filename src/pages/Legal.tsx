@@ -659,7 +659,7 @@ const LegalPage = ({
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.36} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] 2xl:max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
         <Reveal as="header" className="mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
           <h1
@@ -681,7 +681,7 @@ const LegalPage = ({
                   return (
                     <p
                       key={j}
-                      className="font-sans font-normal text-[16px] leading-[1.8] text-ink-muted m-0"
+                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
                     >
                       {block.text}
                     </p>
@@ -690,7 +690,7 @@ const LegalPage = ({
                 return (
                   <ul
                     key={j}
-                    className="font-sans font-normal text-[16px] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0"
+                    className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
                   >
                     {block.items.map((item, k) => (
                       <li key={k}>{item}</li>

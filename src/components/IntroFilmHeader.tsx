@@ -53,7 +53,7 @@ export const IntroFilmHeader = () => {
             animate={
               reduceMotion
                 ? { height: "auto", opacity: 1 }
-                : { height: "100vh", opacity: 1 }
+                : { height: "100dvh", opacity: 1 }
             }
             exit={
               reduceMotion

@@ -71,7 +71,7 @@ export const FindAPrint = () => {
         url="/for-you"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Where to begin</p>
           <h1 className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6 hero-text-shadow")}>
@@ -102,7 +102,7 @@ export const FindAPrint = () => {
                 aria-pressed={on}
                 onClick={() => toggle(f.key)}
                 className={cn(
-                  "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 ring-1 transition-all duration-300",
+                  "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
                   on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
                 )}
               >
@@ -151,7 +151,7 @@ export const FindAPrint = () => {
           {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,520px)]"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">

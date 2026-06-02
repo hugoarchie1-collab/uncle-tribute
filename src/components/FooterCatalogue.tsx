@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { AssetImage } from "./AssetImage";
 import { PAINTINGS } from "../data/paintings";
+import { cn } from "../lib/cn";
+import { EYEBROW_MUTED } from "./ui/tokens";
 
 /**
- * FooterCatalogue — a quiet 10×1 row of every painting in the catalogue,
- * mounted above the Footer on every page. Lets a reader who has scrolled to
+ * FooterCatalogue — a quiet grid of every painting in the catalogue (5×2 at
+ * md/tablet, 10×1 from lg), mounted above the Footer on every page. Lets a reader who has scrolled to
  * the bottom step sideways into any other piece without travelling back up to
  * the nav. Each tile uses the painting's original-colourway cover image.
  *
@@ -47,19 +49,21 @@ export const FooterCatalogue = () => {
   return (
     <section
       aria-label="All paintings"
-      className="relative hidden md:block border-t border-white/8 bg-bg px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-2"
+      className="relative hidden md:block border-t border-line bg-bg px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-2"
     >
       <div className="mx-auto max-w-[1400px]">
-        <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-5 text-center">
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>
           The Catalogue · {tiles.length}
         </p>
         {/* flex-wrap + justify-center so any partial trailing row (if the
             catalogue count ever stops being a clean multiple of the per-row
             count) centres instead of leaving a left-aligned orphan. Each tile
-            is flex: 0 1 calc(10% - 9px): the 9px subtracts this row's share of
-            the nine 10px gaps so 10 tiles still fit one row (10×(10%−9px) +
-            9×10px = 100%), preserving the desktop 10-up. min-w-0 lets a tile
-            shrink so the row can never push past the container. */}
+            basis is responsive: at md/tablet it's 0 1 calc(20% − 8px) for a
+            5×2 grid (the 8px subtracts this row's share of the four 10px gaps:
+            5×(20%−8px) + 4×10px = 100%, ~125px tiles instead of 10 noisy
+            ~61px squares); from lg it's 0 1 calc(10% − 9px) for the desktop
+            10×1 row (10×(10%−9px) + 9×10px = 100%). min-w-0 lets a tile shrink
+            so the row can never push past the container. */}
         <motion.ul
           initial="hidden"
           whileInView="show"
@@ -68,12 +72,12 @@ export const FooterCatalogue = () => {
           className="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
-            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(10%-9px)]">
+            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(20%-8px)] lg:flex-[0_1_calc(10%-9px)]">
               <Link
                 to={`/collections/${t.id}`}
                 aria-label={t.title}
                 title={t.title}
-                className="group relative block aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 hover:ring-accent/50"
+                className="group relative block aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 hover:ring-accent/50"
               >
                 <AssetImage
                   src={t.image}

@@ -17,6 +17,13 @@ const config: Config = {
       },
     },
     extend: {
+      // (#15) Higher breakpoint so QHD/4K/TV layouts can widen past 2xl
+      // instead of freezing in a narrow column with vast dead margins.
+      // Section wrappers step max-w at 2xl + 3xl; prose measures bump one
+      // gentle step at 2xl only (readability).
+      screens: {
+        "3xl": "2200px",
+      },
       fontFamily: {
         // Two families only (#10). Fraunces = editorial display serif with a
         // true italic reserved for quotes; Hanken Grotesk = quiet body/UI

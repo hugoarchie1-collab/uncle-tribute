@@ -134,7 +134,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(14px,1.6vw,15px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(14px,1.6vw,16px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: boolean }) => {
   const [expanded, setExpanded] = useState(false);
@@ -161,7 +161,7 @@ const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: b
         ) : null}
         {/* HEADER LINE — bold name + quiet inline meta on one wrapping baseline */}
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,15.5px)] leading-[1.3] text-ink break-words">
+          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,16.5px)] leading-[1.3] text-ink break-words">
             {memory.name}
           </span>
           {meta ? (
@@ -201,7 +201,7 @@ const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: b
               alt={`A photograph shared by ${memory.name}`}
               loading="lazy"
               decoding="async"
-              className="block w-full h-auto object-cover max-h-[clamp(220px,42vw,380px)]"
+              className="block w-full h-auto object-cover object-top max-h-[clamp(220px,42vw,380px)]"
             />
           </div>
         ) : null}
@@ -441,7 +441,17 @@ const ShareMemoryModal = ({
                       name="botcheck"
                       tabIndex={-1}
                       autoComplete="off"
-                      style={{ position: "absolute", left: "-9999px" }}
+                      style={{
+                        position: "absolute",
+                        width: "1px",
+                        height: "1px",
+                        padding: 0,
+                        margin: "-1px",
+                        overflow: "hidden",
+                        clip: "rect(0,0,0,0)",
+                        whiteSpace: "nowrap",
+                        border: 0,
+                      }}
                       aria-hidden="true"
                     />
 
@@ -617,18 +627,18 @@ export const Memories = () => {
       <main className="relative z-10 flex-1">
         {/* 1 · HEADER — the dignified opening. Eyebrow + display title + the
             "names he answered to" intro + a gentle first invitation. */}
-        <header className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
+        <header className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
           <Reveal as="div" className="max-w-[42ch]">
             <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
               Book of Memories
             </p>
-            <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,36px)] !leading-[1.05]")}>
+            <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
               Memories of Steve.
             </h1>
           </Reveal>
 
           <Reveal as="div" className="mt-[clamp(0.75rem,2vw,1.1rem)] max-w-[60ch]" delay={0.05}>
-            <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0">
+            <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted m-0">
               Stephen to some, SEM to the art world, Steve to his family. If he
               touched your life, add a memory below — the family reads every one.
             </p>
@@ -644,7 +654,7 @@ export const Memories = () => {
             into "feed". */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[640px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
+          className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
         >
           {/* composer — the "add a comment" box (X / YouTube idiom): a generic
               avatar + a rounded input placeholder that opens the share modal. It

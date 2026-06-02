@@ -28,3 +28,4 @@ dist-ssr
 
 # Environment / secrets — never commit these to git.
 .env*
+.image-backups/

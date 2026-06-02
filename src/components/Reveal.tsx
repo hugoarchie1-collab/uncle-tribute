@@ -41,7 +41,7 @@ export const Reveal = ({
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once, amount: 0.15, margin: "0px 0px -10% 0px" }}
+      viewport={{ once, amount: 0.01, margin: "0px" }}
       variants={variants}
     >
       {children}
