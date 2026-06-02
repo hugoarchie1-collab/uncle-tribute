@@ -503,13 +503,13 @@ export const About = () => {
         <section className={cn(SECTION, "py-16 md:py-24")}>
           <Reveal as="div" className="text-center max-w-[860px] mx-auto mb-10 md:mb-14">
             <SectionLabel>The Academy · 2010 → · Phoenix Place, Lewes</SectionLabel>
-            <h2 className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-7")}>
+            <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-7")}>
               The Art of Geometry Academy.
             </h2>
             <p className={cn(SUBTITLE, "mx-auto")}>{ABOUT.legacy[2]}</p>
           </Reveal>
 
-          <Reveal as="figure" className="m-0 max-w-[1040px] mx-auto">
+          <Reveal as="figure" className="my-0 max-w-[1040px] mx-auto">
             <ContainImage
               src="/img/about/08-taga-group.jpg"
               alt="Stephen with a group of TAGA students, each holding a mandala they painted"
@@ -557,7 +557,7 @@ export const About = () => {
         {/* 10 · THE SUNSTAR — cinematic full-bleed-ish close of the work.
             The painting on the studio floor, shown whole on a dark field. */}
         <section className={cn(SECTION, "py-12 md:py-20")}>
-          <Reveal as="figure" className="m-0 max-w-[920px] mx-auto">
+          <Reveal as="figure" className="my-0 max-w-[920px] mx-auto">
             <ContainImage
               src="/img/about/11-ophiuchus-painting.jpg"
               alt="A finished SunStar painting in Stephen's studio"
@@ -575,13 +575,13 @@ export const About = () => {
         <section className="mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
-            <h2 className={cn(TITLE, "max-w-[820px] mx-auto m-0")}>
+            <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
               Stephen Meakin
             </h2>
             <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
           </Reveal>
 
-          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
+          <Reveal as="figure" className="my-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
             <blockquote className="m-0">
               <p className="font-display italic text-[clamp(20px,2.6vw,28px)] leading-[1.45] text-ink m-0">
                 “{MEMORIAL_QUOTE}”

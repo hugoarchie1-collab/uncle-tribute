@@ -37,13 +37,13 @@ export const OrderSuccess = () => {
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order confirmed
           </p>
-          <h1 className={cn(TITLE, "m-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
+          <h1 className={cn(TITLE, "my-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
             Thank you.
           </h1>
-          <p className={cn(SUBTITLE, "m-0 mb-5 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "my-0 mb-5 mx-auto text-center max-w-[640px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mb-10 mx-auto max-w-[640px]">
+          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted my-0 mb-10 mx-auto max-w-[640px]">
             Each print is made to order. We place yours with our atelier, Point 101 in London,
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
@@ -91,10 +91,10 @@ export const OrderCancel = () => {
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order cancelled
           </p>
-          <h1 className={cn(TITLE, "m-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
+          <h1 className={cn(TITLE, "my-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
             No charge taken.
           </h1>
-          <p className={cn(SUBTITLE, "m-0 mb-10 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "my-0 mb-10 mx-auto text-center max-w-[640px]")}>
             You left checkout before completing the order, so nothing was charged. If a detail
             was unclear, or you would like help choosing a colourway, write to us.
           </p>

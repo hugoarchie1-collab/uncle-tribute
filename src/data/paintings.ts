@@ -518,7 +518,9 @@ export const PAINTINGS: Painting[] = [
     colourways: [
       {
         name: "Original",
-        image: "/img/paintings/english-bluebells.jpg",
+        // -v2 filename busts Vercel's 1-year immutable /img cache after the
+        // re-crop (the bordered original was frozen on the old filename).
+        image: "/img/paintings/english-bluebells-v2.jpg",
         hex: "#a9b9d6",
         isOriginal: true,
         available: true,

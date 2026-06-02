@@ -221,7 +221,7 @@ export const Welcome = () => {
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Selected Works
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -295,10 +295,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
             <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 ring-1 ring-white/8">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink m-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 m-0 mt-7 max-w-[680px] mx-auto">
+                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 my-0 mt-7 max-w-[680px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -354,7 +354,7 @@ export const Welcome = () => {
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink m-0 max-w-[820px] mx-auto text-balance">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance">
                 Four traditions, woven into one visual language.
               </h2>
             </Reveal>
@@ -384,7 +384,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 max-w-[820px] mx-auto m-0 text-center">
+              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 max-w-[820px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>

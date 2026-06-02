@@ -74,10 +74,10 @@ export const FindAPrint = () => {
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Where to begin</p>
-          <h1 className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6 hero-text-shadow")}>
+          <h1 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6 hero-text-shadow")}>
             Find a piece by colour.
           </h1>
-          <p className={cn(SUBTITLE, "mx-auto m-0")}>
+          <p className={cn(SUBTITLE, "mx-auto my-0")}>
             Stephen left several colourways of each mandala. Choose the tones you
             are drawn to, and the pieces that hold them rise to the top. There is
             no wrong answer. You can also{" "}
@@ -119,7 +119,7 @@ export const FindAPrint = () => {
           })}
         </Reveal>
 
-        <p className={cn("text-center mx-auto m-0 mb-4 max-w-[560px]", "font-sans text-[13.5px] leading-[1.6] text-ink-muted")}>
+        <p className={cn("text-center mx-auto my-0 mb-4 max-w-[560px]", "font-sans text-[13.5px] leading-[1.6] text-ink-muted")}>
           {COLOURWAY_NOTE}
         </p>
 

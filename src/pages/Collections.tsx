@@ -154,13 +154,13 @@ export const Collections = () => {
             The Collections
           </p>
           <h1
-            className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6")}
+            className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6")}
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
             Estate-stamped editions.
           </h1>
           <p
-            className={cn(SUBTITLE, "max-w-[640px] mx-auto m-0")}
+            className={cn(SUBTITLE, "max-w-[640px] mx-auto my-0")}
             style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
             Every painting Stephen completed, offered as an estate-stamped giclée and made to order. The estate releases further works and colourways over time.
@@ -210,7 +210,7 @@ export const Collections = () => {
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className={cn(TITLE, "max-w-[820px] mx-auto m-0 mb-6")}
+                    className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
@@ -331,7 +331,7 @@ export const Collections = () => {
                       <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,36px)] leading-[1.2] text-ink m-0 mb-3">
                         The complete {shortName}
                       </h3>
-                      <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted m-0 mb-2 max-w-[520px] mx-auto">
+                      <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted my-0 mb-2 max-w-[520px] mx-auto">
                         All {bundle.paintingIds.length} paintings at the Collector
                         edition (A2) — the collection entire, for one home.
                       </p>
@@ -376,10 +376,10 @@ export const Collections = () => {
             <p className={cn(EYEBROW, "m-0 mb-5")}>
               The complete catalogue
             </p>
-            <h2 className={cn(TITLE, "max-w-[640px] mx-auto m-0 mb-4")}>
+            <h2 className={cn(TITLE, "max-w-[640px] mx-auto my-0 mb-4")}>
               The complete works, together.
             </h2>
-            <p className={cn(SUBTITLE, "max-w-[560px] mx-auto m-0 mb-6")}>
+            <p className={cn(SUBTITLE, "max-w-[560px] mx-auto my-0 mb-6")}>
               One estate-stamped Collector print (A2) of all{" "}
               {catalogue.paintingCount} of Stephen's paintings: the entire,
               finite body of his work, gathered for one home.
