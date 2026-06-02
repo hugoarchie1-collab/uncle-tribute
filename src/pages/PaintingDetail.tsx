@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -1246,11 +1246,46 @@ export const PaintingDetail = () => {
     [painting],
   );
 
+  // Optional deep-link: /collections/:id?c=<colourway name>. Lets a featured
+  // card / catalogue tile open the page on the EXACT colourway it showed,
+  // rather than always resetting to the original. Matched case-insensitively
+  // against the available colourways; falls back to the original otherwise.
+  const [searchParams] = useSearchParams();
+  const colourwayParam = searchParams.get("c");
+  const colourwayFromParam = useMemo(
+    () =>
+      colourwayParam
+        ? availableColourways.find(
+            (c) => c.name.toLowerCase() === colourwayParam.toLowerCase(),
+          )
+        : undefined,
+    [colourwayParam, availableColourways],
+  );
+
   const initialColourway =
-    availableColourways.find((c) => c.isOriginal) ?? availableColourways[0];
+    colourwayFromParam ??
+    availableColourways.find((c) => c.isOriginal) ??
+    availableColourways[0];
   const [selectedName, setSelectedName] = useState<string | undefined>(
     initialColourway?.name,
   );
+
+  // Re-sync the selected colourway when the painting OR the ?c= param changes.
+  // React Router reuses this component instance across /collections/:id
+  // navigations, so the useState initialiser alone wouldn't pick up the new
+  // painting / colourway — this effect does (and fixes a stale selection when
+  // hopping straight from one painting's card to another).
+  // Intentional: re-sync the selection to the new painting/colourway on nav.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedName(
+      (colourwayFromParam ??
+        availableColourways.find((c) => c.isOriginal) ??
+        availableColourways[0])?.name,
+    );
+    // painting?.id keys the reset to an actual painting change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [painting?.id, colourwayParam]);
 
   // Tier ladder + size picker selection. Always preselect the anchor.
   const visibleTiers = useMemo(

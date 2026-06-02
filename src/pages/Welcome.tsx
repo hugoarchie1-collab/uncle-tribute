@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
+import { Logo } from "../components/Logo";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -11,7 +12,7 @@ import { MagneticLink } from "../components/MagneticLink";
 import { EYEBROW } from "../components/ui/tokens";
 import { WELCOME } from "../data/content";
 import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
-import { asset, webp } from "../lib/asset";
+import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
 // Three Peacock colourways used as the home page's seamlessly-blending
@@ -20,28 +21,27 @@ import { usePageTitle } from "../lib/usePageTitle";
 // baked into the file offline, zero runtime filter cost.
 // Pre-blurred WebP backdrops (~7-12KB each) — even smaller than the JPG
 // originals while keeping identical visual softness baked into the file.
+// Three Peacock colourways crossfade on page-scroll. Moroccan Purple closes
+// the page — it holds through the Sacred Geometry finale (Hugo's direction:
+// revert the brief Mary-Pink close back to the extended purple).
 const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
   { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
-  // Mary Pink closes the page — the newest colourway, carried into the Sacred
-  // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
   usePageTitle();
   const reduceMotion = useReducedMotion();
 
-  // Whole-page scroll drives four peacock backdrops crossfading in turn:
-  // Indigo → Blood-Moon Red → Moroccan Purple → Mary Pink, the last holding
-  // through the Sacred Geometry finale so its sky matches the rest of the home.
+  // Whole-page scroll drives three peacock backdrops crossfading in turn:
+  // Indigo → Blood-Moon Red → Moroccan Purple, the purple holding through the
+  // Sacred Geometry finale so its sky matches the rest of the home.
   const { scrollYProgress } = useScroll();
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.22, 0.30], [0, 1, 1, 0]);
-  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
-  const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
-  const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
-  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.30, 0.42], [0, 1, 1, 0]);
+  const redOpacity = useTransform(scrollYProgress, [0.30, 0.42, 0.60, 0.72], [0, 1, 1, 0]);
+  const purpleOpacity = useTransform(scrollYProgress, [0.60, 0.72, 0.97, 1], [0, 1, 1, 1]);
+  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity];
 
   // Six featured paintings shown in a 3×2 grid, mirroring the
   // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
@@ -110,15 +110,17 @@ export const Welcome = () => {
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
-          {/* Top padding clears the now-fixed overlay Nav (~56-72px tall) — and
-              no more. The old pt-24/md:pt-28 (96px/112px) was ~double the nav
-              height, reading as a dead band directly beneath the full-screen
-              video. A single fluid clamp() (~70px → ~96px) scales the clearance
-              with the viewport while staying close to the nav height at every
-              width, so the video-to-hero seam reads tight. */}
+          {/* Tight seam between the intro film and the hero. On PORTRAIT phones
+              the film is a short 16:9 card (not full-height), so a large top
+              pad here reads as a dead black band directly under the video (the
+              reported gap). The clamp now starts SMALL (~18px on a phone) and
+              only opens up via the vw term on wider screens where the film is
+              full-height and the hero sits a full scroll below. The fixed Nav
+              always floats over the film at the very top, never over the hero,
+              so the hero needs no nav-clearance padding of its own. */}
           <section
             className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
-            style={{ paddingTop: "clamp(4.375rem, 6vw, 6rem)" }}
+            style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
               <Reveal as="div" className="md:col-span-6">
@@ -238,7 +240,14 @@ export const Welcome = () => {
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
                 return (
-                  <Link key={painting.id} to={`/collections/${painting.id}`} className="group block min-w-0 flex-[0_1_clamp(132px,30%,420px)]">
+                  <Link
+                    key={painting.id}
+                    // Carry the colourway shown on THIS card through to the
+                    // detail page (?c=…) so clicking e.g. the Blood Moon Red
+                    // peacock lands on that exact colourway, not the original.
+                    to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`}
+                    className="group block min-w-0 flex-[0_1_clamp(132px,30%,420px)]"
+                  >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                       <AssetImage
                         src={cover.image}
@@ -433,111 +442,70 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 10 · SACRED GEOMETRY — the bold closing statement.
+          {/* 8 · SACRED GEOMETRY — the closing statement.
 
-              Redesigned 2026-06-02 (Hugo's direction): a confident, screen-
-              filling editorial close, not a restrained colophon. The headline
-              is large and bold in a TRUE Fraunces 700 (loaded; never synthesised
-              now that font-synthesis is off) at a CONTROLLED optical size
-              (opsz 48 — even, heavy strokes). The earlier "scribble" was
-              opsz-144's hairline swash blown up to 560px; a moderate opsz at a
-              capped 132px stays striking AND clean. Background blends the home's
-              own peacock backdrop, now closing on the MARY PINK colourway (the
-              fixed crossfade layer behind the page), with a stronger Earth
-              horizon and NO decorative ring lines. Stephen's words stay verbatim.
-              Section fills the viewport (min-h-100svh) with the content centered;
-              isolate + overflow-hidden retained (gotcha #8). */}
+              Redesigned (Hugo's direction, supersedes the 2026-06-02 bold
+              banner + the gotcha-#7 history): the screen-filling 100svh banner
+              read "long, massive and tedious" with a dead gap above it, so this
+              is now a COMPACT, brand-led editorial close in the register the
+              best closing sections use (Apple / luxury houses): the rose emblem
+              anchors the section, then a refined — not gigantic — statement,
+              Stephen's verbatim line, and a quiet door into the shop. Normal
+              section padding (no min-h-100svh, no items-center → the huge gap is
+              gone). The Earth limb + rust glow were removed to declutter ("looks
+              messy"); the section rides the extended purple peacock sky with a
+              soft local scrim for legibility. Statement is opsz 40 / wght 600 at
+              a CAPPED size (≤60px) so it stays clean, never the opsz/large
+              "scribble". isolate + overflow-hidden retained (gotcha #8);
+              whole-element Reveals only (gotcha #2). */}
           <section
-            className="relative isolate flex min-h-[100svh] w-full items-center overflow-hidden"
+            className="relative isolate w-full overflow-hidden py-20 md:py-28"
             aria-label="Sacred Geometry"
           >
-
-            {/* Earth = atmosphere, not a stage. The lightweight earth-limb
-                (34KB webp / 175KB jpg) replaces the 861KB earth-cutout.png.
-                Pinned absolute to the section foot, decoupled from the head-
-                line entirely. Faded (opacity 0.34) + darkened (brightness
-                0.72) + edge-dissolved UP into #0a0908 via a mask so there is
-                NO hard photographic horizon — the type sits in calm dark
-                space the faded curve only brushes. Rendered statically (no
-                opacity reveal gate) so the faded horizon is always present
-                even on short/landscape viewports where a whileInView
-                threshold could never fire. */}
-            <figure
-              className="m-0 absolute inset-x-0 bottom-0 z-0 pointer-events-none"
-            >
-              <picture aria-hidden="true">
-                <source
-                  srcSet={asset(webp("/img/scenes/earth-limb.jpg"))}
-                  type="image/webp"
-                />
-                <img
-                  src={asset("/img/scenes/earth-limb.jpg")}
-                  alt=""
-                  className="block w-[170%] sm:w-[140%] md:w-[124%] max-w-none mx-auto select-none"
-                  style={{
-                    // Stronger, grounded horizon (Hugo: "less transparent") over
-                    // the Mary Pink peacock sky — present, not a near-invisible wash.
-                    opacity: 0.6,
-                    filter: "brightness(0.92) saturate(1.02)",
-                    WebkitMaskImage:
-                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
-                    maskImage:
-                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
-                  }}
-                />
-              </picture>
-            </figure>
-
-            {/* Rust horizon glow — kept, halved (0.24→0.13 peak): a whisper
-                of warm atmosphere where the limb meets the void, the one
-                warm seam tying type + image. Above the Earth (z-0), below
-                the content (z-10). */}
+            {/* Soft local scrim so the cream type holds on the purple sky. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
+              className="pointer-events-none absolute inset-0 z-0"
               style={{
-                height: "46%",
                 background:
-                  "radial-gradient(120% 78% at 50% 100%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0.08) 36%, rgba(201,120,68,0) 66%)",
+                  "radial-gradient(78% 68% at 50% 50%, rgba(10,9,8,0.62) 0%, rgba(10,9,8,0.28) 64%, rgba(10,9,8,0) 100%)",
               }}
             />
 
-            {/* Content column — normal centered flow. The tall symmetric
-                padding (NOT a negative margin) opens the lower negative
-                space the faded Earth simply fills; the type lives in the
-                upper-middle calm. Layer order: SVG + Earth (z-0) → rust
-                glow (z-1) → content (z-10). Calm staggered Reveals read as
-                a slow settle; whole-element only (gotcha #2). */}
-            <div className="relative z-10 mx-auto w-full max-w-[1120px] px-6 text-center py-[12vh] md:py-[14vh]">
+            <div className="relative z-10 mx-auto w-full max-w-[820px] px-6 text-center">
+              {/* Brand mark — the rose emblem anchors the close. */}
               <Reveal delay={0}>
-                <p className={`${EYEBROW} m-0 mb-8`}>
+                <div className="flex justify-center mb-8">
+                  <Logo size={54} wordmark={false} />
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.06}>
+                <p className={`${EYEBROW} m-0 mb-6`}>
                   The thread through every piece
                 </p>
               </Reveal>
 
-              <Reveal delay={0.08}>
+              <Reveal delay={0.12}>
                 <h2
                   className="font-display text-balance m-0"
                   style={{
-                    // Bold + screen-filling (Hugo's direction) but a CONTROLLED
-                    // optical size: opsz 48 gives even, heavy strokes. The old
-                    // "scribble" was opsz-144's hairline swash at 560px — never
-                    // that again. A TRUE loaded 700 weight (font-synthesis is off,
-                    // so this is real bold, not a faux smear).
-                    fontVariationSettings: '"opsz" 48, "wght" 700',
-                    fontWeight: 700,
-                    fontSize: "clamp(44px, 8.4vw, 132px)",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 0.97,
+                    // opsz 40 / wght 600 — confident but clean; capped at 60px so
+                    // it reads as one composed statement, never a viewport banner.
+                    fontVariationSettings: '"opsz" 40, "wght" 600',
+                    fontWeight: 600,
+                    fontSize: "clamp(30px, 4.6vw, 60px)",
+                    letterSpacing: "-0.022em",
+                    lineHeight: 1.08,
                     color: "#ede6d6",
-                    textShadow: "0 2px 40px rgba(10,9,8,0.7)",
+                    textShadow: "0 1px 24px rgba(10,9,8,0.6)",
                   }}
                 >
                   Sacred{" "}
                   <em
                     style={{
                       fontStyle: "italic",
-                      fontVariationSettings: '"opsz" 48, "wght" 600',
+                      fontVariationSettings: '"opsz" 40, "wght" 600',
                       fontWeight: 600,
                     }}
                   >
@@ -550,20 +518,20 @@ export const Welcome = () => {
 
               {/* Hairline rule — one breath between the estate's statement
                   and Stephen's own voice. */}
-              <Reveal delay={0.16}>
-                <div aria-hidden="true" className="mx-auto my-10 h-px w-12 bg-ink/15" />
+              <Reveal delay={0.18}>
+                <div aria-hidden="true" className="mx-auto my-8 h-px w-12 bg-ink/15" />
               </Reveal>
 
               {/* Stephen's voice — VERBATIM register. His documented words are
                   "everything is connected" (content.ts MEMORIAL_QUOTE); never
                   an invented near-quote. True Fraunces italic, opsz 24. */}
-              <Reveal delay={0.22}>
+              <Reveal delay={0.24}>
                 <p
                   className="font-display text-ink-muted text-balance m-0 mb-8"
                   style={{
                     fontStyle: "italic",
                     fontVariationSettings: '"opsz" 24, "wght" 400',
-                    fontSize: "clamp(18px, 2.2vw, 22px)",
+                    fontSize: "clamp(17px, 2.1vw, 21px)",
                     lineHeight: 1.5,
                   }}
                 >
@@ -577,9 +545,7 @@ export const Welcome = () => {
                 </p>
               </Reveal>
 
-              {/* Quiet exit — a text link, never a pill. The colophon ends on a
-                  soft door into the shop. OPTIONAL: drop this single element
-                  for a purer memorial close if desired. */}
+              {/* Quiet exit — a text link, never a pill. */}
               <Reveal delay={0.3}>
                 <Link
                   to="/collections"

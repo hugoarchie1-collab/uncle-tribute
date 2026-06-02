@@ -96,12 +96,15 @@ export const VideoIntro = () => {
     video.addEventListener("loadedmetadata", tryPlay);
     video.addEventListener("canplay", tryPlay);
 
-    // First-interaction fallback for browsers that refuse programmatic autoplay.
+    // First-interaction fallback for browsers that refuse programmatic autoplay
+    // (notably iOS Low Power Mode, which blocks even muted autoplay). The
+    // instant the user does ANYTHING — the smallest scroll, touch, tap or
+    // pointer move — we start the loop. Combined with the CSS that hides the
+    // native play-button overlay, the reader never sees or clicks a play glyph.
     let kicked = false;
+    const kickEvents = ["touchstart", "pointerdown", "click", "scroll", "keydown"] as const;
     const removeKick = () => {
-      window.removeEventListener("touchstart", kick);
-      window.removeEventListener("click", kick);
-      window.removeEventListener("scroll", kick);
+      for (const ev of kickEvents) window.removeEventListener(ev, kick);
     };
     function kick() {
       if (kicked) return;
@@ -109,9 +112,16 @@ export const VideoIntro = () => {
       tryPlay();
       removeKick();
     }
-    window.addEventListener("touchstart", kick, { passive: true });
-    window.addEventListener("click", kick, { passive: true });
-    window.addEventListener("scroll", kick, { passive: true });
+    for (const ev of kickEvents) {
+      window.addEventListener(ev, kick, { passive: true });
+    }
+
+    // Resume when the tab/app returns to the foreground (iOS pauses media when
+    // back-grounded and won't always restart it on return).
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
 
     // Pause when the hero leaves the viewport; resume when it returns.
     let io: IntersectionObserver | null = null;
@@ -130,6 +140,7 @@ export const VideoIntro = () => {
       video.removeEventListener("loadedmetadata", tryPlay);
       video.removeEventListener("canplay", tryPlay);
       removeKick();
+      document.removeEventListener("visibilitychange", onVisible);
       io?.disconnect();
     };
   }, [useVideo]);

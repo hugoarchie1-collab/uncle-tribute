@@ -256,6 +256,18 @@
   object-position: center 35%;
   background: #0a0908;
 }
+/* Kill the big centred iOS play-button overlay Safari paints over a muted
+   autoplay video when it (e.g. in Low Power Mode) declines to autostart.
+   We never want a tap-to-play affordance on the intro film — the first
+   scroll/touch kicks play() (see VideoIntro.tsx). Hiding the native overlay
+   means the poster frame shows cleanly until that kick, never a play glyph. */
+.video-intro__video::-webkit-media-controls-start-playback-button,
+.video-intro__video::-webkit-media-controls-play-button,
+.video-intro__video::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 .video-intro__vignette {
   position: absolute;
   inset: 0;

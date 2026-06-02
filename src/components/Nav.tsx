@@ -270,48 +270,90 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         </div>
       </div>
 
-      {/* Mobile menu: dimmed backdrop (click to close) + focus-trapped panel. */}
+      {/* Mobile menu — full-screen brand takeover. Tapping ANYWHERE that
+          isn't a link closes it (the overlay's own onClick), as does the X,
+          Escape, a backdrop tap or navigating. Large Fraunces links match the
+          site's editorial display type instead of the old cramped sans panel
+          that "looked out of place". Focus-trapped + scroll-locked (effect
+          above), reduced-motion safe. */}
       <AnimatePresence>
         {menuOpen && (
-          <>
-            <motion.button
-              type="button"
-              aria-label="Close menu"
-              tabIndex={-1}
-              onClick={() => setMenuOpen(false)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="xl:hidden fixed inset-0 z-40 bg-[#0a0908]/70 backdrop-blur-sm"
-            />
-            <motion.nav
-              ref={menuRef}
-              id="mobile-menu"
-              aria-label="Primary"
-              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
-              transition={{ duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
-              className="xl:hidden absolute top-full left-0 right-0 z-50 bg-bg border-b border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.55)] px-4 sm:px-6 flex flex-col max-h-[calc(100dvh-64px)] overflow-y-auto"
-            >
-              {NAV_LINKS.map((l) => (
-                <NavLink
-                  key={l.to}
-                  to={l.to}
-                  end={l.end}
-                  className={({ isActive }) =>
-                    cn(
-                      "py-4 font-sans text-[12px] font-semibold tracking-[0.26em] uppercase border-b border-white/5 last:border-0 transition-colors duration-200",
-                      isActive ? "text-accent" : "text-ink/70 hover:text-ink",
-                    )
-                  }
+          <motion.div
+            ref={menuRef}
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            onClick={() => setMenuOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
+            className="xl:hidden fixed inset-0 z-[60] bg-[#0a0908]/95 backdrop-blur-xl flex flex-col"
+          >
+            {/* Top row mirrors the nav so the takeover feels continuous. */}
+            <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 py-5">
+              <Link
+                to="/"
+                aria-label="The Art of Stephen Meakin — home"
+                className="inline-flex items-center shrink-0"
+              >
+                <Logo size={32} wordmark />
+              </Link>
+              <button
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  aria-hidden="true"
                 >
-                  {l.label}
-                </NavLink>
+                  <path d="M5 5 19 19M19 5 5 19" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Links — centred takeover. Each link navigates (route change
+                closes the menu); empty space closes via the overlay onClick. */}
+            <nav
+              aria-label="Primary"
+              className="flex-1 flex flex-col items-center justify-center gap-1 px-6 pb-[14vh]"
+            >
+              {NAV_LINKS.map((l, i) => (
+                <motion.div
+                  key={l.to}
+                  initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: reduceMotion ? 0 : 0.05 + i * 0.05,
+                    ease: [0.22, 0.61, 0.36, 1],
+                  }}
+                >
+                  <NavLink
+                    to={l.to}
+                    end={l.end}
+                    className={({ isActive }) =>
+                      cn(
+                        "block py-3 text-center font-display tracking-[-0.015em] leading-[1.1] text-[clamp(30px,8vw,46px)] transition-colors duration-200",
+                        isActive ? "text-accent" : "text-ink hover:text-accent",
+                      )
+                    }
+                  >
+                    {l.label}
+                  </NavLink>
+                </motion.div>
               ))}
-            </motion.nav>
-          </>
+            </nav>
+          </motion.div>
         )}
       </AnimatePresence>
     </header>

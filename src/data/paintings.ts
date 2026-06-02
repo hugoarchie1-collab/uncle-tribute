@@ -518,9 +518,12 @@ export const PAINTINGS: Painting[] = [
     colourways: [
       {
         name: "Original",
-        // -v2 filename busts Vercel's 1-year immutable /img cache after the
-        // re-crop (the bordered original was frozen on the old filename).
-        image: "/img/paintings/english-bluebells-v2.jpg",
+        // -v3 filename busts Vercel's 1-year immutable /img cache after the
+        // re-crop. v2 was over-zoomed (cropped INTO the mandala, losing the
+        // corners); v3 removes ONLY the lavender border off the raw original
+        // so the full mandala + sky corners show with the same breathing room
+        // Wild Rose gets across the site.
+        image: "/img/paintings/english-bluebells-v3.jpg",
         hex: "#a9b9d6",
         isOriginal: true,
         available: true,
