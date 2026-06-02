@@ -351,7 +351,7 @@ export const Collections = () => {
                         <span aria-hidden="true">→</span>
                       </button>
                       <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
-                        The set price is honoured at checkout.
+                        The set saving is applied automatically at checkout.
                       </p>
                     </div>
                   </Reveal>
@@ -403,7 +403,7 @@ export const Collections = () => {
               <span aria-hidden="true">→</span>
             </button>
             <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
-              The set price is honoured at checkout.
+              The set saving is applied automatically at checkout.
             </p>
           </div>
         </Reveal>

@@ -616,7 +616,7 @@ export const Memories = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.35} />
+      <AmbientBackdrop src="/img/paintings/peacock-blood-moon-red-blur.webp" opacity={0.35} />
       <Seo
         title="Book of Memories"
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."

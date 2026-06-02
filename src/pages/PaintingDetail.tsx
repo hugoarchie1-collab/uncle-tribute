@@ -10,7 +10,6 @@ import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
-import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import {
   COLLECTIONS,
@@ -810,7 +809,7 @@ const BuyBox = ({
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
             <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
-              The set price is honoured at checkout.
+              The set saving is applied automatically at checkout.
             </p>
           </div>
         )}
@@ -1498,14 +1497,14 @@ export const PaintingDetail = () => {
                 />
               ) : (
               <Reveal>
-                <div className="overflow-hidden">
+                <div className="relative overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setLightboxOpen(true)}
                     aria-label={`View ${painting.title} fullscreen`}
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
-                    <AnimatePresence mode="sync">
+                    <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}
                         initial={{ opacity: 0 }}
@@ -1568,7 +1567,6 @@ export const PaintingDetail = () => {
             <ProvenancePanel />
           </div>
         </main>
-        <CredentialsStrip />
         <FooterCatalogue />
         <Footer />
       </div>

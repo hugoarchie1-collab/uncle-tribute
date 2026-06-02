@@ -37,7 +37,7 @@ type Status = "idle" | "submitting" | "success" | "error";
 const DEFAULT_EYEBROW = "Friends & Family";
 const DEFAULT_TITLE = "A note when there's something to say.";
 const DEFAULT_INTRO =
-  "The Mandala Company sends a quiet quarterly note when a new edition is released or a Stephen Meakin painting goes on view. Leave your name to be told first.";
+  "The Mandala Company writes only when there's something worth saying — a new edition released, or a Stephen Meakin painting going on view. Leave your name to be told first.";
 
 export const NewsletterSignup = ({
   variant = "panel",
@@ -134,7 +134,7 @@ export const NewsletterSignup = ({
             />
             <label className="block">
               <span className="block font-sans text-[13px] leading-[1.6] text-ink-muted mb-3">
-                Quarterly notes on new editions and exhibitions.
+                A note when there's a new edition or an exhibition.
               </span>
               <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
                 <input
@@ -337,7 +337,7 @@ export const NewsletterSignup = ({
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
             <p className="font-sans text-[11px] leading-[1.5] text-ink/55 m-0">
-              No more than four notes a year. Unsubscribe in a click.
+              Only when it matters — a few times a year at most. Unsubscribe in a click.
             </p>
           </div>
           <p className="font-sans text-[11px] italic text-ink/55 mt-2 m-0">

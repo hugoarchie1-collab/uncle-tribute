@@ -363,7 +363,7 @@ export const About = () => {
     <div className="relative">
       {/* Canonical atmospheric backdrop — kept subtle so it never competes with
           the photo-led biography, but ends the flat-black feel. */}
-      <AmbientBackdrop opacity={0.42} />
+      <AmbientBackdrop src="/img/paintings/peacock-persian-indigo-blur.webp" opacity={0.42} />
       <Seo
         title="About Stephen Meakin — the life and work"
         description="The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected."

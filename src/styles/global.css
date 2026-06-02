@@ -52,7 +52,10 @@
      NOTE on viewport units: prefer `100dvh` (dynamic viewport height) over raw
      `100vh` for any full-height element — on mobile the collapsing URL bar
      makes `100vh` taller than the visible area, leaving a dead band. */
-  html { scroll-behavior: smooth; overflow-x: clip; }
+  /* overscroll-behavior:none kills the rubber-band/bounce past the page ends —
+     without it, over-scrolling at the foot of the home page revealed the fixed
+     peacock backdrop (pink) below the black footer. No bounce → no reveal. */
+  html { scroll-behavior: smooth; overflow-x: clip; overscroll-behavior: none; }
 
   body {
     @apply font-sans text-body text-ink-soft antialiased;
@@ -63,6 +66,7 @@
        shifts wrap points). */
     font-synthesis: none;
     overflow-x: clip;
+    overscroll-behavior: none;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
