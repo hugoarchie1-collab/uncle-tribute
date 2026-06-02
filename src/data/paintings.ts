@@ -118,7 +118,7 @@ export const EMBELLISHMENT_NOTE =
   "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.";
 
 /**
- * Copy for the Studio one-off tier (the £950 hand-painted unique piece).
+ * Copy for the Studio one-off tier (the £2,450 hand-painted unique piece).
  * Distinct from EMBELLISHMENT_NOTE: that's an add-on finishing of a print;
  * this is a singular work in its own right. Surfaced by Orla on the PDP
  * as a full-width card (tiers with `isOneOff: true`).
@@ -152,7 +152,7 @@ export const ESTATE_AUTHENTICATION = {
  *
  * Heirloom (A0) is hidden behind `available: false` for now — Hugo needs
  * to confirm Point 101 fulfilment capability + optional gold-leaf detail
- * sourcing before exposing the £1,250 SKU. Flip to `true` to surface it.
+ * sourcing before exposing the £1,750 SKU. Flip to `true` to surface it.
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
@@ -204,7 +204,7 @@ export const PRINT_TIERS: PrintTier[] = [
     description:
       "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
     // Hidden until Hugo confirms fulfilment capability + optional gold-leaf
-    // sourcing. Flip to `true` to expose the £1,250 SKU site-wide.
+    // sourcing. Flip to `true` to expose the £1,750 SKU site-wide.
     available: false,
   },
   {
@@ -236,7 +236,7 @@ export const PRINT_TIERS: PrintTier[] = [
  * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
  * in integers and there are no rounding bugs at checkout.
  *
- * Points at the ANCHOR tier (A2 Collector, £295, edition of 100) for
+ * Points at the ANCHOR tier (A2 Collector, £450, edition of 100) for
  * backwards compatibility with `getPrintPricePence` / `getPrintSize`
  * (still consumed by PaintingDetail + api/checkout.ts until the size-aware
  * wire-up lands in the synthesis round). Keep the api/checkout.ts
@@ -355,7 +355,7 @@ export const COST_FLOOR_PENCE: Record<PrintTier["id"], { printFloor: number }> =
   // Its real cost = A1 print (£43) + frame-if-any + Polly painting it by hand
   // for many hours (4–10+ hrs at £30–45/hr = £120–£450 labour alone). £160 here
   // is a LOWER-BOUND placeholder (£43 print + ~£117 labour at a 4hr minimum).
-  // Set this to Polly's REAL time × rate + print + any frame. At £950 retail it
+  // Set this to Polly's REAL time × rate + print + any frame. At £2,450 retail it
   // is never at risk, but record the real number for honesty / insurance.
   studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder
 };

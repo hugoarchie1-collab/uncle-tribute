@@ -1258,7 +1258,7 @@ export const PaintingDetail = () => {
     [painting],
   );
   // Split the ladder: standard size tiers feed the radio grid; a one-off tier
-  // (Percival's optional `isOneOff: true` £950 piece) is rendered separately.
+  // (the optional `isOneOff: true` £2,450 piece) is rendered separately.
   // Defensive — if no one-off tier exists, oneOffTier is undefined and the
   // feature card never mounts.
   const sizeTiers = useMemo(

@@ -19,7 +19,7 @@
  *
  * Pricing: `tierId` selects a rung on the canonical PRINT_TIERS ladder
  * (mirrored inline below — gotcha #5). Missing `tierId` defaults to the
- * anchor ("collector" = A2 £295). Framing is an OPTIONAL separate Stripe
+ * anchor ("collector" = A2 £450). Framing is an OPTIONAL separate Stripe
  * line item priced from the tier's `framingPricePence` — only A2 + A1
  * carry a framing price; passing `framing: true` on a tier that doesn't
  * offer framing is silently ignored. The same pattern applies to
@@ -111,9 +111,9 @@ const TIERS: Record<TierId, TierDef> = {
     available: false,
   },
   studio: {
-    // Studio one-off — £950 unique hand-painted piece by Polly Wedge. No
+    // Studio one-off — £2,450 unique hand-painted piece by Polly Wedge. No
     // framing / embellishment price: it IS the hand-finished work, so a
-    // "studio" tierId produces a single £950 line item with no add-ons.
+    // "studio" tierId produces a single £2,450 line item with no add-ons.
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
@@ -124,7 +124,7 @@ const TIERS: Record<TierId, TierDef> = {
   },
 };
 
-const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £295)
+const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £450)
 
 // ---- Cost floors (#13) — mirror of src/data/paintings.ts ------------------
 // ⚠️⚠️⚠️ HUGO: EVERY NUMBER HERE IS A RESEARCH ESTIMATE, NOT A REAL INVOICE.
