@@ -122,8 +122,8 @@ export const Welcome = () => {
             className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
             style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
-              <Reveal as="div" className="md:col-span-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
+              <Reveal as="div" className="md:col-span-5">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(46px,6.2vw,132px)] leading-[1.0]">
                     So here we are on Earth
@@ -153,18 +153,21 @@ export const Welcome = () => {
                   </MagneticLink>
                 </div>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
+              <Reveal as="figure" className="m-0 md:col-span-7 max-w-[440px] sm:max-w-[520px] md:max-w-none mx-auto md:mx-0">
                 {/* Source 01-painting-wild-rose.jpg is 1200x800 (3:2 landscape).
-                    The frame's aspect MUST match the source ratio so object-cover
-                    neither hard-crops the sides nor squishes the circular mandala
-                    (the "skew" bug). aspect-[3/2] renders the easel photo
-                    undistorted + uncropped at every width; soft-edge mask +
+                    The photo LEADS the hero, so it takes the wider 7-of-12
+                    column and a slightly taller aspect-[4/3] for real presence
+                    (the old 3:2 in a 6-col half left it floating small in a
+                    half-empty column). aspect-[4/3] + object-cover trims only
+                    the sacrificial outer edges — far-left brass stand, right
+                    wall margin — at center object-position; Stephen and the
+                    wall mandala stay framed and undistorted. soft-edge mask +
                     gentle parallax preserved by ImageReveal. */}
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Wild Rose — from the Habundia collection"
                   eager
-                  aspect="aspect-[3/2]"
+                  aspect="aspect-[4/3]"
                   edges="all"
                   parallax={0.12}
                   objectPosition="center"
