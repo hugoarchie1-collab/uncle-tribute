@@ -151,26 +151,26 @@ export const Collections = () => {
             className={cn(EYEBROW, "m-0 mb-5")}
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            The Collections
+            Everything he finished
           </p>
           <h1
             className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6")}
             style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Estate-stamped editions.
+            The complete works.
           </h1>
           <p
             className={cn(SUBTITLE, "max-w-[640px] mx-auto my-0")}
             style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
           >
-            Every painting Stephen completed, offered as an estate-stamped giclée and made to order. The estate releases further works and colourways over time.
+            Every painting Stephen completed, offered as an estate-stamped giclée and made to order. New colourways are released as the estate brings them to print.
           </p>
           <Link
             to="/for-you"
             className="inline-flex items-center gap-1.5 mt-7 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            Find the print for you <span aria-hidden="true">→</span>
+            Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
           </Link>
         </Reveal>
 
@@ -351,7 +351,7 @@ export const Collections = () => {
                         <span aria-hidden="true">→</span>
                       </button>
                       <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
-                        The set saving is applied at checkout.
+                        The set price is honoured at checkout.
                       </p>
                     </div>
                   </Reveal>
@@ -377,7 +377,7 @@ export const Collections = () => {
               The complete catalogue
             </p>
             <h2 className={cn(TITLE, "max-w-[640px] mx-auto my-0 mb-4")}>
-              The complete works, together.
+              His life's work, in one collection.
             </h2>
             <p className={cn(SUBTITLE, "max-w-[560px] mx-auto my-0 mb-6")}>
               One estate-stamped Collector print (A2) of all{" "}
@@ -403,7 +403,7 @@ export const Collections = () => {
               <span aria-hidden="true">→</span>
             </button>
             <p className="font-sans text-[11px] tracking-[0.03em] text-ink-muted m-0 mt-4">
-              The set saving is applied at checkout.
+              The set price is honoured at checkout.
             </p>
           </div>
         </Reveal>

@@ -35,7 +35,7 @@ interface NewsletterSignupProps {
 type Status = "idle" | "submitting" | "success" | "error";
 
 const DEFAULT_EYEBROW = "Friends & Family";
-const DEFAULT_TITLE = "Quarterly notes from the estate.";
+const DEFAULT_TITLE = "A note when there's something to say.";
 const DEFAULT_INTRO =
   "The Mandala Company sends a quiet quarterly note when a new edition is released or a Stephen Meakin painting goes on view. Leave your name to be told first.";
 

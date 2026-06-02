@@ -57,9 +57,9 @@ export const OrderSuccess = () => {
             <MagneticLink
               to="/collections"
               className={BTN_PRIMARY}
-              ariaLabel="Continue browsing collections"
+              ariaLabel="See more of his work"
             >
-              Continue browsing <span aria-hidden="true" className="ml-2">→</span>
+              See more of his work <span aria-hidden="true" className="ml-2">→</span>
             </MagneticLink>
             <a href="mailto:info@themandalacompany.com" className={BTN_SECONDARY}>
               Contact us

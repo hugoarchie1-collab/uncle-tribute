@@ -138,9 +138,9 @@ export const Welcome = () => {
                   <MagneticLink
                     to="/collections"
                     className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
-                    ariaLabel="Explore the collections"
+                    ariaLabel="See the collection"
                   >
-                    Explore collections <span aria-hidden="true" className="ml-2">→</span>
+                    See the collection <span aria-hidden="true" className="ml-2">→</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
@@ -219,7 +219,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
-                Selected Works
+                From the hand
               </p>
               <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance">
                 Six paintings from a lifetime at the compass.
@@ -284,9 +284,9 @@ export const Welcome = () => {
               <MagneticLink
                 to="/collections"
                 className="inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
-                ariaLabel="View all collections"
+                ariaLabel="See every painting"
               >
-                View all collections <span aria-hidden="true" className="ml-1">↗</span>
+                See every painting <span aria-hidden="true" className="ml-1">↗</span>
               </MagneticLink>
             </Reveal>
           </section>
@@ -355,7 +355,7 @@ export const Welcome = () => {
                 Sacred Geometry
               </p>
               <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(32px,4.4vw,76px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance">
-                Four traditions, woven into one visual language.
+                Four traditions, one language.
               </h2>
             </Reveal>
 

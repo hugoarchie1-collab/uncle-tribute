@@ -109,7 +109,7 @@ export const Contact = () => {
             Contact the estate
           </p>
           <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
-            Get in touch.
+            Write to the family.
           </h1>
           <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
             For commissions, partnerships, press, or a question about a
@@ -214,7 +214,7 @@ export const Contact = () => {
                   disabled={status === "submitting"}
                   className={BTN_PRIMARY}
                 >
-                  {status === "submitting" ? "Sending…" : "Send"}
+                  {status === "submitting" ? "Sending…" : "Send your message"}
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
                 <a

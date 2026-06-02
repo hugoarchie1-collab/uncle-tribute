@@ -218,7 +218,7 @@ export const Basket = () => {
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-5")}>
-            The Estate
+            Made to order
           </p>
           <h1 className={cn(TITLE, "m-0 mb-10 hero-text-shadow")}>
             Your basket.

@@ -810,7 +810,7 @@ const BuyBox = ({
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
             <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
-              The complete-set saving is applied automatically at checkout.
+              The set price is honoured at checkout.
             </p>
           </div>
         )}
