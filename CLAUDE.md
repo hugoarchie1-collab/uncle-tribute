@@ -216,7 +216,7 @@ Each painting has multiple `colourways` (e.g. Wild Rose has Sussex Pink + Deep F
 | `ReturningVisitorChip` | "Welcome back, {name}" hairline in the Nav for returning subscribers. Once per session, then self-hides. |
 | `ShareTheEstate` | Quiet post-purchase share row (Copy link · Email · Twitter · Facebook) on OrderSuccess. No referral tracking — just an introduction. |
 | `Seo` | Per-route `<title>` + `<meta name="description">` + OG/Twitter overrides + optional `jsonLd` (schema.org) via `react-helmet-async`. PaintingDetail passes per-painting OG image (original colourway, absolute URL) + Product & BreadcrumbList JSON-LD. Title logic mirrors `usePageTitle` so output is identical. |
-| `FooterCatalogue` | 5×2 (mobile) / 10×1 (desktop) grid of every painting, mounted above `<Footer />` on every page (Welcome / Collections / About / PaintingDetail). Lets a reader who scrolled to the bottom step sideways into any other piece without travelling back up to the nav. Whole-grid `whileInView` fade-up; reduced-motion renders statically. |
+| `FooterCatalogue` | A single row of all 10 paintings (10×1 from `md` up; `hidden` below `md`), mounted above `<Footer />` on every page **except `/collections` and `/for-you`** (those pages already present the full catalogue, so the strip would be redundant — removed 2026-06-02 at Hugo's request). Tile basis is `flex-[0_1_calc(10%-9px)]` so all ten fit one line at every width from `md`. Lets a reader who scrolled to the bottom step sideways into any other piece without travelling back up to the nav. Whole-grid `whileInView` fade-up; reduced-motion renders statically. |
 
 ### Lib utilities
 
