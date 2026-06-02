@@ -159,18 +159,18 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier",
     label: "Gallery Edition",
     size: "A3 (29.7 × 42 cm)",
-    pricePence: 14500, // £145
-    editionTotal: null,
-    editionLabel: "Open edition",
-    editionPromise: "made to order",
-    description: "Estate-stamped, open edition, COA card",
+    pricePence: 24500, // £245
+    editionTotal: 150,
+    editionLabel: "Limited edition of 150 per colourway",
+    editionPromise: "the edition will never be reopened",
+    description: "Limited edition of 150, estate-stamped, hand-numbered, COA",
     available: true,
   },
   {
     id: "collector",
     label: "Collector's Edition",
     size: "A2 (42 × 59.4 cm)",
-    pricePence: 29500, // £295
+    pricePence: 45000, // £450
     editionTotal: 100,
     editionLabel: "Limited edition of 100 per colourway",
     editionPromise: "the edition will never be reopened",
@@ -184,7 +184,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 59500, // £595
+    pricePence: 85000, // £850
     editionTotal: 50,
     editionLabel: "Limited edition of 50 per colourway",
     editionPromise: "the edition will never be reopened",
@@ -197,7 +197,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "heirloom",
     label: "Heirloom Edition",
     size: "A0 (84.1 × 118.9 cm)",
-    pricePence: 125000, // £1,250
+    pricePence: 175000, // £1,750
     editionTotal: 25,
     editionLabel: "Limited edition of 25 per colourway",
     editionPromise: "the edition will never be reopened",
@@ -216,7 +216,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.4 × 84.1 cm)",
-    pricePence: 95000, // £950
+    pricePence: 245000, // £2,450
     editionTotal: 1,
     editionLabel: "Unique — one of one",
     description: "Hand-painted by Polly Wedge, one of one",
@@ -243,7 +243,7 @@ export const PRINT_TIERS: PrintTier[] = [
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 29500, // £295 — anchor tier (A2 Collector)
+  pricePence: 45000, // £450 — anchor tier (A2 Collector)
   size: "Limited edition giclée, A2 (42 × 59.4 cm), edition of 100, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
@@ -299,8 +299,8 @@ export const getTierById = (
 /**
  * Returns the lowest visible tier price (in pence) for a painting. Used by
  * the browse surfaces (Collections tiles, Welcome Featured Works chip) to
- * advertise the entry price — "from £145" — which lowers the click barrier.
- * The £295 anchor still does its conversion work on the product page itself.
+ * advertise the entry price — "from £245" — which lowers the click barrier.
+ * The £450 anchor still does its conversion work on the product page itself.
  * Falls back to the anchor price if (defensively) no tiers are visible.
  */
 export const getLowestTierPricePence = (painting: Painting): number => {

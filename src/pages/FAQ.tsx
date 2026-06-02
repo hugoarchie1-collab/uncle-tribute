@@ -71,12 +71,14 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four tiers. <strong>Atelier A3</strong> at £145 (open edition).
-        <strong> Collector A2</strong> at £295 (limited edition of 100 per
-        colourway). <strong>Atelier Grande A1</strong> at £595 (limited
-        edition of 50). <strong>Heirloom A0</strong> at £1,250 (limited
-        edition of 25 — currently by request only while we finalise A0
-        fulfilment).
+        Four print editions, each estate-stamped and hand-numbered.
+        <strong> Gallery A3</strong> at £245 (limited edition of 150 per
+        colourway). <strong>Collector's A2</strong> at £450 (limited edition
+        of 100). <strong>Atelier A1</strong> at £850 (limited edition of 50).
+        <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 —
+        currently by request only while we finalise A0 fulfilment). There is
+        also a single <strong>Original — One of One</strong>, hand-painted by
+        Polly Wedge, at £2,450.
       </>
     ),
   },

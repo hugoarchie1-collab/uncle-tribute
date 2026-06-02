@@ -250,8 +250,8 @@ export const Welcome = () => {
                       {/* Price chip — scroll-revealed (visible on mobile,
                           where there's no hover, and on desktop as soon as
                           the tile enters view). Advertises the LOWEST visible
-                          tier (A3 Atelier £145) to lower the click barrier —
-                          the £295 anchor still converts on the product page. */}
+                          tier (A3 Gallery £245) to lower the click barrier —
+                          the £450 anchor still converts on the product page. */}
                       <motion.span
                         aria-hidden="true"
                         initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
