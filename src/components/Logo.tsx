@@ -29,10 +29,19 @@ export const Logo = ({ size = 30, wordmark = true, className }: LogoProps) => {
         height={Math.round(size * (188.95 / 200))}
         decoding="async"
         className="block shrink-0"
-        style={{ width: size, height: size * (188.95 / 200) }}
+        style={{
+          width: size,
+          height: size * (188.95 / 200),
+          // Force the emblem to pure WHITE + a soft shadow so it stays legible
+          // on every backdrop across the site — the dark sections AND the pale
+          // areas of the peacock / Mary-Pink scroll backdrops. brightness(0)
+          // invert(1) maps the SVG's cream fill to white regardless of source.
+          filter:
+            "brightness(0) invert(1) drop-shadow(0 1px 6px rgba(0,0,0,0.55))",
+        }}
       />
       {wordmark && (
-        <span className="hidden sm:inline font-display text-[16px] font-normal tracking-tight text-ink whitespace-nowrap">
+        <span className="hidden sm:inline font-display text-[16px] font-normal tracking-tight text-white whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
           The Art of Stephen Meakin
         </span>
       )}
