@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
@@ -190,7 +189,6 @@ export const FindAPrint = () => {
           </p>
         )}
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

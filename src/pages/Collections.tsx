@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
 import {
@@ -409,7 +408,6 @@ export const Collections = () => {
         </Reveal>
       </main>
 
-      <FooterCatalogue />
       <Footer />
     </div>
   );

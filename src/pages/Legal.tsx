@@ -6,7 +6,7 @@ import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
-import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, TITLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -659,18 +659,18 @@ const LegalPage = ({
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.36} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] 2xl:max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
-        <Reveal as="header" className="mb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] 2xl:max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
+        <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
           <h1
-            className={cn(TITLE, "m-0")}
+            className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}
             dangerouslySetInnerHTML={{ __html: title }}
           />
-          <p className={cn(SUBTITLE, "mt-7 m-0 max-w-[620px]")}>{lead}</p>
-          <p className={cn(EYEBROW_MUTED, "mt-7 m-0")}>Last updated {updated}</p>
-          <Separator className="bg-line mt-8" />
+          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted m-0 max-w-[620px] mt-[clamp(0.75rem,2vw,1.1rem)]">{lead}</p>
+          <p className={cn(EYEBROW_MUTED, "mt-[clamp(0.875rem,2.5vw,1.25rem)] m-0")}>Last updated {updated}</p>
+          <Separator className="bg-line mt-[clamp(0.875rem,2.5vw,1.25rem)]" />
         </Reveal>
-        <Reveal as="article" className="flex flex-col gap-12">
+        <Reveal as="article" className="flex flex-col gap-10">
           {sections.map((section, i) => (
             <section key={i} className="flex flex-col gap-4">
               <h2 className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.2] text-ink m-0">

@@ -157,11 +157,11 @@ export const FAQ = () => {
         url="/faq"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 py-24 md:py-32">
-        <Reveal as="header" className="mb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
+        <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Before you buy</p>
-          <h1 className={cn(TITLE, "m-0")}>What people ask.</h1>
-          <p className={cn(SUBTITLE, "mt-7 m-0")}>
+          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}>What people ask.</h1>
+          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
             On provenance, paper, editions, framing, hand-finishing, shipping
             and after-sale care. For anything not covered here, write to{" "}
             <a
@@ -176,7 +176,7 @@ export const FAQ = () => {
             </Link>
             .
           </p>
-          <Separator className="bg-line mt-10" />
+          <Separator className="bg-line mt-[clamp(0.875rem,2.5vw,1.25rem)]" />
         </Reveal>
 
         <Reveal as="div" className="flex flex-col gap-14">

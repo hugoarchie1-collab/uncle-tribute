@@ -6,10 +6,12 @@ import { cn } from "../lib/cn";
 import { EYEBROW_MUTED } from "./ui/tokens";
 
 /**
- * FooterCatalogue — a quiet grid of every painting in the catalogue (5×2 at
- * md/tablet, 10×1 from lg), mounted above the Footer on every page. Lets a reader who has scrolled to
- * the bottom step sideways into any other piece without travelling back up to
- * the nav. Each tile uses the painting's original-colourway cover image.
+ * FooterCatalogue — a quiet single row of every painting in the catalogue (all
+ * ten on one line from md up), mounted above the Footer. Lets a reader who has
+ * scrolled to the bottom step sideways into any other piece without travelling
+ * back up to the nav. Each tile uses the painting's original-colourway cover
+ * image. NOT mounted on /collections or /for-you (those pages already present
+ * the full catalogue, so a second strip would be redundant).
  *
  * Desktop-only (`hidden md:block`): on mobile a 10-thumbnail grid is a heavy
  * tail that the reader scrolls past on every page. The best art / editorial
@@ -56,14 +58,12 @@ export const FooterCatalogue = () => {
           The Catalogue · {tiles.length}
         </p>
         {/* flex-wrap + justify-center so any partial trailing row (if the
-            catalogue count ever stops being a clean multiple of the per-row
-            count) centres instead of leaving a left-aligned orphan. Each tile
-            basis is responsive: at md/tablet it's 0 1 calc(20% − 8px) for a
-            5×2 grid (the 8px subtracts this row's share of the four 10px gaps:
-            5×(20%−8px) + 4×10px = 100%, ~125px tiles instead of 10 noisy
-            ~61px squares); from lg it's 0 1 calc(10% − 9px) for the desktop
-            10×1 row (10×(10%−9px) + 9×10px = 100%). min-w-0 lets a tile shrink
-            so the row can never push past the container. */}
+            catalogue count ever stops being a clean multiple of 10) centres
+            instead of leaving a left-aligned orphan. Each tile basis is
+            0 1 calc(10% − 9px) so all ten sit on ONE line from md up: the 9px
+            subtracts this row's share of the nine 10px gaps
+            (10×(10%−9px) + 9×10px = 100%). min-w-0 lets a tile shrink so the
+            row can never push past the container. */}
         <motion.ul
           initial="hidden"
           whileInView="show"
@@ -72,7 +72,7 @@ export const FooterCatalogue = () => {
           className="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
-            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(20%-8px)] lg:flex-[0_1_calc(10%-9px)]">
+            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(10%-9px)]">
               <Link
                 to={`/collections/${t.id}`}
                 aria-label={t.title}

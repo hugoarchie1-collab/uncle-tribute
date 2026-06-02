@@ -209,10 +209,9 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              className="h-[clamp(320px,55vh,720px)] w-full"
+              aspect="aspect-[3/2]"
               edges="y"
               parallax={0.18}
-              objectPosition="center 40%"
               shadow=""
             />
           </Reveal>
@@ -311,7 +310,7 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
                 <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
@@ -323,10 +322,10 @@ export const Welcome = () => {
                 </Reveal>
 
                 <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
-                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.8] text-ink m-0">
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[15.5px] md:text-[16.5px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.8] text-ink m-0">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                   <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
@@ -343,11 +342,11 @@ export const Welcome = () => {
                       ["Pigment", "Hand-pressed oils + pigment inks", false],
                     ].map(([label, value, lead]) => (
                       <li key={label as string} className="m-0">
-                        <p className="font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
+                        <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
                         {lead ? (
-                          <p className="font-display font-bold italic tracking-[-0.01em] text-[15px] md:text-[16px] leading-[1.35] text-ink m-0">{value}</p>
+                          <p className="font-display font-bold italic tracking-[-0.01em] text-[16px] md:text-[18px] leading-[1.35] text-ink m-0">{value}</p>
                         ) : (
-                          <p className="font-sans font-normal text-[13.5px] leading-[1.5] text-ink m-0">{value}</p>
+                          <p className="font-sans font-normal text-[15px] leading-[1.5] text-ink m-0">{value}</p>
                         )}
                       </li>
                     ))}
