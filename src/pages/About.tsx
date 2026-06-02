@@ -16,8 +16,8 @@ import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
 import { ABOUT, PASSING_DATE, TRIBUTE, MEMORIAL_QUOTE, LIFE_DATES } from "../data/content";
 import { Seo } from "../components/Seo";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 
 // =============================================================================
@@ -352,6 +352,17 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
 };
 
 // ─── About ─────────────────────────────────────────────────────────────────────
+// The home page's four-colourway Peacock backdrop, mirrored here so the About
+// page shares the EXACT same sky. Pre-blurred WebP (~7–12KB each); order +
+// blur/saturation recipe identical to Welcome.tsx: Persian Indigo → Blood Moon
+// Red → Moroccan Purple → Mary Pink.
+const PEACOCK_BACKDROPS = [
+  { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
+];
+
 export const About = () => {
   // Friends & Family enquiry modal — opened from the closing CTA so a reader
   // moved by the biography can subscribe without leaving the page.
@@ -359,11 +370,47 @@ export const About = () => {
   const closeFriends = useCallback(() => setFriendsOpen(false), []);
   const openFriends = useCallback(() => setFriendsOpen(true), []);
 
+  // Whole-page scroll drives the same four peacock backdrops as the home page,
+  // crossfading in turn: Persian Indigo → Blood Moon Red → Moroccan Purple →
+  // Mary Pink — identical recipe to Welcome.tsx so About shares the home's sky.
+  const { scrollYProgress } = useScroll();
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.22, 0.30], [0, 1, 1, 0]);
+  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
+  const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
+  const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
+  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
+
   return (
     <div className="relative">
-      {/* Canonical atmospheric backdrop — kept subtle so it never competes with
-          the photo-led biography, but ends the flat-black feel. */}
-      <AmbientBackdrop src="/img/paintings/peacock-persian-indigo-blur.webp" opacity={0.42} />
+      {/* PEACOCK BACKDROP LAYER — four colourways crossfading on page-scroll,
+          mirrored EXACTLY from the home page (Welcome.tsx): Persian Indigo →
+          Blood Moon Red → Moroccan Purple → Mary Pink. Fixed behind all content. */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      >
+        {PEACOCK_BACKDROPS.map((bd, i) => (
+          <motion.div
+            key={bd.url}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              opacity: backdropOpacities[i],
+              backgroundImage: `url("${asset(bd.url)}")`,
+              willChange: "opacity",
+            }}
+          />
+        ))}
+        {/* Shared scrim — identical to Welcome.tsx / Collections.tsx so the
+            backdrop shows through at the same visibility level. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+          }}
+        />
+      </div>
       <Seo
         title="About Stephen Meakin — the life and work"
         description="The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected."
@@ -372,7 +419,7 @@ export const About = () => {
       {/* Intro film header — owned by another task; left exactly as-is. */}
       <Nav overlay />
 
-      <main className="relative z-10">
+      <main className="relative isolate z-10">
         {/* 1 · HERO */}
         <AboutHero />
 
