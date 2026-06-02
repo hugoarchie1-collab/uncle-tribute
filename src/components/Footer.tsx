@@ -10,6 +10,12 @@ const YEAR = new Date().getFullYear();
  *  hover. Keeps the whole footer on a single link colour system. */
 const FOOTER_LINK = "transition-colors duration-300 hover:text-ink";
 
+/** ONE body/link type recipe for the whole footer — Hanken 13.5px. Every
+ *  text node uses this (or the 11px eyebrow header / 12px fine-print / the
+ *  serif wordmark) so the footer reads as ONE consistent system instead of
+ *  the old eight-size, two-family jumble. */
+const FOOTER_TEXT = "font-sans text-[13.5px] leading-[1.6]";
+
 /** Site links — mirrors the top-nav order (Home · Collections · For You ·
  *  About · Memories · Contact), then the FAQ / Returns utility links. */
 const SITE_LINKS = [
@@ -26,32 +32,30 @@ const SITE_LINKS = [
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-10 md:pb-12"
+    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-11 md:pt-14 pb-8 md:pb-10"
   >
-    <div className="mx-auto max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-10 md:gap-y-0 items-start">
+    <div className="mx-auto max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
+      {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        <Logo size={32} wordmark />
-        <p className="mt-5 max-w-[280px] font-sans font-normal text-[13.5px] md:text-[14px] leading-[1.65] text-ink-muted m-0">
+        <Logo size={30} wordmark />
+        <p className={cn(FOOTER_TEXT, "mt-5 max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
-        <p className="mt-3 max-w-[280px] font-sans font-normal text-[13px] leading-[1.6] text-ink-fade m-0">
+        <p className={cn(FOOTER_TEXT, "mt-3 max-w-[280px] text-ink-fade m-0")}>
           The estate of Stephen Meakin · The Mandala Company — Steve's immediate family.
         </p>
-        {/* Author credit — desktop only. On mobile it lengthens the footer
-            tail with detail a phone reader rarely needs; the estate line
-            above already carries attribution. */}
-        <p className="hidden md:block mt-3 max-w-[280px] font-display italic text-[12px] leading-[1.65] text-ink-faint m-0">
+        {/* Author credit — desktop only. Now matched to the footer's single
+            sans system (was a stray serif-italic that made the type read
+            "messy"); kept small + faint so it stays a quiet footnote. */}
+        <p className="hidden md:block font-sans text-[12px] leading-[1.55] text-ink-faint mt-3 max-w-[280px] m-0">
           Written for The Mandala Company by Archie Hugo Charles Wedge (Stephen's nephew). Stephen's words are his own, drawn from his notebooks, interviews and the writings he left.
         </p>
       </div>
 
-      {/* Site + Enquiries go full-width (stacked) on mobile and 4-up on
-          desktop. On mobile a half-width column (~160px) is too narrow for the
-          26-char enquiries email — forcing it to wrap mid-word. Full width lets
-          the address sit on one clean line at every breakpoint down to 320px. */}
+      {/* Site */}
       <nav aria-label="Footer" className="col-span-2 md:col-span-1">
-        <h3 className={cn(EYEBROW_MUTED, "mb-5")}>Site</h3>
-        <ul className="flex flex-col gap-3 font-sans text-[14px] leading-none text-ink-muted m-0 p-0 list-none">
+        <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Site</h3>
+        <ul className={cn(FOOTER_TEXT, "flex flex-col gap-2.5 leading-none text-ink-muted m-0 p-0 list-none")}>
           {SITE_LINKS.map((l) => (
             <li key={l.to} className="m-0">
               <Link to={l.to} className={FOOTER_LINK}>
@@ -62,9 +66,11 @@ export const Footer = () => (
         </ul>
       </nav>
 
+      {/* Enquiries — full width on mobile so the 26-char email never wraps
+          mid-word in a half-width column; 1-up from md. */}
       <div className="col-span-2 md:col-span-1">
-        <h3 className={cn(EYEBROW_MUTED, "mb-5")}>Enquiries</h3>
-        <ul className="flex flex-col gap-3 font-sans text-[14px] leading-none text-ink-muted m-0 p-0 list-none">
+        <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Enquiries</h3>
+        <ul className={cn(FOOTER_TEXT, "flex flex-col gap-2.5 text-ink-muted m-0 p-0 list-none")}>
           <li className="m-0">
             <a
               href="mailto:info@themandalacompany.com"
@@ -78,22 +84,20 @@ export const Footer = () => (
               Send an enquiry
             </Link>
           </li>
-          <li className="m-0 leading-[1.6] text-ink-fade">
+          <li className="m-0 text-ink-fade">
             213 Elm Drive, Hove<br />East Sussex, BN3 7JD, UK
           </li>
         </ul>
       </div>
 
       {/* Friends & Family — quiet newsletter signup. Posts to
-          /api/newsletter-subscribe. Same surface as the home / basket /
-          About variants; different markup register for the footer column.
-          Spans both columns on mobile so the input isn't cramped. */}
+          /api/newsletter-subscribe. Spans both columns on mobile. */}
       <div className="col-span-2 md:col-span-1">
         <NewsletterSignup variant="footer" />
       </div>
     </div>
 
-    <div className="mx-auto max-w-[1400px] mt-12 md:mt-16 pt-8 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.6] text-ink-fade">
+    <div className="mx-auto max-w-[1400px] mt-9 md:mt-11 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>
