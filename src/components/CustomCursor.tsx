@@ -68,12 +68,13 @@ export const CustomCursor = () => {
     document.addEventListener("pointerenter", show);
     document.addEventListener("pointerleave", hide);
 
-    // Dot follows tightly, ring trails a touch softer — the silky "alive" feel.
+    // Dot locks tightly to the pointer (precise, connected — a trailing dot is
+    // exactly what reads as "laggy"); only the ring floats softly behind it.
     const tick = () => {
-      dPos.x += (target.x - dPos.x) * 0.35;
-      dPos.y += (target.y - dPos.y) * 0.35;
-      rPos.x += (target.x - rPos.x) * 0.18;
-      rPos.y += (target.y - rPos.y) * 0.18;
+      dPos.x += (target.x - dPos.x) * 0.9;
+      dPos.y += (target.y - dPos.y) * 0.9;
+      rPos.x += (target.x - rPos.x) * 0.2;
+      rPos.y += (target.y - rPos.y) * 0.2;
       dot.style.transform = `translate(${dPos.x}px, ${dPos.y}px) translate(-50%, -50%)`;
       ring.style.transform = `translate(${rPos.x}px, ${rPos.y}px) translate(-50%, -50%)`;
       frame = requestAnimationFrame(tick);
