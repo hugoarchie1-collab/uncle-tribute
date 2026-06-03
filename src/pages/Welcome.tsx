@@ -212,23 +212,50 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 2 · MEET STEPHEN — portrait + invocation + opening bio.
-              Same container, gap and items-center alignment as the Hero
-              above so the image edges and text column align cleanly with
-              the section above instead of stretching to viewport height. */}
-          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-16">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 md:items-center">
-              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
-                <ImageReveal
-                  src="/img/welcome/02-portrait-denim.jpg"
-                  alt="Stephen Meakin"
-                  aspect="aspect-[4/5]"
-                  edges="all"
-                  parallax={0.16}
-                  objectPosition="center"
-                />
-              </Reveal>
-              <Reveal as="div" className="md:col-span-6">
+          {/* 2 · MEET STEPHEN — cinematic LEFT-bleed, mirroring the hero's
+              right-bleed for an alternating rhythm. The portrait fills the
+              left ~44% of the viewport at full height, bleeding to the screen
+              edge; the invocation + bio sit to the right, melting out of the
+              photo's inner edge. Stacks to portrait-then-text below md. */}
+          <section className="relative isolate w-full overflow-hidden">
+            {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge */}
+            <figure className="m-0 hidden md:block absolute inset-y-0 left-0 w-[46%] lg:w-[44%]">
+              <ImageReveal
+                src="/img/welcome/02-portrait-denim.jpg"
+                alt="Stephen Meakin"
+                fill
+                edges="y"
+                parallax={0.1}
+                objectPosition="center 35%"
+                shadow=""
+              />
+              {/* Inner-right melt — the portrait dissolves into the page so the
+                  text reads cleanly over its right edge (no hard seam). */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 right-0 w-1/2"
+                style={{
+                  background:
+                    "linear-gradient(to left, #0a0908 0%, rgba(10,9,8,0.82) 26%, rgba(10,9,8,0.30) 64%, rgba(10,9,8,0) 100%)",
+                }}
+              />
+            </figure>
+
+            {/* Text column — right of the portrait, vertically centred. */}
+            <div className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[72svh] md:py-0">
+              <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
+                {/* MOBILE portrait — above the copy. */}
+                <figure className="m-0 mb-8 md:hidden max-w-[460px]">
+                  <ImageReveal
+                    src="/img/welcome/02-portrait-denim.jpg"
+                    alt="Stephen Meakin"
+                    aspect="aspect-[4/5]"
+                    edges="all"
+                    parallax={0.12}
+                    objectPosition="center"
+                    shadow="shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                  />
+                </figure>
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                   {WELCOME.invocation}
                 </p>
