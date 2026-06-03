@@ -68,11 +68,13 @@ const WordReveal = ({
   if (reduceMotion) return <span className={className}>{text}</span>;
   const words = text.split(" ");
   const wordVariants: Variants = {
-    hidden: { opacity: 0, y: 28, filter: "blur(10px)" },
+    // Opacity + translateY only — both GPU-composited. The old per-word
+    // `filter: blur()` was the worst scroll-jank source on this page (a blur
+    // repaint per glyph wrapper); the reveal reads the same without it.
+    hidden: { opacity: 0, y: 28 },
     show: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration, ease: [0.22, 0.61, 0.36, 1] },
     },
   };
@@ -400,14 +402,17 @@ export const About = () => {
             }}
           />
         ))}
-        {/* Shared scrim — identical to Welcome.tsx / Collections.tsx so the
-            backdrop shows through at the same visibility level. */}
+        {/* Reading scrim — About is long-form, text-led memorial content, so it
+            darkens the peacock sky more than the home page's light scrim: the
+            colourways still show through as a moody tinted texture, but the
+            eulogy + biography stay legible and dignified over the bright
+            (Mary-Pink / magenta) backdrop regions. Same backdrop, calmer veil. */}
         <div
           aria-hidden="true"
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+              "linear-gradient(180deg, rgba(10,9,8,0.82) 0%, rgba(10,9,8,0.66) 45%, rgba(10,9,8,0.82) 100%)",
           }}
         />
       </div>

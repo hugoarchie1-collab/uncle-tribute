@@ -6,7 +6,7 @@ interface MagneticLinkProps {
   to: string;
   children: ReactNode;
   className?: string;
-  /** Magnetic pull strength 0-1. Default 0.3 */
+  /** Magnetic pull strength 0-1. Default 0.22 */
   strength?: number;
   ariaLabel?: string;
 }
@@ -19,7 +19,7 @@ export const MagneticLink = ({
   to,
   children,
   className,
-  strength = 0.3,
+  strength = 0.22,
   ariaLabel,
 }: MagneticLinkProps) => {
   const ref = useRef<HTMLAnchorElement>(null);
@@ -31,7 +31,11 @@ export const MagneticLink = ({
     const rect = ref.current.getBoundingClientRect();
     const x = e.clientX - (rect.left + rect.width / 2);
     const y = e.clientY - (rect.top + rect.height / 2);
-    setPos({ x: x * strength, y: y * strength });
+    // Clamp the pull so the label only LEANS toward the cursor and snaps
+    // back — a premium lift, never a 1:1 drag that reads as a gimmick.
+    const MAX = 14;
+    const clamp = (v: number) => Math.max(-MAX, Math.min(MAX, v));
+    setPos({ x: clamp(x * strength), y: clamp(y * strength) });
   };
 
   return (
@@ -46,7 +50,7 @@ export const MagneticLink = ({
       <motion.span
         className="inline-flex items-center gap-2"
         animate={{ x: pos.x, y: pos.y }}
-        transition={{ type: "spring", stiffness: 200, damping: 18, mass: 0.4 }}
+        transition={{ type: "spring", stiffness: 150, damping: 20, mass: 0.45 }}
       >
         {children}
       </motion.span>

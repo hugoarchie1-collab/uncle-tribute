@@ -48,3 +48,24 @@ export const BTN_PRIMARY =
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
   "inline-flex items-center justify-center ring-1 ring-ink/30 px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-300 hover:ring-accent hover:text-accent";
+
+// =============================================================================
+// MOTION CANON — single source of truth for the site's signature easing +
+// timing. The curve [0.22, 0.61, 0.36, 1] was already retyped ~20× across the
+// codebase; lock it here so the motion language can never drift per-component.
+// =============================================================================
+
+/** The signature easing curve — use for every Framer Motion `ease`. */
+export const EASE_SIGNATURE = [0.22, 0.61, 0.36, 1] as const;
+
+/** CSS form of the signature curve — for transition/animation strings. */
+export const EASE_CSS = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+
+/** Canonical durations / stagger (seconds) so timing reads consistently. */
+export const MOTION = {
+  reveal: 0.7,
+  stagger: 0.09,
+  hover: 0.3,
+  image: 0.7,
+  micro: 0.2,
+} as const;
