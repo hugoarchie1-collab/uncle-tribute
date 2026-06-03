@@ -294,7 +294,7 @@ const TERMS: Section[] = [
         items: [
           <><strong>Unframed, estate-stamped</strong> — 7 to 10 working days to dispatch.</>,
           <><strong>Framed</strong> — approximately two weeks to dispatch (black-stained oak with cast acrylic glazing).</>,
-          <><strong>Hand-finished by Polly</strong> — approximately four weeks to dispatch.</>,
+          <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],
       },
       {

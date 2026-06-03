@@ -115,7 +115,7 @@ export const ORIGINAL_PROVENANCE =
  * plumbing) rather than as its own tier.
  */
 export const EMBELLISHMENT_NOTE =
-  "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.";
+  "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow up to two weeks.";
 
 /**
  * Copy for the Studio one-off tier (the £2,450 hand-painted unique piece).

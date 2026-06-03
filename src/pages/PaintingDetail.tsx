@@ -119,11 +119,12 @@ const framedShippingForTier = (
 
 /* =============================================================================
  * ADD-ON LEAD TIMES — the longest selected add-on governs the stated wait.
- * Frame: 2 weeks. Hand-finishing by Polly Wedge: 4 weeks. Mirrors the copy the
- * estate quotes elsewhere (EMBELLISHMENT_NOTE = "please allow 4 weeks").
+ * Frame: 2 weeks. Hand-finishing by Polly Wedge: 2 weeks max. Mirrors the copy
+ * the estate quotes elsewhere (EMBELLISHMENT_NOTE = "please allow up to two
+ * weeks").
  * ========================================================================== */
 const FRAME_LEAD_WEEKS = 2;
-const FINISH_LEAD_WEEKS = 4;
+const FINISH_LEAD_WEEKS = 2;
 
 /**
  * SizePicker — the standard print tiers as radio cards. One-off tiers

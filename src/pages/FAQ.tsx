@@ -60,9 +60,9 @@ const FAQS: QA[] = [
       <>
         Unframed prints dispatch within <strong>7–10 working days</strong> of
         your order, plus shipping. Framed orders need approximately
-        <strong> two weeks</strong>. Prints hand-finished by Polly Wedge need
-        approximately <strong>four weeks</strong>. You'll receive an email
-        with tracking the moment your print leaves the studio.
+        <strong> two weeks</strong>. Prints hand-finished by Polly Wedge
+        dispatch within <strong>two weeks</strong> maximum. You'll receive an
+        email with tracking the moment your print leaves the studio.
       </>
     ),
   },
@@ -102,7 +102,7 @@ const FAQS: QA[] = [
         detail onto selected prints in Stephen's own tradition. Each
         hand-finished piece is therefore unique. The add-on is available on
         the A2 and A1 tiers only, by request, and adds £350 (A2) or £495
-        (A1). Allow four weeks from order to dispatch.
+        (A1). Allow two weeks maximum from order to dispatch.
       </>
     ),
   },

@@ -127,8 +127,12 @@ export const Welcome = () => {
               (object-cover center on a wide box — only the sacrificial outer
               margins trim). Stacks to text-then-image below md. */}
           <section className="relative isolate w-full overflow-hidden">
-            {/* DESKTOP/TABLET — full-height image bleeding to the right edge */}
-            <figure className="m-0 hidden md:block absolute inset-y-0 right-0 w-[60%] lg:w-[58%]">
+            {/* DESKTOP/TABLET — image bleeding to the right edge. Reined in
+                2026-06-03 (Hugo: "images way too big, take up the entire
+                screen") — the parallel session's full-viewport bleed was the
+                screen-filling culprit; width + section height trimmed so it's
+                a strong framed photo, not an edge-to-edge wall. */}
+            <figure className="m-0 hidden md:block absolute top-1/2 right-0 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
               <ImageReveal
                 src="/img/welcome/01-painting-wild-rose.jpg"
                 alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -162,7 +166,7 @@ export const Welcome = () => {
 
             {/* Text column — vertically centred in a tall cinematic frame. */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[74svh] md:pb-0"
+              className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[56svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
             >
               <Reveal as="div" className="w-full md:max-w-[48%] lg:max-w-[46%]">
@@ -218,8 +222,10 @@ export const Welcome = () => {
               edge; the invocation + bio sit to the right, melting out of the
               photo's inner edge. Stacks to portrait-then-text below md. */}
           <section className="relative isolate w-full overflow-hidden">
-            {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge */}
-            <figure className="m-0 hidden md:block absolute inset-y-0 left-0 w-[46%] lg:w-[44%]">
+            {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge. Reined in
+                2026-06-03 (Hugo: images too big) to match the trimmed hero —
+                a contained framed portrait, not a full-viewport takeover. */}
+            <figure className="m-0 hidden md:block absolute inset-y-0 left-0 w-[44%] lg:w-[42%]">
               <ImageReveal
                 src="/img/welcome/02-portrait-denim.jpg"
                 alt="Stephen Meakin"
@@ -242,7 +248,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[72svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[54svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-8 md:hidden max-w-[460px]">
@@ -488,7 +494,7 @@ export const Welcome = () => {
                 {/* Key-fact strip — surfaces the commission's
                     provenance up front instead of burying it in prose. */}
                 <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
-                  Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Mixed media on board <span className="text-ink/35 mx-1">·</span> Commissioned 2016
+                  Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
                 </p>
                 <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[2]}

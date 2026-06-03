@@ -10,7 +10,6 @@ import { EYEBROW, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_SECONDARY } from "../compo
 import { cn } from "../lib/cn";
 import {
   PAINTINGS,
-  COLOURWAY_NOTE,
   getLowestTierPricePence,
   formatGBP,
 } from "../data/paintings";
@@ -77,9 +76,12 @@ export const FindAPrint = () => {
             Begin with a colour.
           </h1>
           <p className={cn(SUBTITLE, "mx-auto my-0")}>
-            Stephen left several colourways of each mandala. Choose the tones you
-            are drawn to, and the pieces that hold them rise to the top. There is
-            no wrong answer. You can also{" "}
+            Stephen left several colourways of each mandala. Each colourway was
+            created by Stephen himself and discovered on his computer in his
+            studio — these are his own colour variations of the work, exactly as
+            he left them. Choose the tones you are naturally drawn to, or that
+            fit the ambience of the room around it. There is no wrong answer. You
+            can also{" "}
             <Link
               to="/collections"
               className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
@@ -117,10 +119,6 @@ export const FindAPrint = () => {
             );
           })}
         </Reveal>
-
-        <p className={cn("text-center mx-auto my-0 mb-4 max-w-[560px]", "font-sans text-[13.5px] leading-[1.6] text-ink-muted")}>
-          {COLOURWAY_NOTE}
-        </p>
 
         <div className="flex items-center justify-center gap-4 mb-10 md:mb-12">
           <p className={cn(EYEBROW_TIGHT, "m-0")}>
