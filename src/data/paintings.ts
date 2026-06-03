@@ -221,9 +221,11 @@ export const PRINT_TIERS: PrintTier[] = [
     editionLabel: "Unique — one of one",
     description: "Hand-painted by Polly Wedge, one of one",
     isOneOff: true,
-    // Hugo: set available:false if you'd rather hold this until after first
-    // sales + Polly confirms capacity, per the original plan.
-    available: true,
+    // Hidden 2026-06-03 (Hugo): not selling the unique originals until their
+    // value has risen. Flip to `true` to surface the £2,450 one-of-one again.
+    // The api/checkout.ts TIERS map keeps its `studio` pricing row intact so a
+    // stale client can never crash checkout while this is hidden.
+    available: false,
   },
 ];
 

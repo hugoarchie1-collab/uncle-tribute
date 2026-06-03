@@ -76,9 +76,7 @@ const FAQS: QA[] = [
         colourway). <strong>Collector's A2</strong> at £450 (limited edition
         of 100). <strong>Atelier A1</strong> at £850 (limited edition of 50).
         <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 —
-        currently by request only while we finalise A0 fulfilment). There is
-        also a single <strong>Original — One of One</strong>, hand-painted by
-        Polly Wedge, at £2,450.
+        currently by request only while we finalise A0 fulfilment).
       </>
     ),
   },

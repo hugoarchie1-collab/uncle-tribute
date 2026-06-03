@@ -10,7 +10,7 @@ import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
 import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
-import { asset, webp } from "../lib/asset";
+import { asset } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 
 // Four Peacock colourways used as the home page's seamlessly-blending
@@ -175,7 +175,7 @@ export const Welcome = () => {
                   </span>
                 </h1>
 
-                <p className="font-sans font-normal text-[15px] sm:text-[16px] md:text-[17px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[520px]">
+                <p className="font-sans font-normal text-[16px] sm:text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[560px]">
                   {WELCOME.reminder}
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
@@ -262,19 +262,21 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.7] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
             </div>
           </section>
 
-          {/* 3 · STUDIO — full-bleed cinematic break */}
+          {/* 3 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
+              wide screens (lg+) so a 3:2 frame doesn't fill an entire 4K
+              viewport top-to-bottom (Hugo: "some images are way too big"). */}
           <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2]"
+              aspect="aspect-[3/2] md:aspect-[12/5] 2xl:aspect-[5/2]"
               edges="y"
               parallax={0.18}
               shadow=""
@@ -364,19 +366,25 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 5 · CRAFT — Each painting is a ritual (scrim card) */}
+          {/* 5 · CRAFT — Each painting is a ritual.
+              Transparent over the shared peacock backdrop (Hugo 2026-06-03):
+              the old near-opaque bg-[rgba(10,9,8,0.88)] card read as a hard
+              black rectangle that broke the smooth pink wash before Sacred
+              Geometry. Now it sits on the backdrop like every other section;
+              the heading keeps hero-text-shadow and the body is full-cream
+              ink over the global scrim for legibility. */}
           <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
-            <div className="relative bg-[rgba(10,9,8,0.88)] px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14 ring-1 ring-white/8">
+            <div className="relative px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85 my-0 mt-7 max-w-[680px] mx-auto">
+                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink/85 my-0 mt-7 max-w-[720px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-none mx-auto md:mx-0">
+                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[440px] xl:max-w-[500px] mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
                     alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -387,10 +395,10 @@ export const Welcome = () => {
                 </Reveal>
 
                 <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
-                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink m-0">
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[16px] md:text-[18px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink m-0">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                   <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
@@ -457,7 +465,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 max-w-[820px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/85 max-w-[860px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -482,7 +490,7 @@ export const Welcome = () => {
                 <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
                   Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Mixed media on board <span className="text-ink/35 mx-1">·</span> Commissioned 2016
                 </p>
-                <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/85 m-0">
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
@@ -508,77 +516,29 @@ export const Welcome = () => {
 
           {/* 8 · SACRED GEOMETRY — the bold closing statement.
 
-              Restored 2026-06-02 (Hugo's direction): the confident, screen-
-              filling editorial close — NOT the brief compact colophon a git
-              sync had reverted it to. The headline is large and bold in a TRUE
-              Fraunces 700 (loaded; never synthesised now that font-synthesis
-              is off) at a CONTROLLED optical size (opsz 48 — even, heavy
-              strokes; never the opsz-144 hairline "scribble"). A moderate opsz
-              at a capped 132px stays striking AND clean. Background blends the
-              home's own peacock backdrop, closing on the MARY PINK colourway
-              (the fixed crossfade layer behind the page), with a stronger Earth
-              horizon and NO decorative ring lines. Stephen's words stay
-              verbatim. Section fills the viewport (min-h-100svh) with the
-              content centered; isolate + overflow-hidden retained (gotcha #8). */}
+              The confident, screen-filling editorial close. The headline is
+              large and bold in a TRUE Fraunces 700 (loaded; never synthesised
+              now that font-synthesis is off) at a CONTROLLED optical size
+              (opsz 48 — even, heavy strokes; never the opsz-144 hairline
+              "scribble"). Background is JUST the home's own peacock backdrop,
+              closing on the MARY PINK colourway (the fixed crossfade layer
+              behind the page) — same dusty-rose treatment as every other
+              section. Updated 2026-06-03 (Hugo): the green Earth limb + rust
+              horizon glow were removed so the finale shows ONLY the pink
+              backdrop, matching the rest of the home (supersedes the Earth
+              invariants in gotcha #7). Stephen's words stay verbatim. Section
+              fills the viewport (min-h-100svh) with the content centered;
+              isolate + overflow-hidden retained (gotcha #8). */}
           <section
             className="relative isolate flex min-h-[100svh] w-full items-center overflow-hidden"
             aria-label="Sacred Geometry"
           >
 
-            {/* Earth = atmosphere, not a stage. The lightweight earth-limb
-                (34KB webp / 175KB jpg) replaces the 861KB earth-cutout.png.
-                Pinned absolute to the section foot, decoupled from the head-
-                line entirely. A stronger, grounded horizon (opacity 0.6,
-                brightness 0.92) over the Mary Pink peacock sky — present, not
-                a near-invisible wash — edge-dissolved UP into #0a0908 via a
-                mask so there is NO hard photographic horizon. Rendered
-                statically (no opacity reveal gate) so the faded horizon is
-                always present even on short/landscape viewports. */}
-            <figure
-              className="m-0 absolute inset-x-0 bottom-0 z-0 pointer-events-none"
-            >
-              <picture aria-hidden="true">
-                <source
-                  srcSet={asset(webp("/img/scenes/earth-limb.jpg"))}
-                  type="image/webp"
-                />
-                <img
-                  src={asset("/img/scenes/earth-limb.jpg")}
-                  alt=""
-                  className="block w-[170%] sm:w-[140%] md:w-[124%] max-w-none mx-auto select-none"
-                  style={{
-                    // Stronger, grounded horizon (Hugo: "less transparent" /
-                    // "I want it back") over the Mary Pink peacock sky —
-                    // clearly present, not a near-invisible wash.
-                    opacity: 0.7,
-                    filter: "brightness(0.95) saturate(1.04)",
-                    WebkitMaskImage:
-                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
-                    maskImage:
-                      "linear-gradient(to top, #000 0%, #000 36%, transparent 95%)",
-                  }}
-                />
-              </picture>
-            </figure>
-
-            {/* Rust horizon glow — a whisper of warm atmosphere where the limb
-                meets the void, the one warm seam tying type + image. Above the
-                Earth (z-0), below the content (z-10). */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1]"
-              style={{
-                height: "46%",
-                background:
-                  "radial-gradient(120% 78% at 50% 100%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0.08) 36%, rgba(201,120,68,0) 66%)",
-              }}
-            />
-
             {/* Soft local scrim — lifts the big cream statement off the
                 lighter Mary-Pink rose sky (the rose is lighter than the dark
                 colourways, so the headline needs this). Centred high; fades to
-                transparent at the foot so the Earth limb stays clear. Above the
-                backdrop / Earth / glow (z-0,1), below the content (z-10). */}
+                transparent at the edges. Above the backdrop (z-0), below the
+                content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 z-[2]"
@@ -588,10 +548,9 @@ export const Welcome = () => {
               }}
             />
 
-            {/* Content column — centered flow. Symmetric padding opens the
-                lower space the faded Earth fills; the type lives in the
-                upper-middle calm. Layer order: Earth (z-0) → rust glow (z-1) →
-                scrim (z-2) → content (z-10). Whole-element Reveals (gotcha #2). */}
+            {/* Content column — centered flow. Layer order: pink backdrop
+                (z-0, the shared fixed peacock layer) → scrim (z-2) → content
+                (z-10). Whole-element Reveals (gotcha #2). */}
             <div className="relative z-10 mx-auto w-full max-w-[1340px] px-6 text-center py-[4vh] md:py-[6vh]">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
