@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Logo } from "./Logo";
-import { AssetImage } from "./AssetImage";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasket } from "../lib/basket";
@@ -16,23 +15,6 @@ const NAV_LINKS = [
   { to: "/memories", label: "Memories" },
   { to: "/contact", label: "Contact" },
 ];
-
-/**
- * Each primary link maps to ONE original-colourway painting (paths verified
- * against src/data/paintings.ts — every file exists as .jpg + .webp). Reference
- * the .jpg; AssetImage swaps to .webp via <picture>. The featured image in the
- * overlay's right column is keyed off the current route, swapped on hover/focus.
- * Ordered warm → cool → bridge → cool → unity → grounding for a deliberate
- * reveal arc, not a colour accident.
- */
-const NAV_PAINTING: Record<string, string> = {
-  "/": "/img/paintings/wild-rose-sussex-pink.jpg",
-  "/collections": "/img/paintings/english-bluebells-v3.jpg",
-  "/for-you": "/img/paintings/peacock-mary-pink.jpg",
-  "/about": "/img/paintings/orchis7-aquamarine-blue.jpg",
-  "/memories": "/img/paintings/fol-kaleidoscope.jpg",
-  "/contact": "/img/paintings/lulin-original.jpg",
-};
 
 /** Estate meta secondary links — the quiet footer set (real routes only). */
 const SECONDARY_LINKS = [
@@ -90,13 +72,6 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // The painting shown in the overlay's right column. Seeded from the current
-  // route on open (so it's "just there", no entrance), then swapped on link
-  // hover/focus. Never snaps back on leave — it rests on the last-hovered.
-  const [featured, setFeatured] = useState<string>(
-    NAV_PAINTING[location.pathname] ?? NAV_PAINTING["/"],
-  );
 
   // Track the prior basket count so we pulse only on increments, exposing a
   // `pulseKey` that bumps every time a pulse should retrigger. Route changes
@@ -183,15 +158,6 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       toggleBtn?.focus();
     };
   }, [menuOpen]);
-
-  // On open, seed the featured painting from the CURRENT route so it's already
-  // visible (no entrance animation), confident, "just there".
-  useEffect(() => {
-    if (menuOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFeatured(NAV_PAINTING[location.pathname] ?? NAV_PAINTING["/"]);
-    }
-  }, [menuOpen, location.pathname]);
 
   return (
     <header
@@ -325,21 +291,16 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         </div>
       </div>
 
-      {/* Overlay menu (<xl) — an editorial split takeover rendered via a
-          PORTAL to document.body so it escapes every page stacking context
-          (the home <main> isolate + transformed sections). TWO sibling fixed
-          layers: an OPAQUE solid scrim (zero alpha, zero blur — the documented
-          bleed-through fix) under an opaque dialog. The dialog is the
-          interactive surface; clicks on its empty padding close, but the inner
-          content column + painting stopPropagation so link/painting clicks
-          don't bubble to close. Focus-trapped + scroll-locked + route-change
-          close (effects above), reduced-motion safe. */}
-      <NavOverlay
+      {/* Menu (<xl) — a slide-in side panel (drawer) portalled to document.body
+          so it layers cleanly above every page stacking context (incl. the
+          film-grain at z-100). The site stays visible (dimmed) behind a
+          translucent scrim, so the menu reads as a layer ON the site, not a
+          separate page. Just clean links — no imagery. Focus-trapped +
+          scroll-locked + route-change close (effects above), reduced-motion safe. */}
+      <NavMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         menuRef={menuRef}
-        featured={featured}
-        setFeatured={setFeatured}
         reduceMotion={!!reduceMotion}
       />
     </header>
@@ -347,86 +308,66 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
 };
 
 /**
- * The <xl overlay menu, portalled to document.body. Kept as its own component
- * so the portal + AnimatePresence read cleanly and the header stays focused on
- * the inline bar. All a11y wiring (focus-trap, escape, scroll-lock, focus
- * restore, route-change close) lives in the Nav effects above and points
- * `menuRef` at the dialog.
+ * The <xl navigation menu — a slide-in side panel (drawer) portalled to
+ * document.body so it layers above every page stacking context (incl. the
+ * film-grain at z-100). Deliberately NOT a full-screen takeover: the site stays
+ * visible (dimmed) behind a translucent scrim, so the menu reads as a layer ON
+ * the site, not a separate page. Just clean links — no imagery. All a11y wiring
+ * (focus-trap, Escape, scroll-lock, focus restore, route-change close) lives in
+ * the Nav effects above and points `menuRef` at the panel.
  */
-const NavOverlay = ({
+const NavMenu = ({
   open,
   onClose,
   menuRef,
-  featured,
-  setFeatured,
   reduceMotion,
 }: {
   open: boolean;
   onClose: () => void;
   menuRef: RefObject<HTMLDivElement | null>;
-  featured: string;
-  setFeatured: (path: string) => void;
   reduceMotion: boolean;
 }) => {
-  // Shared pad to keep the dialog's header row + footer strip aligned with the
-  // real site header's horizontal rhythm.
-  const PAD = "px-4 sm:px-6 md:px-8 lg:px-12";
-
   return createPortal(
     <AnimatePresence>
       {open && (
         <>
-          {/* (1) SCRIM — fully OPAQUE #0a0908, no alpha, no blur. Sits UNDER
-              the dialog; clicking it closes. The single most important graft:
-              this is the fix for the documented stacking-context bleed. */}
+          {/* SCRIM — translucent, NOT opaque: the site shows through (dimmed),
+              so the menu reads as a layer ON the site, not a separate page.
+              Portalled + z above the film-grain (z-100) so nothing paints over
+              the panel. Clicking it closes. */}
           <motion.div
             aria-hidden="true"
             onClick={onClose}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{
-              duration: reduceMotion ? 0 : open ? 0.28 : 0.2,
-              ease: EASE_SMOOTH,
-            }}
-            className="xl:hidden fixed inset-0 z-[120] bg-[#0a0908]"
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
+            className="xl:hidden fixed inset-0 z-[120] bg-black/55 backdrop-blur-[2px]"
           />
 
-          {/* (2) DIALOG — also fully opaque (belt + braces). Clicks on its
-              empty padding close; the inner column + painting stop bubbling. */}
+          {/* PANEL — opaque drawer sliding in from the right. */}
           <motion.div
             ref={menuRef}
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
-            aria-label="Navigation menu"
-            onClick={onClose}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: reduceMotion ? 0 : open ? 0.28 : 0.2,
-              ease: EASE_SMOOTH,
-            }}
-            className="xl:hidden fixed inset-0 z-[121] bg-[#0a0908] text-ink grid grid-rows-[auto_1fr_auto] h-[100dvh] overflow-hidden"
+            aria-label="Menu"
+            initial={reduceMotion ? false : { x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: reduceMotion ? 0 : 0.42, ease: EASE_SMOOTH }}
+            className="xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
-            {/* HEADER ROW — mirrors the nav bar exactly. */}
-            <div
-              className={cn(PAD, "flex items-center justify-between py-5")}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Link
-                to="/"
-                aria-label="The Art of Stephen Meakin — home"
-                className="inline-flex items-center shrink-0"
-              >
-                <Logo size={32} wordmark />
-              </Link>
+            {/* Top row — quiet label + close. */}
+            <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
+              <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
+                Menu
+              </span>
               <button
                 type="button"
                 aria-label="Close menu"
                 onClick={onClose}
-                className="inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+                className="inline-flex items-center justify-center w-11 h-11 -mr-2.5 text-ink/70 hover:text-ink transition-colors"
               >
                 <svg
                   width="24"
@@ -443,145 +384,66 @@ const NavOverlay = ({
               </button>
             </div>
 
-            {/* BODY — stacked <768; side-by-side 44/56 grid ≥768 (the owner's
-                ~1130px laptop view). Hairline divider on ≥768 only. min-h-0 so
-                the grid row can shrink and the painting column scrolls nothing
-                off-screen. */}
-            <div className="min-h-0 flex flex-col overflow-y-auto md:grid md:grid-cols-[minmax(0,44%)_minmax(0,56%)] md:overflow-hidden">
-              {/* LEFT — link list, vertically centred. */}
-              <nav
-                aria-label="Primary"
-                onClick={(e) => e.stopPropagation()}
-                className="shrink-0 flex flex-col justify-center pl-[clamp(1.5rem,5vw,6rem)] pr-8 py-6 md:py-8"
-              >
-                {NAV_LINKS.map((l, i) => (
-                  <motion.div
-                    key={l.to}
-                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: reduceMotion ? 0 : 0.4,
-                      delay: reduceMotion ? 0 : 0.05 + i * 0.05,
-                      ease: EASE_SMOOTH,
-                    }}
-                  >
-                    <NavLink
-                      to={l.to}
-                      end={l.end}
-                      onMouseEnter={() => setFeatured(NAV_PAINTING[l.to])}
-                      onFocus={() => setFeatured(NAV_PAINTING[l.to])}
-                      className="group flex items-baseline gap-3 py-2.5 outline-none [&.active>span:last-child]:text-accent [&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]"
-                    >
-                      {/* Index numeral — muted, shifts to 40% rust on hover/focus
-                          with a slight delay so the eye reads "link lit, then
-                          watch the art". aria-hidden so SR reads only the label. */}
-                      <span
-                        aria-hidden="true"
-                        className={cn(
-                          "font-sans text-[11px] font-normal text-ink-muted tabular-nums tracking-normal",
-                          reduceMotion
-                            ? "group-hover:[color:rgba(201,120,68,0.4)] group-focus-within:[color:rgba(201,120,68,0.4)]"
-                            : "transition-[color] duration-200 delay-[50ms] group-hover:[color:rgba(201,120,68,0.4)] group-focus-within:[color:rgba(201,120,68,0.4)]",
-                        )}
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span
-                        className={cn(
-                          "font-display font-semibold leading-[1.1] tracking-[-0.015em] text-[clamp(28px,5.2vw,40px)] text-ink group-hover:text-accent",
-                          reduceMotion
-                            ? "duration-0"
-                            : "transition-colors duration-200 ease-out",
-                        )}
-                        style={{ fontVariationSettings: '"opsz" 40' }}
-                      >
-                        {l.label}
-                      </span>
-                    </NavLink>
-                  </motion.div>
-                ))}
-              </nav>
-
-              {/* RIGHT (≥768) / BELOW (<768) — the featured painting. Hairline
-                  divider only ≥768. Cross-dissolve two stacked images on
-                  hover/focus; the current-route image is already at opacity 1
-                  on mount (no entrance). Never cropped (object-contain). */}
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="relative md:border-l md:border-line flex items-center justify-center px-4 py-6 md:p-8 flex-1 min-h-[200px] md:min-h-0"
-              >
-                {reduceMotion ? (
-                  <AssetImage
-                    key={featured}
-                    src={featured}
-                    alt=""
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={featured}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      className="absolute inset-0 flex items-center justify-center px-4 md:p-8"
-                    >
-                      <AssetImage
-                        src={featured}
-                        alt=""
-                        className="max-h-full max-w-full object-contain"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                )}
-              </div>
-            </div>
-
-            {/* FOOTER META STRIP — top hairline + quiet estate meta and the
-                secondary links. Stacked <768; one justify-between flex row
-                ≥768 (meta left, secondary links right). */}
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: reduceMotion ? 0 : 0.4,
-                delay: reduceMotion ? 0 : 0.3,
-                ease: EASE_SMOOTH,
-              }}
-              className={cn(
-                PAD,
-                "border-t border-line py-5 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-x-6 md:gap-y-2",
-              )}
+            {/* Primary links — clean Fraunces list; active = rust, hover = rust. */}
+            <nav
+              aria-label="Primary"
+              className="flex-1 overflow-y-auto px-7 sm:px-8 py-7 flex flex-col gap-0.5"
             >
-              <address className="not-italic font-sans text-[13px] leading-[1.6] text-ink-muted flex flex-col md:flex-row md:gap-x-6">
-                <a
-                  href="mailto:info@themandalacompany.com"
-                  className="inline-block py-1 transition-colors duration-200 hover:text-ink [overflow-wrap:anywhere]"
+              {NAV_LINKS.map((l, i) => (
+                <motion.div
+                  key={l.to}
+                  initial={reduceMotion ? false : { opacity: 0, x: 18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.4,
+                    delay: reduceMotion ? 0 : 0.1 + i * 0.05,
+                    ease: EASE_SMOOTH,
+                  }}
                 >
-                  info@themandalacompany.com
-                </a>
-                <span>213 Elm Drive, Hove, BN3 7JD</span>
-              </address>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 font-sans text-[13px] leading-[1.6] text-ink-muted">
+                  <NavLink
+                    to={l.to}
+                    end={l.end}
+                    className={({ isActive }) =>
+                      cn(
+                        "block py-2.5 font-display font-semibold tracking-[-0.015em] leading-[1.15] text-[clamp(26px,6.6vw,33px)] outline-none transition-colors duration-200",
+                        isActive ? "text-accent" : "text-ink hover:text-accent",
+                        "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
+                      )
+                    }
+                    style={{ fontVariationSettings: '"opsz" 32' }}
+                  >
+                    {l.label}
+                  </NavLink>
+                </motion.div>
+              ))}
+            </nav>
+
+            {/* Footer — quiet secondary links + estate email. */}
+            <div className="px-7 sm:px-8 py-6 border-t border-line/60 flex flex-col gap-3">
+              <div className="flex flex-wrap gap-x-4 gap-y-0.5 font-sans text-[13px] text-ink-muted">
                 {SECONDARY_LINKS.map((l, i) => (
                   <span key={l.to} className="inline-flex items-center gap-x-4">
                     {i > 0 && (
-                      <span aria-hidden="true" className="text-ink-muted/50">
+                      <span aria-hidden="true" className="text-ink-muted/40">
                         ·
                       </span>
                     )}
                     <Link
                       to={l.to}
-                      className="inline-block py-1.5 transition-colors duration-200 hover:text-ink"
+                      className="inline-block py-1 transition-colors duration-200 hover:text-ink"
                     >
                       {l.label}
                     </Link>
                   </span>
                 ))}
               </div>
-            </motion.div>
+              <a
+                href="mailto:info@themandalacompany.com"
+                className="inline-block font-sans text-[13px] text-ink-fade hover:text-ink transition-colors [overflow-wrap:anywhere]"
+              >
+                info@themandalacompany.com
+              </a>
+            </div>
           </motion.div>
         </>
       )}
