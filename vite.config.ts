@@ -10,4 +10,27 @@ const base = process.env.DEPLOY_TARGET === "github-pages" ? "/uncle-tribute/" : 
 export default defineConfig({
   base,
   plugins: [react()],
+  build: {
+    rolldownOptions: {
+      output: {
+        // Peel the heavy, rarely-changing libraries into their own long-cached
+        // chunks so they (a) download in parallel with the app code and (b)
+        // stay cached across deploys instead of busting on every app change.
+        // framer-motion is the single biggest dep and was shipping inside the
+        // eager landing-page chunk.
+        advancedChunks: {
+          groups: [
+            {
+              name: "framer-motion",
+              test: /[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils|motion)[\\/]/,
+            },
+            {
+              name: "vendor-react",
+              test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
 });
