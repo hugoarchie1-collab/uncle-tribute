@@ -118,12 +118,52 @@ export const Welcome = () => {
               full-height and the hero sits a full scroll below. The fixed Nav
               always floats over the film at the very top, never over the hero,
               so the hero needs no nav-clearance padding of its own. */}
-          <section
-            className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
-            style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
-              <Reveal as="div" className="md:col-span-5">
+          {/* 1 · HERO — cinematic right-bleed. The studio photo fills the
+              right ~55% of the viewport at full height, bleeding to the screen
+              edge for real scale; the headline floats out of its dark-melted
+              inner edge on the left. Landscape composition preserved
+              (object-cover center on a wide box — only the sacrificial outer
+              margins trim). Stacks to text-then-image below md. */}
+          <section className="relative isolate w-full overflow-hidden">
+            {/* DESKTOP/TABLET — full-height image bleeding to the right edge */}
+            <figure className="m-0 hidden md:block absolute inset-y-0 right-0 w-[60%] lg:w-[58%]">
+              <ImageReveal
+                src="/img/welcome/01-painting-wild-rose.jpg"
+                alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
+                eager
+                fill
+                edges="y"
+                parallax={0.1}
+                objectPosition="center"
+                shadow=""
+              />
+              {/* Inner-left melt — the photo dissolves into the page so the
+                  headline reads cleanly over its left edge (no hard seam). */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 w-1/2"
+                style={{
+                  background:
+                    "linear-gradient(to right, #0a0908 0%, rgba(10,9,8,0.82) 26%, rgba(10,9,8,0.30) 64%, rgba(10,9,8,0) 100%)",
+                }}
+              />
+              {/* One warm seam where type meets photo. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 w-1/3"
+                style={{
+                  background:
+                    "linear-gradient(to right, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 72%)",
+                }}
+              />
+            </figure>
+
+            {/* Text column — vertically centred in a tall cinematic frame. */}
+            <div
+              className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[74svh] md:pb-0"
+              style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
+            >
+              <Reveal as="div" className="w-full md:max-w-[48%] lg:max-w-[46%]">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(46px,6.2vw,132px)] leading-[1.0]">
                     So here we are on Earth
@@ -152,27 +192,20 @@ export const Welcome = () => {
                     Our story
                   </MagneticLink>
                 </div>
-              </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-7 max-w-[440px] sm:max-w-[520px] md:max-w-none mx-auto md:mx-0">
-                {/* Source 01-painting-wild-rose.jpg is 1200x800 (3:2 landscape).
-                    The photo LEADS the hero, so it takes the wider 7-of-12
-                    column and a slightly taller aspect-[4/3] for real presence
-                    (the old 3:2 in a 6-col half left it floating small in a
-                    half-empty column). aspect-[4/3] + object-cover trims only
-                    the sacrificial outer edges — far-left brass stand, right
-                    wall margin — at center object-position; Stephen and the
-                    wall mandala stay framed and undistorted. soft-edge mask +
-                    gentle parallax preserved by ImageReveal. */}
-                <ImageReveal
-                  src="/img/welcome/01-painting-wild-rose.jpg"
-                  alt="Wild Rose — from the Habundia collection"
-                  eager
-                  aspect="aspect-[4/3]"
-                  edges="all"
-                  parallax={0.12}
-                  objectPosition="center"
-                  shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
-                />
+
+                {/* MOBILE image — below the copy, full landscape, soft-edged. */}
+                <Reveal as="figure" className="m-0 mt-10 md:hidden max-w-[560px]">
+                  <ImageReveal
+                    src="/img/welcome/01-painting-wild-rose.jpg"
+                    alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
+                    eager
+                    aspect="aspect-[4/3]"
+                    edges="all"
+                    parallax={0.12}
+                    objectPosition="center"
+                    shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
+                  />
+                </Reveal>
               </Reveal>
             </div>
           </section>
