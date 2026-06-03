@@ -373,14 +373,18 @@ export const Welcome = () => {
           </section>
 
           {/* 5 · CRAFT — Each painting is a ritual.
-              Transparent over the shared peacock backdrop (Hugo 2026-06-03):
-              the old near-opaque bg-[rgba(10,9,8,0.88)] card read as a hard
-              black rectangle that broke the smooth pink wash before Sacred
-              Geometry. Now it sits on the backdrop like every other section;
-              the heading keeps hero-text-shadow and the body is full-cream
-              ink over the global scrim for legibility. */}
-          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
-            <div className="relative px-6 sm:px-8 md:px-12 lg:px-16 py-10 md:py-14">
+              REFINED CONTAINER (Hugo 2026-06-03): this dense section (heading +
+              intro + image + two paragraphs + a 6-item materials grid) needs a
+              container or the text reads "all over the place" over the busy
+              backdrop. The original hard, sharp, near-opaque black rectangle
+              (`bg-[rgba(10,9,8,0.88)]` + square corners) was the "isn't smooth"
+              problem — removing it entirely was an over-correction. This is the
+              right answer: a premium frosted-glass panel — generous rounding,
+              a translucent dark fill that lets the blurred mandala glow
+              through, a hairline luminous border, and a soft ambient shadow
+              that lifts it off the page (Apple/Stripe register). */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.78)] backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-14 lg:px-20 py-12 md:py-16 lg:py-20">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
