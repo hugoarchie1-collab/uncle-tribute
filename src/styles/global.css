@@ -386,3 +386,67 @@
   body { background: white; color: black; }
   a { color: inherit; text-decoration: underline; }
 }
+
+/* ── Custom cursor ──────────────────────────────────────────────────────────
+   The cream dot + interactive ring rendered by <CustomCursor>. The native
+   cursor is hidden ONLY while the component is mounted (body.has-custom-cursor)
+   and ONLY on fine pointers; form fields keep their caret. */
+@media (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor a,
+  body.has-custom-cursor button,
+  body.has-custom-cursor [role="button"],
+  body.has-custom-cursor label,
+  body.has-custom-cursor summary,
+  body.has-custom-cursor .group,
+  body.has-custom-cursor [data-cursor="ring"] {
+    cursor: none;
+  }
+  body.has-custom-cursor input,
+  body.has-custom-cursor textarea,
+  body.has-custom-cursor select,
+  body.has-custom-cursor [contenteditable="true"] {
+    cursor: auto;
+  }
+}
+.cc-dot,
+.cc-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  pointer-events: none;
+  will-change: transform;
+}
+.cc-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #ede6d6;
+  transition: opacity 0.25s ease;
+}
+.cc-ring {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: 1px solid rgba(237, 230, 214, 0.32);
+  opacity: 0;
+  transition:
+    width 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 0.3s ease,
+    opacity 0.25s ease;
+}
+.cc-ring.cc--active {
+  opacity: 1;
+  width: 46px;
+  height: 46px;
+  border-color: rgba(201, 120, 68, 0.7);
+}
+.cc-dot.cc--dim {
+  opacity: 0;
+}
+.cc-dot.cc--gone,
+.cc-ring.cc--gone {
+  opacity: 0 !important;
+}

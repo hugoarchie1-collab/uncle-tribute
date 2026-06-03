@@ -4,6 +4,7 @@ import { motion, MotionConfig } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
+import { CustomCursor } from "./components/CustomCursor";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -132,6 +133,9 @@ export default function App() {
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
           <div aria-hidden="true" className="film-grain" />
+          {/* Premium custom cursor — fine-pointer + motion-allowed only;
+              renders nothing (native cursor) on touch / reduced-motion. */}
+          <CustomCursor />
           <AnimatedRoutes />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
