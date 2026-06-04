@@ -24,6 +24,7 @@ const SITE_LINKS = [
   { to: "/for-you", label: "For You" },
   { to: "/about", label: "About" },
   { to: "/memories", label: "Memories" },
+  { to: "/news", label: "News" },
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
   { to: "/returns", label: "Returns" },

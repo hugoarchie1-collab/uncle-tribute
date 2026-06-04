@@ -71,6 +71,25 @@ export const WELCOME = {
   reminder:
     "Stephen Meakin said this not to disorient, but to remind. Everything you think is still moving. Everything you think is ordinary is extraordinary. This was the premise of his entire life's work.",
 
+  // Tight hero lead — the verbatim opening of the long reminder below. Kept
+  // short so the hero stays airy above the CTAs; the full passage runs in the
+  // dedicated "A reminder" section on the home page.
+  reminderLead:
+    "This is not here to disorientate or devalue. It is a reminder of the gift in free will — and how temporary every consequence truly is.",
+
+  // The full "reminder" passage — Hugo's authored copy, added 2026-06. It is
+  // displayed VERBATIM in the dedicated home "A reminder" section (Welcome.tsx
+  // maps over this array, so the words are never re-typed inline). Do not
+  // paraphrase. The ONLY normalisation applied to the supplied source was the
+  // proper noun "Steven" → "Stephen" in the closing line.
+  reminderLong: [
+    "This is not here to disorientate or devalue. It is a reminder of the gift in free will — and how temporary every consequence truly is. Whatever suffering occurs in the mind, however heavy it feels, humans overcomplicate what life, in its simplicity, is actually asking of them.",
+    "In the full timeline of the universe our lifespans are minuscule. But that is not the tragedy — that is the gift. Our mortality gives us the freedom to choose a life. To live it in any way we want. To stop thinking and start creating.",
+    "Consider the sheer improbability of being here at all. The chances of the specific sperm cell that became you reaching the egg. Then go further back — two nanoparticles, a proton and a neutron, colliding to ignite the big bang itself. The entire universe beginning in a moment no larger than a thought — let there be light! And here we are now, on Earth, orbiting a sun star at 67,062 miles an hour — moving at extraordinary speed through space while we worry about ordinary things.",
+    "There is a star inside each one of us. Quite literally. The iron in your blood, the calcium in your bones — forged in dying stars billions of years before you existed. But a star must burn for it to be born. The pressure, the heat, the collapse — that is not destruction. That is the process.",
+    "Everything you think is ordinary is extraordinary. That was the premise of Stephen Meakin's entire life's work.",
+  ],
+
   passingNote: `Steve passed away in ${PASSING_DATE}.`,
 
   invocation: "In Steve's own words…",

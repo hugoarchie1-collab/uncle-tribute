@@ -109,11 +109,12 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 ## Routes
 
 ```
-/                            Welcome (9-section home, video intro + scroll experience)
+/                            Welcome (10-section home, video intro + scroll experience)
 /collections                 Browse all 3 collections (Habundia, Genesis, Born in the Sky)
 /collections/:id             Painting detail (colourway picker + Add to basket / Buy now). Accepts an optional `?c=<colourway name>` deep-link — featured-grid / catalogue tiles pass the colourway they show so the page opens on THAT colourway, not the original (matched case-insensitively; falls back to original).
 /about                       Long-form bio (Anegada chapter, TAGA, students letter)
 /memories                    Book of Memories — moderated wall of memories + "leave a memory" form
+/news                        News & releases — Beeper-style estate calendar (upcoming collection/single "drops", announcements, exhibitions, TAGA workshop, events). Reads src/data/news.ts. In primary Nav + Footer. IntroFilmHeader + Seo. (NEW 2026-06-04)
 /journal                     Journal index — writings archive (real indexable content; Blog JSON-LD)
 /journal/:slug               Journal article (per-article meta + Article/Breadcrumb JSON-LD; drafts 404)
 /photo-book                  "Steve's Photo Book by Polly Wedge" — personal-photo gallery (reads src/data/photobook.ts; empty-state until photos added)
@@ -134,14 +135,15 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 
 1. **Video intro** — sticky 100vh boomerang video, dissolves into hero (only 5% bottom fade)
 2. **Hero** — "So here we are on Earth — orbiting a Sun Star at about 67,062 miles an hour" (Stephen's words). Wild Rose painting on the easel on right. CTAs: Explore collections / Our story
-3. **Meet Stephen** — portrait + IN STEVE'S OWN WORDS… eyebrow + opening bio
-4. **Studio** — full-bleed cinematic image
-5. **Featured Works** — 3×2 grid of signature paintings linking to detail pages
-6. **Each painting is a ritual** — Craft section, transparent over the peacock backdrop like every other section (the near-opaque `bg-[rgba(10,9,8,0.88)]` dark scrim card was removed 2026-06-03 — it read as a hard black rectangle that broke the smooth pink wash), with process narrative + materials grid
-7. **Sacred Geometry — four traditions** — 4-card grid (Insular Island / Rose Windows / Persian / Tibetan)
-8. **Arista SunStar** — text-left, framed photo right (the 3.6m commission for Farmacy Notting Hill)
-9. **The Estate** — Prints + Friends-of-the-estate engagement cards (open EnquireModal) + `NewsletterSignup variant="panel"` mounted below the cards
-10. **Sacred Geometry (closing statement)** — finale: **BOLD, screen-filling, TWO-TIER statement (live 2026-06-03, layered on top of the cinematic hero).** A `min-h-[100svh]` centered `flex items-center` section: **"Sacred geometry"** is the dominant title (Fraunces 700, `opsz 48`, `clamp(58px,15vw,232px)`, italic *geometry*) sitting ABOVE a deliberately ~4× smaller subordinate clause **"— the order beneath all things."** (`opsz 36 / wght 600`, `clamp(22px,3.6vw,58px)`, rust period) — Hugo's direction: "Sacred geometry needs to be larger than the order beneath all things." → hairline → Stephen's verbatim "everything is connected" (italic `opsz 24`, cite SEM) → a quiet "Explore the collection →" link. Background is the home's 4-colourway peacock crossfade closing on **Mary Pink** (`peacock-mary-pink-blur-v2.webp`, dusty rose); a soft radial scrim grounds the type — the **Earth limb + rust horizon glow were REMOVED 2026-06-03** (Hugo) so the finale shows ONLY the pink backdrop, matching the rest of the home. **NO** Earth, **NO** rust glow, **NO** rose emblem, **NO** eyebrow, **NO** mandala-ring SVG. `isolate` + `overflow-hidden` retained (gotcha #8); whole-element Reveals only (gotcha #2).
+3. **A reminder** — NEW 2026-06-04. The hero now carries only a tight verbatim lead (`WELCOME.reminderLead`); this dedicated bold editorial section runs Hugo's full five-paragraph "reminder" passage VERBATIM (mapped from `WELCOME.reminderLong[]` in content.ts — never re-typed in JSX). P1 leads large; P2–P4 in a two-column measure on lg+; P5 lands after a hairline as a two-tier Fraunces close (dominant sentence + smaller subordinate clause, one rust period) echoing the finale. Over the shared peacock backdrop; Fraunces opsz held ≤48; whole-element Reveals. (The ONLY normalisation to the supplied copy was "Steven"→"Stephen".)
+4. **Meet Stephen** — portrait + IN STEVE'S OWN WORDS… eyebrow + opening bio
+5. **Studio** — full-bleed cinematic image
+6. **Featured Works** — 3×2 grid of signature paintings linking to detail pages
+7. **Each painting is a ritual** — Craft section, transparent over the peacock backdrop like every other section (the near-opaque `bg-[rgba(10,9,8,0.88)]` dark scrim card was removed 2026-06-03 — it read as a hard black rectangle that broke the smooth pink wash), with process narrative + materials grid
+8. **Sacred Geometry — four traditions** — 4-card grid (Insular Island / Rose Windows / Persian / Tibetan)
+9. **Arista SunStar** — text-left, framed photo right (the 3.6m commission for Farmacy Notting Hill)
+10. **The Estate** — Prints + Friends-of-the-estate engagement cards (open EnquireModal) + `NewsletterSignup variant="panel"` mounted below the cards
+11. **Sacred Geometry (closing statement)** — finale: **BOLD, screen-filling, TWO-TIER statement (live 2026-06-03, layered on top of the cinematic hero).** A `min-h-[100svh]` centered `flex items-center` section: **"Sacred geometry"** is the dominant title (Fraunces 700, `opsz 48`, `clamp(58px,15vw,232px)`, italic *geometry*) sitting ABOVE a deliberately ~4× smaller subordinate clause **"— the order beneath all things."** (`opsz 36 / wght 600`, `clamp(22px,3.6vw,58px)`, rust period) — Hugo's direction: "Sacred geometry needs to be larger than the order beneath all things." → hairline → Stephen's verbatim "everything is connected" (italic `opsz 24`, cite SEM) → a quiet "Explore the collection →" link. Background is the home's 4-colourway peacock crossfade closing on **Mary Pink** (`peacock-mary-pink-blur-v2.webp`, dusty rose); a soft radial scrim grounds the type — the **Earth limb + rust horizon glow were REMOVED 2026-06-03** (Hugo) so the finale shows ONLY the pink backdrop, matching the rest of the home. **NO** Earth, **NO** rust glow, **NO** rose emblem, **NO** eyebrow, **NO** mandala-ring SVG. `isolate` + `overflow-hidden` retained (gotcha #8); whole-element Reveals only (gotcha #2).
 
 (Section 7 = Mandalas Wall and section 9 = Three Collections were both cut — kept their assets on disk for future use, e.g. About page.)
 
@@ -150,7 +152,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 ## Data files (single source of truth)
 
 ### `src/data/content.ts`
-- `WELCOME` — hero quote, reminder, invocation, bio paragraphs
+- `WELCOME` — hero quote, reminder, invocation, bio paragraphs. **2026-06-04:** added `reminderLead` (tight verbatim hero lead) + `reminderLong: string[]` (Hugo's full 5-paragraph "reminder" passage, displayed VERBATIM in the new home **A reminder** section — only normalisation was "Steven"→"Stephen"). The old short `reminder` field is kept (no longer rendered in the hero, which now binds `reminderLead`).
 - `ABOUT` — full About page (opening, earlyLife, anegada, legacy, academyQuote, palestine, studentsIntro, studentsLetter)
 - `PASSING_DATE` `"2021"`
 
@@ -163,6 +165,9 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 ### content.ts memorial constants
 - `BIRTH_DATE` `"2 March 1966"`, `DEATH_DATE` `"12 December 2021"`, `LIFE_DATES` (the en-dash range), `MEMORIAL_QUOTE` (Stephen's "everything is connected" words), and `TRIBUTE` (Polly Wedge's funeral tribute — `eyebrow` / `paragraphs[]` / `attribution`). Surfaced in the About "In loving memory" section. PASSING_DATE stays the YEAR for the 1966–2021 ranges. ⚠️ Four phrases in `TRIBUTE.paragraphs` are kept verbatim pending Polly's confirmation of the exact wording (see the comment block in content.ts) — do not invent replacements.
 
+### `src/data/news.ts` (NEW 2026-06-04)
+- `NEWS` — array of `NewsEntry` for the `/news` "estate calendar" (Beeper-style changelog feed). Fields: `id` / `type` (`release` | `announcement` | `exhibition` | `workshop` | `event`) / optional `kind` (`collection` | `single`, releases only) / `status` (`next` | `soon` | `recent`) / `title` / `displayDate` (HUMAN, e.g. "Coming soon" — never a fabricated firm date) / optional `isoDate` / `summary` / optional `cover` (release album-cover; **.jpg** path under /img/paintings, AssetImage swaps webp — stems are NOT always `<id>-<colourway>`, see the file header) / optional `location` / `ctaLabel` + `ctaTo` (`#notify` scrolls to the foot Friends & Family sign-up; a real route links out). Helpers: `STATUS_ORDER`, `STATUS_META`, `TYPE_LABEL`, `pillLabel`, `NEWS_FILTERS`, `isRelease`, `getFeaturedEntry`, `groupByStatus`. Seeds are honest family-editable PLACEHOLDERS (no fabricated venues/dates, no weaponised scarcity). Rendered by `src/pages/News.tsx`.
+
 ### `src/data/journal.ts`
 - `JOURNAL` — array of writings-archive articles (`slug` / `title` / `excerpt` / optional `kind` / `date` / `isoDate` / `author` / `body: string[]` / `pullQuote` / `coverImage` / `draft`; `JournalArticle` type exported). Newest first. **The SEO layer**: each article is a real indexable page (`/journal/:slug`) with its own meta + Article JSON-LD — the fix for the SPA being near-invisible to crawlers. `draft: true` hides an article from the index AND 404s its route, for safe staging. Helpers: `publishedArticles`, `getPublishedArticle`, `articleAuthor` (defaults byline to the estate), `readingMinutes`. File header carries a paste-ready authoring template. Seeded with one estate-written intro + one draft template.
 
@@ -172,7 +177,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 - `PRINT_TIERS` — **canonical price ladder** (display labels renamed 2026-06-01 for pricing psychology; **prices/editions/sizes UNCHANGED**, internal tier ids unchanged): **Gallery Edition** A3 £245 (id `atelier`, now a LIMITED edition of 150 — was open) / **Collector's Edition** A2 £450 anchor (id `collector`, ed. 100) / **Atelier Edition** A1 £850 (id `atelier-grande`, ed. 50) / **Heirloom Edition** A0 £1,750 (id `heirloom`, ed. 25, hidden until A0 fulfilment confirmed) / **Original — One of One** (id `studio`, £2,450 unique hand-painted — **HIDDEN 2026-06-03 via `available:false`, like Heirloom: Hugo isn't selling unique originals until their value rises. The `api/checkout.ts` `studio` pricing row is deliberately kept intact so a stale client posting `tierId=studio` can't crash checkout; the FAQ £2,450 sentence was removed too**). [Ladder rethought 2026-06-02 — research-backed uplift; was £145/£295/£595/£1,250/£950.] Each A2/A1 tier carries `framingPricePence` (£295/£395) and `embellishmentPricePence` (£350/£495) for the two paid add-ons. Source of truth for site-side pricing. Labels mirror into `api/checkout.ts` + `api/stripe-webhook.ts` (gotcha #9).
 - `ESTATE_AUTHENTICATION` — single source for stamp / numbering / COA / printer copy. Surfaces on PaintingDetail, Basket, and the OrderConfirmation email. Updated 2026-05-28: copy says "The Mandala Company" (NOT "The Mandala Company Foundation" — it's a trading name, not a registered Foundation).
 - `ORIGINAL_PROVENANCE` — single dignified line surfaced on PaintingDetail's key-fact dl ("Original · Held privately by the estate — the original is not currently for sale."). The originals are kept in the family's legal name and aren't for sale.
-- `EMBELLISHMENT_NOTE` — copy for the hand-finishing add-on (Polly Wedge finishes A2/A1 prints by hand; allow 4 weeks). Mirrored into the inline order-confirmation email in `api/stripe-webhook.ts`.
+- `EMBELLISHMENT_NOTE` — copy for the hand-finishing add-on (Polly Wedge finishes A2/A1 prints by hand; **allow up to 2 weeks** — reduced from 4 weeks 2026-06-04 at Hugo's request, kept consistent across FAQ, `PaintingDetail.tsx` `FINISH_LEAD_WEEKS`, and `Legal.tsx`). Mirrored into the inline order-confirmation email in `api/stripe-webhook.ts`.
 - `DEFAULT_PRINT` — legacy default (now £450, mirrors the anchor tier). Kept for the home page "from £…" chip and any straggling callers.
 - Helpers: `getPaintingById`, `getPrintTiers`, `getAnchorTier`, `getFramingPricePence`, `getEmbellishmentPricePence`, `getPrintPricePence` (legacy), `getPrintSize` (legacy), `formatGBP`, `ORIGINAL_PRINT_SPEC`, `ORIGINAL_PROVENANCE`, `EMBELLISHMENT_NOTE`, `COLOURWAY_NOTE`
 

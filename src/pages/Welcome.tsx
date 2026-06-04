@@ -11,6 +11,8 @@ import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
 import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
 import { asset } from "../lib/asset";
+import { cn } from "../lib/cn";
+import { EYEBROW } from "../components/ui/tokens";
 import { usePageTitle } from "../lib/usePageTitle";
 
 // Four Peacock colourways used as the home page's seamlessly-blending
@@ -28,7 +30,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v3.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
@@ -216,7 +218,76 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 2 · MEET STEPHEN — cinematic LEFT-bleed, mirroring the hero's
+          {/* 2 · A REMINDER — the hero carries only a tight lead; here Hugo's
+              full five-paragraph passage runs VERBATIM as a bold editorial
+              spread (mapped from WELCOME.reminderLong so nothing is re-typed).
+              P1 leads large; P2–P4 settle into a balanced two-column measure on
+              lg+ so it reads as a designed essay on a 4K screen, not a lonely
+              phone-width ribbon; P5 lands after a hairline as a two-tier
+              Fraunces close echoing the Sacred Geometry finale, its closing
+              period the one rust note. Over the shared peacock backdrop like
+              every section (no opaque card — gotcha); hero-text-shadow for
+              legibility; Fraunces opsz held ≤48 (finale invariant); whole-
+              element Reveals only (gotcha #2). */}
+          <section className="relative isolate mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 lg:py-32">
+            <Reveal as="header" className="max-w-[820px] mb-8 md:mb-10">
+              <p className={cn(EYEBROW, "m-0 mb-6")}>A reminder</p>
+              <p className="font-sans font-normal text-[19px] md:text-[22px] 2xl:text-[24px] leading-[1.65] text-ink m-0 hero-text-shadow">
+                {WELCOME.reminderLong[0]}
+              </p>
+            </Reveal>
+
+            {/* P2–P4 — one flowing reading column (Hugo: keep the passage together
+                as the "first part", not split into stiff columns). */}
+            <Reveal as="div" className="max-w-[820px] flex flex-col gap-6 md:gap-7">
+              {WELCOME.reminderLong.slice(1, 4).map((para) => (
+                <p
+                  key={para.slice(0, 24)}
+                  className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.85] text-ink/85 m-0"
+                >
+                  {para}
+                </p>
+              ))}
+            </Reveal>
+
+            {/* Closing premise (P5), VERBATIM — pulled out as a two-tier
+                Fraunces close: a dominant first sentence above a smaller
+                subordinate clause, the closing rust period the one accent note.
+                Split at the single ". " boundary in reminderLong[4]; both halves
+                stay verbatim. */}
+            <Reveal delay={0.1}>
+              <div aria-hidden="true" className="mt-12 md:mt-16 mb-8 md:mb-10 h-px w-12 bg-ink/15" />
+              <p className="m-0 max-w-[960px] hero-text-shadow">
+                <span
+                  className="block font-display text-ink text-balance"
+                  style={{
+                    fontVariationSettings: '"opsz" 48, "wght" 600',
+                    fontWeight: 600,
+                    fontSize: "clamp(28px, 4.6vw, 64px)",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 1.02,
+                  }}
+                >
+                  {WELCOME.reminderLong[4].split(". ")[0]}
+                  <span className="text-accent">.</span>
+                </span>
+                <span
+                  className="block font-display font-normal italic text-ink-muted text-balance mt-3 md:mt-4"
+                  style={{
+                    fontVariationSettings: '"opsz" 36, "wght" 400',
+                    fontWeight: 400,
+                    fontSize: "clamp(18px, 2.4vw, 32px)",
+                    letterSpacing: "-0.015em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {WELCOME.reminderLong[4].split(". ").slice(1).join(". ")}
+                </span>
+              </p>
+            </Reveal>
+          </section>
+
+          {/* 3 · MEET STEPHEN — cinematic LEFT-bleed, mirroring the hero's
               right-bleed for an alternating rhythm. The portrait fills the
               left ~44% of the viewport at full height, bleeding to the screen
               edge; the invocation + bio sit to the right, melting out of the
@@ -275,21 +346,21 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 3 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
+          {/* 4 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
               wide screens (lg+) so a 3:2 frame doesn't fill an entire 4K
               viewport top-to-bottom (Hugo: "some images are way too big"). */}
-          <Reveal as="figure" className="m-0 w-full py-3 md:py-5">
+          <Reveal as="figure" className="m-0 w-full py-10 md:py-16 lg:py-20">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2] md:aspect-[12/5] 2xl:aspect-[5/2]"
+              aspect="aspect-[3/2] md:aspect-[2/1] 2xl:aspect-[5/2]"
               edges="y"
               parallax={0.18}
               shadow=""
             />
           </Reveal>
 
-          {/* 4 · FEATURED WORKS — 3×2 grid of signature paintings */}
+          {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
           <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
@@ -372,7 +443,7 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 5 · CRAFT — Each painting is a ritual.
+          {/* 6 · CRAFT — Each painting is a ritual.
               REFINED CONTAINER (Hugo 2026-06-03): this dense section (heading +
               intro + image + two paragraphs + a 6-item materials grid) needs a
               container or the text reads "all over the place" over the busy
@@ -439,7 +510,7 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 6 · SACRED GEOMETRY — 4-card grid of traditions */}
+          {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
@@ -481,7 +552,7 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 7 · ARISTA SUNSTAR — text left, smaller framed image right.
+          {/* 8 · ARISTA SUNSTAR — text left, smaller framed image right.
               Single section (no longer split). Image is intentionally
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
@@ -524,7 +595,7 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 8 · SACRED GEOMETRY — the bold closing statement.
+          {/* 9 · SACRED GEOMETRY — the bold closing statement.
 
               The confident, screen-filling editorial close. The headline is
               large and bold in a TRUE Fraunces 700 (loaded; never synthesised
@@ -544,17 +615,41 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* Soft local scrim — lifts the big cream statement off the
-                lighter Mary-Pink rose sky (the rose is lighter than the dark
-                colourways, so the headline needs this). Centred high; fades to
-                transparent at the edges. Above the backdrop (z-0), below the
+            {/* Earth limb — restored 2026-06-04 (Hugo: "I want the earth back").
+                A subtle blue horizon curve pinned to the bottom, edge-dissolved
+                into the rose sky by a radial mask so it reads as atmosphere, not
+                a hard block. Above the pink backdrop (z-0), below the scrim (z-2)
+                + content (z-10). */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
+            >
+              <img
+                src={asset("/img/scenes/earth-limb.webp")}
+                alt=""
+                className="w-full max-w-[1700px] h-auto select-none"
+                style={{
+                  opacity: 0.55,
+                  filter: "brightness(0.98) saturate(1.05)",
+                  maskImage:
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 44%, rgba(0,0,0,0.3) 68%, transparent 88%)",
+                  WebkitMaskImage:
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 44%, rgba(0,0,0,0.3) 68%, transparent 88%)",
+                }}
+              />
+            </div>
+
+            {/* Soft local scrim — lifts the big cream statement off the rose
+                sky. Lightened + tightened 2026-06-04 (Hugo: "I don't want it
+                darkened") so it grounds the type without dimming the whole
+                section. Above the backdrop (z-0) + Earth (z-1), below the
                 content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 z-[2]"
               style={{
                 background:
-                  "radial-gradient(86% 72% at 50% 44%, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.20) 58%, rgba(10,9,8,0) 100%)",
+                  "radial-gradient(72% 58% at 50% 42%, rgba(10,9,8,0.44) 0%, rgba(10,9,8,0.15) 60%, rgba(10,9,8,0) 100%)",
               }}
             />
 
