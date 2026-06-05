@@ -35,10 +35,10 @@ export const Footer = () => (
     role="contentinfo"
     className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-11 md:pt-14 pb-8 md:pb-10"
   >
-    <div className="mx-auto max-w-[1400px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
       {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        <Logo size={30} wordmark />
+        <Logo size={28} wordmark wordmarkAlwaysOn />
         <p className={cn(FOOTER_TEXT, "mt-5 max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
@@ -98,7 +98,7 @@ export const Footer = () => (
       </div>
     </div>
 
-    <div className="mx-auto max-w-[1400px] mt-9 md:mt-11 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-9 md:mt-11 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>

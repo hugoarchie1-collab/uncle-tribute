@@ -55,7 +55,10 @@
   /* overscroll-behavior:none kills the rubber-band/bounce past the page ends —
      without it, over-scrolling at the foot of the home page revealed the fixed
      peacock backdrop (pink) below the black footer. No bounce → no reveal. */
-  html { scroll-behavior: smooth; overflow-x: clip; overscroll-behavior: none; }
+  html { overflow-x: clip; overscroll-behavior: none; }
+  /* Smooth-scroll is a desktop nicety only — on touch it animates programmatic
+     scrolls and fights momentum scrolling on phones (scroll-lag fix). */
+  @media (pointer: fine) { html { scroll-behavior: smooth; } }
 
   body {
     @apply font-sans text-body text-ink-soft antialiased;

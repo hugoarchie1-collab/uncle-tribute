@@ -3,10 +3,13 @@ import { Link } from "react-router-dom";
 interface LogoProps {
   size?: number;
   wordmark?: boolean;
+  /** Show the wordmark even on the smallest screens (used in the footer, where
+   *  the brand column is full-width — avoids an orphaned emblem on phones). */
+  wordmarkAlwaysOn?: boolean;
   className?: string;
 }
 
-export const Logo = ({ size = 30, wordmark = true, className }: LogoProps) => {
+export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, className }: LogoProps) => {
   const url = `${import.meta.env.BASE_URL}logo/logo-emblem.svg`;
   return (
     <div className={`inline-flex items-center gap-3 leading-none ${className ?? ""}`}>
@@ -37,11 +40,11 @@ export const Logo = ({ size = 30, wordmark = true, className }: LogoProps) => {
           // areas of the peacock / Mary-Pink scroll backdrops. brightness(0)
           // invert(1) maps the SVG's cream fill to white regardless of source.
           filter:
-            "brightness(0) invert(1) drop-shadow(0 1px 6px rgba(0,0,0,0.55))",
+            "brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0,0,0,0.45))",
         }}
       />
       {wordmark && (
-        <span className="hidden sm:inline font-display text-[16px] font-normal tracking-tight text-white whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
+        <span className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-[16px] font-normal leading-none tracking-tight text-white whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]`}>
           The Art of Stephen Meakin
         </span>
       )}

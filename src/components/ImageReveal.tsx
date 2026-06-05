@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useRef, useState, useEffect, type CSSProperties } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { asset, webp } from "../lib/asset";
 
@@ -49,7 +49,20 @@ export const ImageReveal = ({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const px = reduceMotion ? 0 : Math.round(parallax * 60);
+  // Parallax is a desktop-only flourish. Gate it OFF on touch/coarse pointers
+  // (as well as reduced-motion): ~5 ImageReveal instances each run a scroll-
+  // linked transform + GPU layer — a major mobile scroll-lag source with no
+  // benefit on touch. The static scale-[1.04] keeps the framing.
+  const [coarse, setCoarse] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setCoarse(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const noParallax = reduceMotion || coarse;
+  const px = noParallax ? 0 : Math.round(parallax * 60);
   const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
 
   // Mouse tilt
@@ -100,7 +113,7 @@ export const ImageReveal = ({
           style={{
             y,
             objectPosition,
-            willChange: reduceMotion ? undefined : "transform",
+            willChange: noParallax ? undefined : "transform",
           }}
           animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
           transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}

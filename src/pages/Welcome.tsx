@@ -94,7 +94,10 @@ export const Welcome = () => {
                 backgroundImage: `url("${asset(bd.url)}")`,
                 // Promote to its own GPU layer so the scroll-driven crossfade
                 // composites the (pre-blurred) image instead of repainting it.
+                // translateZ(0) forces a composited layer so iOS doesn't
+                // re-rasterise the fixed cover bitmap every scroll frame.
                 willChange: "opacity",
+                transform: "translateZ(0)",
               }}
             />
           ))}
@@ -232,7 +235,7 @@ export const Welcome = () => {
           <section className="relative isolate mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 lg:py-32">
             <Reveal as="header" className="max-w-[820px] mb-8 md:mb-10">
               <p className={cn(EYEBROW, "m-0 mb-6")}>A reminder</p>
-              <p className="font-sans font-normal text-[19px] md:text-[22px] 2xl:text-[24px] leading-[1.65] text-ink m-0 hero-text-shadow">
+              <p className="font-display font-normal tracking-[-0.012em] text-[clamp(24px,3vw,42px)] leading-[1.28] text-ink m-0 text-balance hero-text-shadow">
                 {WELCOME.reminderLong[0]}
               </p>
             </Reveal>
@@ -243,7 +246,7 @@ export const Welcome = () => {
               {WELCOME.reminderLong.slice(1, 4).map((para) => (
                 <p
                   key={para.slice(0, 24)}
-                  className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.85] text-ink/85 m-0"
+                  className="font-sans font-normal text-[18px] md:text-[20px] 2xl:text-[22px] leading-[1.8] text-ink/85 m-0"
                 >
                   {para}
                 </p>
@@ -336,7 +339,7 @@ export const Welcome = () => {
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                   {WELCOME.invocation}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(28px,3.4vw,44px)] leading-[1.02] text-ink m-0 mb-6">
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(30px,4.4vw,64px)] leading-[1.02] text-ink m-0 mb-6">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.7] text-ink/85 m-0">
@@ -361,7 +364,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_1000px] mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 From the hand
@@ -454,8 +457,8 @@ export const Welcome = () => {
               a translucent dark fill that lets the blurred mandala glow
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:py-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.78)] backdrop-blur-2xl ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-14 lg:px-20 py-12 md:py-16 lg:py-20">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-14 lg:px-20 py-12 md:py-16 lg:py-20">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
@@ -511,7 +514,7 @@ export const Welcome = () => {
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
@@ -557,7 +560,7 @@ export const Welcome = () => {
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
               gallery object instead of a stretched full-bleed. */}
-          <section className="mx-auto max-w-[1280px] 2xl:max-w-[1480px] 3xl:max-w-[1720px] px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_800px] mx-auto max-w-[1280px] 2xl:max-w-[1480px] 3xl:max-w-[1720px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
@@ -611,7 +614,7 @@ export const Welcome = () => {
               fills the viewport (min-h-100svh) with the content centered;
               isolate + overflow-hidden retained (gotcha #8). */}
           <section
-            className="relative isolate flex min-h-[100svh] w-full items-center overflow-hidden"
+            className="relative isolate flex min-h-[72svh] md:min-h-[80svh] w-full items-center overflow-hidden py-[10vh] md:py-[12vh]"
             aria-label="Sacred Geometry"
           >
 
@@ -628,15 +631,15 @@ export const Welcome = () => {
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
             >
               <img
-                src={asset("/img/scenes/earth-limb-rose.webp")}
+                src={asset("/img/scenes/earth-limb.webp")}
                 alt=""
                 className="w-full max-w-[1700px] h-auto select-none"
                 style={{
-                  opacity: 0.5,
+                  opacity: 0.72,
                   maskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 42%, rgba(0,0,0,0.28) 66%, transparent 86%)",
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 46%, rgba(0,0,0,0.3) 70%, transparent 90%)",
                   WebkitMaskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 42%, rgba(0,0,0,0.28) 66%, transparent 86%)",
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 46%, rgba(0,0,0,0.3) 70%, transparent 90%)",
                 }}
               />
             </div>
@@ -644,7 +647,7 @@ export const Welcome = () => {
             {/* Content column — centered flow. Layer order: pink backdrop
                 (z-0, the shared fixed peacock layer) → rose Earth (z-1) →
                 content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
-            <div className="relative z-10 mx-auto w-full max-w-[1340px] px-6 text-center py-[4vh] md:py-[6vh]">
+            <div className="relative z-10 mx-auto w-full max-w-[1340px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-6 text-center py-[4vh] md:py-[6vh]">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean

@@ -163,7 +163,7 @@ export const News = () => {
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
         {/* HEADER — centred, matching the other pages (Hugo). */}
-        <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
+        <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>The estate calendar</p>
           <h1 className={cn(TITLE, "mx-auto my-0 mb-6")}>News &amp; releases.</h1>
           <p className={cn(SUBTITLE, "mx-auto my-0")}>
@@ -194,7 +194,7 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="mb-14 md:mb-20 mx-auto w-full max-w-[760px] flex flex-col items-center text-center"
+            className="mb-14 md:mb-20 mx-auto w-full max-w-[760px] 2xl:max-w-[880px] flex flex-col items-center text-center"
           >
             <div className="mb-8 w-full max-w-[460px] overflow-hidden rounded-xl ring-1 ring-line bg-bg">
               <AssetImage
@@ -206,7 +206,7 @@ export const News = () => {
             <p className={cn(EYEBROW, "m-0 mb-4")}>
               {pillLabel(featured)} · {featured.displayDate}
             </p>
-            <h2 className="font-display font-semibold tracking-[-0.035em] text-[clamp(36px,5.4vw,72px)] leading-[0.98] text-ink text-balance m-0 mb-5 hero-text-shadow">
+            <h2 className="font-display font-semibold tracking-[-0.035em] text-[clamp(32px,4.4vw,56px)] leading-[1.0] text-ink text-balance m-0 mb-5 hero-text-shadow">
               {featured.title}
             </h2>
             <p className={cn(SUBTITLE, "mx-auto my-0")}>{featured.summary}</p>
@@ -259,7 +259,7 @@ export const News = () => {
                 spine). Status groups carry a hairline rule above a centred
                 Fraunces heading; entries are borderless, separated by whitespace
                 + a single hairline divide. */}
-            <div className="mx-auto w-full max-w-[760px]">
+            <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px]">
               {groups.map((group, gi) => (
                 <section
                   key={group.status}
