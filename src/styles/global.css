@@ -308,19 +308,39 @@
   pointer-events: none;
 }
 
-/* Portrait / near-square viewports (phones, portrait tablets): the intro asset
-   is a 16:9 LANDSCAPE master. Forcing it to object-fit:cover a full 100dvh tall
-   box scales it ~3-4x and crops ~70-80% of the frame width — the reported "mega
-   zoomed in" look (worst on phones, fine only near-16:9 laptops/TV). Here we drop
-   the forced full-viewport height and let the intro BE the full 16:9 frame:
-   object-fit:cover on a 16:9 box shows the WHOLE frame with zero crop. The
-   cinematic title-card then flows straight into the hero below. Landscape phones
-   and >=16:9 screens keep the full-bleed 100dvh cover (this query doesn't match). */
-@media (max-aspect-ratio: 1/1) {
+/* Portrait / near-square viewports: the intro asset is a 16:9 LANDSCAPE master.
+   Forcing it to object-fit:cover a full 100dvh box scales it ~3-4x and crops
+   ~70-80% of the frame — the reported "mega zoomed in" look. But the strict
+   16:9 letterbox over-corrected: on a near-square window (~820x950) the film
+   shrank to a ~48%-tall strip ("the video is so small"). So we split by shape.
+
+   TRUE PHONES (very tall, aspect < 3/4 e.g. 390x844): keep the gentle letterbox
+   — height is the 16:9 frame height (56.25vw) plus a small floor so a modest
+   sliver of crop returns presence without re-triggering the mega-zoom. Capped at
+   62svh so it can't eat the viewport. Object-fit:cover then shows the whole-or-
+   nearly-whole frame.
+
+   NEAR-SQUARE / PORTRAIT TABLETS (aspect 3/4..1, e.g. 820x950, iPad portrait):
+   give the film real height — 72svh, capped at the 16:9 frame WIDTH (a 16:9 box
+   never grows taller than 56.25vw without cropping, and we WANT a touch of crop
+   here, so we cap at 100vw-derived height) so it reads cinematic, not as a thin
+   strip. Crop stays gentle (subject is biased to center 35%).
+
+   LANDSCAPE / >=16:9 screens (desktop ~1440): this query doesn't match — they
+   keep the full-bleed 100dvh cover. */
+@media (max-aspect-ratio: 1/1) and (min-aspect-ratio: 3/4) {
   .video-intro,
   .video-intro__stage {
     height: auto;
-    aspect-ratio: 16 / 9;
+    height: min(72svh, 75vw);
+    max-height: 100dvh;
+  }
+}
+@media (max-aspect-ratio: 3/4) {
+  .video-intro,
+  .video-intro__stage {
+    height: auto;
+    height: min(62svh, max(56.25vw, 68vw));
     max-height: 100dvh;
   }
 }
