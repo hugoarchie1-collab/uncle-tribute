@@ -144,7 +144,7 @@ export const Collections = () => {
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10 text-center"
+          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10 text-center"
         >
           <p
             className={cn(EYEBROW, "m-0 mb-5")}
@@ -198,7 +198,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className="relative mx-auto max-w-[1400px] 2xl:max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
+              <div className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
                   <p
                     className={cn(EYEBROW, "m-0 mb-5")}
@@ -240,7 +240,7 @@ export const Collections = () => {
                         // orphan). min-w-0 lets the basis shrink below content on
                         // narrow viewports so a long title can never widen the row
                         // past the viewport.
-                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,520px)]"
+                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                         // Each tile drives its OWN whileInView (not the parent
                         // RevealStagger orchestration) with amount:0 so ANY sliver
                         // of visibility commits the reveal. This guarantees tall
@@ -321,7 +321,7 @@ export const Collections = () => {
                 {bundle && items.length > 1 && (
                   <Reveal
                     as="div"
-                    className="mt-12 md:mt-16 mx-auto max-w-[720px]"
+                    className="mt-12 md:mt-16 mx-auto max-w-[820px]"
                   >
                     <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
                       <p className={cn(EYEBROW, "m-0 mb-4")}>
@@ -330,7 +330,7 @@ export const Collections = () => {
                       <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,36px)] leading-[1.2] text-ink m-0 mb-3">
                         The complete {shortName}
                       </h3>
-                      <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted my-0 mb-2 max-w-[520px] mx-auto">
+                      <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted my-0 mb-2 max-w-[640px] mx-auto">
                         All {bundle.paintingIds.length} paintings at the Collector
                         edition (A2) — the collection entire, for one home.
                       </p>
@@ -369,9 +369,9 @@ export const Collections = () => {
             the basket holds one line of every painting. */}
         <Reveal
           as="section"
-          className="relative mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
         >
-          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-10 md:px-14 py-10 md:py-14 text-center">
+          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 py-14 md:py-20 lg:py-24 text-center">
             <p className={cn(EYEBROW, "m-0 mb-5")}>
               The complete catalogue
             </p>

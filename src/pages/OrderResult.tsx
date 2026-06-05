@@ -32,7 +32,7 @@ export const OrderSuccess = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order confirmed
@@ -86,7 +86,7 @@ export const OrderCancel = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-5")}>
             Order cancelled

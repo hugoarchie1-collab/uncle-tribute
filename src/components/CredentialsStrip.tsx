@@ -9,7 +9,7 @@ import { cn } from "../lib/cn";
  * wordmarks, no external logos, never "as seen in". Reusable across pages.
  */
 export const CredentialsStrip = () => (
-  <section className="mx-auto max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
+  <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:py-16">
     <Reveal className="text-center">
       <p className={cn(EYEBROW_MUTED, "m-0 mb-6")}>Exhibited &amp; commissioned</p>
       <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 font-display text-[15px] md:text-[16px] tracking-[0.01em] text-ink/70">

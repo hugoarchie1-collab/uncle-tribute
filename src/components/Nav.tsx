@@ -172,7 +172,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             : "py-5 bg-transparent border-b border-transparent",
       )}
     >
-      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-3 sm:gap-6">
+      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"

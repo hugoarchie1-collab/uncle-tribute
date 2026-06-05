@@ -48,7 +48,7 @@ import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } f
 const BODY =
   "font-sans font-normal text-[16px] md:text-[17px] min-[2560px]:text-[19px] leading-[1.7] text-ink-muted m-0";
 
-const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12";
+const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ─── WordReveal ────────────────────────────────────────────────────────────
 // Stagger every word into place with a blur-clear. Used on the one cinematic
@@ -624,7 +624,7 @@ export const About = () => {
 
         {/* 11 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
             tribute, opened by Stephen's own "everything is connected" words. */}
-        <section className="mx-auto max-w-[820px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
+        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>

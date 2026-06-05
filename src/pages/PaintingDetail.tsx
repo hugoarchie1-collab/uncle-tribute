@@ -1002,7 +1002,7 @@ const BuyBox = ({
  * desktop; flows directly after the buy box on mobile.
  */
 const Story = ({ painting }: { painting: Painting }) => (
-  <div className="max-w-[720px] mx-auto">
+  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto">
     {painting.artistQuote && (
       <Reveal as="div">
         <blockquote className="m-0 pl-6 border-l-2 border-line py-2">
@@ -1438,7 +1438,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1240px] 2xl:max-w-[1480px] px-4 md:px-8 lg:px-12 pt-6 pb-20 md:pb-28">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-24 pb-20 md:pb-28">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
@@ -1563,7 +1563,7 @@ export const PaintingDetail = () => {
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
           <div className="mt-10 md:mt-20">
-            <Separator className="bg-line mb-10 md:mb-14 max-w-[720px] mx-auto" />
+            <Separator className="bg-line mb-10 md:mb-14 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

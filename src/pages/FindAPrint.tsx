@@ -69,10 +69,10 @@ export const FindAPrint = () => {
         url="/for-you"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        <Reveal as="header" className="max-w-[760px] mx-auto text-center mb-9 md:mb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
+        <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] mx-auto text-center mb-9 md:mb-12">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Where to begin</p>
-          <h1 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6 hero-text-shadow")}>
+          <h1 className={cn(TITLE, "mx-auto my-0 mb-6 hero-text-shadow")}>
             Begin with a colour.
           </h1>
           <p className={cn(SUBTITLE, "mx-auto my-0")}>
@@ -93,7 +93,7 @@ export const FindAPrint = () => {
         </Reveal>
 
         {/* Colour swatches */}
-        <Reveal as="div" className="flex flex-wrap items-center justify-center gap-2.5 md:gap-3 mb-5">
+        <Reveal as="div" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 md:gap-4 mb-5">
           {COLOUR_FAMILIES.map((f) => {
             const on = active.has(f.key);
             return (
@@ -148,7 +148,7 @@ export const FindAPrint = () => {
           {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,520px)]"
+              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">

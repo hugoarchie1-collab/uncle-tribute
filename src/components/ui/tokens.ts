@@ -27,7 +27,7 @@ export const TITLE =
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token,
  *  17px / 1.8, capped + centered for the centered header (add mx-auto). */
 export const SUBTITLE =
-  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted max-w-[680px]";
+  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted max-w-[680px] 2xl:max-w-[760px] 3xl:max-w-[860px]";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */

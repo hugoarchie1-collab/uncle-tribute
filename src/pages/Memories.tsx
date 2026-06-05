@@ -385,7 +385,7 @@ const ShareMemoryModal = ({
 
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[600px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[680px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -627,7 +627,7 @@ export const Memories = () => {
       <main className="relative z-10 flex-1">
         {/* 1 · HEADER — the dignified opening. Eyebrow + display title + the
             "names he answered to" intro + a gentle first invitation. */}
-        <header className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
+        <header className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
           <Reveal as="div" className="max-w-[42ch]">
             <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
               Book of Memories
@@ -654,7 +654,7 @@ export const Memories = () => {
             into "feed". */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
+          className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
         >
           {/* composer — the "add a comment" box (X / YouTube idiom): a generic
               avatar + a rounded input placeholder that opens the share modal. It

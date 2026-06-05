@@ -155,7 +155,7 @@ export const FAQ = () => {
         url="/faq"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
         <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Before you buy</p>
           <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}>What people ask.</h1>

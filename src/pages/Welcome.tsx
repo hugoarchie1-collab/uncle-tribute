@@ -171,7 +171,7 @@ export const Welcome = () => {
 
             {/* Text column — vertically centred in a tall cinematic frame. */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[56svh] md:pb-0"
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[56svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
             >
               <Reveal as="div" className="w-full md:max-w-[48%] lg:max-w-[46%]">
@@ -232,8 +232,8 @@ export const Welcome = () => {
               every section (no opaque card — gotcha); hero-text-shadow for
               legibility; Fraunces opsz held ≤48 (finale invariant); whole-
               element Reveals only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 lg:py-32">
-            <Reveal as="header" className="max-w-[820px] mb-8 md:mb-10">
+          <section className="relative isolate mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 lg:py-32">
+            <Reveal as="header" className="mx-auto max-w-[820px] mb-8 md:mb-10">
               <p className={cn(EYEBROW, "m-0 mb-6")}>A reminder</p>
               <p className="font-display font-normal tracking-[-0.012em] text-[clamp(24px,3vw,42px)] leading-[1.28] text-ink m-0 text-balance hero-text-shadow">
                 {WELCOME.reminderLong[0]}
@@ -242,7 +242,7 @@ export const Welcome = () => {
 
             {/* P2–P4 — one flowing reading column (Hugo: keep the passage together
                 as the "first part", not split into stiff columns). */}
-            <Reveal as="div" className="max-w-[820px] flex flex-col gap-6 md:gap-7">
+            <Reveal as="div" className="mx-auto max-w-[820px] flex flex-col gap-6 md:gap-7">
               {WELCOME.reminderLong.slice(1, 4).map((para) => (
                 <p
                   key={para.slice(0, 24)}
@@ -260,7 +260,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1}>
               <div aria-hidden="true" className="mt-12 md:mt-16 mb-8 md:mb-10 h-px w-12 bg-ink/15" />
-              <p className="m-0 max-w-[960px] hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[820px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
                   style={{
@@ -322,7 +322,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[54svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[54svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-8 md:hidden max-w-[460px]">
@@ -352,7 +352,7 @@ export const Welcome = () => {
           {/* 4 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
               wide screens (lg+) so a 3:2 frame doesn't fill an entire 4K
               viewport top-to-bottom (Hugo: "some images are way too big"). */}
-          <Reveal as="figure" className="m-0 w-full py-10 md:py-16 lg:py-20">
+          <Reveal as="figure" className="m-0 w-full py-12 md:py-16 lg:py-20">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
@@ -364,7 +364,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_1000px] mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_1000px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 From the hand
@@ -380,7 +380,7 @@ export const Welcome = () => {
                 leftover tile(s) centre on the last row at every breakpoint
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
-            <Reveal as="div" className="flex flex-wrap justify-center gap-5 md:gap-7 mb-12 md:mb-14">
+            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-6 mb-12 md:mb-14">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
@@ -392,7 +392,7 @@ export const Welcome = () => {
                     // detail page (?c=…) so clicking e.g. the Blood Moon Red
                     // peacock lands on that exact colourway, not the original.
                     to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`}
-                    className="group block min-w-0 flex-[0_1_clamp(132px,30%,420px)]"
+                    className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                       <AssetImage
@@ -458,7 +458,7 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-14 lg:px-20 py-12 md:py-16 lg:py-20">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-14 md:py-20 lg:py-24">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
@@ -468,7 +468,7 @@ export const Welcome = () => {
                 </p>
               </Reveal>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[440px] xl:max-w-[500px] mx-auto md:mx-0">
+                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:ml-auto">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
                     alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -514,7 +514,7 @@ export const Welcome = () => {
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
@@ -524,7 +524,7 @@ export const Welcome = () => {
               </h2>
             </Reveal>
 
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 list-none p-0 mb-10 md:mb-14">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 list-none p-0 mb-10 md:mb-14">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -560,7 +560,7 @@ export const Welcome = () => {
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
               gallery object instead of a stretched full-bleed. */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_800px] mx-auto max-w-[1280px] 2xl:max-w-[1480px] 3xl:max-w-[1720px] px-4 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_800px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
@@ -578,7 +578,7 @@ export const Welcome = () => {
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0">
+              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:ml-auto">
                 <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
                   <AssetImage
                     src="/img/welcome/05-arista-sunstar.jpg"
@@ -614,40 +614,20 @@ export const Welcome = () => {
               fills the viewport (min-h-100svh) with the content centered;
               isolate + overflow-hidden retained (gotcha #8). */}
           <section
-            className="relative isolate flex min-h-[72svh] md:min-h-[80svh] w-full items-center overflow-hidden py-[10vh] md:py-[12vh]"
+            className="relative isolate flex min-h-[72svh] md:min-h-[80svh] w-full items-center overflow-hidden py-16 md:py-24 lg:py-28"
             aria-label="Sacred Geometry"
           >
 
-            {/* Earth limb — restored + recoloured to ROSE 2026-06-04 (Hugo:
-                "I want the earth back" AND "all pink, no green"). A soft rose
-                horizon curve pinned to the bottom, edge-dissolved by a radial
-                mask so it reads as atmosphere, never a hard block. All pink, no
-                blue/green. NO dark scrim now (Hugo: "no darker shades in
-                blocks") — the type stays legible on the rose sky via its own
-                text-shadow alone. Above the pink backdrop (z-0), below the
-                content (z-10). */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
-            >
-              <img
-                src={asset("/img/scenes/earth-limb.webp")}
-                alt=""
-                className="w-full max-w-[1700px] h-auto select-none"
-                style={{
-                  opacity: 0.72,
-                  maskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 46%, rgba(0,0,0,0.3) 70%, transparent 90%)",
-                  WebkitMaskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 46%, rgba(0,0,0,0.3) 70%, transparent 90%)",
-                }}
-              />
-            </div>
+            {/* Earth REMOVED 2026-06-05 (Hugo: the realistic blue Earth on the
+                rose sky clashed badly). The finale is now JUST the clean pink
+                backdrop + the statement — consistent with every other section.
+                A real blue/green planet cannot sit on a pink sky without
+                fighting it, so the Earth is gone rather than tinted. */}
 
             {/* Content column — centered flow. Layer order: pink backdrop
-                (z-0, the shared fixed peacock layer) → rose Earth (z-1) →
+                (z-0, the shared fixed peacock layer) →
                 content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
-            <div className="relative z-10 mx-auto w-full max-w-[1340px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-6 text-center py-[4vh] md:py-[6vh]">
+            <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-8 md:py-12">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean
