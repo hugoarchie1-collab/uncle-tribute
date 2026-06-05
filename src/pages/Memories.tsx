@@ -187,7 +187,7 @@ const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: b
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="mt-1.5 font-sans text-[clamp(13px,1.5vw,13.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
+            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(13px,1.5vw,13.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
             {expanded ? "Show less" : "Read more"}
           </button>

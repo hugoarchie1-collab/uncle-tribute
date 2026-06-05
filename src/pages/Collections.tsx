@@ -1,4 +1,4 @@
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -47,7 +47,28 @@ const ScrollBackdrop = ({
     [0, 1, 1, 0],
   );
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.0]);
+  // Scroll-tied scale REMOVED (perf): re-sampling a full-viewport bg-cover
+  // bitmap at sub-pixel scale every frame, across 3 concurrent layers, was the
+  // costliest scroll transform here — for an imperceptible 1.05→1.0 drift behind
+  // the dark scrim. y + opacity only now.
+
+  // Promote to a GPU layer ONLY while this collection is in view, so the two
+  // off-screen collections don't each hold a full-viewport compositing layer
+  // alive for the whole page lifetime (texture memory → mobile jank).
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "20% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [sectionRef]);
 
   // Reduced-motion: drop the parallax/scale entirely, hold the backdrop at a
   // calm static opacity, and release the GPU layer (will-change:auto) so we
@@ -71,14 +92,11 @@ const ScrollBackdrop = ({
       style={{
         opacity,
         y,
-        scale,
         backgroundImage: `url("${photoUrl}")`,
-        // Promote each backdrop to its own GPU layer so the scroll-driven
-        // opacity/y/scale composite cleanly (GPU transform + opacity only —
-        // no background-attachment:fixed, no layout-triggering props) instead
-        // of repainting the large background image every frame as the user
-        // scrolls past.
-        willChange: "transform, opacity",
+        // GPU-promote ONLY the in-view backdrop (gated above) so the scroll-
+        // driven y/opacity composite cleanly without keeping promoted full-
+        // viewport layers alive for the 2 off-screen collections.
+        willChange: inView ? "transform, opacity" : "auto",
       }}
       className="absolute inset-0 bg-cover bg-center"
       aria-hidden="true"

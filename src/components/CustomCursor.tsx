@@ -44,12 +44,41 @@ export const CustomCursor = () => {
     const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const pos = { ...target };
     let frame = 0;
+    let running = false;
+
+    // The flower locks tightly to the pointer (precise, connected — a trailing
+    // cursor reads as "laggy"). SELF-SUSPENDING: the instant it reaches the
+    // pointer it STOPS the rAF loop instead of re-writing an identical transform
+    // 60–120×/sec forever — that perpetual always-on main-thread style-write was
+    // a core contributor to the whole site feeling laggy. It restarts on move.
+    const tick = () => {
+      pos.x += (target.x - pos.x) * 0.9;
+      pos.y += (target.y - pos.y) * 0.9;
+      const atRest =
+        Math.abs(target.x - pos.x) < 0.1 && Math.abs(target.y - pos.y) < 0.1;
+      if (atRest) {
+        pos.x = target.x;
+        pos.y = target.y;
+      }
+      flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
+      if (atRest) {
+        running = false;
+        return; // idle to ZERO cost until the next pointer move
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    const startLoop = () => {
+      if (running) return;
+      running = true;
+      frame = requestAnimationFrame(tick);
+    };
 
     const onMove = (e: PointerEvent) => {
       target.x = e.clientX;
       target.y = e.clientY;
       const over = !!(e.target as Element | null)?.closest?.(INTERACTIVE);
       flower.classList.toggle("cc--active", over);
+      startLoop();
     };
     const show = () => flower.classList.remove("cc--gone");
     const hide = () => flower.classList.add("cc--gone");
@@ -58,15 +87,8 @@ export const CustomCursor = () => {
     document.addEventListener("pointerenter", show);
     document.addEventListener("pointerleave", hide);
 
-    // The flower locks tightly to the pointer (precise, connected — a trailing
-    // cursor is exactly what reads as "laggy").
-    const tick = () => {
-      pos.x += (target.x - pos.x) * 0.9;
-      pos.y += (target.y - pos.y) * 0.9;
-      flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
+    // Paint the initial (centered) position once — no perpetual loop on mount.
+    flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
 
     return () => {
       cancelAnimationFrame(frame);

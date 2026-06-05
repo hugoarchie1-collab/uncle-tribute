@@ -50,7 +50,7 @@ const listeners = new Set<() => void>();
 const isBrowser = typeof window !== "undefined";
 
 const isTierId = (v: unknown): v is PrintTier["id"] =>
-  v === "atelier" || v === "collector" || v === "atelier-grande" || v === "heirloom";
+  v === "atelier" || v === "collector" || v === "atelier-grande" || v === "heirloom" || v === "studio";
 
 const readFromStorage = (): BasketItem[] => {
   if (!isBrowser) return [];

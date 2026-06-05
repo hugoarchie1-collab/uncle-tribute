@@ -691,7 +691,7 @@ const BuyBox = ({
           {/* Monochrome (#7): the collection tag is a quiet outlined chip in ink
               — no accent/orange. Distinguished from the title by size + tracking,
               not colour. */}
-          <Badge variant="outline">{collection.title}</Badge>
+          <Badge variant="outline">{collection.title.split(" — ")[0]}</Badge>
         </div>
       )}
       <h1 className={cn(TITLE, "m-0 mb-5")}>

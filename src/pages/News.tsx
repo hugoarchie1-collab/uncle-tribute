@@ -143,8 +143,11 @@ export const News = () => {
   );
   const featured = useMemo(() => getFeaturedEntry(NEWS), []); // hero always from full set
   const groups = useMemo(
-    () => groupByStatus(filtered, active === "all" ? featured?.id : undefined),
-    [filtered, featured, active],
+    // Always exclude the featured entry from the feed — it already renders as
+    // the hero — so a type-filter that matches the featured release can't make
+    // it appear twice (hero + feed row).
+    () => groupByStatus(filtered, featured?.id),
+    [filtered, featured],
   );
   // Until the family adds real entries to src/data/news.ts, the page shows a
   // dignified, CENTRED "being prepared" state — never invented releases/dates.

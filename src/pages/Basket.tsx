@@ -313,7 +313,7 @@ export const Basket = () => {
                           only when at least one add-on is selected; the plain
                           print line above is already complete on its own. */}
                       {hasAddOns && (
-                        <div className="mt-4 ml-0 sm:ml-[132px] flex flex-col gap-1.5">
+                        <div className="mt-4 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
                               {line.tier.label} print ({line.tier.size.split(" ")[0]})

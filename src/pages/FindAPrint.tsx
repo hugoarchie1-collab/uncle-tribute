@@ -128,7 +128,7 @@ export const FindAPrint = () => {
             <button
               type="button"
               onClick={() => setActive(new Set())}
-              className={cn(BTN_SECONDARY, "px-4 py-2 text-[10px]")}
+              className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
             >
               Show all {PAINTINGS.length}
             </button>

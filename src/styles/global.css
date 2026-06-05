@@ -150,8 +150,10 @@
        reads back the page behind it. Promote to its own GPU layer so it's
        rasterised once and simply composited over the scrolling page. */
     isolation: isolate;
+    /* translateZ(0) already rasterises this fixed overlay into its own layer
+       once; it never animates after mount, so will-change would just reserve a
+       layer permanently for no imminent change (perf). */
     transform: translateZ(0);
-    will-change: transform;
   }
   /* On touch / small viewports (lowest-power devices) drop the grain entirely —
      it's a subtle texture, not load-bearing, and one fewer full-viewport
