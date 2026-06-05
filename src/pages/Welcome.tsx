@@ -101,14 +101,16 @@ export const Welcome = () => {
               }}
             />
           ))}
-          {/* Shared scrim — identical to Collections.tsx so the backdrop
-              shows through at the same visibility level. */}
+          {/* Backdrop legibility veil — kept LIGHT (0.34→0.08) so the rose/
+              peacock colourways read bright and true (Hugo: "all pink, not
+              dark"); a soft centre veil still grounds the cream type. Lighter
+              than Collections.tsx on purpose — the home is the pink showcase. */}
           <div
             aria-hidden="true"
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+                "radial-gradient(82% 72% at 50% 38%, rgba(10,9,8,0.34) 0%, rgba(10,9,8,0.08) 100%)",
             }}
           />
         </div>
