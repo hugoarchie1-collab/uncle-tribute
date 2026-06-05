@@ -421,18 +421,17 @@
      always sits topmost; it's pointer-events:none, so being highest is safe. */
   z-index: 250;
   pointer-events: none;
-  width: 22px;
-  height: 22px;
-  /* The cream emblem SVG carries its own fill (#ede6d6), so rendering it as a
-     background-image shows the white/cream flower directly — NOT a mask, so it
-     never hits the WebKit currentColor-in-mask transparency gotcha. */
+  width: 34px;
+  height: 34px;
+  /* Render the emblem SVG as a background-image (NOT a mask — dodges the WebKit
+     currentColor-in-mask transparency gotcha). brightness(0) invert(1) forces
+     it to pure WHITE regardless of the SVG's own fill, so the cursor is always
+     a crisp white flower; the drop-shadow keeps it legible on pale rose/pink. */
   background-image: url("/logo/logo-emblem.svg");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  /* A whisper of shadow keeps the flower legible on the lighter rose / pink
-     backdrops as well as the dark sections. */
-  filter: drop-shadow(0 1px 3px rgba(10, 9, 8, 0.55));
+  filter: brightness(0) invert(1) drop-shadow(0 1px 4px rgba(10, 9, 8, 0.65));
   will-change: transform;
   transition:
     width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
@@ -441,8 +440,8 @@
 }
 /* Blooms a little larger over anything interactive — the one cursor state. */
 .cc-flower.cc--active {
-  width: 32px;
-  height: 32px;
+  width: 46px;
+  height: 46px;
 }
 .cc-flower.cc--gone {
   opacity: 0 !important;

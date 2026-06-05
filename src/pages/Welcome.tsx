@@ -364,7 +364,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_1000px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 From the hand
@@ -457,7 +457,7 @@ export const Welcome = () => {
               a translucent dark fill that lets the blurred mandala glow
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-14 md:py-20 lg:py-24">
               <Reveal as="div" className="text-center mb-10 md:mb-14">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
@@ -468,7 +468,7 @@ export const Welcome = () => {
                 </p>
               </Reveal>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:ml-auto">
+                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
                     alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -514,7 +514,7 @@ export const Welcome = () => {
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_900px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <Reveal as="div" className="text-center mb-10 md:mb-12">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
@@ -560,7 +560,7 @@ export const Welcome = () => {
               contained inside a dark mat + ring frame because the source
               photograph is low-res, and the frame lifts it into a
               gallery object instead of a stretched full-bleed. */}
-          <section className="[content-visibility:auto] [contain-intrinsic-size:1px_800px] mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-14 md:py-20 lg:py-24">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-7">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
@@ -578,7 +578,7 @@ export const Welcome = () => {
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:ml-auto">
+              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0">
                 <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
                   <AssetImage
                     src="/img/welcome/05-arista-sunstar.jpg"
