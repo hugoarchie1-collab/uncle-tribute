@@ -138,13 +138,17 @@ export const Welcome = () => {
               inner edge on the left. Landscape composition preserved
               (object-cover center on a wide box — only the sacrificial outer
               margins trim). Stacks to text-then-image below md. */}
-          <section className="relative isolate w-full overflow-hidden">
+          {/* pt opens a clean band of the backdrop between the intro film and
+              the hero so the video never hard-butts the first image (Hugo).
+              svh-based so it scales with the viewport; modest on phones (where
+              the film is a short 16:9 card) and a clear break on desktop. */}
+          <section className="relative isolate w-full overflow-hidden pt-[12svh] md:pt-[15svh]">
             {/* DESKTOP/TABLET — image bleeding to the right edge. Reined in
                 2026-06-03 (Hugo: "images way too big, take up the entire
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-0 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
+            <figure className="m-0 hidden md:block absolute top-[54%] right-0 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
               <ImageReveal
                 src="/img/welcome/01-painting-wild-rose.jpg"
                 alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -204,7 +208,7 @@ export const Welcome = () => {
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="inline-flex w-fit items-center text-ink ring-1 ring-ink/30 px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-300 hover:ring-accent hover:text-accent whitespace-nowrap"
+                    className="inline-flex w-fit items-center justify-center text-ink border border-ink/35 px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     Our story
@@ -492,7 +496,14 @@ export const Welcome = () => {
                   <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink m-0">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
-                  <ul className="grid grid-cols-2 gap-x-6 gap-y-5 list-none p-0 mt-2">
+                  {/* Materials grid — items-start so each cell sizes to its OWN
+                      content instead of stretching to its row-mate's height (the
+                      stretch was what left the awkward empty band below the
+                      shorter value in a row, e.g. under "Edition" beside the
+                      taller "Time" — Hugo's "gap below to the left"). A hairline
+                      top border + even pt/pb on every cell gives one consistent
+                      row rhythm so the labels read as a clean aligned ledger. */}
+                  <ul className="grid grid-cols-2 gap-x-6 gap-y-0 list-none p-0 mt-2 items-start">
                     {/* Provenance-card hierarchy: Time + Edition lead as
                         bold-italic display lines (the headline facts a
                         collector wants), then the supporting material spec
@@ -505,12 +516,12 @@ export const Welcome = () => {
                       ["Tools", "Compass · rule · brush", false],
                       ["Pigment", "Hand-pressed oils + pigment inks", false],
                     ].map(([label, value, lead]) => (
-                      <li key={label as string} className="m-0">
+                      <li key={label as string} className="m-0 py-4 border-t border-ink/10">
                         <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
                         {lead ? (
                           <p className="font-display font-bold italic tracking-[-0.01em] text-[16px] md:text-[18px] leading-[1.35] text-ink m-0">{value}</p>
                         ) : (
-                          <p className="font-sans font-normal text-[15px] leading-[1.5] text-ink m-0">{value}</p>
+                          <p className="font-sans font-normal text-[15px] leading-[1.35] text-ink m-0">{value}</p>
                         )}
                       </li>
                     ))}
@@ -586,15 +597,17 @@ export const Welcome = () => {
                 </p>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0">
-                <div className="bg-[rgba(20,18,15,0.92)] p-3 md:p-4 ring-1 ring-white/10 shadow-[0_28px_70px_rgba(0,0,0,0.6)]">
-                  <AssetImage
-                    src="/img/welcome/05-arista-sunstar.jpg"
-                    alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-                    loading="lazy"
-                    decoding="async"
-                    className="block w-full h-auto"
-                  />
-                </div>
+                {/* Feathered edge (Hugo): the archive photo dissolves into the
+                    page like every other editorial image, instead of sitting in
+                    a hard dark mat rectangle. .soft-edge-img mirrors the ~28px
+                    pixel feather used by the ImageReveal photos. */}
+                <AssetImage
+                  src="/img/welcome/05-arista-sunstar.jpg"
+                  alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
+                  loading="lazy"
+                  decoding="async"
+                  className="soft-edge-img block w-full h-auto"
+                />
                 <figcaption className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-4 text-center">
                   Farmacy · Notting Hill · London
                 </figcaption>
@@ -620,8 +633,14 @@ export const Welcome = () => {
               invariants in gotcha #7). Stephen's words stay verbatim. Section
               fills the viewport (min-h-100svh) with the content centered;
               isolate + overflow-hidden retained (gotcha #8). */}
+          {/* min-h trimmed (was 72/80svh) + lighter BOTTOM pad than top: the
+              content is centred in the box, so an oversized min-h pushed a big
+              dead band BELOW the close before the catalogue (Hugo's gap). The
+              section still breathes (generous top pad + the Earth limb's curve)
+              but no longer leaves a void under it. The Earth limb stays pinned
+              to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[72svh] md:min-h-[80svh] w-full items-center overflow-hidden py-16 md:py-24 lg:py-28"
+            className="relative isolate flex min-h-[56svh] md:min-h-[62svh] w-full items-center overflow-hidden pt-16 pb-8 md:pt-24 md:pb-12 lg:pt-28 lg:pb-14"
             aria-label="Sacred Geometry"
           >
 

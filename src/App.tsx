@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
+import { BasketToast } from "./components/BasketToast";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -139,6 +140,11 @@ export default function App() {
               renders nothing (native cursor) on touch / reduced-motion. */}
           <CustomCursor />
           <AnimatedRoutes />
+          {/* Global "Added to basket" confirmation toast. Listens to the
+              basket store's add side-channel, so every add path triggers it
+              with no per-button wiring. Mounted once; sits at z-[120], below
+              modals (z-200) + cursor (z-250). */}
+          <BasketToast />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />

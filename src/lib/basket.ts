@@ -130,6 +130,50 @@ const emit = () => {
   for (const fn of listeners) fn();
 };
 
+// ---- Add-notification channel --------------------------------------------
+// A tiny, separate pub/sub purely for "an item was just added" UI feedback
+// (the on-screen "Added to basket" toast). Kept independent of the store's
+// own `listeners` so it can NEVER perturb useBasket / reconciliation /
+// cross-tab sync — those fire on every add/remove/clear, whereas this fires
+// ONLY on an add, carrying the line that was added. Subscribing here does not
+// subscribe to storage events; it's a pure notification side-channel.
+
+export interface AddNotification {
+  item: BasketItem;
+  /** Monotonic id so consumers can treat rapid successive adds as fresh
+   *  events even when the same painting/colourway is added twice. */
+  id: number;
+}
+
+const addListeners = new Set<(n: AddNotification) => void>();
+let lastAddNotification: AddNotification | null = null;
+let addSeq = 0;
+
+const emitAdd = (item: BasketItem) => {
+  lastAddNotification = { item, id: ++addSeq };
+  for (const fn of addListeners) fn(lastAddNotification);
+};
+
+/**
+ * Subscribe to "item added to basket" events. Returns an unsubscribe fn.
+ * Every add path (individual buttons, "Buy now", bundle adds) funnels
+ * through `addItem`, so subscribers receive them all with no per-button
+ * wiring. Purely for UI feedback — has no effect on the persisted basket.
+ */
+export const subscribeToAdds = (
+  callback: (n: AddNotification) => void,
+): (() => void) => {
+  addListeners.add(callback);
+  return () => {
+    addListeners.delete(callback);
+  };
+};
+
+/** The most recent add notification, or null if nothing has been added yet
+ *  this session. Lets a late-mounting consumer read the current value. */
+export const getLastAddNotification = (): AddNotification | null =>
+  lastAddNotification;
+
 const setCache = (next: BasketItem[]) => {
   cache = next;
   writeToStorage(next);
@@ -164,17 +208,23 @@ export const addItem = (
     const painting = getPaintingById(paintingId);
     if (painting) resolvedTierId = getAnchorTier(painting).id;
   }
-  setCache([
-    ...current,
-    {
-      paintingId,
-      colourwayName,
-      tierId: resolvedTierId,
-      ...(framing ? { framing: true } : {}),
-      ...(embellished ? { embellished: true } : {}),
-      addedAt: Date.now(),
-    },
-  ]);
+  const added: BasketItem = {
+    paintingId,
+    colourwayName,
+    tierId: resolvedTierId,
+    ...(framing ? { framing: true } : {}),
+    ...(embellished ? { embellished: true } : {}),
+    addedAt: Date.now(),
+  };
+  setCache([...current, added]);
+  // Fire the UI add-notification AFTER the store has settled + persisted, so
+  // a toast consumer reading the basket sees the new line. Wrapped so a
+  // misbehaving subscriber can never break the add itself.
+  try {
+    emitAdd(added);
+  } catch {
+    /* notification is best-effort — never let it disrupt the basket */
+  }
 };
 
 /**

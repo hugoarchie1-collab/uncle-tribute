@@ -38,8 +38,22 @@ export const Footer = () => (
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
       {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        <Logo size={28} wordmark wordmarkAlwaysOn wordmarkWrap />
-        <p className={cn(FOOTER_TEXT, "mt-5 max-w-[280px] text-ink-muted m-0")}>
+        {/* Emblem TOP-aligned to the first wordmark line (the wordmark wraps to
+            two lines in this narrow column, so the Logo's own `items-center`
+            would float the emblem against the block's midpoint — looks loose).
+            `![align-items:flex-start]` wins over Logo's plain non-important
+            `items-center` regardless of stylesheet order. A small `mt-px`
+            optically seats the mark on the cap-height of the first line. The
+            wordmark box is capped to the tribute measure (max-w-[280px]) so it
+            wraps cleanly and never reaches the "Site" column. */}
+        <Logo
+          size={28}
+          wordmark
+          wordmarkAlwaysOn
+          wordmarkWrap
+          className="![align-items:flex-start] max-w-[280px] [&>span]:mt-px"
+        />
+        <p className={cn(FOOTER_TEXT, "mt-6 max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
         <p className={cn(FOOTER_TEXT, "mt-3 max-w-[280px] text-ink-fade m-0")}>
