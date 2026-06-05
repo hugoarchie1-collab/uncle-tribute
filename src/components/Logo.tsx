@@ -6,13 +6,19 @@ interface LogoProps {
   /** Show the wordmark even on the smallest screens (used in the footer, where
    *  the brand column is full-width — avoids an orphaned emblem on phones). */
   wordmarkAlwaysOn?: boolean;
+  /** Let the wordmark WRAP within its container instead of forcing one line.
+   *  Used in the footer 4-col grid, where the column gets narrower than the
+   *  one-line wordmark below ~1400px and the nowrap text spilled into the
+   *  next ("SITE") column. With this on, the brand box fills its column and
+   *  the wordmark breaks cleanly to two lines rather than overlapping. */
+  wordmarkWrap?: boolean;
   className?: string;
 }
 
-export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, className }: LogoProps) => {
+export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wordmarkWrap = false, className }: LogoProps) => {
   const url = `${import.meta.env.BASE_URL}logo/logo-emblem.svg`;
   return (
-    <div className={`inline-flex items-center gap-3 leading-none ${className ?? ""}`}>
+    <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
         The emblem is a plain <img> of an SVG whose own `fill` is the cream ink
         (#ede6d6). Earlier this was a `bg-ink` <span> shaped by `mask-image` of
@@ -44,7 +50,7 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, cla
         }}
       />
       {wordmark && (
-        <span className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-[16px] font-normal leading-none tracking-tight text-white whitespace-nowrap [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]`}>
+        <span className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-[16px] font-normal tracking-tight text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "min-w-0 whitespace-normal leading-[1.2]" : "whitespace-nowrap leading-none"}`}>
           The Art of Stephen Meakin
         </span>
       )}

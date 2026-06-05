@@ -38,7 +38,7 @@ export const Footer = () => (
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
       {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        <Logo size={28} wordmark wordmarkAlwaysOn />
+        <Logo size={28} wordmark wordmarkAlwaysOn wordmarkWrap />
         <p className={cn(FOOTER_TEXT, "mt-5 max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>

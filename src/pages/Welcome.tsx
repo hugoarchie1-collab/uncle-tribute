@@ -625,11 +625,32 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* Earth REMOVED 2026-06-05 (Hugo: the realistic blue Earth on the
-                rose sky clashed badly). The finale is now JUST the clean pink
-                backdrop + the statement — consistent with every other section.
-                A real blue/green planet cannot sit on a pink sky without
-                fighting it, so the Earth is gone rather than tinted. */}
+            {/* Rose Earth limb — brought back 2026-06-05 (Hugo: "wheres the
+                earth"). The realistic BLUE Earth clashed on the pink sky (he
+                called it the worst thing he'd seen), so this is the rose-
+                recoloured limb (earth-limb-rose.webp, a luminance→rose remap,
+                zero blue/green) at a low opacity, edge-dissolved into the
+                Mary-Pink sky by a radial mask so it reads as a tonal horizon
+                curve, NOT a literal planet. Above the pink backdrop (z-0),
+                below the content (z-10). */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
+            >
+              <img
+                src={asset("/img/scenes/earth-limb-rose.webp")}
+                alt=""
+                className="w-full max-w-[1700px] h-auto select-none"
+                style={{
+                  opacity: 0.5,
+                  filter: "saturate(1.04)",
+                  maskImage:
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 40%, rgba(0,0,0,0.26) 66%, transparent 86%)",
+                  WebkitMaskImage:
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 40%, rgba(0,0,0,0.26) 66%, transparent 86%)",
+                }}
+              />
+            </div>
 
             {/* Content column — centered flow. Layer order: pink backdrop
                 (z-0, the shared fixed peacock layer) →
