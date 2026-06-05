@@ -30,7 +30,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v4.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v5.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
@@ -138,17 +138,18 @@ export const Welcome = () => {
               inner edge on the left. Landscape composition preserved
               (object-cover center on a wide box — only the sacrificial outer
               margins trim). Stacks to text-then-image below md. */}
-          {/* pt opens a clean band of the backdrop between the intro film and
-              the hero so the video never hard-butts the first image (Hugo).
-              svh-based so it scales with the viewport; modest on phones (where
-              the film is a short 16:9 card) and a clear break on desktop. */}
-          <section className="relative isolate w-full overflow-hidden pt-[12svh] md:pt-[15svh]">
+          {/* The intro film flows straight into the hero — the video's own 5%
+              bottom mask-feather IS the seam, so no extra top padding (the old
+              pt-[12svh] md:pt-[15svh] opened a dark dead band between the film
+              and the headline). A small uniform pad just keeps the type off the
+              film edge. */}
+          <section className="relative isolate w-full overflow-hidden pt-6 md:pt-0">
             {/* DESKTOP/TABLET — image bleeding to the right edge. Reined in
                 2026-06-03 (Hugo: "images way too big, take up the entire
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-[54%] right-0 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[68svh] w-[54%] lg:w-[52%]">
               <ImageReveal
                 src="/img/welcome/01-painting-wild-rose.jpg"
                 alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -180,12 +181,16 @@ export const Welcome = () => {
               />
             </figure>
 
-            {/* Text column — vertically centred in a tall cinematic frame. */}
+            {/* Text column — vertically centred against the photo so the
+                headline sits opposite the easel, not crammed into a short top
+                strip. min-h matches the photo's 68svh frame; items-center does
+                the centring (no more clamp top-pad — that was fighting the old
+                dark band). */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[56svh] md:pb-0"
-              style={{ paddingTop: "clamp(1.125rem, 5vw, 6rem)" }}
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[68svh] md:pb-0"
+              style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
-              <Reveal as="div" className="w-full md:max-w-[48%] lg:max-w-[46%]">
+              <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[48%]">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(46px,6.2vw,132px)] leading-[1.0]">
                     So here we are on Earth
@@ -310,7 +315,7 @@ export const Welcome = () => {
             {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge. Reined in
                 2026-06-03 (Hugo: images too big) to match the trimmed hero —
                 a contained framed portrait, not a full-viewport takeover. */}
-            <figure className="m-0 hidden md:block absolute inset-y-0 left-0 w-[44%] lg:w-[42%]">
+            <figure className="m-0 hidden md:block absolute top-0 bottom-0 left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
               <ImageReveal
                 src="/img/welcome/02-portrait-denim.jpg"
                 alt="Stephen Meakin"
@@ -363,7 +368,7 @@ export const Welcome = () => {
           {/* 4 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
               wide screens (lg+) so a 3:2 frame doesn't fill an entire 4K
               viewport top-to-bottom (Hugo: "some images are way too big"). */}
-          <Reveal as="figure" className="m-0 w-full">
+          <Reveal as="figure" className="m-0 w-full px-4 sm:px-6 md:px-8 lg:px-12">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
@@ -644,30 +649,24 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* Rose Earth limb — brought back 2026-06-05 (Hugo: "wheres the
-                earth"). The realistic BLUE Earth clashed on the pink sky (he
-                called it the worst thing he'd seen), so this is the rose-
-                recoloured limb (earth-limb-rose.webp, a luminance→rose remap,
-                zero blue/green) at a low opacity, edge-dissolved into the
-                Mary-Pink sky by a radial mask so it reads as a tonal horizon
-                curve, NOT a literal planet. Above the pink backdrop (z-0),
-                below the content (z-10). */}
+            {/* Rose Earth GLOW (not a photo) — Hugo: "stop fucking up the earth /
+                weird shaded boxes". The space photo's BLACK sky + dark planet
+                body were darkening the pink into rectangular shaded boxes.
+                earth-glow-rose-v2.webp is the same limb with the dark space +
+                body turned TRANSPARENT (alpha = luminance), so ONLY the bright
+                rose atmosphere rim composites onto the pink — a glowing horizon
+                arc with ZERO dark mass and ZERO boxes. Full-width so the arc
+                reaches both screen edges (no centred-strip box). Above the pink
+                backdrop (z-0), below the content (z-10). */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] overflow-hidden"
             >
               <img
-                src={asset("/img/scenes/earth-limb-rose.webp")}
+                src={asset("/img/scenes/earth-glow-rose-v2.webp")}
                 alt=""
-                className="w-full max-w-[1700px] h-auto select-none"
-                style={{
-                  opacity: 0.5,
-                  filter: "saturate(1.04)",
-                  maskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 40%, rgba(0,0,0,0.26) 66%, transparent 86%)",
-                  WebkitMaskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 40%, rgba(0,0,0,0.26) 66%, transparent 86%)",
-                }}
+                className="block w-full h-auto select-none"
+                style={{ opacity: 0.85 }}
               />
             </div>
 
