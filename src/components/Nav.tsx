@@ -19,8 +19,6 @@ const NAV_LINKS = [
 
 /** Estate meta secondary links — the quiet footer set (real routes only). */
 const SECONDARY_LINKS = [
-  { to: "/journal", label: "Journal" },
-  { to: "/photo-book", label: "Photo Book" },
   { to: "/faq", label: "FAQ" },
   { to: "/basket", label: "Basket" },
 ];

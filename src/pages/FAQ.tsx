@@ -148,7 +148,8 @@ const FAQS: QA[] = [
 export const FAQ = () => {
   return (
     <div className="relative min-h-screen flex flex-col">
-      <AmbientBackdrop opacity={0.4} />
+      {/* Home "Moroccan Purple" peacock colourway, blurred — matches the home backdrop. */}
+      <AmbientBackdrop src="/img/paintings/peacock-moroccan-purple-blur.webp" opacity={0.4} />
       <Seo
         title="Frequently asked"
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."

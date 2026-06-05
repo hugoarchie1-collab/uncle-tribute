@@ -622,6 +622,8 @@ export const Privacy = () => (
     lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
     sections={PRIVACY}
     updated={UPDATED}
+    // Home "Mary Pink" peacock colourway, blurred — matches the home backdrop.
+    backdrop="/img/paintings/peacock-mary-pink-blur-v2.webp"
   />
 );
 export const Terms = () => (
@@ -638,6 +640,8 @@ export const Returns = () => (
     lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
     sections={RETURNS}
     updated={UPDATED}
+    // Home "Blood Moon Red" peacock colourway, blurred — matches the home backdrop.
+    backdrop="/img/paintings/peacock-blood-moon-red-blur.webp"
   />
 );
 
@@ -646,18 +650,21 @@ const LegalPage = ({
   lead,
   sections,
   updated,
+  backdrop,
 }: {
   title: string;
   lead: string;
   sections: Section[];
   updated: string;
+  /** Optional per-page blurred backdrop. Falls back to the default peacock. */
+  backdrop?: string;
 }) => {
   // Strip HTML entities + the canonical trailing full stop for the tab title.
   const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
   usePageTitle(plainTitle);
   return (
     <div className="relative min-h-screen flex flex-col">
-      <AmbientBackdrop opacity={0.36} />
+      <AmbientBackdrop src={backdrop} opacity={0.36} />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
         <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
