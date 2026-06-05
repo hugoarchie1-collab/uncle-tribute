@@ -30,7 +30,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v3.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v4.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
@@ -181,10 +181,10 @@ export const Welcome = () => {
                   </span>
                 </h1>
 
-                <p className="font-sans font-normal text-[16px] sm:text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/80 m-0 mb-9 max-w-[560px]">
-                  {WELCOME.reminder}
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
+                {/* Hero is headline + CTAs only (Hugo: delete the top reminder
+                    line — the reminder lives once, in the "A reminder" section
+                    below). */}
+                <div className="mt-10 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
                     className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
@@ -615,47 +615,35 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* Earth limb — restored 2026-06-04 (Hugo: "I want the earth back").
-                A subtle blue horizon curve pinned to the bottom, edge-dissolved
-                into the rose sky by a radial mask so it reads as atmosphere, not
-                a hard block. Above the pink backdrop (z-0), below the scrim (z-2)
-                + content (z-10). */}
+            {/* Earth limb — restored + recoloured to ROSE 2026-06-04 (Hugo:
+                "I want the earth back" AND "all pink, no green"). A soft rose
+                horizon curve pinned to the bottom, edge-dissolved by a radial
+                mask so it reads as atmosphere, never a hard block. All pink, no
+                blue/green. NO dark scrim now (Hugo: "no darker shades in
+                blocks") — the type stays legible on the rose sky via its own
+                text-shadow alone. Above the pink backdrop (z-0), below the
+                content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] flex justify-center overflow-hidden"
             >
               <img
-                src={asset("/img/scenes/earth-limb.webp")}
+                src={asset("/img/scenes/earth-limb-rose.webp")}
                 alt=""
                 className="w-full max-w-[1700px] h-auto select-none"
                 style={{
-                  opacity: 0.55,
-                  filter: "brightness(0.98) saturate(1.05)",
+                  opacity: 0.5,
                   maskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 44%, rgba(0,0,0,0.3) 68%, transparent 88%)",
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 42%, rgba(0,0,0,0.28) 66%, transparent 86%)",
                   WebkitMaskImage:
-                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 44%, rgba(0,0,0,0.3) 68%, transparent 88%)",
+                    "radial-gradient(135% 150% at 50% 100%, #000 0%, #000 42%, rgba(0,0,0,0.28) 66%, transparent 86%)",
                 }}
               />
             </div>
 
-            {/* Soft local scrim — lifts the big cream statement off the rose
-                sky. Lightened + tightened 2026-06-04 (Hugo: "I don't want it
-                darkened") so it grounds the type without dimming the whole
-                section. Above the backdrop (z-0) + Earth (z-1), below the
-                content (z-10). */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 z-[2]"
-              style={{
-                background:
-                  "radial-gradient(72% 58% at 50% 42%, rgba(10,9,8,0.44) 0%, rgba(10,9,8,0.15) 60%, rgba(10,9,8,0) 100%)",
-              }}
-            />
-
             {/* Content column — centered flow. Layer order: pink backdrop
-                (z-0, the shared fixed peacock layer) → scrim (z-2) → content
-                (z-10). Whole-element Reveals (gotcha #2). */}
+                (z-0, the shared fixed peacock layer) → rose Earth (z-1) →
+                content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
             <div className="relative z-10 mx-auto w-full max-w-[1340px] px-6 text-center py-[4vh] md:py-[6vh]">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
@@ -722,12 +710,13 @@ export const Welcome = () => {
                   an invented near-quote. True Fraunces italic, opsz 24. */}
               <Reveal delay={0.22}>
                 <p
-                  className="font-display text-ink-muted text-balance m-0 mb-8"
+                  className="font-display text-ink text-balance m-0 mb-8"
                   style={{
                     fontStyle: "italic",
                     fontVariationSettings: '"opsz" 24, "wght" 400',
                     fontSize: "clamp(18px, 2.2vw, 22px)",
                     lineHeight: 1.5,
+                    textShadow: "0 1px 20px rgba(10,9,8,0.55)",
                   }}
                 >
                   &ldquo;I realised that everything is connected.&rdquo;
