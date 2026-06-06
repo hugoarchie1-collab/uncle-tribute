@@ -107,8 +107,9 @@ const TIERS: Record<TierId, TierDef> = {
     size: "A0 (84.1 × 118.9 cm)",
     pricePence: 175000,
     editionLabel: "Limited edition of 25",
-    // Hidden site-wide until Hugo confirms Point 101 A0 fulfilment.
-    available: false,
+    // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,750 charged
+    // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
+    available: true,
   },
   studio: {
     // Studio one-off — £2,450 unique hand-painted piece by Polly Wedge. No

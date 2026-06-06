@@ -617,7 +617,7 @@ export const Welcome = () => {
               gallery object instead of a stretched full-bleed. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
-              <Reveal as="div" className="md:col-span-7">
+              <Reveal as="div" className="md:col-span-6">
                 <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
                   Arista SunStar · 2016
                 </p>
@@ -633,7 +633,7 @@ export const Welcome = () => {
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0">
+              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[560px] md:max-w-none mx-auto md:mx-0">
                 {/* Feathered edge (Hugo): the archive photo dissolves into the
                     page like every other editorial image, instead of sitting in
                     a hard dark mat rectangle. .soft-edge-img mirrors the ~28px
@@ -677,7 +677,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[64svh] md:min-h-[72svh] w-full items-start overflow-hidden pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14"
+            className="relative isolate flex min-h-[58svh] md:min-h-[64svh] w-full items-start overflow-hidden pt-4 pb-10 md:pt-6 md:pb-12 lg:pt-8 lg:pb-14"
             aria-label="Sacred Geometry"
           >
 

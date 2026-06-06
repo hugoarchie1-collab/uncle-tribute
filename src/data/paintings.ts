@@ -203,9 +203,11 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "the edition will never be reopened",
     description:
       "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
-    // Hidden until Hugo confirms fulfilment capability + optional gold-leaf
-    // sourcing. Flip to `true` to expose the £1,750 SKU site-wide.
-    available: false,
+    // ENABLED 2026-06-06 — Hugo confirmed Point 101 can fulfil A0. The £1,750
+    // Heirloom SKU is now live site-wide (surfaces as the top size on
+    // PaintingDetail + in the Collections bundle size selector + as the ladder
+    // anchor). Charged price mirrored in api/checkout.ts TIERS["heirloom"].
+    available: true,
   },
   {
     // Studio — a singular, hand-painted one-off. NOT a print edition: Polly
