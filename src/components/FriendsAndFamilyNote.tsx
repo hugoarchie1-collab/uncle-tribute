@@ -90,7 +90,7 @@ export const FriendsAndFamilyWelcome = () => {
 
   return (
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-5 z-[120] flex justify-center px-5 sm:justify-end sm:px-6"
+      className="pointer-events-none fixed inset-x-0 bottom-5 z-[120] flex justify-end px-5 sm:px-6"
       role="status"
       aria-live="polite"
     >
