@@ -335,8 +335,12 @@ const renderOrderConfirmationHtml = (p: {
     coa: "Ships with a Certificate of Authenticity on estate letterhead",
     printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
   };
+  // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 — the
+  // add-on wording lives in several places). Lead time is "up to two weeks"
+  // (reduced from 4 weeks 2026-06-04); keep in sync with api/checkout.ts +
+  // PaintingDetail FINISH_LEAD_WEEKS.
   const EMBELLISH =
-    "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Allow 4 weeks.";
+    "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Allow up to two weeks.";
   const s = {
     page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
     shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,

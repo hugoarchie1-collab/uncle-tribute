@@ -537,8 +537,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           unit_amount: item.tier.embellishmentPricePence,
           product_data: {
             name: `Hand-finished by Polly Wedge — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 —
+            // the add-on label + wording lives in several places). Lead time is
+            // "up to two weeks" (reduced from 4 weeks 2026-06-04); keep this in
+            // sync with api/stripe-webhook.ts + PaintingDetail FINISH_LEAD_WEEKS.
             description:
-              "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow 4 weeks.",
+              "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow up to two weeks.",
           },
         },
       });

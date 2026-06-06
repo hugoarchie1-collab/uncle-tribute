@@ -8,10 +8,12 @@ import { AssetImage } from "../components/AssetImage";
 import {
   COLLECTIONS,
   PAINTINGS,
+  PRINT_TIERS,
   getLowestTierPricePence,
   getCollectionBundle,
   getCompleteCatalogueBundle,
   formatGBP,
+  type PrintTier,
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
@@ -104,6 +106,43 @@ const ScrollBackdrop = ({
   );
 };
 
+// -----------------------------------------------------------------------------
+// BUNDLE SIZE SELECTOR — which sizes a set may be taken in
+// -----------------------------------------------------------------------------
+//
+// The bundle deals (complete catalogue + per-collection sets) used to be
+// hard-wired to the A2 Collector anchor. They are now offered in EVERY editioned
+// size the catalogue sells, so the advertised £ tracks the size the buyer picks.
+//
+// HARD GUARD (money code, brief rule #3): only the three editioned sizes are
+// selectable — A3 Gallery (atelier) / A2 Collector (collector) / A1 Atelier
+// (atelier-grande). The A0 "heirloom" tier is NEVER a bundle size: it is
+// `available:false`, and getTierById would silently fall back to the A2 anchor,
+// which would advertise an A2 price under an A0 label (advertised != charged).
+// The `studio` one-off is likewise excluded. We derive the list from the
+// canonical PRINT_TIERS ladder — honouring each tier's own `available` flag —
+// then explicitly allowlist the three permitted ids so flipping `available:true`
+// on heirloom/studio elsewhere can NEVER leak them into this selector.
+const BUNDLE_TIER_IDS: PrintTier["id"][] = ["atelier", "collector", "atelier-grande"];
+
+// Short, dignified size labels for the toggle (e.g. "Gallery · A3"). Built from
+// the live ladder so the size string + price always come from the same source
+// of truth as the bundle maths — no hand-typed dimensions to drift.
+const BUNDLE_TIERS: PrintTier[] = BUNDLE_TIER_IDS
+  .map((id) => PRINT_TIERS.find((t) => t.id === id && t.available && !t.isOneOff))
+  .filter((t): t is PrintTier => Boolean(t));
+
+// The default bundle size — the A2 Collector anchor, preserving the prior
+// behaviour. Falls back to the first available bundle tier defensively.
+const DEFAULT_BUNDLE_TIER: PrintTier =
+  BUNDLE_TIERS.find((t) => t.id === "collector") ?? BUNDLE_TIERS[0];
+
+// "A2 (42 × 59.4 cm)" → "A2" for the compact toggle chip.
+const sizeCode = (tier: PrintTier): string => tier.size.split(" ")[0];
+// "Collector's Edition" → "Collector" for the compact toggle chip.
+const editionWord = (tier: PrintTier): string =>
+  tier.label.replace(/['’]s Edition$/, "").replace(/ Edition$/, "");
+
 export const Collections = () => {
   // One ref per collection section so each backdrop can track its own visibility
   const sectionRefs = [
@@ -112,13 +151,21 @@ export const Collections = () => {
     useRef<HTMLElement>(null),
   ];
 
-  // Flagship "complete catalogue" set — one A2 print of every painting at the
-  // deepest bundle (15%). Adding pushes every painting (original colourway,
-  // anchor tier) to the basket; the matching 15% is applied at checkout.
-  const catalogue = getCompleteCatalogueBundle();
+  // Page-level bundle SIZE — governs BOTH the complete-catalogue panel and every
+  // per-collection set card, so one toggle re-prices every set deal in step.
+  // Defaults to the A2 Collector anchor (prior behaviour). Only ever holds one
+  // of the three editioned sizes (see BUNDLE_TIERS guard) — never A0/studio.
+  const [bundleTier, setBundleTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+
+  // Flagship "complete catalogue" set — one print of every painting at the
+  // SELECTED size, at the deepest bundle (15%). The £ figures track the size;
+  // adding pushes every painting (original colourway, SELECTED tier) to the
+  // basket, so checkout's bundlePercentOff sees one line of every painting and
+  // applies the matching 15% — advertised == charged at this size.
+  const catalogue = getCompleteCatalogueBundle(bundleTier.id);
   const acquireCatalogue = () => {
     catalogue.items.forEach((it) =>
-      addItem(it.paintingId, it.colourwayName, "collector"),
+      addItem(it.paintingId, it.colourwayName, bundleTier.id),
     );
   };
 
@@ -189,24 +236,84 @@ export const Collections = () => {
           >
             Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
           </Link>
+
+          {/* BUNDLE SIZE — one page-level control that re-prices every set deal
+              (the per-collection cards + the complete-catalogue panel) in step.
+              Dignified register: "Offered as a set in", a quiet segmented
+              control in the brand palette — never a loud "CHOOSE SIZE" CTA.
+              Only the three editioned sizes appear (A0/studio are guarded out
+              in BUNDLE_TIERS), so the advertised £ always equals what checkout
+              charges at that size. */}
+          {BUNDLE_TIERS.length > 1 && (
+            <div className="mt-10">
+              <p
+                className={cn(EYEBROW, "m-0 mb-3")}
+                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+              >
+                Offered as a set in
+              </p>
+              <div
+                role="radiogroup"
+                aria-label="Choose the print size for the set deals"
+                className="inline-flex flex-wrap justify-center gap-1 p-1 bg-[rgba(10,9,8,0.72)] ring-1 ring-line"
+              >
+                {BUNDLE_TIERS.map((tier) => {
+                  const active = tier.id === bundleTier.id;
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => setBundleTier(tier)}
+                      className={cn(
+                        "px-4 sm:px-5 py-2.5 font-sans text-[12.5px] leading-none transition-colors duration-300",
+                        "focus:outline-none focus-visible:ring-1 focus-visible:ring-accent",
+                        active
+                          ? "bg-ink text-bg font-semibold"
+                          : "text-ink-muted hover:text-ink",
+                      )}
+                    >
+                      <span className="font-semibold tracking-[0.04em]">
+                        {sizeCode(tier)}
+                      </span>
+                      <span
+                        className={cn(
+                          "ml-2",
+                          active ? "text-bg/70" : "text-ink-muted/70",
+                        )}
+                      >
+                        {editionWord(tier)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </Reveal>
 
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
-          const bundle = getCollectionBundle(coll.id);
+          // Bundle priced at the page-selected SIZE — the £ figures track the
+          // toggle, the discount % (5% at 2 paintings / 10% at 3+) is
+          // size-independent and mirrors api/checkout.ts.
+          const bundle = getCollectionBundle(coll.id, bundleTier.id);
           // Short collection name for the CTA copy ("the complete Habundia"),
           // dropping the long subtitle after the em-dash.
           const shortName = coll.title.split(" — ")[0];
-          // Add every painting in the collection to the basket at the anchor
-          // (Collector A2) tier, preserving each painting's original
-          // colourway. basket.ts is the single source of truth for the store.
+          // Add every painting in the collection to the basket at the SELECTED
+          // tier, preserving each painting's original colourway. basket.ts is
+          // the single source of truth for the store. Pushing one line per
+          // painting at this tier is exactly what makes checkout's
+          // bundlePercentOff return the advertised % at this size.
           const acquireCollection = () => {
             items.forEach((p) => {
               const original =
                 p.colourways.find((c) => c.isOriginal && c.available) ??
                 p.colourways.find((c) => c.available) ??
                 p.colourways[0];
-              if (original) addItem(p.id, original.name, "collector");
+              if (original) addItem(p.id, original.name, bundleTier.id);
             });
           };
           return (
@@ -333,9 +440,11 @@ export const Collections = () => {
                     computed by getCollectionBundle to match exactly what the
                     checkout's bundle coupon applies for this collection's item
                     count — 5% at 2 paintings (Habundia), 10% at 3+ (Genesis,
-                    Born in the Sky) — so the number is always honest.
-                    Clicking adds every painting (anchor A2 tier) to the basket;
-                    the buyer reviews + completes on /basket. */}
+                    Born in the Sky) — so the number is always honest. The %
+                    is size-independent; the £ figures track the page-selected
+                    bundle size (bundleTier). Clicking adds every painting at
+                    that selected tier to the basket; the buyer reviews +
+                    completes on /basket. */}
                 {bundle && items.length > 1 && (
                   <Reveal
                     as="div"
@@ -349,8 +458,9 @@ export const Collections = () => {
                         The complete {shortName}
                       </h3>
                       <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.7] text-ink-muted my-0 mb-2 max-w-[640px] mx-auto">
-                        All {bundle.paintingIds.length} paintings at the Collector
-                        edition (A2) — the collection entire, for one home.
+                        All {bundle.paintingIds.length} paintings at the{" "}
+                        {editionWord(bundleTier)} edition ({sizeCode(bundleTier)})
+                        — the collection entire, for one home.
                       </p>
                       <p className="font-sans text-[13.5px] leading-[1.6] text-ink-muted m-0 mb-7">
                         <span className="font-semibold text-ink">
@@ -397,9 +507,10 @@ export const Collections = () => {
               His life's work, in one collection.
             </h2>
             <p className={cn(SUBTITLE, "max-w-[560px] mx-auto my-0 mb-6")}>
-              One estate-stamped Collector print (A2) of all{" "}
-              {catalogue.paintingCount} of Stephen's paintings: the entire,
-              finite body of his work, gathered for one home.
+              One estate-stamped {editionWord(bundleTier)} print (
+              {sizeCode(bundleTier)}) of all {catalogue.paintingCount} of
+              Stephen's paintings: the entire, finite body of his work, gathered
+              for one home.
             </p>
             <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-8">
               <span className="font-display font-semibold text-[22px] md:text-[26px] text-ink align-middle">
