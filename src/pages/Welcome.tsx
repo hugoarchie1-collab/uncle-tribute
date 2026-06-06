@@ -98,6 +98,11 @@ export const Welcome = () => {
                 // re-rasterise the fixed cover bitmap every scroll frame.
                 willChange: "opacity",
                 transform: "translateZ(0)",
+                // Darken + gently desaturate every backdrop so the bright,
+                // near-WHITE blotches in the blurred peacock images can never
+                // wash out the cream text (Hugo: "too much white, can't read
+                // the text"), while keeping each colourway's warm character.
+                filter: "brightness(0.74) saturate(1.06)",
               }}
             />
           ))}
@@ -112,7 +117,7 @@ export const Welcome = () => {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(95% 88% at 50% 40%, rgba(48,14,32,0.24) 0%, rgba(48,14,32,0.10) 58%, rgba(48,14,32,0.03) 100%)",
+                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.42) 0%, rgba(34,10,22,0.26) 55%, rgba(34,10,22,0.16) 100%)",
             }}
           />
           {/* Bottom + top grounding band — darkens the very top strip (under the
@@ -123,7 +128,7 @@ export const Welcome = () => {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(10,9,8,0.10) 0%, rgba(10,9,8,0) 22%, rgba(10,9,8,0) 72%, rgba(10,9,8,0.20) 100%)",
+                "linear-gradient(to bottom, rgba(10,9,8,0.36) 0%, rgba(10,9,8,0.05) 24%, rgba(10,9,8,0.05) 66%, rgba(10,9,8,0.46) 100%)",
             }}
           />
           {/* Mary-Pink darken — fades in ONLY over the final ~25% of scroll
@@ -137,7 +142,7 @@ export const Welcome = () => {
             style={{
               opacity: maryPinkOpacity,
               background:
-                "linear-gradient(to bottom, rgba(40,12,28,0.12) 0%, rgba(28,10,20,0.30) 100%)",
+                "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
             }}
           />
         </div>
@@ -672,7 +677,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[40svh] md:min-h-[44svh] w-full items-start overflow-hidden pt-2 pb-8 md:pt-3 md:pb-10 lg:pt-4 lg:pb-12"
+            className="relative isolate flex min-h-[52svh] md:min-h-[58svh] w-full items-center overflow-hidden pt-6 pb-10 md:pt-8 md:pb-12 lg:pt-10 lg:pb-14"
             aria-label="Sacred Geometry"
           >
 
@@ -706,17 +711,28 @@ export const Welcome = () => {
                 decoding="async"
                 className="block h-auto select-none"
                 style={{
-                  opacity: 1,
-                  width: "150%",
-                  marginLeft: "-25%",
+                  // DEAD-SIMPLE centred wide image: the FULL symmetric Earth
+                  // limb, never half-cut. width 124% with an equal negative
+                  // marginLeft of HALF the overshoot (-12%) mathematically
+                  // centres it (left edge -12%, right edge 112% → centre 50%);
+                  // height:auto keeps its natural aspect. NO objectFit / no
+                  // maxHeight — those were letterboxing it off-centre.
+                  display: "block",
+                  // maxWidth:none is ESSENTIAL — the global `img{max-width:100%}`
+                  // reset was clamping every width we set back to 100%, so the
+                  // negative marginLeft shoved the limb left and left a dead gap
+                  // on the RIGHT. With the clamp lifted, 124% + -12% truly
+                  // centres a slightly-overscanned limb that reaches BOTH edges.
+                  width: "124%",
+                  maxWidth: "none",
+                  marginLeft: "-12%",
                   height: "auto",
-                  maxHeight: "clamp(420px, 66svh, 820px)",
-                  objectFit: "contain",
-                  objectPosition: "bottom center",
+                  // Radial dissolve so the limb melts into the backdrop on every
+                  // edge (top + both sides) — a soft horizon, never a hard box.
                   WebkitMaskImage:
-                    "linear-gradient(to bottom, transparent 0%, #000 24%, #000 100%)",
+                    "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                   maskImage:
-                    "linear-gradient(to bottom, transparent 0%, #000 24%, #000 100%)",
+                    "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 }}
               />
             </div>
