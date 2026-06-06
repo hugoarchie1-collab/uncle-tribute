@@ -77,47 +77,18 @@ const BTN_SECONDARY =
  * ========================================================================== */
 
 /* =============================================================================
- * FRAMED-SHIPPING SURCHARGE — DISPLAY MIRROR of api/checkout.ts
+ * SHIPPING — FREE on everything (DISPLAY MIRROR of api/checkout.ts)
  * -----------------------------------------------------------------------------
- * DMCC (Digital Markets, Competition & Consumers Act 2024, Part 4) requires
- * that any unavoidable charge for the chosen configuration is shown UPFRONT, at
- * equal prominence, the MOMENT the buyer selects it — not first revealed at the
- * Stripe checkout. So the instant a frame is ticked we must state the framed-
- * shipping surcharge here on the product page.
- *
- * These figures MIRROR `buildShippingOptions` in api/checkout.ts (the server is
- * the source of truth — gotcha #9). If the surcharge basis changes there, change
- * it here too. Read directly from that function on 2026-05-31:
- *   UK base £15;  framed A2 +£15 / framed A1 +£25
- *   EU base £35;  framed surcharge DOUBLES vs UK
- *   WW base £60;  framed surcharge DOUBLES vs UK
- * Glazing is cast acrylic, so one shipping band per region (no "with glass" tier).
+ * FREE SHIPPING POLICY (2026-06-06): the estate absorbs ALL delivery cost into
+ * the ~90% print margin — every region (UK / Europe / Worldwide) ships FREE, for
+ * both unframed AND framed orders. So there is NO unavoidable delivery charge to
+ * disclose: `api/checkout.ts` `buildShippingOptions` now returns a £0 (free) rate
+ * per region, and the basket / product-page previews simply say "Free". The old
+ * framed-shipping surcharge — and the DMCC equal-prominence drip-pricing
+ * disclosure it required the moment a frame was ticked — is therefore GONE: a
+ * frame no longer adds any delivery cost, so there is nothing left to surface.
+ * Advertised £0 == charged £0 (mirror invariant, gotcha #9).
  * ========================================================================== */
-const SHIP_BASE_PENCE = { uk: 1500, eu: 3500, ww: 6000 } as const;
-/** Per-framed-item UK surcharge by tier (pence). EU/WW double this. A3/A0/Studio = 0. */
-const FRAMED_UK_SURCHARGE_PENCE: Partial<Record<PrintTier["id"], number>> = {
-  collector: 1500, // A2 framed +£15
-  "atelier-grande": 2500, // A1 framed +£25
-};
-
-/**
- * The framed-shipping totals (per region) for a SINGLE framed item of the given
- * tier — what the buyer will actually be charged for delivery when this one
- * framed print is in the basket. Mirrors api/checkout.ts buildShippingOptions.
- * Returns null when the tier carries no framed surcharge (A3/A0/Studio).
- */
-const framedShippingForTier = (
-  tierId: PrintTier["id"],
-): { ukPence: number; euPence: number; wwPence: number } | null => {
-  const ukSurcharge = FRAMED_UK_SURCHARGE_PENCE[tierId];
-  if (!ukSurcharge) return null;
-  const intlSurcharge = ukSurcharge * 2; // EU + WW double (api/checkout.ts)
-  return {
-    ukPence: SHIP_BASE_PENCE.uk + ukSurcharge,
-    euPence: SHIP_BASE_PENCE.eu + intlSurcharge,
-    wwPence: SHIP_BASE_PENCE.ww + intlSurcharge,
-  };
-};
 
 /* =============================================================================
  * ADD-ON LEAD TIMES — the longest selected add-on governs the stated wait.
@@ -605,11 +576,6 @@ const BuyBox = ({
     embellishActive ? FINISH_LEAD_WEEKS : 0,
   );
 
-  // Framed-shipping surcharge for THIS size — shown upfront the moment the
-  // frame is ticked (DMCC equal-prominence rule; figures mirror
-  // api/checkout.ts buildShippingOptions, see top of file).
-  const framedShipping = framedShippingForTier(selectedTier.id);
-
   // Complete colourway set — every available colourway of this painting at the
   // SELECTED size (gotcha #9 size-tiered deals: pass the selected tier id so the
   // advertised set price tracks the size the buyer is actually choosing). The
@@ -745,7 +711,7 @@ const BuyBox = ({
             the eyebrow is muted ink, the price is the display-serif figure — the
             jump in size/weight carries the hierarchy, not colour. */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Order a print</p>
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-6">
+        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-3">
           <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
             {formatGBP(selectedTier.pricePence).replace(".00", "")}
           </p>
@@ -753,6 +719,13 @@ const BuyBox = ({
             {selectedTier.size}
           </p>
         </div>
+
+        {/* Free shipping — advertised upfront beside the price. Mirrors the £0
+            (free) rate api/checkout.ts now charges in every region; framed or
+            unframed, nothing is added at checkout (mirror invariant, gotcha #9). */}
+        <p className={cn(EYEBROW_TIGHT, "m-0 mb-6")}>
+          Free delivery worldwide
+        </p>
 
         {/* Dimension chip — instant size reassurance, updates with the tier */}
         <div className="mb-6 -mt-2">
@@ -842,12 +815,12 @@ const BuyBox = ({
             The "Most collectors choose hand-framed" line is a QUIET lead to the
             eye, NOT a pre-selected box: both finishes stay OPT-IN (DMCC
             no-default-selection rule). Each option shows its price, its lead
-            time and a short description; the frame ALSO surfaces the framed-
-            shipping surcharge UPFRONT the moment it's ticked (DMCC equal-
-            prominence — figures mirror api/checkout.ts). Ticking either updates
-            the running total + stated lead time below. The selections flow to
-            addItem / Buy-now unchanged — only the placement + presentation
-            moved. */}
+            time and a short description. Delivery is FREE on everything (incl.
+            framed), so there is NO framed-shipping surcharge to disclose — a
+            frame only adds its own add-on price, nothing more. Ticking either
+            updates the running total + stated lead time below. The selections
+            flow to addItem / Buy-now unchanged — only the placement +
+            presentation moved. */}
         {showAddOns && (
           <fieldset className="border-0 p-0 m-0 mt-8 ring-1 ring-line px-4 py-4 sm:px-5 sm:py-5">
             <legend className="float-none p-0 mb-1 w-full">
@@ -899,18 +872,14 @@ const BuyBox = ({
                       Black-stained oak with cast-acrylic glazing for safe
                       transit, ready to hang. Allow {FRAME_LEAD_WEEKS} weeks.
                     </span>
-                    {/* DMCC: the framed-shipping surcharge for THIS size, shown
-                        the moment the frame is ticked — exact regional totals,
-                        not a vague "surcharge at checkout". */}
-                    {framingActive && framedShipping && (
+                    {/* Free delivery applies to framed prints too — reassurance
+                        shown the moment a frame is ticked. There is no framed-
+                        shipping surcharge (the estate absorbs delivery), so this
+                        is a positive note, not a DMCC drip-pricing disclosure. */}
+                    {framingActive && (
                       <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-line/70 px-2.5 py-1.5">
-                        Framed prints ship at this size: UK{" "}
-                        {formatGBP(framedShipping.ukPence).replace(".00", "")} ·
-                        Europe{" "}
-                        {formatGBP(framedShipping.euPence).replace(".00", "")} ·
-                        Worldwide{" "}
-                        {formatGBP(framedShipping.wwPence).replace(".00", "")}.
-                        Shown again at checkout before you pay.
+                        Framed and delivered free — UK, Europe and Worldwide.
+                        No delivery charge is added at checkout.
                       </span>
                     )}
                   </span>

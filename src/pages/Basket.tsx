@@ -20,7 +20,7 @@ import {
   PAINTINGS,
   type PrintTier,
 } from "../data/paintings";
-import { useBasket, removeItem, type BasketItem } from "../lib/basket";
+import { useBasket, useGiftCards, removeItem, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
@@ -162,37 +162,30 @@ const bundlePercentOff = (lines: ResolvedLine[]): number => {
 
 /**
  * Per-region SHIPPING preview — a mirror of api/checkout.ts
- * `buildShippingOptions`. Standard delivery is MANDATORY (the estate only
- * ships; there is no collection / free option), so under DMCC it must be shown
- * upfront with equal prominence, not first revealed at Stripe. Framed prints
- * carry a per-item surcharge that ACCUMULATES, which must also be visible the
- * moment a frame is in the basket:
- *   base    UK £15 / EU £35 / WW £60
- *   A2 framed +£15 UK, +£30 EU/WW   (intl surcharge doubles)
- *   A1 framed +£25 UK, +£50 EU/WW
+ * `buildShippingOptions`. FREE SHIPPING POLICY (2026-06-06): the estate absorbs
+ * ALL delivery cost into the ~90% print margin, so EVERY region ships FREE —
+ * unframed AND framed alike. api/checkout.ts now charges a £0 (free) rate per
+ * region, so the previewed delivery here is £0 too (advertised == charged to the
+ * penny — mirror invariant, gotcha #9). There is no framed-shipping surcharge
+ * anymore, hence no DMCC drip-pricing disclosure to surface.
  */
-const shippingPreview = (lines: ResolvedLine[]) => {
-  const framedUkSurchargePence = lines.reduce((acc, line) => {
-    if (!line.item.framing) return acc;
-    if (line.tier.id === "collector") return acc + 1500; // A2 framed +£15
-    if (line.tier.id === "atelier-grande") return acc + 2500; // A1 framed +£25
-    return acc;
-  }, 0);
-  const intlSurchargePence = framedUkSurchargePence * 2; // EU + WW double
-  return {
-    hasFramedItem: framedUkSurchargePence > 0,
-    framedUkSurchargePence,
-    intlSurchargePence,
-    ukPence: 1500 + framedUkSurchargePence,
-    euPence: 3500 + intlSurchargePence,
-    wwPence: 6000 + intlSurchargePence,
-  };
-};
+const shippingPreview = (_lines: ResolvedLine[]) => ({
+  ukPence: 0,
+  euPence: 0,
+  wwPence: 0,
+});
 
 export const Basket = () => {
   usePageTitle("Your Basket");
   const items = useBasket();
   const lines = resolveLines(items);
+
+  // Gift-card lines (digital e-vouchers). Excluded from the bundle-discount
+  // maths (a gift card is not a print) + shipping (digital). Their face value
+  // IS the Stripe charge (price_data.unit_amount), so it just adds to the total.
+  const giftCards = useGiftCards();
+  const giftTotalPence = giftCards.reduce((sum, g) => sum + g.amountPence, 0);
+  const isEmpty = lines.length === 0 && giftCards.length === 0;
 
   // Genuine PRE-discount subtotal — print + every selected add-on across all
   // lines. This is the honest "before any bundle saving" figure (DMCC: show
@@ -207,6 +200,8 @@ export const Basket = () => {
   const bundleDiscountPercent = bundlePercentOff(lines);
   const bundleDiscountPence = bundleDiscountPenceFor(lines, bundleDiscountPercent);
   const discountedSubtotalPence = subtotalPence - bundleDiscountPence;
+  // Grand total = discounted prints + gift-card face values (delivery is free).
+  const grandTotalPence = discountedSubtotalPence + giftTotalPence;
 
   // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.
   const shipping = shippingPreview(lines);
@@ -215,7 +210,7 @@ export const Basket = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   const onCheckout = async () => {
-    if (lines.length === 0) return;
+    if (isEmpty) return;
     setStatus("loading");
     setErrorMsg("");
     const controller = new AbortController();
@@ -225,13 +220,26 @@ export const Basket = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: lines.map((l) => ({
-            paintingId: l.paintingId,
-            colourwayName: l.colourwayName,
-            tierId: l.tier.id,
-            framing: l.item.framing === true,
-            embellished: l.item.embellished === true,
-          })),
+          // Prints AND gift cards travel in the SAME `items` array; the server
+          // (api/checkout.ts) splits on `kind === "gift"`. Gift face value flows
+          // through unchanged → Stripe price_data.unit_amount (advertised==charged).
+          items: [
+            ...lines.map((l) => ({
+              paintingId: l.paintingId,
+              colourwayName: l.colourwayName,
+              tierId: l.tier.id,
+              framing: l.item.framing === true,
+              embellished: l.item.embellished === true,
+            })),
+            ...giftCards.map((g) => ({
+              kind: "gift" as const,
+              amountPence: g.amountPence,
+              label: g.label,
+              ...(g.recipientName ? { recipientName: g.recipientName } : {}),
+              ...(g.recipientEmail ? { recipientEmail: g.recipientEmail } : {}),
+              ...(g.giftMessage ? { giftMessage: g.giftMessage } : {}),
+            })),
+          ],
         }),
         signal: controller.signal,
       });
@@ -270,7 +278,7 @@ export const Basket = () => {
           </h1>
         </Reveal>
 
-        {lines.length === 0 ? (
+        {isEmpty ? (
           <Reveal as="div" className="max-w-[640px]">
             <Separator className="bg-line mb-8" />
             <p className={cn(SUBTITLE, "m-0 mb-8")}>
@@ -284,6 +292,7 @@ export const Basket = () => {
           </Reveal>
         ) : (
           <>
+            {lines.length > 0 && (
             <Reveal as="div">
               <Separator className="bg-line mb-8" />
               <ul className="list-none p-0 m-0 flex flex-col">
@@ -402,6 +411,50 @@ export const Basket = () => {
                 })}
               </ul>
             </Reveal>
+            )}
+
+            {giftCards.length > 0 && (
+              <Reveal as="div" className={lines.length > 0 ? "mt-2" : ""}>
+                {lines.length === 0 && <Separator className="bg-line mb-8" />}
+                <ul className="list-none p-0 m-0 flex flex-col">
+                  {giftCards.map((g: GiftBasketItem) => (
+                    <li
+                      key={g.addedAt}
+                      className="py-6 border-t border-line first:border-t-0"
+                    >
+                      <div className="flex gap-5 sm:gap-7 items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,26px)] text-ink leading-tight m-0">
+                            Gift card
+                          </p>
+                          <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>{g.label}</p>
+                          {(g.recipientName || g.recipientEmail) && (
+                            <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
+                              For {g.recipientName || g.recipientEmail}
+                            </p>
+                          )}
+                          {g.giftMessage && (
+                            <p className="font-display italic text-[13px] leading-[1.55] text-ink/55 m-0 mt-1.5">
+                              “{g.giftMessage}”
+                            </p>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeItem(g.addedAt)}
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,24px)] text-ink m-0 flex-shrink-0">
+                          {formatGBP(g.amountPence)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
 
             <Reveal as="div" className="mt-10">
               <Separator className="bg-line mb-8" />
@@ -430,67 +483,61 @@ export const Basket = () => {
                     </dd>
                   </div>
                 )}
+                {giftTotalPence > 0 && (
+                  <div className="flex items-baseline justify-between gap-6">
+                    <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0 min-w-0">
+                      Gift cards
+                    </dt>
+                    <dd className="font-sans text-[15px] text-ink m-0 tabular-nums flex-shrink-0">
+                      {formatGBP(giftTotalPence)}
+                    </dd>
+                  </div>
+                )}
               </dl>
 
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
-                  {bundleDiscountPercent > 0 ? "Total before delivery" : "Subtotal"}
+                  Total <span className="text-[12px] normal-case tracking-normal">(delivery free)</span>
                 </p>
                 <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,44px)] text-ink m-0 tabular-nums flex-shrink-0">
-                  {formatGBP(discountedSubtotalPence)}
+                  {formatGBP(grandTotalPence)}
                 </p>
               </div>
 
-              {/* MANDATORY DELIVERY — shown in full upfront (the estate only
-                  ships; UK delivery is unavoidable). When a framed print is in
-                  the basket the framed-shipping surcharge is folded into these
-                  figures (and called out), so the rate the buyer sees here is
-                  exactly the rate charged at Stripe. */}
+              {/* DELIVERY — FREE everywhere, shown in full upfront. The estate
+                  absorbs all delivery cost into the print margin, so every region
+                  ships free, framed or unframed. These £0 figures mirror the £0
+                  (free) rate api/checkout.ts charges at Stripe — advertised ==
+                  charged to the penny (mirror invariant, gotcha #9). */}
               <div className="border border-line/70 rounded-2xl p-4 sm:p-5 mb-3">
                 <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>
-                  Delivery — chosen at checkout
+                  Delivery — free worldwide
                 </p>
                 <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
-                  <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
-                      United Kingdom
-                    </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                      {formatGBP(shipping.ukPence)}
-                    </span>
-                  </li>
-                  <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
-                      Europe
-                    </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                      {formatGBP(shipping.euPence)}
-                    </span>
-                  </li>
-                  <li className="flex items-baseline justify-between gap-4">
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
-                      Worldwide
-                    </span>
-                    <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                      {formatGBP(shipping.wwPence)}
-                    </span>
-                  </li>
+                  {(
+                    [
+                      ["United Kingdom", shipping.ukPence],
+                      ["Europe", shipping.euPence],
+                      ["Worldwide", shipping.wwPence],
+                    ] as const
+                  ).map(([region, pence]) => (
+                    <li
+                      key={region}
+                      className="flex items-baseline justify-between gap-4"
+                    >
+                      <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
+                        {region}
+                      </span>
+                      <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
+                        {pence === 0 ? "Free" : formatGBP(pence)}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
-                {shipping.hasFramedItem ? (
-                  <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
-                    Includes the framed-delivery surcharge for the framed
-                    print{lines.filter((l) => l.item.framing).length > 1 ? "s" : ""}{" "}
-                    in your basket (UK +{formatGBP(shipping.framedUkSurchargePence)} ·
-                    Europe / Worldwide +{formatGBP(shipping.intlSurchargePence)}).
-                    These are the final delivery rates — nothing further is added
-                    at checkout.
-                  </p>
-                ) : (
-                  <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
-                    Flat rates, nothing further added at checkout. Each print
-                    ships within 7–10 working days.
-                  </p>
-                )}
+                <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
+                  Free delivery on every order — framed or unframed — with nothing
+                  added at checkout. Each print ships within 7–10 working days.
+                </p>
               </div>
 
               <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-7">

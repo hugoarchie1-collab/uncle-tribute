@@ -205,6 +205,21 @@ const PRINT_SPEC =
 // catalogue; protects against an absurd POST body from a broken client.
 const MAX_ITEMS = 20;
 
+// ---- Gift-card bounds (mirror of src/lib/basket.ts) -----------------------
+// Whole pounds only; min £25, max £5,000. Re-validated here so a tampered
+// client can never mint a gift line outside the advertised window. The
+// advertised gift price (UI) === the charged price (price_data.unit_amount ===
+// this same amountPence) by construction — there is no separate price table.
+const GIFT_MIN_PENCE = 2500; //   £25
+const GIFT_MAX_PENCE = 500000; // £5,000
+
+// Stripe per-metadata-value cap (re-stated near use for the gift fields).
+// Recipient name / message are user-supplied, so they're trimmed to fit.
+const giftMetaTrim = (v: string): string =>
+  v.length <= STRIPE_METADATA_VALUE_LIMIT
+    ? v
+    : `${v.slice(0, STRIPE_METADATA_VALUE_LIMIT - 1)}…`;
+
 // Stripe caps each metadata value at 500 characters. We truncate gracefully
 // when concatenating IDs / colourways across a multi-item basket.
 const STRIPE_METADATA_VALUE_LIMIT = 500;
@@ -311,6 +326,60 @@ const normaliseItem = (
   return { paintingId, colourway, title, tier, framing, embellished };
 };
 
+// ---- Gift-card normalisation ----------------------------------------------
+// A gift card is a DIGITAL e-voucher: no painting, no tier, no shipping, and
+// never eligible for a bundle discount (it's not a print). The charged amount
+// is taken straight from the client's `amountPence`, but ONLY after it clears
+// the same whole-pound / min / max window the UI advertised — so the price the
+// buyer was shown is exactly the price Stripe charges.
+interface NormalisedGift {
+  amountPence: number;
+  label: string;
+  recipientName: string;
+  recipientEmail: string;
+  giftMessage: string;
+}
+
+const normaliseGift = (raw: {
+  amountPence?: unknown;
+  label?: unknown;
+  recipientName?: unknown;
+  recipientEmail?: unknown;
+  giftMessage?: unknown;
+}): NormalisedGift | { error: string } => {
+  // Coerce a numeric or numeric-string amount; reject anything else.
+  const amountRaw =
+    typeof raw.amountPence === "number"
+      ? raw.amountPence
+      : typeof raw.amountPence === "string"
+        ? Number.parseInt(raw.amountPence, 10)
+        : Number.NaN;
+  const amountPence = Math.round(amountRaw);
+  if (
+    !Number.isFinite(amountPence) ||
+    amountPence < GIFT_MIN_PENCE ||
+    amountPence > GIFT_MAX_PENCE ||
+    amountPence % 100 !== 0 // whole pounds only
+  ) {
+    return {
+      error: `Gift amount must be a whole £ figure between £${
+        GIFT_MIN_PENCE / 100
+      } and £${GIFT_MAX_PENCE / 100}.`,
+    };
+  }
+  // Label is display-only; default to the amount if the client omitted it. The
+  // amount — never the label — is the price source.
+  const labelRaw = typeof raw.label === "string" ? raw.label.trim() : "";
+  const label = labelRaw || `£${(amountPence / 100).toFixed(0)} gift card`;
+  const recipientName =
+    typeof raw.recipientName === "string" ? raw.recipientName.trim() : "";
+  const recipientEmail =
+    typeof raw.recipientEmail === "string" ? raw.recipientEmail.trim() : "";
+  const giftMessage =
+    typeof raw.giftMessage === "string" ? raw.giftMessage.trim() : "";
+  return { amountPence, label, recipientName, recipientEmail, giftMessage };
+};
+
 /**
  * Truncate a comma-joined metadata string so it stays under Stripe's 500-
  * char per-value cap. We trim at the last complete entry boundary so we
@@ -352,56 +421,50 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
 };
 
 /**
- * Compute the shipping options for a session. Framed items add a per-region
- * surcharge on top of the unframed flat rates per Agent K's research:
- *   UK base £15; framed A2 +£15 / framed A1 +£25
- *   EU base £35; framed surcharge doubles vs UK
- *   WW base £60; framed surcharge doubles vs UK
- * Glazing is cast acrylic for framed posts (no breakage liability) so a single
- * shipping band per region still works — no separate "with glass" tier.
- * Unframed orders see the original flat rates byte-for-byte.
+ * Compute the shipping options for a session.
+ *
+ * FREE SHIPPING POLICY (2026-06-06) — the estate absorbs ALL delivery cost into
+ * the ~90% print margin rather than charging the buyer or raising print prices.
+ * Every region (UK, Europe, Worldwide) ships FREE — for BOTH unframed AND framed
+ * orders. Each band is a `fixed_amount` of £0, so Stripe shows a "Free" line and
+ * the charged shipping is £0 to the penny, matching the basket / product-page
+ * preview (advertised == charged invariant).
+ *
+ * Why this is absorbable (2026-05-31 delivery-cost research, conservative low-end
+ * estate costs vs retail): UK delivery to the buyer is £0 on unframed prints
+ * (Point 101 includes free tracked UK delivery inside the print COGS) and only
+ * ~£10-25 boxed on framed; even the worst case — an A1 frame shipped to the US
+ * (~£65 delivery) on a £1,245 sale — still clears ~78% margin. Nothing here
+ * threatens the 90% target on the prints themselves, so a flat free-shipping
+ * policy is the simplest, most dignified choice and removes all framed-surcharge
+ * complexity (no per-tier surcharge, no DMCC drip-pricing disclosure needed).
+ *
+ * `items` is retained in the signature (call-site compatibility) even though the
+ * rate no longer depends on the basket contents — every order ships free.
  */
-const buildShippingOptions = (items: NormalisedItem[]) => {
-  const framedUkSurchargePence = items.reduce((acc, item) => {
-    if (!item.framing) return acc;
-    if (item.tier.id === "collector") return acc + 1500;       // A2 framed +£15
-    if (item.tier.id === "atelier-grande") return acc + 2500;  // A1 framed +£25
-    return acc;
-  }, 0);
-  const intlSurchargePence = framedUkSurchargePence * 2; // EU + WW double per Agent K
-  return [
-    {
-      shipping_rate_data: {
-        type: "fixed_amount" as const,
-        fixed_amount: { amount: 1500 + framedUkSurchargePence, currency: "gbp" },
-        display_name:
-          framedUkSurchargePence > 0
-            ? "United Kingdom — framed (5-7 working days)"
-            : "United Kingdom (5-7 working days)",
-      },
+const buildShippingOptions = (_items: NormalisedItem[]) => [
+  {
+    shipping_rate_data: {
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 0, currency: "gbp" },
+      display_name: "United Kingdom — free delivery (5-7 working days)",
     },
-    {
-      shipping_rate_data: {
-        type: "fixed_amount" as const,
-        fixed_amount: { amount: 3500 + intlSurchargePence, currency: "gbp" },
-        display_name:
-          intlSurchargePence > 0
-            ? "Europe — framed (7-10 working days)"
-            : "Europe (7-10 working days)",
-      },
+  },
+  {
+    shipping_rate_data: {
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 0, currency: "gbp" },
+      display_name: "Europe — free delivery (7-10 working days)",
     },
-    {
-      shipping_rate_data: {
-        type: "fixed_amount" as const,
-        fixed_amount: { amount: 6000 + intlSurchargePence, currency: "gbp" },
-        display_name:
-          intlSurchargePence > 0
-            ? "Worldwide — framed (10-14 working days)"
-            : "Worldwide (10-14 working days)",
-      },
+  },
+  {
+    shipping_rate_data: {
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 0, currency: "gbp" },
+      display_name: "Worldwide — free delivery (10-14 working days)",
     },
-  ];
-};
+  },
+];
 
 export default async function handler(req: VercelReq, res: VercelRes) {
   // CORS on every response.
@@ -434,11 +497,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     framing?: unknown;
     embellished?: unknown;
     items?: Array<{
+      kind?: unknown;
       paintingId?: string;
       colourwayName?: string;
       tierId?: unknown;
       framing?: unknown;
       embellished?: unknown;
+      // Gift-card line fields (kind === "gift"):
+      amountPence?: unknown;
+      label?: unknown;
+      recipientName?: unknown;
+      recipientEmail?: unknown;
+      giftMessage?: unknown;
     }>;
   };
   try {
@@ -471,8 +541,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
   }
 
-  const normalised: NormalisedItem[] = [];
+  // Split + normalise. A line with kind === "gift" is a digital gift card;
+  // everything else is a print (kind absent / "print" — preserves the legacy
+  // single-item + basket bodies byte-for-byte).
+  const normalised: NormalisedItem[] = []; // print lines (drive shipping + bundle)
+  const gifts: NormalisedGift[] = []; // gift-card lines (digital, no shipping)
   for (const raw of rawItems) {
+    if (raw?.kind === "gift") {
+      const result = normaliseGift(raw);
+      if ("error" in result) return send(400, result);
+      gifts.push(result);
+      continue;
+    }
     const result = normaliseItem(
       raw?.paintingId,
       raw?.colourwayName,
@@ -483,6 +563,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if ("error" in result) return send(400, result);
     normalised.push(result);
   }
+
+  // A basket of ONLY gift cards needs NO shipping address / options.
+  const giftOnly = normalised.length === 0 && gifts.length > 0;
 
   // ---- Build Stripe line items -------------------------------------------
   // One line per print, plus an OPTIONAL separate line per framing add-on so
@@ -550,38 +633,102 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
   }
 
+  // ---- Gift-card line items ----------------------------------------------
+  // Each gift card is one Stripe line item priced via price_data with
+  // unit_amount === the buyer's chosen amountPence — so the advertised gift
+  // value equals the Stripe charge to the penny. Digital: no shipping, and NOT
+  // caught by the bundle coupon (the coupon is only minted off `normalised`,
+  // the print lines — see bundlePercentOff(normalised) below).
+  for (const gift of gifts) {
+    const toLine = gift.recipientName
+      ? ` for ${gift.recipientName}`
+      : "";
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: "gbp",
+        unit_amount: gift.amountPence, // advertised == charged
+        product_data: {
+          name: `Gift card — ${gift.label}`,
+          description:
+            `A digital gift card towards any of Stephen Meakin's editions${toLine}.` +
+            " Redeemable at checkout against a print of the recipient's choosing.",
+        },
+      },
+    });
+  }
+
   // ---- Metadata ----------------------------------------------------------
-  // For single-item we keep the historical key names so any existing
-  // webhook-log dashboards keep parsing cleanly. For multi-item we add
+  // For a single print we keep the historical key names so any existing
+  // webhook-log dashboards keep parsing cleanly. For multi-print we add
   // truncated comma-joined lists plus an item_count for at-a-glance triage.
-  const metadata: Record<string, string> =
-    normalised.length === 1
-      ? {
-          painting_id: normalised[0].paintingId,
-          painting_title: normalised[0].title,
-          colourway_name: normalised[0].colourway,
-          tier_id: normalised[0].tier.id,
-          tier_label: normalised[0].tier.label,
-          size: normalised[0].tier.size,
-          framing: normalised[0].framing ? "yes" : "no",
-          embellished: normalised[0].embellished ? "yes" : "no",
-          item_count: "1",
-        }
-      : {
-          item_count: String(normalised.length),
-          painting_ids: truncateMetadata(normalised.map((i) => i.paintingId)),
-          painting_titles: truncateMetadata(normalised.map((i) => i.title)),
-          colourway_names: truncateMetadata(normalised.map((i) => i.colourway)),
-          tier_ids: truncateMetadata(normalised.map((i) => i.tier.id)),
-          tier_labels: truncateMetadata(normalised.map((i) => i.tier.label)),
-          framing_flags: truncateMetadata(
-            normalised.map((i) => (i.framing ? "y" : "n")),
-          ),
-          embellished_flags: truncateMetadata(
-            normalised.map((i) => (i.embellished ? "y" : "n")),
-          ),
-          size: normalised[0].tier.size,
-        };
+  // Gift cards carry their own marker + recipient fields (see below) so the
+  // webhook / fulfilment can tell a gift purchase apart from a print order.
+  let metadata: Record<string, string>;
+  if (giftOnly) {
+    // Pure gift-card basket — no print metadata to emit.
+    metadata = {
+      order_kind: "gift",
+      item_count: "0",
+    };
+  } else if (normalised.length === 1) {
+    metadata = {
+      painting_id: normalised[0].paintingId,
+      painting_title: normalised[0].title,
+      colourway_name: normalised[0].colourway,
+      tier_id: normalised[0].tier.id,
+      tier_label: normalised[0].tier.label,
+      size: normalised[0].tier.size,
+      framing: normalised[0].framing ? "yes" : "no",
+      embellished: normalised[0].embellished ? "yes" : "no",
+      item_count: "1",
+    };
+  } else {
+    metadata = {
+      item_count: String(normalised.length),
+      painting_ids: truncateMetadata(normalised.map((i) => i.paintingId)),
+      painting_titles: truncateMetadata(normalised.map((i) => i.title)),
+      colourway_names: truncateMetadata(normalised.map((i) => i.colourway)),
+      tier_ids: truncateMetadata(normalised.map((i) => i.tier.id)),
+      tier_labels: truncateMetadata(normalised.map((i) => i.tier.label)),
+      framing_flags: truncateMetadata(
+        normalised.map((i) => (i.framing ? "y" : "n")),
+      ),
+      embellished_flags: truncateMetadata(
+        normalised.map((i) => (i.embellished ? "y" : "n")),
+      ),
+      size: normalised[0].tier.size,
+    };
+  }
+
+  // GIFT marker + recipient details. Present whenever the basket contains at
+  // least one gift card (gift-only OR mixed with prints), so a webhook can
+  // route the gift fulfilment (issue + email a redeemable code to the
+  // recipient) independently of any prints in the same order.
+  if (gifts.length > 0) {
+    metadata.has_gift = "yes";
+    metadata.gift_count = String(gifts.length);
+    metadata.gift_amounts_pence = truncateMetadata(
+      gifts.map((g) => String(g.amountPence)),
+    );
+    metadata.gift_total_pence = String(
+      gifts.reduce((sum, g) => sum + g.amountPence, 0),
+    );
+    metadata.gift_labels = truncateMetadata(gifts.map((g) => g.label));
+    const recipientNames = gifts.map((g) => g.recipientName).filter(Boolean);
+    const recipientEmails = gifts.map((g) => g.recipientEmail).filter(Boolean);
+    if (recipientNames.length > 0) {
+      metadata.gift_recipient_names = truncateMetadata(recipientNames);
+    }
+    if (recipientEmails.length > 0) {
+      metadata.gift_recipient_emails = truncateMetadata(recipientEmails);
+    }
+    // Single-gift baskets carry the personal message in full (trimmed to
+    // Stripe's per-value cap) so the webhook can render it into the email.
+    if (gifts.length === 1 && gifts[0].giftMessage) {
+      metadata.gift_message = giftMetaTrim(gifts[0].giftMessage);
+    }
+  }
 
   // Note: `new Stripe(secret)` with no apiVersion — pinning a version
   // literal like "2025-09-30.clover" can mismatch the SDK's exported type
@@ -678,24 +825,37 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
   }
 
+  // Shipping is collected ONLY when there's a physical print to post. A basket
+  // of ONLY gift cards (giftOnly) is fully digital — no address, no shipping
+  // options — so Stripe shows a clean digital checkout. A mixed basket (prints
+  // + gifts) still ships, so it keeps address collection + the print shipping
+  // options (gifts simply don't add to the shipping surcharge — buildShipping-
+  // Options reads `normalised` only).
+  const shippingParams: Partial<Stripe.Checkout.SessionCreateParams> = giftOnly
+    ? {}
+    : {
+        shipping_address_collection: {
+          allowed_countries: [
+            "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU",
+            "AT", "PT", "DK", "SE", "NO", "FI", "CH", "PL",
+            "US", "CA", "AU", "NZ",
+          ],
+        },
+        shipping_options: buildShippingOptions(normalised),
+      };
+
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
-      shipping_address_collection: {
-        allowed_countries: [
-          "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU",
-          "AT", "PT", "DK", "SE", "NO", "FI", "CH", "PL",
-          "US", "CA", "AU", "NZ",
-        ],
-      },
-      shipping_options: buildShippingOptions(normalised),
+      ...shippingParams,
       metadata,
       // Stripe disallows `allow_promotion_codes` and `discounts` together.
       // When we've programmatically applied a bundle discount, we drop the
       // promo-code input on the hosted checkout (the buyer's bundle already
       // beats their thank-you code anyway). When there's no bundle, the
-      // promo-code input stays so the thank-you code is redeemable.
+      // promo-code input stays so a gift / thank-you code is redeemable —
+      // including on a gift-only basket (a giver could redeem a code too).
       ...(discounts
         ? { discounts }
         : { allow_promotion_codes: true }),
@@ -715,6 +875,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tiers: normalised.map((i) => i.tier.id).join(","),
       framed: normalised.filter((i) => i.framing).length,
       embellished: normalised.filter((i) => i.embellished).length,
+      giftCount: gifts.length,
+      giftTotalPence: gifts.reduce((sum, g) => sum + g.amountPence, 0),
+      giftOnly,
       bundleDiscount: discounts ? `${percentOff}%` : "no",
     });
     return send(200, { url: session.url });

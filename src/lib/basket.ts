@@ -24,7 +24,16 @@
 import { useSyncExternalStore } from "react";
 import { getPaintingById, getPrintTiers, getAnchorTier, type PrintTier } from "../data/paintings";
 
+/**
+ * A PRINT line — one painting + one colourway + one tier (size), quantity
+ * always 1. This is the original BasketItem shape, now carrying an optional
+ * `kind` discriminant that is absent / "print" for every print line. Old
+ * entries written before gift cards existed have no `kind` field and still
+ * read as print lines, so no storage-version bump is needed.
+ */
 export interface BasketItem {
+  /** Discriminant. Absent or "print" → a print line (back-compat). */
+  kind?: "print";
   paintingId: string;
   colourwayName: string;
   tierId: PrintTier["id"];
@@ -41,10 +50,54 @@ export interface BasketItem {
   addedAt: number;
 }
 
+/**
+ * A GIFT-CARD line — a digital e-voucher for a chosen amount. Gift cards are
+ * NOT prints: they carry no painting / colourway / tier, NO shipping, and are
+ * EXCLUDED from every bundle-discount calculation (a gift card is not a print).
+ * `amountPence` is the face value (== what Stripe charges == what the buyer is
+ * advertised). Recipient details + a personal message are optional and ride
+ * along to checkout / the fulfilment email.
+ */
+export interface GiftBasketItem {
+  kind: "gift";
+  /** Face value in integer pence (== advertised == Stripe charge). */
+  amountPence: number;
+  /**
+   * Short human label for the denomination, e.g. "A2 Collector — £450" or
+   * "Custom amount". Display + Stripe product name only — never a price source
+   * (amountPence is the single source of the charge).
+   */
+  label: string;
+  /** Optional recipient name (for the gift email + Stripe metadata). */
+  recipientName?: string;
+  /** Optional recipient email (for the gift email + Stripe metadata). */
+  recipientEmail?: string;
+  /** Optional personal message from the giver. */
+  giftMessage?: string;
+  addedAt: number;
+}
+
+/** Any line in the basket — a print or a gift card. */
+export type BasketLine = BasketItem | GiftBasketItem;
+
+/** Type guard — true for gift-card lines. */
+export const isGiftItem = (line: BasketLine): line is GiftBasketItem =>
+  (line as GiftBasketItem).kind === "gift";
+
+/** Type guard — true for print lines (the implicit / "print" kind). */
+export const isPrintItem = (line: BasketLine): line is BasketItem =>
+  (line as GiftBasketItem).kind !== "gift";
+
+// ---- Gift-card denomination bounds (custom amount) -------------------------
+// Whole pounds only; min £25, max £5,000 — mirror these in src/pages/Gift.tsx
+// and validate again server-side in api/checkout.ts (never trust the client).
+export const GIFT_MIN_PENCE = 2500; //   £25
+export const GIFT_MAX_PENCE = 500000; // £5,000
+
 const STORAGE_KEY = "tasm.basket.v2";
 
 // In-memory mirror of the persisted basket. We initialise on first read.
-let cache: BasketItem[] | null = null;
+let cache: BasketLine[] | null = null;
 const listeners = new Set<() => void>();
 
 const isBrowser = typeof window !== "undefined";
@@ -52,7 +105,7 @@ const isBrowser = typeof window !== "undefined";
 const isTierId = (v: unknown): v is PrintTier["id"] =>
   v === "atelier" || v === "collector" || v === "atelier-grande" || v === "heirloom" || v === "studio";
 
-const readFromStorage = (): BasketItem[] => {
+const readFromStorage = (): BasketLine[] => {
   if (!isBrowser) return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -60,18 +113,54 @@ const readFromStorage = (): BasketItem[] => {
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
     return parsed
-      .map((item): BasketItem | null => {
+      .map((item): BasketLine | null => {
         if (!item || typeof item !== "object") return null;
         const o = item as Record<string, unknown>;
+        if (typeof o.addedAt !== "number") return null;
+
+        // ---- Gift-card line ----------------------------------------------
+        if (o.kind === "gift") {
+          // amountPence must be a positive whole-pound integer inside bounds;
+          // anything malformed drops the line silently (never trust storage).
+          if (typeof o.amountPence !== "number") return null;
+          const amountPence = Math.round(o.amountPence);
+          if (
+            !Number.isFinite(amountPence) ||
+            amountPence < GIFT_MIN_PENCE ||
+            amountPence > GIFT_MAX_PENCE ||
+            amountPence % 100 !== 0
+          ) {
+            return null;
+          }
+          const label = typeof o.label === "string" ? o.label : "Gift card";
+          const gift: GiftBasketItem = {
+            kind: "gift",
+            amountPence,
+            label,
+            ...(typeof o.recipientName === "string" && o.recipientName.trim()
+              ? { recipientName: o.recipientName }
+              : {}),
+            ...(typeof o.recipientEmail === "string" && o.recipientEmail.trim()
+              ? { recipientEmail: o.recipientEmail }
+              : {}),
+            ...(typeof o.giftMessage === "string" && o.giftMessage.trim()
+              ? { giftMessage: o.giftMessage }
+              : {}),
+            addedAt: o.addedAt,
+          };
+          return gift;
+        }
+
+        // ---- Print line (default / "print") ------------------------------
         if (typeof o.paintingId !== "string") return null;
         if (typeof o.colourwayName !== "string") return null;
-        if (typeof o.addedAt !== "number") return null;
         // Defensive default — anything stored without a tierId (e.g. a v2
         // entry written by a buggy older build) reconciles to the anchor.
         const tierId: PrintTier["id"] = isTierId(o.tierId) ? o.tierId : "collector";
         const framing = o.framing === true ? true : undefined;
         const embellished = o.embellished === true ? true : undefined;
         return {
+          kind: "print",
           paintingId: o.paintingId,
           colourwayName: o.colourwayName,
           tierId,
@@ -80,13 +169,13 @@ const readFromStorage = (): BasketItem[] => {
           addedAt: o.addedAt,
         };
       })
-      .filter((item): item is BasketItem => item !== null);
+      .filter((item): item is BasketLine => item !== null);
   } catch {
     return [];
   }
 };
 
-const writeToStorage = (items: BasketItem[]) => {
+const writeToStorage = (items: BasketLine[]) => {
   if (!isBrowser) return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
@@ -97,13 +186,20 @@ const writeToStorage = (items: BasketItem[]) => {
 };
 
 /**
- * Drop any lines whose painting / colourway / tier no longer exist in the
- * catalogue. Returns the reconciled list. If anything was dropped (or any
- * tierId was repaired against the anchor), also writes the cleaned list
- * back to storage so the next read is cheap.
+ * Drop any PRINT lines whose painting / colourway / tier no longer exist in
+ * the catalogue. Returns the reconciled list. If anything was dropped (or any
+ * tierId was repaired against the anchor), also writes the cleaned list back
+ * to storage so the next read is cheap.
+ *
+ * GIFT lines are digital — they reference no painting / colourway / tier — so
+ * they're never reconciled against the catalogue; they pass through untouched
+ * (their face value can never "drift" against a catalogue change).
  */
-const reconcile = (items: BasketItem[]): BasketItem[] => {
+const reconcile = (items: BasketLine[]): BasketLine[] => {
   const cleaned = items.filter((item) => {
+    // Gift cards always survive reconciliation — nothing in the catalogue
+    // governs them. (readFromStorage already validated their amount bounds.)
+    if (isGiftItem(item)) return true;
     const painting = getPaintingById(item.paintingId);
     if (!painting) return false;
     const colourway = painting.colourways.find(
@@ -121,7 +217,7 @@ const reconcile = (items: BasketItem[]): BasketItem[] => {
   return cleaned;
 };
 
-const ensureCache = (): BasketItem[] => {
+const ensureCache = (): BasketLine[] => {
   if (cache === null) cache = reconcile(readFromStorage());
   return cache;
 };
@@ -139,6 +235,13 @@ const emit = () => {
 // subscribe to storage events; it's a pure notification side-channel.
 
 export interface AddNotification {
+  /**
+   * The PRINT line that was just added. Kept as `BasketItem` (not the union)
+   * so the existing global toast (BasketToast) — which resolves a painting
+   * title off `item.paintingId` — stays correct and unbroken. Gift-card adds
+   * deliberately do NOT fire this channel (a gift has no painting to title);
+   * the Gift page shows its own in-page "Added to your basket" confirmation.
+   */
   item: BasketItem;
   /** Monotonic id so consumers can treat rapid successive adds as fresh
    *  events even when the same painting/colourway is added twice. */
@@ -174,7 +277,7 @@ export const subscribeToAdds = (
 export const getLastAddNotification = (): AddNotification | null =>
   lastAddNotification;
 
-const setCache = (next: BasketItem[]) => {
+const setCache = (next: BasketLine[]) => {
   cache = next;
   writeToStorage(next);
   emit();
@@ -182,9 +285,28 @@ const setCache = (next: BasketItem[]) => {
 
 // ---- Public API ----------------------------------------------------------
 
-export const getBasket = (): BasketItem[] => ensureCache();
+/**
+ * The print lines only — the HISTORICAL contract. Every existing consumer
+ * (Nav badge, Basket page, OrderResult, email-basket) keeps receiving exactly
+ * the `BasketItem[]` it always did, so adding gift cards never changes their
+ * types or behaviour. Gift cards are NOT prints, so they're correctly absent
+ * here. Gift-aware surfaces (the Gift page, a gift-aware basket render) use
+ * `getBasketLines()` / `useBasketLines()` instead.
+ */
+export const getBasket = (): BasketItem[] => ensureCache().filter(isPrintItem);
 
-export const getBasketCount = (): number => ensureCache().length;
+/** Count of PRINT lines (the historical basket-count contract). */
+export const getBasketCount = (): number => getBasket().length;
+
+/** Every line — prints AND gift cards. Use the type guards to narrow. */
+export const getBasketLines = (): BasketLine[] => ensureCache();
+
+/** Count of ALL lines (prints + gift cards). */
+export const getBasketLineCount = (): number => ensureCache().length;
+
+/** Gift-card lines only. */
+export const getGiftCards = (): GiftBasketItem[] =>
+  ensureCache().filter(isGiftItem);
 
 /**
  * Add a line. `tierId` defaults to the painting's anchor tier so legacy
@@ -209,6 +331,7 @@ export const addItem = (
     if (painting) resolvedTierId = getAnchorTier(painting).id;
   }
   const added: BasketItem = {
+    kind: "print",
     paintingId,
     colourwayName,
     tierId: resolvedTierId,
@@ -225,6 +348,55 @@ export const addItem = (
   } catch {
     /* notification is best-effort — never let it disrupt the basket */
   }
+};
+
+/**
+ * Add a GIFT-CARD line. `amountPence` is the face value (must be a whole-pound
+ * integer between GIFT_MIN_PENCE and GIFT_MAX_PENCE) — it is BOTH the advertised
+ * price AND, by construction, the amount api/checkout.ts charges via Stripe
+ * price_data.unit_amount. Returns true if the line was added, false if the
+ * amount failed validation (so the Gift page can surface an error). Recipient
+ * name / email and a personal message are optional.
+ */
+export const addGiftCard = (input: {
+  amountPence: number;
+  label: string;
+  recipientName?: string;
+  recipientEmail?: string;
+  giftMessage?: string;
+}): boolean => {
+  const amountPence = Math.round(input.amountPence);
+  // Whole pounds only, within bounds — never trust the caller; the server
+  // re-validates the same window in api/checkout.ts.
+  if (
+    !Number.isFinite(amountPence) ||
+    amountPence < GIFT_MIN_PENCE ||
+    amountPence > GIFT_MAX_PENCE ||
+    amountPence % 100 !== 0
+  ) {
+    return false;
+  }
+  const current = ensureCache();
+  const added: GiftBasketItem = {
+    kind: "gift",
+    amountPence,
+    label: input.label.trim() || "Gift card",
+    ...(input.recipientName?.trim()
+      ? { recipientName: input.recipientName.trim() }
+      : {}),
+    ...(input.recipientEmail?.trim()
+      ? { recipientEmail: input.recipientEmail.trim() }
+      : {}),
+    ...(input.giftMessage?.trim()
+      ? { giftMessage: input.giftMessage.trim() }
+      : {}),
+    addedAt: Date.now(),
+  };
+  setCache([...current, added]);
+  // Note: gift adds do NOT fire the global "Added to basket" toast channel —
+  // that toast titles itself off a painting, which a gift has none of. The
+  // Gift page surfaces its own in-page confirmation instead.
+  return true;
 };
 
 /**
@@ -259,12 +431,52 @@ const subscribe = (callback: () => void): (() => void) => {
   };
 };
 
-const getSnapshot = (): BasketItem[] => ensureCache();
-const getServerSnapshot = (): BasketItem[] => [];
+const getSnapshot = (): BasketLine[] => ensureCache();
+const getServerSnapshot = (): BasketLine[] => [];
+
+// `useSyncExternalStore` requires referentially-STABLE snapshots between
+// renders when nothing changed — a fresh `.filter()` array each call would
+// loop. So the print-only + gift-only views are memoised against the last
+// underlying cache array: recompute only when `ensureCache()` returns a new
+// reference (which it does on every add/remove/clear and cross-tab sync).
+let lastFullSnapshot: BasketLine[] | null = null;
+let lastPrintSnapshot: BasketItem[] = [];
+let lastGiftSnapshot: GiftBasketItem[] = [];
+
+const refreshDerivedSnapshots = (full: BasketLine[]) => {
+  if (full === lastFullSnapshot) return;
+  lastFullSnapshot = full;
+  lastPrintSnapshot = full.filter(isPrintItem);
+  lastGiftSnapshot = full.filter(isGiftItem);
+};
+
+const getPrintSnapshot = (): BasketItem[] => {
+  refreshDerivedSnapshots(ensureCache());
+  return lastPrintSnapshot;
+};
+const getGiftSnapshot = (): GiftBasketItem[] => {
+  refreshDerivedSnapshots(ensureCache());
+  return lastGiftSnapshot;
+};
+const EMPTY_PRINTS: BasketItem[] = [];
+const EMPTY_GIFTS: GiftBasketItem[] = [];
 
 /**
- * Reactive hook — returns the current basket and re-renders the calling
- * component whenever any add/remove/clear happens (in this tab or another).
+ * Reactive hook — the HISTORICAL contract: returns the current PRINT lines and
+ * re-renders whenever any add/remove/clear happens (in this tab or another).
+ * Unchanged for every existing consumer; gift cards are excluded (they're not
+ * prints). Gift-aware surfaces use `useBasketLines()` / `useGiftCards()`.
  */
 export const useBasket = (): BasketItem[] =>
+  useSyncExternalStore(subscribe, getPrintSnapshot, () => EMPTY_PRINTS);
+
+/**
+ * Reactive hook — the FULL basket (print + gift lines). Narrow with the
+ * `isPrintItem` / `isGiftItem` type guards.
+ */
+export const useBasketLines = (): BasketLine[] =>
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+/** Reactive hook — gift-card lines only. */
+export const useGiftCards = (): GiftBasketItem[] =>
+  useSyncExternalStore(subscribe, getGiftSnapshot, () => EMPTY_GIFTS);

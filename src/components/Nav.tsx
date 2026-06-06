@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Logo } from "./Logo";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
-import { useBasket } from "../lib/basket";
+import { useBasketLines } from "../lib/basket";
 
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
@@ -67,7 +67,9 @@ const BasketIcon = ({ className }: { className?: string }) => (
  */
 export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const [scrolled, setScrolled] = useState(false);
-  const basket = useBasket();
+  // Count ALL basket lines — prints AND gift cards — so the badge reflects a
+  // gift-only basket too.
+  const basket = useBasketLines();
   const basketCount = basket.length;
   const location = useLocation();
   const reduceMotion = useReducedMotion();

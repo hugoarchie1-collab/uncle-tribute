@@ -348,6 +348,194 @@ const createThankYouCode = async (
 };
 
 // ---------------------------------------------------------------------------
+// Gift e-voucher minter (mirrors the thank-you-code minter's Stripe SDK shape —
+// gotcha #5 self-contained). Difference vs the thank-you code: this is an
+// AMOUNT-OFF coupon (the gift value the buyer paid), single-use, ~12-month
+// validity, with a readable GIFT-XXXXXX promotion code. The promotionCodes
+// call shape MUST match createThankYouCode above (promotion: { type, coupon })
+// — do NOT regress it to the legacy positional `coupon` argument.
+// ---------------------------------------------------------------------------
+interface GiftCard {
+  /** Pence value the buyer paid — equals the coupon's amount_off to the penny. */
+  amountPence: number;
+  /** Optional — who the gift is for. */
+  recipientEmail?: string;
+  recipientName?: string;
+  /** Optional — the buyer's personal note to the recipient. */
+  giftMessage?: string;
+}
+interface MintedGiftCard {
+  code: string; // GIFT-XXXXXX
+  amountPence: number;
+  amountLabel: string; // formatted GBP, e.g. "£50.00"
+  expiresLabel: string; // human date ~12 months out
+}
+const GIFT_VALID_DAYS = 365;
+const GIFT_PREFIX = "GIFT";
+// Same unambiguous alphabet as the thank-you code (no 0/O/1/I).
+const GIFT_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const giftSuffix = (length = 6): string => {
+  let out = "";
+  for (let i = 0; i < length; i += 1) {
+    out += GIFT_ALPHABET[Math.floor(Math.random() * GIFT_ALPHABET.length)];
+  }
+  return out;
+};
+const createGiftCard = async (
+  stripe: Stripe,
+  {
+    sessionId,
+    buyerEmail,
+    amountPence,
+    index,
+  }: {
+    sessionId: string;
+    buyerEmail: string | null;
+    amountPence: number;
+    index: number;
+  },
+): Promise<MintedGiftCard> => {
+  const expiresAt = new Date(Date.now() + GIFT_VALID_DAYS * 24 * 60 * 60 * 1000);
+  const expiresUnix = Math.floor(expiresAt.getTime() / 1000);
+  // INVARIANT: the minted gift value MUST equal the amount the buyer was
+  // charged for this gift line, to the penny. amount_off IS amountPence.
+  const coupon = await stripe.coupons.create({
+    amount_off: amountPence,
+    currency: "gbp",
+    duration: "once",
+    max_redemptions: 1,
+    redeem_by: expiresUnix,
+    name: "Estate gift card",
+    metadata: {
+      kind: "gift_card",
+      session_id: sessionId,
+      gift_index: String(index),
+      amount_pence: String(amountPence),
+      buyer_email: buyerEmail ?? "",
+    },
+  });
+  let promoErr: unknown = null;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const code = `${GIFT_PREFIX}-${giftSuffix()}`;
+    try {
+      // Match createThankYouCode's promotionCodes.create shape EXACTLY
+      // (promotion: { type: "coupon", coupon }) — the installed SDK's working
+      // call. Do NOT regress to a positional `coupon` field (gotcha).
+      await stripe.promotionCodes.create({
+        promotion: { type: "coupon", coupon: coupon.id },
+        code,
+        max_redemptions: 1,
+        expires_at: expiresUnix,
+        metadata: {
+          kind: "gift_card",
+          session_id: sessionId,
+          gift_index: String(index),
+          amount_pence: String(amountPence),
+          buyer_email: buyerEmail ?? "",
+        },
+      });
+      return {
+        code,
+        amountPence,
+        amountLabel: formatGBP(amountPence),
+        expiresLabel: expiresAt.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+      };
+    } catch (err) {
+      promoErr = err;
+      const message = err instanceof Error ? err.message : "";
+      // Only retry on a code collision; any other error is terminal.
+      if (!message.includes("code_already_exists") && !message.includes("already exists")) break;
+    }
+  }
+  throw promoErr instanceof Error
+    ? promoErr
+    : new Error("Failed to create gift promotion code.");
+};
+
+// ---------------------------------------------------------------------------
+// Gift line-item parser. The checkout handler marks gift-card purchases in the
+// session metadata. We accept TWO shapes for resilience against the parallel
+// checkout agent's exact wire format:
+//   (A) A JSON blob:  gift_cards = '[{"amountPence":5000,"recipientEmail":"…",
+//                                      "recipientName":"…","giftMessage":"…"}, …]'
+//   (B) Comma-joined parallel arrays (mirrors the multi-item print shape):
+//         gift_card_count        = "2"
+//         gift_amounts_pence     = "5000,10000"
+//         gift_recipient_emails  = "a@x.com,"      (empty slot = no recipient)
+//         gift_recipient_names   = "Ada,"
+//         gift_messages          = "Happy birthday|"   (pipe-joined; see note)
+// Comma is the array separator everywhere else in this file, so gift MESSAGES
+// (which may contain commas) are pipe-separated in shape (B). Either shape
+// yields the same GiftCard[]. Returns [] when there are no gift cards.
+// ---------------------------------------------------------------------------
+const cleanStr = (v: unknown): string | undefined => {
+  if (typeof v !== "string") return undefined;
+  const t = v.trim();
+  return t ? t : undefined;
+};
+const parseGiftCards = (m: Stripe.Metadata | null): GiftCard[] => {
+  if (!m) return [];
+
+  // Shape (A): a JSON blob.
+  const blob = cleanStr(m.gift_cards);
+  if (blob) {
+    try {
+      const arr = JSON.parse(blob);
+      if (Array.isArray(arr)) {
+        return arr
+          .map((raw): GiftCard | null => {
+            const amountPence = Math.round(
+              Number(
+                (raw && (raw.amountPence ?? raw.amount_pence ?? raw.amount)) ?? NaN,
+              ),
+            );
+            if (!Number.isFinite(amountPence) || amountPence <= 0) return null;
+            return {
+              amountPence,
+              recipientEmail: cleanStr(raw.recipientEmail ?? raw.recipient_email),
+              recipientName: cleanStr(raw.recipientName ?? raw.recipient_name),
+              giftMessage: cleanStr(raw.giftMessage ?? raw.gift_message),
+            };
+          })
+          .filter((g): g is GiftCard => g !== null);
+      }
+    } catch {
+      // fall through to shape (B)
+    }
+  }
+
+  // Shape (B): comma-joined parallel arrays.
+  const amounts = (m.gift_amounts_pence || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (amounts.length === 0) return [];
+  // Recipient email/name are comma-joined; messages are pipe-joined (may hold
+  // commas). Keep empty slots positional by NOT filtering them out.
+  const splitKeepEmpties = (raw: string | undefined, sep: string): string[] =>
+    (raw || "").split(sep).map((s) => s.trim());
+  const emails = splitKeepEmpties(m.gift_recipient_emails, ",");
+  const names = splitKeepEmpties(m.gift_recipient_names, ",");
+  const messages = splitKeepEmpties(m.gift_messages, "|");
+  return amounts
+    .map((a, idx): GiftCard | null => {
+      const amountPence = Math.round(Number(a));
+      if (!Number.isFinite(amountPence) || amountPence <= 0) return null;
+      return {
+        amountPence,
+        recipientEmail: cleanStr(emails[idx]),
+        recipientName: cleanStr(names[idx]),
+        giftMessage: cleanStr(messages[idx]),
+      };
+    })
+    .filter((g): g is GiftCard => g !== null);
+};
+
+// ---------------------------------------------------------------------------
 // Inlined order-confirmation email → HTML string (mirror of
 // api/_lib/emails/OrderConfirmation.tsx + ./styles.ts — gotcha #5)
 // ---------------------------------------------------------------------------
@@ -468,6 +656,90 @@ const renderOrderConfirmationHtml = (p: {
 };
 
 // ---------------------------------------------------------------------------
+// Inlined gift e-voucher email → HTML string. Same dark estate palette + the
+// shared esc() / SANS / DISPLAY utils as the order-confirmation email above
+// (gotcha #5 — inline, do not import). Sent either to the named recipient (with
+// the buyer's note) or, when no recipient was given, back to the buyer to
+// forward. The estate is always BCC'd for a paper trail.
+// ---------------------------------------------------------------------------
+const renderGiftHtml = (p: {
+  /** true → addressed to the recipient; false → addressed to the buyer. */
+  toRecipient: boolean;
+  recipientName?: string | null;
+  buyerName?: string | null;
+  giftMessage?: string | null;
+  code: string; // GIFT-XXXXXX
+  amountLabel: string; // formatted GBP
+  expiresLabel: string;
+  estateEmail: string;
+  orderRef: string;
+}): string => {
+  const firstOf = (name: string | null | undefined, fallback: string): string => {
+    const t = (name ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : fallback;
+  };
+  const recipientFirst = firstOf(p.recipientName, "there");
+  const buyerFull = (p.buyerName ?? "").trim();
+  const buyerLabel = buyerFull ? esc(buyerFull) : "someone who cares for you";
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#ede6d6;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:28px 22px;margin:28px 0;text-align:center;`,
+    amount: `font-family:${DISPLAY};font-weight:700;font-size:40px;line-height:1;color:#ede6d6;margin:0 0 6px 0;`,
+    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:14px 0 12px 0;display:block;`,
+    note: `font-family:${DISPLAY};font-style:italic;font-size:16px;line-height:1.6;color:#ede6d6;margin:0;`,
+    noteCard: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+
+  const greeting = p.toRecipient
+    ? `Dear ${recipientFirst},`
+    : `Thank you, ${firstOf(p.buyerName, "there")}.`;
+
+  const intro = p.toRecipient
+    ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards a signed, estate-stamped giclée print of one of Stephen's mandalas, each one made to order at Point 101 in London.</p>`
+    : `<p style="${s.body}">Your gift card for <em>The Art of Stephen Meakin</em> is ready. Below is the code and how it's redeemed — forward this email to whomever it's for, or keep it for yourself.</p>`;
+
+  const noteHtml =
+    p.toRecipient && cleanStr(p.giftMessage ?? undefined)
+      ? `<div style="${s.noteCard}">`
+        + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">A note from ${buyerLabel}</p>`
+        + `<p style="${s.note}">${esc((p.giftMessage ?? "").trim())}</p>`
+        + `</div>`
+      : "";
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A gift from the Stephen Meakin estate</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">${greeting}</h1>`
+    + intro
+    + noteHtml
+    + `<div style="${s.giftCard}">`
+    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">Your gift card</p>`
+    + `<p style="${s.amount}">${esc(p.amountLabel)}</p>`
+    + `<p style="${s.small}margin:0 0 4px 0;">towards a signed estate print</p>`
+    + `<code style="${s.code}">${esc(p.code)}</code>`
+    + `<p style="${s.small}margin:0;">Valid until ${esc(p.expiresLabel)}.</p>`
+    + `</div>`
+    + `<h2 style="${s.subheading}">How to redeem</h2>`
+    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code <strong style="color:#ede6d6;">${esc(p.code)}</strong> at checkout. It covers a single order — for example, an A2 Collector's Edition print — and the gift value is taken off the total. If the print costs more than the gift, you simply pay the difference; if less, the gift covers it in full.</p>`
+    + `<p style="${s.small}">The code is single-use and applies to one order. There's no need to spend it all at once on shipping or add-ons — just pick the piece that speaks to you.</p>`
+    + `<p style="${s.signoff}">With warmth from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -557,6 +829,120 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         shipping_name: shipping?.name,
         shipping_address: shipping?.address,
       });
+
+      // -- 0. Gift e-vouchers -----------------------------------------------
+      // Run BEFORE the print confirmation block (which has early `break`s when
+      // RESEND_API_KEY / buyerEmail are missing) so gifts are always processed.
+      // For each gift card purchased: mint an amount_off coupon + GIFT-XXXXXX
+      // promotion code worth EXACTLY what the buyer paid, then email it to the
+      // recipient (with the buyer's note) or back to the buyer. Every step is
+      // try/catch'd per-card so one failure can't block the others or the
+      // webhook — we ALWAYS return 200 (never make Stripe retry).
+      const giftCards = parseGiftCards(m);
+      if (giftCards.length > 0) {
+        const resendKeyGift = process.env.RESEND_API_KEY;
+        const fromEmailGift = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+        const bccEmailGift = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+        const resendGift = resendKeyGift ? new Resend(resendKeyGift) : null;
+        if (!resendGift) {
+          console.warn(
+            "[stripe-webhook] RESEND_API_KEY missing — gift codes will be minted but the gift email cannot be sent.",
+            { session_id: session.id, gift_count: giftCards.length },
+          );
+        }
+        for (let i = 0; i < giftCards.length; i += 1) {
+          const gift = giftCards[i];
+          let minted: MintedGiftCard | null = null;
+          try {
+            minted = await createGiftCard(stripe, {
+              sessionId: session.id,
+              buyerEmail,
+              amountPence: gift.amountPence,
+              index: i,
+            });
+            // INVARIANT confirmed in the log: minted value == amount charged.
+            console.log("[stripe-webhook] gift card minted", {
+              session_id: session.id,
+              gift_index: i,
+              code: minted.code,
+              amount_pence: minted.amountPence,
+              charged_pence: gift.amountPence,
+              value_matches_charge: minted.amountPence === gift.amountPence,
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.error("[stripe-webhook] gift card mint failed:", message, {
+              session_id: session.id,
+              gift_index: i,
+            });
+            continue; // skip the email for a card we couldn't mint
+          }
+
+          // Send the dignified gift email. To the recipient if given (with the
+          // buyer's note); else back to the buyer to forward. Estate BCC'd.
+          if (!resendGift) continue;
+          const toRecipient = !!gift.recipientEmail;
+          const toAddress = gift.recipientEmail || buyerEmail;
+          if (!toAddress) {
+            console.warn(
+              "[stripe-webhook] gift card has no recipient email AND no buyer email — code minted, email skipped.",
+              { session_id: session.id, gift_index: i, code: minted.code },
+            );
+            continue;
+          }
+          try {
+            const html = renderGiftHtml({
+              toRecipient,
+              recipientName: gift.recipientName ?? null,
+              buyerName,
+              giftMessage: gift.giftMessage ?? null,
+              code: minted.code,
+              amountLabel: minted.amountLabel,
+              expiresLabel: minted.expiresLabel,
+              estateEmail: DEFAULT_FROM,
+              orderRef: session.id.slice(0, 18) + "…",
+            });
+            const subject = toRecipient
+              ? `A gift for you — ${minted.amountLabel} towards a Stephen Meakin print`
+              : `Your gift card — ${minted.amountLabel} for The Art of Stephen Meakin`;
+            const giftSend = await resendGift.emails.send({
+              from: `${FROM_NAME} <${fromEmailGift}>`,
+              to: [toAddress],
+              bcc:
+                bccEmailGift && bccEmailGift.toLowerCase() !== fromEmailGift.toLowerCase()
+                  ? [bccEmailGift]
+                  : undefined,
+              replyTo: DEFAULT_FROM,
+              subject,
+              html,
+            });
+            if (giftSend.error) {
+              console.error("[stripe-webhook] gift email Resend error:", giftSend.error, {
+                session_id: session.id,
+                gift_index: i,
+                code: minted.code,
+              });
+            } else {
+              console.log("[stripe-webhook] gift email sent", {
+                session_id: session.id,
+                gift_index: i,
+                code: minted.code,
+                to: toAddress,
+                to_recipient: toRecipient,
+                resend_id: giftSend.data?.id,
+              });
+            }
+          } catch (err) {
+            // Swallow all email errors — never fail the webhook on email send.
+            const message = err instanceof Error ? err.message : String(err);
+            console.error("[stripe-webhook] gift email failed:", message, {
+              session_id: session.id,
+              gift_index: i,
+              code: minted.code,
+            });
+          }
+        }
+      }
 
       // -- 1. Mint the thank-you code (or fall back) -----------------------
       // We do this BEFORE rendering the email so the code lands in the
