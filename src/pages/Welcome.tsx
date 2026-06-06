@@ -280,25 +280,62 @@ export const Welcome = () => {
               every section (no opaque card — gotcha); hero-text-shadow for
               legibility; Fraunces opsz held ≤48 (finale invariant); whole-
               element Reveals only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="header" className="mx-auto max-w-[820px] mb-5 md:mb-6">
-              <p className={cn(EYEBROW, "m-0 mb-6")}>A reminder</p>
-              <p className="font-display font-normal tracking-[-0.012em] text-[clamp(32px,3.6vw,54px)] leading-[1.18] text-ink m-0 text-balance hero-text-shadow">
+          <section className="relative isolate mx-auto w-full max-w-[680px] 2xl:max-w-[720px] px-4 sm:px-6 md:px-8">
+            <Reveal as="header" className="mb-7 md:mb-9">
+              <p className={cn(EYEBROW, "m-0 mb-7 text-center")}>A reminder</p>
+              {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
+                  Fraunces opsz 40, generous leading, a rust ::first-letter drop
+                  cap (pure CSS — the word itself is untouched). text-pretty so
+                  the rag flows cleanly around the floated cap. */}
+              <p
+                className="font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty hero-text-shadow [&::first-letter]:float-left [&::first-letter]:mr-3 [&::first-letter]:mt-[0.06em] [&::first-letter]:font-display [&::first-letter]:text-accent [&::first-letter]:leading-[0.74] [&::first-letter]:tracking-[-0.02em] [&::first-letter]:text-[clamp(60px,8vw,104px)]"
+                style={{
+                  fontVariationSettings: '"opsz" 40, "wght" 400',
+                  fontSize: "clamp(24px, 2.4vw, 34px)",
+                  lineHeight: 1.42,
+                }}
+              >
                 {WELCOME.reminderLong[0]}
               </p>
             </Reveal>
 
-            {/* P2–P4 — one flowing reading column (Hugo: keep the passage together
-                as the "first part", not split into stiff columns). */}
-            <Reveal as="div" className="mx-auto max-w-[820px] flex flex-col gap-5 md:gap-6">
-              {WELCOME.reminderLong.slice(1, 4).map((para) => (
+            {/* P2–P3 — the calm single monograph reading column; hero-text-shadow
+                for legibility on the pink peacock backdrop. VERBATIM. */}
+            <Reveal as="div" className="flex flex-col gap-6 md:gap-7">
+              {WELCOME.reminderLong.slice(1, 3).map((para) => (
                 <p
                   key={para.slice(0, 24)}
-                  className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0"
+                  className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 hero-text-shadow"
                 >
                   {para}
                 </p>
               ))}
+            </Reveal>
+
+            {/* Pull-quote — ONE of Stephen's EXACT existing lines lifted to
+                display scale as a quiet editorial ECHO, set ABOVE the paragraph
+                it is drawn from (reminderLong[3]), which STILL renders in full
+                below — nothing removed or reordered. The quote is byte-identical
+                to that paragraph's opening (its first two sentences). opsz 44. */}
+            <Reveal delay={0.05} className="my-9 md:my-12">
+              <p
+                className="font-display font-normal italic text-ink text-balance m-0 max-w-[20ch] hero-text-shadow"
+                style={{
+                  fontVariationSettings: '"opsz" 44, "wght" 400',
+                  fontSize: "clamp(28px, 3.6vw, 46px)",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.14,
+                }}
+              >
+                {WELCOME.reminderLong[3].split(". ").slice(0, 2).join(". ") + "."}
+              </p>
+            </Reveal>
+
+            {/* reminderLong[3] — its source paragraph, rendered VERBATIM in full. */}
+            <Reveal as="div" className="flex flex-col">
+              <p className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 hero-text-shadow">
+                {WELCOME.reminderLong[3]}
+              </p>
             </Reveal>
 
             {/* Closing premise (P5), VERBATIM — pulled out as a two-tier
@@ -404,9 +441,10 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2] md:aspect-[21/9] 2xl:aspect-[12/5]"
+              aspect="aspect-[3/2] md:aspect-[2/1] 2xl:aspect-[21/9]"
               edges="y"
               parallax={0.18}
+              objectPosition="center 62%"
               shadow=""
             />
           </Reveal>
@@ -515,7 +553,7 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-center">
                 <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
@@ -648,7 +686,7 @@ export const Welcome = () => {
                 <figcaption className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-3 text-center">
                   Farmacy · Notting Hill · London
                 </figcaption>
-                <p className="font-display italic text-[13px] leading-[1.55] text-ink/45 mt-2 text-center">
+                <p className="font-display italic text-[15px] md:text-[16px] leading-[1.6] text-ink/60 mt-2.5 text-center">
                   Photograph from Stephen's archive, c. 2016.
                 </p>
               </Reveal>
