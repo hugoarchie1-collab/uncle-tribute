@@ -19,8 +19,11 @@ const NAV_LINKS = [
 
 /** Estate meta secondary links — the quiet footer set (real routes only). */
 const SECONDARY_LINKS = [
-  { to: "/faq", label: "FAQ" },
   { to: "/basket", label: "Basket" },
+  { to: "/faq", label: "FAQ" },
+  { to: "/privacy", label: "Privacy" },
+  { to: "/terms", label: "Terms" },
+  { to: "/returns", label: "Returns" },
 ];
 
 /** Site canonical easing — mirrors tailwind transitionTimingFunction.smooth. */
