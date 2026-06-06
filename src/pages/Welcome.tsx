@@ -280,8 +280,8 @@ export const Welcome = () => {
               every section (no opaque card — gotcha); hero-text-shadow for
               legibility; Fraunces opsz held ≤48 (finale invariant); whole-
               element Reveals only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[680px] 2xl:max-w-[720px] px-4 sm:px-6 md:px-8">
-            <Reveal as="header" className="mb-7 md:mb-9">
+          <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <Reveal as="header" className="mb-7 md:mb-9 mx-auto max-w-[820px]">
               <p className={cn(EYEBROW, "m-0 mb-7 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust ::first-letter drop
@@ -299,27 +299,12 @@ export const Welcome = () => {
               </p>
             </Reveal>
 
-            {/* P2–P3 — the calm single monograph reading column; hero-text-shadow
-                for legibility on the pink peacock backdrop. VERBATIM. */}
-            <Reveal as="div" className="flex flex-col gap-6 md:gap-7">
-              {WELCOME.reminderLong.slice(1, 3).map((para) => (
-                <p
-                  key={para.slice(0, 24)}
-                  className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 hero-text-shadow"
-                >
-                  {para}
-                </p>
-              ))}
-            </Reveal>
-
-            {/* Pull-quote — ONE of Stephen's EXACT existing lines lifted to
-                display scale as a quiet editorial ECHO, set ABOVE the paragraph
-                it is drawn from (reminderLong[3]), which STILL renders in full
-                below — nothing removed or reordered. The quote is byte-identical
-                to that paragraph's opening (its first two sentences). opsz 44. */}
-            <Reveal delay={0.05} className="my-9 md:my-12">
+            {/* Pull-quote — Stephen's own line lifted to display scale as a
+                centred editorial feature, leading INTO the two-column body it is
+                drawn from. Byte-identical to reminderLong[3]'s opening. opsz 44. */}
+            <Reveal delay={0.05} className="my-8 md:my-10 mx-auto max-w-[760px] text-center">
               <p
-                className="font-display font-normal italic text-ink text-balance m-0 max-w-[20ch] hero-text-shadow"
+                className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
                 style={{
                   fontVariationSettings: '"opsz" 44, "wght" 400',
                   fontSize: "clamp(28px, 3.6vw, 46px)",
@@ -331,11 +316,20 @@ export const Welcome = () => {
               </p>
             </Reveal>
 
-            {/* reminderLong[3] — its source paragraph, rendered VERBATIM in full. */}
-            <Reveal as="div" className="flex flex-col">
-              <p className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 hero-text-shadow">
-                {WELCOME.reminderLong[3]}
-              </p>
+            {/* TWO-COLUMN essay body — reminderLong[1..3] VERBATIM, flowed into
+                two balanced columns on md+ so the passage reads as a designed
+                magazine spread and takes ~half the vertical space (Hugo: less
+                scrolling + more aesthetic). break-inside-avoid keeps each
+                paragraph whole; hero-text-shadow for legibility on the backdrop. */}
+            <Reveal as="div" className="columns-1 md:columns-2 gap-x-10 lg:gap-x-14 [column-fill:_balance]">
+              {WELCOME.reminderLong.slice(1, 4).map((para) => (
+                <p
+                  key={para.slice(0, 24)}
+                  className="break-inside-avoid font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
+                >
+                  {para}
+                </p>
+              ))}
             </Reveal>
 
             {/* Closing premise (P5), VERBATIM — pulled out as a two-tier
@@ -715,7 +709,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[58svh] md:min-h-[64svh] w-full items-start overflow-hidden pt-4 pb-10 md:pt-6 md:pb-12 lg:pt-8 lg:pb-14"
+            className="relative isolate flex min-h-[54svh] md:min-h-[58svh] w-full items-start overflow-hidden pt-0 pb-8 md:pt-0 md:pb-10 lg:pt-0 lg:pb-12"
             aria-label="Sacred Geometry"
           >
 
@@ -778,7 +772,7 @@ export const Welcome = () => {
             {/* Content column — centered flow. Layer order: pink backdrop
                 (z-0, the shared fixed peacock layer) →
                 content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
-            <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-3 md:py-5">
+            <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-1 md:py-2">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean
@@ -797,8 +791,8 @@ export const Welcome = () => {
                       // Sized so the longest word (GEOMETRY, 8 caps) fits on ONE
                       // line at every width — no orphaned "Y". Big + caps + 700
                       // reads as the screen-filling brand statement.
-                      fontSize: "clamp(52px, 12.5vw, 202px)",
-                      letterSpacing: "-0.025em",
+                      fontSize: "clamp(58px, 14.5vw, 240px)",
+                      letterSpacing: "-0.03em",
                       lineHeight: 0.92,
                       textTransform: "uppercase",
                       color: "#ede6d6",
