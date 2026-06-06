@@ -27,6 +27,7 @@ const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.C
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
+const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -113,6 +114,7 @@ const AnimatedRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
+          <Route path="/trade" element={<Trade />} />
           <Route path="/basket" element={<Basket />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route path="/order/cancel" element={<OrderCancel />} />

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -7,10 +7,252 @@ import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
-import { clearBasket } from "../lib/basket";
+import { getBasket, clearBasket, type BasketItem } from "../lib/basket";
+import {
+  PAINTINGS,
+  getPaintingById,
+  getPaintingsByCollection,
+  getAnchorTier,
+  formatGBP,
+  type Painting,
+} from "../data/paintings";
+
+/* =============================================================================
+ * COMPANION PIECES — "Complete the set" post-purchase upsell
+ * -----------------------------------------------------------------------------
+ * A quiet, dignified suggestion shown AFTER a successful order: 2–3 works the
+ * buyer might take next — other colourways of the piece they just bought, then
+ * its collection-mates, then a calm catalogue fallback. Framed as estate
+ * generosity ("Stephen often worked in pairs"), never a hard sell, never a
+ * "SALE" / discount badge.
+ *
+ * ADVERTISED == CHARGED (gotcha #9): each card starts a FRESH, single-item
+ * Stripe Checkout via the SAME `/api/checkout` client path PaintingDetail's
+ * "Buy now" uses — the server prices it from the canonical PRINT_TIERS ladder.
+ * The card NEVER invents a price: the figure it shows is the painting's anchor
+ * tier price read straight from the data layer (getAnchorTier), and the request
+ * posts that SAME `tierId`, so the £ shown equals the £ Stripe charges to the
+ * penny. No client-side discounting; no thank-you code is fabricated here (the
+ * 10% FRIENDS- code is minted server-side and only reaches the buyer via the
+ * confirmation email — so we reference it warmly without printing a code).
+ * ========================================================================== */
+
+/** One companion suggestion: a painting + a specific colourway to surface. */
+interface Companion {
+  painting: Painting;
+  colourwayName: string;
+  image: string;
+  /** Short, warm reason this piece is being suggested. */
+  note: string;
+}
+
+/**
+ * Build up to `max` companion suggestions from the paintings the buyer just
+ * bought (snapshot taken before the basket is cleared). Order of preference:
+ *   1. other available colourways of a just-bought painting (a true "companion")
+ *   2. collection-mates of a just-bought painting
+ *   3. a calm catalogue fallback (covers the single-item "Buy now" path, where
+ *      the basket may be empty by the time we land here)
+ * Never suggests a colourway/painting the buyer just bought.
+ */
+const buildCompanions = (justBought: BasketItem[], max = 3): Companion[] => {
+  const out: Companion[] = [];
+  const seen = new Set<string>(); // painting|colourway keys already chosen
+  const boughtKeys = new Set(
+    justBought.map((i) => `${i.paintingId}|${i.colourwayName}`),
+  );
+  const boughtPaintingIds = new Set(justBought.map((i) => i.paintingId));
+
+  const tryAdd = (painting: Painting, colourwayName: string, note: string) => {
+    if (out.length >= max) return;
+    const key = `${painting.id}|${colourwayName}`;
+    if (seen.has(key) || boughtKeys.has(key)) return;
+    const cw = painting.colourways.find(
+      (c) => c.name === colourwayName && c.available,
+    );
+    if (!cw) return;
+    seen.add(key);
+    out.push({ painting, colourwayName: cw.name, image: cw.image, note });
+  };
+
+  // 1 · other colourways of the works just bought — Stephen's own variations.
+  for (const id of boughtPaintingIds) {
+    const painting = getPaintingById(id);
+    if (!painting) continue;
+    for (const cw of painting.colourways) {
+      if (!cw.available) continue;
+      tryAdd(
+        painting,
+        cw.name,
+        "Another of Stephen's own colourways for this work.",
+      );
+    }
+  }
+
+  // 2 · collection-mates of the works just bought — pieces made alongside it.
+  for (const id of boughtPaintingIds) {
+    const painting = getPaintingById(id);
+    if (!painting) continue;
+    for (const mate of getPaintingsByCollection(painting.collection)) {
+      if (boughtPaintingIds.has(mate.id)) continue;
+      const original =
+        mate.colourways.find((c) => c.isOriginal && c.available) ??
+        mate.colourways.find((c) => c.available);
+      if (!original) continue;
+      tryAdd(mate, original.name, "A companion from the same collection.");
+    }
+  }
+
+  // 3 · graceful fallback — a quiet trio from the wider catalogue. Covers the
+  // "Buy now" path (basket already empty) so the section is never empty.
+  for (const painting of PAINTINGS) {
+    if (boughtPaintingIds.has(painting.id)) continue;
+    const original =
+      painting.colourways.find((c) => c.isOriginal && c.available) ??
+      painting.colourways.find((c) => c.available);
+    if (!original) continue;
+    tryAdd(painting, original.name, "From the estate collection.");
+  }
+
+  return out.slice(0, max);
+};
+
+/**
+ * CompanionCard — one quiet suggestion. Clicking starts a NEW single-item
+ * Stripe Checkout via the SAME `/api/checkout` client path used elsewhere, so
+ * the new session is freshly + correctly priced by the server. The advertised
+ * figure is the painting's anchor-tier price (data layer) and we POST that same
+ * tierId — advertised == charged.
+ */
+const CompanionCard = ({ companion }: { companion: Companion }) => {
+  const { painting, colourwayName, image, note } = companion;
+  const anchor = getAnchorTier(painting);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Mirrors PaintingDetail's onBuyNow: a single-item POST the server prices.
+  const onTake = async () => {
+    setStatus("loading");
+    setErrorMsg("");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paintingId: painting.id,
+          colourwayName,
+          tierId: anchor.id,
+          framing: false,
+          embellished: false,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      const body = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !body.url) {
+        setStatus("error");
+        setErrorMsg(body.error ?? "Couldn't open checkout. Please try again.");
+        return;
+      }
+      window.location.assign(body.url);
+    } catch (err) {
+      clearTimeout(timeoutId);
+      setStatus("error");
+      if (err instanceof Error && err.name === "AbortError") {
+        setErrorMsg("Checkout took too long. Please try again.");
+      } else {
+        setErrorMsg("Network error. Please try again.");
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col text-left ring-1 ring-line p-3.5 transition-all duration-300 hover:ring-ink/40">
+      <div className="relative w-full aspect-square overflow-hidden bg-ink/[0.03] mb-3.5">
+        <picture>
+          <source srcSet={asset(webp(image))} type="image/webp" />
+          <img
+            src={asset(image)}
+            alt={`${painting.title} — ${colourwayName}`}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </picture>
+      </div>
+      <p className="font-sans text-[14px] font-semibold leading-[1.3] text-ink m-0">
+        {painting.title}
+      </p>
+      <p className={cn(EYEBROW_TIGHT, "mt-1.5")}>{colourwayName}</p>
+      <p className={cn(META, "mt-2 mb-3")}>{note}</p>
+      <div className="mt-auto flex items-baseline justify-between gap-3">
+        <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink">
+          {formatGBP(anchor.pricePence).replace(".00", "")}
+        </span>
+        <span className={cn(EYEBROW_TIGHT)}>{anchor.size.split(" ")[0]}</span>
+      </div>
+      <button
+        type="button"
+        onClick={onTake}
+        disabled={status === "loading"}
+        className={cn(BTN_SECONDARY, "mt-3.5 w-full disabled:opacity-60")}
+      >
+        {status === "loading" ? "Opening checkout…" : "Take this one too"}
+      </button>
+      {status === "error" && (
+        <p className="mt-2 font-sans text-[12.5px] font-semibold text-ink m-0">
+          {errorMsg}
+        </p>
+      )}
+    </div>
+  );
+};
+
+/**
+ * CompleteTheSet — the post-purchase companion block. Renders nothing if there
+ * are no honest suggestions to make.
+ */
+const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
+  const companions = useMemo(
+    () => buildCompanions(justBought, 3),
+    [justBought],
+  );
+  if (companions.length === 0) return null;
+
+  return (
+    <Reveal as="div" className="mt-20 md:mt-28 text-left">
+      <div className="text-center mb-9">
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Complete the set</p>
+        <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0 mb-3">
+          A companion piece
+        </h2>
+        <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mx-auto max-w-[560px]">
+          Stephen often worked in pairs and in series — a colourway beside its
+          twin, a flower beside its collection. With no obligation, here are a
+          few of his works that sit naturally alongside the one you&rsquo;ve
+          just taken home.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        {companions.map((c) => (
+          <CompanionCard key={`${c.painting.id}|${c.colourwayName}`} companion={c} />
+        ))}
+      </div>
+      {/* The thank-you 10% code is minted server-side and reaches the buyer via
+          the confirmation email — we reference it warmly here, but never print
+          a code we don't hold client-side (no fabrication; gotcha #9 register). */}
+      <p className={cn(META, "text-center mt-7 mx-auto max-w-[560px]")}>
+        Your order comes with a small thank-you towards a future print — look for
+        it in the confirmation email Stripe is sending now, with our warmth.
+      </p>
+    </Reveal>
+  );
+};
 
 /**
  * Post-checkout confirmation page. Stripe redirects here on a successful
@@ -21,6 +263,12 @@ export const OrderSuccess = () => {
   usePageTitle("Order confirmed — The Art of Stephen Meakin");
   const [params] = useSearchParams();
   const sessionId = params.get("session_id");
+
+  // Snapshot what was just bought BEFORE clearing the basket, so the companion
+  // upsell can suggest other colourways / collection-mates of those works.
+  // (On the single-item "Buy now" path the basket may already be empty — the
+  // upsell falls back to a quiet catalogue trio in that case.)
+  const [justBought] = useState<BasketItem[]>(() => getBasket());
 
   // Clear the basket once on mount. Stripe only redirects here after a
   // successful payment, so it's safe to wipe local state at this point.
@@ -69,6 +317,13 @@ export const OrderSuccess = () => {
               Framed as an introduction to Stephen's work, not a referral. */}
           <ShareTheEstate align="center" />
         </Reveal>
+
+        {/* Complete the set — dignified post-purchase companion suggestions.
+            Each card starts a FRESH single-item Stripe Checkout via the same
+            /api/checkout client path, so the new session is server-priced
+            (advertised == charged). Renders nothing if there's nothing honest
+            to suggest. */}
+        <CompleteTheSet justBought={justBought} />
       </main>
       <FooterCatalogue />
       <Footer />

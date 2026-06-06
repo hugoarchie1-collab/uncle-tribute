@@ -177,17 +177,34 @@ export const News = () => {
         </Reveal>
 
         {/* EMPTY STATE — no fabricated content. The live page today: a centred,
-            dignified "being prepared" line. Shown until real entries are added
-            to src/data/news.ts. */}
+            dignified "being prepared" line, with the WAITLIST raised to the clear
+            primary action (the foot Friends & Family panel is suppressed below
+            while NEWS is empty so this single capture leads, never doubled). Shown
+            until real entries are added to src/data/news.ts. */}
         {!hasNews ? (
-          <Reveal as="div" className="max-w-[760px] mx-auto text-center">
-            <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted m-0">
-              The estate calendar is being prepared. New collections and singles,
-              exhibitions, the return of Steve's mandala workshop and gatherings hosted
-              by The Mandala Company will be announced here as they are confirmed. Leave
-              your name below and we'll write the moment there's something to share.
-            </p>
-          </Reveal>
+          <div className="max-w-[760px] mx-auto">
+            <Reveal as="div" className="text-center">
+              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted m-0">
+                The estate calendar is being prepared. New collections and singles,
+                exhibitions, the return of Steve's mandala workshop and gatherings hosted
+                by The Mandala Company will be announced here as they are confirmed. Each
+                release is a limited, numbered edition — quiet, and small.
+              </p>
+            </Reveal>
+
+            {/* WAITLIST — the primary action while NEWS is empty. Reuses the
+                NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
+                framing is provenance, not hype: early access + low edition numbers,
+                never countdowns or "SALE". Centred like the rest of the page. */}
+            <Reveal as="div" delay={0.06} className="mt-10 md:mt-12 flex justify-center">
+              <NewsletterSignup
+                variant="panel"
+                eyebrow="Join the waitlist"
+                title="Be first to know about the next release."
+                intro="When the next edition is released, those on the waitlist hear first — an early window to take a piece while the lowest edition numbers are still available. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
+              />
+            </Reveal>
+          </div>
         ) : null}
 
         {/* FEATURED NEXT-DROP HERO — one item, never a carousel. A centred,
@@ -292,17 +309,22 @@ export const News = () => {
           </>
         )}
 
-        {/* FOOT — the Friends & Family panel is the #notify target for every CTA. */}
-        <Reveal as="section" delay={0.05} className="mt-16 md:mt-24 scroll-mt-28">
-          <div id="notify" className="flex justify-center">
-            <NewsletterSignup
-              variant="panel"
-              eyebrow="Friends & Family"
-              title="Be the first to know."
-              intro="Releases are quiet and limited. Leave your name and we'll write to you before each collection, single, exhibition or workshop — and never more often than that."
-            />
-          </div>
-        </Reveal>
+        {/* FOOT — the Friends & Family panel is the #notify target for every CTA.
+            Shown only once NEWS has entries; while the feed is empty the waitlist
+            in the empty-state above is the single, leading capture (no duplicate
+            panel) and there are no entry CTAs pointing at #notify yet. */}
+        {hasNews ? (
+          <Reveal as="section" delay={0.05} className="mt-16 md:mt-24 scroll-mt-28">
+            <div id="notify" className="flex justify-center">
+              <NewsletterSignup
+                variant="panel"
+                eyebrow="Friends & Family"
+                title="Be the first to know."
+                intro="Releases are quiet and limited. Leave your name and we'll write to you before each collection, single, exhibition or workshop — and never more often than that."
+              />
+            </div>
+          </Reveal>
+        ) : null}
       </main>
       <FooterCatalogue />
       <Footer />
