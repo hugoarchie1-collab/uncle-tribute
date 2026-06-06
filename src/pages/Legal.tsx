@@ -688,7 +688,7 @@ const LegalPage = ({
                   return (
                     <p
                       key={j}
-                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
+                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] 2xl:max-w-[72ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
                     >
                       {block.text}
                     </p>

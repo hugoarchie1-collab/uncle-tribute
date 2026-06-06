@@ -95,7 +95,7 @@ export const Contact = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <AmbientBackdrop opacity={0.4} />
       <Seo
         title="Contact the estate"

@@ -187,7 +187,7 @@ export const FAQ = () => {
               <h2 className={cn("font-display font-semibold tracking-[-0.04em] text-balance text-ink", "m-0 text-[clamp(24px,2.8vw,40px)] leading-[1.1]")}>
                 {qa.question}
               </h2>
-              <div className={cn(SUBTITLE, "max-w-none 2xl:text-[19px]")}>
+              <div className={cn(SUBTITLE, "max-w-none 2xl:max-w-[68ch] 2xl:text-[19px]")}>
                 {qa.answer}
               </div>
             </section>
