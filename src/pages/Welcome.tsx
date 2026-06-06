@@ -707,10 +707,10 @@ export const Welcome = () => {
                 className="block h-auto select-none"
                 style={{
                   opacity: 1,
-                  width: "130%",
-                  marginLeft: "-15%",
+                  width: "150%",
+                  marginLeft: "-25%",
                   height: "auto",
-                  maxHeight: "clamp(320px, 52svh, 640px)",
+                  maxHeight: "clamp(420px, 66svh, 820px)",
                   objectFit: "contain",
                   objectPosition: "bottom center",
                   WebkitMaskImage:
