@@ -164,7 +164,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
         "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
         scrolled
-          ? "py-3 bg-[#0a0908]/92 backdrop-blur-md border-b border-white/5"
+          ? "py-3 bg-[#0a0908]/95 border-b border-white/5"
           : overlay
             ? "py-5 bg-gradient-to-b from-[#0a0908]/70 via-[#0a0908]/25 to-transparent border-b border-transparent"
             : "py-5 bg-transparent border-b border-transparent",
@@ -341,7 +341,7 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
-            className="xl:hidden fixed inset-0 z-[120] bg-black/55 backdrop-blur-[2px]"
+            className="xl:hidden fixed inset-0 z-[120] bg-black/60"
           />
 
           {/* PANEL — opaque drawer sliding in from the right. */}

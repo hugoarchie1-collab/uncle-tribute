@@ -89,6 +89,14 @@ export const VideoIntro = () => {
     const video = videoRef.current;
     if (!video) return;
 
+    // React's `muted` PROP is unreliable on the DOM property — iOS Safari only
+    // honours muted-autoplay when the element is GENUINELY muted, otherwise it
+    // declines autoplay and shows a tap-to-play control (the reported "have to
+    // manually click"). Force muted imperatively before play().
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute("muted", "");
+
     const tryPlay = () => {
       void video.play?.().catch(() => {});
     };

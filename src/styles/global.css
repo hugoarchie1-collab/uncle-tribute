@@ -342,7 +342,7 @@
   .video-intro,
   .video-intro__stage {
     height: auto;
-    height: min(62svh, max(56.25vw, 68vw));
+    height: min(60svh, 115vw);
     max-height: 100dvh;
   }
 }

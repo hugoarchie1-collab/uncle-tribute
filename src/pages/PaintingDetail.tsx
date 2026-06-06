@@ -15,6 +15,8 @@ import {
   COLLECTIONS,
   EMBELLISHMENT_NOTE,
   getAnchorTier,
+  getEmbellishmentPricePence,
+  getFramingPricePence,
   getPaintingById,
   getPrintTiers,
   ORIGINAL_PRINT_SPEC,
@@ -553,12 +555,18 @@ const BuyBox = ({
   const fadeTimerRef = useRef<number | null>(null);
 
   const isOneOffSelected = selectedTier.isOneOff === true;
+  // Framing / hand-finishing are offered ONLY at the sizes the data layer prices
+  // them for — A2 (Collector) + A1 (Atelier). getFramingPricePence /
+  // getEmbellishmentPricePence return null elsewhere, so the "Finish your piece"
+  // step renders only on those tiers (the brief: A2/A1 only).
   const framingOffered =
-    !isOneOffSelected && typeof selectedTier.framingPricePence === "number";
+    !isOneOffSelected && getFramingPricePence(selectedTier) !== null;
   const embellishOffered =
-    !isOneOffSelected && typeof selectedTier.embellishmentPricePence === "number";
-  // Add-ons only make sense on a multiple (framed / hand-finished print).
-  const showAddOns = !isOneOffSelected;
+    !isOneOffSelected && getEmbellishmentPricePence(selectedTier) !== null;
+  // The promoted "Finish your piece" step appears only when at least one finish
+  // is actually offered at the selected size (and never on the one-off original,
+  // which IS the finished work). On A3/A0 the step is simply absent.
+  const showAddOns = !isOneOffSelected && (framingOffered || embellishOffered);
   // Effective add-on selections — an add-on is only "on" if it's both offered
   // at this size AND ticked. Switching to a size that doesn't offer an add-on
   // silently turns it off for pricing/total/lead-time purposes (the box also
@@ -566,24 +574,28 @@ const BuyBox = ({
   const framingActive = framingOffered && framing;
   const embellishActive = embellishOffered && embellished;
 
-  // Add-on prices read from the selected tier so they can never drift from
-  // the data source (gotcha #9 — pricing must not be hand-typed).
+  // Add-on prices read from the data layer's helpers so they can never drift
+  // from the source ladder (gotcha #9 — pricing must not be hand-typed). The
+  // helpers return null at sizes that don't offer the add-on (A3/A0).
+  const framingPricePence = getFramingPricePence(selectedTier);
+  const embellishPricePence = getEmbellishmentPricePence(selectedTier);
   const framingPriceLabel =
-    typeof selectedTier.framingPricePence === "number"
-      ? formatGBP(selectedTier.framingPricePence).replace(".00", "")
+    framingPricePence !== null
+      ? formatGBP(framingPricePence).replace(".00", "")
       : null;
   const embellishPriceLabel =
-    typeof selectedTier.embellishmentPricePence === "number"
-      ? formatGBP(selectedTier.embellishmentPricePence).replace(".00", "")
+    embellishPricePence !== null
+      ? formatGBP(embellishPricePence).replace(".00", "")
       : null;
 
   // Running line total = print + (frame if active) + (hand-finish if active).
   // Updates live as the buyer ticks add-ons (DMCC: the running total must
-  // reflect the chosen configuration before they commit).
+  // reflect the chosen configuration before they commit). Add-on pence come
+  // from the data-layer helpers, so the figure can never drift from the ladder.
   const lineTotalPence =
     selectedTier.pricePence +
-    (framingActive ? selectedTier.framingPricePence ?? 0 : 0) +
-    (embellishActive ? selectedTier.embellishmentPricePence ?? 0 : 0);
+    (framingActive ? framingPricePence ?? 0 : 0) +
+    (embellishActive ? embellishPricePence ?? 0 : 0);
   const hasAddOnSelected = framingActive || embellishActive;
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
@@ -815,115 +827,137 @@ const BuyBox = ({
           </div>
         )}
 
-        {/* 6 · ADD-ONS (#12) — hidden on the one-off original. Both add-ons are
-            OPT-IN (NEVER pre-ticked — DMCC no-default-selection rule). Each
-            shows its price, its lead time, a short description; the frame ALSO
-            shows the framed-shipping surcharge UPFRONT the moment it's ticked
-            (DMCC equal-prominence — figures mirror api/checkout.ts). Selecting
-            an add-on updates the running total + stated lead time below. */}
+        {/* 6 · FINISH YOUR PIECE (#12) — the PROMOTED add-on step (King & McGaw
+            / Lumas pattern). Lifted out of a buried "optional add-ons" list into
+            a distinct, dignified purchase step that sits DIRECTLY ABOVE the
+            Add-to-basket CTA, so a frame / hand-finish is offered at the natural
+            moment of decision, not discovered afterwards.
+
+            Renders ONLY on the sizes the data layer prices a finish for — A2
+            (Collector) + A1 (Atelier) — via `showAddOns` (getFramingPricePence /
+            getEmbellishmentPricePence return null elsewhere), and never on the
+            one-off original. On A3/A0 the step is simply absent.
+
+            MONOCHROME (#7): ink + muted ink + hairlines only — no accent badge.
+            The "Most collectors choose hand-framed" line is a QUIET lead to the
+            eye, NOT a pre-selected box: both finishes stay OPT-IN (DMCC
+            no-default-selection rule). Each option shows its price, its lead
+            time and a short description; the frame ALSO surfaces the framed-
+            shipping surcharge UPFRONT the moment it's ticked (DMCC equal-
+            prominence — figures mirror api/checkout.ts). Ticking either updates
+            the running total + stated lead time below. The selections flow to
+            addItem / Buy-now unchanged — only the placement + presentation
+            moved. */}
         {showAddOns && (
-          <fieldset className="border-0 p-0 m-0 mt-7 flex flex-col gap-2.5">
-            <legend className={cn(EYEBROW_MUTED, "m-0 mb-2 p-0")}>
-              Add-ons · optional
+          <fieldset className="border-0 p-0 m-0 mt-8 ring-1 ring-line px-4 py-4 sm:px-5 sm:py-5">
+            <legend className="float-none p-0 mb-1 w-full">
+              <span className={cn(EYEBROW_MUTED, "block")}>
+                Finish your piece
+              </span>
             </legend>
+            <p className="font-sans text-[13.5px] leading-[1.6] text-ink/70 m-0 mb-4">
+              Take it further than the print alone — framed ready to hang, or
+              hand-finished by the estate. Both are optional and made to order.
+            </p>
 
-            {/* FRAME */}
-            <label
-              className={cn(
-                "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
-                framingOffered
-                  ? framingActive
-                    ? "ring-ink"
-                    : "ring-line hover:ring-ink/40"
-                  : "ring-line opacity-55 cursor-not-allowed",
-              )}
-            >
-              <input
-                type="checkbox"
-                checked={framingActive}
-                disabled={!framingOffered}
-                onChange={(e) => onFramingChange(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer disabled:cursor-not-allowed"
-              />
-              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
-                <span className="flex items-baseline justify-between gap-3">
-                  <strong className="text-ink">Add a hand-made frame</strong>
-                  {framingPriceLabel && (
-                    <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
-                      +{framingPriceLabel}
-                    </span>
+            {/* Quiet lead to the eye — guidance, NOT a default selection. Sits
+                above the framing option it points to (DMCC: no pre-tick). */}
+            {framingOffered && (
+              <p
+                className={cn(EYEBROW_TIGHT, "m-0 mb-2.5 flex items-center gap-2")}
+              >
+                <span aria-hidden="true" className="text-ink/40">—</span>
+                Most collectors choose hand-framed
+              </p>
+            )}
+
+            <div className="flex flex-col gap-2.5">
+              {/* FRAME */}
+              {framingOffered && (
+                <label
+                  className={cn(
+                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
+                    framingActive ? "ring-ink" : "ring-line hover:ring-ink/40",
                   )}
-                </span>
-                <span>
-                  Black-stained oak with cast-acrylic glazing for safe transit,
-                  ready to hang. Allow {FRAME_LEAD_WEEKS} weeks.
-                </span>
-                {/* DMCC: the framed-shipping surcharge for THIS size, shown the
-                    moment the frame is ticked — exact regional totals, not a
-                    vague "surcharge at checkout". */}
-                {framingActive && framedShipping && (
-                  <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-line/70 px-2.5 py-1.5">
-                    Framed prints ship at this size: UK{" "}
-                    {formatGBP(framedShipping.ukPence).replace(".00", "")} · Europe{" "}
-                    {formatGBP(framedShipping.euPence).replace(".00", "")} · Worldwide{" "}
-                    {formatGBP(framedShipping.wwPence).replace(".00", "")}. Shown
-                    again at checkout before you pay.
-                  </span>
-                )}
-                {!framingOffered && (
-                  <span className="font-sans text-[13.5px] text-ink-muted">
-                    Framing offered on A2 and A1 sizes only.
-                  </span>
-                )}
-              </span>
-            </label>
-
-            {/* HAND-FINISHING by Polly Wedge */}
-            <label
-              className={cn(
-                "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
-                embellishOffered
-                  ? embellishActive
-                    ? "ring-ink"
-                    : "ring-line hover:ring-ink/40"
-                  : "ring-line opacity-55 cursor-not-allowed",
-              )}
-            >
-              <input
-                type="checkbox"
-                checked={embellishActive}
-                disabled={!embellishOffered}
-                onChange={(e) => onEmbellishedChange(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer disabled:cursor-not-allowed"
-              />
-              <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
-                <span className="flex items-baseline justify-between gap-3">
-                  <strong className="text-ink">Hand-finished by Polly Wedge</strong>
-                  {embellishPriceLabel && (
-                    <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
-                      +{embellishPriceLabel}
+                >
+                  <input
+                    type="checkbox"
+                    checked={framingActive}
+                    onChange={(e) => onFramingChange(e.target.checked)}
+                    className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
+                  />
+                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <strong className="text-ink">Bespoke framing</strong>
+                      {framingPriceLabel && (
+                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                          +{framingPriceLabel}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <span className="text-ink/55">{EMBELLISHMENT_NOTE}</span>
-                <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
-                {!embellishOffered && (
-                  <span className="font-sans text-[13.5px] text-ink-muted">
-                    Hand-finishing offered on A2 and A1 sizes only.
+                    <span>
+                      Black-stained oak with cast-acrylic glazing for safe
+                      transit, ready to hang. Allow {FRAME_LEAD_WEEKS} weeks.
+                    </span>
+                    {/* DMCC: the framed-shipping surcharge for THIS size, shown
+                        the moment the frame is ticked — exact regional totals,
+                        not a vague "surcharge at checkout". */}
+                    {framingActive && framedShipping && (
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-line/70 px-2.5 py-1.5">
+                        Framed prints ship at this size: UK{" "}
+                        {formatGBP(framedShipping.ukPence).replace(".00", "")} ·
+                        Europe{" "}
+                        {formatGBP(framedShipping.euPence).replace(".00", "")} ·
+                        Worldwide{" "}
+                        {formatGBP(framedShipping.wwPence).replace(".00", "")}.
+                        Shown again at checkout before you pay.
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-            </label>
+                </label>
+              )}
 
-            {/* RUNNING TOTAL + LEAD TIME — updates live as add-ons are ticked.
+              {/* HAND-FINISHING by Polly Wedge */}
+              {embellishOffered && (
+                <label
+                  className={cn(
+                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
+                    embellishActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={embellishActive}
+                    onChange={(e) => onEmbellishedChange(e.target.checked)}
+                    className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
+                  />
+                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <strong className="text-ink">
+                        Hand-finished by Polly Wedge
+                      </strong>
+                      {embellishPriceLabel && (
+                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                          +{embellishPriceLabel}
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-ink/55">{EMBELLISHMENT_NOTE}</span>
+                    <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
+                  </span>
+                </label>
+              )}
+            </div>
+
+            {/* RUNNING TOTAL + LEAD TIME — updates live as finishes are ticked.
                 DMCC: the buyer sees the full configured price (and the longest
-                add-on lead time) before committing. Only shown once an add-on is
+                add-on lead time) before committing. Only shown once a finish is
                 selected, so the bare-print case stays clean. */}
             {hasAddOnSelected && (
-              <div className="mt-1 flex items-baseline justify-between gap-3 border-t border-line pt-3">
+              <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-3">
                 <span className="flex flex-col gap-0.5">
                   <span className={cn(EYEBROW_TIGHT)}>
-                    Your print · {selectedTier.size.split(" ")[0]}
+                    Your piece · {selectedTier.size.split(" ")[0]}
                   </span>
                   <span className={cn(META)}>
                     Made to order · allow {leadWeeks} weeks
@@ -1128,7 +1162,7 @@ const StickyAddBar = ({
           animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
           transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-[#0a0908]/95 backdrop-blur-md ring-1 ring-line shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
+          className="fixed bottom-5 right-5 z-40 hidden md:flex items-center gap-4 bg-[#0a0908]/97 ring-1 ring-line shadow-[0_18px_50px_rgba(0,0,0,0.55)] pl-3 pr-2 py-2 rounded-full"
           role="region"
           aria-label="Quick add to basket"
         >

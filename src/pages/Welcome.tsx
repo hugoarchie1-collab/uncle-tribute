@@ -465,7 +465,7 @@ export const Welcome = () => {
                           delay: 0.15,
                           ease: [0.22, 0.61, 0.36, 1],
                         }}
-                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/85 backdrop-blur-sm px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
+                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/90 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
                       >
                         From {formatGBP(fromPrice).replace(".00", "")}
                       </motion.span>
