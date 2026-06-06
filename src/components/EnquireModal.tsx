@@ -56,6 +56,9 @@ export const EnquireModal = ({
       setErrorMsg("");
       return;
     }
+    // Capture the element focused when the dialog opened, so focus returns to
+    // it on close (a11y — the trigger button, never dropped to <body>).
+    const opener = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onCloseRef.current();
@@ -91,6 +94,9 @@ export const EnquireModal = ({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
+      // Return focus to the trigger so keyboard/screen-reader users aren't
+      // stranded on <body> after the dialog closes.
+      if (opener && document.contains(opener)) opener.focus();
     };
   }, [open]);
 

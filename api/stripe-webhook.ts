@@ -275,7 +275,7 @@ const createThankYouCode = async (
     const code = `${THANKYOU_PREFIX}-${thankYouSuffix()}`;
     try {
       await stripe.promotionCodes.create({
-        coupon: coupon.id,
+        promotion: { type: "coupon", coupon: coupon.id },
         code,
         max_redemptions: 1,
         expires_at: expiresUnix,

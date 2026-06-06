@@ -244,6 +244,8 @@ const ShareMemoryModal = ({
       imageDataRef.current = "";
       return;
     }
+    // Capture the opener so focus returns to the trigger on close (a11y).
+    const opener = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onCloseRef.current();
@@ -277,6 +279,7 @@ const ShareMemoryModal = ({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
+      if (opener && document.contains(opener)) opener.focus();
     };
   }, [open]);
 

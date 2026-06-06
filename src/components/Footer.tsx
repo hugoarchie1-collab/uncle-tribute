@@ -14,7 +14,7 @@ const FOOTER_LINK = "transition-colors duration-300 hover:text-ink";
  *  text node uses this (or the 11px eyebrow header / 12px fine-print / the
  *  serif wordmark) so the footer reads as ONE consistent system instead of
  *  the old eight-size, two-family jumble. */
-const FOOTER_TEXT = "font-sans text-[13.5px] leading-[1.6]";
+const FOOTER_TEXT = "font-sans text-[14px] leading-[1.6]";
 
 /** Site links — mirrors the top-nav order (Home · Collections · For You ·
  *  About · Memories · Contact), then the FAQ / Returns utility links. */
@@ -50,18 +50,23 @@ export const Footer = () => (
           wordmark
           wordmarkAlwaysOn
           wordmarkWrap
-          className="max-w-[280px] mb-7 [&>span]:leading-[1.35]"
+          className="max-w-[280px] mb-6 [&>span]:leading-[1.4]"
         />
+        {/* Explicit hairline rule — a deliberate separator (not just whitespace)
+            between the emblem+wordmark lockup and the tagline group, so the
+            wordmark never crowds the line below (Hugo's "isn't separated
+            enough"). The lockup stays CENTRED (top-aligning read "off/loose"). */}
+        <div aria-hidden="true" className="h-px w-10 bg-line mb-6" />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
-        <p className={cn(FOOTER_TEXT, "mt-3 max-w-[280px] text-ink-fade m-0")}>
+        <p className={cn(FOOTER_TEXT, "mt-2.5 max-w-[280px] text-ink-fade m-0")}>
           The estate of Stephen Meakin · The Mandala Company — Steve's immediate family.
         </p>
         {/* Author credit — desktop only. Now matched to the footer's single
             sans system (was a stray serif-italic that made the type read
             "messy"); kept small + faint so it stays a quiet footnote. */}
-        <p className="hidden md:block font-sans text-[12px] leading-[1.55] text-ink-faint mt-3 max-w-[280px] m-0">
+        <p className="hidden md:block font-sans text-[12px] leading-[1.55] text-ink-faint mt-3.5 max-w-[280px] m-0">
           Written for The Mandala Company by Archie Hugo Charles Wedge (Stephen's nephew). Stephen's words are his own, drawn from his notebooks, interviews and the writings he left.
         </p>
       </div>

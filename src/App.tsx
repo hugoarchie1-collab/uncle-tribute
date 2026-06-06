@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
 import { BasketToast } from "./components/BasketToast";
+import { FriendsAndFamilyWelcome } from "./components/FriendsAndFamilyNote";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -145,6 +146,11 @@ export default function App() {
               with no per-button wiring. Mounted once; sits at z-[120], below
               modals (z-200) + cursor (z-250). */}
           <BasketToast />
+          {/* Friends & Family welcome ribbon — shows the remembrance code once
+              per device, ONLY to arrivals from the private Facebook link
+              (…?ff=1). Self-gates on the param + localStorage; renders nothing
+              otherwise. Same z-[120] register as the basket toast. */}
+          <FriendsAndFamilyWelcome />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />

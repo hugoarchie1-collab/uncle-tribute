@@ -8,6 +8,7 @@ import { AssetImage } from "../components/AssetImage";
 import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
 import { EmailMyBasket } from "../components/EmailMyBasket";
+import { FriendsAndFamilyNote } from "../components/FriendsAndFamilyNote";
 import { ExitSaveBasket } from "../components/ExitSaveBasket";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import {
@@ -448,9 +449,18 @@ export const Basket = () => {
                 )}
               </div>
 
-              <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-8">
+              <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-7">
                 International buyers may be charged local import duties on delivery.
               </p>
+
+              {/* Friends & family — a quiet remembrance note for Stephen's
+                  circle, the last beat before the Stripe promo-code field (which
+                  is already enabled on the single-print checkout path). States
+                  NEITHER the code NOR a percent (FriendsAndFamilyNote) so only
+                  someone the family gave the code to can use it. */}
+              <div className="mb-8 pt-6 border-t border-line/70">
+                <FriendsAndFamilyNote />
+              </div>
 
               <div className="flex flex-wrap items-center gap-4">
                 <button

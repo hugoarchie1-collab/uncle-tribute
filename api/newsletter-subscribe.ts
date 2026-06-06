@@ -181,7 +181,7 @@ const mintSubscriberCode = async (
     const code = `${CODE_PREFIX}-${randomSuffix()}`;
     try {
       await stripe.promotionCodes.create({
-        coupon: coupon.id,
+        promotion: { type: "coupon", coupon: coupon.id },
         code,
         max_redemptions: 1,
         expires_at: expiresUnix,
