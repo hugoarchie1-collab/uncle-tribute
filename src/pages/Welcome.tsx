@@ -325,7 +325,7 @@ export const Welcome = () => {
               {WELCOME.reminderLong.slice(1, 4).map((para) => (
                 <p
                   key={para.slice(0, 24)}
-                  className="break-inside-avoid font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
+                  className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
                 >
                   {para}
                 </p>
@@ -437,7 +437,7 @@ export const Welcome = () => {
               alt="Stephen painting in the studio"
               aspect="aspect-[3/2] md:aspect-[2/1] 2xl:aspect-[21/9]"
               edges="y"
-              parallax={0.18}
+              parallax={0.06}
               objectPosition="center 62%"
               shadow=""
             />
@@ -547,12 +547,16 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 md:items-center">
-                <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:mx-0">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
+                {/* Image at its native 4:3 (source is 2048x1536 landscape) so it
+                    is never cropped; vertically centred against the two-paragraph
+                    column. The materials ledger moved OUT to a full-width strip
+                    below this grid. */}
+                <Reveal as="figure" className="m-0 md:col-span-6 mx-auto md:mx-0 w-full max-w-[520px] md:max-w-none">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
                     alt="Stephen at his drafting table, drawing the underlying geometry"
-                    aspect="aspect-[4/5]"
+                    aspect="aspect-[4/3]"
                     edges="all"
                     parallax={0.1}
                   />
@@ -565,14 +569,15 @@ export const Welcome = () => {
                   <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
-                  {/* Materials grid — items-start so each cell sizes to its OWN
-                      content instead of stretching to its row-mate's height (the
-                      stretch was what left the awkward empty band below the
-                      shorter value in a row, e.g. under "Edition" beside the
-                      taller "Time" — Hugo's "gap below to the left"). A hairline
-                      top border + even pt/pb on every cell gives one consistent
-                      row rhythm so the labels read as a clean aligned ledger. */}
-                  <ul className="grid grid-cols-2 gap-x-6 gap-y-0 list-none p-0 mt-2 items-start">
+                </Reveal>
+              </div>
+
+              {/* Materials ledger — FULL-WIDTH spec strip BELOW the image+text
+                  row (it used to be nested in the right column, leaving a dead
+                  void to its left where the shorter image ended — Hugo's "gap
+                  next to highlighted"). Three columns on md+ so the six facts
+                  read as a clean ledger across the whole panel. */}
+              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-10 md:mt-12 items-start">
                     {/* Provenance-card hierarchy: Time + Edition lead as
                         bold-italic display lines (the headline facts a
                         collector wants), then the supporting material spec
@@ -594,9 +599,7 @@ export const Welcome = () => {
                         )}
                       </li>
                     ))}
-                  </ul>
-                </Reveal>
-              </div>
+              </ul>
             </div>
           </section>
 
