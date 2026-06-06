@@ -93,6 +93,51 @@ const lineEmbellishPence = (line: ResolvedLine): number =>
 const lineTotalPence = (line: ResolvedLine): number =>
   line.tier.pricePence + lineFramingPence(line) + lineEmbellishPence(line);
 
+/**
+ * The Stripe LINE ITEMS one basket line expands into (pence each). Mirrors the
+ * way api/checkout.ts builds `line_items`: the print is one line item; framing
+ * and hand-finishing — when billable — are SEPARATE line items, not folded
+ * into the print. This split is what makes the discount round per-line the way
+ * Stripe does (see bundleDiscountPenceFor below).
+ */
+const stripeLineItemsFor = (line: ResolvedLine): number[] => {
+  const items = [line.tier.pricePence];
+  const framing = lineFramingPence(line);
+  if (framing > 0) items.push(framing);
+  const embellish = lineEmbellishPence(line);
+  if (embellish > 0) items.push(embellish);
+  return items;
+};
+
+/**
+ * The bundle discount in pence the way STRIPE actually charges it — to the
+ * penny — for ANY basket (bundle, add-ons, mixed). [gotcha #9]
+ *
+ * api/checkout.ts mints a single coupon with an INTEGER `percent_off` and lets
+ * Stripe apply it. Stripe distributes a `percent_off` coupon by discounting
+ * EACH line item independently — `round(lineAmount * percent / 100)` per line,
+ * rounded to the nearest penny — then sums. The print, framing and
+ * embellishment are SEPARATE line items there, so each is rounded on its own.
+ *
+ * The old preview rounded ONCE over the whole subtotal
+ * (`round(subtotal * pct / 100)`), which can differ from the sum of per-line
+ * roundings by 1–2p on a mixed basket. We now replicate the per-line-item
+ * rounding exactly, so the displayed saving == the Stripe charge to the penny.
+ */
+const bundleDiscountPenceFor = (
+  lines: ResolvedLine[],
+  percent: number,
+): number => {
+  if (percent <= 0) return 0;
+  let discount = 0;
+  for (const line of lines) {
+    for (const amount of stripeLineItemsFor(line)) {
+      discount += Math.round((amount * percent) / 100);
+    }
+  }
+  return discount;
+};
+
 // Distinct-painting count for the complete-catalogue trigger. Mirrors
 // api/checkout.ts CATALOGUE_PAINTING_COUNT (= the painting allowlist size).
 const CATALOGUE_PAINTING_COUNT = PAINTINGS.length;
@@ -155,13 +200,12 @@ export const Basket = () => {
   const subtotalPence = lines.reduce((sum, l) => sum + lineTotalPence(l), 0);
 
   // Bundle discount — content-derived percent that EQUALS the Stripe charge,
-  // and the absolute £ saving it produces (rounded the same way the coupon's
-  // percent_off rounds the line total).
+  // and the absolute £ saving it produces. Computed PER STRIPE LINE ITEM (print
+  // / framing / embellishment each rounded on its own, then summed) so it
+  // matches Stripe's coupon distribution to the penny — not a single round over
+  // the whole subtotal, which drifted 1–2p on mixed baskets (gotcha #9).
   const bundleDiscountPercent = bundlePercentOff(lines);
-  const bundleDiscountPence =
-    bundleDiscountPercent > 0
-      ? Math.round((subtotalPence * bundleDiscountPercent) / 100)
-      : 0;
+  const bundleDiscountPence = bundleDiscountPenceFor(lines, bundleDiscountPercent);
   const discountedSubtotalPence = subtotalPence - bundleDiscountPence;
 
   // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.

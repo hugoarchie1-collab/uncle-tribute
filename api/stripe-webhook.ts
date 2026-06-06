@@ -159,6 +159,13 @@ interface EmailLine {
   size: string;
   framing?: boolean;
   embellished?: boolean;
+  // Per-line add-on prices, formatted GBP — only present when the add-on
+  // applies on this tier AND was purchased, so the email can itemise the
+  // framing / hand-finishing charge on its own sub-line and the per-line
+  // breakdown sums to the grand Total.
+  framingPrice?: string;
+  embellishPrice?: string;
+  // The base TIER price (formatted GBP) — the print itself, before add-ons.
   price: string;
 }
 
@@ -193,6 +200,21 @@ const TIER_EDITION: Record<string, string> = {
   heirloom: "Limited edition of 25",
   studio: "Unique — one of one",
 };
+// Per-tier ADD-ON price lookups (mirror of framingPricePence /
+// embellishmentPricePence in src/data/paintings.ts PRINT_TIERS +
+// api/checkout.ts TIERS + api/email-basket.ts TIERS — gotcha #9; keep all
+// four in sync). Only A2 (collector) + A1 (atelier-grande) carry add-ons;
+// A3 / A0 / studio one-off have none. Used to itemise the framing /
+// hand-finishing charge as its own email sub-line so the per-line
+// breakdown sums to the grand Total (session.amount_total).
+const TIER_FRAMING_PENCE: Record<string, number> = {
+  collector: 29500,
+  "atelier-grande": 39500,
+};
+const TIER_EMBELLISH_PENCE: Record<string, number> = {
+  collector: 35000,
+  "atelier-grande": 49500,
+};
 
 const linesFromMetadata = (
   m: Stripe.Metadata | null,
@@ -202,6 +224,8 @@ const linesFromMetadata = (
   // Single-item shape
   if (m.painting_title && !m.painting_titles) {
     const tierId = m.tier_id || "collector";
+    const framing = m.framing === "yes";
+    const embellished = m.embellished === "yes";
     return [
       {
         title: m.painting_title,
@@ -209,8 +233,19 @@ const linesFromMetadata = (
         tierLabel: TIER_LABEL[tierId] ?? m.tier_label,
         editionLabel: TIER_EDITION[tierId],
         size: TIER_SIZE[tierId] ?? m.size ?? "Limited edition giclée print",
-        framing: m.framing === "yes",
-        embellished: m.embellished === "yes",
+        framing,
+        embellished,
+        // Itemise the add-on only when it applies on this tier AND was bought
+        // (the tier lookup is undefined on A3 / A0 / studio, so framingPrice /
+        // embellishPrice stay absent and no sub-line renders).
+        framingPrice:
+          framing && tierId in TIER_FRAMING_PENCE
+            ? formatGBP(TIER_FRAMING_PENCE[tierId])
+            : undefined,
+        embellishPrice:
+          embellished && tierId in TIER_EMBELLISH_PENCE
+            ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
+            : undefined,
         price: formatGBP(TIER_PRICE_PENCE[tierId] ?? amountSubtotal ?? null),
       },
     ];
@@ -224,14 +259,25 @@ const linesFromMetadata = (
   if (titles.length === 0) return [];
   return titles.map((title, idx) => {
     const tierId = tierIds[idx] || "collector";
+    const framing = framingFlags[idx] === "y";
+    const embellished = embellishedFlags[idx] === "y";
     return {
       title,
       colourway: colourways[idx] || "Original",
       tierLabel: TIER_LABEL[tierId],
       editionLabel: TIER_EDITION[tierId],
       size: TIER_SIZE[tierId] ?? "Limited edition giclée print",
-      framing: framingFlags[idx] === "y",
-      embellished: embellishedFlags[idx] === "y",
+      framing,
+      embellished,
+      // Itemise the add-on only when it applies on this tier AND was bought.
+      framingPrice:
+        framing && tierId in TIER_FRAMING_PENCE
+          ? formatGBP(TIER_FRAMING_PENCE[tierId])
+          : undefined,
+      embellishPrice:
+        embellished && tierId in TIER_EMBELLISH_PENCE
+          ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
+          : undefined,
       price: formatGBP(TIER_PRICE_PENCE[tierId] ?? null),
     };
   });
@@ -363,13 +409,28 @@ const renderOrderConfirmationHtml = (p: {
       const tierBits = [line.tierLabel, line.size.split(" ")[0], line.editionLabel]
         .filter(Boolean)
         .join(" · ");
+      // Per-line breakdown: the print (base tier price) on its own row, then
+      // each purchased add-on as its OWN clearly-labelled + priced sub-line, so
+      // the line's rows sum to what was charged for it and the whole email's
+      // per-line breakdown sums to the grand Total. The add-on prices mirror
+      // paintings.ts / api/checkout.ts / api/email-basket.ts (gotcha #9).
+      const priceRow = (label: string, value: string, sub?: string) =>
+        `<p style="${s.meta}margin-top:6px;color:#ede6d6;">`
+        + `<span style="color:rgba(237,230,214,0.78);">${label}</span>`
+        + ` &nbsp;·&nbsp; <strong style="color:#ede6d6;">${esc(value)}</strong>`
+        + (sub ? `<br/><span style="color:rgba(237,230,214,0.55);">${sub}</span>` : "")
+        + `</p>`;
       return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
         + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`
         + (tierBits ? `<p style="font-family:${SANS};color:#c97844;letter-spacing:0.18em;text-transform:uppercase;font-size:10px;font-weight:700;margin:4px 0 0 0;">${esc(tierBits)}</p>` : "")
         + `<p style="${s.meta}margin-top:4px;">${esc(line.size)}</p>`
-        + (line.framing ? `<p style="${s.meta}margin-top:4px;">Framed — hand-finished frame included</p>` : "")
-        + (line.embellished ? `<p style="${s.meta}margin-top:4px;">Hand-finished by Polly Wedge — ${EMBELLISH}</p>` : "")
-        + `<p style="${s.meta}margin-top:4px;color:#ede6d6;">${esc(line.price)}</p>`
+        + priceRow("Print", line.price)
+        + (line.framing && line.framingPrice
+            ? priceRow("Hand-finished frame", line.framingPrice)
+            : "")
+        + (line.embellished && line.embellishPrice
+            ? priceRow("Hand-finished by Polly Wedge", line.embellishPrice, EMBELLISH)
+            : "")
         + `</div>`;
     })
     .join("");
