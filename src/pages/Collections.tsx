@@ -197,8 +197,13 @@ export const Collections = () => {
             // Stronger, even darkening so the cream (text-ink) copy stays
             // legible over the bright collection photos while the photo
             // remains as a subdued, moody texture (matches the dark brand).
+            // Top kept LIGHT (0.38) so the blurred collection backdrop shows
+            // through behind the overlay nav instead of stacking with the nav's
+            // own gradient into a black bar at the very top (Hugo). Ramps darker
+            // toward the foot for the catalogue/footer seam; the page-intro +
+            // tile copy carry their own text-shadow for legibility.
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.82) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
           }}
         />
       </div>
