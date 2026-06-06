@@ -669,21 +669,22 @@ export const Welcome = () => {
                 </p>
               </Reveal>
               <Reveal as="figure" className="m-0 md:col-span-6 max-w-[560px] md:max-w-none mx-auto md:mx-0">
-                {/* Feathered edge (Hugo): the archive photo dissolves into the
-                    page like every other editorial image, instead of sitting in
-                    a hard dark mat rectangle. .soft-edge-img mirrors the ~28px
-                    pixel feather used by the ImageReveal photos. */}
-                <AssetImage
+                {/* Feathered edge (Hugo): the archive photo now dissolves into
+                    the page through the SAME ImageReveal soft-edge (4-side
+                    feather) + gentle parallax every other editorial photo uses
+                    (Featured, Craft) — no more hard rectangular mat. Native
+                    16:9 source (641×353) so the aspect crops next to nothing. */}
+                <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-                  loading="lazy"
-                  decoding="async"
-                  className="soft-edge-img block w-full h-auto"
+                  aspect="aspect-[16/9]"
+                  edges="all"
+                  parallax={0.08}
                 />
-                <figcaption className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-3 text-center">
+                <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.28em] uppercase text-ink/65 mt-4 text-center">
                   Farmacy · Notting Hill · London
                 </figcaption>
-                <p className="font-display italic text-[15px] md:text-[16px] leading-[1.6] text-ink/60 mt-2.5 text-center">
+                <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">
                   Photograph from Stephen's archive, c. 2016.
                 </p>
               </Reveal>

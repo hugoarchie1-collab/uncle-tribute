@@ -17,9 +17,11 @@ const NAV_LINKS = [
   { to: "/contact", label: "Contact" },
 ];
 
-/** Estate meta secondary links — the quiet footer set (real routes only). */
+/** Estate meta secondary links — the quiet footer set (real routes only).
+ *  Basket is intentionally NOT here: it already has its own always-visible icon
+ *  in the top bar, so listing it again in the menu footer was redundant (and
+ *  read as a stray highlighted chip with an odd gap beside it — Hugo). */
 const SECONDARY_LINKS = [
-  { to: "/basket", label: "Basket" },
   { to: "/faq", label: "FAQ" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
@@ -168,10 +170,16 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       className={cn(
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
         "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
+        // Scrolled: a FROSTED translucent bar (blurred so the warm pink backdrop
+        // shows softly through) instead of the old opaque near-black slab, which
+        // read as a hard "black banner" rectangle sitting on the soft pink wash
+        // (Hugo — same hard-black-rectangle problem we removed from the craft
+        // card). Dark enough at /55 over the blur to keep the cream logo + links
+        // legible; the bottom hairline fades the seam rather than drawing a line.
         scrolled
-          ? "py-3 bg-[#0a0908]/95 border-b border-white/5"
+          ? "py-3 bg-[#0a0908]/55 supports-[backdrop-filter]:bg-[#0a0908]/40 backdrop-blur-xl border-b border-white/10"
           : overlay
-            ? "py-5 bg-gradient-to-b from-[#0a0908]/70 via-[#0a0908]/25 to-transparent border-b border-transparent"
+            ? "py-5 bg-gradient-to-b from-[#0a0908]/55 via-[#0a0908]/15 to-transparent border-b border-transparent"
             : "py-5 bg-transparent border-b border-transparent",
       )}
     >
