@@ -677,7 +677,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[52svh] md:min-h-[58svh] w-full items-center overflow-hidden pt-6 pb-10 md:pt-8 md:pb-12 lg:pt-10 lg:pb-14"
+            className="relative isolate flex min-h-[64svh] md:min-h-[72svh] w-full items-start overflow-hidden pt-12 pb-10 md:pt-16 md:pb-12 lg:pt-20 lg:pb-14"
             aria-label="Sacred Geometry"
           >
 
@@ -752,23 +752,27 @@ export const Welcome = () => {
                       the page (Hugo: it must be larger than the clause beneath).
                       opsz 48 keeps the strokes clean at this scale. */}
                   <span
-                    className="block text-balance"
+                    className="block"
                     style={{
                       fontVariationSettings: '"opsz" 48, "wght" 700',
                       fontWeight: 700,
-                      fontSize: "clamp(58px, 15vw, 232px)",
-                      letterSpacing: "-0.04em",
-                      lineHeight: 0.86,
+                      // Sized so the longest word (GEOMETRY, 8 caps) fits on ONE
+                      // line at every width — no orphaned "Y". Big + caps + 700
+                      // reads as the screen-filling brand statement.
+                      fontSize: "clamp(52px, 12.5vw, 202px)",
+                      letterSpacing: "-0.025em",
+                      lineHeight: 0.92,
+                      textTransform: "uppercase",
                       color: "#ede6d6",
-                      textShadow: "0 2px 50px rgba(10,9,8,0.8)",
+                      textShadow: "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6)",
                     }}
                   >
                     Sacred{" "}
                     <em
                       style={{
-                        fontStyle: "italic",
-                        fontVariationSettings: '"opsz" 48, "wght" 600',
-                        fontWeight: 600,
+                        fontStyle: "normal",
+                        fontVariationSettings: '"opsz" 48, "wght" 700',
+                        fontWeight: 700,
                       }}
                     >
                       geometry
@@ -781,12 +785,16 @@ export const Welcome = () => {
                     style={{
                       fontVariationSettings: '"opsz" 36, "wght" 600',
                       fontWeight: 600,
-                      fontSize: "clamp(24px, 3.8vw, 62px)",
-                      letterSpacing: "-0.015em",
-                      lineHeight: 1.08,
+                      fontSize: "clamp(22px, 3.4vw, 54px)",
+                      letterSpacing: "-0.005em",
+                      lineHeight: 1.1,
                       color: "#ede6d6",
-                      marginTop: "clamp(10px, 1.5vw, 28px)",
-                      textShadow: "0 1px 24px rgba(10,9,8,0.7)",
+                      marginTop: "clamp(4px, 0.8vw, 14px)",
+                      // Heavy dark halo so the subordinate line stays crisp even
+                      // when it crosses the Earth's bright atmosphere rim (Hugo:
+                      // "barely read it against the white part of earth").
+                      textShadow:
+                        "0 2px 16px rgba(8,6,12,0.96), 0 1px 3px rgba(8,6,12,0.9), 0 0 40px rgba(8,6,12,0.55)",
                     }}
                   >
                     &mdash; the order beneath all things
