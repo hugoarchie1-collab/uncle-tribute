@@ -33,27 +33,26 @@ const SITE_LINKS = [
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-11 md:pt-14 pb-8 md:pb-10"
+    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-7 md:pb-9"
   >
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
-      {/* Brand */}
       <div className="col-span-2 md:col-span-1">
-        {/* Emblem TOP-aligned to the first wordmark line (the wordmark wraps to
-            two lines in this narrow column, so the Logo's own `items-center`
-            would float the emblem against the block's midpoint — looks loose).
-            `![align-items:flex-start]` wins over Logo's plain non-important
-            `items-center` regardless of stylesheet order. A small `mt-px`
-            optically seats the mark on the cap-height of the first line. The
-            wordmark box is capped to the tribute measure (max-w-[280px]) so it
-            wraps cleanly and never reaches the "Site" column. */}
+      {/* Brand. The emblem + two-line wordmark form ONE tidy lockup: the Logo
+          keeps its own vertical centring (emblem optically centred on the
+          two-line wordmark block — top-aligning it read "off/loose"), and the
+          whole mark is capped to the tribute measure (max-w-[280px]) so the
+          wordmark wraps cleanly and never reaches the "Site" column at any
+          width. A deliberate `mb-7` under the lockup (paired with the tribute's
+          own `m-0`) gives clear, intentional separation so the wordmark never
+          crowds the line below — Hugo's "isn't separated enough" fix. */}
         <Logo
           size={28}
           wordmark
           wordmarkAlwaysOn
           wordmarkWrap
-          className="![align-items:flex-start] max-w-[280px] [&>span]:mt-px"
+          className="max-w-[280px] mb-7 [&>span]:leading-[1.35]"
         />
-        <p className={cn(FOOTER_TEXT, "mt-6 max-w-[280px] text-ink-muted m-0")}>
+        <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
         <p className={cn(FOOTER_TEXT, "mt-3 max-w-[280px] text-ink-fade m-0")}>
@@ -112,7 +111,7 @@ export const Footer = () => (
       </div>
     </div>
 
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-9 md:mt-11 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-8 md:mt-10 pt-5 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>

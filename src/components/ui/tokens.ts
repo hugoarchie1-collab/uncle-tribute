@@ -11,7 +11,7 @@
  *  The signature element: 11px bold uppercase, 0.32em tracking, accent-toned.
  *  Sits ABOVE a TITLE (gap mb-4/mb-5). This is the canonical home value. */
 export const EYEBROW =
-  "font-sans text-[11px] md:text-[12px] font-bold tracking-[0.32em] uppercase text-accent";
+  "font-sans text-[12px] md:text-[13px] font-bold tracking-[0.32em] uppercase text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -21,18 +21,18 @@ export const EYEBROW =
  *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
  *  or leave left-aligned. End the copy with a full stop, sentence-case. */
 export const TITLE =
-  "font-display font-semibold tracking-[-0.04em] text-[clamp(34px,4.8vw,66px)] leading-[1.02] md:leading-[0.98] text-ink text-balance";
+  "font-display font-bold tracking-[-0.04em] text-[clamp(38px,5vw,72px)] leading-[1.02] md:leading-[0.98] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token,
  *  17px / 1.8, capped + centered for the centered header (add mx-auto). */
 export const SUBTITLE =
-  "font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted max-w-[680px] 2xl:max-w-[760px] 3xl:max-w-[860px]";
+  "font-sans font-normal text-[18px] md:text-[20px] 2xl:text-[22px] leading-[1.8] text-ink-muted max-w-[720px] 2xl:max-w-[760px] 3xl:max-w-[860px]";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[11px] md:text-[12px] font-bold tracking-[0.32em] uppercase text-ink-muted";
+  "font-sans text-[12px] md:text-[13px] font-bold tracking-[0.32em] uppercase text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =

@@ -362,7 +362,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
   { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
-  { url: "/img/paintings/peacock-mary-pink-blur-v5.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v7.webp", name: "Mary Pink" },
 ];
 
 export const About = () => {

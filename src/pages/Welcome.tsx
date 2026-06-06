@@ -30,7 +30,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v5.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v7.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
@@ -101,16 +101,18 @@ export const Welcome = () => {
               }}
             />
           ))}
-          {/* Backdrop legibility veil — kept LIGHT (0.34→0.08) so the rose/
-              peacock colourways read bright and true (Hugo: "all pink, not
-              dark"); a soft centre veil still grounds the cream type. Lighter
-              than Collections.tsx on purpose — the home is the pink showcase. */}
+          {/* Backdrop legibility veil — a warm PLUM-ROSE radial (NOT neutral
+              black), so the centre "darkening" that grounds the cream type reads
+              as a RICHER pink rather than a grey/dark wash (Hugo: deepen the
+              veil only where cream sits, never grey the pink). Deepest at the
+              centre where running copy lives, dissolving to clear at the edges
+              so the bright rose petal pattern still shows through. */}
           <div
             aria-hidden="true"
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(82% 72% at 50% 38%, rgba(10,9,8,0.34) 0%, rgba(10,9,8,0.08) 100%)",
+                "radial-gradient(92% 82% at 50% 42%, rgba(58,18,38,0.26) 0%, rgba(58,18,38,0.08) 62%, rgba(58,18,38,0) 100%)",
             }}
           />
         </div>
@@ -120,7 +122,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-20 md:space-y-28 lg:space-y-32">
+        <main className="relative isolate z-10 space-y-14 md:space-y-20 lg:space-y-24">
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
@@ -149,7 +151,7 @@ export const Welcome = () => {
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[68svh] w-[54%] lg:w-[52%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
               <ImageReveal
                 src="/img/welcome/01-painting-wild-rose.jpg"
                 alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -187,11 +189,11 @@ export const Welcome = () => {
                 the centring (no more clamp top-pad — that was fighting the old
                 dark band). */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[68svh] md:pb-0"
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[60svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[48%]">
-                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-8 text-balance hero-text-shadow">
+                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-7 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(46px,6.2vw,132px)] leading-[1.0]">
                     So here we are on Earth
                   </span>
@@ -203,7 +205,7 @@ export const Welcome = () => {
                 {/* Hero is headline + CTAs only (Hugo: delete the top reminder
                     line — the reminder lives once, in the "A reminder" section
                     below). */}
-                <div className="mt-10 flex flex-wrap items-center gap-3">
+                <div className="mt-8 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
                     className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
@@ -249,9 +251,9 @@ export const Welcome = () => {
               legibility; Fraunces opsz held ≤48 (finale invariant); whole-
               element Reveals only (gotcha #2). */}
           <section className="relative isolate mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="header" className="mx-auto max-w-[820px] mb-8 md:mb-10">
+            <Reveal as="header" className="mx-auto max-w-[820px] mb-6 md:mb-8">
               <p className={cn(EYEBROW, "m-0 mb-6")}>A reminder</p>
-              <p className="font-display font-normal tracking-[-0.012em] text-[clamp(24px,3vw,42px)] leading-[1.28] text-ink m-0 text-balance hero-text-shadow">
+              <p className="font-display font-normal tracking-[-0.012em] text-[clamp(28px,3.3vw,48px)] leading-[1.22] text-ink m-0 text-balance hero-text-shadow">
                 {WELCOME.reminderLong[0]}
               </p>
             </Reveal>
@@ -262,7 +264,7 @@ export const Welcome = () => {
               {WELCOME.reminderLong.slice(1, 4).map((para) => (
                 <p
                   key={para.slice(0, 24)}
-                  className="font-sans font-normal text-[18px] md:text-[20px] 2xl:text-[22px] leading-[1.8] text-ink/85 m-0"
+                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.72] text-ink/85 m-0"
                 >
                   {para}
                 </p>
@@ -275,7 +277,7 @@ export const Welcome = () => {
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
             <Reveal delay={0.1}>
-              <div aria-hidden="true" className="mt-12 md:mt-16 mb-8 md:mb-10 h-px w-12 bg-ink/15" />
+              <div aria-hidden="true" className="mt-9 md:mt-12 mb-6 md:mb-8 h-px w-12 bg-ink/15" />
               <p className="m-0 mx-auto max-w-[820px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
@@ -338,7 +340,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[54svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[46svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-8 md:hidden max-w-[460px]">
@@ -358,7 +360,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(30px,4.4vw,64px)] leading-[1.02] text-ink m-0 mb-6">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.7] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -372,7 +374,7 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2] md:aspect-[2/1] 2xl:aspect-[5/2]"
+              aspect="aspect-[3/2] md:aspect-[21/9] 2xl:aspect-[12/5]"
               edges="y"
               parallax={0.18}
               shadow=""
@@ -381,7 +383,7 @@ export const Welcome = () => {
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-10 md:mb-12">
+            <Reveal as="div" className="text-center mb-7 md:mb-9">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 From the hand
               </p>
@@ -396,7 +398,7 @@ export const Welcome = () => {
                 leftover tile(s) centre on the last row at every breakpoint
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
-            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-6 mb-12 md:mb-14">
+            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-10 md:mb-12">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
@@ -438,8 +440,8 @@ export const Welcome = () => {
                         From {formatGBP(fromPrice).replace(".00", "")}
                       </motion.span>
                     </div>
-                    <div className="pt-5">
-                      <h3 className="font-display font-bold text-[16px] md:text-[18px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
+                    <div className="pt-4">
+                      <h3 className="font-display font-bold text-[17px] md:text-[20px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
                         {painting.title}
                       </h3>
                       <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-2 m-0">
@@ -474,16 +476,16 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-14 md:py-20 lg:py-24">
-              <Reveal as="div" className="text-center mb-10 md:mb-14">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-12 md:py-16 lg:py-20">
+              <Reveal as="div" className="text-center mb-8 md:mb-10">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,5.4vw,96px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink/85 my-0 mt-7 max-w-[720px] mx-auto">
+                <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink/85 my-0 mt-6 max-w-[720px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-start">
                 <Reveal as="figure" className="m-0 md:col-span-6 max-w-[400px] sm:max-w-[460px] md:max-w-[480px] xl:max-w-[540px] 2xl:max-w-[600px] mx-auto md:mx-0">
                   <ImageReveal
                     src="/img/about/02-painting-table.jpg"
@@ -495,10 +497,10 @@ export const Welcome = () => {
                 </Reveal>
 
                 <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
-                  <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink m-0">
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.8] text-ink m-0">
+                  <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink m-0">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                   {/* Materials grid — items-start so each cell sizes to its OWN
@@ -538,7 +540,7 @@ export const Welcome = () => {
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-10 md:mb-12">
+            <Reveal as="div" className="text-center mb-7 md:mb-9">
               <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
                 Sacred Geometry
               </p>
@@ -547,7 +549,7 @@ export const Welcome = () => {
               </h2>
             </Reveal>
 
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 list-none p-0 mb-10 md:mb-14">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 list-none p-0 mb-8 md:mb-10">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -556,15 +558,15 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="bg-bg-soft ring-1 ring-white/8 p-6 md:p-7 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
+                  className="bg-bg-soft ring-1 ring-white/8 p-5 md:p-6 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
                 >
                   <p className="font-display font-bold text-ink/45 text-[clamp(32px,3.4vw,44px)] leading-none m-0 mb-4 tracking-tight">
                     {item.tag}
                   </p>
-                  <p className="font-sans text-[14px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
+                  <p className="font-sans text-[15px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
                     {item.name}
                   </p>
-                  <p className="font-sans font-normal text-[13px] leading-[1.5] text-ink/65 m-0">
+                  <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink/65 m-0">
                     {item.note}
                   </p>
                 </li>
@@ -572,7 +574,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/85 max-w-[860px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink/85 max-w-[860px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -597,7 +599,7 @@ export const Welcome = () => {
                 <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
                   Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
                 </p>
-                <p className="font-sans font-normal text-[17px] md:text-[18px] 2xl:text-[20px] leading-[1.75] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] leading-[1.7] text-ink/85 m-0">
                   {WELCOME.bio[2]}
                 </p>
               </Reveal>
@@ -613,7 +615,7 @@ export const Welcome = () => {
                   decoding="async"
                   className="soft-edge-img block w-full h-auto"
                 />
-                <figcaption className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-4 text-center">
+                <figcaption className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-3 text-center">
                   Farmacy · Notting Hill · London
                 </figcaption>
                 <p className="font-display italic text-[12px] leading-[1.55] text-ink/45 mt-2 text-center">
@@ -645,35 +647,39 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[56svh] md:min-h-[62svh] w-full items-center overflow-hidden pt-16 pb-8 md:pt-24 md:pb-12 lg:pt-28 lg:pb-14"
+            className="relative isolate flex min-h-[48svh] md:min-h-[54svh] w-full items-center overflow-hidden pt-10 pb-6 md:pt-14 md:pb-10 lg:pt-16 lg:pb-12"
             aria-label="Sacred Geometry"
           >
 
-            {/* Rose Earth GLOW (not a photo) — Hugo: "stop fucking up the earth /
-                weird shaded boxes". The space photo's BLACK sky + dark planet
-                body were darkening the pink into rectangular shaded boxes.
-                earth-glow-rose-v2.webp is the same limb with the dark space +
-                body turned TRANSPARENT (alpha = luminance), so ONLY the bright
-                rose atmosphere rim composites onto the pink — a glowing horizon
-                arc with ZERO dark mass and ZERO boxes. Full-width so the arc
-                reaches both screen edges (no centred-strip box). Above the pink
-                backdrop (z-0), below the content (z-10). */}
+            {/* FULLY-VISIBLE NATURAL Earth limb (Hugo: "i never wanted a rose
+                earth — i need it normal colours"). The real blue Earth limb
+                (earth-natural-v1.webp) is bottom-pinned + full-width and bleeds
+                past both edges (no centred strip-box). Its black SPACE is baked
+                TRANSPARENT (alpha = luminance) and the top + bottom edges fade
+                out, so ONLY the lit, natural-colour Earth composites onto the
+                deep-rose backdrop — a real Earth horizon with NO dark boxes and
+                NO recolouring. High opacity so it shows clearly. z-[1], below
+                the content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] overflow-hidden"
             >
               <img
-                src={asset("/img/scenes/earth-glow-rose-v2.webp")}
+                src={asset("/img/scenes/earth-natural-v1.webp")}
                 alt=""
-                className="block w-full h-auto select-none"
-                style={{ opacity: 0.85 }}
+                className="block h-auto select-none"
+                style={{
+                  opacity: 0.95,
+                  width: "112%",
+                  marginLeft: "-6%",
+                }}
               />
             </div>
 
             {/* Content column — centered flow. Layer order: pink backdrop
                 (z-0, the shared fixed peacock layer) →
                 content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
-            <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-8 md:py-12">
+            <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-6 md:py-8">
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean
