@@ -740,6 +740,152 @@ const renderGiftHtml = (p: {
 };
 
 // ---------------------------------------------------------------------------
+// Klaviyo (CRM / revenue flows) — BEST-EFFORT, ENV-GUARDED, SELF-CONTAINED.
+// ---------------------------------------------------------------------------
+// Klaviyo is the estate's marketing CRM (post-purchase + revenue flows /
+// analytics / segmentation). Resend stays the transactional sender — Klaviyo is
+// purely additive here. This block is INLINED (gotcha #5: no /api local imports)
+// and fully guarded on process.env.KLAVIYO_API_KEY: absent → clean no-op. Each
+// call is try/catch'd by the caller so a Klaviyo outage can NEVER break the
+// order flow, and the webhook ALWAYS returns 200.
+//
+// Current Klaviyo REST API (auth `Authorization: Klaviyo-API-Key <key>` + dated
+// `revision` header) via Node 18+ global fetch.
+//   - Create Event ("Placed Order"): feeds the Post-Purchase flow + revenue
+//     analytics. The event's profile block auto-creates/updates the buyer's
+//     Klaviyo profile, so this both records the order and upserts the customer.
+//   - Create/Update Profile: a small extra best-effort upsert so the buyer's
+//     name lands on the profile even if the event's profile attrs are sparse.
+const KLAVIYO_API_BASE = "https://a.klaviyo.com/api";
+const KLAVIYO_REVISION = "2026-04-15";
+
+const klaviyoHeaders = (apiKey: string): Record<string, string> => ({
+  Authorization: `Klaviyo-API-Key ${apiKey}`,
+  revision: KLAVIYO_REVISION,
+  accept: "application/json",
+  "content-type": "application/json",
+});
+
+const splitName = (
+  name: string | null,
+): { firstName?: string; lastName?: string } => {
+  const parts = (name ?? "").split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] || undefined,
+    lastName: parts.slice(1).join(" ") || undefined,
+  };
+};
+
+/**
+ * Push a "Placed Order" event to Klaviyo. value is the order total in major
+ * units (pounds), value_currency from the session. The properties carry a basic
+ * line summary lifted from the session metadata for segmentation. unique_id is
+ * the Stripe session id so Klaviyo dedupes retried webhooks. The profile block
+ * auto-upserts the buyer.
+ */
+const klaviyoPlacedOrderEvent = async (
+  apiKey: string,
+  args: {
+    email: string;
+    name: string | null;
+    sessionId: string;
+    amountTotalPence: number | null | undefined;
+    currency: string | null | undefined;
+    lines: EmailLine[];
+  },
+): Promise<void> => {
+  const { firstName, lastName } = splitName(args.name);
+  const value =
+    typeof args.amountTotalPence === "number"
+      ? Math.round(args.amountTotalPence) / 100
+      : undefined;
+  const currency = (args.currency || "gbp").toUpperCase();
+  const itemNames = args.lines.map((l) =>
+    [l.title, l.colourway].filter(Boolean).join(" — "),
+  );
+  const items = args.lines.map((l) => ({
+    title: l.title,
+    colourway: l.colourway,
+    tier: l.tierLabel,
+    edition: l.editionLabel,
+    size: l.size,
+    framing: !!l.framing,
+    embellished: !!l.embellished,
+  }));
+  const body = {
+    data: {
+      type: "event",
+      attributes: {
+        metric: {
+          data: { type: "metric", attributes: { name: "Placed Order" } },
+        },
+        profile: {
+          data: {
+            type: "profile",
+            attributes: {
+              email: args.email,
+              ...(firstName ? { first_name: firstName } : {}),
+              ...(lastName ? { last_name: lastName } : {}),
+            },
+          },
+        },
+        properties: {
+          OrderId: args.sessionId,
+          ItemNames: itemNames,
+          Items: items,
+          ItemCount: args.lines.length,
+          source: "stripe-checkout",
+        },
+        ...(value !== undefined ? { value } : {}),
+        value_currency: currency,
+        unique_id: args.sessionId,
+      },
+    },
+  };
+  const resp = await fetch(`${KLAVIYO_API_BASE}/events`, {
+    method: "POST",
+    headers: klaviyoHeaders(apiKey),
+    body: JSON.stringify(body),
+  });
+  // 202 Accepted is the success status; 409 = duplicate (already accepted).
+  if (!resp.ok && resp.status !== 409) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Klaviyo event ${resp.status}: ${text.slice(0, 300)}`);
+  }
+};
+
+/**
+ * Best-effort customer profile upsert. Create Profile returns 409 when the
+ * profile already exists — fine for our purposes, so we treat it as success.
+ */
+const klaviyoUpsertProfile = async (
+  apiKey: string,
+  email: string,
+  name: string | null,
+): Promise<void> => {
+  const { firstName, lastName } = splitName(name);
+  const body = {
+    data: {
+      type: "profile",
+      attributes: {
+        email,
+        ...(firstName ? { first_name: firstName } : {}),
+        ...(lastName ? { last_name: lastName } : {}),
+      },
+    },
+  };
+  const resp = await fetch(`${KLAVIYO_API_BASE}/profiles`, {
+    method: "POST",
+    headers: klaviyoHeaders(apiKey),
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok && resp.status !== 409) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Klaviyo profile upsert ${resp.status}: ${text.slice(0, 300)}`);
+  }
+};
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -939,6 +1085,55 @@ export default async function handler(req: VercelReq, res: VercelRes) {
               session_id: session.id,
               gift_index: i,
               code: minted.code,
+            });
+          }
+        }
+      }
+
+      // -- 0b. Klaviyo "Placed Order" event + customer upsert ---------------
+      // Best-effort + env-guarded (no KLAVIYO_API_KEY → clean no-op). Runs here
+      // BEFORE the confirmation-email block, which has early `break`s when
+      // RESEND_API_KEY / buyerEmail are missing — so the CRM sync isn't tied to
+      // the email path. Feeds the Post-Purchase flow + revenue analytics +
+      // segmentation. Every call is try/catch'd; the webhook ALWAYS returns 200
+      // regardless of Klaviyo's outcome (Stripe must not retry on our errors).
+      const klaviyoKey = process.env.KLAVIYO_API_KEY;
+      if (klaviyoKey) {
+        if (!buyerEmail) {
+          console.warn(
+            "[stripe-webhook] No buyer email on session — skipping Klaviyo sync.",
+            { session_id: session.id },
+          );
+        } else {
+          try {
+            const klaviyoLines = linesFromMetadata(m, session.amount_subtotal);
+            await klaviyoPlacedOrderEvent(klaviyoKey, {
+              email: buyerEmail,
+              name: buyerName,
+              sessionId: session.id,
+              amountTotalPence: session.amount_total,
+              currency: session.currency,
+              lines: klaviyoLines,
+            });
+            console.log("[stripe-webhook] klaviyo Placed Order event sent", {
+              session_id: session.id,
+              email: buyerEmail,
+              value_pence: session.amount_total,
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.error("[stripe-webhook] klaviyo event failed:", message, {
+              session_id: session.id,
+            });
+          }
+          // Extra best-effort profile upsert (name lands on the profile even if
+          // the event's profile attrs were sparse). Independent try/catch.
+          try {
+            await klaviyoUpsertProfile(klaviyoKey, buyerEmail, buyerName);
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.error("[stripe-webhook] klaviyo profile upsert failed:", message, {
+              session_id: session.id,
             });
           }
         }

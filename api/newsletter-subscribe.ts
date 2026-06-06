@@ -215,6 +215,126 @@ const isValidEmail = (email: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 
 // ---------------------------------------------------------------------------
+// Klaviyo (CRM / email flows) — BEST-EFFORT, ENV-GUARDED, SELF-CONTAINED.
+// ---------------------------------------------------------------------------
+// Klaviyo is the estate's marketing CRM (Welcome / abandoned-cart / post-
+// purchase revenue flows). Resend stays the transactional sender — Klaviyo is
+// purely additive here. This block is INLINED (gotcha #5: no /api local imports)
+// and fully guarded on process.env.KLAVIYO_API_KEY: if the key is absent, every
+// helper is a clean no-op so the site is unaffected until Hugo adds the key.
+// Every call is wrapped in try/catch by the caller — a Klaviyo failure must
+// NEVER break a newsletter signup.
+//
+// Uses the current Klaviyo REST API (auth header `Authorization: Klaviyo-API-Key
+// <private_key>`, plus the dated `revision` header) via Node 18+ global fetch.
+//   - Bulk Subscribe Profiles job: upserts the profile AND subscribes it to a
+//     list (when KLAVIYO_LIST_ID is set) — powers the Welcome flow.
+//   - Create/Update Profile: a plain upsert used when no list id is configured,
+//     so a flow can still target the new profile.
+const KLAVIYO_API_BASE = "https://a.klaviyo.com/api";
+const KLAVIYO_REVISION = "2026-04-15";
+
+const klaviyoHeaders = (apiKey: string): Record<string, string> => ({
+  Authorization: `Klaviyo-API-Key ${apiKey}`,
+  revision: KLAVIYO_REVISION,
+  accept: "application/json",
+  "content-type": "application/json",
+});
+
+/**
+ * Upsert a profile AND subscribe it to a list via the bulk-subscribe job. This
+ * single call both creates/updates the profile and records explicit email
+ * marketing consent against the list — the cleanest way to feed the Welcome
+ * flow. consented_at is set so Klaviyo logs the opt-in timestamp.
+ */
+const klaviyoSubscribeToList = async (
+  apiKey: string,
+  listId: string,
+  email: string,
+  name: string,
+): Promise<void> => {
+  const parts = name.split(/\s+/).filter(Boolean);
+  const firstName = parts[0] || undefined;
+  const lastName = parts.slice(1).join(" ") || undefined;
+  const body = {
+    data: {
+      type: "profile-subscription-bulk-create-job",
+      attributes: {
+        profiles: {
+          data: [
+            {
+              type: "profile",
+              attributes: {
+                email,
+                ...(firstName ? { first_name: firstName } : {}),
+                ...(lastName ? { last_name: lastName } : {}),
+                subscriptions: {
+                  email: { marketing: { consent: "SUBSCRIBED" } },
+                },
+              },
+            },
+          ],
+        },
+        historical_import: false,
+      },
+      relationships: {
+        list: { data: { type: "list", id: listId } },
+      },
+    },
+  };
+  const resp = await fetch(
+    `${KLAVIYO_API_BASE}/profile-subscription-bulk-create-jobs`,
+    {
+      method: "POST",
+      headers: klaviyoHeaders(apiKey),
+      body: JSON.stringify(body),
+    },
+  );
+  // 202 Accepted is the success status for this async job. Treat a 409
+  // (already queued/duplicate) as fine too.
+  if (!resp.ok && resp.status !== 409) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Klaviyo subscribe job ${resp.status}: ${text.slice(0, 300)}`);
+  }
+};
+
+/**
+ * Plain create-or-update profile (no list). Used as the fallback when
+ * KLAVIYO_LIST_ID is not configured so a flow can still target the profile.
+ * The Create Profile endpoint returns 409 when the profile already exists —
+ * which is a perfectly good outcome for our purposes, so we treat it as success.
+ */
+const klaviyoUpsertProfile = async (
+  apiKey: string,
+  email: string,
+  name: string,
+): Promise<void> => {
+  const parts = name.split(/\s+/).filter(Boolean);
+  const firstName = parts[0] || undefined;
+  const lastName = parts.slice(1).join(" ") || undefined;
+  const body = {
+    data: {
+      type: "profile",
+      attributes: {
+        email,
+        ...(firstName ? { first_name: firstName } : {}),
+        ...(lastName ? { last_name: lastName } : {}),
+      },
+    },
+  };
+  const resp = await fetch(`${KLAVIYO_API_BASE}/profiles`, {
+    method: "POST",
+    headers: klaviyoHeaders(apiKey),
+    body: JSON.stringify(body),
+  });
+  // 201 created, 200 updated, 409 already exists — all acceptable.
+  if (!resp.ok && resp.status !== 409) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Klaviyo profile upsert ${resp.status}: ${text.slice(0, 300)}`);
+  }
+};
+
+// ---------------------------------------------------------------------------
 // Inlined welcome email → HTML string (mirror of
 // api/_lib/emails/Welcome.tsx + ./styles.ts — gotcha #5)
 // ---------------------------------------------------------------------------
@@ -324,6 +444,32 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // Audit trail — always log even if downstream sends are skipped. Hugo can
   // grep Vercel logs for "[newsletter-subscribe]" to see his list grow.
   console.log("[newsletter-subscribe] sign-up", { email, name, source });
+
+  // ---- Optional: push into Klaviyo (CRM / Welcome flow) -------------------
+  // Best-effort + env-guarded: no KLAVIYO_API_KEY → clean no-op. With a list
+  // id we upsert + subscribe in one job (powers the Welcome flow); without one
+  // we still upsert the profile so a flow can target it. Never blocks signup.
+  const klaviyoKey = process.env.KLAVIYO_API_KEY;
+  if (klaviyoKey) {
+    const klaviyoListId = (process.env.KLAVIYO_LIST_ID || "").trim();
+    try {
+      if (klaviyoListId) {
+        await klaviyoSubscribeToList(klaviyoKey, klaviyoListId, email, name);
+        console.log("[newsletter-subscribe] klaviyo subscribed to list", {
+          email,
+          list_id: klaviyoListId,
+        });
+      } else {
+        await klaviyoUpsertProfile(klaviyoKey, email, name);
+        console.log("[newsletter-subscribe] klaviyo profile upserted (no list id)", {
+          email,
+        });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[newsletter-subscribe] klaviyo sync failed:", message);
+    }
+  }
 
   // ---- Optional: mint subscriber thank-you code ---------------------------
   let subscriberCode: SubscriberCode | null = null;
