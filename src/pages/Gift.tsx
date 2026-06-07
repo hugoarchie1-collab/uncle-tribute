@@ -302,7 +302,7 @@ export const Gift = () => {
                         setCustomAmount(e.target.value);
                         setError("");
                       }}
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={String(minPounds)}
                     />
                   </div>

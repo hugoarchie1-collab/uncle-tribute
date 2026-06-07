@@ -419,7 +419,7 @@ export const Welcome = () => {
                     shadow="shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
                   />
                 </figure>
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+                <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
                 <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,68px)] leading-[1.02] text-ink m-0 mb-5 hero-text-shadow">
@@ -450,7 +450,7 @@ export const Welcome = () => {
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-6 md:mb-7">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+              <p className={cn(EYEBROW, "m-0 mb-4")}>
                 From the hand
               </p>
               <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,4.6vw,80px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance hero-text-shadow">
@@ -570,10 +570,10 @@ export const Welcome = () => {
               {/* Two paragraphs in a balanced two-column measure below the image —
                   same body register as the rest of the page. */}
               <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5">
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
                   Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                 </p>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
                   When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                 </p>
               </Reveal>
@@ -608,7 +608,7 @@ export const Welcome = () => {
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-6 md:mb-7">
-              <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-4">
+              <p className={cn(EYEBROW, "m-0 mb-4")}>
                 Sacred Geometry
               </p>
               <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,4.6vw,80px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance hero-text-shadow">
@@ -655,7 +655,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
               <Reveal as="div" className="md:col-span-6">
-                <p className="font-sans text-[11px] font-bold tracking-[0.36em] uppercase text-accent m-0 mb-5">
+                <p className={cn(EYEBROW, "m-0 mb-5")}>
                   Arista SunStar · 2016
                 </p>
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(34px,4vw,58px)] leading-[1.08] text-ink m-0 mb-5">
