@@ -41,7 +41,11 @@ export const Welcome = () => {
   // Indigo → Blood-Moon Red → Moroccan Purple, the purple holding through the
   // Sacred Geometry finale so its sky matches the rest of the home.
   const { scrollYProgress } = useScroll();
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.05, 0.22, 0.30], [0, 1, 1, 0]);
+  // Persian Indigo opens at FULL opacity from the very top (scroll progress 0) —
+  // NOT fading up from 0 — so the page is never bare black before the first
+  // scroll (Hugo: "before scrolling the blue background isn't there, it's
+  // black"). It only starts crossfading to Blood-Moon Red at 0.22.
+  const indigoOpacity = useTransform(scrollYProgress, [0, 0.22, 0.30], [1, 1, 0]);
   const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
   const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
   const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
@@ -547,30 +551,32 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center">
-                {/* Image at its native 4:3 (source is 2048x1536 landscape) so it
-                    is never cropped; vertically centred against the two-paragraph
-                    column. The materials ledger moved OUT to a full-width strip
-                    below this grid. */}
-                <Reveal as="figure" className="m-0 md:col-span-6 mx-auto md:mx-0 w-full max-w-[520px] md:max-w-none">
-                  <ImageReveal
-                    src="/img/about/02-painting-table.jpg"
-                    alt="Stephen at his drafting table, drawing the underlying geometry"
-                    aspect="aspect-[4/3]"
-                    edges="all"
-                    parallax={0.1}
-                  />
-                </Reveal>
+              {/* FEATURE IMAGE — full width of the panel so it reads large and
+                  leaves NO dead blank space beside a short side-by-side frame
+                  (Hugo: "too small, lots of blank space"). A gentle 16:10 crop of
+                  the 4:3 documentary source (sm+) trims only a sliver of ceiling
+                  and foreground — the subjects + mandala are never touched, and
+                  full 4:3 shows on phones. Clean feather, no box-shadow. */}
+              <Reveal as="figure" className="m-0 mb-8 md:mb-12">
+                <ImageReveal
+                  src="/img/about/02-painting-table.jpg"
+                  alt="Stephen at his drafting table, drawing the underlying geometry"
+                  aspect="aspect-[4/3] sm:aspect-[3/2]"
+                  edges="all"
+                  parallax={0.08}
+                />
+              </Reveal>
 
-                <Reveal as="div" className="md:col-span-6 flex flex-col gap-6">
-                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
-                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                  </p>
-                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
-                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                  </p>
-                </Reveal>
-              </div>
+              {/* Two paragraphs in a balanced two-column measure below the image —
+                  same body register as the rest of the page. */}
+              <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
+                  Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                </p>
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink m-0">
+                  When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                </p>
+              </Reveal>
 
               {/* Materials ledger — FULL-WIDTH spec strip BELOW the image+text
                   row (it used to be nested in the right column, leaving a dead
@@ -578,25 +584,21 @@ export const Welcome = () => {
                   next to highlighted"). Three columns on md+ so the six facts
                   read as a clean ledger across the whole panel. */}
               <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-10 md:mt-12 items-start">
-                    {/* Provenance-card hierarchy: Time + Edition lead as
-                        bold-italic display lines (the headline facts a
-                        collector wants), then the supporting material spec
-                        follows in the original eyebrow + body register. */}
+                    {/* ONE consistent register for all six facts — same eyebrow
+                        label + same Hanken value at one size, no mixed serif/
+                        italic lines (Hugo: "different sizes, different fonts,
+                        some italics — messy"). Reads as a clean, even ledger. */}
                     {[
-                      ["Time", "Hundreds of hours per canvas", true],
-                      ["Edition", "Individually made to order", true],
-                      ["Surface", "350gsm archival canvas", false],
-                      ["Frame", "Hand-stretched, deep wooden", false],
-                      ["Tools", "Compass · rule · brush", false],
-                      ["Pigment", "Hand-pressed oils + pigment inks", false],
-                    ].map(([label, value, lead]) => (
-                      <li key={label as string} className="m-0 py-4 border-t border-ink/10">
-                        <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/65 m-0 mb-1.5">{label}</p>
-                        {lead ? (
-                          <p className="font-display font-bold italic tracking-[-0.01em] text-[17px] md:text-[19px] leading-[1.35] text-ink m-0">{value}</p>
-                        ) : (
-                          <p className="font-sans font-normal text-[16px] leading-[1.35] text-ink m-0">{value}</p>
-                        )}
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                    ].map(([label, value]) => (
+                      <li key={label} className="m-0 py-4 border-t border-ink/15">
+                        <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/55 m-0 mb-2">{label}</p>
+                        <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.4] text-ink m-0">{value}</p>
                       </li>
                     ))}
               </ul>

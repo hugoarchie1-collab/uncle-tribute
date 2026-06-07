@@ -78,6 +78,13 @@ export const ImageReveal = ({
 
   const edgeClass = edges === "all" ? "soft-edge" : edges === "y" ? "soft-edge-y" : "";
 
+  // A feathered image dissolves into the page; a rectangular box-shadow draws a
+  // HARD offset halo around it — heaviest at the bottom (the y-offset points
+  // down), which reads as "only half the image is softened, the other half is
+  // the opposite" (Hugo). So a feathered image NEVER carries a shadow, whatever
+  // the `shadow` prop says; only a sharp-edged image keeps the lift shadow.
+  const resolvedShadow = edges === "none" ? shadow : "shadow-none";
+
   const wrapperStyle: CSSProperties = tilt
     ? { perspective: 1200, transformStyle: "preserve-3d" }
     : {};
@@ -89,7 +96,7 @@ export const ImageReveal = ({
       className={[
         "overflow-hidden relative",
         fill ? "h-full" : aspect ?? "",
-        shadow,
+        resolvedShadow,
         edgeClass,
         className ?? "",
       ]

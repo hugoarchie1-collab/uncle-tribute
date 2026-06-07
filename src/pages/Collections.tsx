@@ -31,9 +31,11 @@ import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../compone
 const ScrollBackdrop = ({
   photoUrl,
   sectionRef,
+  isFirst = false,
 }: {
   photoUrl: string;
   sectionRef: RefObject<HTMLElement | null>;
+  isFirst?: boolean;
 }) => {
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -43,10 +45,14 @@ const ScrollBackdrop = ({
   // Hold near full opacity across the bulk of the section so the photo
   // is never invisible while the user is reading the collection. Soft
   // fade at the very edges keeps adjacent collections cross-dissolving.
+  // The FIRST collection opens at FULL opacity from the top (no fade-up from
+  // 0) so the page is never bare black before the first scroll — the intro
+  // sits on its backdrop immediately (Hugo: "before scrolling the background
+  // is black"). It still fades out normally as the second collection arrives.
   const opacity = useTransform(
     scrollYProgress,
-    [0, 0.12, 0.88, 1],
-    [0, 1, 1, 0],
+    isFirst ? [0, 0.88, 1] : [0, 0.12, 0.88, 1],
+    isFirst ? [1, 1, 0] : [0, 1, 1, 0],
   );
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
   // Scroll-tied scale REMOVED (perf): re-sampling a full-viewport bg-cover
@@ -100,7 +106,11 @@ const ScrollBackdrop = ({
         // viewport layers alive for the 2 off-screen collections.
         willChange: inView ? "transform, opacity" : "auto",
       }}
-      className="absolute inset-0 bg-cover bg-center"
+      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift
+      // can NEVER expose an uncovered strip at the top — that gap was revealing
+      // the black page background as a "black bar at the top" of /collections
+      // (Hugo). The parent is overflow-hidden, so the overscan is clipped.
+      className="absolute inset-[-8%] bg-cover bg-center"
       aria-hidden="true"
     />
   );
@@ -186,6 +196,7 @@ export const Collections = () => {
               key={coll.id}
               photoUrl={asset(coll.backdropImage)}
               sectionRef={sectionRefs[i]}
+              isFirst={i === 0}
             />
           ) : null,
         )}
