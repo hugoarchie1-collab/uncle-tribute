@@ -85,7 +85,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
   };
 
   return (
-    <div className="mt-10 pt-8 border-t border-white/10">
+    <div className="mt-10 pt-8 border-t border-line">
       {!open && status !== "success" && (
         <button
           type="button"
@@ -114,7 +114,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 type="text"
                 autoComplete="name"
                 placeholder="Your name (optional)"
-                className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -122,7 +122,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 required
                 autoComplete="email"
                 placeholder="you@example.com"
-                className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </div>
             <div className="flex items-center gap-3 flex-wrap">

@@ -298,8 +298,7 @@ const AnegadaSpread = () => {
               <p className={BODY}>{ABOUT.anegada[0]}</p>
               <blockquote className="m-0 pl-5 border-l border-line">
                 <p className="font-display italic tracking-[-0.01em] text-[clamp(18px,2vw,24px)] leading-[1.5] text-ink m-0">
-                  “At the exact moment I completed the circle, I felt something touch me that was
-                  inexplicable.”
+                  &ldquo;{ABOUT.anegadaQuote}&rdquo;
                 </p>
               </blockquote>
               <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen Meakin, in his own words</p>

@@ -312,7 +312,7 @@ export const Basket = () => {
                       <div className="flex gap-5 sm:gap-7 items-start">
                         <Link
                           to={`/collections/${line.paintingId}`}
-                          className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] 2xl:w-[128px] 2xl:h-[128px] overflow-hidden ring-1 ring-white/8"
+                          className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] 2xl:w-[128px] 2xl:h-[128px] overflow-hidden ring-1 ring-line"
                           aria-label={`${line.title} — view painting`}
                         >
                           <AssetImage

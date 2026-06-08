@@ -63,10 +63,10 @@
   body {
     @apply font-sans text-body text-ink-soft antialiased;
     font-weight: 400;
-    /* Only 400 + 600 of each family load — forbid the browser from
-       synthesising any unloaded weight/style. A stray weight then snaps to a
-       real loaded face instead of faux-rendering (which varies per engine and
-       shifts wrap points). */
+    /* Only the loaded weights render (Fraunces 400/600/700, Hanken Grotesk
+       400/600) — forbid the browser from synthesising any unloaded weight/style.
+       A stray weight then snaps to a real loaded face instead of faux-rendering
+       (which varies per engine and shifts wrap points). */
     font-synthesis: none;
     overflow-x: clip;
     overscroll-behavior: none;

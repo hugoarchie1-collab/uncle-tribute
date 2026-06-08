@@ -173,6 +173,17 @@ export const Collections = () => {
   // basket, so checkout's bundlePercentOff sees one line of every painting and
   // applies the matching 15% — advertised == charged at this size.
   const catalogue = getCompleteCatalogueBundle(bundleTier.id);
+  // Render the catalogue's three figures (set price · individual total · saving)
+  // with ONE decimal style: strip ".00" when they are all whole pounds, but keep
+  // full pence the moment any one lands on a half-pound (e.g. the A3 tier's
+  // 15%-off total) so the trio never reads as a ragged "£2,450 / £2,082.50" mix.
+  // Nothing is rounded — advertised still equals charged.
+  const catalogueWhole =
+    catalogue.bundlePricePence % 100 === 0 &&
+    catalogue.fullPricePence % 100 === 0 &&
+    catalogue.savePence % 100 === 0;
+  const fmtCatalogue = (pence: number) =>
+    catalogueWhole ? formatGBP(pence).replace(".00", "") : formatGBP(pence);
   const acquireCatalogue = () => {
     catalogue.items.forEach((it) =>
       addItem(it.paintingId, it.colourwayName, bundleTier.id),
@@ -530,12 +541,12 @@ export const Collections = () => {
             </p>
             <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-8">
               <span className="font-display font-semibold text-[22px] md:text-[26px] text-ink align-middle">
-                {formatGBP(catalogue.bundlePricePence).replace(".00", "")}
+                {fmtCatalogue(catalogue.bundlePricePence)}
               </span>
               <span className="mx-3 text-ink/35">·</span>
               <span>
-                individually {formatGBP(catalogue.fullPricePence).replace(".00", "")},
-                a saving of {formatGBP(catalogue.savePence).replace(".00", "")}
+                individually {fmtCatalogue(catalogue.fullPricePence)},
+                a saving of {fmtCatalogue(catalogue.savePence)}
               </span>
             </p>
             <button

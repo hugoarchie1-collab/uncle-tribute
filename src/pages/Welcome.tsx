@@ -307,9 +307,11 @@ export const Welcome = () => {
               </p>
             </Reveal>
 
-            {/* Pull-quote — Stephen's own line lifted to display scale as a
-                centred editorial feature, leading INTO the two-column body it is
-                drawn from. Byte-identical to reminderLong[3]'s opening. opsz 44. */}
+            {/* Pull-quote — reminderLong[3]'s OPENING two sentences lifted to
+                display scale as a centred editorial feature. The two-column body
+                below then renders only the REMAINDER of that paragraph (see the
+                slice in the map), so the full passage appears exactly once across
+                the feature + body — never read twice. opsz 44. */}
             <Reveal delay={0.05} className="my-8 md:my-10 mx-auto max-w-[760px] text-center">
               <p
                 className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
@@ -330,14 +332,23 @@ export const Welcome = () => {
                 scrolling + more aesthetic). break-inside-avoid keeps each
                 paragraph whole; hero-text-shadow for legibility on the backdrop. */}
             <Reveal as="div" className="columns-1 md:columns-2 gap-x-10 lg:gap-x-14 [column-fill:_balance]">
-              {WELCOME.reminderLong.slice(1, 4).map((para) => (
-                <p
-                  key={para.slice(0, 24)}
-                  className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
-                >
-                  {para}
-                </p>
-              ))}
+              {WELCOME.reminderLong.slice(1, 4).map((para) => {
+                // reminderLong[3]'s first two sentences are the pull-quote above,
+                // so render only the remainder here — the paragraph is shown once
+                // across the feature + body, with none of Stephen's words lost.
+                const text =
+                  para === WELCOME.reminderLong[3]
+                    ? para.split(". ").slice(2).join(". ")
+                    : para;
+                return (
+                  <p
+                    key={para.slice(0, 24)}
+                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
+                  >
+                    {text}
+                  </p>
+                );
+              })}
             </Reveal>
 
             {/* Closing premise (P5), VERBATIM — pulled out as a two-tier
