@@ -46,7 +46,7 @@ import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } f
  *  Mirrors the home section prose: Hanken Grotesk, 16/17px, leading 1.7, routed
  *  through the single muted-ink token (never a bespoke /85 alpha). */
 const BODY =
-  "font-sans font-normal text-[16px] md:text-[17px] min-[2560px]:text-[19px] leading-[1.7] text-ink-muted m-0";
+  "font-sans font-normal text-[16px] md:text-[17px] 3xl:text-[19px] leading-[1.7] text-ink-muted m-0";
 
 const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
 
@@ -224,7 +224,7 @@ const AboutHero = () => {
         />
         <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center px-4">
           <p className={cn(EYEBROW_MUTED, "m-0 hero-text-shadow")}>
-            In memoriam · 1966 — {PASSING_DATE}
+            In memoriam · 1966–{PASSING_DATE}
           </p>
         </Reveal>
         <motion.div
@@ -263,7 +263,7 @@ const AnegadaSpread = () => {
       className="relative w-full overflow-hidden bg-bg-soft"
       aria-label="The turning point"
     >
-      <div className="mx-auto max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-28">
+      <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-28">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-center">
           {/* Uncropped portrait of Stephen on the cairn */}
           <figure

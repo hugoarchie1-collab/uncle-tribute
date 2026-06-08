@@ -55,14 +55,14 @@ const ROWS = [
 ];
 
 export const AuthenticationCard = () => (
-  <div className="ring-1 ring-white/12 rounded-[2px] p-5">
-    <ul className="list-none m-0 p-0 divide-y divide-white/8">
+  <div className="ring-1 ring-line p-5">
+    <ul className="list-none m-0 p-0 divide-y divide-line">
       {ROWS.map(({ Icon, label, detail }) => (
         <li
           key={label}
           className="grid grid-cols-[16px_1fr] gap-3 items-start py-2.5 first:pt-0 last:pb-0"
         >
-          <Icon className="w-4 h-4 mt-0.5 text-accent/70" />
+          <Icon className="w-4 h-4 mt-0.5 text-ink/55" />
           <span className="min-w-0">
             <span className={cn(EYEBROW_TIGHT, "block")}>{label}</span>
             <span className={cn(META, "block mt-0.5")}>{detail}</span>

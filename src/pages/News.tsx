@@ -142,12 +142,15 @@ export const News = () => {
     [active],
   );
   const featured = useMemo(() => getFeaturedEntry(NEWS), []); // hero always from full set
+  // Only hide the featured entry from the feed when it will ACTUALLY render as
+  // the hero (a release WITH a cover — the same gate the hero JSX uses below).
+  // Otherwise a non-cover "next" entry was excluded from the feed yet never
+  // shown as a hero, so it vanished from the page entirely (audit).
+  const heroId =
+    featured && isRelease(featured) && featured.cover ? featured.id : undefined;
   const groups = useMemo(
-    // Always exclude the featured entry from the feed — it already renders as
-    // the hero — so a type-filter that matches the featured release can't make
-    // it appear twice (hero + feed row).
-    () => groupByStatus(filtered, featured?.id),
-    [filtered, featured],
+    () => groupByStatus(filtered, heroId),
+    [filtered, heroId],
   );
   // Until the family adds real entries to src/data/news.ts, the page shows a
   // dignified, CENTRED "being prepared" state — never invented releases/dates.
@@ -184,11 +187,10 @@ export const News = () => {
         {!hasNews ? (
           <div className="max-w-[760px] mx-auto">
             <Reveal as="div" className="text-center">
-              <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink-muted m-0">
-                The estate calendar is being prepared. New collections and singles,
-                exhibitions, the return of Steve's mandala workshop and gatherings hosted
-                by The Mandala Company will be announced here as they are confirmed. Each
-                release is a limited, numbered edition — quiet, and small.
+              <p className={cn(SUBTITLE, "my-0")}>
+                The estate calendar is being prepared. Everything here is announced
+                only once it is confirmed — each release a limited, numbered edition,
+                quiet and small.
               </p>
             </Reveal>
 
@@ -249,15 +251,14 @@ export const News = () => {
               delay={0.08}
               className="mb-12 md:mb-14 flex flex-wrap items-center justify-center gap-2.5 border-b border-line pb-6"
             >
-              <div role="tablist" aria-label="Filter news by type" className="flex flex-wrap justify-center gap-2.5">
+              <div role="group" aria-label="Filter news by type" className="flex flex-wrap justify-center gap-2.5">
                 {NEWS_FILTERS.map((f) => {
                   const on = active === f.id;
                   return (
                     <button
                       key={f.id}
                       type="button"
-                      role="tab"
-                      aria-selected={on}
+                      aria-pressed={on}
                       onClick={() => setActive(f.id)}
                       className={cn(
                         EYEBROW_TIGHT,

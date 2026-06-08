@@ -107,7 +107,7 @@ export const NewsletterSignup = ({
   if (variant === "footer") {
     return (
       <div>
-        <h3 className={cn(EYEBROW_MUTED, "mb-5")}>Friends &amp; Family</h3>
+        <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Friends &amp; Family</h3>
         {status === "success" ? (
           <p className="font-sans text-[13px] leading-[1.65] text-ink-muted m-0">
             Thank you. We'll be in touch when the next edition is released.

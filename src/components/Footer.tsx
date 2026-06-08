@@ -76,7 +76,7 @@ export const Footer = () => (
       {/* Site */}
       <nav aria-label="Footer" className="col-span-2 md:col-span-1">
         <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Site</h3>
-        <ul className={cn(FOOTER_TEXT, "flex flex-col gap-2.5 leading-none text-ink-muted m-0 p-0 list-none")}>
+        <ul className={cn(FOOTER_TEXT, "flex flex-col gap-2.5 text-ink-muted m-0 p-0 list-none")}>
           {SITE_LINKS.map((l) => (
             <li key={l.to} className="m-0">
               <Link to={l.to} className={FOOTER_LINK}>
