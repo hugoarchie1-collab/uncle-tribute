@@ -94,7 +94,11 @@ export const Welcome = () => {
               key={bd.url}
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                opacity: backdropOpacities[i],
+                // prefers-reduced-motion: short-circuit the scroll-driven
+                // crossfade (CLAUDE.md convention) — hold a single static
+                // backdrop (the opening indigo) instead of colour-shifting the
+                // whole viewport on every scroll frame.
+                opacity: reduceMotion ? (i === 0 ? 1 : 0) : backdropOpacities[i],
                 backgroundImage: `url("${asset(bd.url)}")`,
                 // Promote to its own GPU layer so the scroll-driven crossfade
                 // composites the (pre-blurred) image instead of repainting it.
@@ -144,7 +148,7 @@ export const Welcome = () => {
             aria-hidden="true"
             className="absolute inset-0"
             style={{
-              opacity: maryPinkOpacity,
+              opacity: reduceMotion ? 0 : maryPinkOpacity,
               background:
                 "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
             }}
@@ -476,6 +480,10 @@ export const Welcome = () => {
                     // detail page (?c=…) so clicking e.g. the Blood Moon Red
                     // peacock lands on that exact colourway, not the original.
                     to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`}
+                    // Spell the price into the link's accessible name — the visual
+                    // price chip below is aria-hidden (it animates in), so without
+                    // this a screen-reader user would get no price for any tile.
+                    aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${formatGBP(fromPrice).replace(".00", "")}`}
                     className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">

@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -31,6 +31,14 @@ export const Contact = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const firstFieldRef = useRef<HTMLInputElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // When the form is swapped for the success message, move focus to it so a
+  // keyboard / screen-reader user isn't silently dropped on <body> — and the
+  // region is announced via role=status / aria-live.
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,7 +137,13 @@ export const Contact = () => {
 
         <Reveal as="section" className="mt-[clamp(1.25rem,3.5vw,2rem)]">
           {status === "success" ? (
-            <div className="py-[clamp(0.5rem,2vw,1rem)]">
+            <div
+              ref={successRef}
+              tabIndex={-1}
+              role="status"
+              aria-live="polite"
+              className="py-[clamp(0.5rem,2vw,1rem)] outline-none"
+            >
               <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,28px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]">
                 Thank you.
               </p>
@@ -205,7 +219,7 @@ export const Contact = () => {
               </label>
 
               {errorMsg && (
-                <p className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                <p role="alert" className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
               )}
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">

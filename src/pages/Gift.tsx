@@ -195,7 +195,7 @@ export const Gift = () => {
             </p>
             <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted m-0 max-w-[56ch]">
               A gift card of{" "}
-              <span className="text-ink">{formatGBP(added.amountPence)}</span> is
+              <span className="text-ink">{formatGBP(added.amountPence).replace(".00", "")}</span> is
               in your basket. The amount you see is exactly what you'll pay —
               nothing is added at checkout. You can add another, or proceed when
               you're ready.
@@ -246,7 +246,7 @@ export const Gift = () => {
                         {d.sizeShort} · {d.label}
                       </span>
                       <span className="font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,28px)] text-ink leading-none">
-                        {formatGBP(d.amountPence)}
+                        {formatGBP(d.amountPence).replace(".00", "")}
                       </span>
                     </button>
                   );
@@ -272,8 +272,8 @@ export const Gift = () => {
                     Custom amount
                   </span>
                   <span className="font-sans font-normal text-[14px] text-ink-muted">
-                    Any whole-pound value from {formatGBP(GIFT_MIN_PENCE)} to{" "}
-                    {formatGBP(GIFT_MAX_PENCE)}.
+                    Any whole-pound value from {formatGBP(GIFT_MIN_PENCE).replace(".00", "")} to{" "}
+                    {formatGBP(GIFT_MAX_PENCE).replace(".00", "")}.
                   </span>
                 </button>
               </div>
@@ -376,7 +376,7 @@ export const Gift = () => {
                 <div>
                   <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>Your gift</p>
                   <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,38px)] text-ink m-0 leading-none">
-                    {resolved ? formatGBP(resolved.amountPence) : "—"}
+                    {resolved ? formatGBP(resolved.amountPence).replace(".00", "") : "—"}
                   </p>
                 </div>
                 <button type="button" onClick={handleAdd} className={BTN_PRIMARY}>

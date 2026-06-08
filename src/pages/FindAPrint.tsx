@@ -164,7 +164,7 @@ export const FindAPrint = () => {
                   <h3 className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300">
                     {painting.title}
                   </h3>
-                  <p className="mt-2 font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0">
+                  <p className="mt-2 font-sans text-[11px] md:text-[12px] font-bold tracking-[0.16em] uppercase text-ink/70 m-0">
                     Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
                   </p>
                 </figcaption>
