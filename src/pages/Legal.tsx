@@ -299,7 +299,7 @@ const TERMS: Section[] = [
       },
       {
         kind: "p",
-        text: "We post via Royal Mail, DHL or FedEx depending on the destination and the size of the print. You'll receive a shipping notification with tracking once it leaves the studio.",
+        text: "Delivery is free to every destination we serve — framed or unframed — with no shipping charge added at checkout. We post via Royal Mail, DHL or FedEx depending on the destination and the size of the print. You'll receive a shipping notification with tracking once it leaves the studio.",
       },
     ],
   },
@@ -342,7 +342,8 @@ const TERMS: Section[] = [
             {" "}— a clear statement that you wish to cancel is enough. Return
             the print to us (you pay the return postage) and, once we have it
             back or you show proof of return, we will refund the full price you
-            paid plus the standard delivery cost, with{" "}
+            paid — delivery is free, so there is no separate delivery charge to
+            add back — with{" "}
             <strong>no deduction for payment-processing fees</strong>. We make
             the refund within 14 days using the same payment method you used to
             pay.
@@ -517,7 +518,7 @@ const RETURNS: Section[] = [
       },
       {
         kind: "p",
-        text: "Send the print back to us (you cover the return postage) and, once we've received it or you've shown proof of return, we'll refund the full price plus the standard delivery cost — with no deduction for payment-processing fees — within 14 days, to the card you paid with.",
+        text: "Send the print back to us (you cover the return postage) and, once we've received it or you've shown proof of return, we'll refund the full price you paid — with no deduction for payment-processing fees — within 14 days, to the card you paid with. Delivery is free, so there is no separate delivery charge to refund.",
       },
     ],
   },
@@ -680,7 +681,7 @@ const LegalPage = ({
         <Reveal as="article" className="flex flex-col gap-10">
           {sections.map((section, i) => (
             <section key={i} className="flex flex-col gap-4">
-              <h2 className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.2] text-ink m-0">
+              <h2 className="font-display font-semibold tracking-[-0.04em] text-balance text-[clamp(24px,2.8vw,40px)] leading-[1.2] text-ink m-0">
                 {section.heading}
               </h2>
               {section.blocks.map((block, j) => {
@@ -697,7 +698,7 @@ const LegalPage = ({
                 return (
                   <ul
                     key={j}
-                    className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
+                    className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] 2xl:max-w-[72ch] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
                   >
                     {block.items.map((item, k) => (
                       <li key={k}>{item}</li>

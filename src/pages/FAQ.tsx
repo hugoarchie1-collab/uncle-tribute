@@ -59,8 +59,8 @@ const FAQS: QA[] = [
     answer: (
       <>
         Unframed prints dispatch within <strong>7–10 working days</strong> of
-        your order, plus shipping. Framed orders need approximately
-        <strong> two weeks</strong>. Prints hand-finished by Polly Wedge
+        your order, with free delivery worldwide. Framed orders add roughly
+        <strong> two weeks</strong> to that. Prints hand-finished by Polly Wedge
         dispatch within <strong>two weeks</strong> maximum. You'll receive an
         email with tracking the moment your print leaves the studio.
       </>
@@ -75,8 +75,8 @@ const FAQS: QA[] = [
         <strong> Gallery A3</strong> at £245 (limited edition of 150 per
         colourway). <strong>Collector's A2</strong> at £450 (limited edition
         of 100). <strong>Atelier A1</strong> at £850 (limited edition of 50).
-        <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 —
-        currently by request only while we finalise A0 fulfilment).
+        <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 per
+        colourway).
       </>
     ),
   },
@@ -88,8 +88,9 @@ const FAQS: QA[] = [
         Yes — framing is offered on the A2 and A1 tiers. The frame is
         black-stained oak with <strong>cast acrylic glazing</strong> (we
         don't ship glass — too fragile in transit). Add £295 on A2 and £395
-        on A1, plus a small framed-shipping surcharge calculated at
-        checkout. Framed orders add roughly two weeks to the lead time.
+        on A1. Delivery is free worldwide, framed or unframed — there is no
+        framing surcharge at checkout. Framed orders add roughly two weeks to
+        the lead time.
       </>
     ),
   },
@@ -111,12 +112,11 @@ const FAQS: QA[] = [
     question: "Do you ship internationally?",
     answer: (
       <>
-        Yes — to Europe, North America, Australia and New Zealand. Shipping
-        is flat-rate at checkout (UK £15 · Europe £35 · Rest of world £60),
-        with a small surcharge applied to framed orders. International
-        buyers may be charged local import duties or VAT on delivery by
-        their courier — these are set by your country's customs authority,
-        not by us.
+        Yes — to the UK, Europe, North America, Australia and New Zealand.
+        Delivery is free worldwide on every order, framed or unframed, with
+        nothing added at checkout. International buyers may be charged local
+        import duties or VAT on delivery by their courier — these are set by
+        your country's customs authority, not by us.
       </>
     ),
   },
@@ -159,7 +159,7 @@ export const FAQ = () => {
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
         <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
           <p className={cn(EYEBROW, "m-0 mb-5")}>Before you buy</p>
-          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}>What people ask.</h1>
+          <h1 className={cn(TITLE, "m-0 !text-[clamp(30px,4.4vw,56px)] !leading-[1.05]")}>What people ask.</h1>
           <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
             On provenance, paper, editions, framing, hand-finishing, shipping
             and after-sale care. For anything not covered here, write to{" "}
