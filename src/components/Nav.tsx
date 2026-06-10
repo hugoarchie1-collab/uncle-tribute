@@ -187,7 +187,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"
-          className="inline-flex items-center shrink-0"
+          className="press inline-flex items-center shrink-0"
         >
           <Logo size={32} wordmark />
         </Link>
@@ -230,7 +230,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             }
             className={({ isActive }) =>
               cn(
-                "relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
+                "press relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
                 isActive ? "text-ink" : "text-ink/55 hover:text-accent",
               )
             }
@@ -277,7 +277,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((o) => !o)}
-            className="xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
           >
             <svg
               width="22"
@@ -379,7 +379,7 @@ const NavMenu = ({
                 type="button"
                 aria-label="Close menu"
                 onClick={onClose}
-                className="inline-flex items-center justify-center w-11 h-11 -mr-2.5 text-ink/70 hover:text-ink transition-colors"
+                className="press inline-flex items-center justify-center w-11 h-11 -mr-2.5 text-ink/70 hover:text-ink transition-colors"
               >
                 <svg
                   width="24"

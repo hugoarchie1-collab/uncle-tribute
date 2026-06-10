@@ -459,6 +459,9 @@ export const Welcome = () => {
               parallax={0.06}
               objectPosition="center 62%"
               shadow=""
+              // Full-bleed minus the px-4→px-12 page gutter — effectively the
+              // viewport width; the appended 2000w original covers wide screens.
+              sizes="100vw"
             />
           </Reveal>
 
@@ -503,6 +506,11 @@ export const Welcome = () => {
                         alt={`${painting.title} — ${cover.name}`}
                         loading="lazy"
                         decoding="async"
+                        // Same orphan-centring grid as /collections: each card is
+                        // flex-[0_1_clamp(280px,30%,420px)] in the
+                        // max-w-[1320px]→[1720px] container — ~one-up (≈90vw) on
+                        // phones, ~30vw at mid widths, capped at the 420px ceiling.
+                        sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                       />
                       {/* Price chip — scroll-revealed (visible on mobile,
@@ -583,6 +591,10 @@ export const Welcome = () => {
                   aspect="aspect-[4/3] sm:aspect-[3/2]"
                   edges="all"
                   parallax={0.08}
+                  // Inside the max-w-[1320px]→[1720px] Craft panel, full panel
+                  // width minus section + panel padding: ~the container at wide
+                  // widths, near-full viewport on phones.
+                  sizes="(min-width: 1400px) 1200px, 92vw"
                 />
               </Reveal>
 

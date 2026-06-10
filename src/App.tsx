@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
-import { motion, MotionConfig } from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
 import { BasketToast } from "./components/BasketToast";
 import { ConsentBanner } from "./components/ConsentBanner";
+import { PageTransition } from "./components/PageTransition";
+import { SiteEntrance } from "./components/SiteEntrance";
 import { absoluteUrl } from "./lib/seo";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
@@ -34,53 +36,6 @@ const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
-
-/**
- * Scroll behaviour on route change:
- *  - POP (browser back/forward): let the browser restore its scroll position
- *  - PUSH / REPLACE with hash: poll for the target element (page may still be
- *    mounting + fixed backdrop layer settling), then scroll it into view
- *  - PUSH / REPLACE without hash: scroll to top
- */
-const ScrollToTop = () => {
-  const { pathname, hash } = useLocation();
-  const navType = useNavigationType();
-
-  useEffect(() => {
-    if (navType === "POP") return;
-
-    if (hash) {
-      const id = hash.replace(/^#/, "");
-      let attempts = 0;
-      const maxAttempts = 30; // 30 × 100ms = 3s max
-      let cancelled = false;
-
-      const tryScroll = () => {
-        if (cancelled) return;
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          return;
-        }
-        if (attempts < maxAttempts) {
-          attempts += 1;
-          window.setTimeout(tryScroll, 100);
-        }
-      };
-
-      // First attempt after a short delay so the new page has a chance to mount
-      const t = window.setTimeout(tryScroll, 80);
-      return () => {
-        cancelled = true;
-        window.clearTimeout(t);
-      };
-    }
-
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [pathname, hash, navType]);
-
-  return null;
-};
 
 /**
  * Default per-route canonical URL. react-helmet-async treats
@@ -116,21 +71,23 @@ const LoadingFallback = () => (
 );
 
 /**
- * Routes wrapped in a gentle per-route fade, keyed on pathname so each
- * navigation eases in. OPACITY ONLY — never a transform on this wrapper: a
- * transformed ancestor re-bases every page's position:fixed backdrop and would
- * break it. MotionConfig reducedMotion="user" disables it for those who ask.
+ * Routes wrapped in PageTransition — a dignified route crossfade (outgoing
+ * fades out 160ms, incoming fades in 300ms on the house curve), with the
+ * scroll reset relocated INTO the incoming page's pre-paint mount so there is
+ * never a flash of the old scroll position. OPACITY ONLY on the animated
+ * wrapper — never a transform: a transformed ancestor re-bases every page's
+ * position:fixed backdrop and would break it (see PageTransition.tsx for the
+ * full invariant list). POP + prefers-reduced-motion swap instantly.
+ *
+ * `<Routes location={location}>` (the explicit prop, not context) is what
+ * lets AnimatePresence hold the OUTGOING page on its old location while it
+ * fades — don't remove it.
  */
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-      >
+    <PageTransition>
+      <Suspense fallback={<LoadingFallback />}>
         <Routes location={location}>
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
@@ -153,8 +110,8 @@ const AnimatedRoutes = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </motion.div>
-    </Suspense>
+      </Suspense>
+    </PageTransition>
   );
 };
 
@@ -174,7 +131,6 @@ export default function App() {
     <HelmetProvider>
       <MotionConfig reducedMotion="user">
         <BrowserRouter basename={basename}>
-          <ScrollToTop />
           <CanonicalDefault />
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
@@ -182,6 +138,12 @@ export default function App() {
           {/* Premium custom cursor — fine-pointer + motion-allowed only;
               renders nothing (native cursor) on touch / reduced-motion. */}
           <CustomCursor />
+          {/* Branded entrance — first visit per session only: a #0a0908 veil
+              with the rose emblem breathing in, parting upward within 900ms.
+              pointer-events:none for its whole life, unmounts completely.
+              z-[180]: above grain/consent/toasts, below modals (z-200) and
+              the cursor (z-250). Skipped on prefers-reduced-motion. */}
+          <SiteEntrance />
           <AnimatedRoutes />
           {/* Global "Added to basket" confirmation toast. Listens to the
               basket store's add side-channel, so every add path triggers it

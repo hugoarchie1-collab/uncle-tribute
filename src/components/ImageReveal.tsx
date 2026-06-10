@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, type CSSProperties } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { asset, webp } from "../lib/asset";
+import { asset, webp, webpSrcSet } from "../lib/asset";
 
 interface ImageRevealProps {
   src: string;
@@ -22,6 +22,12 @@ interface ImageRevealProps {
   objectPosition?: string;
   /** Mouse-track tilt on hover (futurist immersive feel) */
   tilt?: boolean;
+  /** CSS `sizes` describing the image's rendered width across breakpoints.
+   *  Only takes effect when responsive WebP width variants exist for `src`
+   *  (see `webpSrcSet`); the browser then picks the smallest sufficient file.
+   *  Default "100vw" is conservative — pass an accurate value where the frame
+   *  is narrower than the viewport. */
+  sizes?: string;
 }
 
 /**
@@ -40,9 +46,11 @@ export const ImageReveal = ({
   shadow = "shadow-[0_24px_60px_rgba(0,0,0,0.55)]",
   objectPosition = "center",
   tilt = false,
+  sizes = "100vw",
 }: ImageRevealProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const srcSet = webpSrcSet(src);
 
   // Scroll parallax
   const { scrollYProgress } = useScroll({
@@ -106,7 +114,11 @@ export const ImageReveal = ({
       onMouseLeave={tilt ? onMouseLeave : undefined}
     >
       <picture style={{ display: "contents" }}>
-        <source srcSet={asset(webp(src))} type="image/webp" />
+        {srcSet ? (
+          <source srcSet={srcSet} sizes={sizes} type="image/webp" />
+        ) : (
+          <source srcSet={asset(webp(src))} type="image/webp" />
+        )}
         <motion.img
           src={asset(src)}
           alt={alt}

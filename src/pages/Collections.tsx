@@ -424,6 +424,12 @@ export const Collections = () => {
                               alt={painting.title}
                               loading="lazy"
                               decoding="async"
+                              // Tile width is flex-[0_1_clamp(280px,30%,420px)]
+                              // inside the max-w-[1320px]→[1720px] grid: floors
+                              // to ~one-up (≈90vw) on phones, ~30vw of the row at
+                              // mid widths, capped at the 420px clamp ceiling on
+                              // wide screens.
+                              sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                             />
                           </div>

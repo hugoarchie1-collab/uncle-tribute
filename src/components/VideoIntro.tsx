@@ -23,9 +23,25 @@ import { useEffect, useRef, useState } from "react";
  *  - The scroll-driven fade/scale touches ONLY opacity + transform (GPU
  *    compositing), is rAF-throttled, and never hijacks or blocks native scroll.
  *
- * Video assets (re-encoded 2026-05-31): intro.webm (VP9, ~3.6MB) + intro.mp4
- * (H.264 720p, ~4.0MB), audio stripped — down from a 38MB 1440p/25Mbps source.
- * Reduced-motion users get the 891KB poster instead.
+ * DEFERRED FETCH (off the critical path):
+ *  - The multi-MB film must NOT compete with fonts/hero/LCP during first paint.
+ *    The <video> mounts with preload="none" and NO <source> children, so the
+ *    browser fetches zero media bytes up front. The ~100KB poster-v2 (already
+ *    <link rel="preload">ed in index.html) paints the frame instantly via the
+ *    poster attribute. Once a "go" signal fires — window 'load' (already fired
+ *    or fires), a requestIdleCallback/setTimeout(~1200ms) safety net, OR the
+ *    user's first interaction (they're engaged → start the film) — we attach the
+ *    sources, call load(), and kick play(). The poster keeps the frame painted
+ *    across the swap; a CSS opacity crossfade (driven by the 'playing' event)
+ *    eases the video in over the poster with no visible pop.
+ *
+ * Video assets (re-encoded 2026-06-10, "-v2" names because /video is cached
+ * immutable for 1yr): intro-v2.webm (VP9 two-pass) + intro-v2.mp4 (H.264
+ * CRF 33), both 720p, denoised (hqdn3d) + audio stripped — the high-entropy
+ * footage (starfield + foliage) made the old files 3.8–4.2MB; these are
+ * 1.4MB/2.2MB. Reduced-motion
+ * users get the ~100KB poster-v2 instead (1280×720, down from a 2560×1440
+ * 469KB webp).
  */
 
 const prefersReducedMotion = (): boolean =>
@@ -38,17 +54,80 @@ export const VideoIntro = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   // The <video> mounts on every device and autoplays + loops. The only
   // fallback to the static poster is prefers-reduced-motion (accessibility).
-  const [useVideo, setUseVideo] = useState(false);
+  // Lazy initialisers (not a mount effect): the media-query answer is known
+  // synchronously, and initialising in-render avoids a first-frame flip from
+  // poster→video (and the react-hooks/set-state-in-effect lint error).
+  const [useVideo] = useState(() => !prefersReducedMotion());
   // Reduced-motion users get a STATIC stage: no scroll listener is wired and
   // no opacity/scale transform is applied — the intro simply rests in place.
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion] = useState(prefersReducedMotion);
+  // Gate for the deferred media fetch. Stays false until the "go" signal fires
+  // (window load / idle fallback / first interaction); only then do the
+  // <source> children mount, so the browser pulls zero video bytes at first
+  // paint. The poster attribute keeps the frame painted in the meantime.
+  const [go, setGo] = useState(false);
+  // Drives the gentle opacity crossfade: the video element starts at 0 (the
+  // poster shows through the `poster` attribute) and eases to 1 on 'playing',
+  // so the first decoded frame never "pops" in over the still.
+  const [playing, setPlaying] = useState(false);
   const base = import.meta.env.BASE_URL;
 
+  // Defer the media fetch until AFTER first paint so the film never competes
+  // with fonts/hero/LCP. Flip `go` on whichever fires first: window 'load'
+  // (already done or pending), an idle/timeout safety net (~1200ms — so a slow
+  // page that never settles still starts the film), or the user's first
+  // interaction (engagement = start it now). Skipped under reduced-motion,
+  // where the <video> is never mounted at all.
   useEffect(() => {
-    const reduce = prefersReducedMotion();
-    setReducedMotion(reduce);
-    setUseVideo(!reduce);
-  }, []);
+    if (!useVideo || go) return;
+    let done = false;
+    const fire = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      setGo(true);
+    };
+
+    // Idle/timeout safety net so we never wait forever on a stalled load.
+    const ric = (
+      window as Window &
+        typeof globalThis & {
+          requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+          cancelIdleCallback?: (id: number) => void;
+        }
+    ).requestIdleCallback;
+    let idleId = 0;
+    let timeoutId = 0;
+    if (ric) idleId = ric(fire, { timeout: 1200 });
+    else timeoutId = window.setTimeout(fire, 1200);
+
+    // First interaction before the go signal = the reader is engaged; bring the
+    // film forward early. Passive so it never blocks scroll.
+    // ⚠️ DECLARED BEFORE the readyState check below: when the document is
+    // already complete, fire() runs SYNCHRONOUSLY and its cleanup() reads
+    // `goEvents` — declared after, that's a TDZ ReferenceError that crashed
+    // the whole tree at mount (debugged 2026-06-10).
+    const goEvents = ["touchstart", "pointerdown", "click", "scroll", "keydown"] as const;
+    for (const ev of goEvents) window.addEventListener(ev, fire, { passive: true, once: true });
+
+    // Window 'load' = the critical path is done; pull the film now. If load
+    // already fired before this effect ran, document.readyState covers it.
+    if (document.readyState === "complete") {
+      fire();
+    } else {
+      window.addEventListener("load", fire, { once: true });
+    }
+
+    function cleanup() {
+      window.removeEventListener("load", fire);
+      for (const ev of goEvents) window.removeEventListener(ev, fire);
+      const cic = (window as Window & { cancelIdleCallback?: (id: number) => void })
+        .cancelIdleCallback;
+      if (idleId && cic) cic(idleId);
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
+    return cleanup;
+  }, [useVideo, go]);
 
   // Scroll-driven fade + gentle scale. opacity/transform only, rAF-throttled,
   // passive listener — page scroll stays fully native. Skipped entirely under
@@ -77,14 +156,16 @@ export const VideoIntro = () => {
     };
   }, [reducedMotion]);
 
-  // Autoplay + keep-alive. (1) Kick play() on mount and as soon as the media is
-  // ready (loadedmetadata / canplay) — covers iOS, where the autoPlay attribute
-  // alone is unreliable. (2) A one-time first-interaction fallback (touch /
-  // click / scroll) starts the loop even if iOS blocked programmatic autoplay
-  // (e.g. Low Power Mode). (3) An IntersectionObserver pauses the video when the
-  // hero leaves the viewport and resumes it when it returns.
+  // Autoplay + keep-alive. (1) Once the go signal lands, attach the sources +
+  // load() so the deferred fetch begins, then kick play() on mount and as soon
+  // as the media is ready (loadedmetadata / canplay) — covers iOS, where the
+  // autoPlay attribute alone is unreliable. (2) A one-time first-interaction
+  // fallback (touch / click / scroll) starts the loop even if iOS blocked
+  // programmatic autoplay (e.g. Low Power Mode). (3) An IntersectionObserver
+  // pauses the video when the hero leaves the viewport and resumes it when it
+  // returns. (4) A 'playing' listener flips `playing` to crossfade the video in.
   useEffect(() => {
-    if (!useVideo) return;
+    if (!useVideo || !go) return;
     const el = sectionRef.current;
     const video = videoRef.current;
     if (!video) return;
@@ -97,12 +178,21 @@ export const VideoIntro = () => {
     video.muted = true;
     video.setAttribute("muted", "");
 
+    // Begin the deferred fetch: the <source> children are now in the DOM (go is
+    // true), so load() picks them up and starts pulling the chosen encoding.
+    video.load();
+
     const tryPlay = () => {
       void video.play?.().catch(() => {});
     };
     tryPlay();
     video.addEventListener("loadedmetadata", tryPlay);
     video.addEventListener("canplay", tryPlay);
+
+    // Crossfade the video in once it actually paints frames, so the swap from
+    // the poster still never pops. (Under reduced-motion this path never runs.)
+    const onPlaying = () => setPlaying(true);
+    video.addEventListener("playing", onPlaying);
 
     // First-interaction fallback for browsers that refuse programmatic autoplay
     // (notably iOS Low Power Mode, which blocks even muted autoplay). The
@@ -147,11 +237,12 @@ export const VideoIntro = () => {
     return () => {
       video.removeEventListener("loadedmetadata", tryPlay);
       video.removeEventListener("canplay", tryPlay);
+      video.removeEventListener("playing", onPlaying);
       removeKick();
       document.removeEventListener("visibilitychange", onVisible);
       io?.disconnect();
     };
-  }, [useVideo]);
+  }, [useVideo, go]);
 
   return (
     <section ref={sectionRef} className="video-intro" aria-label="Introduction">
@@ -177,22 +268,34 @@ export const VideoIntro = () => {
             loop
             playsInline
             // iOS reads this lowercase attribute; the React prop above covers
-            // every other engine. Belt-and-braces for phone autoplay.
-            // eslint-disable-next-line react/no-unknown-property
+            // every other engine. Belt-and-braces for phone autoplay. (No
+            // eslint-disable needed: eslint-plugin-react isn't in this config,
+            // and React 19 passes lowercase hyphenated attributes through.)
             webkit-playsinline="true"
-            preload="auto"
-            poster={`${base}video/poster.jpg`}
+            // Deferred: fetch nothing up front. The sources only mount once the
+            // go signal fires (see the defer effect), and load() then pulls them.
+            preload="none"
+            poster={`${base}video/poster-v2.jpg`}
+            // Gentle crossfade in over the poster on the first painted frame —
+            // no pop. The poster attribute keeps the still painted at opacity 0.
+            style={{ opacity: playing ? 1 : 0, transition: "opacity 0.5s ease" }}
           >
             {/* WebM/VP9 first (smaller) for browsers that support it; H.264
-                mp4 fallback. Both 720p, audio stripped (re-encoded 2026-05-31). */}
-            <source src={`${base}video/intro.webm`} type="video/webm" />
-            <source src={`${base}video/intro.mp4`} type="video/mp4" />
+                mp4 fallback. Both 720p, audio stripped (re-encoded 2026-06-10).
+                Withheld until `go` so the browser pulls zero bytes at first
+                paint — the poster carries the frame until then. */}
+            {go && (
+              <>
+                <source src={`${base}video/intro-v2.webm`} type="video/webm" />
+                <source src={`${base}video/intro-v2.mp4`} type="video/mp4" />
+              </>
+            )}
           </video>
         ) : (
           <picture style={{ display: "contents" }}>
-            <source srcSet={`${base}video/poster.webp`} type="image/webp" />
+            <source srcSet={`${base}video/poster-v2.webp`} type="image/webp" />
             <img
-              src={`${base}video/poster.jpg`}
+              src={`${base}video/poster-v2.jpg`}
               alt="The Wild Rose mandala on an easel in Stephen's garden"
               className="video-intro__poster"
               decoding="async"

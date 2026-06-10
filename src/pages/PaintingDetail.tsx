@@ -11,6 +11,7 @@ import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
 import { DimensionChip } from "../components/DimensionChip";
+import { CloserLook } from "../components/CloserLook";
 import {
   COLLECTIONS,
   EMBELLISHMENT_NOTE,
@@ -1181,85 +1182,6 @@ const StickyAddBar = ({
   );
 };
 
-// ─── HeroLightbox ──────────────────────────────────────────────────────────
-// Fullscreen overlay that shows the painting at native resolution against a
-// dark backdrop. Esc + backdrop click both close it. Body scroll is locked
-// while open. Mobile pinch-zoom is native inside the overlay.
-const HeroLightbox = ({
-  open,
-  onClose,
-  imageSrc,
-  alt,
-}: {
-  open: boolean;
-  onClose: () => void;
-  imageSrc: string;
-  alt: string;
-}) => {
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          key="hero-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={alt}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.32, ease: [0.22, 0.61, 0.36, 1] }}
-          onClick={onClose}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0908]/97 backdrop-blur-sm cursor-zoom-out p-4 md:p-10"
-        >
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose();
-            }}
-            aria-label="Close (Esc)"
-            className="absolute top-4 right-4 md:top-6 md:right-6 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 bg-[#0a0908]/60 backdrop-blur-sm px-3 py-2 rounded-full ring-1 ring-line"
-          >
-            Close <span aria-hidden="true">· Esc</span>
-          </button>
-          <motion.picture
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
-            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.36, ease: [0.22, 0.61, 0.36, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            className="block max-w-full max-h-full"
-          >
-            <source srcSet={webp(imageSrc)} type="image/webp" />
-            <img
-              src={imageSrc}
-              alt={alt}
-              className="max-w-full max-h-full object-contain block"
-              draggable={false}
-            />
-          </motion.picture>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-};
-
 export const PaintingDetail = () => {
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
@@ -1354,9 +1276,12 @@ export const PaintingDetail = () => {
   const [framing, setFraming] = useState(false);
   const [embellished, setEmbellished] = useState(false);
 
-  // Fullscreen lightbox state for the hero image.
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const closeLightbox = useCallback(() => setLightboxOpen(false), []);
+  // Deep-zoom viewer state for the hero image — plus a ref on the on-page
+  // artwork <img> so the viewer can FLIP-lift from its measured rect (and read
+  // the already-decoded source's natural pixel size).
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const closeViewer = useCallback(() => setViewerOpen(false), []);
+  const heroImgRef = useRef<HTMLImageElement>(null);
   // Left-column view: the artwork itself, or the True Size room view (#11) —
   // the painting shown at its real printed size on a wall in a room.
   const [view, setView] = useState<"art" | "true-size">("art");
@@ -1534,12 +1459,13 @@ export const PaintingDetail = () => {
                   onSelectTier={setSelectedTierId}
                 />
               ) : (
+              <>
               <Reveal>
                 <div className="relative overflow-hidden">
                   <button
                     type="button"
-                    onClick={() => setLightboxOpen(true)}
-                    aria-label={`View ${painting.title} fullscreen`}
+                    onClick={() => setViewerOpen(true)}
+                    aria-label="Explore the painting in detail"
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
                     <AnimatePresence mode="popLayout">
@@ -1559,6 +1485,7 @@ export const PaintingDetail = () => {
                             pushing the price + buy controls 2+ screens down. On
                             lg+ the image sits in its ~600px column unchanged. */}
                         <img
+                          ref={heroImgRef}
                           src={asset(selected.image)}
                           alt={`${painting.title} — ${selected.name}`}
                           width={heroDims.w}
@@ -1570,6 +1497,37 @@ export const PaintingDetail = () => {
                   </button>
                 </div>
               </Reveal>
+              {/* Closer-look affordance — the quiet invitation under the
+                  artwork: a hairline-bordered pill in the muted register. Opens
+                  the same viewer the artwork itself opens. */}
+              <div className="mt-4 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setViewerOpen(true)}
+                  className={cn(
+                    EYEBROW_TIGHT,
+                    "inline-flex items-center gap-2.5 bg-transparent cursor-pointer rounded-full ring-1 ring-line px-4 py-2 transition-all duration-300 hover:text-ink hover:ring-ink/40",
+                  )}
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    aria-hidden="true"
+                    className="shrink-0"
+                  >
+                    <path
+                      d="M6 1.5v9M1.5 6h9"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  Take a closer look
+                </button>
+              </div>
+              </>
               )}
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
@@ -1622,12 +1580,18 @@ export const PaintingDetail = () => {
         orderSentinelRef={orderSentinelRef}
       />
 
-      {/* Fullscreen lightbox — opens when the hero is clicked. */}
-      <HeroLightbox
-        open={lightboxOpen}
-        onClose={closeLightbox}
-        imageSrc={asset(selected.image)}
-        alt={`${painting.title} — ${selected.name}`}
+      {/* Closer-look viewer — opens from the artwork (or its caption) and always
+          shows the SELECTED colourway's full-resolution source. When the
+          colourway picker changes while it's open, `selected.image` updates and
+          the viewer re-fits the new colourway. */}
+      <CloserLook
+        open={viewerOpen}
+        onClose={closeViewer}
+        imageSrc={selected.image}
+        alt={`${painting.title} — ${selected.name}, full-resolution detail`}
+        paintingTitle={painting.title}
+        colourwayName={selected.name}
+        sourceImgRef={heroImgRef}
       />
     </div>
   );
