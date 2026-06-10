@@ -32,6 +32,8 @@ import {
 import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
+import { getStoredUtm } from "../lib/utm";
+import { trackAddToCart, trackViewContent } from "../lib/tracking";
 import {
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
@@ -608,6 +610,12 @@ const BuyBox = ({
       framingActive,
       embellishActive,
     );
+    // Marketing analytics (consent-gated no-op otherwise) — AddToCart /
+    // add_to_cart at the SELECTED tier's print price.
+    trackAddToCart(
+      { id: painting.id, title: painting.title },
+      selectedTier.pricePence,
+    );
     const stamp = Date.now();
     setAddedFor({
       paintingId: painting.id,
@@ -629,6 +637,9 @@ const BuyBox = ({
     // symptom).
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
+    // First-touch attribution (tasm.utm.v1) rides along as the optional `utm`
+    // field — the server validates it and writes the session metadata.
+    const utm = getStoredUtm();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -639,6 +650,7 @@ const BuyBox = ({
           tierId: selectedTier.id,
           framing: framingActive,
           embellished: embellishActive,
+          ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
       });
@@ -1110,12 +1122,20 @@ const StickyAddBar = ({
       framingOffered && framing,
       embellishOffered && embellished,
     );
+    // Same consent-gated AddToCart as the buy box — this bar is just the
+    // floating twin of that handler.
+    trackAddToCart(
+      { id: painting.id, title: painting.title },
+      selectedTier.pricePence,
+    );
     setAdded(true);
     window.setTimeout(() => setAdded(false), 2200);
   }, [
     painting.id,
+    painting.title,
     selected.name,
     selectedTier.id,
+    selectedTier.pricePence,
     framingOffered,
     framing,
     embellishOffered,
@@ -1314,6 +1334,20 @@ export const PaintingDetail = () => {
   const [selectedTierId, setSelectedTierId] = useState<PrintTier["id"] | undefined>(
     anchorTier?.id,
   );
+
+  // Marketing analytics — ViewContent / view_item once per painting viewed
+  // (consent-gated; a silent no-op without an accept + configured IDs). The
+  // value is the anchor-tier price — the figure the page itself leads with.
+  // Keyed on the painting id: refiring on colourway / tier changes would
+  // inflate view counts.
+  useEffect(() => {
+    if (!painting || !anchorTier) return;
+    trackViewContent(
+      { id: painting.id, title: painting.title },
+      anchorTier.pricePence,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [painting?.id]);
 
   // Add-on state — lives on the parent so the sticky add bar and the BuyBox
   // share one source of truth.

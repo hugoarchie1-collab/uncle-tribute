@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -20,6 +20,9 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { useBasket, useGiftCards, removeItem, type BasketItem, type GiftBasketItem } from "../lib/basket";
+import { restoreBasketFromUrl } from "../lib/basketRestore";
+import { getStoredUtm } from "../lib/utm";
+import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
@@ -168,7 +171,7 @@ const bundlePercentOff = (lines: ResolvedLine[]): number => {
  * penny — mirror invariant, gotcha #9). There is no framed-shipping surcharge
  * anymore, hence no DMCC drip-pricing disclosure to surface.
  */
-const shippingPreview = (_lines: ResolvedLine[]) => ({
+const shippingPreview = () => ({
   ukPence: 0,
   euPence: 0,
   wwPence: 0,
@@ -178,6 +181,14 @@ export const Basket = () => {
   usePageTitle("Your Basket");
   const items = useBasket();
   const lines = resolveLines(items);
+
+  // Saved-basket pickup (contract C2) — the save-basket email links back to
+  // /basket?restore=<base64url payload>. On mount: decode, validate every
+  // line against the live catalogue, merge without duplicating identical
+  // lines, then strip the param. A no-op when no ?restore= is present.
+  useEffect(() => {
+    restoreBasketFromUrl();
+  }, []);
 
   // Gift-card lines (digital e-vouchers). Excluded from the bundle-discount
   // maths (a gift card is not a print) + shipping (digital). Their face value
@@ -203,7 +214,7 @@ export const Basket = () => {
   const grandTotalPence = discountedSubtotalPence + giftTotalPence;
 
   // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.
-  const shipping = shippingPreview(lines);
+  const shipping = shippingPreview();
 
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -212,8 +223,18 @@ export const Basket = () => {
     if (isEmpty) return;
     setStatus("loading");
     setErrorMsg("");
+    // Marketing analytics (consent-gated no-op otherwise) — InitiateCheckout /
+    // begin_checkout with the full pre-discount basket figure (the page's
+    // "Subtotal" + gift-card face values) and the total line count.
+    trackInitiateCheckout(
+      subtotalPence + giftTotalPence,
+      lines.length + giftCards.length,
+    );
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
+    // First-touch attribution (tasm.utm.v1) rides along as the optional `utm`
+    // field — the server validates it and writes the session metadata.
+    const utm = getStoredUtm();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -239,6 +260,7 @@ export const Basket = () => {
               ...(g.giftMessage ? { giftMessage: g.giftMessage } : {}),
             })),
           ],
+          ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
       });

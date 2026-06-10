@@ -19,6 +19,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
+    // noEmit: `tsc -p api` is for TYPE-CHECKING ONLY. Without this it emits
+    // api/*.js siblings next to the .ts sources — committed, Vercel would
+    // deploy them as duplicate/shadow routes ahead of the real functions.
+    "noEmit": true,
     "types": ["node"]
   },
   "include": ["**/*.ts"]

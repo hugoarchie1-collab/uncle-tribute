@@ -17,6 +17,15 @@
  * item path is preserved byte-for-byte so the existing "Buy now" button on
  * each painting page keeps working without redeploy coordination.
  *
+ * Both body shapes also accept an OPTIONAL top-level `utm` object (contract
+ * C1 — first-touch attribution the client persists in localStorage
+ * "tasm.utm.v1"): { source?, medium?, campaign?, term?, content?, gclid?,
+ * fbclid?, landing? } — optional strings, trimmed, capped at 200 chars.
+ * Non-empty fields are written into the session metadata as utm_source,
+ * utm_medium, utm_campaign, utm_term, utm_content, utm_gclid, utm_fbclid,
+ * utm_landing so orders are attributable in Stripe / the webhook. A missing
+ * or malformed `utm` is silently ignored — it never blocks checkout.
+ *
  * Pricing: `tierId` selects a rung on the canonical PRINT_TIERS ladder
  * (mirrored inline below — gotcha #5). Missing `tierId` defaults to the
  * anchor ("collector" = A2 £450). Framing is an OPTIONAL separate Stripe
@@ -403,6 +412,43 @@ const truncateMetadata = (parts: string[]): string => {
   return acc;
 };
 
+// ---- UTM attribution (contract C1, server half) ---------------------------
+// The client captures first-touch attribution once (localStorage
+// "tasm.utm.v1") and forwards it verbatim as an OPTIONAL top-level `utm`
+// object on BOTH body shapes. Validation: each field is an optional string,
+// trimmed, capped at UTM_MAX_LEN chars; everything else is ignored. Only
+// non-empty fields become metadata keys, so a clean direct visit adds zero
+// keys. 200 chars sits comfortably under Stripe's 500-char per-value cap,
+// and 8 extra keys on top of the order metadata (~17 keys worst case) stays
+// well under Stripe's 50-key cap. Never blocks checkout — a malformed `utm`
+// simply contributes nothing.
+const UTM_MAX_LEN = 200;
+const UTM_FIELDS = [
+  ["source", "utm_source"],
+  ["medium", "utm_medium"],
+  ["campaign", "utm_campaign"],
+  ["term", "utm_term"],
+  ["content", "utm_content"],
+  ["gclid", "utm_gclid"],
+  ["fbclid", "utm_fbclid"],
+  ["landing", "utm_landing"],
+] as const;
+
+const utmMetadata = (raw: unknown): Record<string, string> => {
+  const out: Record<string, string> = {};
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return out;
+  }
+  const obj = raw as Record<string, unknown>;
+  for (const [field, key] of UTM_FIELDS) {
+    const value = obj[field];
+    if (typeof value !== "string") continue;
+    const trimmed = value.trim().slice(0, UTM_MAX_LEN);
+    if (trimmed) out[key] = trimmed;
+  }
+  return out;
+};
+
 /**
  * The bundle discount percent for a basket, derived from its CONTENTS (never
  * trusted from the client). Mirrors src/data/paintings.ts (gotcha #9):
@@ -442,6 +488,7 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
  * `items` is retained in the signature (call-site compatibility) even though the
  * rate no longer depends on the basket contents — every order ships free.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature kept for call-site compatibility
 const buildShippingOptions = (_items: NormalisedItem[]) => [
   {
     shipping_rate_data: {
@@ -510,6 +557,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       recipientEmail?: unknown;
       giftMessage?: unknown;
     }>;
+    // First-touch attribution (contract C1) — optional on BOTH body shapes.
+    utm?: unknown;
   };
   try {
     body =
@@ -730,6 +779,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
   }
 
+  // UTM attribution (contract C1) — appended last. All keys are utm_-prefixed
+  // so they can never collide with the order keys above; only non-empty
+  // validated fields are written (max 8 keys, values ≤200 chars — see
+  // utmMetadata for the Stripe 50-key / 500-char headroom note).
+  Object.assign(metadata, utmMetadata(body.utm));
+
   // Note: `new Stripe(secret)` with no apiVersion — pinning a version
   // literal like "2025-09-30.clover" can mismatch the SDK's exported type
   // union (gotcha #6 in CLAUDE.md). Let the SDK use its pinned default.
@@ -844,24 +899,63 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         shipping_options: buildShippingOptions(normalised),
       };
 
+  // Base session params — the proven checkout shape. The marketing add-ons
+  // (abandoned-checkout recovery + promotions consent) are layered on top so
+  // they can be retried WITHOUT if Stripe ever rejects them (see below) —
+  // selling the print always outranks attribution / recovery extras.
+  const baseSessionParams: Stripe.Checkout.SessionCreateParams = {
+    mode: "payment",
+    line_items: lineItems,
+    ...shippingParams,
+    metadata,
+    // Stripe disallows `allow_promotion_codes` and `discounts` together.
+    // When we've programmatically applied a bundle discount, we drop the
+    // promo-code input on the hosted checkout (the buyer's bundle already
+    // beats their thank-you code anyway). When there's no bundle, the
+    // promo-code input stays so a gift / thank-you code is redeemable —
+    // including on a gift-only basket (a giver could redeem a code too).
+    ...(discounts
+      ? { discounts }
+      : { allow_promotion_codes: true }),
+    success_url: `${siteUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${siteUrl}/order/cancel`,
+  };
+
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
+    ...baseSessionParams,
+    // Abandoned-checkout recovery: when the session expires (Stripe default
+    // 24h) the `checkout.session.expired` webhook event carries
+    // after_expiration.recovery.url — a link that re-opens a copy of this
+    // exact session — so the estate can send a dignified "your basket is
+    // saved" note. Recovery is a payment-mode feature; every session here is
+    // payment mode, including the gift-only basket (no shipping params — no
+    // conflict with the giftOnly spread above).
+    after_expiration: { recovery: { enabled: true } },
+    // Promotions-consent checkbox on the hosted checkout. "auto" defers the
+    // display decision entirely to Stripe (shown by buyer locale per its
+    // docs); the result lands on session.consent.promotions
+    // ("opt_in" / "opt_out") for the webhook to read. No conflicting params:
+    // we never set ui_mode, setup mode, or customer-creation options.
+    consent_collection: { promotions: "auto" },
+  };
+
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: lineItems,
-      ...shippingParams,
-      metadata,
-      // Stripe disallows `allow_promotion_codes` and `discounts` together.
-      // When we've programmatically applied a bundle discount, we drop the
-      // promo-code input on the hosted checkout (the buyer's bundle already
-      // beats their thank-you code anyway). When there's no bundle, the
-      // promo-code input stays so a gift / thank-you code is redeemable —
-      // including on a gift-only basket (a giver could redeem a code too).
-      ...(discounts
-        ? { discounts }
-        : { allow_promotion_codes: true }),
-      success_url: `${siteUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/order/cancel`,
-    });
+    let session: Stripe.Checkout.Session;
+    try {
+      session = await stripe.checkout.sessions.create(sessionParams);
+    } catch (err) {
+      // Belt-and-braces: if Stripe rejects either ADDITIVE marketing param
+      // (e.g. promotions consent availability can vary by account country),
+      // retry once with the proven base shape rather than failing the sale.
+      // Any other error falls through to the outer catch unchanged.
+      const message = err instanceof Error ? err.message : String(err);
+      if (!/consent_collection|after_expiration/i.test(message)) throw err;
+      console.warn(
+        "[/api/checkout] marketing params rejected by Stripe — retrying without recovery/consent:",
+        message,
+      );
+      session = await stripe.checkout.sessions.create(baseSessionParams);
+    }
 
     if (!session.url) {
       console.error("[/api/checkout] Stripe returned session without URL", session.id);

@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import { pageTitle, absoluteUrl } from "../lib/seo";
 
 /**
@@ -25,6 +26,14 @@ export interface SeoProps {
   image?: string;
   /** og:type — "website" (default) or "product" for painting pages. */
   type?: "website" | "product" | "article";
+  /**
+   * Canonical path or absolute URL. Defaults to the CURRENT pathname (query
+   * stripped), which is right for every route today — the prop exists for
+   * pages that need to canonicalise elsewhere (e.g. a variant URL pointing at
+   * its parent). Helmet treats rel=canonical as unique, so this also
+   * overrides App.tsx's route-level default.
+   */
+  canonical?: string;
   /** schema.org JSON-LD object(s) to inject. */
   jsonLd?: object | object[];
 }
@@ -35,16 +44,22 @@ export const Seo = ({
   url,
   image,
   type = "website",
+  canonical,
   jsonLd,
 }: SeoProps) => {
+  const { pathname } = useLocation();
   const fullTitle = pageTitle(title);
   const ogImage = image ? absoluteUrl(image) : undefined;
   const ogUrl = url ? absoluteUrl(url) : undefined;
+  // Canonical = current pathname unless overridden — query params (?c=
+  // colourway deep-links etc.) never fragment the indexed URL.
+  const canonicalUrl = absoluteUrl(canonical ?? pathname);
   const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
+      <link rel="canonical" href={canonicalUrl} />
       {description && <meta name="description" content={description} />}
       <meta property="og:type" content={type} />
       <meta property="og:title" content={title ?? fullTitle} />

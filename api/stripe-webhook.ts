@@ -33,6 +33,15 @@
  *                             fails (default: "FRIENDS"; Hugo must set up a
  *                             matching promotion code in the Stripe dashboard
  *                             for the fallback to actually work)
+ *   META_PIXEL_ID +
+ *   META_CAPI_ACCESS_TOKEN  – Meta Conversions API server-side Purchase event
+ *                             on checkout.session.completed (both required;
+ *                             either absent => clean silent no-op)
+ *
+ * Also handles `checkout.session.expired`: when the session has a Stripe
+ * recovery URL, a buyer email AND the buyer opted in to promotions
+ * (consent.promotions === "opt_in"), we send ONE quiet basket-held recovery
+ * email via Resend. All conditions required, otherwise log + skip.
  *
  * Self-contained file (no imports from /src — gotcha #5 in CLAUDE.md).
  * Imports from /api/_lib/* are fine — same Vercel bundle, underscore prefix
@@ -40,6 +49,7 @@
  */
 
 import type { IncomingMessage } from "node:http";
+import { createHash } from "node:crypto";
 import Stripe from "stripe";
 import { Resend } from "resend";
 
@@ -740,6 +750,54 @@ const renderGiftHtml = (p: {
 };
 
 // ---------------------------------------------------------------------------
+// Inlined basket-held recovery email → HTML string (checkout.session.expired).
+// Same dark estate palette + shared esc() / SANS / DISPLAY utils as the
+// order-confirmation email above (gotcha #5 — inline, do not import). Register:
+// quiet, zero pressure — NO discounts, NO countdowns, NO "don't miss out".
+// Sent ONLY when the buyer ticked Stripe's promotions consent (opt_in), the
+// session carries a recovery URL, and we have their email.
+// ---------------------------------------------------------------------------
+const renderBasketHeldHtml = (p: {
+  buyerName?: string | null;
+  recoveryUrl: string;
+  estateEmail: string;
+  orderRef: string;
+}): string => {
+  const first = (() => {
+    const t = (p.buyerName ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : "there";
+  })();
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#ede6d6;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:28px 22px;margin:24px 0;text-align:center;`,
+    button: `display:inline-block;background-color:#ede6d6;color:#0a0908;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:4px;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your basket is still held — The Art of Stephen Meakin</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">Hello, ${first}.</h1>`
+    + `<p style="${s.body}">The pieces you were considering from <em>The Art of Stephen Meakin</em> are still held in your basket. If you'd like to pick up where you left off, your checkout is here.</p>`
+    + `<div style="${s.card}">`
+    + `<a href="${esc(p.recoveryUrl)}" style="${s.button}">Return to your checkout</a>`
+    + `</div>`
+    + `<p style="${s.small}">The link above stays live for thirty days, then quietly expires. And if you've decided it isn't for you, there's nothing to do — this is the only note we'll send.</p>`
+    + `<p style="${s.signoff}">With love from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
+// ---------------------------------------------------------------------------
 // Klaviyo (CRM / revenue flows) — BEST-EFFORT, ENV-GUARDED, SELF-CONTAINED.
 // ---------------------------------------------------------------------------
 // Klaviyo is the estate's marketing CRM (post-purchase + revenue flows /
@@ -886,6 +944,62 @@ const klaviyoUpsertProfile = async (
 };
 
 // ---------------------------------------------------------------------------
+// Meta Conversions API (server-side Purchase) — BEST-EFFORT, ENV-GUARDED,
+// SELF-CONTAINED (gotcha #5: inlined, node:crypto + global fetch only).
+// ---------------------------------------------------------------------------
+// Guarded on BOTH META_PIXEL_ID + META_CAPI_ACCESS_TOKEN — either absent is a
+// clean silent no-op. event_id is the Stripe checkout session id: that's the
+// browser/server dedup key (in v1 the browser does NOT fire Purchase at all —
+// CAPI is the sole Purchase source, so Meta sees exactly one event per order
+// even across webhook retries). The only user_data identifier we send is the
+// buyer's email, sha256-hexed after trim + lowercase, per Meta's hashing spec.
+const META_GRAPH_VERSION = "v21.0";
+
+const sha256Hex = (input: string): string =>
+  createHash("sha256").update(input, "utf8").digest("hex");
+
+const metaCapiPurchase = async (args: {
+  pixelId: string;
+  accessToken: string;
+  sessionId: string;
+  email: string;
+  amountTotalPence: number | null | undefined;
+  currency: string | null | undefined;
+}): Promise<void> => {
+  const body = {
+    data: [
+      {
+        event_name: "Purchase",
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: args.sessionId,
+        action_source: "website",
+        event_source_url: "https://themandalacompany.com/order/success",
+        user_data: {
+          em: [sha256Hex(args.email.trim().toLowerCase())],
+        },
+        custom_data: {
+          value: (args.amountTotalPence ?? 0) / 100,
+          currency: (args.currency || "gbp").toUpperCase(),
+        },
+      },
+    ],
+    access_token: args.accessToken,
+  };
+  const resp = await fetch(
+    `https://graph.facebook.com/${META_GRAPH_VERSION}/${args.pixelId}/events`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`Meta CAPI ${resp.status}: ${text.slice(0, 300)}`);
+  }
+};
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -998,7 +1112,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         }
         for (let i = 0; i < giftCards.length; i += 1) {
           const gift = giftCards[i];
-          let minted: MintedGiftCard | null = null;
+          let minted: MintedGiftCard;
           try {
             minted = await createGiftCard(stripe, {
               sessionId: session.id,
@@ -1139,6 +1253,46 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         }
       }
 
+      // -- 0c. Meta Conversions API "Purchase" event -------------------------
+      // Best-effort + env-guarded (META_PIXEL_ID / META_CAPI_ACCESS_TOKEN —
+      // either absent → clean silent no-op). Runs here BEFORE the
+      // confirmation-email block (which has early `break`s when
+      // RESEND_API_KEY / buyerEmail are missing), like Klaviyo, so ad
+      // attribution isn't tied to the email path. Try/catch'd; the webhook
+      // ALWAYS returns 200 regardless of Meta's outcome.
+      const metaPixelId = process.env.META_PIXEL_ID;
+      const metaCapiToken = process.env.META_CAPI_ACCESS_TOKEN;
+      if (metaPixelId && metaCapiToken) {
+        if (!buyerEmail) {
+          // Meta requires at least one user_data identifier — without the
+          // buyer's email we have nothing to hash, so skip with a log.
+          console.warn(
+            "[stripe-webhook] No buyer email on session — skipping Meta CAPI Purchase.",
+            { session_id: session.id },
+          );
+        } else {
+          try {
+            await metaCapiPurchase({
+              pixelId: metaPixelId,
+              accessToken: metaCapiToken,
+              sessionId: session.id,
+              email: buyerEmail,
+              amountTotalPence: session.amount_total,
+              currency: session.currency,
+            });
+            console.log("[stripe-webhook] meta CAPI Purchase sent", {
+              session_id: session.id,
+              value_pence: session.amount_total,
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            console.error("[stripe-webhook] meta CAPI Purchase failed:", message, {
+              session_id: session.id,
+            });
+          }
+        }
+      }
+
       // -- 1. Mint the thank-you code (or fall back) -----------------------
       // We do this BEFORE rendering the email so the code lands in the
       // template. Any failure falls back to the static reusable code; we
@@ -1242,6 +1396,82 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       // OrderShipped template via Resend. For initial launch this remains
       // manual from Hugo's own inbox.
 
+      break;
+    }
+    case "checkout.session.expired": {
+      // A buyer started checkout but let it lapse. We send ONE quiet recovery
+      // email — never a discount, never a countdown — and ONLY when ALL of:
+      //   (a) Stripe minted a recovery URL (after_expiration.recovery.url —
+      //       requires checkout.ts to request after_expiration recovery),
+      //   (b) we have the buyer's email,
+      //   (c) the buyer ticked Stripe's promotions consent ("opt_in") — this
+      //       is a marketing touch, so explicit consent is non-negotiable,
+      //   (d) RESEND_API_KEY is configured.
+      // Anything missing → log + skip. Everything try/catch'd; ALWAYS 200.
+      const session = event.data.object;
+      const recoveryUrl = session.after_expiration?.recovery?.url ?? null;
+      const buyerEmail =
+        session.customer_details?.email ?? session.customer_email ?? null;
+      const promotionsConsent = session.consent?.promotions ?? null;
+      const resendKey = process.env.RESEND_API_KEY;
+
+      if (!recoveryUrl || !buyerEmail || promotionsConsent !== "opt_in" || !resendKey) {
+        console.log("[stripe-webhook] expired session — recovery email skipped", {
+          session_id: session.id,
+          has_recovery_url: !!recoveryUrl,
+          has_buyer_email: !!buyerEmail,
+          promotions_consent: promotionsConsent,
+          has_resend_key: !!resendKey,
+        });
+        break;
+      }
+
+      try {
+        const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+        const bccEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+        const resend = new Resend(resendKey);
+
+        const html = renderBasketHeldHtml({
+          buyerName: session.customer_details?.name ?? null,
+          recoveryUrl,
+          estateEmail: DEFAULT_FROM,
+          orderRef: session.id.slice(0, 18) + "…",
+        });
+
+        const sendResult = await resend.emails.send({
+          from: `${FROM_NAME} <${fromEmail}>`,
+          to: [buyerEmail],
+          // BCC only if it's a different inbox to "from" (same rule as the
+          // confirmation email) so the estate keeps its paper trail.
+          bcc:
+            bccEmail && bccEmail.toLowerCase() !== fromEmail.toLowerCase()
+              ? [bccEmail]
+              : undefined,
+          replyTo: DEFAULT_FROM,
+          subject: "Your basket is still held — The Art of Stephen Meakin",
+          html,
+        });
+
+        if (sendResult.error) {
+          console.error(
+            "[stripe-webhook] basket-held recovery email Resend error:",
+            sendResult.error,
+            { session_id: session.id },
+          );
+        } else {
+          console.log("[stripe-webhook] basket-held recovery email sent", {
+            session_id: session.id,
+            to: buyerEmail,
+            resend_id: sendResult.data?.id,
+          });
+        }
+      } catch (err) {
+        // Swallow ALL errors — never fail the webhook on a recovery email.
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] basket-held recovery email failed:", message, {
+          session_id: session.id,
+        });
+      }
       break;
     }
     default:

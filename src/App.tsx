@@ -159,11 +159,23 @@ const AnimatedRoutes = () => {
 };
 
 export default function App() {
+  // One-time, render-free side effects:
+  //  - captureUtm: persist first-touch campaign attribution (?utm_* / gclid /
+  //    fbclid) to localStorage `tasm.utm.v1` — rides along on checkout bodies.
+  //  - initTrackingIfConsented: a returning visitor with a STORED analytics
+  //    accept gets GA4 + Meta Pixel initialised on load; everyone else gets
+  //    nothing (the consent banner handles first-time accepts live).
+  useEffect(() => {
+    captureUtm();
+    initTrackingIfConsented();
+  }, []);
+
   return (
     <HelmetProvider>
       <MotionConfig reducedMotion="user">
         <BrowserRouter basename={basename}>
           <ScrollToTop />
+          <CanonicalDefault />
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
           <div aria-hidden="true" className="film-grain" />
@@ -176,6 +188,12 @@ export default function App() {
               with no per-button wiring. Mounted once; sits at z-[120], below
               modals (z-200) + cursor (z-250). */}
           <BasketToast />
+          {/* Consent banner — quiet bottom bar, renders only while no
+              decision exists in tasm.consent.v1. GA4 + Meta Pixel load ONLY
+              after "Allow analytics"; the footer's "Cookie preferences" link
+              clears the decision and re-opens it live. z-[110], below the
+              toasts (z-[120]) + modals (z-200). */}
+          <ConsentBanner />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />

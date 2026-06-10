@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { merchantFeedPlugin } from "./scripts/merchant-feed";
 
 // When deploying to GitHub Pages the site lives at /<repo-name>/.
 // Vercel / Netlify / Cloudflare Pages serve from the root and want "/".
@@ -9,7 +10,9 @@ const base = process.env.DEPLOY_TARGET === "github-pages" ? "/uncle-tribute/" : 
 
 export default defineConfig({
   base,
-  plugins: [react()],
+  // merchantFeedPlugin emits dist/merchant-feed.xml (Google Merchant Center
+  // product feed, generated from src/data/paintings.ts) + a summary txt.
+  plugins: [react(), merchantFeedPlugin()],
   build: {
     rolldownOptions: {
       output: {

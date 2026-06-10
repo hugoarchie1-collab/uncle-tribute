@@ -86,11 +86,12 @@ const PRIVACY: Section[] = [
           <><strong>Saved basket</strong> — the painting / colourway / tier you've added is stored in your own browser only (<code>localStorage</code> key <code>tasm.basket.v2</code>). It never leaves your device unless you choose to email it to yourself, in which case your email address is also stored (briefly) to send the basket.</>,
           <><strong>Server logs</strong> — basic request information (IP address, browser type, timestamps) is held in our hosting provider's logs for security and abuse-prevention purposes.</>,
           <><strong>Aggregate analytics</strong> — we use Vercel Web Analytics to understand which pages are visited and roughly where visitors come from. It is privacy-friendly and cookieless: no cookies are set, no cross-site tracking takes place, and no individual is identified or profiled. Only anonymous, aggregate page-view counts are recorded.</>,
+          <><strong>How you found us</strong> — if you arrive through a campaign link (one carrying <code>utm_</code> parameters or an ad-click id), that referral note is kept in your own browser's <code>localStorage</code> and attached to your order at checkout, so the estate can see which introductions actually lead to a print finding a home. It is not sent anywhere otherwise.</>,
         ],
       },
       {
         kind: "p",
-        text: "We do not run third-party advertising trackers, fingerprinting libraries, or any analytics that profile individuals. Our only analytics is Vercel's cookieless, aggregate Web Analytics described above.",
+        text: "By default, we run no third-party advertising trackers and no analytics that profile individuals — the only analytics that runs without asking is Vercel's cookieless, aggregate Web Analytics described above. If you choose \"Allow analytics\" on our cookie banner, Google Analytics 4 and the Meta Pixel also run — see \"Cookies & analytics\" below.",
       },
     ],
   },
@@ -101,8 +102,8 @@ const PRIVACY: Section[] = [
         kind: "ul",
         items: [
           <><strong>Performance of a contract</strong> — for handling orders, fulfilment and after-sale support.</>,
-          <><strong>Legitimate interest</strong> — for the in-browser basket store and minimal server logs.</>,
-          <><strong>Consent</strong> — for the newsletter; you can withdraw at any time via the unsubscribe link in any email or by writing to us.</>,
+          <><strong>Legitimate interest</strong> — for the in-browser basket store, minimal server logs, and the server-side sharing of a hashed order identifier with Meta for advertising measurement (described under "Cookies &amp; analytics" below).</>,
+          <><strong>Consent</strong> — for the newsletter, and for the optional analytics and advertising cookies (Google Analytics 4, Meta Pixel). You can withdraw newsletter consent via the unsubscribe link in any email, and cookie consent via the "Cookie preferences" link in the site footer.</>,
         ],
       },
     ],
@@ -128,6 +129,12 @@ const PRIVACY: Section[] = [
           </>,
           <><strong>Point 101</strong> — print fulfilment (UK). Your name and shipping address are shared so they can post the print.</>,
           <><strong>IONOS</strong> — email hosting for the <code>themandalacompany.com</code> inbox (Germany / EU).</>,
+          <><strong>Google</strong> — analytics (Google Analytics 4), only if you allow analytics cookies on our banner.{" "}
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Google Privacy Policy</a>
+          </>,
+          <><strong>Meta</strong> — advertising measurement: the Meta Pixel only if you allow analytics cookies, plus a hashed order identifier sent server-side when an order completes (see "Cookies &amp; analytics" below).{" "}
+            <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Meta Privacy Policy</a>
+          </>,
         ],
       },
       {
@@ -205,11 +212,58 @@ const PRIVACY: Section[] = [
     ],
   },
   {
-    heading: "Cookies",
+    heading: "Cookies & analytics",
     blocks: [
       {
         kind: "p",
-        text: "This site sets no third-party tracking cookies and no advertising cookies. Our analytics (Vercel Web Analytics) is cookieless, so it sets no cookies at all. The site uses your browser's localStorage for one thing only — remembering the items in your basket between visits. You can clear it any time from your browser's site-settings.",
+        text: (
+          <>
+            <strong>Essential only, by default.</strong> Until you say
+            otherwise, this site sets no tracking or advertising cookies of
+            any kind. Our built-in analytics (Vercel Web Analytics) is
+            cookieless and aggregate. Your browser&rsquo;s{" "}
+            <code>localStorage</code> is used for three small things: the
+            items in your basket, your cookie choice itself, and — if you
+            arrived through a campaign link — a note of how you found us.
+            You can clear all of these at any time from your browser&rsquo;s
+            site settings.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>Optional analytics &amp; advertising cookies.</strong> A
+            small banner asks once whether we may use Google Analytics 4 and
+            the Meta Pixel to understand how the estate&rsquo;s site is found
+            and how its advertising performs. Neither loads, sets a cookie,
+            nor sends anything until you choose <em>Allow analytics</em> — and
+            if you choose <em>Essential only</em>, that choice is remembered
+            and nothing ever loads. You can change your mind at any time via
+            the <strong>Cookie preferences</strong> link in the site footer,
+            which clears your decision and asks again.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>Order measurement (Meta Conversions API).</strong> When an
+            order completes, our server tells Meta that a purchase happened —
+            the order value and your email address protected as a one-way
+            SHA-256 hash, never the address itself in readable form — so the
+            estate can measure whether its advertising pays for itself. This
+            happens server-side, involves no cookie, and rests on our
+            legitimate interests in measuring advertising spend. You can
+            object at any time by writing to{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            .
+          </>
+        ),
       },
     ],
   },

@@ -6,6 +6,13 @@
  * can finish on another device. This is our tone-appropriate substitute for
  * a real abandoned-basket flow — see the email funnel brief.
  *
+ * Cross-device restore (contract C2): the email's button links to
+ * /basket?restore=<base64url(JSON items)> carrying the validated basket lines
+ * (same field names the client POSTed), so the basket rebuilds on a device
+ * whose localStorage is empty. If the URL would exceed ~1,800 chars it falls
+ * back to the bare /basket link (logged) so the email never carries a broken
+ * mega-URL.
+ *
  * The basket lives in localStorage on the client; there's no server-side
  * persistence (no DB on this project). So:
  *   1. Client sends { email, name?, items: [{ paintingId, colourwayName }] }
@@ -110,6 +117,11 @@ const TIERS: Record<TierId, EmailTier> = {
 const ANCHOR_TIER_ID: TierId = "collector";
 
 const MAX_ITEMS = 20;
+
+// Ceiling for the emailed /basket?restore=… link (contract C2). Past roughly
+// this length some mail clients and link-rewriting proxies truncate URLs, so
+// anything longer falls back to the bare /basket link instead.
+const MAX_BASKET_URL_LENGTH = 1800;
 
 const VALID_PAINTING_IDS = new Set<string>([
   "wild-rose",
@@ -238,6 +250,9 @@ const renderBasketSavedHtml = (p: {
   subtotal: string;
   basketUrl: string;
   estateEmail: string;
+  // True when basketUrl carries the ?restore= payload (contract C2) — the
+  // intro copy promises cross-device pick-up only when the link can honour it.
+  restoreCarried: boolean;
 }): string => {
   const first = (() => {
     const t = (p.buyerName ?? "").trim();
@@ -272,7 +287,11 @@ const renderBasketSavedHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Your basket, ${first}.</h1>`
-    + `<p style="${s.body}">Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.</p>`
+    + `<p style="${s.body}">${
+      p.restoreCarried
+        ? `Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and your basket will be waiting just as you left it.`
+        : `Here are the prints you set aside on the estate website. They live in this email now — follow the link below and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.`
+    }</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your basket</p>`
     + `<div style="${s.card}">${lineHtml}`
@@ -351,6 +370,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     size: string;
     price: string;
   }> = [];
+  // Sanitised mirror of the POSTed items for the restore link (contract C2).
+  // Same field names the client sent — /basket re-validates every line on
+  // restore, so we pass the buyer's choices through rather than the email's
+  // display-side defaulting (e.g. we do NOT inject "Original" or the anchor
+  // tier here; absent fields stay absent).
+  const restoreItems: Array<{
+    paintingId: string;
+    colourwayName?: string;
+    tierId?: string;
+    framing?: boolean;
+    embellished?: boolean;
+  }> = [];
   let subtotalPence = 0;
   for (const raw of rawItems) {
     const id = (raw?.paintingId ?? "").toString();
@@ -386,6 +417,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       price: formatGBP(linePence),
     });
     subtotalPence += linePence;
+
+    const postedColourway = (raw?.colourwayName ?? "").toString().trim();
+    const restoreItem: (typeof restoreItems)[number] = { paintingId: id };
+    if (postedColourway) restoreItem.colourwayName = postedColourway;
+    if (rawTierId) restoreItem.tierId = rawTierId;
+    if (typeof raw?.framing === "boolean") restoreItem.framing = raw.framing;
+    if (typeof raw?.embellished === "boolean") restoreItem.embellished = raw.embellished;
+    restoreItems.push(restoreItem);
   }
 
   // Throttle.
@@ -411,12 +450,40 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     const siteUrl = (process.env.SITE_URL || DEFAULT_SITE_URL).replace(/\/$/, "");
     const resend = new Resend(resendKey);
 
+    // Cross-device restore link (contract C2): carry the basket lines in the
+    // URL as base64url JSON so /basket can rebuild them on a device whose
+    // localStorage is empty. base64url's alphabet (A–Z a–z 0–9 - _) is
+    // query-string safe — no extra encoding needed. Guard the total length:
+    // past ~1,800 chars some mail clients / proxies truncate links, which
+    // would be worse than the old same-device-only behaviour, so fall back
+    // to the bare /basket URL (and log it) rather than send a broken link.
+    const bareBasketUrl = `${siteUrl}/basket`;
+    let basketUrl = bareBasketUrl;
+    let restoreCarried = false;
+    try {
+      const payload = Buffer.from(JSON.stringify(restoreItems), "utf8").toString("base64url");
+      const candidate = `${bareBasketUrl}?restore=${payload}`;
+      if (candidate.length <= MAX_BASKET_URL_LENGTH) {
+        basketUrl = candidate;
+        restoreCarried = true;
+      } else {
+        console.log("[email-basket] restore URL too long — falling back to bare /basket", {
+          urlLength: candidate.length,
+          itemCount: restoreItems.length,
+        });
+      }
+    } catch (err) {
+      // Never let the restore nicety break the email itself.
+      console.error("[email-basket] restore payload build failed:", err);
+    }
+
     const html = renderBasketSavedHtml({
       buyerName: name || null,
       lines,
       subtotal: formatGBP(subtotalPence),
-      basketUrl: `${siteUrl}/basket`,
+      basketUrl,
       estateEmail: DEFAULT_FROM,
+      restoreCarried,
     });
 
     const sendResult = await resend.emails.send({

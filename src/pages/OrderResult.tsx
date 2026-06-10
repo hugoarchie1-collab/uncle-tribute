@@ -11,7 +11,8 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, TITLE, SUBTITLE, BTN_PRIMA
 import { cn } from "../lib/cn";
 import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
-import { getBasket, clearBasket, type BasketItem } from "../lib/basket";
+import { getBasket, clearBasket, useBasket, type BasketItem } from "../lib/basket";
+import { getStoredUtm } from "../lib/utm";
 import {
   PAINTINGS,
   getPaintingById,
@@ -140,6 +141,9 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
     setErrorMsg("");
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
+    // First-touch attribution (tasm.utm.v1) rides along like every other
+    // checkout body — the server validates + writes the session metadata.
+    const utm = getStoredUtm();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -150,6 +154,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           tierId: anchor.id,
           framing: false,
           embellished: false,
+          ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
       });
@@ -337,6 +342,13 @@ export const OrderSuccess = () => {
  */
 export const OrderCancel = () => {
   usePageTitle("Order cancelled — The Art of Stephen Meakin");
+  // The basket is only cleared on a SUCCESSFUL payment (OrderSuccess), so an
+  // abandoned checkout still holds everything the buyer chose. When lines
+  // remain, the primary way back is the basket itself — a quiet recovery
+  // path, no pressure copy, no discounts. Empty basket (e.g. a single-item
+  // "Buy now" abandon) falls back to the collections link.
+  const basketItems = useBasket();
+  const hasBasket = basketItems.length > 0;
   return (
     <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
@@ -350,17 +362,38 @@ export const OrderCancel = () => {
             No charge taken.
           </h1>
           <p className={cn(SUBTITLE, "my-0 mb-10 mx-auto text-center max-w-[640px]")}>
-            You left checkout before completing the order, so nothing was charged. If a detail
-            was unclear, or you would like help choosing a colourway, write to us.
+            You left checkout before completing the order, so nothing was charged.
+            {hasBasket && " Your basket is saved — return when you're ready."}
+            {" "}If a detail was unclear, or you would like help choosing a
+            colourway, write to us.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <MagneticLink
-              to="/collections"
-              className={BTN_PRIMARY}
-              ariaLabel="Back to collections"
-            >
-              Back to collections <span aria-hidden="true" className="ml-2">→</span>
-            </MagneticLink>
+            {hasBasket ? (
+              <MagneticLink
+                to="/basket"
+                className={BTN_PRIMARY}
+                ariaLabel="Return to your basket"
+              >
+                Return to your basket <span aria-hidden="true" className="ml-2">→</span>
+              </MagneticLink>
+            ) : (
+              <MagneticLink
+                to="/collections"
+                className={BTN_PRIMARY}
+                ariaLabel="Back to collections"
+              >
+                Back to collections <span aria-hidden="true" className="ml-2">→</span>
+              </MagneticLink>
+            )}
+            {hasBasket && (
+              <MagneticLink
+                to="/collections"
+                className={BTN_SECONDARY}
+                ariaLabel="Back to collections"
+              >
+                Back to collections
+              </MagneticLink>
+            )}
             <a href="mailto:info@themandalacompany.com" className={BTN_SECONDARY}>
               Ask a question
             </a>

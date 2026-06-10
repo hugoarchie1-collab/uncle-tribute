@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
+import { clearConsent } from "../lib/consent";
 import { EYEBROW_MUTED } from "./ui/tokens";
 
 const YEAR = new Date().getFullYear();
@@ -122,12 +123,22 @@ export const Footer = () => (
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the estate. All rights reserved.
       </p>
-      <p className="m-0 flex items-center gap-2">
+      <p className="m-0 flex items-center gap-2 flex-wrap">
         <Link to="/privacy" className={FOOTER_LINK}>Privacy</Link>
         <span aria-hidden="true">·</span>
         <Link to="/terms" className={FOOTER_LINK}>Terms</Link>
         <span aria-hidden="true">·</span>
         <Link to="/returns" className={FOOTER_LINK}>Returns</Link>
+        <span aria-hidden="true">·</span>
+        {/* Clears the tasm.consent.v1 decision — the consent banner subscribes
+            to the consent store, so it re-opens immediately, no reload. */}
+        <button
+          type="button"
+          onClick={clearConsent}
+          className={cn(FOOTER_LINK, "bg-transparent border-0 p-0 cursor-pointer font-sans text-[12px] leading-[1.5] text-ink-fade")}
+        >
+          Cookie preferences
+        </button>
       </p>
     </div>
   </footer>
