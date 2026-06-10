@@ -296,10 +296,8 @@ The estate sends a **single-use 10% promotion code** to every first-time buyer i
 
 **Fallback**: if the dynamic coupon mint fails, the webhook falls back to a static reusable code (env var `THANK_YOU_CODE_FALLBACK`, default `FRIENDS`). For the fallback to actually grant a discount, Hugo must create a matching promotion code in the Stripe dashboard: Dashboard → Products → Coupons → New (10% off, "Once", no expiry) → attach a promotion code with that name. Otherwise leave the fallback unused — the dynamic path is the production design.
 
-### Shipping (flat rates hardcoded in `api/checkout.ts`)
-- UK: £15
-- Europe: £35
-- Worldwide: £60
+### Shipping — FREE worldwide (policy 2026-06-06)
+The estate absorbs **all** delivery cost into the ~90% print margin, so every region ships **FREE**, framed or unframed. `api/checkout.ts` `buildShippingOptions` returns a single £0 rate per region (UK / Europe / Worldwide) — advertised == charged to the penny (mirror invariant, gotcha #9). All customer-facing surfaces say "Free delivery worldwide": PaintingDetail, Basket, ReassuranceRow, FAQ, Legal (Delivery + returns), and the save-your-basket email. There is **no** framed-shipping surcharge. (Was flat-rate UK £15 / Europe £35 / Worldwide £60 before 2026-06-06.) International buyers may still owe local import duties / VAT, set by their own customs authority — disclosed on Basket, FAQ and Legal.
 
 ### Required Vercel env vars
 (Settings → Environment Variables, all for Production + Preview, Sensitive ON for secrets)

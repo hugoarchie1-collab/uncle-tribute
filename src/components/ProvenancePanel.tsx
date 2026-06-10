@@ -51,7 +51,7 @@ export const ProvenancePanel = () => (
     <Disclosure summary="Shipping & care">
       <ul className="list-none m-0 p-0 flex flex-col gap-2">
         <li className={META}>Each print is made to order and ships within 7–10 working days.</li>
-        <li className={META}>UK £15 · Europe £35 · Worldwide £60 (unframed; framed orders carry a small surcharge).</li>
+        <li className={META}>Delivery is free worldwide — UK, Europe and beyond, framed or unframed — with nothing added at checkout.</li>
         <li className={META}>
           Damaged or lost in transit? See{" "}
           <Link to="/returns" className="underline underline-offset-4 hover:text-ink transition-colors">

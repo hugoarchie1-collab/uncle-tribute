@@ -5,9 +5,11 @@ import { cn } from "../lib/cn";
 /**
  * ReassuranceRow — three honest, documented reassurances under the buy box.
  * Every claim is literally true for this stack: payments via Stripe,
- * damaged-in-transit replacement (see /returns), estate dispatch in 7–10 days
- * (see /faq). Deliberately NOT an unconditional 14-day refund (made-to-order,
- * UK CCR 2013 reg 28) and NO fake SSL/badge.
+ * damaged-in-transit replacement (see /returns), and free worldwide delivery
+ * with estate dispatch in 7–10 days (see /faq — FREE SHIPPING POLICY 2026-06-06,
+ * the estate absorbs all delivery cost into the print margin). Deliberately NOT
+ * an unconditional 14-day refund (made-to-order, UK CCR 2013 reg 28) and NO
+ * fake SSL/badge.
  */
 type IconProps = { className?: string };
 const baseSvg = {
@@ -54,9 +56,9 @@ export const ReassuranceRow = () => (
     </div>
     <div className="flex flex-col gap-1.5">
       <ParcelIcon className="w-[18px] h-[18px] text-ink/55" />
-      <span className={EYEBROW_TIGHT}>Estate dispatch</span>
+      <span className={EYEBROW_TIGHT}>Free delivery</span>
       <Link to="/faq" className={cn(META, "underline-offset-4 hover:text-accent transition-colors")}>
-        Ships in 7–10 days →
+        Worldwide · ships in 7–10 days →
       </Link>
     </div>
   </div>

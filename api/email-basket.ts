@@ -278,7 +278,7 @@ const renderBasketSavedHtml = (p: {
     + `<div style="${s.card}">${lineHtml}`
     + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
     + `<p style="${s.orderRow}display:flex;justify-content:space-between;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Subtotal</span> <strong style="color:#ede6d6;font-size:16px;">${esc(p.subtotal)}</strong></p>`
-    + `<p style="${s.small}margin:8px 0 0 0;">Shipping calculated at checkout. UK £15 · Europe £35 · Worldwide £60.</p>`
+    + `<p style="${s.small}margin:8px 0 0 0;">Delivery is free worldwide — framed or unframed — with nothing added at checkout.</p>`
     + `</div>`
     + `<p style="text-align:center;margin:28px 0 24px 0;"><a href="${esc(p.basketUrl)}" style="${s.button}">Open your basket</a></p>`
     + `<p style="${s.body}">Each print is individually made to order at a small UK atelier and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</p>`
