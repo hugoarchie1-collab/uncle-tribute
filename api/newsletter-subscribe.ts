@@ -471,10 +471,16 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
   }
 
-  // ---- Optional: mint subscriber thank-you code ---------------------------
+  // ---- Subscriber thank-you code: DISABLED --------------------------------
+  // Hugo's decision: newsletter sign-ups are NOT given a discount code — they
+  // simply join the Friends & Family mailing list. Minting stays behind an
+  // opt-in env flag (unset by default), so it never runs and never creates a
+  // wasted Stripe coupon, while remaining one env var away if that changes. The
+  // welcome email skips its code section when no code is passed (hasGift=false).
+  // The post-purchase BUYER thank-you code (api/stripe-webhook.ts) is untouched.
   let subscriberCode: SubscriberCode | null = null;
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  if (stripeKey) {
+  if (stripeKey && process.env.NEWSLETTER_DISCOUNT_ENABLED === "true") {
     try {
       const stripe = new Stripe(stripeKey);
       subscriberCode = await mintSubscriberCode(stripe, email);
