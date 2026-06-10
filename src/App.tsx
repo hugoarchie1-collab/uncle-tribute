@@ -1,12 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
 import { motion, MotionConfig } from "framer-motion";
-import { HelmetProvider } from "react-helmet-async";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
 import { BasketToast } from "./components/BasketToast";
-import { FriendsAndFamilyWelcome } from "./components/FriendsAndFamilyNote";
+import { ConsentBanner } from "./components/ConsentBanner";
+import { absoluteUrl } from "./lib/seo";
+import { captureUtm } from "./lib/utm";
+import { initTrackingIfConsented } from "./lib/tracking";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -77,6 +80,29 @@ const ScrollToTop = () => {
   }, [pathname, hash, navType]);
 
   return null;
+};
+
+/**
+ * Default per-route canonical URL. react-helmet-async treats
+ * <link rel="canonical"> as a UNIQUE tag, so a page that mounts <Seo> (deeper
+ * in the tree, processed later) overrides this default with its own canonical
+ * — this component only has to cover the routes that don't (Welcome, Basket,
+ * Legal, OrderResult, NotFound…). The static default canonical in index.html
+ * serves crawlers that don't run JS; once React mounts we remove it so the
+ * document never carries two canonical links.
+ */
+const CanonicalDefault = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document
+      .querySelector('link[rel="canonical"][data-default-canonical]')
+      ?.remove();
+  }, []);
+  return (
+    <Helmet>
+      <link rel="canonical" href={absoluteUrl(pathname)} />
+    </Helmet>
+  );
 };
 
 const LoadingFallback = () => (
@@ -150,11 +176,6 @@ export default function App() {
               with no per-button wiring. Mounted once; sits at z-[120], below
               modals (z-200) + cursor (z-250). */}
           <BasketToast />
-          {/* Friends & Family welcome ribbon — shows the remembrance code once
-              per device, ONLY to arrivals from the private Facebook link
-              (…?ff=1). Self-gates on the param + localStorage; renders nothing
-              otherwise. Same z-[120] register as the basket toast. */}
-          <FriendsAndFamilyWelcome />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />
