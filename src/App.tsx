@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { MotionConfig } from "framer-motion";
-import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
@@ -9,7 +8,7 @@ import { BasketToast } from "./components/BasketToast";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
-import { absoluteUrl } from "./lib/seo";
+import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
 import "./styles/global.css";
@@ -38,26 +37,30 @@ const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
 /**
- * Default per-route canonical URL. react-helmet-async treats
- * <link rel="canonical"> as a UNIQUE tag, so a page that mounts <Seo> (deeper
- * in the tree, processed later) overrides this default with its own canonical
- * — this component only has to cover the routes that don't (Welcome, Basket,
- * Legal, OrderResult, NotFound…). The static default canonical in index.html
- * serves crawlers that don't run JS; once React mounts we remove it so the
- * document never carries two canonical links.
+ * Per-route head defaults (canonical + description/og/twitter resets) for
+ * routes whose page does NOT mount its own <Seo> (Welcome, Basket, Legal,
+ * OrderResult, NotFound…). Direct DOM upserts via lib/headMeta — the static
+ * index.html tags are MUTATED in place, so the document always carries
+ * exactly one of each tag (react-helmet-async was removed 2026-06-10: its
+ * rAF-deferred commits were flaky-to-dead on React 19 and every URL was
+ * presenting the homepage meta to crawlers).
+ *
+ * WRITE-ORDER CONTRACT (headMeta.ts): layout effects run CHILD-FIRST, so on
+ * a direct load a page's <Seo> has already written (and flagged) its
+ * specific meta by the time this parent effect runs — didSeoWrite() makes us
+ * skip instead of clobbering it. On SPA navigations this fires on the
+ * location-change commit (defaults), then the incoming page's <Seo>
+ * overwrites with specifics when it mounts after the exit transition.
+ * Titles are deliberately NOT touched here — pages own their title via
+ * <Seo> or usePageTitle; pages with neither keep the static default.
  */
-const CanonicalDefault = () => {
+const RouteHeadDefaults = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
-    document
-      .querySelector('link[rel="canonical"][data-default-canonical]')
-      ?.remove();
-  }, []);
-  return (
-    <Helmet>
-      <link rel="canonical" href={absoluteUrl(pathname)} />
-    </Helmet>
-  );
+  useLayoutEffect(() => {
+    if (didSeoWrite(pathname)) return;
+    applyDefaultHead(pathname);
+  }, [pathname]);
+  return null;
 };
 
 const LoadingFallback = () => (
@@ -128,10 +131,9 @@ export default function App() {
   }, []);
 
   return (
-    <HelmetProvider>
-      <MotionConfig reducedMotion="user">
-        <BrowserRouter basename={basename}>
-          <CanonicalDefault />
+    <MotionConfig reducedMotion="user">
+      <BrowserRouter basename={basename}>
+        <RouteHeadDefaults />
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
           <div aria-hidden="true" className="film-grain" />
@@ -159,9 +161,8 @@ export default function App() {
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />
-        </BrowserRouter>
-      </MotionConfig>
-    </HelmetProvider>
+      </BrowserRouter>
+    </MotionConfig>
   );
 }
 

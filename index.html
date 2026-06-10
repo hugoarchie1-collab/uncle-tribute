@@ -14,9 +14,9 @@
     <meta name="author" content="The Estate of Stephen Meakin" />
 
     <!-- Default canonical — serves crawlers that don't execute JS. Once React
-         mounts, App.tsx's per-route Helmet canonical takes over and removes
-         this tag (data-default-canonical is its removal handle), so the
-         rendered document always carries exactly one canonical. -->
+         mounts, lib/headMeta.ts MUTATES this tag's href per route (it is the
+         document's ONLY canonical — never add a second; react-helmet-async
+         was removed 2026-06-10, see CLAUDE.md). -->
     <link rel="canonical" href="https://themandalacompany.com/" data-default-canonical />
 
     <!-- OpenGraph for shareable links -->
