@@ -148,3 +148,70 @@ export const ABOUT = {
   studentsLetter:
     "Yes, you can make beautiful works of art, and I hope that you make art forever. So you have time! Relax because the real work you will need to do will be the work you do on ‘yourself’, but it's great to have an art practice to keep us occupied on our magnificent journey through space-time. You will make many circles, so treat yourself to a good quality compass. The life-force within you knows everything you want to know and need to know. You can access your ‘cleverness’ by being full of ‘wonderment’ — yes, look at the flowers and be amazed! Do not worry about what others think, for they are responsible for their own reality. Sometimes we all ‘miss the point’ — just as in life, with geometry it is no different — sometimes we make a big mess, so practice and practice, eventually make perfect. Words have power, magic and meaning, so make use of your etymology dictionary. Geometry will ‘unfold’ in space before your eyes, so try to keep an eye on your Centre Point! Experience your geometry as if it were a rose growing in quick time right in front of you. Study the Temples of your ancestors as if they were the maps to hidden treasure. Try to see the book of nature — that's all the stuff both inside and outside of all of us — as interconnected and interdependent. Please don't use your pencil eraser like a crazy person, better just to start again on a new page, but remember that one pencil has 10 shades of grey, so be soft and gentle until you are sure what you are doing. The Flower of Life is easy to draw, but study this little book, for it will lead you home from the beginning. May you have a wonderful journey.",
 };
+
+// -----------------------------------------------------------------------------
+// INTERVIEW — Stephen's January 2011 press interview, given while ‘The Mystic
+// Rose’ hung at the Majlis Gallery in Dubai's Bastakiya quarter. Published by
+// Time Out Dubai ("Stephen Meakin exhibition — British artist driven by
+// patterns and geometry comes to Dubai", Nyree Barrett, 10 January 2011).
+// NOTE: Hugo's PDF guessed The National — the archived article's own byline
+// block reads "Nyree Barrett, Time Out Dubai, 10 January 2011". The live page
+// now blocks direct access, so `source.url` is the Internet Archive capture.
+//
+// ⚠️ The ANSWERS are Stephen's own words, reproduced VERBATIM from the
+// published article (cross-checked word-for-word against the archive capture).
+// Only PDF-extraction artifacts were repaired (fi ligatures, hard line-breaks,
+// double spaces). "by no mean exclusive" and "500BC;" are the published
+// wording — verified against the original page; do not "fix" them. The
+// QUESTIONS are the interviewer's, lightly tightened where noted. `context` is
+// original estate-voice prose, NOT the journalist's copy — the only words
+// quoted from her introduction are the attributed phrase “a master sacred
+// geometer”.
+// -----------------------------------------------------------------------------
+
+export const INTERVIEW = {
+  eyebrow: "The Dubai interview, 2011",
+
+  // Original estate prose — sets the scene; never lifts the journalist's lines.
+  context: [
+    "January 2011. ‘The Mystic Rose’ was hanging at the Majlis Gallery, a courtyard house among the wind-towers of Bastakiya — the oldest quarter of Dubai, built by Persian merchants a century before. Stephen was 44, and the city's press introduced him to its readers as “a master sacred geometer”.",
+    "Time Out Dubai sent the writer Nyree Barrett to ask him where the patterns came from. Her questions follow, lightly trimmed. Stephen's answers are word for word as he gave them.",
+  ],
+
+  qa: [
+    {
+      q: "You're a sacred geometrist. Can you explain what that is?",
+      a: "I am first an artist, but one who consciously works with geometry as part of my practice. I'm guided by the traditional idea of the Seven Liberal Arts, a philosophy of understanding originally formulated by Pythagoras in around 500BC; the seven arts include arithmetic, geometry, music and astronomy. All of these may be considered as the study of the number and its relationship to physical space or time: arithmetic is pure number, geometry is the number in space, music is the number in time and astronomy is the number in space and time. Traditionally, a geometer is an architect of sacred spaces, such as temples and churches. The ‘sacredness’ of geometry is symbolic in that various meanings can be ascribed to certain shapes, and certain shapes can evoke certain feelings and emotions. Many forms in nature can be related to geometry: the word geometry means ‘earth measure’, or an observed mathematical order in nature.",
+    },
+    {
+      q: "Is your work more science, or more art?",
+      a: "The division of ‘knowledge’ into categories is a purely modern phenomenon. As such, my work is both art and science, and much more besides.",
+    },
+    {
+      q: "What is unique about Islamic geometrical patterns?",
+      a: "Islamic art focuses on the depictions of pattern and calligraphy. The original Arabesque style was born from the arts of the nomadic tribes of pre-Islamic Persia. The uniqueness of this style comes from repeating elements such as geometrical floral or vegetal designs. The Arabesque in Islamic art is often used to symbolise the transcendent, indivisible and infinite. Geometrical pattern design in the Islamic world definitely has a distinct style, but it is by no mean exclusive. You can see similar geometrical patterns all over the world, from the Pyramids in Mexico and Egypt to ancient temples such as Stonehenge in England, and native American medicine wheels.",
+    },
+    {
+      q: "How long does each of your works take to complete?",
+      a: "This varies greatly from a few days to more than a year… each work has a life of its own. Sometimes a painting gets in a mood with me and won't let me work on it for weeks on end, then suddenly I am allowed back in.",
+    },
+    {
+      q: "What is your main aspiration?",
+      a: "To inspire wonderment.",
+    },
+    {
+      // Tightened from "If asked by someone to describe your work in one
+      // sentence, what would you say?"
+      q: "If asked to describe your work in one sentence, what would you say?",
+      a: "Shall we sit down and have some tea?",
+    },
+  ],
+
+  source: {
+    publication: "Time Out Dubai",
+    byline: "Nyree Barrett",
+    date: "10 January 2011",
+    url: "https://web.archive.org/web/20110120183433/http://www.timeoutdubai.com/art/features/20308-stephen-meakin-exhibition",
+    note: "Published as “British artist driven by patterns and geometry comes to Dubai”, alongside ‘The Mystic Rose’ — Stephen's exhibition at the Majlis Gallery, which ran until 24 January 2011.",
+  },
+};

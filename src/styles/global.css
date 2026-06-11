@@ -289,6 +289,122 @@
 }
 
 /* =============================================================================
+   Editorial typography craft — caption convention, hung quotes, drop cap.
+   Deliberately UNLAYERED (after the @tailwind directives) so these always ship
+   and win source-order ties against same-specificity utilities.
+   ============================================================================= */
+
+/* CAPTION — the one quiet sentence-case caption for documentary figcaptions
+   (museum convention: a caption describes, it never shouts). 13→14px Hanken,
+   normal weight + tracking, the single muted-ink token. This is NOT the
+   bold-uppercase EYEBROW/EYEBROW_MUTED label token — reserve those for true
+   section labels, cites and UI furniture. An artwork / exhibition title inside
+   a caption may sit in <i>/<em>, which renders in the display serif italic. */
+.caption {
+  font-family: theme(fontFamily.sans);
+  font-size: 13px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  text-transform: none;
+  color: var(--ink-muted);
+}
+@media (min-width: 768px) {
+  .caption { font-size: 14px; }
+}
+.caption i,
+.caption em {
+  font-family: theme(fontFamily.display);
+  font-style: italic;
+}
+
+/* QUOTE-HANG — optical margin alignment for a quote that OPENS with a
+   quotation mark (“ / ‘). Without it the first line reads indented — the
+   classic print tell. Fallback: a negative text-indent roughly the advance
+   width of Fraunces' “ (~0.45em — verified visually at the rendered sizes).
+   Where the engine supports real hanging punctuation (Safari), use that
+   instead — it hangs the glyph precisely and only when one is present. */
+.quote-hang {
+  text-indent: -0.45em;
+}
+@supports (hanging-punctuation: first) {
+  .quote-hang {
+    text-indent: 0;
+    hanging-punctuation: first;
+  }
+}
+
+/* DROP-CAP — the reminder essay's single illuminated initial (Welcome.tsx
+   "A reminder"). Base recipe = the hand-tuned ::first-letter float (works
+   everywhere, incl. Firefox). Where `initial-letter` is supported
+   (Safari/Chrome) the cap is sized AND baseline-locked to exactly two lines
+   by the engine — no magic numbers, no cross-engine drift. `initial-letter: 2`
+   computes ≈ the same cap height as the float recipe's clamp at desktop, so
+   the visual is unchanged; the alignment just becomes law instead of luck.
+   NOTE: the rust cap is a recorded decision — the essay's one illuminated
+   initial — not accent drift (see the design canon in CLAUDE.md). */
+.drop-cap::first-letter {
+  float: left;
+  margin-right: 0.75rem;
+  margin-top: 0.06em;
+  font-family: theme(fontFamily.display);
+  font-size: clamp(60px, 8vw, 104px);
+  line-height: 0.74;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+@supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
+  .drop-cap::first-letter {
+    float: none;
+    margin-top: 0;
+    /* The engine derives size + baseline from initial-letter — clear the
+       manual metrics so they can't fight it. */
+    font-size: unset;
+    line-height: unset;
+    -webkit-initial-letter: 2;
+    initial-letter: 2;
+  }
+}
+
+/* =============================================================================
+   Mobile form inputs — iOS Safari auto-zoom guard.
+   iOS zooms the WHOLE viewport when focusing any form control whose computed
+   font-size is under 16px (audit: every input sitewide computed 14–15px),
+   forcing a pinch-back after every form interaction. Force ≥16px on touch /
+   sub-md viewports only — desktop keeps each form's designed size. !important
+   is required: the per-component utilities (text-[14px]/text-[15px]) are
+   class-specificity and would otherwise win over this element selector.
+   ============================================================================= */
+@media (max-width: 767px), ((hover: none) and (pointer: coarse)) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* =============================================================================
+   Safe-area helpers — index.html sets viewport-fit=cover (layout extends under
+   the iPhone notch / home indicator) but nothing pads the insets back out.
+   These are deliberately UNLAYERED so they always ship (utilities-layer rules
+   are tree-shaken until a component uses them, and the components that need
+   these are owned by other tasks).
+   APPLY TO (fixed bottom-edge surfaces): ConsentBanner.tsx (bottom bar — the
+   Allow/Essential buttons sit in the home-indicator swipe zone on every first
+   visit), CloserLook.tsx (zoom control bar ~16px from the viewport bottom),
+   Nav.tsx mobile drawer (bottom email link), and any future mobile sticky
+   add-bar on PaintingDetail. Use .pb-safe when the surface has its own
+   padding; .pb-safe-4 / .pb-safe-6 to ADD the inset to a 1rem / 1.5rem pad.
+   ============================================================================= */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pb-safe-4 { padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
+.pb-safe-6 { padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+.px-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* =============================================================================
    Video intro — sticky scroll-driven layer
    ============================================================================= */
 

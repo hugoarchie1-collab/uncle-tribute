@@ -6,6 +6,18 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "preview"],
       "port": 4173
+    },
+    {
+      "name": "qa-finale",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4401", "--strictPort"],
+      "port": 4401
+    },
+    {
+      "name": "qa-finale-desktop",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4402", "--strictPort"],
+      "port": 4402
     }
   ]
 }

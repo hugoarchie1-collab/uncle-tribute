@@ -13,6 +13,7 @@ import { NewsletterSignup } from "../components/NewsletterSignup";
 import {
   formatGBP,
   getAnchorTier,
+  getLowestTierPricePence,
   getPaintingById,
   getPrintTiers,
   COLLECTIONS,
@@ -26,7 +27,7 @@ import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { useNoindexHead } from "../lib/useNoindexHead";
 
 /**
@@ -178,6 +179,26 @@ const shippingPreview = () => ({
   wwPence: 0,
 });
 
+// -----------------------------------------------------------------------------
+// EMPTY-STATE MERCHANDISING — "Begin with these": three signature works quietly
+// presented when the basket is empty (e.g. a saved-basket email opened after
+// localStorage expired), so the page offers a way back into the collection
+// instead of dead-ending. Calm gallery register — title + from-price only, no
+// urgency copy. Shown in the ORIGINAL colourway (the PDP's default, so a plain
+// /collections/:id link lands on the colourway pictured).
+// -----------------------------------------------------------------------------
+const BEGIN_WITH_IDS = ["wild-rose", "english-bluebells", "ophiuchus"] as const;
+
+const BEGIN_WITH_PICKS = BEGIN_WITH_IDS.map((id) => {
+  const painting = getPaintingById(id);
+  if (!painting) return null;
+  const cover =
+    painting.colourways.find((c) => c.isOriginal && c.available) ??
+    painting.colourways.find((c) => c.available) ??
+    painting.colourways[0];
+  return { painting, cover, fromPence: getLowestTierPricePence(painting) };
+}).filter((p): p is NonNullable<typeof p> => p !== null);
+
 export const Basket = () => {
   usePageTitle("Your Basket");
   // Transactional route — noindex + default meta (see useNoindexHead).
@@ -312,6 +333,48 @@ export const Basket = () => {
             <Link to="/collections" className={cn(BTN_PRIMARY, "w-fit")}>
               View the collections <span aria-hidden="true" className="ml-2">→</span>
             </Link>
+
+            {/* BEGIN WITH THESE — quiet three-tile strip of signature works
+                beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
+            {BEGIN_WITH_PICKS.length > 0 && (
+              <div className="mt-14">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
+                <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
+                  {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
+                    <li key={painting.id} className="m-0 min-w-0">
+                      <Link
+                        to={`/collections/${painting.id}`}
+                        className="group block"
+                        aria-label={`${painting.title} — from ${formatGBP(fromPence).replace(".00", "")}`}
+                      >
+                        <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
+                          <AssetImage
+                            src={cover.image}
+                            alt={`${painting.title} — ${cover.name}`}
+                            loading="lazy"
+                            decoding="async"
+                            // The empty-state column is capped at 640px, so each
+                            // of the three tiles renders ≤ ~200px. With this
+                            // `sizes` the browser serves the small -w480 / -w800
+                            // webp variants from the manifest (imageVariants.ts),
+                            // never the full-size original.
+                            sizes="(min-width: 640px) 200px, 30vw"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                          />
+                        </div>
+                        <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[16px] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                          {painting.title}
+                        </h3>
+                        <p className="font-sans font-normal text-[12.5px] leading-[1.5] text-ink-muted m-0 mt-1">
+                          From {formatGBP(fromPence).replace(".00", "")}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <NewsletterSignup variant="inline" />
           </Reveal>
         ) : (
@@ -585,6 +648,46 @@ export const Basket = () => {
               {status === "error" && (
                 <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
               )}
+
+              {/* TRUST CLUSTER AT THE MONEY CLICK — quiet, text-led reassurance
+                  directly under the checkout button, in the house META register
+                  (no badge images). Every claim is documented-true and mirrors
+                  copy that already ships elsewhere: Stripe-hosted checkout +
+                  the wallet/card marks Stripe Checkout presents
+                  (ReassuranceRow "Payments by Stripe"), the estate stamp +
+                  hand-numbering (ESTATE_AUTHENTICATION), free worldwide
+                  delivery (the delivery panel above / FREE SHIPPING POLICY
+                  2026-06-06) and the damaged-in-transit replacement
+                  (/returns; ReassuranceRow). Deliberately NOT an unconditional
+                  refund promise and NO fake SSL seal. */}
+              <div className="mt-5 max-w-[560px]">
+                <p className="m-0 flex items-start gap-2.5">
+                  {/* Lock glyph — same hairline lock as ReassuranceRow. */}
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.25}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                    className="w-[15px] h-[15px] mt-[3px] flex-shrink-0 text-ink/55"
+                  >
+                    <rect x="5" y="11" width="14" height="9" rx="2" />
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <span className={META}>
+                    Secure checkout by Stripe — Visa, Mastercard, Amex,
+                    Apple&nbsp;Pay &amp; Google&nbsp;Pay
+                  </span>
+                </p>
+                {/* pl-[25px] = 15px glyph + 10px gap, so the second line
+                    aligns with the first line's text, not the glyph. */}
+                <p className="font-sans font-normal text-[12.5px] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
+                  Estate-stamped &amp; hand-numbered · Free delivery worldwide ·
+                  Damaged-in-transit replacement
+                </p>
+              </div>
               {/* Inline "save your basket" affordance — quiet link below
                   the subtotal block. Renders nothing when the basket is
                   empty (we're inside the non-empty branch anyway). */}

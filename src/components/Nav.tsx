@@ -208,9 +208,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                   cn(
                     "relative py-2 font-sans text-[11px] font-semibold tracking-[0.26em] uppercase transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
-                    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-left after:transition-transform after:duration-300",
+                    // DIRECTIONAL underline — grows in FROM the left (hover sets
+                    // origin-left), and on hover-out the origin reverts to the
+                    // base origin-right so the line collapses out THROUGH the
+                    // right edge: one continuous direction of travel, never a
+                    // rewind. The active page keeps its persistent underline.
+                    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-right after:transition-transform after:duration-300",
                     isActive && "after:scale-x-100",
-                    "hover:after:scale-x-100",
+                    "hover:after:scale-x-100 hover:after:origin-left",
                   )
                 }
               >

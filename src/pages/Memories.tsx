@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, TITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT } from "../data/content";
 
@@ -63,6 +63,60 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 /** A memory plus an optional published image URL (from KV). */
 type WallMemory = Memory & { imageUrl?: string };
+
+// ---------------------------------------------------------------------------
+// ScrollBackdrop — the single full-page atmospheric layer, cloned from the
+// Collections treatment (src/pages/Collections.tsx ScrollBackdrop) but
+// simplified for ONE image with no cross-fade. A blurred peacock-plumage scene
+// sits behind the whole comments feed at full opacity, drifting ±6% as the user
+// scrolls the document (parallax), so the page reads as part of the same world
+// as Collections / Welcome rather than a flatter, separate microsite.
+//
+// Differences from Collections' ScrollBackdrop: there is only ONE backdrop, so
+// it tracks the DOCUMENT scroll (useScroll() with no target) instead of a per-
+// section ref, and holds at full opacity throughout (no in/out cross-fade).
+// Everything else matches: inset-[-8%] overscan so the ±6% `y` shift can never
+// expose an uncovered strip (the parent is overflow-hidden, so the overscan is
+// clipped); bg-cover bg-center; and the EXACT shared scrim gradient on top.
+//
+// Reduced-motion: drop the parallax entirely and render the static div exactly
+// like Collections' fallback (calm opacity, will-change:auto so no promoted
+// compositing layer is held alive for motion that never runs).
+// ---------------------------------------------------------------------------
+const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => {
+  const reduceMotion = useReducedMotion();
+  // Whole-document parallax — no `target`, so this tracks the page scroll.
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+
+  if (reduceMotion) {
+    return (
+      <div
+        style={{
+          backgroundImage: `url("${photoUrl}")`,
+          willChange: "auto",
+        }}
+        className="absolute inset-0 bg-cover bg-center"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  return (
+    <motion.div
+      style={{
+        y,
+        backgroundImage: `url("${photoUrl}")`,
+        willChange: "transform",
+      }}
+      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift
+      // can NEVER expose an uncovered strip at the top/bottom — the parent is
+      // overflow-hidden, so the overscan is clipped (mirrors Collections).
+      className="absolute inset-[-8%] bg-cover bg-center"
+      aria-hidden="true"
+    />
+  );
+};
 
 // The pinned founding memory — Stephen's letter to his students, verbatim.
 const ARTIST_MEMORY: WallMemory = {
@@ -466,7 +520,7 @@ const ShareMemoryModal = ({
                           name="name"
                           required
                           autoComplete="name"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Jane Smith"
                         />
                       </label>
@@ -477,7 +531,7 @@ const ShareMemoryModal = ({
                         <input
                           name="relationship"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Student, friend, collector…"
                         />
                       </label>
@@ -492,7 +546,7 @@ const ShareMemoryModal = ({
                         <input
                           name="location"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Lewes, East Sussex"
                         />
                       </label>
@@ -505,7 +559,7 @@ const ShareMemoryModal = ({
                           name="email"
                           type="email"
                           autoComplete="email"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="So the family can thank you"
                         />
                       </label>
@@ -519,7 +573,7 @@ const ShareMemoryModal = ({
                         name="message"
                         required
                         rows={6}
-                        className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                         placeholder="A moment with Steve, something he said, what his work means to you…"
                       />
                     </label>
@@ -619,7 +673,25 @@ export const Memories = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop src="/img/paintings/peacock-blood-moon-red-blur.webp" opacity={0.35} />
+      {/* FIXED BACKDROP LAYER — a single full-page blurred peacock-plumage scene
+          drifting with the document scroll, cloned from the Collections
+          treatment (one image, no cross-fade). The whole feed reads over it at
+          relative z-10. The z-[200] share modal sits well above this z-0 layer,
+          so its stacking is undisturbed. */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-plumage-blur.webp")} />
+        {/* Shared scrim — the EXACT site-wide gradient (matches Collections /
+            Welcome) so the cream copy stays legible over the photo while the
+            backdrop reads as a subdued, moody texture. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
+          }}
+        />
+      </div>
       <Seo
         title="Book of Memories"
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
@@ -632,16 +704,33 @@ export const Memories = () => {
             "names he answered to" intro + a gentle first invitation. */}
         <header className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
           <Reveal as="div" className="max-w-[42ch]">
-            <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
+            <p
+              className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+            >
               Book of Memories
             </p>
-            <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
+            {/* TITLE_SM — the feed legitimately needs a quieter display title
+                than the canonical TITLE clamp, so this is the full TITLE
+                recipe (family / weight / tracking / ink / balance) at the
+                sub-scale clamp, spelled out locally instead of !important
+                arbitrary values fighting the token (cn doesn't resolve
+                conflicting text-size utilities — the old bang-override was
+                load-bearing by accident). tokens.ts is owned by another task:
+                when a TITLE_SM lands there, swap this string for the token. */}
+            <h1
+              className="font-display font-bold tracking-[-0.04em] text-[clamp(26px,3.6vw,44px)] leading-[1.05] text-ink text-balance m-0"
+              style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+            >
               Memories of Steve.
             </h1>
           </Reveal>
 
           <Reveal as="div" className="mt-[clamp(0.75rem,2vw,1.1rem)] max-w-[60ch]" delay={0.05}>
-            <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted m-0">
+            <p
+              className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted m-0"
+              style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+            >
               Stephen to some, SEM to the art world, Steve to his family. If he
               touched your life, add a memory below — the family reads every one.
             </p>

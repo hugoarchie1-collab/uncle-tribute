@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ESTATE_AUTHENTICATION } from "../data/paintings";
 import { EYEBROW_TIGHT, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
@@ -5,7 +6,9 @@ import { cn } from "../lib/cn";
 /**
  * AuthenticationCard — the buy box's trust anchor. Four estate-authentication
  * facts as a scannable list, ALL copy from the single-source
- * ESTATE_AUTHENTICATION constant (never hand-typed here). Static, no motion.
+ * ESTATE_AUTHENTICATION constant (never hand-typed here), plus a quiet fifth
+ * row linking to /verify so the COA claim is self-evidencing at the point of
+ * purchase (same idiom as ProvenancePanel's link). Static, no motion.
  * Reverent: provenance facts, not badges or guarantees.
  */
 type IconProps = { className?: string };
@@ -60,7 +63,7 @@ export const AuthenticationCard = () => (
       {ROWS.map(({ Icon, label, detail }) => (
         <li
           key={label}
-          className="grid grid-cols-[16px_1fr] gap-3 items-start py-2.5 first:pt-0 last:pb-0"
+          className="grid grid-cols-[16px_1fr] gap-3 items-start py-2.5 first:pt-0"
         >
           <Icon className="w-4 h-4 mt-0.5 text-ink/55" />
           <span className="min-w-0">
@@ -69,6 +72,21 @@ export const AuthenticationCard = () => (
           </span>
         </li>
       ))}
+      {/* Quiet fifth row — the proof one click from the claim (mirrors the
+          ProvenancePanel link's monochrome idiom; PaintingDetail stays
+          accent-free). */}
+      <li className="grid grid-cols-[16px_1fr] gap-3 items-start pt-2.5">
+        <span aria-hidden="true" />
+        <Link
+          to="/verify"
+          className={cn(
+            META,
+            "underline underline-offset-4 hover:text-ink transition-colors",
+          )}
+        >
+          Verify a certificate →
+        </Link>
+      </li>
     </ul>
   </div>
 );

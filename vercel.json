@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|img/|video/|fonts/|logo/).*)", "destination": "/index.html" }
   ],
   "redirects": [
     {

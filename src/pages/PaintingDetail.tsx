@@ -42,7 +42,8 @@ import {
 // colourwayName, tierId) = allocatedCount + 1 — the next certificate number
 // the estate would allocate for that edition. Read-only here.
 import { nextNumber } from "../data/editions";
-import { asset, webp } from "../lib/asset";
+import { asset, webp, webpSrcSet } from "../lib/asset";
+import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 import { cn } from "../lib/cn";
 import { addItem } from "../lib/basket";
 import { getStoredUtm } from "../lib/utm";
@@ -115,6 +116,19 @@ const FRAME_LEAD_WEEKS = 2;
 const FINISH_LEAD_WEEKS = 2;
 
 /**
+ * Ambient backdrop source — the page-wide blurred wash behind the PDP. It's a
+ * CSS backgroundImage (no srcset possible), sits behind a 14px blur + the
+ * ambient veil, and renders at background-size: cover — so the -w480 variant
+ * (~49–112KB) is visually identical to the full ~2000px webp (0.4–1.27MB)
+ * there. Falls back to the full-size webp for any path without a -w480
+ * sibling (manifest: IMAGE_VARIANT_WIDTHS).
+ */
+const ambientBackdropUrl = (jpgPath: string): string =>
+  jpgPath.endsWith(".jpg") && IMAGE_VARIANT_WIDTHS[jpgPath]?.includes(480)
+    ? asset(`${jpgPath.slice(0, -4)}-w480.webp`)
+    : asset(webp(jpgPath));
+
+/**
  * SizePicker — the standard print tiers as radio cards. One-off tiers
  * (`isOneOff: true`) are NEVER rendered here; they're handed to OneOffCard
  * below the grid. In the narrow right column the cards stack one-per-row so
@@ -169,9 +183,13 @@ const SizePicker = ({
           <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
             {formatGBP(tier.pricePence).replace(".00", "")}
           </span>
+          {/* Selected summary — the card's own editionLabel line already sits
+              two lines above, so it is NOT repeated here (mobile made the
+              duplication conspicuous). The summary carries only what the card
+              doesn't already say. */}
           {isSelected && !tier.isOneOff && (
             <span className={cn(META, "col-span-2 mt-3")}>
-              {tier.editionLabel} · estate-stamped &amp; hand-numbered
+              Estate-stamped &amp; hand-numbered
               {tier.editionPromise ? ` · ${tier.editionPromise}` : ""}
             </span>
           )}
@@ -305,7 +323,10 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
           onClick={() => setOpen(true)}
           className={cn(
             META,
-            "bg-transparent border-0 p-0 cursor-pointer underline underline-offset-4 hover:text-ink transition-colors",
+            // Tap target: the bare text line measured 22px tall — py-3 grows
+            // the hit area to ≥44px (WCAG 2.5.8 comfort size) while -my-3
+            // cancels it visually, so the hairline-link look is unchanged.
+            "inline-flex items-center bg-transparent border-0 px-0 py-3 -my-3 min-h-[44px] cursor-pointer underline underline-offset-4 hover:text-ink transition-colors",
           )}
         >
           Register interest in the original →
@@ -1283,6 +1304,46 @@ const StickyAddBar = ({
   return (
     <AnimatePresence>
       {visible && (
+        <>
+        {/* MOBILE — full-width compact bottom bar (below md). Same sentinel
+            logic + add handler as the desktop pill; geometry adapted for
+            thumbs: 44px+ CTA, env(safe-area-inset-bottom) padding so the bar
+            clears the iPhone home indicator (index.html sets
+            viewport-fit=cover). z-40 keeps it under the modals (CloserLook
+            z-[200], mobile menu z-[60], consent banner z-[110]). */}
+        <motion.div
+          key="sticky-add-bar-mobile"
+          initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+          animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
+          transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+          className="fixed bottom-0 inset-x-0 z-40 flex md:hidden items-center gap-3 bg-[#0a0908]/97 border-t border-line shadow-[0_-14px_44px_rgba(0,0,0,0.5)] px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]"
+          role="region"
+          aria-label="Quick add to basket"
+        >
+          <span
+            aria-hidden="true"
+            className="block w-8 h-8 rounded-full ring-1 ring-line shrink-0"
+            style={{ background: selected.hex }}
+          />
+          <span className="flex flex-col leading-tight min-w-0 flex-1">
+            <span className="font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/55 truncate">
+              {selected.name}
+            </span>
+            <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
+              {formatGBP(selectedTier.pricePence).replace(".00", "")}
+            </span>
+          </span>
+          <button
+            type="button"
+            onClick={onAdd}
+            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+          >
+            {added ? "Added ✓" : "Add to basket"}
+          </button>
+        </motion.div>
+
+        {/* DESKTOP — the original bottom-right pill (md and up). */}
         <motion.div
           key="sticky-add-bar"
           initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
@@ -1314,6 +1375,7 @@ const StickyAddBar = ({
             {added ? "Added ✓" : "Add to basket"}
           </button>
         </motion.div>
+        </>
       )}
     </AnimatePresence>
   );
@@ -1463,6 +1525,17 @@ export const PaintingDetail = () => {
   const paintingPath = `/collections/${painting.id}`;
   const ogImagePath = ogColourway?.image ?? selected.image;
 
+  // AggregateOffer bounds — derived from the SAME visible ladder the page
+  // renders (getPrintTiers → available tiers only), so the markup can never
+  // drift from the on-page prices or the per-tier SKUs in /merchant-feed.xml
+  // (gotcha #9: advertised price == charged price, here too).
+  const tierPricesPence =
+    visibleTiers.length > 0
+      ? visibleTiers.map((t) => t.pricePence)
+      : [anchorTier.pricePence]; // defensive — never emit Infinity
+  const lowPricePence = Math.min(...tierPricesPence);
+  const highPricePence = Math.max(...tierPricesPence);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -1471,11 +1544,48 @@ export const PaintingDetail = () => {
     description: metaDescription,
     brand: { "@type": "Brand", name: "The Art of Stephen Meakin" },
     offers: {
-      "@type": "Offer",
-      price: (anchorTier.pricePence / 100).toFixed(2),
+      "@type": "AggregateOffer",
+      lowPrice: (lowPricePence / 100).toFixed(2),
+      highPrice: (highPricePence / 100).toFixed(2),
+      offerCount: tierPricesPence.length,
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       url: absoluteUrl(paintingPath),
+      // FREE delivery (policy 2026-06-06): api/checkout.ts charges a £0 rate
+      // in every region, framed or unframed — mirrored here as a £0
+      // shippingRate. GB is declared as the destination (Google requires a
+      // country code; delivery is equally free worldwide, but DefinedRegion
+      // has no "worldwide" token). Handling mirrors the advertised
+      // made-to-order lead: "ships within 7–10 working days".
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: { "@type": "MonetaryAmount", value: "0", currency: "GBP" },
+        shippingDestination: { "@type": "DefinedRegion", addressCountry: "GB" },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 7,
+            maxValue: 10,
+            unitCode: "DAY",
+          },
+        },
+      },
+      // Returns — mirrors /returns (src/pages/Legal.tsx RETURNS; facts only,
+      // never invented terms): the limited-edition and framed / hand-finished
+      // The per-tier returns reality is mixed (most prints are made-to-order
+      // and reg-28 exempt from the 14-day change-of-mind right, but Legal.tsx
+      // documents the statutory right where it applies) — so NO blanket
+      // returnPolicyCategory is declared here: a single category on an
+      // AggregateOffer spanning all tiers would be false for one of them
+      // (gate finding 2026-06-12). Defect handling + the full policy link
+      // carry the truthful, tier-independent facts.
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "GB",
+        itemDefectReturnFees: "https://schema.org/FreeReturn",
+        merchantReturnLink: absoluteUrl("/returns"),
+      },
     },
   };
 
@@ -1527,7 +1637,9 @@ export const PaintingDetail = () => {
             transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
             className="painting-detail__ambient-bg"
             style={{
-              backgroundImage: `url("${asset(webp(selected.image))}")`,
+              // -w480 variant — blurred + veiled, so full-res here was pure
+              // wasted transfer (the hero <picture> no longer fetches it either).
+              backgroundImage: `url("${ambientBackdropUrl(selected.image)}")`,
             }}
           />
         </AnimatePresence>
@@ -1603,6 +1715,7 @@ export const PaintingDetail = () => {
                     type="button"
                     onClick={() => setViewerOpen(true)}
                     aria-label="Explore the painting in detail"
+                    data-cursor-label="Closer look"
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
                     <AnimatePresence mode="popLayout">
@@ -1614,7 +1727,20 @@ export const PaintingDetail = () => {
                         transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
                         className="block w-full"
                       >
-                        <source srcSet={asset(webp(selected.image))} type="image/webp" />
+                        {/* Responsive variants (#perf): webpSrcSet advertises the
+                            -w480/-w800/-w1200/-w1600 siblings + the ~2000w full
+                            webp, with an honest sizes attr (the image fills
+                            ~92vw of a phone, ~55% of the container on lg+). A
+                            390w DPR-2 phone now fetches -w800 (~107–261KB)
+                            instead of the 0.4–1.27MB full-res file; retina
+                            desktop still reaches the 2000w candidate. CloserLook
+                            does its own progressive load (-w800 → full-res), so
+                            the hero no longer needs to warm the full-res cache. */}
+                        <source
+                          srcSet={webpSrcSet(selected.image) ?? asset(webp(selected.image))}
+                          sizes="(min-width: 1024px) 55vw, 92vw"
+                          type="image/webp"
+                        />
                         {/* Height-capped + centred so a square/portrait painting
                             never exceeds ~78% of the viewport. Without the cap a
                             square painting rendered full-width was ~940px tall on

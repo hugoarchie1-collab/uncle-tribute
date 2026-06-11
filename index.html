@@ -41,7 +41,9 @@
     <meta name="twitter:description" content="A life's work in sacred geometry and mandala painting." />
     <meta name="twitter:image" content="https://themandalacompany.com/og-image.jpg" />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- ?v=2 cache-busts the old black-rendering favicon (its inner group used
+         fill="currentColor", which resolves to BLACK in a tab context). -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
 
     <!-- Fonts (#10): Fraunces (editorial display serif, true italic for
          quotes) + Hanken Grotesk (quiet body/UI sans). SELF-HOSTED variable
@@ -53,6 +55,10 @@
          file needs a NEW filename + these @font-face urls updated. -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-roman-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/hanken-roman-latin.woff2" crossorigin />
+    <!-- Italic preloaded too: the home hero's largest line is italic Fraunces
+         ("— orbiting a Sun Star…") and quotes use it on most routes — without
+         the preload it was the one face that FOUTed. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-italic-latin.woff2" crossorigin />
     <style>
       @font-face {
         font-family: "Fraunces";
@@ -104,11 +110,13 @@
       }
     </style>
 
-    <!-- Preload the intro poster + hero painting so the landing paints fast.
+    <!-- Preload the intro poster (the home LCP) so the landing paints fast.
          WebP preloads only fire on browsers that support them; the JPG
-         remains as the in-DOM fallback via <picture>. -->
+         remains as the in-DOM fallback via <picture>. The welcome hero
+         painting preload was REMOVED 2026-06-11: it taxed every NON-home
+         direct entry (painting pages, /verify…) ~62KB for an image that sits
+         a viewport below the fold on the one page that uses it. -->
     <link rel="preload" as="image" href="/video/poster-v2.webp" type="image/webp" />
-    <link rel="preload" as="image" href="/img/welcome/01-painting-wild-rose.webp" type="image/webp" />
 
     <!-- JSON-LD: site identity for search engines -->
     <script type="application/ld+json">

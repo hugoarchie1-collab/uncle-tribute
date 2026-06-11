@@ -476,7 +476,7 @@ export const COLLECTIONS: Collection[] = [
     title: "Born in the Sky",
     description:
       "Stephen worked at night. While the world slept, he was at his canvas, alone with geometry and gold leaf and the dark outside the window. He understood, more than most, what it felt like to carry knowledge that set you apart. To see things others didn't look for. To find more companionship in the sky than in a room full of people.\n\nThese five paintings came from that place. Each one about something above us that most people never notice: a constellation left out, a comet on its only pass, a message sent into deep space not knowing if it will ever be received, nine stars in the shape of a swan.\n\nThings that exist beyond the edge of what is commonly seen or celebrated. Stephen found them beautiful. He spent months, sometimes over a year, bringing each one down to earth.\n\nHe called the Enneagon a painting born in the sky. All five of these were.",
-    backdropImage: "/img/scenes/born-in-the-sky-blur.webp",
+    backdropImage: "/img/scenes/born-in-the-sky-blur-v2.webp",
   },
 ];
 

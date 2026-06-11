@@ -679,6 +679,13 @@ export const CloserLook = ({
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
+          // Contextual cursor caption (CustomCursor reads these): the chip
+          // whispers what the stage affords, and swaps to "Drag" while a
+          // pointer is held. On the OVERLAY (not the inner stage) because
+          // setPointerCapture retargets mid-drag pointer events here; the
+          // cursor suppresses the caption over the chrome buttons itself.
+          data-cursor-label="Drag · scroll to zoom"
+          data-cursor-label-drag="Drag"
           className="fixed inset-0 z-[200] overflow-hidden select-none cursor-zoom-out"
           style={{
             backgroundColor: "rgba(10, 9, 8, 0.97)",

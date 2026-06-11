@@ -132,8 +132,11 @@ export const NewsletterSignup = ({
               }}
               aria-hidden="true"
             />
-            <label className="block">
-              <span className="block font-sans text-[13px] leading-[1.6] text-ink-muted mb-3">
+            {/* Focus-within `group`: the field's lead line eases to fuller ink
+                while the email input is focused — the label answers the focus,
+                not just the input ring. */}
+            <label className="group block">
+              <span className="block font-sans text-[13px] leading-[1.6] text-ink-muted mb-3 transition-colors duration-200 group-focus-within:text-ink">
                 A note when there's a new edition or an exhibition.
               </span>
               <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
@@ -296,8 +299,10 @@ export const NewsletterSignup = ({
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-            <label className="block">
-              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+            {/* Focus-within `group`: the muted field label warms to full ink
+                while its input is focused (matches Contact's form focus). */}
+            <label className="group block">
+              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Name
               </span>
               <input
@@ -308,8 +313,8 @@ export const NewsletterSignup = ({
                 className="w-full bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
-            <label className="block">
-              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+            <label className="group block">
+              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Email
               </span>
               <input
@@ -331,10 +336,15 @@ export const NewsletterSignup = ({
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
             >
               {status === "submitting" ? "Subscribing…" : "Subscribe"}
-              <span aria-hidden="true" className="ml-2">→</span>
+              <span
+                aria-hidden="true"
+                className="ml-2 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
+              >
+                →
+              </span>
             </button>
             <p className="font-sans text-[11px] leading-[1.5] text-ink/55 m-0">
               Only when it matters — a few times a year at most. Unsubscribe in a click.

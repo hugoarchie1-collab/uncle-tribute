@@ -68,7 +68,19 @@ export const Welcome = () => {
       const cover = pick.colourway
         ? painting.colourways.find((c) => c.name === pick.colourway) ?? painting.colourways[0]
         : painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
-      return { painting, cover };
+      // Polène-style "turn shot": on hover the tile crossfades to the NEXT
+      // available colourway — Stephen's own alternates are the estate
+      // equivalent of the luxury packshot turn, and they quietly advertise
+      // that colourways exist before the visitor reaches the detail page.
+      // Only for paintings with 2+ AVAILABLE colourways (single-colourway
+      // tiles keep today's scale-only hover, a graceful no-op); the .jpg
+      // guard keeps the -w800 stem maths honest.
+      const available = painting.colourways.filter((c) => c.available);
+      const hoverCover =
+        available.length >= 2
+          ? available.find((c) => c.name !== cover.name && c.image.endsWith(".jpg"))
+          : undefined;
+      return { painting, cover, hoverCover };
     })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
@@ -285,18 +297,39 @@ export const Welcome = () => {
               phone-width ribbon; P5 lands after a hairline as a two-tier
               Fraunces close echoing the Sacred Geometry finale, its closing
               period the one rust note. Over the shared peacock backdrop like
-              every section (no opaque card — gotcha); hero-text-shadow for
-              legibility; Fraunces opsz held ≤48 (finale invariant); whole-
-              element Reveals only (gotcha #2). */}
+              every section (no opaque card — gotcha); legibility for the
+              READING tiers comes from the local radial scrim below (edges fade
+              to fully transparent so it can never read as a card) — the double
+              hero-text-shadow stays ONLY on the display-scale pull-quote +
+              close, never on body-size glyphs where it fuzzed the edges.
+              Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
+              only (gotcha #2). */}
           <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] px-4 sm:px-6 md:px-8 lg:px-12">
+            {/* Local reading scrim — a soft radial deepening behind the essay
+                (the About reading-veil / finale-radial recipe, localised). It
+                replaces the per-glyph text-shadow on the lead + two-column
+                body: print-crisp glyphs, grounded backdrop. Every edge ends at
+                alpha 0 — NEVER a visible rectangle (the removed Craft-card
+                regression). Static paint, reduced-motion safe by nature. */}
+            <div
+              aria-hidden="true"
+              className="absolute -inset-x-10 -inset-y-12 md:-inset-y-16 -z-10 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
+              }}
+            />
             <Reveal as="header" className="mb-7 md:mb-9 mx-auto max-w-[820px]">
               <p className={cn(EYEBROW, "m-0 mb-7 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
-                  Fraunces opsz 40, generous leading, a rust ::first-letter drop
-                  cap (pure CSS — the word itself is untouched). text-pretty so
-                  the rag flows cleanly around the floated cap. */}
+                  Fraunces opsz 40, generous leading, a rust drop cap (pure
+                  CSS — the word itself is untouched). The cap recipe lives in
+                  global.css `.drop-cap`: the hand-tuned ::first-letter float
+                  everywhere, upgraded via @supports to `initial-letter: 2`
+                  (engine-locked cap sizing/baseline) on Safari/Chrome.
+                  text-pretty so the rag flows cleanly around the cap. */}
               <p
-                className="font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty hero-text-shadow [&::first-letter]:float-left [&::first-letter]:mr-3 [&::first-letter]:mt-[0.06em] [&::first-letter]:font-display [&::first-letter]:text-accent [&::first-letter]:leading-[0.74] [&::first-letter]:tracking-[-0.02em] [&::first-letter]:text-[clamp(60px,8vw,104px)]"
+                className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty"
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
                   fontSize: "clamp(24px, 2.4vw, 34px)",
@@ -330,7 +363,11 @@ export const Welcome = () => {
                 two balanced columns on md+ so the passage reads as a designed
                 magazine spread and takes ~half the vertical space (Hugo: less
                 scrolling + more aesthetic). break-inside-avoid keeps each
-                paragraph whole; hero-text-shadow for legibility on the backdrop. */}
+                paragraph whole across the column break; text-pretty +
+                hyphens-auto (with lang="en-GB") treat the rag at the ~46ch
+                column measure. Ink = the 0.85 ink-soft TOKEN (was a bespoke
+                /85 alpha — same value, token discipline). Legibility comes
+                from the section's radial scrim, not a per-glyph shadow. */}
             <Reveal as="div" className="columns-1 md:columns-2 gap-x-10 lg:gap-x-14 [column-fill:_balance]">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
@@ -343,7 +380,8 @@ export const Welcome = () => {
                 return (
                   <p
                     key={para.slice(0, 24)}
-                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink/85 m-0 mb-5 md:mb-6 last:mb-0 hero-text-shadow"
+                    lang="en-GB"
+                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
                   >
                     {text}
                   </p>
@@ -483,7 +521,7 @@ export const Welcome = () => {
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
             <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-7 md:mb-9">
-              {featured.map(({ painting, cover }) => {
+              {featured.map(({ painting, cover, hoverCover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
@@ -501,18 +539,49 @@ export const Welcome = () => {
                     className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                      <AssetImage
-                        src={cover.image}
-                        alt={`${painting.title} — ${cover.name}`}
-                        loading="lazy"
-                        decoding="async"
-                        // Same orphan-centring grid as /collections: each card is
-                        // flex-[0_1_clamp(280px,30%,420px)] in the
-                        // max-w-[1320px]→[1720px] container — ~one-up (≈90vw) on
-                        // phones, ~30vw at mid widths, capped at the 420px ceiling.
-                        sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                      />
+                      {/* Shared transform wrapper: the existing 1.05 hover scale
+                          lives HERE so the cover and the turn-shot crossfade
+                          move as one layer (no scale mismatch mid-fade). */}
+                      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
+                        <AssetImage
+                          src={cover.image}
+                          alt={`${painting.title} — ${cover.name}`}
+                          loading="lazy"
+                          decoding="async"
+                          // Same orphan-centring grid as /collections: each card is
+                          // flex-[0_1_clamp(280px,30%,420px)] in the
+                          // max-w-[1320px]→[1720px] container — ~one-up (≈90vw) on
+                          // phones, ~30vw at mid widths, capped at the 420px ceiling.
+                          sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        {hoverCover && (
+                          // Polène-style turn-shot: the next available colourway
+                          // crossfades in over the cover (450ms house ease).
+                          // Decorative duplicate → aria-hidden + empty alt; lazy +
+                          // async so the grid payload doesn't double up front.
+                          // Single -w800 webp candidate (~110–260KB vs ~660KB
+                          // full-res; every colourway has one on disk, verified)
+                          // with the .jpg fallback for WebP-less browsers.
+                          // Reduced-motion: global.css zeroes transition-duration
+                          // sitewide, so the swap is instant — exactly the same
+                          // pattern the scale hover above already relies on.
+                          <picture style={{ display: "contents" }}>
+                            <source
+                              srcSet={asset(`${hoverCover.image.slice(0, -4)}-w800.webp`)}
+                              type="image/webp"
+                            />
+                            <img
+                              src={asset(hoverCover.image)}
+                              alt=""
+                              aria-hidden="true"
+                              loading="lazy"
+                              decoding="async"
+                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[450ms] ease-smooth group-hover:opacity-100"
+                            />
+                          </picture>
+                        )}
+                      </div>
                       {/* Price chip — scroll-revealed (visible on mobile,
                           where there's no hover, and on desktop as soon as
                           the tile enters view). Advertises the LOWEST visible

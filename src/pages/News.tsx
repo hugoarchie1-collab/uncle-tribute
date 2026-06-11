@@ -30,14 +30,15 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { AssetImage } from "../components/AssetImage";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { NewsletterSignup } from "../components/NewsletterSignup";
+import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, META } from "../components/ui/tokens";
 import {
@@ -50,6 +51,54 @@ import {
   type NewsEntry,
   type NewsType,
 } from "../data/news";
+
+/**
+ * Fixed full-page backdrop — blurred indigo Persian carpets behind the whole
+ * estate calendar (echoes the Persian sacred-geometry tradition). The Collections
+ * treatment, simplified for ONE image: a single bg-cover layer at full opacity
+ * that drifts ±6% with WHOLE-PAGE scroll (useScroll over the document, no section
+ * target), inset-[-8%] overscan so the parallax `y` can never expose an
+ * uncovered strip, clipped by the overflow-hidden parent. Reduced-motion drops
+ * the parallax entirely and holds the layer static (matches Collections').
+ */
+const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => {
+  const reduceMotion = useReducedMotion();
+  // No `target` → tracks the viewport's scroll over the whole document, so the
+  // single backdrop drifts across the entire page rather than one section.
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+
+  // Reduced-motion: drop the parallax, hold the backdrop static, and release the
+  // GPU layer (will-change:auto) — no motion means no need for a promoted layer.
+  if (reduceMotion) {
+    return (
+      <div
+        style={{
+          backgroundImage: `url("${photoUrl}")`,
+          willChange: "auto",
+        }}
+        className="absolute inset-0 bg-cover bg-center"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  return (
+    <motion.div
+      style={{
+        y,
+        backgroundImage: `url("${photoUrl}")`,
+        willChange: "transform",
+      }}
+      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift can
+      // NEVER expose an uncovered strip (the black page background) at the top —
+      // the same fix Collections carries. The parent is overflow-hidden, so the
+      // overscan is clipped.
+      className="absolute inset-[-8%] bg-cover bg-center"
+      aria-hidden="true"
+    />
+  );
+};
 
 // Quiet type pill — the EYEBROW_TIGHT recipe inside a rounded-full hairline
 // chip (the one tasteful nod to Beeper's chip vocabulary). ink-muted at rest;
@@ -160,7 +209,21 @@ export const News = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.45} />
+      {/* FIXED BACKDROP LAYER — one blurred indigo Persian-carpet scene drifting
+          ±6% with whole-page scroll (Collections' treatment, single image). */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <ScrollBackdrop photoUrl={asset("/img/scenes/news-indigo-carpet-blur.webp")} />
+        {/* Shared scrim — the EXACT gradient Collections uses so the cream copy
+            stays legible while the carpet reads as a subdued, moody texture. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
+          }}
+        />
+      </div>
       <Seo
         title="News"
         description="Up-and-coming releases, exhibitions, workshops and events from the estate of Stephen Meakin — The Mandala Company."
@@ -168,11 +231,27 @@ export const News = () => {
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        {/* HEADER — centred, matching the other pages (Hugo). */}
+        {/* HEADER — centred, matching the other pages (Hugo). Carries the EXACT
+            Collections intro-header text-shadows so the cream copy stays legible
+            over the lightest (0.38) top band of the scrim, where the carpet
+            texture shows through most. */}
         <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] mx-auto text-center mb-9 md:mb-12">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>The estate calendar</p>
-          <h1 className={cn(TITLE, "mx-auto my-0 mb-6")}>News &amp; releases.</h1>
-          <p className={cn(SUBTITLE, "mx-auto my-0")}>
+          <p
+            className={cn(EYEBROW, "m-0 mb-5")}
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
+            The estate calendar
+          </p>
+          <h1
+            className={cn(TITLE, "mx-auto my-0 mb-6")}
+            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
+            News &amp; releases.
+          </h1>
+          <p
+            className={cn(SUBTITLE, "mx-auto my-0")}
+            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
             What is coming from the estate — new prints released like albums and singles,
             exhibitions, the return of Steve's workshop, and gatherings hosted by The Mandala
             Company.
@@ -187,7 +266,10 @@ export const News = () => {
         {!hasNews ? (
           <div className="max-w-[760px] mx-auto">
             <Reveal as="div" className="text-center">
-              <p className={cn(SUBTITLE, "my-0")}>
+              <p
+                className={cn(SUBTITLE, "my-0")}
+                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+              >
                 The estate calendar is being prepared. Everything here is announced
                 only once it is confirmed — each release a limited, numbered edition,
                 quiet and small.

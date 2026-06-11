@@ -1,13 +1,77 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { EYEBROW, EYEBROW_MUTED, TITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
+
+// Single backdrop scene for /contact — a blurred autumn tree with raked leaf
+// circles. webp referenced directly because it's a CSS background-image (this
+// matches Collections; the <picture> jpg-swap rule applies only to <img> tags).
+const BACKDROP = asset("/img/scenes/contact-autumn-tree-blur.webp");
+
+/**
+ * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment
+ * but simplified for ONE static image (no cross-fade between sections). One
+ * bg-cover layer at full opacity drifts ±6% over the whole document scroll —
+ * useScroll() with no target tracks the page, y "6%"→"-6%" — and is overscanned
+ * inset-[-8%] so the parallax can never expose an uncovered strip (the parent is
+ * overflow-hidden, so the overscan is clipped). The EXACT shared scrim gradient
+ * Collections uses sits on top so the cream copy stays legible.
+ *
+ * Reduced-motion: drop the parallax entirely, hold a calm static layer, and
+ * release the GPU promotion (will-change:auto) — identical short-circuit to
+ * Collections' ScrollBackdrop.
+ */
+const ContactBackdrop = () => {
+  const reduceMotion = useReducedMotion();
+  // No `target` — track the whole document scroll for one page-wide drift.
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+
+  return (
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      {reduceMotion ? (
+        <div
+          style={{
+            backgroundImage: `url("${BACKDROP}")`,
+            willChange: "auto",
+          }}
+          className="absolute inset-0 bg-cover bg-center"
+          aria-hidden="true"
+        />
+      ) : (
+        <motion.div
+          style={{
+            y,
+            backgroundImage: `url("${BACKDROP}")`,
+            willChange: "transform",
+          }}
+          // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can NEVER
+          // expose an uncovered strip at the top/bottom — same guard Collections
+          // uses. The parent is overflow-hidden, so the overscan is clipped.
+          className="absolute inset-[-8%] bg-cover bg-center"
+          aria-hidden="true"
+        />
+      )}
+      {/* Shared scrim — the EXACT gradient Collections uses, so /contact reads as
+          part of the same world and the cream copy stays legible over the photo. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
+        }}
+      />
+    </div>
+  );
+};
 
 /**
  * /contact — full-page version of the EnquireModal form. Same mailto +
@@ -104,7 +168,7 @@ export const Contact = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.4} />
+      <ContactBackdrop />
       <Seo
         title="Contact the estate"
         description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
@@ -113,22 +177,40 @@ export const Contact = () => {
       <Nav overlay />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(6rem,11vw,6.5rem)] pb-[clamp(3rem,7vw,4.5rem)]">
         <Reveal as="header">
-          <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
+          {/* Header copy floats directly over the photo backdrop, so it carries
+              the EXACT legibility text-shadows Collections uses on its intro
+              header (eyebrow / title / subtitle tiers) — no invented values. */}
+          <p
+            className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
             Contact the estate
           </p>
-          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
+          <h1
+            className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}
+            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
             Write to the family.
           </h1>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
+          <p
+            className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0"
+            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
             For commissions, partnerships, press, or a question about a
             particular work, write to The Mandala Company. We are a small
             estate; every message is read by the family, and answered within a
             day or two.
           </p>
-          <p className={cn(EYEBROW_MUTED, "mt-[clamp(1.1rem,3vw,1.5rem)] mb-[clamp(0.4rem,1.2vw,0.55rem)]")}>
+          <p
+            className={cn(EYEBROW_MUTED, "mt-[clamp(1.1rem,3vw,1.5rem)] mb-[clamp(0.4rem,1.2vw,0.55rem)]")}
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
             By post
           </p>
-          <address className="font-sans font-normal not-italic text-[14px] leading-[1.55] text-ink-muted m-0">
+          <address
+            className="font-sans font-normal not-italic text-[14px] leading-[1.55] text-ink-muted m-0"
+            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+          >
             The Mandala Company — 213 Elm Drive, Hove,
             East Sussex, BN3 7JD, United Kingdom
           </address>
@@ -144,10 +226,16 @@ export const Contact = () => {
               aria-live="polite"
               className="py-[clamp(0.5rem,2vw,1rem)] outline-none"
             >
-              <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,28px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]">
+              <p
+                className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,28px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]"
+                style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+              >
                 Thank you.
               </p>
-              <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0 max-w-[56ch]">
+              <p
+                className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0 max-w-[56ch]"
+                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+              >
                 Your message is on its way to{" "}
                 <span className="text-ink">info@themandalacompany.com</span>.
                 If your mail client did not open, we have copied the message to
@@ -176,9 +264,18 @@ export const Contact = () => {
                 aria-hidden="true"
               />
 
+              {/* Each label is a focus-within `group`: the muted eyebrow above
+                  a field eases to full ink while its input is focused — the
+                  label answers the focus, not just the input ring. */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <label className="block">
-                  <span className={cn(EYEBROW_MUTED, "block mb-2")}>
+                <label className="group block">
+                  <span
+                    className={cn(
+                      EYEBROW_MUTED,
+                      "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                    )}
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                  >
                     Name
                   </span>
                   <input
@@ -190,8 +287,14 @@ export const Contact = () => {
                     placeholder="Jane Smith"
                   />
                 </label>
-                <label className="block">
-                  <span className={cn(EYEBROW_MUTED, "block mb-2")}>
+                <label className="group block">
+                  <span
+                    className={cn(
+                      EYEBROW_MUTED,
+                      "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                    )}
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                  >
                     Email
                   </span>
                   <input
@@ -205,8 +308,14 @@ export const Contact = () => {
                 </label>
               </div>
 
-              <label className="block mb-5">
-                <span className={cn(EYEBROW_MUTED, "block mb-2")}>
+              <label className="group block mb-5">
+                <span
+                  className={cn(
+                    EYEBROW_MUTED,
+                    "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                  )}
+                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                >
                   Message
                 </span>
                 <textarea
@@ -226,17 +335,28 @@ export const Contact = () => {
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className={BTN_PRIMARY}
+                  className={cn(BTN_PRIMARY, "group")}
                 >
                   {status === "submitting" ? "Sending…" : "Send your message"}
-                  <span aria-hidden="true" className="ml-2">→</span>
+                  <span
+                    aria-hidden="true"
+                    className="ml-2 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
+                  >
+                    →
+                  </span>
                 </button>
                 <a
                   href="mailto:info@themandalacompany.com"
-                  className="inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                  className="group inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                  style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Or write directly
-                  <span aria-hidden="true" className="ml-1.5">→</span>
+                  <span
+                    aria-hidden="true"
+                    className="ml-1.5 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[2px]"
+                  >
+                    →
+                  </span>
                 </a>
               </div>
             </form>

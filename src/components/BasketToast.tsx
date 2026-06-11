@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { subscribeToAdds, type AddNotification } from "../lib/basket";
 import { getPaintingById } from "../data/paintings";
@@ -25,6 +26,11 @@ import { getPaintingById } from "../data/paintings";
  *  - Rapid successive adds REFRESH the same toast in place (the content and
  *    the dismiss timer reset) rather than stacking — keyed on the
  *    notification id so the title cross-fades on each new add.
+ *  - Carries a quiet "View basket →" link so the confirmation offers a next
+ *    step, not a dead end. The link is keyboard-focusable but never steals
+ *    focus, and it does NOT change the dismiss timing — the toast still
+ *    auto-hides on the same 2.5s clock. Clicking it dismisses immediately
+ *    (the reader is navigating to the basket; the toast's job is done).
  *
  * Positioning: bottom-centre, high z-index but deliberately BELOW modals
  * (z-200) and the custom cursor (z-250) — `z-[120]`.
@@ -88,7 +94,7 @@ export const BasketToast = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: offset }}
             transition={{ duration: 0.34, ease: [0.22, 0.61, 0.36, 1] }}
-            className="pointer-events-auto flex max-w-[380px] items-center gap-3.5 bg-bg-soft ring-1 ring-line px-5 py-3.5 shadow-[0_24px_70px_rgba(0,0,0,0.6)]"
+            className="pointer-events-auto flex max-w-[420px] items-center gap-3.5 bg-bg-soft ring-1 ring-line px-5 py-3.5 shadow-[0_24px_70px_rgba(0,0,0,0.6)]"
           >
             {/* Hairline-circled check — rust accent, not a filled green badge. */}
             <span
@@ -105,7 +111,7 @@ export const BasketToast = () => {
                 />
               </svg>
             </span>
-            <span className="min-w-0">
+            <span className="min-w-0 flex-1">
               <span className="block font-sans text-[10px] font-bold uppercase tracking-[0.28em] text-ink-muted">
                 Added to basket
               </span>
@@ -113,6 +119,16 @@ export const BasketToast = () => {
                 {toast.title}
               </span>
             </span>
+            {/* Quiet next step — hairline-divided micro link to the basket.
+                Focusable (global :focus-visible accent outline applies) but
+                never focused programmatically; dismiss timing is untouched. */}
+            <Link
+              to="/basket"
+              onClick={() => setToast(null)}
+              className="ml-1 shrink-0 self-center whitespace-nowrap border-l border-line pl-3.5 font-sans text-[10px] font-bold uppercase tracking-[0.18em] text-ink-muted transition-colors duration-300 hover:text-accent"
+            >
+              View basket <span aria-hidden="true">→</span>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
