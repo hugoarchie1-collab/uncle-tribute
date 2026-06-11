@@ -27,6 +27,7 @@ import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { useNoindexHead } from "../lib/useNoindexHead";
 
 /**
  * Hydrated basket line — joins a stored item against the live catalogue so
@@ -179,6 +180,8 @@ const shippingPreview = () => ({
 
 export const Basket = () => {
   usePageTitle("Your Basket");
+  // Transactional route — noindex + default meta (see useNoindexHead).
+  useNoindexHead();
   const items = useBasket();
   const lines = resolveLines(items);
 

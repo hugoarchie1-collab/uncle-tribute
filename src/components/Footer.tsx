@@ -28,6 +28,7 @@ const SITE_LINKS = [
   { to: "/news", label: "News" },
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
+  { to: "/verify", label: "Verify" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
   { to: "/returns", label: "Returns" },

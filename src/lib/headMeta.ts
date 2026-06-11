@@ -117,6 +117,30 @@ export const setRouteJsonLd = (blocks: object[] | null): void => {
 };
 
 /**
+ * Toggle a <meta name="robots" content="noindex"> tag. The element exists
+ * ONLY while a transactional route is mounted — indexable routes carry no
+ * robots meta at all (the index.html ships none; absence = indexable).
+ */
+export const setRobotsNoindex = (on: boolean): void => {
+  if (!isBrowser) return;
+  const existing = document.head.querySelector<HTMLMetaElement>(
+    'meta[name="robots"]',
+  );
+  if (!on) {
+    existing?.remove();
+    return;
+  }
+  if (existing) {
+    existing.setAttribute("content", "noindex");
+    return;
+  }
+  const el = document.createElement("meta");
+  el.setAttribute("name", "robots");
+  el.setAttribute("content", "noindex");
+  document.head.appendChild(el);
+};
+
+/**
  * Reset every route-variable tag to the site defaults + point the canonical
  * at the given path. Called by the App-level RouteHeadDefaults for routes
  * whose page didn't mount its own <Seo> (see the write-order contract).
@@ -133,4 +157,19 @@ export const applyDefaultHead = (pathname: string): void => {
   upsertMeta("name", "twitter:description", HEAD_DEFAULTS.twitterDescription);
   upsertMeta("name", "twitter:image", HEAD_DEFAULTS.twitterImage);
   setRouteJsonLd(null);
+  setRobotsNoindex(false);
+};
+
+/**
+ * Head treatment for TRANSACTIONAL routes (Basket, Order result, NotFound):
+ * site-default meta + per-route canonical + robots NOINDEX — a buyer's
+ * basket or a soft-404 must never enter the index (the SPA serves every
+ * route with HTTP 200, so the meta tag is the only honest signal). Marks
+ * the route as self-written so RouteHeadDefaults doesn't strip the noindex
+ * on a direct load (same write-order contract as <Seo>).
+ */
+export const applyTransactionalHead = (pathname: string): void => {
+  applyDefaultHead(pathname);
+  setRobotsNoindex(true);
+  markSeoWrote(pathname);
 };

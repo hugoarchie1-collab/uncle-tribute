@@ -13,6 +13,7 @@ import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 import { getBasket, clearBasket, useBasket, type BasketItem } from "../lib/basket";
 import { getStoredUtm } from "../lib/utm";
+import { useNoindexHead } from "../lib/useNoindexHead";
 import {
   PAINTINGS,
   getPaintingById,
@@ -266,6 +267,8 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
  */
 export const OrderSuccess = () => {
   usePageTitle("Order confirmed — The Art of Stephen Meakin");
+  // Transactional route — noindex + default meta (see useNoindexHead).
+  useNoindexHead();
   const [params] = useSearchParams();
   const sessionId = params.get("session_id");
 
@@ -342,6 +345,8 @@ export const OrderSuccess = () => {
  */
 export const OrderCancel = () => {
   usePageTitle("Order cancelled — The Art of Stephen Meakin");
+  // Transactional route — noindex + default meta (see useNoindexHead).
+  useNoindexHead();
   // The basket is only cleared on a SUCCESSFUL payment (OrderSuccess), so an
   // abandoned checkout still holds everything the buyer chose. When lines
   // remain, the primary way back is the basket itself — a quiet recovery

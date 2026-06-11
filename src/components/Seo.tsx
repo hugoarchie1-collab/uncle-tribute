@@ -5,6 +5,7 @@ import {
   HEAD_DEFAULTS,
   markSeoWrote,
   setCanonical,
+  setRobotsNoindex,
   setRouteJsonLd,
   upsertMeta,
 } from "../lib/headMeta";
@@ -99,6 +100,10 @@ export const Seo = ({
     );
     upsertMeta("name", "twitter:image", ogImage);
     setRouteJsonLd(blocksJson ? (JSON.parse(blocksJson) as object[]) : null);
+    // A page that mounts <Seo> is indexable by definition — clear any robots
+    // noindex a transactional route may have left (belt-and-braces; the
+    // App-level defaults writer also clears it on route change).
+    setRobotsNoindex(false);
     markSeoWrote(pathname);
   }, [
     fullTitle,

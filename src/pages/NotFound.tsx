@@ -13,9 +13,12 @@ import {
 } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { usePageTitle } from "../lib/usePageTitle";
+import { useNoindexHead } from "../lib/useNoindexHead";
 
 export const NotFound = () => {
   usePageTitle("Page not found");
+  // Transactional route — noindex + default meta (see useNoindexHead).
+  useNoindexHead();
   return (
     <div className="relative min-h-[100svh] md:min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.45} />
