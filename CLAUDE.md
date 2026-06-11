@@ -74,7 +74,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 | Framework | React 19 + TypeScript + Vite 8 |
 | Routing | React Router 7 (BrowserRouter, SPA) |
 | Styling | Tailwind CSS 3 (custom config in `tailwind.config.ts`) |
-| Display font | Fraunces (Google Fonts variable: `opsz 9..144`, `wght 400/600/700`, true italic at 400/600). 700 is the bold, screen-filling FINALE display weight — real, never synthesised (`font-synthesis: none` is set, so any unloaded weight fails visibly instead of faux-rendering). NOT Playfair. |
+| Display font | Fraunces (variable: `opsz 9..144`, `wght 400/600/700`, true italic at 400/600). **SELF-HOSTED since 2026-06-10** — woff2 files in `/public/fonts` with inline `@font-face` in index.html (latin/latin-ext unicode-range split); the render-blocking Google Fonts CSS + two preconnects are GONE. ⚠️ `/fonts` is cached immutable 1yr (vercel.json) — replacing a font file needs a NEW filename + the index.html `@font-face`/preload urls updated. 700 is the bold, screen-filling FINALE display weight — real, never synthesised (`font-synthesis: none`). NOT Playfair. |
 | Body font | Hanken Grotesk (`400/600`). NOT Inter. |
 | Animation | Framer Motion 12 |
 | Hosting | Vercel (static SPA + serverless functions in `/api`) |
