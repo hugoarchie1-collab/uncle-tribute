@@ -1,13 +1,17 @@
 // =============================================================================
-// MARKETING ANALYTICS — Meta Pixel + GA4, strictly consent-gated (C3 / C5).
+// MARKETING ANALYTICS — Meta Pixel + GA4 + Klaviyo onsite, strictly
+// consent-gated (C3 / C5).
 // =============================================================================
-// Lazy initialisers for the two marketing scripts. NOTHING here loads or
+// Lazy initialisers for the three marketing scripts. NOTHING here loads or
 // fires until the visitor has explicitly allowed analytics on the consent
 // banner (lib/consent.ts, `tasm.consent.v1` marketing === true), and each
 // script also requires its build-time ID:
 //
-//   VITE_META_PIXEL_ID — Meta Pixel id (absent → Pixel never initialises)
-//   VITE_GA4_ID        — GA4 measurement id (absent → gtag never initialises)
+//   VITE_META_PIXEL_ID       — Meta Pixel id (absent → Pixel never initialises)
+//   VITE_GA4_ID              — GA4 measurement id (absent → gtag never initialises)
+//   VITE_KLAVIYO_COMPANY_ID  — Klaviyo PUBLIC site/company id for onsite
+//                              klaviyo.js (NOT the private API key; absent →
+//                              Klaviyo never initialises)
 //
 // Absent IDs and absent consent are both clean silent no-ops — zero console
 // errors, zero network requests.
@@ -17,12 +21,18 @@
 // then update to "granted" — and since the script itself only loads after an
 // explicit accept, the granted state is always genuinely consented.
 //
+// Klaviyo onsite powers the abandoned-cart / browse-abandonment flows: the
+// browser pushes "Viewed Product" / "Added to Cart" / "Started Checkout" via
+// window.klaviyo.push(["track", …]) — the array queue stub holds calls safely
+// until klaviyo.js arrives. (Server-side "Placed Order" lives in the webhook
+// under the separate PRIVATE KLAVIYO_API_KEY — unrelated to this id.)
+//
 // ⚠️ NO Purchase event in the browser (contract C4): the Purchase signal is
 // sent server-side via the Meta Conversions API from api/stripe-webhook.ts,
 // keyed on the Stripe checkout session id as event_id. Firing it here too
 // would double-count. The browser sends only ViewContent / AddToCart /
 // InitiateCheckout (fbq) mirrored as view_item / add_to_cart / begin_checkout
-// (GA4).
+// (GA4) and Viewed Product / Added to Cart / Started Checkout (Klaviyo).
 // =============================================================================
 
 import { hasMarketingConsent } from "./consent";
@@ -33,23 +43,28 @@ export interface TrackedPainting {
   title: string;
 }
 
-// fbq / gtag globals — typed loosely; both are queue-stub functions until
-// their scripts arrive.
+// fbq / gtag / klaviyo globals — typed loosely; all are queue stubs until
+// their scripts arrive (fbq/gtag queue functions; klaviyo a plain array whose
+// .push the loaded script drains and replaces).
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
     _fbq?: unknown;
     gtag?: (...args: unknown[]) => void;
     dataLayer?: unknown[];
+    klaviyo?: { push: (call: unknown[]) => unknown };
   }
 }
 
 const META_PIXEL_ID =
   (import.meta.env.VITE_META_PIXEL_ID as string | undefined)?.trim() || "";
 const GA4_ID = (import.meta.env.VITE_GA4_ID as string | undefined)?.trim() || "";
+const KLAVIYO_COMPANY_ID =
+  (import.meta.env.VITE_KLAVIYO_COMPANY_ID as string | undefined)?.trim() || "";
 
 let metaInitialised = false;
 let ga4Initialised = false;
+let klaviyoInitialised = false;
 
 /** Inject an async external script once. */
 const loadScript = (src: string): void => {
@@ -126,6 +141,21 @@ const initGa4 = (): void => {
 };
 
 /**
+ * Klaviyo onsite tracking (klaviyo.js, keyed by the PUBLIC company id). The
+ * official queue stub is just an array — klaviyo.js drains it on arrival and
+ * replaces window.klaviyo with the live object, so push() calls made before
+ * the script loads are never dropped.
+ */
+const initKlaviyo = (): void => {
+  if (klaviyoInitialised || !KLAVIYO_COMPANY_ID) return;
+  klaviyoInitialised = true;
+  window.klaviyo = window.klaviyo || ([] as unknown as { push: (call: unknown[]) => unknown });
+  loadScript(
+    `https://static.klaviyo.com/onsite/js/${KLAVIYO_COMPANY_ID}/klaviyo.js`,
+  );
+};
+
+/**
  * Initialise whatever the consent state + configured IDs allow. Called from
  * App.tsx on mount (covers a returning visitor with a stored accept) and from
  * the consent banner the moment "Allow analytics" is chosen. Safe to call
@@ -136,6 +166,7 @@ export const initTrackingIfConsented = (): void => {
   if (!hasMarketingConsent()) return;
   initMetaPixel();
   initGa4();
+  initKlaviyo();
 };
 
 // ---- Event helpers ----------------------------------------------------------
@@ -154,7 +185,7 @@ const ready = (): boolean => {
   return true;
 };
 
-/** Painting page viewed — fbq ViewContent / GA4 view_item. */
+/** Painting page viewed — fbq ViewContent / GA4 view_item / Klaviyo "Viewed Product". */
 export const trackViewContent = (
   painting: TrackedPainting,
   valuePence: number,
@@ -176,9 +207,22 @@ export const trackViewContent = (
       items: [{ item_id: painting.id, item_name: painting.title, price: value }],
     });
   }
+  if (KLAVIYO_COMPANY_ID && window.klaviyo) {
+    window.klaviyo.push([
+      "track",
+      "Viewed Product",
+      {
+        ProductName: painting.title,
+        ProductID: painting.id,
+        Price: value,
+        URL: window.location.href,
+        Brand: "Stephen Meakin",
+      },
+    ]);
+  }
 };
 
-/** Added to basket — fbq AddToCart / GA4 add_to_cart. */
+/** Added to basket — fbq AddToCart / GA4 add_to_cart / Klaviyo "Added to Cart". */
 export const trackAddToCart = (
   painting: TrackedPainting,
   valuePence: number,
@@ -200,9 +244,23 @@ export const trackAddToCart = (
       items: [{ item_id: painting.id, item_name: painting.title, price: value }],
     });
   }
+  if (KLAVIYO_COMPANY_ID && window.klaviyo) {
+    window.klaviyo.push([
+      "track",
+      "Added to Cart",
+      {
+        ProductName: painting.title,
+        ProductID: painting.id,
+        Price: value,
+        AddedItemPrice: value,
+        URL: window.location.href,
+        Brand: "Stephen Meakin",
+      },
+    ]);
+  }
 };
 
-/** Proceed-to-checkout pressed — fbq InitiateCheckout / GA4 begin_checkout. */
+/** Proceed-to-checkout pressed — fbq InitiateCheckout / GA4 begin_checkout / Klaviyo "Started Checkout". */
 export const trackInitiateCheckout = (
   totalPence: number,
   itemCount: number,
@@ -221,5 +279,15 @@ export const trackInitiateCheckout = (
       currency: "GBP",
       value,
     });
+  }
+  if (KLAVIYO_COMPANY_ID && window.klaviyo) {
+    window.klaviyo.push([
+      "track",
+      "Started Checkout",
+      {
+        $value: value,
+        ItemCount: itemCount,
+      },
+    ]);
   }
 };

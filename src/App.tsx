@@ -33,6 +33,7 @@ const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ defaul
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
+const Verify = lazy(() => import("./pages/Verify").then((m) => ({ default: m.Verify })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -111,6 +112,7 @@ const AnimatedRoutes = () => {
           <Route path="/returns" element={<Returns />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/verify" element={<Verify />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

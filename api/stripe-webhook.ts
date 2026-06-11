@@ -9,6 +9,18 @@
  *   3. Send an estate-branded confirmation email via Resend, including the
  *      thank-you code — see api/_lib/emails/OrderConfirmation.tsx
  *
+ * Duplicate-delivery protection (Stripe redelivers the same event id after
+ * network blips / slow responses): each verified event id is claimed
+ * atomically in Vercel KV / Upstash — "SET stripe_evt:<id> 1 NX EX 86400",
+ * one REST round-trip — BEFORE any side effects run, so a retry can't re-send
+ * the confirmation email or re-mint thank-you/gift codes even across cold
+ * starts and regions. FAIL-OPEN: if the KV env vars are absent, or KV errors
+ * or times out (~2s), we fall back to the best-effort in-memory dedup and
+ * still process the event — KV can never block or fail the webhook. The
+ * in-memory Map is kept as a second layer regardless. (This resolves the
+ * CLAUDE.md P2 "durable webhook dedup" caveat whenever the KV env vars are
+ * configured; without them, dedup is in-memory best-effort as before.)
+ *
  * Critical contract with Stripe: this endpoint MUST return 200 quickly, even
  * if our downstream actions (Resend, coupon creation) fail. Stripe retries
  * non-2xx responses aggressively and we don't want a Resend outage to spam
@@ -37,6 +49,13 @@
  *   META_CAPI_ACCESS_TOKEN  – Meta Conversions API server-side Purchase event
  *                             on checkout.session.completed (both required;
  *                             either absent => clean silent no-op)
+ *   KV_REST_API_URL +
+ *   KV_REST_API_TOKEN       – Vercel KV / Upstash REST credentials for the
+ *                             DURABLE event-id dedup described above
+ *                             (UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+ *                             accepted as aliases — same handling as
+ *                             api/memories-submit.ts; either half absent =>
+ *                             in-memory best-effort dedup only)
  *
  * Also handles `checkout.session.expired`: when the session has a Stripe
  * recovery URL, a buyer email AND the buyer opted in to promotions
@@ -101,14 +120,15 @@ async function readRawBody(req: IncomingMessage): Promise<Buffer> {
 }
 
 // ---------------------------------------------------------------------------
-// In-memory event-id deduplication
+// Event-id deduplication — layer 2: in-memory (best-effort)
 // ---------------------------------------------------------------------------
 // Vercel serverless functions are short-lived (warm instances last minutes,
-// not hours) and may be replicated across regions — so this is BEST-EFFORT
-// only. It catches the common case where Stripe retries the same event
-// within seconds of a network blip, while a warm instance is still in
-// memory. The complete fix needs a shared store (Vercel KV or Stripe's own
-// idempotency keys logged to a DB) — flagged as P2 in CLAUDE.md.
+// not hours) and may be replicated across regions — so this layer is
+// BEST-EFFORT only. It catches the common case where Stripe retries the same
+// event within seconds of a network blip, while a warm instance is still in
+// memory. The DURABLE layer 1 is the KV SET-NX claim below (kvClaimEventId);
+// this Map is kept REGARDLESS as a cheap second layer that still catches
+// same-instance retries whenever KV is unconfigured or having a blip.
 //
 // We bound the set's size + age so a long-running warm instance can't grow
 // the set unboundedly under attack.
@@ -131,6 +151,92 @@ const cleanSeenEvents = () => {
     }
   }
 };
+
+// ---------------------------------------------------------------------------
+// Event-id deduplication — layer 1: durable Vercel KV / Upstash claim
+// ---------------------------------------------------------------------------
+// One atomic REST round-trip per verified event:
+//   SET stripe_evt:<event.id> 1 NX EX 86400
+// NX makes the write a claim — exactly one delivery wins the key; every retry
+// (including on a different instance / region / after a cold start) sees
+// "already exists" and is dropped before any side effects (Resend email,
+// coupon mints) can re-run. EX 86400 (24h) self-expires the key, matching
+// SEEN_EVENT_TTL_MS — Stripe's retry window is well inside it.
+//
+// Inlined raw-fetch Upstash REST call — mirror of api/memories-submit.ts's
+// working kvCommand shape (POST {url} with a JSON array command body + bearer
+// token; response { result, error }), including its env-var handling:
+// KV_REST_API_URL/KV_REST_API_TOKEN with UPSTASH_REDIS_REST_URL/_TOKEN
+// accepted as aliases. NOT a shared module — gotcha #5.
+//
+// FAIL-OPEN by design: missing env vars, HTTP/command errors, or a timeout
+// (~2s AbortController via AbortSignal.timeout) all return "unavailable" and
+// the handler falls back to the in-memory layer 2 — KV can never block or
+// fail the webhook, which must ALWAYS 200 on verified events.
+const KV_DEDUP_PREFIX = "stripe_evt:";
+const KV_DEDUP_TTL_SECONDS = 86_400; // 24h — matches SEEN_EVENT_TTL_MS
+const KV_DEDUP_TIMEOUT_MS = 2_000;
+
+const kvDedupConfig = (): { url: string; token: string } | null => {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  return { url, token };
+};
+
+type KvClaimOutcome = "first" | "duplicate" | "unavailable";
+
+async function kvClaimEventId(eventId: string): Promise<KvClaimOutcome> {
+  const cfg = kvDedupConfig();
+  if (!cfg) return "unavailable";
+  try {
+    const resp = await fetch(cfg.url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${cfg.token}`, "Content-Type": "application/json" },
+      body: JSON.stringify([
+        "SET",
+        `${KV_DEDUP_PREFIX}${eventId}`,
+        "1",
+        "NX",
+        "EX",
+        String(KV_DEDUP_TTL_SECONDS),
+      ]),
+      signal: AbortSignal.timeout(KV_DEDUP_TIMEOUT_MS),
+    });
+    if (!resp.ok) {
+      console.error(
+        `[stripe-webhook] KV dedup SET failed: HTTP ${resp.status} — falling back to in-memory dedup.`,
+      );
+      return "unavailable";
+    }
+    const json = (await resp.json()) as { result?: unknown; error?: string };
+    if (json.error) {
+      console.error(
+        "[stripe-webhook] KV dedup SET error:",
+        json.error,
+        "— falling back to in-memory dedup.",
+      );
+      return "unavailable";
+    }
+    // Upstash SET … NX → "OK" when the key was set (first delivery), null when
+    // it already existed (duplicate). Anything unexpected → fail open.
+    if (json.result === "OK") return "first";
+    if (json.result === null || json.result === undefined) return "duplicate";
+    console.error(
+      "[stripe-webhook] KV dedup SET returned an unexpected result — falling back to in-memory dedup.",
+      { result: json.result },
+    );
+    return "unavailable";
+  } catch (err) {
+    // Timeout (AbortSignal.timeout) or network failure — fail open.
+    console.error(
+      "[stripe-webhook] KV dedup SET threw:",
+      err instanceof Error ? err.message : err,
+      "— falling back to in-memory dedup.",
+    );
+    return "unavailable";
+  }
+}
 
 // Defaults — kept in code (not env) so missing env vars don't break the
 // happy path. Hugo can override either via Vercel env vars if desired.
@@ -1048,14 +1154,32 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   }
 
   // ---- Event-id deduplication ---------------------------------------------
-  // If we've already seen this exact Stripe event id on this warm instance,
-  // return 200 immediately without re-running side effects (Resend send,
-  // coupon mint). Stripe will stop retrying once it gets a 200.
+  // Layer 1 — DURABLE: atomically claim the event id in Vercel KV / Upstash
+  // ("SET stripe_evt:<id> 1 NX EX 86400", single round-trip). Survives cold
+  // starts and cross-region replicas, so a Stripe retry can't re-send the
+  // confirmation email or re-mint codes. FAIL-OPEN: "unavailable" (no env
+  // vars / KV error / ~2s timeout) falls through to layer 2 below — KV never
+  // blocks the webhook, and we still ALWAYS 200 verified events.
+  const kvClaim = await kvClaimEventId(event.id);
+  if (kvClaim === "duplicate") {
+    console.log("[stripe-webhook] duplicate event id (KV), skipping", {
+      event_id: event.id,
+      type: event.type,
+    });
+    return ok();
+  }
+
+  // Layer 2 — in-memory (best-effort), kept REGARDLESS of the KV outcome: it
+  // is the only dedup when KV is unconfigured or down, and it cheaply catches
+  // same-instance retries during a KV blip. If we've already seen this exact
+  // event id on this warm instance, return 200 immediately without re-running
+  // side effects (Resend send, coupon mint). Stripe stops retrying on a 200.
   cleanSeenEvents();
   if (seenEvents.has(event.id)) {
     console.log("[stripe-webhook] duplicate event id, skipping", {
       event_id: event.id,
       type: event.type,
+      kv: kvClaim,
     });
     return ok();
   }

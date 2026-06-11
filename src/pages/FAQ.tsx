@@ -12,7 +12,7 @@ import { cn } from "../lib/cn";
 /**
  * /faq — frequently asked questions.
  *
- * Eight sections, each with an editorial eyebrow + question (font-display
+ * Nine sections, each with an editorial eyebrow + question (font-display
  * serif, via the shared TITLE token) + answer (font-sans, muted ink). Visual
  * register sits between About and Legal — readable long-form copy, not
  * cinematic. Designed to be the first place a curious buyer lands when they
@@ -37,6 +37,28 @@ const FAQS: QA[] = [
         of Authenticity printed on estate letterhead. This is the convention
         used by the estates of Picasso, Hepworth and Hilma af Klint, and
         is the standard for posthumously-released editions.
+      </>
+    ),
+  },
+  {
+    eyebrow: "Verification",
+    question: "Can I check a certificate is genuine?",
+    answer: (
+      <>
+        Yes — every allocated print is recorded in the estate's edition
+        ledger, and any certificate can be checked against it on our{" "}
+        <Link to="/verify" className="text-accent hover:underline">
+          verification page
+        </Link>
+        . The online register covers editions allocated from June 2026
+        onward; for an earlier or unlisted certificate, write to{" "}
+        <a
+          href="mailto:info@themandalacompany.com"
+          className="text-accent hover:underline"
+        >
+          info@themandalacompany.com
+        </a>
+        {" "}and the estate will confirm it directly.
       </>
     ),
   },

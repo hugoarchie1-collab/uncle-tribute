@@ -504,7 +504,35 @@ export const About = () => {
           </div>
         </section>
 
-        {/* 7 · EXHIBITIONS & COMMISSIONS — body left, Force India plate right
+        {/* 7 · THE BODY OF WORK — image-led pause: the paintings gathered
+            together in the studio (the wide shot kept on disk since May for
+            exactly this). Deliberately quiet — one eyebrow, the widest figure
+            on the page (full SECTION width, soft edges like every other
+            ImageReveal here), one caption whose facts are derived from
+            paintings.ts (ten paintings, three collections) — no invented
+            words. `sizes` mirrors the SECTION wrapper: max-w 1320/1500/1720
+            minus the horizontal padding at each step, so the 800/1400w WebP
+            variants actually get picked instead of the full-size file. */}
+        <section className={cn(SECTION, "py-12 md:py-20")}>
+          <Reveal as="div" className="text-center mb-6 md:mb-8">
+            <p className={cn(EYEBROW, "m-0")}>The body of work</p>
+          </Reveal>
+          <Reveal as="figure" className="my-0">
+            <ImageReveal
+              src="/img/welcome/04-paintings-collection.jpg"
+              alt="Stephen Meakin's mandala paintings gathered together against the timber walls of the studio"
+              aspect="aspect-[16/9]"
+              edges="all"
+              parallax={0.1}
+              sizes="(min-width: 2200px) 1624px, (min-width: 1536px) 1404px, (min-width: 768px) calc(100vw - 64px), calc(100vw - 32px)"
+            />
+            <figcaption className={cn(EYEBROW_MUTED, "mt-5 text-center")}>
+              Ten paintings across three collections — Habundia, Genesis and Born in the Sky
+            </figcaption>
+          </Reveal>
+        </section>
+
+        {/* 8 · EXHIBITIONS & COMMISSIONS — body left, Force India plate right
             (a design document → object-contain so the whole layout reads) */}
         <section className={cn(SECTION, "py-12 md:py-20")}>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center">
@@ -548,7 +576,7 @@ export const About = () => {
           </div>
         </section>
 
-        {/* 8 · TAGA — the Academy. The group photo is the hero of this section
+        {/* 9 · TAGA — the Academy. The group photo is the hero of this section
             and MUST show in full (heads + all the mandalas), so it is contained
             on a mat rather than cropped. */}
         <section className={cn(SECTION, "py-16 md:py-24")}>
@@ -582,7 +610,7 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 9 · PALESTINE — children photo (no head crop → safe 4:3 cover) left,
+        {/* 10 · PALESTINE — children photo (no head crop → safe 4:3 cover) left,
             text right */}
         <section className={cn(SECTION, "py-12 md:py-20")}>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center">
@@ -605,7 +633,7 @@ export const About = () => {
           </div>
         </section>
 
-        {/* 10 · THE SUNSTAR — cinematic full-bleed-ish close of the work.
+        {/* 11 · THE SUNSTAR — cinematic full-bleed-ish close of the work.
             The painting on the studio floor, shown whole on a dark field. */}
         <section className={cn(SECTION, "py-12 md:py-20")}>
           <Reveal as="figure" className="my-0 max-w-[920px] mx-auto">
@@ -621,7 +649,7 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 11 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
+        {/* 12 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
             tribute, opened by Stephen's own "everything is connected" words. */}
         <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
@@ -653,7 +681,7 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 12 · CLOSING CTA */}
+        {/* 13 · CLOSING CTA */}
         <section className={cn(SECTION, "pb-16 md:pb-24 pt-4")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
