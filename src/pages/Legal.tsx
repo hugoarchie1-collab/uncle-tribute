@@ -23,17 +23,20 @@ import { cn } from "../lib/cn";
  * Edition granted the standard 14-day right, a complaints/ADR statement, and
  * standard consumer-sale boilerplate. NB: trader postal address still pending.
  *
- * TODO (Hugo — policy decision, 2026-06-11): the A3 tier is no longer an open
- * edition — PRINT_TIERS (2026-06-02) makes it the "Gallery Edition", a limited
- * edition of 150 per colourway, estate-stamped and hand-numbered, made to
- * order. The copy below still grants the A3 the full statutory 14-day
- * change-of-mind right (deliberately left unchanged — naming/description
- * fixes only). Decide whether the A3 keeps that right, or now falls under the
- * reg 28(1)(b) made-to-order exemption like A2/A1/A0. If it moves to the
- * exemption, update: the two "Your right to cancel" Terms paragraphs, the
- * Returns "In plain English" / "Cancelling an A3 Gallery Edition print" /
- * "If you change your mind" sections, and keep PaintingDetail's Product
- * JSON-LD hasMerchantReturnPolicy consistent.
+ * DECIDED 2026-06-12 (Hugo): the A3 Gallery Edition KEEPS the full 14-day
+ * change-of-mind right even though it is now a limited edition of 150 per
+ * colourway, made to order (PRINT_TIERS, 2026-06-02). Rationale: (a) the
+ * reg 28(1)(b) "consumer's specifications" exemption is unlikely to cover a
+ * standard catalogue print where the buyer only picks size/colourway from
+ * fixed options, so the statutory right probably applies to the A3 regardless
+ * and claiming the exemption would risk an unenforceable term; (b) a returned
+ * A3 costs the estate ~£12–20 (buyer pays return postage) against £245, so
+ * the generous policy is a cheap conversion asset on the entry tier. The
+ * exemption stance on A2/A1/A0 (strong for framed/hand-finished/hand-painted,
+ * weaker for plain made-to-order prints) should still go to the solicitor
+ * review flagged above. PaintingDetail's Product JSON-LD
+ * hasMerchantReturnPolicy stays MerchantReturnNotPermitted — one policy per
+ * Product can't express per-tier detail; /returns carries it.
  */
 
 const UPDATED = "31 May 2026";
