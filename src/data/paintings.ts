@@ -462,14 +462,14 @@ export const COLLECTIONS: Collection[] = [
     title: "Habundia — Seven Wild Flowers of the British Isles",
     description:
       "Stephen spent his life studying the sacred geometry of ancient temples, Persian courts and Tibetan monasteries. In 2018, he turned to the fields outside his door.\n\nA series of British wild flower mandalas, each painted with oil pressed from the flower it depicts, each built on the same geometric precision he brought to every canvas.\n\nHabundia is the medieval spirit of wild abundance. She is not cultivated. She cannot be controlled. Stephen named this series after her because the flowers he chose share that quality: they appear where they will, in their season, without permission.\n\nHe found the same ancient geometry in all of them.",
-    backdropImage: "/img/scenes/habundia-blur.webp",
+    backdropImage: "/img/scenes/habundia-blur-v2.webp",
   },
   {
     id: "genesis",
     title: "Genesis Mandalas",
     description:
       "Stephen had been exploring geometry in private sketchbooks for years, learning the techniques of Celtic and Persian pattern making, studying the decorative arts of Gothic Europe and Tibet. In 1999, while studying Architecture at the University of Brighton, he made his first major mandala.\n\nThese are the Genesis paintings — three works from the earliest years of his life as a mandala artist, made between 1999 and 2001. The works that opened Stephen's practice and established its three foundations: sacred number, divine encounter, and nature's rarest geometry.",
-    backdropImage: "/img/scenes/genesis-blur.webp",
+    backdropImage: "/img/scenes/genesis-blur-v2.webp",
   },
   {
     id: "born-in-the-sky",

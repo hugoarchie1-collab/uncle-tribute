@@ -196,12 +196,12 @@ export const FindAPrint = () => {
           reader scrolls. Cloned from Collections' ScrollBackdrop. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <ScrollBackdrop
-          photoUrl={asset("/img/scenes/foryou-woodland-blur.webp")}
+          photoUrl={asset("/img/scenes/foryou-woodland-blur-v2.webp")}
           sectionRef={topRef}
           isFirst
         />
         <ScrollBackdrop
-          photoUrl={asset("/img/scenes/foryou-dusk-garden-blur.webp")}
+          photoUrl={asset("/img/scenes/foryou-dusk-garden-blur-v2.webp")}
           sectionRef={bottomRef}
           isLast
         />
