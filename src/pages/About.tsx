@@ -16,6 +16,7 @@ import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
 import {
   ABOUT,
+  CREDENTIALS,
   INTERVIEW,
   PASSING_DATE,
   TRIBUTE,
@@ -62,14 +63,16 @@ import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } f
 // =============================================================================
 
 /** Canonical body paragraph recipe — one measure, one register, used everywhere.
- *  Hanken Grotesk, 16/17px, leading 1.7. Sustained READING ink sits at the
+ *  Hanken Grotesk, 18/19px, leading 1.7 — 18px is the HOME page's smallest
+ *  sustained prose (the SUBTITLE token floor), so About's long-form register
+ *  never dips below the design source of truth. Sustained READING ink sits at the
  *  0.85 `text-ink-soft` token (1,200+ words at the 0.7 muted alpha flattened
  *  the hierarchy — body and captions were the same colour, and dark-theme
  *  editorial sets reading text near full ink). `text-ink-muted` is reserved
  *  for captions / cites / meta, so brightest→quietest (body > caption) reads.
  *  `text-pretty` = orphan/rag control on the long measure. */
 const BODY =
-  "font-sans font-normal text-[16px] md:text-[17px] 3xl:text-[19px] leading-[1.7] text-ink-soft text-pretty m-0";
+  "font-sans font-normal text-[18px] md:text-[19px] 3xl:text-[21px] leading-[1.7] text-ink-soft text-pretty m-0";
 
 const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
 
@@ -193,6 +196,10 @@ const ContainImage = ({
 // ─── AboutHero ────────────────────────────────────────────────────────────────
 // Full-bleed cover image with the SAME atmosphere as the home page: object-cover
 // (never crops/distorts at any width), the shared radial scrim used site-wide,
+// The source is the 2048px LANDSCAPE studio photograph (02-painting-table) —
+// the only frame wide and large enough for a viewport-wide cover slot. The old
+// 800×1200 portrait gallery shot upscaled ~2–3× here (visibly soft) and now
+// lives at its native size beside the interview instead.
 // plus a soft top+bottom gradient so the cream type and the overlay Nav stay
 // legible over any part of the photograph. Type is the canonical home register —
 // font-display headline (not 700, which isn't loaded), accent-free eyebrows in
@@ -214,18 +221,19 @@ const AboutHero = () => {
     <section className="relative">
       <div
         ref={ref}
-        className="relative h-[68vh] md:h-[78vh] min-h-[560px] max-h-[820px] aspect-[4/3] md:aspect-[3/2] w-full overflow-hidden bg-bg"
+        className="relative h-[68vh] md:h-[78vh] min-h-[560px] max-h-[820px] w-full overflow-hidden bg-bg"
       >
         <motion.div
           className="absolute inset-0 will-change-transform"
           style={reduceMotion ? undefined : { scale: imgScale, opacity: imgOpacity }}
         >
           <AssetImage
-            src="/img/about/01-stephen-at-gallery.jpg"
-            alt="Stephen Meakin beside one of his paintings at a gallery"
+            src="/img/about/02-painting-table.jpg"
+            alt="Stephen Meakin and a companion at work on a large mandala painting laid flat across the studio table"
             loading="eager"
             decoding="sync"
             fetchPriority="high"
+            sizes="100vw"
             className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
           />
         </motion.div>
@@ -408,6 +416,30 @@ const TRADITIONS = [
 // land in the large display-italic register instead of the reading register.
 const BEAT_ANSWER_MAX_CHARS = 64;
 
+// ─── InterviewQA ─────────────────────────────────────────────────────────────
+// One question/answer pair from content.ts INTERVIEW, rendered verbatim.
+// Questions sit in the muted sans register; long answers in the Fraunces
+// reading register; beat answers (≤ BEAT_ANSWER_MAX_CHARS) land large. Used by
+// the photo-essay interview flow, where working photographs from the owner's
+// layout PDF breathe between the pairs.
+const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
+  const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
+  return (
+    <Reveal as="div" className="border-b border-line py-8 md:py-10">
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4 md:mb-5 leading-[1.9]")}>{item.q}</p>
+      {isBeat ? (
+        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,44px)] leading-[1.15] text-ink m-0 text-balance">
+          &ldquo;{item.a}&rdquo;
+        </p>
+      ) : (
+        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.9vw,20px)] leading-[1.6] text-ink m-0">
+          {item.a}
+        </p>
+      )}
+    </Reveal>
+  );
+};
+
 export const About = () => {
   const reduceMotion = useReducedMotion();
 
@@ -522,8 +554,10 @@ export const About = () => {
             lead, then ABOUT.opening[1] presented as his self-description (the
             PDF frames it "As he described himself…") — quote styling only, the
             words verbatim from content.ts. Closed by a quiet editorial photo
-            row: the close portrait, the later-years headshot, the family group
-            (PDF pp. 1–2). All three are precious → ContainImage, no crops. */}
+            row: the close portrait, the outdoor headshot, the family group
+            (PDF pp. 1–2). All three are precious → ContainImage, no crops.
+            Captions stay CLAIM-FREE — the PDF shows these photos uncaptioned,
+            so no dates, venues or who-is-who until the family confirms. */}
         <section className={cn(SECTION, "py-16 md:py-24")}>
           <Reveal as="div" className="max-w-[860px] mx-auto text-center">
             <SectionLabel>The artist</SectionLabel>
@@ -559,7 +593,7 @@ export const About = () => {
                 aspect="aspect-[4/3]"
                 sizes="(min-width: 768px) 42vw, 50vw"
               />
-              <figcaption className="caption mt-3">In later years</figcaption>
+              <figcaption className="caption mt-3">In the sun</figcaption>
             </Reveal>
             <Reveal as="figure" className="m-0 col-span-2 md:col-span-3 max-w-[420px] mx-auto md:mx-0 w-full" delay={0.12}>
               <ContainImage
@@ -584,29 +618,29 @@ export const About = () => {
               <h2 className={cn(TITLE, "m-0 mb-7 max-w-[640px]")}>
                 Bath, Brighton, and a different aesthetic.
               </h2>
-              <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.earlyLife[0]}</p>
+              <p className={SUBTITLE}>{ABOUT.earlyLife[0]}</p>
             </Reveal>
             <div className="md:col-span-7 flex flex-col gap-4 md:gap-6">
               <Reveal as="figure" className="m-0">
                 <ContainImage
                   src="/img/about/15-wedding-top-hats.jpg"
-                  alt="A bride and three young men in morning dress and grey top hats at a family wedding, a young Stephen Meakin second from the left."
+                  alt="A bride and three young men in morning dress and grey top hats at a family wedding."
                   aspect="aspect-[5/3]"
                   sizes="(min-width: 768px) 56vw, 100vw"
                 />
                 <figcaption className="caption mt-3">
-                  A family wedding — Stephen second from the left
+                  A family wedding
                 </figcaption>
               </Reveal>
               <Reveal as="figure" className="m-0 md:max-w-[78%] md:ml-auto w-full" delay={0.08}>
                 <ContainImage
                   src="/img/about/16-family-sofa.jpg"
-                  alt="A teenage Stephen Meakin in a yellow patterned shirt on a floral sofa beside two teenage girls, a family photograph from his growing-up years."
+                  alt="A teenager in a yellow patterned shirt on a floral sofa beside two teenage girls — a family photograph."
                   aspect="aspect-[4/3]"
                   sizes="(min-width: 768px) 44vw, 100vw"
                 />
                 <figcaption className="caption mt-3 md:text-right">
-                  Growing up — Bath &amp; Brighton
+                  Growing up
                 </figcaption>
               </Reveal>
             </div>
@@ -623,12 +657,12 @@ export const About = () => {
               <Reveal as="figure" className="m-0">
                 <ContainImage
                   src="/img/about/17-bournemouth-friends.jpg"
-                  alt="Stephen Meakin, long-haired in a pale suit, standing with three smartly dressed friends outdoors under trees."
+                  alt="Four smartly dressed young men standing together outdoors under trees."
                   aspect="aspect-video"
                   sizes="(min-width: 768px) 56vw, 100vw"
                 />
                 <figcaption className="caption mt-3">
-                  Bournemouth, 1990 — Stephen in the pale suit
+                  Bournemouth
                 </figcaption>
               </Reveal>
               <Reveal as="figure" className="m-0 md:max-w-[72%] w-full" delay={0.08}>
@@ -647,7 +681,7 @@ export const About = () => {
               <h2 className={cn(TITLE, "m-0 mb-7 max-w-[640px]")}>
                 A dusty old hardback.
               </h2>
-              <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.earlyLife[1]}</p>
+              <p className={SUBTITLE}>{ABOUT.earlyLife[1]}</p>
             </Reveal>
           </div>
         </section>
@@ -663,9 +697,7 @@ export const About = () => {
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-7")}>
               The wandering years.
             </h2>
-            <p className={cn(BODY, "max-w-[62ch] mx-auto text-left md:text-center")}>
-              {ABOUT.earlyLife[2]}
-            </p>
+            <p className={cn(SUBTITLE, "mx-auto")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
           <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-end">
@@ -688,7 +720,7 @@ export const About = () => {
             <Reveal as="figure" className="m-0 col-span-1 md:col-span-4" delay={0.12}>
               <ContainImage
                 src="/img/about/21-at-the-helm.jpg"
-                alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him, from his Virgin Islands years."
+                alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him."
                 aspect="aspect-[3/4]"
                 sizes="(min-width: 768px) 33vw, 50vw"
               />
@@ -724,7 +756,9 @@ export const About = () => {
         {/* 6 · RETURN & STUDY · 1996 → 2002 — architecture at Brighton, the MA
             in Fine Art (ABOUT.earlyLife[3]), and the first major mandala
             (ABOUT.earlyLife[4] — verbatim, set as the pull-line it deserves).
-            Paired with the first circle in the sand (PDF p7). */}
+            Paired with the sand-mandala photograph (PDF p7 — UNCAPTIONED there;
+            its venue/date are unconfirmed, so the caption stays an evocation and
+            must never claim Anegada, 1995, or "the first circle"). */}
         <section className={cn(SECTION, "py-12 md:py-20")}>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 md:items-center">
             <Reveal as="div" className="md:col-span-7">
@@ -732,7 +766,7 @@ export const About = () => {
               <h2 className={cn(TITLE, "m-0 mb-7 max-w-[680px]")}>
                 Architecture, fine art, and the first mandala.
               </h2>
-              <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.earlyLife[3]}</p>
+              <p className={SUBTITLE}>{ABOUT.earlyLife[3]}</p>
               <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,34px)] leading-[1.25] text-ink m-0 mt-8 max-w-[680px] text-balance">
                 {ABOUT.earlyLife[4]}
               </p>
@@ -745,7 +779,7 @@ export const About = () => {
                 sizes="(min-width: 768px) 40vw, 100vw"
               />
               <figcaption className="caption mt-3 text-center">
-                The first circle — drawn in the sand at Anegada, 1995
+                A mandala drawn in sand — the circle was where it began
               </figcaption>
             </Reveal>
           </div>
@@ -756,13 +790,17 @@ export const About = () => {
 
         {/* 8 · ART AS RITUAL — Stephen's own words on the practice
             (ABOUT.anegada[1] + ABOUT.anegada[2]) in a two-column reading
-            measure on md+, supported by the drafting-table photograph and the
-            harmonic-frequency grid (PDF p8) as quiet figures. */}
+            measure on md+, supported by the studio photograph (09 — the
+            drafting-table shot moved up to the hero) and the
+            harmonic-frequency grid (PDF p8) as quiet figures. The heading is
+            Stephen's EXACT phrase from anegada[1] ("the very palette of my
+            being") — never shorten or paraphrase it, the attribution line
+            below presents it as his words. */}
         <section className={cn(SECTION, "py-16 md:py-24")}>
           <Reveal as="div" className="text-center max-w-[860px] mx-auto mb-10 md:mb-14">
             <SectionLabel>Art as ritual</SectionLabel>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-5")}>
-              The palette of my being.
+              The very palette of my being.
             </h2>
             <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
@@ -779,8 +817,8 @@ export const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 items-end max-w-[1180px] mx-auto mt-12 md:mt-16">
             <Reveal as="figure" className="m-0 md:col-span-7">
               <ImageReveal
-                src="/img/about/02-painting-table.jpg"
-                alt="Stephen at his drafting table, working on a mandala"
+                src="/img/about/09-taga-studio.jpg"
+                alt="A paint-spattered drafting easel in the studio, finished mandalas crowding the walls behind it"
                 aspect="aspect-[4/3]"
                 edges="all"
                 parallax={0.1}
@@ -870,16 +908,12 @@ export const About = () => {
               <h2 className={cn(TITLE, "m-0 mb-7 max-w-[600px]")}>
                 From the Majlis in Dubai to a Formula One car.
               </h2>
-              <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-4 list-none p-0 mt-8 max-w-[520px]">
-                {[
-                  "Majlis Gallery · Dubai",
-                  "Trinity Gallery · London",
-                  "Unique Arts · Brighton",
-                  "Arista SunStar · Notting Hill",
-                  "Sahara Force India F1",
-                  "Tree of Wellbeing · 1,200 UK hospices",
-                ].map((item) => (
+              <p className={SUBTITLE}>{ABOUT.legacy[1]}</p>
+              {/* The documented exhibitions & commissions, rendered from the
+                  canonical CREDENTIALS export (content.ts) — never re-typed
+                  inline, so the facts can't drift from the single source. */}
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-4 list-none p-0 mt-8 max-w-[560px]">
+                {CREDENTIALS.map((item) => (
                   <li key={item} className={cn(EYEBROW_MUTED, "m-0 leading-[1.5]")}>
                     {item}
                   </li>
@@ -906,83 +940,234 @@ export const About = () => {
         </section>
 
         {/* 11 · IN CONVERSATION · DUBAI 2011 — the Time Out Dubai interview
-            (content.ts INTERVIEW): estate-voice context + the Mystic Rose
-            flyer on the left, the Q&A on the right. Questions in the muted
-            sans register; Stephen's answers verbatim in the display register —
-            the two short answers ("To inspire wonderment." / "Shall we sit
-            down and have some tea?") land large, as the emotional beats. */}
+            (content.ts INTERVIEW), recomposed as a PHOTO-ESSAY per the owner's
+            layout PDF: nine working photographs breathe between the Q&A pairs,
+            each placed against the question the PDF pairs it with. Questions
+            in the muted sans register; Stephen's answers verbatim in the
+            display register — the two beats ("To inspire wonderment." /
+            "Shall we sit down and have some tea?") land large, and the
+            gallery-crowd photograph lands directly under the wonderment
+            answer as the payoff.
+            ⚠️ CAPTIONS ARE CLAIM-FREE: the layout PDF shows these photographs
+            uncaptioned, so no venue, date or painting title may be asserted
+            that the image itself does not prove.
+            ⚠️ The flyer is NOT from the January 2011 Majlis show: its own text
+            reads "Fairmont DUBAI" and its featured painting is captioned
+            "CYGNUS - 2012" — it's a LATER Mystic Rose exhibition at the
+            Fairmont, presented by the Majlis Gallery. Caption only what the
+            flyer itself says; never date it January 2011. */}
         <section className={cn(SECTION, "py-16 md:py-24")}>
           <Reveal as="div" className="mb-10 md:mb-14">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
             <h2 className={cn(TITLE, "m-0 max-w-[760px]")}>In conversation.</h2>
           </Reveal>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-            <div className="lg:col-span-5">
-              <Reveal as="div" className="flex flex-col gap-5 max-w-[62ch]">
-                {INTERVIEW.context.map((p, i) => (
-                  <p key={i} className={BODY}>
-                    {p}
-                  </p>
-                ))}
-              </Reveal>
-              <Reveal as="figure" className="m-0 mt-10 max-w-[480px]">
-                <div className="bg-cream p-3 md:p-4 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-                  <AssetImage
-                    src="/img/about/04-mystic-rose-flyer.jpg"
-                    alt="The exhibition flyer for ‘The Mystic Rose’ at the Majlis Gallery, Dubai, January 2011"
-                    width={900}
-                    height={604}
-                    loading="lazy"
-                    decoding="async"
-                    className="block w-full h-auto"
-                  />
-                </div>
-                <figcaption className="caption mt-4">
-                  <i>‘The Mystic Rose’</i> · Majlis Gallery, Dubai · January 2011
-                </figcaption>
-              </Reveal>
-            </div>
+          {/* Opening photograph — Stephen at work over a mandala print, the
+              turquoise mandala filling the studio wall behind him (PDF p11,
+              paired with the geometrist question that follows). Native 3:2 so
+              cover never crops. */}
+          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[1180px] mx-auto">
+            <ImageReveal
+              src="/img/about/28-at-the-drafting-table.jpg"
+              alt="Stephen Meakin in glasses bent over a mandala print on the studio worktable, pencil in hand, a large turquoise mandala painting filling the wall behind him"
+              aspect="aspect-[3/2]"
+              edges="all"
+              parallax={0.1}
+              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
+            />
+            <figcaption className="caption mt-4 text-center">
+              At work in the studio
+            </figcaption>
+          </Reveal>
 
-            <div className="lg:col-span-7">
-              <div className="border-t border-line">
-                {INTERVIEW.qa.map((item) => {
-                  const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
-                  return (
-                    <Reveal as="div" key={item.q} className="border-b border-line py-8 md:py-10">
-                      <p className={cn(EYEBROW_MUTED, "m-0 mb-4 md:mb-5 leading-[1.9]")}>{item.q}</p>
-                      {isBeat ? (
-                        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,44px)] leading-[1.15] text-ink m-0 text-balance">
-                          &ldquo;{item.a}&rdquo;
-                        </p>
-                      ) : (
-                        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.9vw,20px)] leading-[1.6] text-ink m-0">
-                          {item.a}
-                        </p>
-                      )}
-                    </Reveal>
-                  );
-                })}
-              </div>
-              <Reveal as="div" className="mt-6">
-                <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
-                  {INTERVIEW.source.publication} · {INTERVIEW.source.byline} · {INTERVIEW.source.date}
-                  {INTERVIEW.source.url && (
-                    <>
-                      {" — "}
-                      <a
-                        href={INTERVIEW.source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline underline-offset-4 hover:text-accent transition-colors"
-                      >
-                        read the archived article ↗
-                      </a>
-                    </>
-                  )}
+          {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
+              right (the flyer's own wording only — see the Fairmont note). */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-14 md:mb-20">
+            <Reveal as="div" className="lg:col-span-7 flex flex-col gap-5 max-w-[62ch]">
+              {INTERVIEW.context.map((p, i) => (
+                <p key={i} className={BODY}>
+                  {p}
                 </p>
-              </Reveal>
+              ))}
+            </Reveal>
+            <Reveal as="figure" className="m-0 lg:col-span-5 max-w-[480px]" delay={0.08}>
+              <div className="bg-cream p-3 md:p-4 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
+                <AssetImage
+                  src="/img/about/04-mystic-rose-flyer.jpg"
+                  alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
+                  width={900}
+                  height={604}
+                  loading="lazy"
+                  decoding="async"
+                  className="block w-full h-auto"
+                />
+              </div>
+              <figcaption className="caption mt-4">
+                <i>‘The Mystic Rose’</i> · Fairmont Dubai · presented by the Majlis Gallery
+              </figcaption>
+            </Reveal>
+          </div>
+
+          {/* Q1 — the geometrist answer, full reading measure under the opener. */}
+          <div className="max-w-[860px] mx-auto border-t border-line">
+            <InterviewQA item={INTERVIEW.qa[0]} />
+          </div>
+
+          {/* Q2 beside the portrait easel shot (PDF p12 top) — Stephen seated
+              at the tilted circular canvas. Portrait + people → contained. */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-12 md:mt-16">
+            <Reveal as="figure" className="m-0 md:col-span-5 max-w-[440px] mx-auto md:mx-0 w-full">
+              <ContainImage
+                src="/img/about/29-at-the-easel.jpg"
+                alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
+                aspect="aspect-[2/3]"
+                parallax={0.06}
+              />
+            </Reveal>
+            <div className="md:col-span-7">
+              <div className="border-t border-line">
+                <InterviewQA item={INTERVIEW.qa[1]} />
+              </div>
             </div>
+          </div>
+
+          {/* Q3 beside the rose-window painting in progress (PDF p12 bottom) —
+              mirrored composition. */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-12 md:mt-16">
+            <div className="md:col-span-7 order-2 md:order-1">
+              <div className="border-t border-line">
+                <InterviewQA item={INTERVIEW.qa[2]} />
+              </div>
+            </div>
+            <Reveal as="figure" className="m-0 md:col-span-5 order-1 md:order-2">
+              <ImageReveal
+                src="/img/about/30-painting-in-progress.jpg"
+                alt="Stephen Meakin painting a circular rose-window-patterned mandala in the studio"
+                aspect="aspect-[3/2]"
+                edges="all"
+                parallax={0.1}
+                sizes="(min-width: 768px) 42vw, 100vw"
+              />
+            </Reveal>
+          </div>
+
+          {/* Q4, then the pair the PDF places with it — the studio wall
+              crowded with finished paintings, and the paintings at home. */}
+          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+            <InterviewQA item={INTERVIEW.qa[3]} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-10 md:mt-12">
+            <Reveal as="figure" className="m-0">
+              <ImageReveal
+                src="/img/about/31-studio-wall.jpg"
+                alt="A studio wall hung edge to edge with finished framed mandala paintings"
+                aspect="aspect-[16/9]"
+                edges="all"
+                parallax={0.08}
+                sizes="(min-width: 768px) 50vw, 100vw"
+              />
+              <figcaption className="caption mt-3 text-center">
+                Finished paintings crowd the studio wall
+              </figcaption>
+            </Reveal>
+            <Reveal as="figure" className="m-0" delay={0.08}>
+              <ImageReveal
+                src="/img/about/32-paintings-at-home.jpg"
+                alt="A sitting room hung with mandala paintings and panels"
+                aspect="aspect-[16/9]"
+                edges="all"
+                parallax={0.08}
+                sizes="(min-width: 768px) 50vw, 100vw"
+              />
+              <figcaption className="caption mt-3 text-center">
+                Living with the work
+              </figcaption>
+            </Reveal>
+          </div>
+
+          {/* Between the questions — at the easel and at the brush (PDF p14):
+              the deep-blue painting on the easel, and white blossoms going
+              onto a large round work. */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 mt-6 md:mt-8">
+            <Reveal as="figure" className="m-0 md:col-span-5">
+              <ContainImage
+                src="/img/about/33-painting-on-easel.jpg"
+                alt="A deep blue, violet and gold geometric painting standing on the studio easel"
+                aspect="aspect-square"
+                parallax={0.05}
+              />
+            </Reveal>
+            <Reveal as="figure" className="m-0 md:col-span-7" delay={0.08}>
+              <ImageReveal
+                src="/img/about/34-white-flowers-in-progress.jpg"
+                alt="Stephen Meakin, palette in hand, painting clusters of white blossoms onto a large round work"
+                aspect="aspect-[4/3]"
+                edges="all"
+                parallax={0.08}
+                sizes="(min-width: 768px) 56vw, 100vw"
+              />
+              <figcaption className="caption mt-3 text-center">
+                Blossom by blossom
+              </figcaption>
+            </Reveal>
+          </div>
+
+          {/* Q5 — the wonderment beat, answered by the gathering: the crowd
+              photograph lands directly beneath it (PDF p14 bottom). */}
+          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+            <InterviewQA item={INTERVIEW.qa[4]} />
+          </div>
+          <Reveal as="figure" className="m-0 mt-10 md:mt-12">
+            <ImageReveal
+              src="/img/about/35-gathering-at-the-gallery.jpg"
+              alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
+              aspect="aspect-[16/9]"
+              edges="all"
+              parallax={0.1}
+              sizes="(min-width: 2200px) 1624px, (min-width: 1536px) 1404px, (min-width: 768px) calc(100vw - 64px), calc(100vw - 32px)"
+            />
+            <figcaption className="caption mt-4 text-center">
+              Gathered among the paintings
+            </figcaption>
+          </Reveal>
+
+          {/* Q6 — the tea line, then the exhibition room beside the source
+              credit (PDF p15). */}
+          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+            <InterviewQA item={INTERVIEW.qa[5]} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-10 md:mt-12">
+            <Reveal as="figure" className="m-0 md:col-span-5">
+              <ImageReveal
+                src="/img/about/36-mystic-rose-exhibition.jpg"
+                alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
+                aspect="aspect-[4/3]"
+                edges="all"
+                parallax={0.08}
+                sizes="(min-width: 768px) 42vw, 100vw"
+              />
+            </Reveal>
+            <Reveal as="div" className="md:col-span-7" delay={0.08}>
+              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.8vw,22px)] leading-[1.55] text-ink m-0 mb-5 max-w-[56ch]">
+                {INTERVIEW.source.note}
+              </p>
+              <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
+                {INTERVIEW.source.publication} · {INTERVIEW.source.byline} · {INTERVIEW.source.date}
+                {INTERVIEW.source.url && (
+                  <>
+                    {" — "}
+                    <a
+                      href={INTERVIEW.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4 hover:text-accent transition-colors"
+                    >
+                      read the archived article ↗
+                    </a>
+                  </>
+                )}
+              </p>
+            </Reveal>
           </div>
         </section>
 
@@ -1039,7 +1224,7 @@ export const About = () => {
               <h2 className={cn(TITLE, "m-0 mb-7 max-w-[600px]")}>
                 The same geometry, taught to children who had lost everything.
               </h2>
-              <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.palestine}</p>
+              <p className={SUBTITLE}>{ABOUT.palestine}</p>
             </Reveal>
           </div>
         </section>
@@ -1071,7 +1256,33 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 15 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
+        {/* 15 · TO HIS STUDENTS — Stephen's verbatim parting words to his
+            students (ABOUT.studentsIntro + ABOUT.studentsLetter), restored as
+            the close of the biography exactly as the layout PDF (p14) places
+            it. The letter runs in the display-italic quote register of the
+            section-2 self-description; the heading is its own closing line,
+            verbatim. */}
+        <section className={cn(SECTION, "py-16 md:py-24")}>
+          <Reveal as="div" className="text-center max-w-[860px] mx-auto mb-10 md:mb-14">
+            <SectionLabel>To his students</SectionLabel>
+            <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-7")}>
+              May you have a wonderful journey.
+            </h2>
+            <p className={cn(SUBTITLE, "mx-auto")}>{ABOUT.studentsIntro}</p>
+          </Reveal>
+          <Reveal as="figure" className="my-0 max-w-[760px] mx-auto">
+            <blockquote className="m-0 pl-5 md:pl-7 border-l border-line">
+              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.9vw,21px)] leading-[1.65] text-ink m-0">
+                {ABOUT.studentsLetter}
+              </p>
+            </blockquote>
+            <figcaption className={cn(EYEBROW_MUTED, "not-italic mt-6 pl-5 md:pl-7")}>
+              — Stephen, to his students
+            </figcaption>
+          </Reveal>
+        </section>
+
+        {/* 16 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
             tribute, opened by Stephen's own "everything is connected" words. */}
         <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
@@ -1103,7 +1314,7 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 16 · CLOSING CTA */}
+        {/* 17 · CLOSING CTA */}
         <section className={cn(SECTION, "pb-16 md:pb-24 pt-4")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>

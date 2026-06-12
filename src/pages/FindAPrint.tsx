@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -16,104 +16,13 @@ import {
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
-/**
- * Fixed backdrop layer that cross-fades between two scenes as the user scrolls
- * /for-you — cloned from Collections' ScrollBackdrop. Each backdrop tracks its
- * own section's visibility; adjacent backdrops overlap so the woodland (top)
- * dissolves into the dusk garden (bottom) with no hard seam.
- *
- * Differs from Collections in ONE way: the LAST backdrop here HOLDS at full
- * opacity to the foot of the page (opacity stops `[0, 1, 1]` instead of fading
- * back to 0) — the page ends on the dusk garden rather than bare black, since
- * there is no third scene to cross-dissolve into.
- */
-const ScrollBackdrop = ({
-  photoUrl,
-  sectionRef,
-  isFirst = false,
-  isLast = false,
-}: {
-  photoUrl: string;
-  sectionRef: RefObject<HTMLElement | null>;
-  isFirst?: boolean;
-  isLast?: boolean;
-}) => {
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  // Hold near full opacity across the bulk of the section so the photo is never
-  // invisible while the user is reading. Soft fade at the edges keeps the two
-  // scenes cross-dissolving. The FIRST scene opens at FULL opacity from the top
-  // (no fade-up from 0) so the page is never bare black before the first scroll
-  // — exactly like Collections' isFirst. The LAST scene HOLDS at full opacity to
-  // the foot of the page (the final `1` instead of fading back to `0`) since
-  // there's no third backdrop to cross-dissolve into below it.
-  const opacity = useTransform(
-    scrollYProgress,
-    isFirst ? [0, 0.88, 1] : [0, 0.12, 1],
-    isFirst ? [1, 1, 0] : isLast ? [0, 1, 1] : [0, 1, 0],
-  );
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  // Scroll-tied scale REMOVED (perf): re-sampling a full-viewport bg-cover
-  // bitmap at sub-pixel scale every frame was the costliest scroll transform
-  // here — for an imperceptible drift behind the dark scrim. y + opacity only.
-
-  // Promote to a GPU layer ONLY while this section is in view, so the off-screen
-  // backdrop doesn't hold a full-viewport compositing layer alive for the whole
-  // page lifetime (texture memory → mobile jank).
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
-      setInView(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: "20% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [sectionRef]);
-
-  // Reduced-motion: drop the parallax entirely, hold the backdrop at a calm
-  // static opacity, and release the GPU layer (will-change:auto) so we don't
-  // keep a promoted compositing layer alive for motion that never runs.
-  if (reduceMotion) {
-    return (
-      <div
-        style={{
-          opacity: 0.5,
-          backgroundImage: `url("${photoUrl}")`,
-          willChange: "auto",
-        }}
-        className="absolute inset-0 bg-cover bg-center"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  return (
-    <motion.div
-      style={{
-        opacity,
-        y,
-        backgroundImage: `url("${photoUrl}")`,
-        // GPU-promote ONLY the in-view backdrop (gated above) so the scroll-
-        // driven y/opacity composite cleanly without keeping promoted full-
-        // viewport layers alive for the off-screen scene.
-        willChange: inView ? "transform, opacity" : "auto",
-      }}
-      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift
-      // can NEVER expose an uncovered strip — the parent is overflow-hidden, so
-      // the overscan is clipped (matches Collections' fix for the "black bar").
-      className="absolute inset-[-8%] bg-cover bg-center"
-      aria-hidden="true"
-    />
-  );
-};
+// Two backdrop scenes the /for-you page cross-dissolves between as the reader
+// scrolls the WHOLE page: a woodland tunnel (top) into a dusk wildflower garden
+// (foot). Treatment values (blur/scrim) are cropped + baked into the files.
+const FORYOU_BACKDROPS = {
+  woodland: "/img/scenes/foryou-woodland-blur-v3.webp",
+  garden: "/img/scenes/foryou-dusk-garden-blur-v3.webp",
+} as const;
 
 /**
  * /for-you — a calm "find a piece that's right for you, by colour" wayfinder
@@ -126,13 +35,25 @@ const ScrollBackdrop = ({
  */
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
+  const reduceMotion = useReducedMotion();
 
-  // One ref per backdrop, attached to two roughly equal logical halves of the
-  // page (upper = the wayfinder header + colour controls; lower = the results
-  // grid). Each ScrollBackdrop tracks its own half's visibility so the woodland
-  // dissolves into the dusk garden as the reader scrolls into the lower half.
-  const topRef = useRef<HTMLElement>(null);
-  const bottomRef = useRef<HTMLElement>(null);
+  // WHOLE-PAGE-progress crossfade (home page's PEACOCK_BACKDROPS pattern), NOT
+  // Collections' per-section refs. The reason is structural: the results grid
+  // STARTS INSIDE the first viewport (~y760 on a 980px screen), so a "lower
+  // half" section ref can't express "the bottom of the page" — its scroll
+  // progress is already >0 at the very top, which bled the garden over the
+  // woodland on first paint. One useScroll over the document gives both layers
+  // a single honest 0→1 timeline instead.
+  const { scrollYProgress } = useScroll();
+  // Woodland OWNS the top: full from first paint (the page is never bare black
+  // before the first scroll), holding until 0.40, then fading out by 0.62.
+  const woodlandOpacity = useTransform(scrollYProgress, [0, 0.4, 0.62], [1, 1, 0]);
+  // Garden fades in across the middle (the 0.40–0.62 overlap is the soft
+  // cross-dissolve — no dead gap, no double-bright flash) and HOLDS at 1 to the
+  // foot, since there's no third scene to dissolve into below it.
+  const gardenOpacity = useTransform(scrollYProgress, [0.4, 0.62, 1], [0, 1, 1]);
+  // Shared parallax: a gentle ±6% drift on both layers, exactly like Collections.
+  const backdropY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
 
   const toggle = (k: ColourFamily) =>
     setActive((prev) => {
@@ -192,19 +113,65 @@ export const FindAPrint = () => {
       />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades the woodland tunnel
-          (top of page) into the dusk wildflower garden (lower half) as the
-          reader scrolls. Cloned from Collections' ScrollBackdrop. */}
+          (top of page) into the dusk wildflower garden (foot) on WHOLE-PAGE
+          scroll. Treatment (overscan + parallax) cloned from Collections'
+          ScrollBackdrop, but the crossfade is driven by one document-level
+          useScroll (the home page's PEACOCK_BACKDROPS pattern) rather than
+          per-section refs — the grid starts inside the first viewport, so a
+          per-section "lower half" ref can't express "the foot of the page". */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop
-          photoUrl={asset("/img/scenes/foryou-woodland-blur-v2.webp")}
-          sectionRef={topRef}
-          isFirst
-        />
-        <ScrollBackdrop
-          photoUrl={asset("/img/scenes/foryou-dusk-garden-blur-v2.webp")}
-          sectionRef={bottomRef}
-          isLast
-        />
+        {reduceMotion ? (
+          // Reduced-motion: drop the parallax + scroll crossfade entirely, hold
+          // both scenes at a calm static opacity, and release the GPU layer
+          // (will-change:auto) — matches Collections' fallback, which renders
+          // every layer at 0.5.
+          <>
+            <div
+              style={{
+                opacity: 0.5,
+                backgroundImage: `url("${asset(FORYOU_BACKDROPS.woodland)}")`,
+                willChange: "auto",
+              }}
+              className="absolute inset-0 bg-cover bg-center"
+              aria-hidden="true"
+            />
+            <div
+              style={{
+                opacity: 0.5,
+                backgroundImage: `url("${asset(FORYOU_BACKDROPS.garden)}")`,
+                willChange: "auto",
+              }}
+              className="absolute inset-0 bg-cover bg-center"
+              aria-hidden="true"
+            />
+          </>
+        ) : (
+          <>
+            <motion.div
+              style={{
+                opacity: woodlandOpacity,
+                y: backdropY,
+                backgroundImage: `url("${asset(FORYOU_BACKDROPS.woodland)}")`,
+                willChange: "transform, opacity",
+              }}
+              // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can
+              // NEVER expose an uncovered strip — the parent is overflow-hidden,
+              // so the overscan is clipped (Collections' "black bar" fix).
+              className="absolute inset-[-8%] bg-cover bg-center"
+              aria-hidden="true"
+            />
+            <motion.div
+              style={{
+                opacity: gardenOpacity,
+                y: backdropY,
+                backgroundImage: `url("${asset(FORYOU_BACKDROPS.garden)}")`,
+                willChange: "transform, opacity",
+              }}
+              className="absolute inset-[-8%] bg-cover bg-center"
+              aria-hidden="true"
+            />
+          </>
+        )}
         {/* Shared scrim — EXACT gradient used on Collections / the rest of the
             site, so the colour swatches + tile copy read clearly over the
             scenes while the photo stays a subdued, moody texture. */}
@@ -220,9 +187,10 @@ export const FindAPrint = () => {
 
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        {/* UPPER HALF — wayfinder header + colour controls. Tracked by topRef so
-            the woodland backdrop holds at full opacity here. */}
-        <section ref={topRef}>
+        {/* UPPER HALF — wayfinder header + colour controls. The woodland backdrop
+            owns the top of the page (full opacity until ~0.40 of page scroll),
+            so this region reads over the woodland tunnel. */}
+        <section>
         <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] mx-auto text-center mb-9 md:mb-12">
           <p
             className={cn(EYEBROW, "m-0 mb-5")}
@@ -300,10 +268,10 @@ export const FindAPrint = () => {
         </div>
         </section>
 
-        {/* LOWER HALF — the results grid. Tracked by bottomRef so the dusk-garden
-            backdrop fades in across this region and HOLDS to the foot of the
-            page. */}
-        <section ref={bottomRef}>
+        {/* LOWER HALF — the results grid. The dusk-garden backdrop fades in
+            across the back half of page scroll (0.40–0.62) and HOLDS to the
+            foot, so the page ends on the garden rather than bare black. */}
+        <section>
         {/* Results — flex-wrap + justify-center so a partial last row (e.g. 10
             paintings → 3+3+3+1, or a colour-filtered 5 → 3+2) centres at every
             width instead of leaving a left-aligned orphan. Each tile is

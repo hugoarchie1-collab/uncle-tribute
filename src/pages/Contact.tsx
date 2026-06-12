@@ -13,7 +13,7 @@ import { cn } from "../lib/cn";
 // Single backdrop scene for /contact — a blurred autumn tree with raked leaf
 // circles. webp referenced directly because it's a CSS background-image (this
 // matches Collections; the <picture> jpg-swap rule applies only to <img> tags).
-const BACKDROP = asset("/img/scenes/contact-autumn-tree-blur-v2.webp");
+const BACKDROP = asset("/img/scenes/contact-autumn-tree-blur-v3.webp");
 
 /**
  * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment

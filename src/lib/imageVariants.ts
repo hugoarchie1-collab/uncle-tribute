@@ -54,5 +54,13 @@ export const IMAGE_VARIANT_WIDTHS: Record<string, readonly number[]> = {
   "/img/about/19-evening-with-friends.jpg": [800, 1400],
   "/img/about/23-costume-evening.jpg": [800, 1400],
   "/img/about/27-sainte-chapelle.jpg": [800, 1400],
+  "/img/about/28-at-the-drafting-table.jpg": [800],
+  "/img/about/30-painting-in-progress.jpg": [800],
+  "/img/about/31-studio-wall.jpg": [800, 1400],
+  "/img/about/32-paintings-at-home.jpg": [800, 1400],
+  "/img/about/33-painting-on-easel.jpg": [800, 1400],
+  "/img/about/34-white-flowers-in-progress.jpg": [800, 1400],
+  "/img/about/35-gathering-at-the-gallery.jpg": [800, 1400],
+  "/img/about/36-mystic-rose-exhibition.jpg": [800, 1400],
   "/img/art/scroll-mandala.jpg": [800, 1400],
 };
