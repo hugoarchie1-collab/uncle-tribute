@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { merchantFeedPlugin } from "./scripts/merchant-feed";
+import { prerenderPlugin } from "./scripts/prerender";
 
 // When deploying to GitHub Pages the site lives at /<repo-name>/.
 // Vercel / Netlify / Cloudflare Pages serve from the root and want "/".
@@ -12,7 +13,11 @@ export default defineConfig({
   base,
   // merchantFeedPlugin emits dist/merchant-feed.xml (Google Merchant Center
   // product feed, generated from src/data/paintings.ts) + a summary txt.
-  plugins: [react(), merchantFeedPlugin()],
+  // prerenderPlugin emits dist/<route>/index.html for every indexable route
+  // with the correct per-route <head> + JSON-LD baked into the raw HTML, so
+  // non-JS crawlers (Bing, AI, social unfurlers, Merchant Center) see the real
+  // page instead of the SPA shell. Both run at closeBundle, order-independent.
+  plugins: [react(), merchantFeedPlugin(), prerenderPlugin()],
   build: {
     rolldownOptions: {
       output: {
