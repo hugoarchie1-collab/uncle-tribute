@@ -462,7 +462,7 @@ export const COLLECTIONS: Collection[] = [
     title: "Habundia — Seven Wild Flowers of the British Isles",
     description:
       "Stephen spent his life studying the sacred geometry of ancient temples, Persian courts and Tibetan monasteries. In 2018, he turned to the fields outside his door.\n\nA series of British wild flower mandalas, each painted with oil pressed from the flower it depicts, each built on the same geometric precision he brought to every canvas.\n\nHabundia is the medieval spirit of wild abundance. She is not cultivated. She cannot be controlled. Stephen named this series after her because the flowers he chose share that quality: they appear where they will, in their season, without permission.\n\nHe found the same ancient geometry in all of them.",
-    backdropImage: "/img/scenes/habundia-blur-v3.webp",
+    backdropImage: "/img/scenes/habundia-blur-v4.webp",
   },
   {
     id: "genesis",

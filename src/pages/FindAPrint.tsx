@@ -21,7 +21,7 @@ import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colo
 // (foot). Treatment values (blur/scrim) are cropped + baked into the files.
 const FORYOU_BACKDROPS = {
   woodland: "/img/scenes/foryou-woodland-blur-v3.webp",
-  garden: "/img/scenes/foryou-dusk-garden-blur-v3.webp",
+  garden: "/img/scenes/foryou-dusk-garden-blur-v4.webp",
 } as const;
 
 /**
