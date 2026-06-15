@@ -171,7 +171,7 @@ export const NEWS: NewsEntry[] = [
     title: "Orchis 7 — Aquamarine",
     displayDate: "Coming soon",
     summary:
-      "Stephen's septagon mandala of thirty Lady's Slipper Orchids, in the cool aquamarine colourway he kept in his own studio files — sea-glass blues set against gold leaf. Released as a limited, numbered edition.",
+      "Stephen's septagon mandala of thirty Lady's Slipper Orchids, in the cool aquamarine colourway he kept in his own studio files — sea-glass blues set against gold leaf. Issued as a numbered drop.",
     cover: "/img/paintings/orchis7-aquamarine-blue.jpg",
     ctaLabel: "Be the first to know",
     ctaTo: "#notify",
@@ -187,7 +187,7 @@ export const NEWS: NewsEntry[] = [
     title: "Wild Rose — Black Rose",
     displayDate: "Coming soon",
     summary:
-      "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, limited and numbered.",
+      "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, and issued in a numbered drop.",
     ctaLabel: "Be the first to know",
     ctaTo: "#notify",
   },

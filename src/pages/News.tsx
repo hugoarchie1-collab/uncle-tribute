@@ -349,14 +349,14 @@ export const News = () => {
 
               {/* WAITLIST — the primary action while NEWS is empty. Reuses the
                   NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
-                  framing is provenance, not hype: early access + low edition numbers,
+                  framing is provenance, not hype: early access to each new drop,
                   never countdowns or "SALE". Sits beside the note, not below it. */}
               <Reveal as="div" delay={0.06} className="lg:col-span-7 lg:sticky lg:top-28">
                 <NewsletterSignup
                   variant="panel"
                   eyebrow="Join the waitlist"
                   title="Be first to know about the next release."
-                  intro="When the next edition is released, those on the waitlist hear first — an early window to take a piece while the lowest edition numbers are still available. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
+                  intro="When the next drop is released, those on the waitlist hear first — an early window before the allocation is taken. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
                 />
               </Reveal>
             </div>

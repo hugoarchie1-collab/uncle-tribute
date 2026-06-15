@@ -32,10 +32,15 @@ const makeMockKv = () => {
   const store = new Map();
   return {
     async cmd(args) {
-      const [op, key, val] = args;
+      const [op, key, val, opt] = args;
       if (op === "GET") return store.has(key) ? store.get(key) : null;
-      if (op === "SET") { store.set(key, String(val)); return "OK"; }
+      if (op === "SET") {
+        if (opt === "NX" && store.has(key)) return null; // claim already held
+        store.set(key, String(val));
+        return "OK";
+      }
       if (op === "INCR") { const n = (Number(store.get(key)) || 0) + 1; store.set(key, String(n)); return n; }
+      if (op === "DEL") { return store.delete(key) ? 1 : 0; }
       throw new Error(`mock kv: unsupported ${op}`);
     },
     _store: store,
@@ -45,19 +50,23 @@ const makeMockKv = () => {
 // ---- mirror of issueLedgerEntries (one line) -----------------------------
 const issueLine = async (kv, sessionId, idx, line) => {
   const idemKey = `ledger:order:${sessionId}:${idx}`;
-  const existing = await kv.cmd(["GET", idemKey]);
-  if (typeof existing === "string" && existing) {
-    const rec = await kv.cmd(["GET", `ledger:cert:${existing}`]);
+  const code = ARTWORK_CODE[line.paintingId] || line.paintingId.slice(0, 3).toUpperCase();
+  const cert = `MANDALA-${code}-${certSuffix()}`;
+  // Atomic NX claim BEFORE the INCR (mirror of api/stripe-webhook.ts).
+  const claim = await kv.cmd(["SET", idemKey, cert, "NX"]);
+  if (claim !== "OK") {
+    const winner = await kv.cmd(["GET", idemKey]);
+    const rec = await kv.cmd(["GET", `ledger:cert:${winner}`]);
     return JSON.parse(rec);
   }
   const allocation = TIER_ALLOCATION[line.tierId] ?? null;
   let printNumber = null;
   if (allocation !== null) {
     const seq = await kv.cmd(["INCR", `ledger:seq:${line.paintingId}:${line.tierId}:${LEDGER_DROP.id}`]);
-    printNumber = Number(seq);
+    const n = typeof seq === "number" ? seq : Number.parseInt(String(seq), 10);
+    if (!Number.isFinite(n) || n <= 0) { await kv.cmd(["DEL", idemKey]); return null; }
+    printNumber = n;
   }
-  const code = ARTWORK_CODE[line.paintingId] || line.paintingId.slice(0, 3).toUpperCase();
-  const cert = `MANDALA-${code}-${certSuffix()}`;
   const entry = {
     certificate_id: cert, artwork_id: line.paintingId, artwork_name: line.title,
     colourway: line.colourway, drop_id: LEDGER_DROP.id, drop_label: LEDGER_DROP.label,
@@ -65,7 +74,6 @@ const issueLine = async (kv, sessionId, idx, line) => {
     allocation, issued_date: new Date().toISOString(), order_id: sessionId, status: "issued",
   };
   await kv.cmd(["SET", `ledger:cert:${cert}`, JSON.stringify(entry)]);
-  await kv.cmd(["SET", idemKey, cert]);
   return entry;
 };
 const issueOrder = async (kv, sessionId, lines) => {

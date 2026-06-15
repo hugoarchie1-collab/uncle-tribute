@@ -1244,34 +1244,54 @@ async function issueLedgerEntries(
     const line = lines[idx];
     const idemKey = `ledger:order:${sessionId}:${idx}`;
     try {
-      // Idempotency: if this line already issued a certificate, re-read + reuse.
-      const existingCert = await kvCmd(["GET", idemKey]);
-      if (typeof existingCert === "string" && existingCert) {
-        const rec = await kvCmd(["GET", `ledger:cert:${existingCert}`]);
-        if (typeof rec === "string") {
-          try {
-            out.push(JSON.parse(rec) as LedgerEntry);
-          } catch {
-            /* corrupt record — skip, but don't re-issue under a new id */
+      // Idempotency = an ATOMIC claim placed BEFORE the INCR, so a Stripe
+      // redelivery (or two overlapping deliveries) can NEVER burn a second
+      // print number. Generate the cert id first (it needs no counter), then
+      // claim the (order, line) key with SET NX: exactly one writer wins and
+      // owns the number; every later delivery sees the claim and reuses the
+      // winner's record. The claim is the FIRST durable write (not the last) —
+      // that is what collapses the old GET/INCR/SET race to a single winner.
+      const code =
+        ARTWORK_CODE[line.paintingId] || line.paintingId.slice(0, 3).toUpperCase();
+      const cert = `MANDALA-${code}-${certSuffix()}`;
+      const claim = await kvCmd(["SET", idemKey, cert, "NX"]);
+      if (claim !== "OK") {
+        // Lost the race — this line was already issued. Reuse the winner.
+        const winnerCert = await kvCmd(["GET", idemKey]);
+        if (typeof winnerCert === "string" && winnerCert) {
+          const rec = await kvCmd(["GET", `ledger:cert:${winnerCert}`]);
+          if (typeof rec === "string") {
+            try {
+              out.push(JSON.parse(rec) as LedgerEntry);
+            } catch {
+              /* corrupt record — skip, don't re-issue under a new id */
+            }
           }
         }
         continue;
       }
+      // We own this line. Assign the sequential number WITHIN THE DROP.
       const allocation = TIER_ALLOCATION[line.tierId] ?? null;
-      // Open Edition (allocation null) is NOT numbered. Numbered tiers take the
-      // next sequential number WITHIN THE DROP via an atomic INCR.
       let printNumber: number | null = null;
       if (allocation !== null) {
         const seq = await kvCmd([
           "INCR",
           `ledger:seq:${line.paintingId}:${line.tierId}:${LEDGER_DROP.id}`,
         ]);
-        const n = typeof seq === "number" ? seq : Number(seq);
-        printNumber = Number.isFinite(n) ? n : null;
+        const n = typeof seq === "number" ? seq : Number.parseInt(String(seq), 10);
+        if (!Number.isFinite(n) || n <= 0) {
+          // INCR failed (KV blip) — DON'T freeze an invalid "No. 000". Release
+          // the claim so the line re-issues cleanly with a real number on the
+          // next delivery.
+          await kvCmd(["DEL", idemKey]);
+          console.error(
+            "[stripe-webhook] estate ledger: INCR returned no usable number — released claim, line will re-issue",
+            { order_id: sessionId, idx, tier: line.tierId },
+          );
+          continue;
+        }
+        printNumber = n;
       }
-      const code =
-        ARTWORK_CODE[line.paintingId] || line.paintingId.slice(0, 3).toUpperCase();
-      const cert = `MANDALA-${code}-${certSuffix()}`;
       const entry: LedgerEntry = {
         certificate_id: cert,
         artwork_id: line.paintingId,
@@ -1287,10 +1307,10 @@ async function issueLedgerEntries(
         order_id: sessionId,
         status: "issued",
       };
-      // Write the record FIRST, then claim the idempotency key (so a crash
-      // between the two re-issues cleanly on retry rather than orphaning a key).
+      // Write the record under the already-claimed cert id. The NX claim above
+      // is the durable idempotency guard; if this SET blips, the rare cost is a
+      // burned number with no record — never a double-issue.
       await kvCmd(["SET", `ledger:cert:${cert}`, JSON.stringify(entry)]);
-      await kvCmd(["SET", idemKey, cert]);
       out.push(entry);
       console.log("[stripe-webhook] estate ledger entry issued", {
         order_id: sessionId,

@@ -98,7 +98,8 @@ type LookupResult =
   | { state: "idle" }
   | { state: "loading" }
   | { state: "found"; record: RegistryRecord }
-  | { state: "unlisted" };
+  | { state: "unlisted" }
+  | { state: "unavailable" };
 
 const AUTH_FACTS = [
   { label: ESTATE_AUTHENTICATION.stampLabel, body: ESTATE_AUTHENTICATION.stamp },
@@ -196,15 +197,40 @@ const UnlistedNote = () => (
   </div>
 );
 
+/** Transient registry/network failure — kept DISTINCT from a genuine miss so a
+ *  real certificate is never reported invalid during a blip. Invites a retry. */
+const UnavailableNote = () => (
+  <div className="border border-line bg-bg-soft/20 px-6 py-8 sm:px-9 sm:py-9">
+    <div className="flex items-center gap-4 border-b border-line pb-4">
+      <span className={EYEBROW_MUTED}>Registry temporarily unavailable</span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+    </div>
+    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-soft text-pretty m-0 mt-5 max-w-[58ch]">
+      We couldn&rsquo;t reach the Estate Ledger just now. Please try again in a
+      moment — your certificate may well be valid. If it persists, write to{" "}
+      <a
+        href="mailto:info@themandalacompany.com"
+        className="underline underline-offset-4 hover:text-accent transition-colors"
+      >
+        info@themandalacompany.com
+      </a>
+      .
+    </p>
+  </div>
+);
+
 export const Auth = () => {
   const { certId } = useParams<{ certId?: string }>();
   const [certificate, setCertificate] = useState(certId ?? "");
   const [result, setResult] = useState<LookupResult>({ state: "idle" });
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Query the live estate ledger; fall back to the static editions.ts ledger
-  // when the store is unprovisioned, the request fails, or the certificate
-  // predates the live ledger. A certificate is only "unlisted" when in neither.
+  // Query the live estate ledger; fall back to the static editions.ts ledger.
+  // A certificate is "unlisted" ONLY on a GENUINE miss (live ledger reachable +
+  // empty, or unprovisioned, AND absent from the static ledger). A TRANSIENT
+  // failure (KV error/timeout, network error, non-OK status) with no static
+  // match shows "temporarily unavailable" — never a false "not found" for what
+  // may be a real, issued certificate (the system's core invariant).
   const lookup = useCallback(async (raw: string) => {
     const query = raw.trim();
     if (!query) {
@@ -219,30 +245,41 @@ export const Auth = () => {
         const json = (await resp.json()) as {
           found?: boolean;
           configured?: boolean;
+          error?: boolean;
           record?: Record<string, unknown>;
         };
         if (json.found && json.record) {
           setResult({ state: "found", record: fromApi(json.record) });
           return;
         }
-        // found:false OR configured:false → consult the static ledger.
         const stat = fromStatic(query);
-        setResult(stat ? { state: "found", record: stat } : { state: "unlisted" });
+        if (stat) {
+          setResult({ state: "found", record: stat });
+          return;
+        }
+        // No live record + no static record. A transient KV error must NOT read
+        // as a definitive "not found"; only a clean miss (configured:false /
+        // found:false) is genuinely "unlisted".
+        setResult({ state: json.error ? "unavailable" : "unlisted" });
         return;
       }
     } catch {
-      /* network error — fall through to the static ledger */
+      /* network error — handled below as transient */
     }
+    // Network error or a non-OK HTTP status: transient. A static match wins;
+    // otherwise "temporarily unavailable", never a false "not found".
     const stat = fromStatic(query);
-    setResult(stat ? { state: "found", record: stat } : { state: "unlisted" });
+    setResult(stat ? { state: "found", record: stat } : { state: "unavailable" });
   }, []);
 
-  // Deep-link from the COA QR code: /auth/<CERT_ID> auto-runs the lookup.
+  // Deep-link from the COA QR code: /auth/<CERT_ID> auto-runs the lookup. The
+  // input is already seeded from the param via useState above. The lookup is
+  // deferred to a macrotask so its (loading) state update isn't dispatched
+  // synchronously inside the effect body — no cascading render.
   useEffect(() => {
-    if (certId && certId.trim()) {
-      setCertificate(certId);
-      void lookup(certId);
-    }
+    if (!certId || !certId.trim()) return;
+    const t = setTimeout(() => void lookup(certId), 0);
+    return () => clearTimeout(t);
     // run once for the param the page loaded with
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -313,6 +350,7 @@ export const Auth = () => {
                 ) : null}
                 {result.state === "found" ? <FoundCard record={result.record} /> : null}
                 {result.state === "unlisted" ? <UnlistedNote /> : null}
+                {result.state === "unavailable" ? <UnavailableNote /> : null}
               </div>
             </form>
           </Reveal>

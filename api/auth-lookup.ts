@@ -10,9 +10,11 @@
  *   200 { found: true, record: {...} }   verified — show the provenance card
  *   200 { found: false }                 valid request, no such certificate
  *   200 { configured: false }            KV not provisioned in this environment
- *                                        → the client falls back to the static
- *                                          editions.ts ledger (hand-curated)
- *   400 { error }                        missing / blank cert
+ *                                        → client falls back to static editions.ts
+ *   200 { error: true }                  TRANSIENT KV error / timeout → client
+ *                                        shows "temporarily unavailable" (never a
+ *                                        false "not found" for a real certificate)
+ *   400 { error: "<msg>" }               missing / blank cert
  *
  * Self-contained (gotcha #5 — no imports from /src or sibling /api files).
  * Inline raw-fetch Upstash REST, mirroring api/stripe-webhook.ts's transport
@@ -96,7 +98,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       signal: AbortSignal.timeout(3000),
     });
     if (!resp.ok) {
-      res.status(200).json({ configured: false });
+      // KV reachable but errored — a TRANSIENT failure, distinct from
+      // "unconfigured", so the client shows "temporarily unavailable" rather
+      // than a false "not found" for a genuinely-issued certificate.
+      res.status(200).json({ error: true });
       return;
     }
     const json = (await resp.json()) as { result?: unknown };
@@ -127,7 +132,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       },
     });
   } catch {
-    // KV error / timeout — let the client fall back to the static ledger.
-    res.status(200).json({ configured: false });
+    // KV error / timeout — a TRANSIENT failure (distinct from "unconfigured"),
+    // so the client shows "temporarily unavailable", never a false "not found".
+    res.status(200).json({ error: true });
   }
 }
