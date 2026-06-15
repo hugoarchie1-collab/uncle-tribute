@@ -44,6 +44,13 @@
     <!-- ?v=2 cache-busts the old black-rendering favicon (its inner group used
          fill="currentColor", which resolves to BLACK in a tab context). -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <!-- Installable, branded home-screen identity (cream rose emblem on the
+         #0a0908 brand ground). apple-touch-icon for iOS "Add to Home Screen";
+         the web manifest gives Android/Chrome the installable app identity. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="Stephen Meakin" />
+    <meta name="application-name" content="The Art of Stephen Meakin" />
 
     <!-- Fonts (#10): Fraunces (editorial display serif, true italic for
          quotes) + Hanken Grotesk (quiet body/UI sans). SELF-HOSTED variable
@@ -150,6 +157,45 @@
           "foundingDate": "2010",
           "location": "Phoenix Place, Lewes, East Sussex"
         }
+      }
+    </script>
+
+    <!-- JSON-LD: brand ENTITY — grounds "The Art of Stephen Meakin" / "The
+         Mandala Company" as a recognised organisation (Knowledge-Panel /
+         entity signals) and the website itself. Real, verifiable facts only.
+         ⚠️ When Hugo creates official Instagram / other estate social
+         profiles, add their URLs to the Organization `sameAs` array — that is
+         the single strongest signal tying the brand together across the web. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://themandalacompany.com/#organization",
+        "name": "The Art of Stephen Meakin",
+        "alternateName": "The Mandala Company",
+        "url": "https://themandalacompany.com",
+        "email": "info@themandalacompany.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://themandalacompany.com/icon-512.png",
+          "width": 512,
+          "height": 512
+        },
+        "image": "https://themandalacompany.com/og-image.jpg",
+        "description": "The estate of British mandala artist and Sacred Geometer Stephen Meakin (SEM, 1966–2021). Estate-stamped, hand-numbered giclée editions of his life's work, made to order.",
+        "foundingLocation": "Lewes, East Sussex, United Kingdom",
+        "founder": { "@type": "Person", "name": "Stephen Meakin" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": "https://themandalacompany.com/#website",
+        "url": "https://themandalacompany.com",
+        "name": "The Art of Stephen Meakin",
+        "inLanguage": "en-GB",
+        "publisher": { "@id": "https://themandalacompany.com/#organization" }
       }
     </script>
   </head>
