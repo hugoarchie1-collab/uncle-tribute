@@ -13,7 +13,7 @@ import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../d
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { EYEBROW } from "../components/ui/tokens";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 
 // Four Peacock colourways used as the home page's seamlessly-blending
 // backdrop layer (yellow removed — text was unreadable against it).
@@ -34,7 +34,6 @@ const PEACOCK_BACKDROPS = [
 ];
 
 export const Welcome = () => {
-  usePageTitle();
   const reduceMotion = useReducedMotion();
 
   // Whole-page scroll drives three peacock backdrops crossfading in turn:
@@ -50,6 +49,20 @@ export const Welcome = () => {
   const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
   const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
   const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
+  // SCROLL-JANK FIX (Hugo: "heavy/stuttery scroll, esp. home"): the four
+  // full-viewport peacock layers are sequenced so AT MOST TWO ever overlap during
+  // a crossfade — but the other two sit at opacity 0 and were still being
+  // composited (each is a filtered, full-screen GPU layer) on every scroll frame.
+  // Flip a layer to `visibility: hidden` the instant it's fully transparent so the
+  // compositor drops it entirely, ~halving the worst-case per-frame full-screen
+  // compositing on the home page. Look is identical — a layer only hides once it
+  // is already invisible, and re-shows before it ramps back up.
+  const toVis = (v: number): "visible" | "hidden" => (v < 0.004 ? "hidden" : "visible");
+  const indigoVis = useTransform(indigoOpacity, toVis);
+  const redVis = useTransform(redOpacity, toVis);
+  const purpleVis = useTransform(purpleOpacity, toVis);
+  const maryPinkVis = useTransform(maryPinkOpacity, toVis);
+  const backdropVisibilities = [indigoVis, redVis, purpleVis, maryPinkVis];
 
   // Six featured paintings shown in a 3×2 grid, mirroring the
   // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
@@ -86,6 +99,16 @@ export const Welcome = () => {
 
   return (
     <>
+      {/* The home page is the strongest URL on the domain — give it a
+          buyer-intent <title> + description (it previously ran a bare
+          usePageTitle() that targeted no commercial term). The on-screen H1
+          stays Stephen's poetic line; this only feeds <head>. Title already
+          names "Stephen Meakin" so pageTitle() returns it verbatim (no brand
+          suffix). ⚠️ "estate-stamped", never "signed" — Stephen is deceased. */}
+      <Seo
+        title="Mandala & Sacred Geometry Art Prints — The Art of Stephen Meakin"
+        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in Lewes — free worldwide delivery."
+      />
       {/* Nav overlays the intro video (fixed) so the logo + links stay pinned
           to the top of the screen from the very first frame — and remain there
           when scrolling back up from anywhere on the page. Every other page
@@ -111,6 +134,13 @@ export const Welcome = () => {
                 // backdrop (the opening indigo) instead of colour-shifting the
                 // whole viewport on every scroll frame.
                 opacity: reduceMotion ? (i === 0 ? 1 : 0) : backdropOpacities[i],
+                // Cull this layer from compositing while it's fully transparent
+                // (see the toVis note above) — the per-frame scroll-jank fix.
+                visibility: reduceMotion
+                  ? i === 0
+                    ? "visible"
+                    : "hidden"
+                  : backdropVisibilities[i],
                 backgroundImage: `url("${asset(bd.url)}")`,
                 // Promote to its own GPU layer so the scroll-driven crossfade
                 // composites the (pre-blurred) image instead of repainting it.

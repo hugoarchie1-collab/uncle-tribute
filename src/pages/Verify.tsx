@@ -230,7 +230,7 @@ export const Verify = () => {
         {/* AUTHENTICATION FACTS — the single-source estate copy, never re-typed,
             laid as a dense 2×2 / 4-up labelled grid (no thin bullet list). The
             `*Label` short forms head each cell; the full sentence sits beneath. */}
-        <section className="mt-12 md:mt-16">
+        <section className="mt-9 md:mt-12">
           <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
             <span className={EYEBROW_MUTED}>What every certificate carries</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />

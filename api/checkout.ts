@@ -84,38 +84,38 @@ interface TierDef {
 const TIERS: Record<TierId, TierDef> = {
   atelier: {
     id: "atelier",
-    label: "Gallery Edition",
-    size: "A3 (29.7 × 42 cm)",
+    label: "Open Edition",
+    size: "A3 (29.5 × 29.5 cm)",
     pricePence: 24500,
-    editionLabel: "Limited edition of 150",
+    editionLabel: "Open Edition — issued within each drop",
     available: true,
   },
   collector: {
     id: "collector",
-    label: "Collector's Edition",
-    size: "A2 (42 × 59.4 cm)",
+    label: "Collector Drop",
+    size: "A2 (42 × 42 cm)",
     pricePence: 45000,
-    editionLabel: "Limited edition of 100",
+    editionLabel: "Collector Drop — allocation of 200 per drop",
     framingPricePence: 29500,
     embellishmentPricePence: 35000,
     available: true,
   },
   "atelier-grande": {
     id: "atelier-grande",
-    label: "Atelier Edition",
-    size: "A1 (59.4 × 84.1 cm)",
+    label: "Atelier Drop",
+    size: "A1 (59.5 × 59.5 cm)",
     pricePence: 85000,
-    editionLabel: "Limited edition of 50",
+    editionLabel: "Atelier Drop — allocation of 75 per drop",
     framingPricePence: 39500,
     embellishmentPricePence: 49500,
     available: true,
   },
   heirloom: {
     id: "heirloom",
-    label: "Heirloom Edition",
-    size: "A0 (84.1 × 118.9 cm)",
+    label: "Heirloom Drop",
+    size: "A0 (84 × 84 cm)",
     pricePence: 175000,
-    editionLabel: "Limited edition of 25",
+    editionLabel: "Heirloom Drop — allocation of 18 per drop",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,750 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
     available: true,
@@ -126,7 +126,7 @@ const TIERS: Record<TierId, TierDef> = {
     // "studio" tierId produces a single £2,450 line item with no add-ons.
     id: "studio",
     label: "Original — One of One",
-    size: "A1 (59.4 × 84.1 cm)",
+    size: "A1 (59.5 × 59.5 cm)",
     pricePence: 245000,
     editionLabel: "Unique — one of one",
     isOneOff: true,
@@ -208,7 +208,12 @@ const lineRetailPence = (item: NormalisedItem): number => {
 
 // Boilerplate spec line used in Stripe product description.
 const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, hand-numbered within the edition. Ships with a Certificate of Authenticity. Printed at Point 101, London.";
+  "Estate-stamped by The Mandala Company, numbered within its drop. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at Point 101, London.";
+
+// The drop the catalogue is currently issuing under (mirror of CURRENT_DROP in
+// src/data/paintings.ts — gotcha #5 forbids importing it here). Surfaced on the
+// Stripe line so each checkout line reads "… · Drop I".
+const DROP_LABEL = "Drop I";
 
 // Hard cap on a single Stripe checkout — sane upper bound for a 10-painting
 // catalogue; protects against an absurd POST body from a broken client.
@@ -638,8 +643,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         currency: "gbp",
         unit_amount: item.tier.pricePence,
         product_data: {
-          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}`,
-          description: `${item.tier.size}. ${item.tier.editionLabel}. ${PRINT_SPEC}`,
+          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${DROP_LABEL}`}`,
+          description: `${item.tier.size}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in ${DROP_LABEL}.`} ${PRINT_SPEC}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).

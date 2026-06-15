@@ -43,10 +43,10 @@ const FAQS: QA[] = [
       <>
         No — Stephen passed in 2021, so prints cannot be signed in his hand.
         Every print is <strong>estate-stamped</strong> by The Mandala Company
-        and hand-numbered within its edition. Each ships with a Certificate
-        of Authenticity printed on estate letterhead. This is the convention
+        and numbered within its drop. Each ships with a Certificate
+        of Authenticity carrying a unique Certificate ID. This is the convention
         used by the estates of Picasso, Hepworth and Hilma af Klint, and
-        is the standard for posthumously-released editions.
+        is the standard for works released posthumously by an estate.
       </>
     ),
   },
@@ -55,12 +55,12 @@ const FAQS: QA[] = [
     question: "Can I check a certificate is genuine?",
     answer: (
       <>
-        Yes — every allocated print is recorded in the estate's edition
-        ledger, and any certificate can be checked against it on our{" "}
-        <Link to="/verify" className="text-accent hover:underline">
-          verification page
+        Yes — every issued print is recorded in the estate ledger, and any
+        Certificate ID can be checked against it on our{" "}
+        <Link to="/auth" className="text-accent hover:underline">
+          Authentication page
         </Link>
-        . The online register covers editions allocated from June 2026
+        . The Estate Registry covers prints issued from June 2026
         onward; for an earlier or unlisted certificate, write to{" "}
         <a
           href="mailto:info@themandalacompany.com"
@@ -99,16 +99,16 @@ const FAQS: QA[] = [
     ),
   },
   {
-    eyebrow: "Sizes & editions",
+    eyebrow: "Sizes & drops",
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four print editions, each estate-stamped and hand-numbered.
-        <strong> Gallery A3</strong> at £245 (limited edition of 150 per
-        colourway). <strong>Collector's A2</strong> at £450 (limited edition
-        of 100). <strong>Atelier A1</strong> at £850 (limited edition of 50).
-        <strong> Heirloom A0</strong> at £1,750 (limited edition of 25 per
-        colourway).
+        Four tiers, each estate-stamped and issued within the estate's drop
+        cycle. <strong>Open Edition A3</strong> at £245 (issued within each
+        drop, no fixed allocation). <strong>Collector Drop A2</strong> at £450
+        (200 allocated per drop). <strong>Atelier Drop A1</strong> at £850
+        (75 per drop). <strong>Heirloom Drop A0</strong> at £1,750 (18 per
+        drop).
       </>
     ),
   },

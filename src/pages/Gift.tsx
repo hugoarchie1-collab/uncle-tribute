@@ -163,7 +163,7 @@ export const Gift = () => {
       <AmbientBackdrop opacity={0.4} />
       <Seo
         title="Gift an edition"
-        description="Give a piece of Stephen Meakin's work. A digital gift card towards any estate-stamped edition — choose a size-pegged amount or a custom value, add a personal message, and let the recipient choose the print that speaks to them."
+        description="Give a piece of Stephen Meakin's work. A digital gift card towards any estate-stamped print — choose a size-pegged amount or a custom value, add a personal message, and let the recipient choose the print that speaks to them."
         url="/gift"
       />
       <Nav overlay />
@@ -207,7 +207,7 @@ export const Gift = () => {
                 lineHeight: 1.3,
               }}
             >
-              A gift towards any estate-stamped edition of Stephen Meakin's
+              A gift towards any estate-stamped print of Stephen Meakin's
               mandala paintings. Choose an amount pegged to a print size — or
               set your own — add a few words if you wish, and let the person
               you're thinking of choose the work that speaks to them.

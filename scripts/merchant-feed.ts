@@ -32,6 +32,12 @@ const FEED_DESCRIPTION =
 const PRODUCT_TYPE =
   "Home & Garden > Decor > Artwork > Posters, Prints & Visual Artwork";
 
+// Google's NUMERIC product taxonomy id for the node above ("Posters, Prints &
+// Visual Artwork"). g:product_type is our own free-text taxonomy; Google
+// prefers the numeric g:google_product_category for categorisation + free-
+// listing ranking. https://support.google.com/merchants/answer/6324436
+const GOOGLE_PRODUCT_CATEGORY = "500044";
+
 /** Escape the five XML entities for element text content. */
 const escapeXml = (s: string): string =>
   s
@@ -111,7 +117,23 @@ export function buildMerchantFeed(): MerchantFeed {
             "      <g:condition>new</g:condition>",
             "      <g:brand>Stephen Meakin</g:brand>",
             `      <g:product_type>${escapeXml(PRODUCT_TYPE)}</g:product_type>`,
+            `      <g:google_product_category>${GOOGLE_PRODUCT_CATEGORY}</g:google_product_category>`,
+            // Variant grouping: every colourway × size of ONE painting shares an
+            // item_group_id (the painting id), with g:color + g:size as the
+            // variant axes — so Google clusters them into one product with
+            // colour/size pickers in free listings instead of 100 unrelated SKUs.
+            `      <g:item_group_id>${escapeXml(painting.id)}</g:item_group_id>`,
+            `      <g:color>${escapeXml(colourway.name)}</g:color>`,
+            `      <g:size>${escapeXml(aSize(tier.size))}</g:size>`,
             "      <g:identifier_exists>false</g:identifier_exists>",
+            // Free worldwide delivery (policy 2026-06-06) — declared in-feed so
+            // the £0 benefit shows in free listings rather than being estimated.
+            // Mirrors api/checkout.ts buildShippingOptions + the PDP Product
+            // schema's £0 shippingRate (gotcha #9: one free-shipping truth).
+            "      <g:shipping>",
+            "        <g:country>GB</g:country>",
+            "        <g:price>0.00 GBP</g:price>",
+            "      </g:shipping>",
             "    </item>",
           ].join("\n"),
         );

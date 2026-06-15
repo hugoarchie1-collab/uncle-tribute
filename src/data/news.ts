@@ -138,14 +138,14 @@ export const groupByStatus = (
   })).filter((g) => g.entries.length > 0);
 
 // -----------------------------------------------------------------------------
-// ENTRIES — EMPTY by design. The /news page shows a dignified "being prepared"
-// state until the family adds real entries here. Do NOT invent releases, dates,
-// venues, or words attributed to Steve/Polly. When there is something genuine to
-// announce, add a NewsEntry object (see the interface + HOW TO EDIT header above)
-// — soonest/most-meaningful first within each `status`. A RELEASE entry needs a
-// real /img/paintings/<stem>.jpg cover (AssetImage swaps the .webp sibling).
+// ENTRIES. Soonest/most-meaningful first WITHIN each `status`. Do NOT invent
+// dates, venues, or words attributed to Steve/Polly; keep displayDate human and
+// honest ("Coming soon"), never a fabricated firm date. A RELEASE entry only
+// shows its album cover when `cover` points at a real /img/paintings/<stem>.jpg
+// on disk (AssetImage swaps the .webp sibling) — omit `cover` for a colourway
+// whose print image isn't prepared yet and the row renders lean (text-led).
 //
-// Template (uncomment + fill in a real announcement):
+// Template (copy + fill in a real announcement):
 //   {
 //     id: "unique-id",
 //     type: "release",            // release | announcement | exhibition | workshop | event
@@ -154,9 +154,41 @@ export const groupByStatus = (
 //     title: "…",
 //     displayDate: "Coming soon", // human + honest — never a fabricated firm date
 //     summary: "…",
-//     cover: "/img/paintings/wild-rose-sussex-pink.jpg", // releases only
+//     cover: "/img/paintings/wild-rose-sussex-pink.jpg", // releases only, real file
 //     ctaLabel: "Be the first to know",
 //     ctaTo: "#notify",
 //   },
 // -----------------------------------------------------------------------------
-export const NEWS: NewsEntry[] = [];
+export const NEWS: NewsEntry[] = [
+  {
+    // Orchis 7's Aquamarine colourway — Stephen's own sea-glass variation of the
+    // septagon mandala, kept in his studio files. The cover is verified present
+    // on disk (orchis7-aquamarine-blue.jpg + its .webp sibling).
+    id: "orchis-7-aquamarine",
+    type: "release",
+    kind: "single",
+    status: "next",
+    title: "Orchis 7 — Aquamarine",
+    displayDate: "Coming soon",
+    summary:
+      "Stephen's septagon mandala of thirty Lady's Slipper Orchids, in the cool aquamarine colourway he kept in his own studio files — sea-glass blues set against gold leaf. Released as a limited, numbered edition.",
+    cover: "/img/paintings/orchis7-aquamarine-blue.jpg",
+    ctaLabel: "Be the first to know",
+    ctaTo: "#notify",
+  },
+  {
+    // Wild Rose's Black Rose colourway — in preparation. No print image on disk
+    // yet, so `cover` is deliberately omitted and the row renders lean; add the
+    // cover (a real /img/paintings stem) once the file is in the catalogue.
+    id: "wild-rose-black-rose",
+    type: "release",
+    kind: "single",
+    status: "soon",
+    title: "Wild Rose — Black Rose",
+    displayDate: "Coming soon",
+    summary:
+      "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, limited and numbered.",
+    ctaLabel: "Be the first to know",
+    ctaTo: "#notify",
+  },
+];

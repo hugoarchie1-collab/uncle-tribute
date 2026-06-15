@@ -18,13 +18,13 @@ import { cn } from "../lib/cn";
  *
  * Updated: 2026-05-31. Anything written here should be reviewed by a UK
  * solicitor before the site is heavily promoted; the wording covers UK GDPR
- * Art 13–14, CCR 2013 reg 28 (made-to-order exemption) with the A3 Gallery
+ * Art 13–14, CCR 2013 reg 28 (made-to-order exemption) with the A3 Open
  * Edition granted the standard 14-day right, a complaints/ADR statement, and
  * standard consumer-sale boilerplate. NB: trader postal address still pending.
  *
- * DECIDED 2026-06-12 (Hugo): the A3 Gallery Edition KEEPS the full 14-day
- * change-of-mind right even though it is now a limited edition of 150 per
- * colourway, made to order (PRINT_TIERS, 2026-06-02). Rationale: (a) the
+ * DECIDED 2026-06-12 (Hugo): the A3 Open Edition KEEPS the full 14-day
+ * change-of-mind right — it is an Open Edition issued within drops, made to
+ * order (PRINT_TIERS). Rationale: (a) the
  * reg 28(1)(b) "consumer's specifications" exemption is unlikely to cover a
  * standard catalogue print where the buyer only picks size/colourway from
  * fixed options, so the statutory right probably applies to the A3 regardless
@@ -396,9 +396,9 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>A3 "Gallery Edition" prints.</strong> The A3 Gallery
-            Edition is a limited edition of 150 per colourway, estate-stamped
-            and hand-numbered. For this tier
+            <strong>A3 "Open Edition" prints.</strong> The A3 Open
+            Edition is estate-stamped and issued within the estate's drop
+            cycle (not numbered). For this tier
             you have the full statutory <strong>14-day cancellation right</strong>{" "}
             under the{" "}
             <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>.
@@ -423,12 +423,13 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Made-to-order prints (A2, A1, A0, the hand-painted
-            Studio piece, and any framed or hand-finished order).</strong>{" "}
+            <strong>Made-to-order prints (the A2 Collector, A1 Atelier and
+            A0 Heirloom Drops, the hand-painted Studio piece, and any framed or
+            hand-finished order).</strong>{" "}
             These are made to your specification — your chosen colourway, tier
             and add-ons are sent to the atelier for an individual,
-            estate-stamped and hand-numbered print run, and the Studio piece is
-            hand-painted uniquely for you. Under the same Regulations,{" "}
+            estate-stamped print run numbered within its drop, and the Studio
+            piece is hand-painted uniquely for you. Under the same Regulations,{" "}
             <em>regulation 28(1)(b)</em>, goods "made to the consumer's
             specifications or clearly personalised" are exempt from the 14-day
             distance-selling cancellation right, so the statutory cooling-off
@@ -561,18 +562,18 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the A3 Gallery Edition print carries the full 14-day right to change your mind; the larger A2, A1 and A0 editions, the hand-painted piece and any framed or hand-finished order are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
+        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the A3 Open Edition print carries the full 14-day right to change your mind; the larger Collector, Atelier and Heirloom Drops, the hand-painted piece and any framed or hand-finished order are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
       },
     ],
   },
   {
-    heading: "Cancelling an A3 Gallery Edition print",
+    heading: "Cancelling an A3 Open Edition print",
     blocks: [
       {
         kind: "p",
         text: (
           <>
-            With the A3 Gallery Edition print you have the full statutory{" "}
+            With the A3 Open Edition print you have the full statutory{" "}
             <strong>14-day cancellation right</strong> under
             the Consumer Contracts Regulations 2013. You can cancel for any
             reason from when you order until 14 days after the day it arrives —
@@ -595,7 +596,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "The A2, A1 and A0 limited editions, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped and hand-numbered print run, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
+        text: "The A2 Collector, A1 Atelier and A0 Heirloom Drops, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped print run numbered within its drop, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
       },
       {
         kind: "p",
@@ -647,7 +648,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "For the A3 Gallery Edition print you can change your mind within 14 days of receiving it, as set out above. For the made-to-order prints — the A2, A1 and A0 editions, the hand-painted piece, and any framed or hand-finished order, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
+        text: "For the A3 Open Edition print you can change your mind within 14 days of receiving it, as set out above. For the made-to-order prints — the Collector, Atelier and Heirloom Drops, the hand-painted piece, and any framed or hand-finished order, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
       },
     ],
   },

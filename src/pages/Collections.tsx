@@ -149,9 +149,9 @@ const DEFAULT_BUNDLE_TIER: PrintTier =
 
 // "A2 (42 × 59.4 cm)" → "A2" for the compact toggle chip.
 const sizeCode = (tier: PrintTier): string => tier.size.split(" ")[0];
-// "Collector's Edition" → "Collector" for the compact toggle chip.
+// "Collector Drop" → "Collector" for the compact toggle chip.
 const editionWord = (tier: PrintTier): string =>
-  tier.label.replace(/['’]s Edition$/, "").replace(/ Edition$/, "");
+  tier.label.replace(/['’]s Edition$/, "").replace(/ (Edition|Drop)$/, "");
 
 export const Collections = () => {
   // One ref per collection section so each backdrop can track its own visibility
@@ -192,9 +192,13 @@ export const Collections = () => {
 
   return (
     <div className="relative">
+      {/* This browse page is the natural ranker for the category head terms
+          ("mandala art prints", "sacred geometry prints"). Title + description
+          lead with the product category, then the collection names. The on-page
+          H1 ("The complete works.") is unchanged. */}
       <Seo
-        title="The Collections"
-        description="Habundia, Genesis and Born in the Sky — three collections of Stephen Meakin's mandala paintings, each offered as an estate-stamped giclée print, individually made to order."
+        title="Mandala & Sacred Geometry Art Prints — The Collection"
+        description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery."
         url="/collections"
       />
       <Nav overlay />

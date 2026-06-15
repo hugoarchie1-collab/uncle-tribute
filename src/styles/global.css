@@ -626,11 +626,12 @@
   pointer-events: none;
   width: 34px;
   height: 34px;
-  /* Render the emblem SVG as a background-image (NOT a mask — dodges the WebKit
-     currentColor-in-mask transparency gotcha). brightness(0) invert(1) forces
-     it to pure WHITE regardless of the SVG's own fill, so the cursor is always
-     a crisp white flower; the drop-shadow keeps it legible on pale rose/pink. */
-  background-image: url("/logo/logo-emblem.svg");
+  /* The new Tudor-rose mark in its crisp white line treatment (the seal itself
+     is too dark/detailed to read as a tiny moving cursor). brightness(0)
+     invert(1) forces it to pure WHITE regardless of source, so the cursor is
+     always a crisp white flower; the drop-shadow keeps it legible on pale
+     rose/pink. Same rose as the wax seal — just the mono companion mark. */
+  background-image: url("/logo/logo-rose-line-v1-w128.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

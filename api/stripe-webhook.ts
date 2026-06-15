@@ -296,24 +296,24 @@ const TIER_PRICE_PENCE: Record<string, number> = {
   studio: 245000,
 };
 const TIER_LABEL: Record<string, string> = {
-  atelier: "Gallery Edition",
-  collector: "Collector's Edition",
-  "atelier-grande": "Atelier Edition",
-  heirloom: "Heirloom Edition",
+  atelier: "Open Edition",
+  collector: "Collector Drop",
+  "atelier-grande": "Atelier Drop",
+  heirloom: "Heirloom Drop",
   studio: "Original — One of One",
 };
 const TIER_SIZE: Record<string, string> = {
-  atelier: "A3 (29.7 × 42 cm)",
-  collector: "A2 (42 × 59.4 cm)",
-  "atelier-grande": "A1 (59.4 × 84.1 cm)",
-  heirloom: "A0 (84.1 × 118.9 cm)",
-  studio: "A1 (59.4 × 84.1 cm)",
+  atelier: "A3 (29.5 × 29.5 cm)",
+  collector: "A2 (42 × 42 cm)",
+  "atelier-grande": "A1 (59.5 × 59.5 cm)",
+  heirloom: "A0 (84 × 84 cm)",
+  studio: "A1 (59.5 × 59.5 cm)",
 };
 const TIER_EDITION: Record<string, string> = {
-  atelier: "Limited edition of 150",
-  collector: "Limited edition of 100",
-  "atelier-grande": "Limited edition of 50",
-  heirloom: "Limited edition of 25",
+  atelier: "Open Edition — issued within each drop",
+  collector: "Collector Drop — allocation of 200 per drop",
+  "atelier-grande": "Atelier Drop — allocation of 75 per drop",
+  heirloom: "Heirloom Drop — allocation of 18 per drop",
   studio: "Unique — one of one",
 };
 // Per-tier ADD-ON price lookups (mirror of framingPricePence /
@@ -681,8 +681,8 @@ const renderOrderConfirmationHtml = (p: {
   })();
   const ESTATE = {
     stamp: "Estate-stamped by The Mandala Company",
-    numbering: "Hand-numbered within the edition",
-    coa: "Ships with a Certificate of Authenticity on estate letterhead",
+    numbering: "Numbered within its drop",
+    coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
     printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
   };
   // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 — the

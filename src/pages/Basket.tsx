@@ -692,7 +692,7 @@ export const Basket = () => {
                 {/* pl-[25px] = 15px glyph + 10px gap, so the second line
                     aligns with the first line's text, not the glyph. */}
                 <p className="font-sans font-normal text-[12.5px] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
-                  Estate-stamped &amp; hand-numbered · Free delivery worldwide ·
+                  Estate-stamped &amp; numbered within the drop · Free delivery worldwide ·
                   Damaged-in-transit replacement
                 </p>
               </div>

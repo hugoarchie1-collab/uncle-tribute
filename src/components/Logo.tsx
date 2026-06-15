@@ -16,37 +16,31 @@ interface LogoProps {
 }
 
 export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wordmarkWrap = false, className }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/logo-emblem.svg`;
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v1-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
-        The emblem is a plain <img> of an SVG whose own `fill` is the cream ink
-        (#ede6d6). Earlier this was a `bg-ink` <span> shaped by `mask-image` of
-        the SVG — but WebKit/iOS Safari resolves the mask SVG's `currentColor`
-        against the (transparent) mask resource context, so the mask went fully
-        transparent and the emblem VANISHED on iPhone/iPad while rendering fine
-        on desktop Chromium. Rendering the SVG directly sidesteps that whole
-        mask bug class and is identical across engines. The mark must stay
-        visible at every width (it is never display:none'd); only the wordmark
-        beside it hides on the smallest screens.
+        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal,
+        rendered as a transparent PNG (the pure-black source background was
+        keyed out with a feathered alpha so the soft seal edges dissolve onto
+        any ground). Shown in its TRUE deep red — no white-forcing filter: the
+        dark tone reads on the pale peacock/Mary-Pink scroll backdrops, and the
+        soft warm glow below lifts it off the near-black sections. Square mark,
+        so width === height. Never display:none'd; only the wordmark hides small.
       */}
       <img
         src={url}
         alt=""
         aria-hidden="true"
         width={size}
-        height={Math.round(size * (188.95 / 200))}
+        height={size}
         decoding="async"
         className="block shrink-0"
         style={{
           width: size,
-          height: size * (188.95 / 200),
-          // Force the emblem to pure WHITE + a soft shadow so it stays legible
-          // on every backdrop across the site — the dark sections AND the pale
-          // areas of the peacock / Mary-Pink scroll backdrops. brightness(0)
-          // invert(1) maps the SVG's cream fill to white regardless of source.
+          height: size,
           filter:
-            "brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0,0,0,0.45))",
+            "drop-shadow(0 1px 3px rgba(0,0,0,0.5)) drop-shadow(0 0 7px rgba(150,28,28,0.4))",
         }}
       />
       {wordmark && (

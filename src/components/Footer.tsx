@@ -18,13 +18,15 @@ const FOOTER_TEXT = "font-sans text-[14px] leading-[1.6]";
 
 /** Footer navigation — TWO short columns, not one tall 12-item stack.
  *
- *  EXPLORE mirrors the primary nav order (Nav.tsx NAV_LINKS) minus Home — the
- *  wordmark already links home. ESTATE gathers the secondary / utility pages
- *  and is the ONLY place /gift and /trade are linked anywhere in the chrome,
- *  so those routes aren't orphaned. Legal (Privacy · Terms · Returns) lives
- *  ONLY in the bottom bar below — never duplicated up here. Keep both lists in
- *  the same canonical order the nav uses so the surfaces never drift. */
+ *  EXPLORE leads with Home (the wordmark also links home, but Hugo wants Home
+ *  explicit in the footer site map) then mirrors the primary nav order
+ *  (Nav.tsx NAV_LINKS). ESTATE gathers the secondary / utility pages and is the
+ *  ONLY place /gift and /trade are linked anywhere in the chrome, so those
+ *  routes aren't orphaned. Legal (Privacy · Terms · Returns) lives ONLY in the
+ *  bottom bar below — never duplicated up here. Keep both lists in the same
+ *  canonical order the nav uses so the surfaces never drift. */
 const EXPLORE_LINKS = [
+  { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "For You" },
   { to: "/about", label: "About" },

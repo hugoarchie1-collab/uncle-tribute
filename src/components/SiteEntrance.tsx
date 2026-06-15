@@ -112,12 +112,15 @@ export const SiteEntrance = () => {
       {/* The emblem breathes — a slow, gentle opacity pulse (no spin, no scale
           travel beyond a hair) — while the veil holds. */}
       <motion.img
-        src={asset("/logo/logo-emblem.svg")}
+        src={asset("/logo/logo-seal-v1-w512.png")}
         alt=""
-        width={64}
-        height={64}
-        className="h-14 w-14 md:h-16 md:w-16"
-        style={{ filter: "brightness(0) invert(1)" }}
+        width={512}
+        height={512}
+        className="h-20 w-20 md:h-28 md:w-28"
+        style={{
+          filter:
+            "drop-shadow(0 2px 10px rgba(0,0,0,0.55)) drop-shadow(0 0 18px rgba(150,28,28,0.45))",
+        }}
         initial={{ opacity: 0.55, scale: 0.985 }}
         animate={{ opacity: [0.55, 0.95, 0.55], scale: [0.985, 1, 0.985] }}
         transition={{ duration: 2.4, ease: "easeInOut", repeat: Infinity }}

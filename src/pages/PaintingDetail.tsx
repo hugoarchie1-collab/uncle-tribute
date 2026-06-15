@@ -25,6 +25,7 @@ import {
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
+  getLowestTierPricePence,
   getPaintingById,
   getPrintTiers,
   ORIGINAL_PRINT_SPEC,
@@ -37,7 +38,7 @@ import {
   type Painting,
   type PrintTier,
 } from "../data/paintings";
-// THE EDITION LEDGER — hand-curated allocation register (src/data/editions.ts,
+// THE ESTATE LEDGER — hand-curated allocation register (src/data/editions.ts,
 // curated by Hugo per fulfilled order; ships empty). nextNumber(paintingId,
 // colourwayName, tierId) = allocatedCount + 1 — the next certificate number
 // the estate would allocate for that edition. Read-only here.
@@ -56,6 +57,16 @@ import {
 } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
+
+// Rolling ~12-month price-validity horizon for the Product Offer JSON-LD
+// (Rich Results recommended field — keeps the cached price from looking stale).
+// Computed ONCE at module load (a date ~1yr out, refreshed each deploy/session)
+// so it stays pure during render — `Date.now()` in the component body trips the
+// react-hooks/purity rule and the value sits after the early returns anyway. It
+// carries no money value, so it can't drift from the pricing mirror (gotcha #9).
+const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
+  .toISOString()
+  .slice(0, 10);
 
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.
@@ -189,17 +200,18 @@ const SizePicker = ({
               doesn't already say. */}
           {isSelected && !tier.isOneOff && (
             <span className={cn(META, "col-span-2 mt-3")}>
-              Estate-stamped &amp; hand-numbered
+              Estate-stamped
+              {tier.editionTotal !== null ? " · numbered within its drop" : ""}
               {tier.editionPromise ? ` · ${tier.editionPromise}` : ""}
             </span>
           )}
           {/* Allocation register line — dignified provenance, never urgency.
-              Reads from the hand-curated edition ledger (data/editions.ts);
-              recomputes as the buyer switches size or colourway. Skipped for
-              open editions (editionTotal null) and one-off pieces. */}
+              Reads from the estate ledger (data/editions.ts); recomputes as the
+              buyer switches size or colourway. Skipped for the Open Edition
+              (editionTotal null, not numbered) and one-off pieces. */}
           {isSelected && !tier.isOneOff && tier.editionTotal !== null && (
             <span className={cn(META, "col-span-2 mt-1 text-ink-muted")}>
-              Next to be allocated: No.{" "}
+              Next to be allocated in this drop: No.{" "}
               {nextNumber(paintingId, colourwayName, tier.id)} of {tier.editionTotal}
             </span>
           )}
@@ -1531,9 +1543,32 @@ export const PaintingDetail = () => {
   // while the buyer has a different swatch selected on-page.
   const ogColourway =
     painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
-  const metaDescription = firstSentence(painting.description);
+  // Commercial, keyword-front-loaded meta description + <title> — the SERP
+  // click-drivers. The visible H1 stays painting.title; these only feed <head>.
+  // They lead with medium + provenance + artist + "from £…" so the snippet
+  // reads like a product, not the poetic story opener firstSentence() returned.
+  // ⚠️ "estate-stamped" is the ONE provenance claim true across EVERY visible
+  // tier. Do NOT say "signed" (Stephen is deceased — estate stamp + COA, not a
+  // hand signature) and do NOT say "numbered"/"limited edition" here: the
+  // from-price tier is the Open Edition (no cap, NOT numbered) under the drop
+  // model (PRINT_TIERS / ESTATE_AUTHENTICATION / GLOBAL_DROP_NOTE).
+  const fromPriceLabel = formatGBP(getLowestTierPricePence(painting));
+  const metaDescription = `Estate-stamped giclée print of ${painting.title} by British mandala artist Stephen Meakin — sacred geometry, made to order, from ${fromPriceLabel}. Free worldwide delivery.`;
+  // Title leads with buyer intent AND names the artist, so pageTitle() returns
+  // it verbatim (it already contains "Stephen Meakin" → no brand suffix appended,
+  // avoiding "…by Stephen Meakin · The Art of Stephen Meakin").
+  const pageTitleText = `${painting.title} — Mandala Art Print by Stephen Meakin`;
+  // Product JSON-LD carries a fuller description: the commercial lead + the
+  // painting's own opening line (keeps firstSentence in play, adds richness for
+  // rich results / AI extraction without bloating the SERP meta description).
+  const productDescription = `${metaDescription} ${firstSentence(painting.description)}`;
   const paintingPath = `/collections/${painting.id}`;
   const ogImagePath = ogColourway?.image ?? selected.image;
+  // VisualArtwork dateCreated — only emit a real 4-digit year (painting.year can
+  // be a range like "2006–2007" → take the first year, or "[ DATE ]" TBD → omit).
+  const artworkYear = painting.year.match(/\d{4}/)?.[0];
+  // Original-work dimensions (cm) for the VisualArtwork node, when catalogued.
+  const artworkDims = parseSizeCm(painting.size ?? "");
 
   // AggregateOffer bounds — derived from the SAME visible ladder the page
   // renders (getPrintTiers → available tiers only), so the markup can never
@@ -1551,14 +1586,19 @@ export const PaintingDetail = () => {
     "@type": "Product",
     name: painting.title,
     image: absoluteUrl(ogImagePath),
-    description: metaDescription,
-    brand: { "@type": "Brand", name: "The Art of Stephen Meakin" },
+    description: productDescription,
+    // Reference the entity-grounded Organization + Person nodes (index.html
+    // @ids) instead of loose literals — ties every product to the verified
+    // brand AND to the artist, the strongest entity signal for an estate.
+    brand: { "@id": `${SITE_URL}/#organization` },
+    creator: { "@id": `${SITE_URL}/#person` },
     offers: {
       "@type": "AggregateOffer",
       lowPrice: (lowPricePence / 100).toFixed(2),
       highPrice: (highPricePence / 100).toFixed(2),
       offerCount: tierPricesPence.length,
       priceCurrency: "GBP",
+      priceValidUntil: PRICE_VALID_UNTIL,
       availability: "https://schema.org/InStock",
       url: absoluteUrl(paintingPath),
       // FREE delivery (policy 2026-06-06): api/checkout.ts charges a £0 rate
@@ -1619,6 +1659,38 @@ export const PaintingDetail = () => {
     ],
   };
 
+  // The original work as a VisualArtwork, linked to the artist Person node — so
+  // Google understands the catalogue as fine art by a named creator, not just a
+  // poster SKU. Every field is sourced from paintings.ts; dateCreated + the
+  // dimensions are gated so we never emit a placeholder year or a 1×1 fallback.
+  // artMedium is deliberately omitted (it varies per work — do not invent).
+  const visualArtworkJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    name: painting.title,
+    creator: { "@id": `${SITE_URL}/#person` },
+    artform: "Mandala painting",
+    image: absoluteUrl(ogImagePath),
+    url: absoluteUrl(paintingPath),
+    ...(artworkYear ? { dateCreated: artworkYear } : {}),
+    ...(artworkDims
+      ? {
+          width: {
+            "@type": "QuantitativeValue",
+            value: artworkDims.w,
+            unitCode: "CMT",
+            unitText: "cm",
+          },
+          height: {
+            "@type": "QuantitativeValue",
+            value: artworkDims.h,
+            unitCode: "CMT",
+            unitText: "cm",
+          },
+        }
+      : {}),
+  };
+
   return (
     // overflow-x-clip (NOT overflow-hidden): clips horizontal overflow without
     // creating a scroll container, so the sticky painting (below) still works.
@@ -1626,12 +1698,12 @@ export const PaintingDetail = () => {
     // dark void beside the buy box on desktop. html/body already clip the X axis.
     <div className="relative overflow-x-clip">
       <Seo
-        title={painting.title}
+        title={pageTitleText}
         description={metaDescription}
         url={paintingPath}
         image={ogImagePath}
         type="product"
-        jsonLd={[productJsonLd, breadcrumbJsonLd]}
+        jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
       {/* Ambient backdrop — selected colourway painting blurred behind the
           page. Crossfades seamlessly between colourways as the user switches

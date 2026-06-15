@@ -35,12 +35,12 @@ export interface Colourway {
  */
 export interface PrintTier {
   id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
-  label: string;                // "Gallery Edition", "Collector's Edition", "Atelier Edition", "Heirloom Edition", "Original — One of One"
-  size: string;                 // "A3 (29.7 × 42 cm)"
+  label: string;                // "Open Edition", "Collector Drop", "Atelier Drop", "Heirloom Drop", "Original — One of One"
+  size: string;                 // "A3 (29.5 × 29.5 cm)"
   pricePence: number;           // integer pence
-  editionTotal: number | null;  // null = open edition
-  editionLabel: string;         // "Open edition" / "Edition of 100" / etc
-  /** Provenance promise shown on the SELECTED tier — descriptive, never scarcity. */
+  editionTotal: number | null;  // per-DROP allocation cap; null = Open Edition (no cap, not numbered)
+  editionLabel: string;         // neutral drop language, e.g. "Collector Drop — allocation of 200 per drop"
+  /** Provenance line shown on the SELECTED tier — institutional, never scarcity/urgency. */
   editionPromise?: string;
   framingPricePence?: number;   // optional framing surcharge (A2 + A1 only)
   /**
@@ -94,7 +94,27 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each edition is estate-stamped by The Mandala Company, hand-numbered, and ships with a Certificate of Authenticity. Individually made to order in Lewes, East Sussex.";
+  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its drop, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order in Lewes, East Sussex.";
+
+/**
+ * The drop the catalogue is CURRENTLY issuing under. Every artwork is released
+ * in named drop cycles — this is the live one. Future drops increment the
+ * numeral (Drop II, Drop III), or run as an Archive Drop / Seasonal Release.
+ * Surfaced as the drop identifier on product metadata, the COA, and the estate
+ * ledger.
+ */
+export const CURRENT_DROP = {
+  id: "drop-i",
+  label: "Drop I",
+};
+
+/**
+ * The single institutional line shown across every product — replaces all
+ * lifetime-edition / permanent-scarcity copy. Neutral, archival register: no
+ * urgency, no countdowns, no "never reopened".
+ */
+export const GLOBAL_DROP_NOTE =
+  "Each work is issued as part of a controlled drop cycle, with a limited allocation per release. Future drops may introduce new allocations or variations.";
 
 export const COLOURWAY_NOTE =
   "Each colourway was created by Stephen himself and discovered on his computer in his studio. These are his own colour variations of the work, exactly as he left them.";
@@ -134,99 +154,101 @@ export const STUDIO_ONE_OFF_NOTE =
 export const ESTATE_AUTHENTICATION = {
   stamp: "Estate-stamped by The Mandala Company",
   stampLabel: "Estate stamp",
-  numbering: "Hand-numbered within the edition",
-  numberingLabel: "Hand-numbered",
-  coa: "Ships with a Certificate of Authenticity on estate letterhead",
+  numbering: "Numbered within its drop",
+  numberingLabel: "Numbered within the drop",
+  coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
   printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
   printerLabel: "Printed at Point 101",
 };
 
 /**
- * The canonical print tier ladder. Applies uniformly across every painting.
- * Researched 2026-05-28: the prior £180 flat price was below market for a
- * deceased British artist estate selling estate-stamped editions to a
- * culturally-discerning audience. Ladder anchors on the A2 Collector tier
- * — that's the conversion target; Atelier is the entry, Atelier Grande
- * the upsell, Heirloom the statement piece.
+ * The canonical DROP-BASED tier ladder. Every artwork is released in named drop
+ * cycles (see CURRENT_DROP); each tier carries its own per-DROP allocation —
+ * inventory is managed per drop batch, NEVER globally capped across all time.
+ * Future restocks come only as NEW drops, never by reopening a prior one.
  *
- * Heirloom (A0) is hidden behind `available: false` for now — Hugo needs
- * to confirm Point 101 fulfilment capability + optional gold-leaf detail
- * sourcing before exposing the £1,750 SKU. Flip to `true` to surface it.
+ *   Open Edition   (A3) — no allocation cap, not numbered
+ *   Collector Drop (A2) — 200 per drop · the anchor / conversion target
+ *   Atelier Drop   (A1) — 75 per drop
+ *   Heirloom Drop  (A0) — 18 per drop · statement piece
+ *
+ * Internal tier `id`s, prices and SKUs are UNCHANGED from the prior edition
+ * model so existing checkout / ledger references keep working. `editionTotal`
+ * is now the per-DROP allocation (null = Open Edition, no cap). Prices mirrored
+ * in the three /api files (gotcha #9).
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
     id: "atelier",
-    label: "Gallery Edition",
-    size: "A3 (29.7 × 42 cm)",
+    label: "Open Edition",
+    size: "A3 (29.5 × 29.5 cm)",
     pricePence: 24500, // £245
-    editionTotal: 150,
-    editionLabel: "Limited edition of 150 per colourway",
-    editionPromise: "the edition will never be reopened",
-    description: "Limited edition of 150, estate-stamped, hand-numbered, COA",
+    editionTotal: null, // Open Edition — no allocation cap, not numbered
+    editionLabel: "Open Edition — issued within each drop, no fixed allocation",
+    editionPromise: "issued on demand within the current drop",
+    description:
+      "Open Edition, estate-stamped, issued within a controlled drop cycle, ships with a Certificate of Authenticity",
     available: true,
   },
   {
     id: "collector",
-    label: "Collector's Edition",
-    size: "A2 (42 × 59.4 cm)",
+    label: "Collector Drop",
+    size: "A2 (42 × 42 cm)",
     pricePence: 45000, // £450
-    editionTotal: 100,
-    editionLabel: "Limited edition of 100 per colourway",
-    editionPromise: "the edition will never be reopened",
+    editionTotal: 200, // per-drop allocation
+    editionLabel: "Collector Drop — allocation of 200 per drop",
+    editionPromise: "allocated within the current drop",
     framingPricePence: 29500, // £295 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
-    description: "Limited edition of 100, estate-stamped, hand-numbered, COA",
+    description:
+      "Collector Drop, allocation of 200 per drop, estate-stamped, numbered within the drop, COA",
     available: true,
     isAnchor: true,
   },
   {
     id: "atelier-grande",
-    label: "Atelier Edition",
-    size: "A1 (59.4 × 84.1 cm)",
+    label: "Atelier Drop",
+    size: "A1 (59.5 × 59.5 cm)",
     pricePence: 85000, // £850
-    editionTotal: 50,
-    editionLabel: "Limited edition of 50 per colourway",
-    editionPromise: "the edition will never be reopened",
+    editionTotal: 75, // per-drop allocation
+    editionLabel: "Atelier Drop — allocation of 75 per drop",
+    editionPromise: "allocated within the current drop",
     framingPricePence: 39500, // £395 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
-    description: "Limited edition of 50, estate-stamped, hand-numbered, COA",
+    description:
+      "Atelier Drop, allocation of 75 per drop, estate-stamped, numbered within the drop, COA",
     available: true,
   },
   {
     id: "heirloom",
-    label: "Heirloom Edition",
-    size: "A0 (84.1 × 118.9 cm)",
+    label: "Heirloom Drop",
+    size: "A0 (84 × 84 cm)",
     pricePence: 175000, // £1,750
-    editionTotal: 25,
-    editionLabel: "Limited edition of 25 per colourway",
-    editionPromise: "the edition will never be reopened",
+    editionTotal: 18, // per-drop allocation
+    editionLabel: "Heirloom Drop — allocation of 18 per drop",
+    editionPromise: "allocated within the current drop",
     description:
-      "Limited edition of 25, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
-    // ENABLED 2026-06-06 — Hugo confirmed Point 101 can fulfil A0. The £1,750
-    // Heirloom SKU is now live site-wide (surfaces as the top size on
-    // PaintingDetail + in the Collections bundle size selector + as the ladder
-    // anchor). Charged price mirrored in api/checkout.ts TIERS["heirloom"].
+      "Heirloom Drop, allocation of 18 per drop, estate-stamped, numbered within the drop, COA, optional gold-leaf detail",
+    // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
+    // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,
   },
   {
-    // Studio — a singular, hand-painted one-off. NOT a print edition: Polly
-    // Wedge hand-paints geometric detail in Stephen's tradition onto a large
-    // archival print, making each one unique (one of one). It IS the
-    // hand-finished piece, so it carries no framing / embellishment add-on
-    // price — the price is the whole work.
+    // Studio — a singular, hand-painted one-off. OUTSIDE the drop model: there
+    // is only ever one, so it is not issued in drops. Kept hidden until the
+    // estate chooses to sell unique originals.
     id: "studio",
     label: "Original — One of One",
-    size: "A1 (59.4 × 84.1 cm)",
+    size: "A1 (59.5 × 59.5 cm)",
     pricePence: 245000, // £2,450
     editionTotal: 1,
     editionLabel: "Unique — one of one",
     description: "Hand-painted by Polly Wedge, one of one",
     isOneOff: true,
-    // Hidden 2026-06-03 (Hugo): not selling the unique originals until their
-    // value has risen. Flip to `true` to surface the £2,450 one-of-one again.
-    // The api/checkout.ts TIERS map keeps its `studio` pricing row intact so a
-    // stale client can never crash checkout while this is hidden.
+    // Hidden (Hugo): not selling unique originals until their value has risen.
+    // api/checkout.ts keeps its `studio` pricing row so a stale client can't
+    // crash checkout while hidden.
     available: false,
   },
 ];
@@ -247,8 +269,8 @@ export const PRINT_TIERS: PrintTier[] = [
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 45000, // £450 — anchor tier (A2 Collector)
-  size: "Limited edition giclée, A2 (42 × 59.4 cm), edition of 100, estate-stamped",
+  pricePence: 45000, // £450 — anchor tier (A2 Collector Drop)
+  size: "Giclée print, A2 (42 × 42 cm), Collector Drop, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
 
@@ -423,7 +445,7 @@ export const formatGBP = (pence: number): string =>
 
 /**
  * Parse the cm dimensions out of a tier `size` string, e.g.
- * "A2 (42 × 59.4 cm)" → { w: 42, h: 59.4 }. Returns null if absent.
+ * "A2 (42 × 42 cm)" → { w: 42, h: 42 }. Returns null if absent.
  * Lets the scale viewer + dimension chip draw the print honestly from its
  * catalogued size with zero new data entry.
  */
@@ -521,7 +543,7 @@ export const PAINTINGS: Painting[] = [
       "A painting about being in the bluebell woods. Within the circle of 6 large bells are 12 small bells, 48 bluebell buds, three of which are white and one of which is pink, together with 5 open blooms and one pentangle. There are 6 owls in the six trees that are just about to fill with leaves.",
     colourways: [
       {
-        name: "Original",
+        name: "Sussex Blue",
         // -v3 filename busts Vercel's 1-year immutable /img cache after the
         // re-crop. v2 was over-zoomed (cropped INTO the mandala, losing the
         // corners); v3 removes ONLY the lavender border off the raw original
@@ -686,7 +708,7 @@ export const PAINTINGS: Painting[] = [
       "There are thirteen constellations through which the ecliptic passes. The Babylonians used twelve, one for each month. Ophiuchus, through which the sun travels for eighteen days between November and December, was left out. It has been the excluded thirteenth ever since.\n\nOphiuchus is the Serpent Bearer. In Greek mythology, he is Asclepius, son of Apollo, who became so skilled in healing that he could raise the dead. Zeus killed him with a thunderbolt for upsetting the natural order, then placed him in the sky as a constellation, holding a serpent in both hands.\n\nThe Rod of Asclepius, a single serpent coiled around a staff, remains the global symbol of medicine. The serpent was chosen because its venom is simultaneously poison and cure. The same substance kills and heals. Asclepius understood that there is no such thing as a toxin that is only a toxin.\n\nStephen built this painting on a square — the Tibetan mandala palace form, four gates facing four directions, the sacred architecture of the cosmos. Most of his mandalas are circular. This one is not. The excluded constellation demanded a different kind of space.\n\nStephen described it as his homage to Ophiuchus, the constellation of the serpent bearer and toxin protector.",
     colourways: [
       {
-        name: "Original",
+        name: "Stained Glass",
         image: "/img/paintings/ophiuchus-original.jpg",
         hex: "#1a1330",
         isOriginal: true,
@@ -745,9 +767,9 @@ export const PAINTINGS: Painting[] = [
       "On 24 February 2009, a green comet made its closest approach to Earth. It came within 38 million miles, glowing green from cyanogen and diatomic carbon burning in its atmosphere. Cyanogen is a poisonous gas. It makes one of the most beautiful colours in the night sky.\n\nComet Lulin was discovered in 2007 by a nineteen-year-old Chinese student named Ye Quanzhi, studying a photograph taken at the Lulin Observatory in Taiwan. He noticed something that wasn't a star. No one had seen it before, because it had never been here before. This was Comet Lulin's first visit to the inner solar system, its first exposure to sunlight. It moved backwards, retrograde, against the direction of every planet.\n\nIt orbits the sun once every million years. It will not return.\n\nStephen painted it three years after its passing. A portrait of something most people missed entirely, already gone, made permanent.",
     colourways: [
       {
-        name: "Original",
+        name: "Lapis & Gold",
         image: "/img/paintings/lulin-original.jpg",
-        hex: "#7da383",
+        hex: "#caa54a",
         isOriginal: true,
         available: true,
       },

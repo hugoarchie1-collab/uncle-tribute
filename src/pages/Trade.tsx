@@ -51,8 +51,8 @@ const OFFERINGS: Offering[] = [
     title: "Estate prints, at project scale.",
     body: (
       <>
-        Every work in the catalogue is available as an estate-stamped,
-        hand-numbered giclée edition on 350gsm Hahnemühle archival paper,
+        Every work in the catalogue is available as an estate-stamped giclée
+        print, numbered within its drop, on 350gsm Hahnemühle archival paper,
         printed to order at Point 101, London. For multi-room schemes, repeat
         placements or a full suite across a property, volume and project
         pricing is offered <strong>on request</strong> — tell us the spaces
@@ -101,7 +101,7 @@ export const Trade = () => {
       <AmbientBackdrop opacity={0.4} />
       <Seo
         title="Trade & Interior Design"
-        description="For interior designers, art consultants and hospitality buyers. Estate-stamped editions of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
+        description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
         url="/trade"
       />
       <Nav overlay />
@@ -152,7 +152,7 @@ export const Trade = () => {
                 The estate works directly with interior designers, art
                 consultants and hospitality buyers — hotels, restaurants and
                 wellness spaces. Whether you are placing a suite of
-                estate-stamped editions across a property or commissioning a
+                estate-stamped prints across a property or commissioning a
                 single defining piece, the conversation starts here and is
                 handled, quietly and personally, by the family.
               </p>

@@ -41,11 +41,12 @@
     <meta name="twitter:description" content="A life's work in sacred geometry and mandala painting." />
     <meta name="twitter:image" content="https://themandalacompany.com/og-image.jpg" />
 
-    <!-- ?v=2 cache-busts the old black-rendering favicon (its inner group used
-         fill="currentColor", which resolves to BLACK in a tab context). -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
-    <!-- Installable, branded home-screen identity (cream rose emblem on the
-         #0a0908 brand ground). apple-touch-icon for iOS "Add to Home Screen";
+    <!-- New wax-seal mark (raster, so PNG favicons replace the old cream-emblem
+         SVG). ?v=3 busts the old favicon cache. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-seal-32.png?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-seal-16.png?v=3" />
+    <!-- Installable, branded home-screen identity (wax-seal rose on the #0a0908
+         brand ground). apple-touch-icon for iOS "Add to Home Screen";
          the web manifest gives Android/Chrome the installable app identity. -->
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -118,18 +119,23 @@
     </style>
 
     <!-- Preload the intro poster (the home LCP) so the landing paints fast.
-         WebP preloads only fire on browsers that support them; the JPG
-         remains as the in-DOM fallback via <picture>. The welcome hero
-         painting preload was REMOVED 2026-06-11: it taxed every NON-home
-         direct entry (painting pages, /verify…) ~62KB for an image that sits
-         a viewport below the fold on the one page that uses it. -->
-    <link rel="preload" as="image" href="/video/poster-v2.webp" type="image/webp" />
+         ⚠️ Points at the .JPG, not the .webp: the <video poster> attribute (the
+         frame actually painted on the common motion-allowed path) takes a single
+         URL and can't negotiate webp via <picture>, so it paints poster-v2.jpg
+         (VideoIntro.tsx). Preloading the .jpg therefore feeds the REAL LCP;
+         fetchpriority=high wins it the request race from byte one. The webp
+         poster is still used by the reduced-motion <picture> fallback (loaded
+         there, just not preloaded — a tiny minority). The welcome hero painting
+         preload was REMOVED 2026-06-11: it taxed every NON-home direct entry
+         (painting pages, /verify…) ~62KB for an image a viewport below the fold. -->
+    <link rel="preload" as="image" href="/video/poster-v2.jpg" type="image/jpeg" fetchpriority="high" />
 
     <!-- JSON-LD: site identity for search engines -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Person",
+        "@id": "https://themandalacompany.com/#person",
         "name": "Stephen Meakin",
         "alternateName": "SEM",
         "givenName": "Stephen",
@@ -184,7 +190,7 @@
         "image": "https://themandalacompany.com/og-image.jpg",
         "description": "The estate of British mandala artist and Sacred Geometer Stephen Meakin (SEM, 1966–2021). Estate-stamped, hand-numbered giclée editions of his life's work, made to order.",
         "foundingLocation": "Lewes, East Sussex, United Kingdom",
-        "founder": { "@type": "Person", "name": "Stephen Meakin" }
+        "founder": { "@id": "https://themandalacompany.com/#person" }
       }
     </script>
     <script type="application/ld+json">
