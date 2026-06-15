@@ -438,10 +438,14 @@ const ContainImage = ({
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
   <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-36 pb-8 md:pb-12">
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-      <span className={EYEBROW}>In memoriam</span>
-      <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+    {/* Meta rule. On mobile the 31-char date can't share a line with the label
+        + connecting rule, so they STACK (label, then date on its own line at
+        gently reduced tracking — no clip). From sm:+ it's the intended single
+        horizontal rule: label · hairline · date at full tracking. */}
+    <Reveal as="div" className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-6 border-b border-line pb-4 md:pb-5">
+      <span className={cn(EYEBROW, "shrink-0")}>In memoriam</span>
+      <span aria-hidden className="hidden sm:block h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0 !tracking-[0.18em] sm:!tracking-[0.32em]")}>{LIFE_DATES}</span>
     </Reveal>
 
     <Reveal as="div" className="mt-4 md:mt-6">
