@@ -186,7 +186,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-14 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-32 pb-8 md:pb-20">
         {/* MASTHEAD — bold left-aligned wayfinder cover (replacing the timid
             centred eyebrow + floating title). A meta rule, a giant Fraunces
             statement filling the width, the verbatim guidance packed
@@ -305,7 +305,7 @@ export const FindAPrint = () => {
             foot, so the page ends on the garden rather than bare black. The grid
             sits tight under the masthead's hairline — no min-h spacer, no big
             gap — so the page reads as one dense editorial block. */}
-        <section className="mt-9 md:mt-12">
+        <section className="mt-8 md:mt-12">
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of
             floating centred with dead gutters. auto-fill + minmax keeps the old
@@ -313,7 +313,7 @@ export const FindAPrint = () => {
             rather than orphaning to the centre. */}
         <div
           aria-live="polite"
-          className="grid gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+          className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-14"
           style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))" }}
         >
           {filtered.map(({ painting, cover, hoverCover }) => (

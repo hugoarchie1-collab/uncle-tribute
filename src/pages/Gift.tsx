@@ -167,7 +167,7 @@ export const Gift = () => {
         url="/gift"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-16">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             Bold left-aligned front cover (the AboutMasthead recipe): a meta
             rule → a giant Fraunces statement filling the width → the
@@ -256,7 +256,7 @@ export const Gift = () => {
           // optional recipient details + a sticky "your gift" summary. Section
           // headings carry a numeral so the two acts read as a deliberate
           // sequence, not a stack of separators floating in air.
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-8 md:gap-y-12">
             {/* ACT 01 — Choose an amount (the denser denomination grid) */}
             <Reveal as="section" className="lg:col-span-7">
               <div className="flex items-baseline gap-3 border-t border-line pt-4 mb-6 md:mb-7">
@@ -354,7 +354,7 @@ export const Gift = () => {
 
               {/* Recipient + message (all optional) — packed directly under
                   the ladder so the left rail reads as one continuous act. */}
-              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-10 md:mt-12 mb-6 md:mb-7">
+              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-8 md:mt-12 mb-6 md:mb-7">
                 <span className={cn(EYEBROW, "shrink-0")}>02</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>
                   For someone in particular?{" "}

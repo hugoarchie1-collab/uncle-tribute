@@ -1179,25 +1179,35 @@ const Story = ({ painting }: { painting: Painting }) => (
   <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto">
     {painting.artistQuote && (
       <Reveal as="div">
-        <blockquote className="m-0 pl-6 border-l-2 border-line py-2">
-          <p className="font-display italic text-[clamp(18px,1.9vw,22px)] leading-[1.45] text-ink m-0 mb-3">
+        {/* AboutMasthead grammar adapted to the monochrome PDP: a full-measure
+            hairline + muted-ink eyebrow, then the artist quote lifted to a
+            confident Fraunces statement (opsz ≤48, real italic 400) — the
+            page's bold prose header. COPY IS VERBATIM from paintings.ts
+            (painting.artistQuote), never re-typed. */}
+        <div aria-hidden className="h-px w-full bg-line" />
+        <p className={cn(EYEBROW_MUTED, "m-0 mt-5 mb-5")}>In Stephen&rsquo;s words</p>
+        <blockquote className="m-0">
+          <p
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3.1vw,40px)] leading-[1.25] text-ink m-0 mb-4 text-balance"
+            style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
+          >
             &ldquo;{painting.artistQuote}&rdquo;
           </p>
-          <cite className={cn(EYEBROW_MUTED, "not-italic")}>— Stephen Meakin</cite>
+          <cite className={cn(EYEBROW_MUTED, "not-italic block")}>— Stephen Meakin</cite>
         </blockquote>
       </Reveal>
     )}
 
     <Reveal
       as="div"
-      className="mt-12 md:mt-14 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
+      className="mt-8 md:mt-12 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
       ))}
     </Reveal>
 
-    <Reveal as="div" className="mt-12 md:mt-16">
+    <Reveal as="div" className="mt-8 md:mt-12">
       <Separator className="bg-line mb-7" />
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Original print</p>
       <p className="font-sans font-normal text-[16px] leading-[1.75] text-ink/85 m-0">
@@ -1649,11 +1659,11 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-24 pb-20 md:pb-28">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
-          <div className="flex items-center justify-between gap-4 mb-8 md:mb-10">
+          <div className="flex items-center justify-between gap-4 mb-6 md:mb-8">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
               className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-ink")}
@@ -1679,7 +1689,7 @@ export const PaintingDetail = () => {
               (right) on lg+. On mobile this collapses to a single column:
               image first, then the buy box (so buyers reach the controls
               quickly, before the story). */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-10 lg:gap-14 xl:gap-20 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6 lg:gap-14 xl:gap-20 items-start">
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[88px]">
@@ -1820,8 +1830,8 @@ export const PaintingDetail = () => {
 
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
-          <div className="mt-10 md:mt-20">
-            <Separator className="bg-line mb-10 md:mb-14 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
+          <div className="mt-10 md:mt-16">
+            <Separator className="bg-line mb-8 md:mb-12 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

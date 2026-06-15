@@ -273,13 +273,13 @@ const CommentRow = ({
         {/* OPTIONAL IMAGE — inline comment attachment scale, not a hero. The one
             allowed ring (on the image, never on the row). */}
         {memory.imageUrl ? (
-          <div className="mt-2.5 inline-block overflow-hidden rounded-xl ring-1 ring-line bg-bg max-w-[clamp(200px,60%,400px)]">
+          <div className="mt-2.5 block w-full md:inline-block overflow-hidden rounded-xl ring-1 ring-line bg-bg md:max-w-[clamp(200px,60%,400px)]">
             <img
               src={memory.imageUrl}
               alt={`A photograph shared by ${memory.name}`}
               loading="lazy"
               decoding="async"
-              className="block w-full h-auto object-cover object-top max-h-[clamp(220px,42vw,380px)]"
+              className="block w-full h-auto object-cover object-top md:max-h-[clamp(220px,42vw,380px)]"
             />
           </div>
         ) : null}

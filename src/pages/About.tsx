@@ -504,21 +504,9 @@ const AnegadaPoster = () => (
         </h3>
       </Reveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-16 items-start mt-12 md:mt-16">
-        <Reveal as="div" className="md:col-span-6">
-          <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.anegada[0]}</p>
-        </Reveal>
-        <Reveal as="figure" delay={0.08} className="m-0 md:col-span-5 md:col-start-8 max-w-[480px] md:max-w-none mx-auto md:mx-0 w-full">
-          <ContainImage
-            src="/img/about/24-circle-in-the-sand.jpg"
-            alt="A large circular mandala pattern drawn into the sand of a long beach, the shoreline stretching away behind it."
-            aspect="aspect-[4/5]"
-            parallax={0.06}
-            sizes="(min-width: 768px) 38vw, 100vw"
-          />
-          <PlateCaption>A circle drawn in the sand</PlateCaption>
-        </Reveal>
-      </div>
+      <Reveal as="div" className="mt-8 md:mt-16">
+        <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.anegada[0]}</p>
+      </Reveal>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
           content.ts (ABOUT.anegadaQuote), never truncated or re-typed. */}
@@ -785,20 +773,11 @@ export const About = () => {
                 </p>
               </blockquote>
             </Reveal>
-            <Reveal as="div" delay={0.1} className="mt-10 lg:mt-0 lg:col-span-4 lg:col-start-9">
-              <figure className="m-0 max-w-[460px] lg:max-w-none mx-auto lg:mx-0">
-                <ContainImage
-                  src="/img/about/12-stephen-portrait.jpg"
-                  alt="Close portrait of Stephen Meakin against a dark background, bearded and smiling slightly."
-                  aspect="aspect-[5/6]"
-                  sizes="(min-width: 1024px) 30vw, 100vw"
-                />
-                <PlateCaption>Stephen — SEM</PlateCaption>
-              </figure>
+            <Reveal as="div" delay={0.1} className="mt-8 lg:mt-0 lg:col-span-4 lg:col-start-9">
               {/* Facts rail — dt/dd from content.ts constants; Staffordshire is
                   earlyLife[0]'s word, Phoenix Place legacy[0]'s. Collapses to a
                   horizontal hairline strip below lg. */}
-              <dl className="mt-7 flex flex-wrap gap-x-10 gap-y-4 border-y border-line py-5 lg:block lg:space-y-5 lg:border-y-0 lg:border-l lg:border-line lg:py-0 lg:pl-6">
+              <dl className="flex flex-wrap gap-x-10 gap-y-4 border-y border-line py-5 lg:block lg:space-y-5 lg:border-y-0 lg:border-l lg:border-line lg:py-0 lg:pl-6">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
                   <dd className={cn(META, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
@@ -823,7 +802,7 @@ export const About = () => {
             mat). The portrait's caption is right-set so the family-group
             print pulled up beside it never covers it. */}
         <section className={cn(SECTION, "py-8 md:py-10")}>
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start">
             <Reveal as="div" className="col-span-2 md:col-span-7">
               <Plate
                 src="/img/about/13-stephen-outdoor-portrait.jpg"
@@ -939,7 +918,7 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="wandering" title="The wandering years." />
 
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start">
             <Reveal as="div" className="col-span-2 md:col-span-7">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
@@ -962,11 +941,11 @@ export const About = () => {
             </Reveal>
           </div>
 
-          <Reveal as="div" className="max-w-[62ch] mx-auto mt-12 md:mt-16">
+          <Reveal as="div" className="max-w-[62ch] mx-auto mt-8 md:mt-16">
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-start mt-12 md:mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start mt-8 md:mt-16">
             <Reveal as="div" className="col-span-1 md:col-span-4">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -1102,7 +1081,7 @@ export const About = () => {
           </div>
 
           {/* The four key components, named exactly as in legacy[0]. */}
-          <Reveal as="div" className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 mt-14 md:mt-20 mb-10 md:mb-14">
+          <Reveal as="div" className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 mt-8 md:mt-20 mb-10 md:mb-14">
             {TRADITIONS.map((t) => (
               <div key={t.numeral} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>

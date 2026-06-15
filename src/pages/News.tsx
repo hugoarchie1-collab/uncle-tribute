@@ -309,8 +309,8 @@ export const News = () => {
             paragraph stacked above a lonely panel. Everything here is announced
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <section className="border-t border-line pt-9 md:pt-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start">
+          <section className="border-t border-line pt-8 md:pt-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
               {/* The programme note — estate voice, set as a designed lead, NOT a
                   thin centred ribbon. */}
               <Reveal as="div" className="lg:col-span-5">
@@ -371,7 +371,7 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="border-t border-line pt-9 md:pt-12 mb-12 md:mb-16"
+            className="border-t border-line pt-8 md:pt-12 mb-8 md:mb-16"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
               <div className="md:col-span-5 w-full max-w-[460px] md:max-w-none overflow-hidden rounded-xl ring-1 ring-line bg-bg">
@@ -408,7 +408,7 @@ export const News = () => {
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-9 md:mb-12 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
+              className="mb-8 md:mb-12 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
@@ -444,7 +444,7 @@ export const News = () => {
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-10 md:mt-14")}
+                  className={cn(gi > 0 && "mt-8 md:mt-14")}
                 >
                   <Reveal
                     as="div"
@@ -474,7 +474,7 @@ export const News = () => {
             in the empty-state above is the single, leading capture (no duplicate
             panel) and there are no entry CTAs pointing at #notify yet. */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-12 md:mt-16 scroll-mt-28 border-t border-line pt-9 md:pt-12">
+          <Reveal as="section" delay={0.05} className="mt-8 md:mt-16 scroll-mt-28 border-t border-line pt-8 md:pt-12">
             <div id="notify">
               <NewsletterSignup
                 variant="panel"

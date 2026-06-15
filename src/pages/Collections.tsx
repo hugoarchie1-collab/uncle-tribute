@@ -231,38 +231,54 @@ export const Collections = () => {
       </div>
 
       <main className="relative z-10">
-        {/* PAGE INTRO — generic, future-proof opener. Deliberately does NOT
+        {/* PAGE INTRO — bold masthead (the AboutMasthead grammar): a meta rule,
+            the name set ENORMOUS edge-to-edge (Fraunces 700, opsz 48), then the
+            opening passage packed immediately beneath a hairline — so the very
+            first screen is dense, confident type, not a small centred header
+            stranded in air. Generic + future-proof: it deliberately does NOT
             name or count the collections, so it never goes stale as new
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-10 text-center"
+          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-8"
         >
-          <p
-            className={cn(EYEBROW, "m-0 mb-5")}
+          <div
+            className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            Everything he finished
-          </p>
+            <span className={EYEBROW}>Everything he finished</span>
+            <span aria-hidden="true" className="h-px flex-1 bg-ink/15" />
+            <span className={cn(EYEBROW_MUTED, "shrink-0")}>The estate catalogue</span>
+          </div>
+
           <h1
-            className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6")}
-            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.82]"
+            style={{
+              fontVariationSettings: '"opsz" 48, "wght" 700',
+              fontSize: "clamp(60px, 11vw, 184px)",
+              textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+            }}
           >
             The complete works.
           </h1>
-          <p
-            className={cn(SUBTITLE, "max-w-[640px] mx-auto my-0")}
-            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            Every painting Stephen completed, offered as an estate-stamped giclée and made to order. New colourways are released as the estate brings them to print.
-          </p>
-          <Link
-            to="/for-you"
-            className="inline-flex items-center gap-1.5 mt-7 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-          >
-            Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
-          </Link>
+
+          <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-7">
+            <p
+              className={cn(SUBTITLE, "lg:col-span-8 max-w-none my-0")}
+              style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+            >
+              Every painting Stephen completed, offered as an estate-stamped giclée and made to order. New colourways are released as the estate brings them to print.
+            </p>
+            <div className="lg:col-span-4 lg:text-right">
+              <Link
+                to="/for-you"
+                className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
+                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+              >
+                Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
 
           {/* BUNDLE SIZE — one page-level control that re-prices every set deal
               (the per-collection cards + the complete-catalogue panel) in step.
@@ -272,7 +288,7 @@ export const Collections = () => {
               in BUNDLE_TIERS), so the advertised £ always equals what checkout
               charges at that size. */}
           {BUNDLE_TIERS.length > 1 && (
-            <div className="mt-10">
+            <div className="mt-7 md:mt-8">
               <p
                 className={cn(EYEBROW, "m-0 mb-3")}
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -351,7 +367,7 @@ export const Collections = () => {
               className="relative scroll-mt-24"
             >
               <div className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
-                <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-8 md:mb-10">
+                <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-7 md:mb-9">
                   <p
                     className={cn(EYEBROW, "m-0 mb-5")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -527,7 +543,7 @@ export const Collections = () => {
                 {bundle && items.length > 1 && (
                   <Reveal
                     as="div"
-                    className="mt-12 md:mt-16 mx-auto max-w-[820px]"
+                    className="mt-8 md:mt-12 mx-auto max-w-[820px]"
                   >
                     <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
                       <p className={cn(EYEBROW, "m-0 mb-4")}>
@@ -576,9 +592,9 @@ export const Collections = () => {
             the basket holds one line of every painting. */}
         <Reveal
           as="section"
-          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-16"
         >
-          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 py-14 md:py-20 lg:py-24 text-center">
+          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 py-8 md:py-14 lg:py-16 text-center">
             <p className={cn(EYEBROW, "m-0 mb-5")}>
               The complete catalogue
             </p>

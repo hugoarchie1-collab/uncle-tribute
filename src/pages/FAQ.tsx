@@ -265,7 +265,7 @@ export const FAQ = () => {
             self-densifying — items flow two-up on md+ filling the horizontal
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
-        <section className={cn(SECTION, "pb-12 md:pb-16")}>
+        <section className={cn(SECTION, "pb-8 md:pb-16")}>
           <Reveal
             as="div"
             className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-10 md:gap-y-12 border-t border-line"
