@@ -3,21 +3,31 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, TITLE, SUBTITLE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
  * /faq — frequently asked questions.
  *
- * Nine sections, each with an editorial eyebrow + question (font-display
- * serif, via the shared TITLE token) + answer (font-sans, muted ink). Visual
- * register sits between About and Legal — readable long-form copy, not
- * cinematic. Designed to be the first place a curious buyer lands when they
- * want to know "is this real?".
+ * Redesigned to the bold/dense house pattern (the AboutMasthead law): a meta
+ * rule + a LARGE left-aligned Fraunces statement filling the width, supporting
+ * copy packed immediately beneath under a hairline — NOT a timid eyebrow +
+ * shrunk centred title floating in a narrow column. The eight questions then
+ * run as a NUMBERED two-column editorial register (a bordered question grid),
+ * densifying what was a single thin column of stacked paragraphs into dense
+ * horizontal blocks. Compressed vertical rhythm throughout (no big gap-14 air,
+ * no clamp(5rem,…) hero pad). Visual register sits between About and Legal —
+ * readable long-form copy, not cinematic. Designed to be the first place a
+ * curious buyer lands when they want to know "is this real?".
+ *
+ * ⚠️ EVERY answer / eyebrow / question below is verbatim — restructure LAYOUT
+ * only; never edit the copy, links, emails or prices.
  */
+
+const SECTION =
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 interface QA {
   eyebrow: string;
@@ -167,6 +177,73 @@ const FAQS: QA[] = [
   },
 ];
 
+/** Two-digit ordinal for the question rail — 01 · 02 · 03 … */
+const ordinal = (i: number) => String(i + 1).padStart(2, "0");
+
+// ─── FaqMasthead ─────────────────────────────────────────────────────────────
+// The bold front cover — the AboutMasthead recipe ported to FAQ: a meta rule
+// (eyebrow + hairline + question count), the page statement set ENORMOUS and
+// edge-to-edge in Fraunces (opsz 48, real loaded weight 700, font-synthesis
+// none), then the supporting passage packed immediately beneath under a
+// border-t — so the first screen is dense confident type filling the width,
+// not a shrunk centred title floating in a thin column.
+const FaqMasthead = () => (
+  <section className={cn(SECTION, "pt-28 md:pt-36 pb-8 md:pb-12")}>
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <span className={EYEBROW}>Before you buy</span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0")}>
+        {ordinal(FAQS.length - 1)} questions
+      </span>
+    </Reveal>
+
+    <Reveal as="div" className="mt-4 md:mt-6">
+      <h1
+        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
+        style={{
+          fontVariationSettings: '"opsz" 48, "wght" 700',
+          fontSynthesis: "none",
+          fontSize: "clamp(58px, 12vw, 220px)",
+        }}
+      >
+        What people<br />ask.
+      </h1>
+    </Reveal>
+
+    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+      <Reveal as="div" className="lg:col-span-3">
+        <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+          Provenance · paper · editions · care
+        </p>
+      </Reveal>
+      <Reveal as="div" delay={0.06} className="lg:col-span-9">
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[40ch]"
+          style={{
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(21px, 2.5vw, 34px)",
+            lineHeight: 1.32,
+          }}
+        >
+          On provenance, paper, editions, framing, hand-finishing, shipping
+          and after-sale care. For anything not covered here, write to{" "}
+          <a
+            href="mailto:info@themandalacompany.com"
+            className="text-accent hover:underline"
+          >
+            info@themandalacompany.com
+          </a>
+          {" "}or use the{" "}
+          <Link to="/contact" className="text-accent hover:underline">
+            contact page
+          </Link>
+          .
+        </p>
+      </Reveal>
+    </div>
+  </section>
+);
+
 export const FAQ = () => {
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -178,43 +255,54 @@ export const FAQ = () => {
         url="/faq"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
-        <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Before you buy</p>
-          <h1 className={cn(TITLE, "m-0 !text-[clamp(30px,4.4vw,56px)] !leading-[1.05]")}>What people ask.</h1>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0">
-            On provenance, paper, editions, framing, hand-finishing, shipping
-            and after-sale care. For anything not covered here, write to{" "}
-            <a
-              href="mailto:info@themandalacompany.com"
-              className="text-accent hover:underline"
-            >
-              info@themandalacompany.com
-            </a>
-            {" "}or use the{" "}
-            <Link to="/contact" className="text-accent hover:underline">
-              contact page
-            </Link>
-            .
-          </p>
-          <Separator className="bg-line mt-[clamp(0.875rem,2.5vw,1.25rem)]" />
-        </Reveal>
+      <main className="relative z-10 flex-1">
+        {/* 1 · MASTHEAD — bold left-aligned front cover. */}
+        <FaqMasthead />
 
-        <Reveal as="div" className="flex flex-col gap-14">
-          {FAQS.map((qa, i) => (
-            <section key={i} className="flex flex-col gap-4">
-              <p className={cn(EYEBROW, "m-0")}>
-                {qa.eyebrow}
-              </p>
-              <h2 className={cn("font-display font-semibold tracking-[-0.04em] text-balance text-ink", "m-0 text-[clamp(24px,2.8vw,40px)] leading-[1.1]")}>
-                {qa.question}
-              </h2>
-              <div className={cn(SUBTITLE, "max-w-none 2xl:max-w-[68ch] 2xl:text-[19px]")}>
-                {qa.answer}
-              </div>
-            </section>
-          ))}
-        </Reveal>
+        {/* 2 · THE QUESTIONS — a numbered two-column editorial register. Each
+            answer / eyebrow / question is verbatim; only the LAYOUT changed
+            from the old single thin column with gap-14 dead air. The grid is
+            self-densifying — items flow two-up on md+ filling the horizontal
+            space, divided by hairlines so they read as dense blocks, not an
+            endless scroll. */}
+        <section className={cn(SECTION, "pb-12 md:pb-16")}>
+          <Reveal
+            as="div"
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-10 md:gap-y-12 border-t border-line"
+          >
+            {FAQS.map((qa, i) => (
+              <section
+                key={i}
+                className="relative flex flex-col gap-3.5 pt-7 md:pt-9 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+              >
+                <div className="flex items-baseline gap-4">
+                  <span
+                    aria-hidden
+                    className="font-display font-semibold leading-none text-accent/55 select-none shrink-0"
+                    style={{
+                      fontVariationSettings: '"opsz" 32, "wght" 600',
+                      fontSize: "clamp(20px,1.7vw,26px)",
+                    }}
+                  >
+                    {ordinal(i)}
+                  </span>
+                  <p className={cn(EYEBROW, "m-0 self-center")}>{qa.eyebrow}</p>
+                </div>
+                <h2
+                  className={cn(
+                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0",
+                    "text-[clamp(23px,2.4vw,34px)] leading-[1.08]",
+                  )}
+                >
+                  {qa.question}
+                </h2>
+                <div className={cn(SUBTITLE, "max-w-none !text-[17px] md:!text-[18px] 2xl:!text-[19px] !leading-[1.7]")}>
+                  {qa.answer}
+                </div>
+              </section>
+            ))}
+          </Reveal>
+        </section>
       </main>
       <FooterCatalogue />
       <Footer />

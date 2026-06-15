@@ -1,29 +1,34 @@
 // src/pages/News.tsx — the estate calendar, a Beeper-faithful changelog/feed
-// dressed in this brand's dark cinematic register, CENTRED throughout (Hugo).
-// Named export, lazy-imported in App.tsx. Wiring: SECONDARY_LINKS (Nav) +
-// Footer SITE_LINKS + sitemap.xml.
+// dressed in this brand's dark cinematic register. Named export, lazy-imported
+// in App.tsx. Wiring: SECONDARY_LINKS (Nav) + Footer SITE_LINKS + sitemap.xml.
 //
-// WHAT THIS BORROWS FROM BEEPER (the DNA worth keeping):
-//   - ONE narrow reading column (~760px), but CENTRED as a column AND centred
-//     within — header furniture, featured hero, feed and sign-up all sit on a
-//     single vertical centreline (Hugo: "centred like the other pages").
+// REDESIGN 2026-06-15 (Hugo's no-blank-space law, matched to the just-shipped
+// About masthead): the page opens on a BOLD LEFT-ALIGNED MASTHEAD — a meta rule,
+// a giant edge-to-edge Fraunces statement (opsz 48, the AboutMasthead recipe),
+// and the programme intro packed immediately beneath under a border-t, dense and
+// confident over the indigo carpet. NOT a small eyebrow + centred title floating
+// in space (the old timid hero, now gone). Section paddings compressed to
+// py-9..py-14; the min-h-screen spacer, the pb-28 foot pad and the big mt-16..24
+// gaps are killed. The empty state (NEWS is empty by design) is densified into a
+// two-column editorial block — programme note beside the live waitlist — so it
+// reads as a designed spread, never a lonely paragraph above a lonely panel.
+//
+// WHAT THIS KEEPS FROM BEEPER (the feed DNA, for when NEWS fills):
 //   - BORDERLESS entries separated by whitespace + a single hairline divide
 //     (`divide-y divide-line`), NOT a uniform bordered card grid, NO shadows.
 //   - A quiet date stamp as a secondary line near the title (human displayDate,
 //     with <time dateTime> when isoDate is present — never a relative "3 days ago").
 //   - A slim text-style filter/segment row (NEWS_FILTERS) as quiet eyebrow tabs,
-//     ONE active state, centred.
+//     ONE active state.
 //   - A single large featured item at the top (Beeper's hero post) — album-cover
-//     energy, never a carousel — restyled as a centred, reverent "next release".
-//   - Generous vertical rhythm so scanning feels effortless and calm.
+//     energy, never a carousel — restyled as a reverent "next release" spread.
 //
 // WHAT THIS INVERTS so it is premium, not a generic SaaS changelog:
 //   - Titles + group headings are Fraunces (font-display), NOT Beeper's sans.
 //     Sans is held to EYEBROW / EYEBROW_TIGHT / META / SUBTITLE only.
 //   - Dark #0a0908 / cream ink / rust held to AT MOST three places (featured
 //     eyebrow, active filter tab, hover/focus) — never a colour-coded badge wall.
-//   - NO emoji category icons, NO version numbers, NO left timeline spine + dots
-//     (a left rail fights "centred" and reads as a generic dev-changelog).
+//   - NO emoji category icons, NO version numbers, NO left timeline spine + dots.
 //
 // Tokens imported from ui/tokens (never re-typed). Reveal wraps WHOLE elements
 // only. AssetImage src is .jpg (picture swaps webp).
@@ -40,7 +45,7 @@ import { Reveal } from "../components/Reveal";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE, META } from "../components/ui/tokens";
 import {
   NEWS,
   NEWS_FILTERS,
@@ -115,12 +120,13 @@ const TypePill = ({ entry }: { entry: NewsEntry }) => (
   </span>
 );
 
-// One CENTRED feed entry. Borderless (the divide-y between rows does the
-// separating work) with a centred stack: date eyebrow -> optional square cover
-// (releases only, album energy) -> type pill -> Fraunces title -> location ->
-// summary -> CTA. Release rows inset a small square cover for rhythm; text-led
-// announcements / exhibitions / workshops / events stay lean (varied, not a
-// uniform card grid).
+// One DENSE editorial feed entry. Borderless (the divide-y between rows does the
+// separating work). A left-aligned magazine row: the date is a quiet rail in the
+// left column, the body (pill -> Fraunces title -> location -> summary -> CTA)
+// fills the right — so each row reads as packed editorial across the measure
+// rather than a thin centred stack floating in air. Release rows inset a small
+// square cover for album-cover rhythm; text-led announcements / exhibitions /
+// workshops / events stay lean (varied, not a uniform card grid).
 const EntryRow = ({ entry }: { entry: NewsEntry }) => {
   const ctaClass = cn(
     EYEBROW_TIGHT,
@@ -144,9 +150,9 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
     ) : null;
 
   return (
-    <article className="group flex flex-col items-center text-center py-8 md:py-10">
-      {/* DATE — human state line as a centred eyebrow above the title. */}
-      <p className={cn(EYEBROW_TIGHT, "m-0 mb-4")}>
+    <article className="group grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start py-7 md:py-9">
+      {/* DATE — human state line as a quiet left rail (top line on mobile). */}
+      <p className={cn(EYEBROW_TIGHT, "m-0 md:col-span-3 md:pt-1")}>
         {entry.isoDate ? (
           <time dateTime={entry.isoDate}>{entry.displayDate}</time>
         ) : (
@@ -154,35 +160,97 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
         )}
       </p>
 
-      {/* RELEASE COVER — a centred square, album energy. Releases only. */}
-      {isRelease(entry) && entry.cover ? (
-        <div className="mb-6 w-[132px] sm:w-[156px] md:w-[180px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
-          <AssetImage
-            src={entry.cover}
-            alt={entry.title}
-            loading="lazy"
-            decoding="async"
-            className="block aspect-square w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          />
+      {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
+      <div className="md:col-span-9 flex flex-col sm:flex-row gap-5 md:gap-7 items-start">
+        {isRelease(entry) && entry.cover ? (
+          <div className="shrink-0 w-[132px] sm:w-[148px] md:w-[168px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
+            <AssetImage
+              src={entry.cover}
+              alt={entry.title}
+              loading="lazy"
+              decoding="async"
+              className="block aspect-square w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+          </div>
+        ) : null}
+
+        <div className="min-w-0">
+          <TypePill entry={entry} />
+
+          <h3 className="mt-3 mb-2 font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,32px)] leading-[1.1] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
+            {entry.title}
+          </h3>
+
+          {entry.location ? (
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-2 tracking-[0.22em]")}>{entry.location}</p>
+          ) : null}
+
+          <p className={cn(META, "m-0 max-w-[58ch] text-[14.5px]")}>{entry.summary}</p>
+
+          {cta}
         </div>
-      ) : null}
-
-      <TypePill entry={entry} />
-
-      <h3 className="mt-4 mb-2 max-w-[20ch] mx-auto font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,28px)] leading-[1.15] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
-        {entry.title}
-      </h3>
-
-      {entry.location ? (
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-2 tracking-[0.22em]")}>{entry.location}</p>
-      ) : null}
-
-      <p className={cn(META, "m-0 mx-auto max-w-[42ch] sm:max-w-[52ch] md:max-w-[58ch] text-[14.5px]")}>{entry.summary}</p>
-
-      {cta}
+      </div>
     </article>
   );
 };
+
+// ─── NewsMasthead ────────────────────────────────────────────────────────────
+// The front cover — the AboutMasthead recipe, ported to the estate calendar: a
+// meta rule (eyebrow · hairline · place tag), then a giant left-aligned Fraunces
+// statement set edge-to-edge (opsz 48, real loaded weight, font-synthesis none),
+// then the programme note packed immediately beneath under a border-t — dense,
+// confident type over the indigo carpet. No timid centred header floating in
+// space. The verbatim Seo/description copy is unchanged; this is page framing
+// microcopy only (the page owns its own headings, never sourced content).
+const NewsMasthead = () => (
+  <section className="relative pt-8 md:pt-10 pb-7 md:pb-9">
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <span
+        className={EYEBROW}
+        style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+      >
+        The estate calendar
+      </span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
+    </Reveal>
+
+    <Reveal as="div" className="mt-4 md:mt-6">
+      <h1
+        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
+        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(60px, 13vw, 220px)" }}
+      >
+        News &amp;<br />releases.
+      </h1>
+    </Reveal>
+
+    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+      <Reveal as="div" className="lg:col-span-3">
+        <p
+          className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+          style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
+        >
+          Collections &amp; singles · exhibitions · workshops · events
+        </p>
+      </Reveal>
+      <Reveal as="div" delay={0.06} className="lg:col-span-9">
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+          style={{
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(22px, 2.6vw, 36px)",
+            lineHeight: 1.3,
+            textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+          }}
+        >
+          What is coming from the estate — new prints released like albums and singles,
+          exhibitions, the return of Steve's workshop, and gatherings hosted by The Mandala
+          Company.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+);
 
 export const News = () => {
   const [active, setActive] = useState<NewsType | "all">("all");
@@ -208,7 +276,7 @@ export const News = () => {
   const hasNews = NEWS.length > 0;
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+    <div className="relative flex min-h-[100svh] flex-col overflow-x-hidden">
       {/* FIXED BACKDROP LAYER — one blurred indigo Persian-carpet scene drifting
           ±6% with whole-page scroll (Collections' treatment, single image). */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -230,110 +298,119 @@ export const News = () => {
         url="/news"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        {/* HEADER — centred, matching the other pages (Hugo). Carries the EXACT
-            Collections intro-header text-shadows so the cream copy stays legible
-            over the lightest (0.38) top band of the scrim, where the carpet
-            texture shows through most. */}
-        <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] mx-auto text-center mb-9 md:mb-12">
-          <p
-            className={cn(EYEBROW, "m-0 mb-5")}
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-          >
-            The estate calendar
-          </p>
-          <h1
-            className={cn(TITLE, "mx-auto my-0 mb-6")}
-            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            News &amp; releases.
-          </h1>
-          <p
-            className={cn(SUBTITLE, "mx-auto my-0")}
-            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            What is coming from the estate — new prints released like albums and singles,
-            exhibitions, the return of Steve's workshop, and gatherings hosted by The Mandala
-            Company.
-          </p>
-        </Reveal>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+        {/* MASTHEAD — bold left-aligned front cover (replaces the old timid
+            centred eyebrow + title + subtitle floating in space). */}
+        <NewsMasthead />
 
-        {/* EMPTY STATE — no fabricated content. The live page today: a centred,
-            dignified "being prepared" line, with the WAITLIST raised to the clear
-            primary action (the foot Friends & Family panel is suppressed below
-            while NEWS is empty so this single capture leads, never doubled). Shown
-            until real entries are added to src/data/news.ts. */}
+        {/* EMPTY STATE — no fabricated content. NEWS is empty by design, so the
+            live page is a DENSE two-column editorial spread: the programme note
+            packed left, the live waitlist beside it right — never a lonely
+            paragraph stacked above a lonely panel. Everything here is announced
+            only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <div className="max-w-[760px] mx-auto">
-            <Reveal as="div" className="text-center">
-              <p
-                className={cn(SUBTITLE, "my-0")}
-                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-              >
-                The estate calendar is being prepared. Everything here is announced
-                only once it is confirmed — each release a limited, numbered edition,
-                quiet and small.
-              </p>
-            </Reveal>
+          <section className="border-t border-line pt-9 md:pt-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start">
+              {/* The programme note — estate voice, set as a designed lead, NOT a
+                  thin centred ribbon. */}
+              <Reveal as="div" className="lg:col-span-5">
+                <p className={cn(EYEBROW, "m-0 mb-5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
+                  Being prepared
+                </p>
+                <p
+                  className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
+                  style={{
+                    fontVariationSettings: '"opsz" 36, "wght" 400',
+                    fontSize: "clamp(24px, 2.6vw, 38px)",
+                    lineHeight: 1.28,
+                    textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+                  }}
+                >
+                  The estate calendar is being prepared. Everything here is announced
+                  only once it is confirmed — each release a limited, numbered edition,
+                  quiet and small.
+                </p>
+                {/* Programme spine — a quiet ledger so the column reads dense, not
+                    half-empty. Page framing microcopy (no sourced content). */}
+                <ul className="list-none p-0 m-0 mt-8 md:mt-10">
+                  {[
+                    ["Collections & singles", "Prints released like albums"],
+                    ["Exhibitions", "Where the work goes on view"],
+                    ["Workshops", "The return of Steve's classes"],
+                    ["Events", "Gatherings hosted by the estate"],
+                  ].map(([label, note]) => (
+                    <li key={label} className="border-t border-line py-3.5">
+                      <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>{label}</p>
+                      <p className={cn(META, "m-0")}>{note}</p>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
 
-            {/* WAITLIST — the primary action while NEWS is empty. Reuses the
-                NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
-                framing is provenance, not hype: early access + low edition numbers,
-                never countdowns or "SALE". Centred like the rest of the page. */}
-            <Reveal as="div" delay={0.06} className="mt-10 md:mt-12 flex justify-center">
-              <NewsletterSignup
-                variant="panel"
-                eyebrow="Join the waitlist"
-                title="Be first to know about the next release."
-                intro="When the next edition is released, those on the waitlist hear first — an early window to take a piece while the lowest edition numbers are still available. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
-              />
-            </Reveal>
-          </div>
+              {/* WAITLIST — the primary action while NEWS is empty. Reuses the
+                  NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
+                  framing is provenance, not hype: early access + low edition numbers,
+                  never countdowns or "SALE". Sits beside the note, not below it. */}
+              <Reveal as="div" delay={0.06} className="lg:col-span-7 lg:sticky lg:top-28">
+                <NewsletterSignup
+                  variant="panel"
+                  eyebrow="Join the waitlist"
+                  title="Be first to know about the next release."
+                  intro="When the next edition is released, those on the waitlist hear first — an early window to take a piece while the lowest edition numbers are still available. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
+                />
+              </Reveal>
+            </div>
+          </section>
         ) : null}
 
-        {/* FEATURED NEXT-DROP HERO — one item, never a carousel. A centred,
-            reverent stack: cover above, then the ONE rust eyebrow on the page,
-            the Fraunces title, the summary, and an inline Friends & Family hook. */}
+        {/* FEATURED NEXT-DROP HERO — one item, never a carousel. A BOLD asymmetric
+            spread: the album cover fills the left, the ONE rust eyebrow + Fraunces
+            title + summary + inline Friends & Family hook pack the right. Reads as
+            a designed feature, not a tall centred stack. */}
         {hasNews && featured && isRelease(featured) && featured.cover ? (
           <Reveal
             as="section"
             delay={0.05}
-            className="mb-14 md:mb-20 mx-auto w-full max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] flex flex-col items-center text-center"
+            className="border-t border-line pt-9 md:pt-12 mb-12 md:mb-16"
           >
-            <div className="mb-8 w-full max-w-[460px] overflow-hidden rounded-xl ring-1 ring-line bg-bg">
-              <AssetImage
-                src={featured.cover}
-                alt={featured.title}
-                className="block aspect-square w-full object-cover"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              <div className="md:col-span-5 w-full max-w-[460px] md:max-w-none overflow-hidden rounded-xl ring-1 ring-line bg-bg">
+                <AssetImage
+                  src={featured.cover}
+                  alt={featured.title}
+                  className="block aspect-square w-full object-cover"
+                />
+              </div>
+              <div className="md:col-span-7">
+                <p className={cn(EYEBROW, "m-0 mb-4")}>
+                  {pillLabel(featured)} · {featured.displayDate}
+                </p>
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,64px)] leading-[0.98] text-ink text-balance m-0 mb-5 hero-text-shadow">
+                  {featured.title}
+                </h2>
+                <p className={cn(SUBTITLE, "my-0")}>{featured.summary}</p>
+                {/* The "be the first to know" hook — inline variant takes only
+                    eyebrow + intro (title is ignored on the inline variant). */}
+                <NewsletterSignup
+                  variant="inline"
+                  eyebrow="Be the first to know"
+                  intro="Leave your name and we'll write the moment this edition is released."
+                />
+              </div>
             </div>
-            <p className={cn(EYEBROW, "m-0 mb-4")}>
-              {pillLabel(featured)} · {featured.displayDate}
-            </p>
-            <h2 className="font-display font-semibold tracking-[-0.035em] text-[clamp(32px,4.4vw,56px)] leading-[1.0] text-ink text-balance m-0 mb-5 hero-text-shadow">
-              {featured.title}
-            </h2>
-            <p className={cn(SUBTITLE, "mx-auto my-0")}>{featured.summary}</p>
-            {/* The "be the first to know" hook — inline variant takes only
-                eyebrow + intro (title is ignored on the inline variant). */}
-            <NewsletterSignup
-              variant="inline"
-              eyebrow="Be the first to know"
-              intro="Leave your name and we'll write the moment this edition is released."
-            />
           </Reveal>
         ) : null}
 
         {hasNews && (
           <>
             {/* TYPE-FILTER TABS — Beeper's tabs restyled as quiet eyebrow pills,
-                CENTRED; rust marks only the active tab. */}
+                left-aligned to the masthead; rust marks only the active tab. */}
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-12 md:mb-14 flex flex-wrap items-center justify-center gap-2.5 border-b border-line pb-6"
+              className="mb-9 md:mb-12 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
             >
-              <div role="group" aria-label="Filter news by type" className="flex flex-wrap justify-center gap-2.5">
+              <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
                   const on = active === f.id;
                   return (
@@ -358,28 +435,28 @@ export const News = () => {
               </span>
             </Reveal>
 
-            {/* THE FEED — one calm, CENTRED reading column (no left timeline
-                spine). Status groups carry a hairline rule above a centred
-                Fraunces heading; entries are borderless, separated by whitespace
-                + a single hairline divide. */}
-            <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px]">
+            {/* THE FEED — one calm reading column (no left timeline spine). Status
+                groups carry a hairline rule above a left-aligned Fraunces heading
+                (matching the masthead); the season-note sits inline beside it.
+                Entries are borderless, separated by whitespace + a hairline divide. */}
+            <div className="w-full">
               {groups.map((group, gi) => (
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-12 md:mt-16")}
+                  className={cn(gi > 0 && "mt-10 md:mt-14")}
                 >
                   <Reveal
                     as="div"
                     delay={Math.min(gi * 0.05, 0.2)}
-                    className="text-center border-t border-line pt-8 md:pt-10"
+                    className="flex items-baseline gap-4 flex-wrap border-t border-line pt-7 md:pt-9"
                   >
-                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(24px,3vw,40px)] leading-[1.04] text-ink m-0">
+                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.4vw,48px)] leading-[1.0] text-ink m-0">
                       {group.heading}
                     </h2>
-                    <p className={cn(EYEBROW_MUTED, "m-0 mt-3 hidden sm:block")}>{group.note}</p>
+                    <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>{group.note}</p>
                   </Reveal>
-                  <div className="mt-2 divide-y divide-line">
+                  <div className="mt-1 divide-y divide-line">
                     {group.entries.map((entry, i) => (
                       <Reveal key={entry.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
                         <EntryRow entry={entry} />
@@ -397,8 +474,8 @@ export const News = () => {
             in the empty-state above is the single, leading capture (no duplicate
             panel) and there are no entry CTAs pointing at #notify yet. */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-16 md:mt-24 scroll-mt-28">
-            <div id="notify" className="flex justify-center">
+          <Reveal as="section" delay={0.05} className="mt-12 md:mt-16 scroll-mt-28 border-t border-line pt-9 md:pt-12">
+            <div id="notify">
               <NewsletterSignup
                 variant="panel"
                 eyebrow="Friends & Family"

@@ -6,7 +6,7 @@ import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_TIGHT, TITLE, SUBTITLE, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import {
   PAINTINGS,
@@ -186,106 +186,140 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        {/* UPPER HALF — wayfinder header + colour controls. The woodland backdrop
-            owns the top of the page (full opacity until ~0.40 of page scroll),
-            so this region reads over the woodland tunnel. */}
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-14 md:pb-20">
+        {/* MASTHEAD — bold left-aligned wayfinder cover (replacing the timid
+            centred eyebrow + floating title). A meta rule, a giant Fraunces
+            statement filling the width, the verbatim guidance packed
+            immediately beneath, and the colour controls promoted to a
+            confident editorial panel — all over the woodland tunnel, which owns
+            the top of the page (full opacity until ~0.40 of page scroll). */}
         <section>
-        <Reveal as="header" className="max-w-[760px] 2xl:max-w-[880px] 3xl:max-w-[960px] mx-auto text-center mb-9 md:mb-12">
-          <p
-            className={cn(EYEBROW, "m-0 mb-5")}
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-          >
-            Where to begin
-          </p>
-          <h1 className={cn(TITLE, "mx-auto my-0 mb-6 hero-text-shadow")}>
-            Begin with a colour.
-          </h1>
-          <p
-            className={cn(SUBTITLE, "mx-auto my-0")}
-            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            Stephen left several colourways of each mandala. Each colourway was
-            created by Stephen himself and discovered on his computer in his
-            studio — these are his own colour variations of the work, exactly as
-            he left them. Choose the tones you are naturally drawn to, or that
-            fit the ambience of the room around it. There is no wrong answer. You
-            can also{" "}
-            <Link
-              to="/collections"
-              className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
-            >
-              browse by collection
-            </Link>
-            .
-          </p>
-        </Reveal>
+          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+              For you · Where to begin
+            </span>
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
+            <span className={cn(EYEBROW_MUTED, "shrink-0")}>{PAINTINGS.length} works</span>
+          </Reveal>
 
-        {/* Colour swatches */}
-        <Reveal as="div" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 md:gap-4 mb-5">
-          {COLOUR_FAMILIES.map((f) => {
-            const on = active.has(f.key);
-            return (
-              <button
-                key={f.key}
-                type="button"
-                aria-pressed={on}
-                onClick={() => toggle(f.key)}
-                className={cn(
-                  "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
-                  on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
-                )}
+          <Reveal as="div" className="mt-4 md:mt-6">
+            <h1
+              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
+              style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 14vw, 240px)" }}
+            >
+              Begin with<br />a colour.
+            </h1>
+          </Reveal>
+
+          {/* Guidance packed under a border-t, dense — no centred column, no
+              dead gap. The verbatim copy is unchanged; only its framing moves. */}
+          <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-7">
+            <Reveal as="div" className="lg:col-span-3">
+              <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+                Filter by the tones<br className="hidden lg:block" /> you are drawn to
+              </p>
+            </Reveal>
+            <Reveal
+              as="div"
+              delay={0.06}
+              className="lg:col-span-9 columns-1 md:columns-2 gap-x-10"
+            >
+              <p
+                className="font-sans font-normal text-[17px] md:text-[19px] leading-[1.7] text-ink/85 text-pretty m-0"
+                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
-                <span
-                  aria-hidden="true"
-                  className="block w-7 h-7 rounded-full ring-1 ring-line"
-                  style={{ background: f.swatch }}
-                />
-                <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>
-                  {f.label}
-                </span>
-              </button>
-            );
-          })}
-        </Reveal>
+                Stephen left several colourways of each mandala. Each colourway was
+                created by Stephen himself and discovered on his computer in his
+                studio — these are his own colour variations of the work, exactly as
+                he left them. Choose the tones you are naturally drawn to, or that
+                fit the ambience of the room around it. There is no wrong answer. You
+                can also{" "}
+                <Link
+                  to="/collections"
+                  className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
+                >
+                  browse by collection
+                </Link>
+                .
+              </p>
+            </Reveal>
+          </div>
 
-        <div className="flex items-center justify-center gap-4 mb-10 md:mb-12">
-          <p
-            className={cn(EYEBROW_TIGHT, "m-0")}
-            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-          >
-            {filtered.length} of {PAINTINGS.length}
-          </p>
-          {active.size > 0 && (
-            <button
-              type="button"
-              onClick={() => setActive(new Set())}
-              className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
-            >
-              Show all {PAINTINGS.length}
-            </button>
-          )}
-        </div>
+          {/* Colour controls — a bold left-aligned panel under a hairline, with
+              the live count sitting INLINE on the rule (no centred orphan row,
+              no big gap before the grid). */}
+          <Reveal as="div" className="mt-7 md:mt-9 border-t border-line pt-5 md:pt-6">
+            <div className="flex items-baseline justify-between gap-4 mb-4 md:mb-5">
+              <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+                The colour lens
+              </p>
+              <div className="flex items-center gap-4 shrink-0">
+                <p
+                  className={cn(EYEBROW_TIGHT, "m-0")}
+                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                >
+                  {filtered.length} of {PAINTINGS.length}
+                </p>
+                {active.size > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActive(new Set())}
+                    className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
+                  >
+                    Show all {PAINTINGS.length}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              {COLOUR_FAMILIES.map((f) => {
+                const on = active.has(f.key);
+                return (
+                  <button
+                    key={f.key}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => toggle(f.key)}
+                    className={cn(
+                      "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
+                      on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
+                    )}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="block w-7 h-7 rounded-full ring-1 ring-line"
+                      style={{ background: f.swatch }}
+                    />
+                    <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>
+                      {f.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Reveal>
         </section>
 
         {/* LOWER HALF — the results grid. The dusk-garden backdrop fades in
             across the back half of page scroll (0.40–0.62) and HOLDS to the
-            foot, so the page ends on the garden rather than bare black. */}
-        <section>
-        {/* Results — flex-wrap + justify-center so a partial last row (e.g. 10
-            paintings → 3+3+3+1, or a colour-filtered 5 → 3+2) centres at every
-            width instead of leaving a left-aligned orphan. Each tile is
-            flex: 0 1 clamp(MIN, BASIS, MAX) so it tracks the old 1/2/3-up feel
-            (≈1 col on phones, ≈2 on small, ≈3 from md) while min-w-0 lets a
-            tile shrink rather than push the row past the viewport. */}
+            foot, so the page ends on the garden rather than bare black. The grid
+            sits tight under the masthead's hairline — no min-h spacer, no big
+            gap — so the page reads as one dense editorial block. */}
+        <section className="mt-9 md:mt-12">
+        {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
+            masthead) so the tiles fill the full width edge-to-edge instead of
+            floating centred with dead gutters. auto-fill + minmax keeps the old
+            ≈1/2/3-up cadence; a partial last row left-aligns under the title
+            rather than orphaning to the centre. */}
         <div
           aria-live="polite"
-          className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+          className="grid gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))" }}
         >
           {filtered.map(({ painting, cover, hoverCover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+              className="m-0 min-w-0"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
@@ -328,7 +362,7 @@ export const FindAPrint = () => {
                     )}
                   </div>
                 </div>
-                <figcaption className="pt-5 text-center">
+                <figcaption className="pt-4 md:pt-5">
                   <h3
                     className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
@@ -348,7 +382,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center font-sans text-[16px] leading-[1.7] text-ink-muted mt-10">
+          <p className="font-sans text-[16px] leading-[1.7] text-ink-muted mt-10">
             Nothing holds those tones at once.{" "}
             <button
               type="button"

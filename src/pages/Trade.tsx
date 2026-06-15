@@ -4,11 +4,16 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { EnquireModal } from "../components/EnquireModal";
-import { EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import {
+  EYEBROW,
+  EYEBROW_MUTED,
+  EYEBROW_TIGHT,
+  SUBTITLE,
+  BTN_PRIMARY,
+} from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -21,15 +26,19 @@ import { cn } from "../lib/cn";
  * tradition by his sister Polly Wedge — the same hand behind the 3.6-metre
  * Arista SunStar at Farmacy, Notting Hill.
  *
- * Register: the FAQ / About long-form shell — readable reading-width column on
- * the shared ambient backdrop, Fraunces + Hanken Grotesk, accent reserved for
- * eyebrows + interaction. NEVER tacky or "trade discount" loud — this is an
- * estate inviting professionals to collaborate. NO prices are quoted: volume
- * and project pricing is "on request". The single CTA opens the shared
- * EnquireModal; a quiet link to /contact is offered as the alternative path.
+ * Register (redesigned 2026-06-15 to the home/About "bold + dense" law): a
+ * BOLD left-aligned masthead (meta rule → giant Fraunces statement → supporting
+ * copy packed immediately beneath) over the shared ambient backdrop, then a
+ * dense numbered offerings grid, the Farmacy precedent as an asymmetric
+ * pull-quote spread, and a compact enquiry close. Compressed vertical rhythm —
+ * no min-h spacers, no big clamp gaps. NEVER tacky or "trade discount" loud —
+ * this is an estate inviting professionals to collaborate. NO prices are
+ * quoted: volume and project pricing is "on request". The single CTA opens the
+ * shared EnquireModal; a quiet link to /contact is offered as the alternative.
  */
 
 interface Offering {
+  index: string;
   eyebrow: string;
   title: string;
   body: React.ReactNode;
@@ -37,6 +46,7 @@ interface Offering {
 
 const OFFERINGS: Offering[] = [
   {
+    index: "01",
     eyebrow: "Editions for projects",
     title: "Estate prints, at project scale.",
     body: (
@@ -51,6 +61,7 @@ const OFFERINGS: Offering[] = [
     ),
   },
   {
+    index: "02",
     eyebrow: "Framing & finishing",
     title: "Framed, glazed and delivery-ready.",
     body: (
@@ -64,6 +75,7 @@ const OFFERINGS: Offering[] = [
     ),
   },
   {
+    index: "03",
     eyebrow: "Bespoke commissions",
     title: "New work, in Stephen's tradition.",
     body: (
@@ -93,106 +105,198 @@ export const Trade = () => {
         url="/trade"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
-        {/* Header */}
-        <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Trade &amp; Interior Design</p>
-          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}>
-            For designers and considered spaces.
-          </h1>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0 max-w-[68ch]">
-            The estate of Stephen Meakin works directly with interior
-            designers, art consultants and hospitality buyers — hotels,
-            restaurants and wellness spaces. Whether you are placing a suite of
-            estate-stamped editions across a property or commissioning a single
-            defining piece, the conversation starts here and is handled, quietly
-            and personally, by the family.
-          </p>
-          <Separator className="bg-line mt-[clamp(0.875rem,2.5vw,1.25rem)]" />
-        </Reveal>
 
-        {/* What's offered */}
-        <Reveal as="div" className="flex flex-col gap-14">
-          {OFFERINGS.map((item, i) => (
-            <section key={i} className="flex flex-col gap-4">
-              <p className={cn(EYEBROW, "m-0")}>{item.eyebrow}</p>
-              <h2
-                className={cn(
-                  "font-display font-semibold tracking-[-0.04em] text-balance text-ink",
-                  "m-0 text-[clamp(24px,2.8vw,40px)] leading-[1.1]",
-                )}
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-12 md:pb-16">
+        {/* ── MASTHEAD ── A bold left-aligned front cover: meta rule → giant
+            Fraunces statement filling the width → the framing passage packed
+            immediately beneath under a border-t, no floating gap. Mirrors
+            AboutMasthead's recipe. */}
+        <section className="pb-9 md:pb-12">
+          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span className={EYEBROW}>Trade &amp; Interior Design</span>
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
+            <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>
+              By introduction
+            </span>
+          </Reveal>
+
+          <Reveal as="div" className="mt-5 md:mt-7">
+            <h1
+              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] text-balance"
+              style={{
+                fontVariationSettings: '"opsz" 48, "wght" 700',
+                fontSize: "clamp(46px, 8.2vw, 132px)",
+              }}
+            >
+              For designers and
+              <br />
+              considered spaces.
+            </h1>
+          </Reveal>
+
+          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+            <Reveal as="div" className="lg:col-span-4">
+              <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+                The estate of Stephen Meakin · SEM
+              </p>
+            </Reveal>
+            <Reveal as="div" delay={0.06} className="lg:col-span-8">
+              <p
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+                style={{
+                  fontVariationSettings: '"opsz" 32, "wght" 400',
+                  fontSize: "clamp(21px, 2.5vw, 34px)",
+                  lineHeight: 1.32,
+                }}
               >
-                {item.title}
-              </h2>
-              <div className={cn(SUBTITLE, "max-w-none 2xl:max-w-[68ch] 2xl:text-[19px]")}>
-                {item.body}
-              </div>
-            </section>
-          ))}
-        </Reveal>
-
-        {/* Farmacy credential */}
-        <Reveal as="section" className="mt-[clamp(2.5rem,6vw,4rem)]">
-          <Separator className="bg-line mb-[clamp(2rem,5vw,3rem)]" />
-          <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>The precedent</p>
-          <blockquote className="m-0 border-0 p-0">
-            <p className="font-display font-normal not-italic text-ink text-[clamp(22px,3.2vw,34px)] leading-[1.25] tracking-[-0.02em] m-0 max-w-[24ch]">
-              A 3.6-metre commission — the{" "}
-              <span className="italic">Arista SunStar</span> — hangs at Farmacy,
-              Notting Hill.
-            </p>
-          </blockquote>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.7] text-ink-muted mt-[clamp(1rem,2.5vw,1.4rem)] m-0 max-w-[64ch]">
-            Stephen's largest realised work was made for a public hospitality
-            space — proof that this geometry holds at architectural scale.
-            Bespoke commissions for projects continue in that tradition, hand-
-            painted by Polly Wedge, sized and coloured for the room they will
-            live in.
-          </p>
-        </Reveal>
-
-        {/* Enquiry CTA */}
-        <Reveal as="section" className="mt-[clamp(2.5rem,6vw,4rem)]">
-          <Separator className="bg-line mb-[clamp(2rem,5vw,3rem)]" />
-          <p className={cn(EYEBROW, "m-0 mb-5")}>Start a project</p>
-          <h2
-            className={cn(
-              "font-display font-semibold tracking-[-0.04em] text-balance text-ink",
-              "m-0 text-[clamp(24px,2.8vw,40px)] leading-[1.1]",
-            )}
-          >
-            Make a trade enquiry.
-          </h2>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.7] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0 max-w-[64ch]">
-            Tell us about the project — the spaces, the scale, and whether you
-            are after editions, framing or a bespoke commission. We will reply
-            personally, usually within a day or two, with availability and
-            project pricing.
-          </p>
-          <div className="mt-[clamp(1.25rem,3vw,1.75rem)] flex flex-col sm:flex-row sm:items-center gap-4">
-            <button type="button" onClick={openEnquire} className={BTN_PRIMARY}>
-              Make a trade enquiry
-              <span aria-hidden="true" className="ml-2">→</span>
-            </button>
-            <Link
-              to="/contact"
-              className="inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
-            >
-              Or use the contact page
-              <span aria-hidden="true" className="ml-1.5">→</span>
-            </Link>
+                The estate works directly with interior designers, art
+                consultants and hospitality buyers — hotels, restaurants and
+                wellness spaces. Whether you are placing a suite of
+                estate-stamped editions across a property or commissioning a
+                single defining piece, the conversation starts here and is
+                handled, quietly and personally, by the family.
+              </p>
+            </Reveal>
           </div>
-          <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-faint mt-[clamp(1rem,2.5vw,1.4rem)] m-0">
-            Or write directly to{" "}
-            <a
-              href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"
-              className="text-accent hover:underline"
-            >
-              info@themandalacompany.com
-            </a>
-            .
-          </p>
-        </Reveal>
+        </section>
+
+        {/* ── WHAT'S OFFERED ── A dense numbered grid, not a tall single
+            column: three offerings as editorial blocks side by side from md,
+            each opening with a big ghost numeral + hairline so they read as
+            composed plates rather than an endless scroll. Verbatim body copy
+            unchanged. */}
+        <section className="py-9 md:py-12">
+          <Reveal as="div" className="border-t border-line pt-6 md:pt-8 mb-9 md:mb-12 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+            <p className={cn(EYEBROW, "m-0")}>How the estate works with projects</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>Three ways in</p>
+          </Reveal>
+
+          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-10 md:gap-y-0 items-start">
+            {OFFERINGS.map((item) => (
+              <section
+                key={item.index}
+                className="md:border-l md:border-line md:pl-6 lg:pl-8 first:md:border-l-0 first:md:pl-0"
+              >
+                <div className="flex items-baseline gap-4">
+                  <span
+                    aria-hidden
+                    className="font-display font-semibold leading-none tracking-[-0.04em] text-ink/[0.18] select-none"
+                    style={{
+                      fontVariationSettings: '"opsz" 48, "wght" 600',
+                      fontSize: "clamp(40px,4.6vw,68px)",
+                    }}
+                  >
+                    {item.index}
+                  </span>
+                  <span className={cn(EYEBROW_TIGHT, "translate-y-[-0.2em]")}>
+                    {item.eyebrow}
+                  </span>
+                </div>
+                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-5 text-[clamp(23px,2.4vw,32px)] leading-[1.12]">
+                  {item.title}
+                </h2>
+                <div
+                  className={cn(
+                    SUBTITLE,
+                    "max-w-none mt-4 !text-[16px] md:!text-[17px] 2xl:!text-[18px] !leading-[1.7]",
+                  )}
+                >
+                  {item.body}
+                </div>
+              </section>
+            ))}
+          </Reveal>
+        </section>
+
+        {/* ── FARMACY PRECEDENT ── An asymmetric pull-quote spread: a large
+            Fraunces statement filling the left, the supporting note packed in
+            a second column on the right, under a full-measure rule. Breaks the
+            single-column monotony and fills the horizontal space. */}
+        <section className="py-9 md:py-12">
+          <Reveal as="div" className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10">
+            <p className={cn(EYEBROW_MUTED, "m-0")}>The precedent</p>
+          </Reveal>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-7 items-start">
+            <Reveal as="div" className="lg:col-span-7">
+              <blockquote className="m-0 border-0 p-0">
+                <p
+                  className="font-display font-normal not-italic text-ink m-0 tracking-[-0.02em]"
+                  style={{
+                    fontVariationSettings: '"opsz" 40, "wght" 400',
+                    fontSize: "clamp(28px,4.2vw,56px)",
+                    lineHeight: 1.14,
+                  }}
+                >
+                  A 3.6-metre commission — the{" "}
+                  <span className="italic">Arista SunStar</span> — hangs at
+                  Farmacy, Notting Hill.
+                </p>
+              </blockquote>
+            </Reveal>
+            <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
+              <p className={cn(SUBTITLE, "max-w-none !text-[16px] md:!text-[17px] !leading-[1.75]")}>
+                Stephen's largest realised work was made for a public
+                hospitality space — proof that this geometry holds at
+                architectural scale. Bespoke commissions for projects continue
+                in that tradition, hand-painted by Polly Wedge, sized and
+                coloured for the room they will live in.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── ENQUIRY CLOSE ── A bold left-aligned conversion beat packed under
+            a rule: the statement and supporting copy on the left, the actions
+            and the direct-email fallback on the right. Commerce-free — opens
+            the shared EnquireModal; quiet /contact + mailto paths preserved
+            byte-for-byte. */}
+        <section className="py-9 md:py-12">
+          <Reveal as="div" className="border-t border-line pt-7 md:pt-9 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-end">
+            <div className="lg:col-span-7">
+              <p className={cn(EYEBROW, "m-0 mb-5")}>Start a project</p>
+              <h2
+                className="font-display font-bold tracking-[-0.04em] text-balance text-ink m-0 leading-[0.92]"
+                style={{
+                  fontVariationSettings: '"opsz" 48, "wght" 700',
+                  fontSize: "clamp(34px,5.4vw,76px)",
+                }}
+              >
+                Make a trade enquiry.
+              </h2>
+              <p className={cn(SUBTITLE, "max-w-none mt-5 !text-[16px] md:!text-[17px] !leading-[1.7]")}>
+                Tell us about the project — the spaces, the scale, and whether
+                you are after editions, framing or a bespoke commission. We
+                will reply personally, usually within a day or two, with
+                availability and project pricing.
+              </p>
+            </div>
+            <div className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
+              <div className="flex flex-col sm:flex-row lg:flex-col sm:items-start gap-4">
+                <button type="button" onClick={openEnquire} className={BTN_PRIMARY}>
+                  Make a trade enquiry
+                  <span aria-hidden="true" className="ml-2">→</span>
+                </button>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                >
+                  Or use the contact page
+                  <span aria-hidden="true" className="ml-1.5">→</span>
+                </Link>
+              </div>
+              <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-faint mt-6 m-0">
+                Or write directly to{" "}
+                <a
+                  href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"
+                  className="text-accent hover:underline"
+                >
+                  info@themandalacompany.com
+                </a>
+                .
+              </p>
+            </div>
+          </Reveal>
+        </section>
       </main>
 
       <EnquireModal

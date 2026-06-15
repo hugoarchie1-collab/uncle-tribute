@@ -3,10 +3,9 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
-import { EYEBROW, EYEBROW_MUTED, TITLE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -715,6 +714,79 @@ export const Returns = () => (
   />
 );
 
+// ─── LegalMasthead ───────────────────────────────────────────────────────────
+// The bold front cover for a legal page — modelled on AboutMasthead (the
+// just-approved pattern): a meta rule, the title set ENORMOUS edge-to-edge
+// (Fraunces 700, opsz 48), then the lead packed immediately beneath under a
+// border-t — dense, left-aligned, no centred-floating-header timidity and no
+// clamp-driven dead air. The numbered section index sits in the left rail so
+// the reader can see the whole document's shape at a glance before scrolling.
+const LegalMasthead = ({
+  title,
+  lead,
+  updated,
+  sections,
+}: {
+  title: string;
+  lead: string;
+  updated: string;
+  sections: Section[];
+}) => (
+  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-7 md:pb-10">
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <span className={EYEBROW}>The Mandala Company</span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0")}>Updated {updated}</span>
+    </Reveal>
+
+    <Reveal as="div" className="mt-4 md:mt-6">
+      <h1
+        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] [&_br]:hidden sm:[&_br]:block"
+        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(54px, 11vw, 200px)" }}
+        dangerouslySetInnerHTML={{ __html: title }}
+      />
+    </Reveal>
+
+    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-start border-t border-line pt-6 md:pt-8">
+      <Reveal as="div" className="lg:col-span-8">
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
+          style={{
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(21px, 2.4vw, 34px)",
+            lineHeight: 1.32,
+          }}
+        >
+          {lead}
+        </p>
+      </Reveal>
+      {/* Document index — the shape of the whole policy at a glance, so the
+          masthead screen is dense with wayfinding rather than blank air. Anchor
+          jumps to each section's id. */}
+      <Reveal as="div" delay={0.06} className="lg:col-span-4">
+        <nav aria-label="On this page">
+          <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>On this page</p>
+          <ol className="m-0 p-0 list-none columns-2 lg:columns-1 gap-x-8">
+            {sections.map((section, i) => (
+              <li key={i} className="break-inside-avoid mb-1.5">
+                <a
+                  href={`#legal-${i}`}
+                  className="group flex items-baseline gap-2 font-sans text-[13.5px] md:text-[14px] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
+                >
+                  <span aria-hidden className="font-sans text-[11px] font-bold tracking-[0.18em] tabular-nums text-ink/40 group-hover:text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>{section.heading}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </Reveal>
+    </div>
+  </section>
+);
+
 const LegalPage = ({
   title,
   lead,
@@ -733,51 +805,71 @@ const LegalPage = ({
   const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
   usePageTitle(plainTitle);
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative flex flex-col">
       <AmbientBackdrop src={backdrop} opacity={0.36} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(4rem,8vw,6rem)]">
-        <Reveal as="header" className="mb-[clamp(2rem,5vw,3rem)]">
-          <p className={cn(EYEBROW, "m-0 mb-5")}>The Mandala Company</p>
-          <h1
-            className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,40px)] !leading-[1.05]")}
-            dangerouslySetInnerHTML={{ __html: title }}
-          />
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted m-0 max-w-[620px] mt-[clamp(0.75rem,2vw,1.1rem)]">{lead}</p>
-          <p className={cn(EYEBROW_MUTED, "mt-[clamp(0.875rem,2.5vw,1.25rem)] m-0")}>Last updated {updated}</p>
-          <Separator className="bg-line mt-[clamp(0.875rem,2.5vw,1.25rem)]" />
-        </Reveal>
-        <Reveal as="article" className="flex flex-col gap-10">
+
+      {/* 1 · MASTHEAD — bold left-aligned front cover (lead + document index). */}
+      <LegalMasthead title={title} lead={lead} updated={updated} sections={sections} />
+
+      {/* 2 · THE POLICY — sections as an editorial ledger. Each section is a
+          12-col row: the heading + a hairline rule hold the LEFT rail, the
+          verbatim blocks pack the wide RIGHT column at a comfortable legal
+          reading measure. Asymmetric, dense, no tall single ribbon of prose;
+          legibility of the legal copy stays paramount (the right column never
+          goes multi-column — clauses must read linearly). Compressed py so the
+          whole page reads tight, never an endless scroll. */}
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+        <article className="flex flex-col">
           {sections.map((section, i) => (
-            <section key={i} className="flex flex-col gap-4">
-              <h2 className="font-display font-semibold tracking-[-0.04em] text-balance text-[clamp(24px,2.8vw,40px)] leading-[1.2] text-ink m-0">
-                {section.heading}
-              </h2>
-              {section.blocks.map((block, j) => {
-                if (block.kind === "p") {
+            <Reveal
+              as="section"
+              key={i}
+              id={`legal-${i}`}
+              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-4 border-t border-line py-8 md:py-10"
+            >
+              {/* Left rail — the section number + heading, sticky on lg so the
+                  reader always knows which clause they're in. */}
+              <div className="lg:col-span-4 lg:sticky lg:top-24 self-start">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5 tabular-nums")}>
+                  {String(i + 1).padStart(2, "0")} / {String(sections.length).padStart(2, "0")}
+                </p>
+                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(26px,2.6vw,42px)] leading-[1.08] text-ink m-0">
+                  {section.heading}
+                </h2>
+              </div>
+
+              {/* Right column — the verbatim blocks, unchanged copy, at the
+                  legal reading register. */}
+              <div className="lg:col-span-8 flex flex-col gap-4">
+                {section.blocks.map((block, j) => {
+                  if (block.kind === "p") {
+                    return (
+                      <p
+                        key={j}
+                        className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] max-w-[72ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                      >
+                        {block.text}
+                      </p>
+                    );
+                  }
                   return (
-                    <p
+                    <ul
                       key={j}
-                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] 2xl:max-w-[72ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
+                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] max-w-[72ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                     >
-                      {block.text}
-                    </p>
+                      {block.items.map((item, k) => (
+                        <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   );
-                }
-                return (
-                  <ul
-                    key={j}
-                    className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] 2xl:max-w-[72ch] leading-[1.8] text-ink-muted list-disc pl-6 flex flex-col gap-2 m-0 [&_strong]:font-semibold [&_em]:font-display [&_em]:italic"
-                  >
-                    {block.items.map((item, k) => (
-                      <li key={k}>{item}</li>
-                    ))}
-                  </ul>
-                );
-              })}
-            </section>
+                })}
+              </div>
+            </Reveal>
           ))}
-        </Reveal>
+        </article>
       </main>
       <FooterCatalogue />
       <Footer />

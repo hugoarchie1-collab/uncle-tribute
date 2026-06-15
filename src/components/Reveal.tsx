@@ -15,6 +15,8 @@ interface RevealProps {
   as?: "div" | "section" | "article" | "figure" | "header" | "ul";
   offset?: number;
   once?: boolean;
+  /** Optional DOM id forwarded to the host element (e.g. anchor targets). */
+  id?: string;
 }
 
 /**
@@ -38,6 +40,7 @@ export const Reveal = ({
   as = "div",
   offset = 28,
   once = true,
+  id,
 }: RevealProps) => {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement | null>(null);
@@ -98,7 +101,7 @@ export const Reveal = ({
   // ref on a DOM host element via createElement is valid; the new react-hooks
   // "refs" rule flags the generic createElement call defensively.
   // eslint-disable-next-line react-hooks/refs
-  return createElement(as, { ref, className, style }, children);
+  return createElement(as, { ref, className, style, id }, children);
 };
 
 export const RevealStagger = ({

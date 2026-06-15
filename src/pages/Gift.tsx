@@ -4,7 +4,6 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import {
@@ -20,7 +19,6 @@ import {
 import {
   EYEBROW,
   EYEBROW_MUTED,
-  TITLE,
   BTN_PRIMARY,
   BTN_SECONDARY,
 } from "../components/ui/tokens";
@@ -169,59 +167,103 @@ export const Gift = () => {
         url="/gift"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[900px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(6rem,11vw,6.5rem)] pb-[clamp(3rem,7vw,4.5rem)]">
-        {/* Header */}
-        <Reveal as="header" className="mb-[clamp(1.5rem,4vw,2.5rem)]">
-          <p className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}>
-            Gift an edition
-          </p>
-          <h1 className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}>
-            Give a piece of Stephen's work.
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-12 md:pb-16">
+        {/* ── MASTHEAD ─────────────────────────────────────────────────────
+            Bold left-aligned front cover (the AboutMasthead recipe): a meta
+            rule → a giant Fraunces statement filling the width → the
+            supporting passage packed immediately beneath under a border-t.
+            No timid centred header, no dead vertical air. The denomination
+            range is surfaced in the meta row as a confident commerce fact
+            (figures read LIVE from GIFT_MIN/MAX_PENCE — never re-typed). */}
+        <Reveal as="header" className="mb-9 md:mb-12">
+          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span className={EYEBROW}>Gift an edition</span>
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
+            <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:block")}>
+              {formatGBP(GIFT_MIN_PENCE).replace(".00", "")} –{" "}
+              {formatGBP(GIFT_MAX_PENCE).replace(".00", "")}
+            </span>
+          </div>
+
+          <h1
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-5 md:mt-7 leading-[0.86]"
+            style={{
+              fontVariationSettings: '"opsz" 48, "wght" 700',
+              fontSize: "clamp(52px, 11vw, 168px)",
+            }}
+          >
+            Give a piece<br />of Stephen's work.
           </h1>
-          <p className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.6] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0 max-w-[60ch]">
-            A gift towards any estate-stamped edition of Stephen Meakin's
-            mandala paintings. Choose an amount pegged to a print size — or set
-            your own — add a few words if you wish, and let the person you're
-            thinking of choose the work that speaks to them.
-          </p>
-          <Separator className="bg-line mt-[clamp(1.25rem,3.5vw,2rem)]" />
+
+          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+            <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
+              A digital gift card · redeemed against any edition
+            </p>
+            <p
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0 lg:col-span-9"
+              style={{
+                fontVariationSettings: '"opsz" 32, "wght" 400',
+                fontSize: "clamp(21px, 2.5vw, 34px)",
+                lineHeight: 1.3,
+              }}
+            >
+              A gift towards any estate-stamped edition of Stephen Meakin's
+              mandala paintings. Choose an amount pegged to a print size — or
+              set your own — add a few words if you wish, and let the person
+              you're thinking of choose the work that speaks to them.
+            </p>
+          </div>
         </Reveal>
 
         {added ? (
           // ---- Confirmation ---------------------------------------------
-          <Reveal as="section" className="py-[clamp(0.5rem,2vw,1rem)]">
-            <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,30px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]">
-              Added to your basket.
-            </p>
-            <p className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.6] text-ink-muted m-0 max-w-[56ch]">
-              A gift card of{" "}
-              <span className="text-ink">{formatGBP(added.amountPence).replace(".00", "")}</span> is
-              in your basket. The amount you see is exactly what you'll pay —
-              nothing is added at checkout. You can add another, or proceed when
-              you're ready.
-            </p>
-            <div className="mt-[clamp(1.25rem,3vw,1.75rem)] flex flex-col sm:flex-row sm:items-center gap-4">
-              <Link to="/basket" className={BTN_PRIMARY}>
-                Go to basket
-                <span aria-hidden="true" className="ml-2">→</span>
-              </Link>
-              <button
-                type="button"
-                onClick={() => setAdded(null)}
-                className={BTN_SECONDARY}
+          <Reveal as="section" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start">
+            <p className={cn(EYEBROW, "m-0 lg:col-span-3 lg:pt-3")}>In your basket</p>
+            <div className="lg:col-span-9 max-w-[64ch]">
+              <p
+                className="font-display font-semibold tracking-[-0.025em] text-[clamp(28px,4vw,52px)] leading-[1.05] text-ink m-0"
+                style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
               >
-                Add another gift card
-              </button>
+                A gift card of{" "}
+                <span className="text-accent">
+                  {formatGBP(added.amountPence).replace(".00", "")}
+                </span>{" "}
+                is in your basket.
+              </p>
+              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.65] text-ink-muted m-0 mt-5">
+                The amount you see is exactly what you'll pay — nothing is added
+                at checkout. You can add another, or proceed when you're ready.
+              </p>
+              <div className="mt-7 md:mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+                <Link to="/basket" className={BTN_PRIMARY}>
+                  Go to basket
+                  <span aria-hidden="true" className="ml-2">→</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setAdded(null)}
+                  className={BTN_SECONDARY}
+                >
+                  Add another gift card
+                </button>
+              </div>
             </div>
           </Reveal>
         ) : (
-          <>
-            {/* Denomination picker */}
-            <Reveal as="section" className="mb-[clamp(1.5rem,4vw,2.25rem)]">
-              <p className={cn(EYEBROW_MUTED, "m-0 mb-[clamp(0.75rem,2vw,1rem)]")}>
-                Choose an amount
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          // ── DENSE TWO-COLUMN EDITORIAL BODY ───────────────────────────────
+          // Left rail = the denomination grid (the headline act, packed into a
+          // tighter 2/3-up grid that fills the width). Right rail = the
+          // optional recipient details + a sticky "your gift" summary. Section
+          // headings carry a numeral so the two acts read as a deliberate
+          // sequence, not a stack of separators floating in air.
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-12">
+            {/* ACT 01 — Choose an amount (the denser denomination grid) */}
+            <Reveal as="section" className="lg:col-span-7">
+              <div className="flex items-baseline gap-3 border-t border-line pt-4 mb-6 md:mb-7">
+                <span className={cn(EYEBROW, "shrink-0")}>01</span>
+                <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
                 {denominations.map((d) => {
                   const isSelected =
                     selection.kind === "tier" && selection.id === d.id;
@@ -235,24 +277,25 @@ export const Gift = () => {
                       }}
                       aria-pressed={isSelected}
                       className={cn(
-                        "text-left rounded-2xl px-5 py-4 transition-all duration-300 bg-bg-soft",
+                        "group text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
                           ? "ring-accent ring-2"
                           : "ring-line hover:ring-ink/40",
                       )}
                     >
-                      <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
+                      <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
                         {d.sizeShort} · {d.label}
                       </span>
-                      <span className="font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,28px)] text-ink leading-none">
+                      <span className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,38px)] text-ink leading-none block">
                         {formatGBP(d.amountPence).replace(".00", "")}
                       </span>
                     </button>
                   );
                 })}
 
-                {/* Custom amount */}
+                {/* Custom amount — spans the full grid width as the wide rung
+                    that closes the ladder. */}
                 <button
                   type="button"
                   onClick={() => {
@@ -261,14 +304,14 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-2xl px-5 py-4 transition-all duration-300 bg-bg-soft sm:col-span-2",
+                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 sm:col-span-3",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"
                       : "ring-line hover:ring-ink/40",
                   )}
                 >
-                  <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
+                  <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
                     Custom amount
                   </span>
                   <span className="font-sans font-normal text-[14px] text-ink-muted">
@@ -308,17 +351,18 @@ export const Gift = () => {
                   </div>
                 </label>
               )}
-            </Reveal>
 
-            {/* Recipient + message (all optional) */}
-            <Reveal as="section" className="mb-[clamp(1.5rem,4vw,2.25rem)]">
-              <Separator className="bg-line mb-[clamp(1.25rem,3.5vw,2rem)]" />
-              <p className={cn(EYEBROW_MUTED, "m-0 mb-[clamp(0.75rem,2vw,1rem)]")}>
-                For someone in particular?{" "}
-                <span className="font-normal tracking-normal normal-case text-ink-faint">
-                  Optional
+              {/* Recipient + message (all optional) — packed directly under
+                  the ladder so the left rail reads as one continuous act. */}
+              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-10 md:mt-12 mb-6 md:mb-7">
+                <span className={cn(EYEBROW, "shrink-0")}>02</span>
+                <span className={cn(EYEBROW_MUTED, "shrink-0")}>
+                  For someone in particular?{" "}
+                  <span className="font-normal tracking-normal normal-case text-ink-faint">
+                    Optional
+                  </span>
                 </span>
-              </p>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <label className="block">
                   <span className={cn(EYEBROW_MUTED, "block mb-2")}>
@@ -369,28 +413,36 @@ export const Gift = () => {
               </p>
             </Reveal>
 
-            {/* Add to basket */}
-            <Reveal as="section">
-              <Separator className="bg-line mb-[clamp(1.25rem,3.5vw,2rem)]" />
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>Your gift</p>
-                  <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,38px)] text-ink m-0 leading-none">
-                    {resolved ? formatGBP(resolved.amountPence).replace(".00", "") : "—"}
-                  </p>
-                </div>
-                <button type="button" onClick={handleAdd} className={BTN_PRIMARY}>
+            {/* ACT — the running "your gift" summary, a sticky panel on the
+                right rail so the figure + the add button travel with the
+                reader as they move down the long left column. */}
+            <Reveal as="div" className="lg:col-span-5 lg:col-start-8">
+              <div className="lg:sticky lg:top-28 rounded-2xl bg-bg-soft ring-1 ring-line p-6 md:p-8">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
+                <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,92px)] text-ink m-0 leading-[0.85]"
+                   style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}>
+                  {resolved ? formatGBP(resolved.amountPence).replace(".00", "") : "—"}
+                </p>
+                <p className="font-sans font-normal text-[13.5px] leading-[1.6] text-ink-muted m-0 mt-5 max-w-[40ch]">
+                  The figure you choose is exactly what you pay — nothing is
+                  added at checkout, and a gift card carries no delivery cost.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  className={cn(BTN_PRIMARY, "mt-7 w-full")}
+                >
                   Add gift card to basket
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
+                {error && (
+                  <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">
+                    {error}
+                  </p>
+                )}
               </div>
-              {error && (
-                <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">
-                  {error}
-                </p>
-              )}
             </Reveal>
-          </>
+          </div>
         )}
       </main>
       <FooterCatalogue />

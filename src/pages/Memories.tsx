@@ -9,19 +9,25 @@ import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
 import { MEMORIES, type Memory } from "../data/memories";
-import { ABOUT } from "../data/content";
+import { ABOUT, LIFE_DATES } from "../data/content";
 
 /**
- * /memories — the Book of Memories, built as a modern COMMENTS FEED in the
- * idiom of X (Twitter) replies / YouTube comments / a community discussion —
- * not a "book", not boxed editorial cards. A single centred ~640px channel
- * (the page deliberately steps IN from the 860px header band) carries a flat
- * stream of COMMENT ROWS separated by hairline dividers. Each row is one shared
- * <CommentRow>: a circular monogram avatar in a left gutter, then a header line
- * (bold NAME + a quieter relationship/location meta on the same baseline), then
- * the message BODY, then an optional inline image. Dense, scannable, dignified —
- * no card chrome, no rings on rows, no shadows, no fabricated engagement (no
- * like/reply/share counts, no fake timestamps).
+ * /memories — the Book of Memories. Redesigned 2026-06-15 to the home/About
+ * LAW (bold, dense, NO blank space): a BOLD left-aligned masthead (the
+ * AboutMasthead recipe — a meta rule, a giant edge-to-edge Fraunces statement,
+ * the invitation packed immediately beneath under a border-t) opens the page at
+ * full width, killing the old timid 640px-band centred header that floated a
+ * sub-scale h1 in a sea of dead horizontal space. Below it the wall TILES
+ * DENSELY: the pinned artist comment leads as a single wide feature; visitor
+ * memories then flow into a balanced MASONRY (CSS `columns`) so they fill the
+ * width as dense editorial cards instead of one endless thin single column.
+ *
+ * The atom is still one shared <CommentRow>: a circular monogram avatar in a
+ * left gutter, then a header line (bold NAME + a quieter relationship/location
+ * meta on the same baseline), then the message BODY, then an optional inline
+ * image. Dense, scannable, dignified — no fabricated engagement (no
+ * like/reply/share counts, no fake timestamps). Visitor rows tile inside the
+ * masonry with break-inside-avoid; the pinned + composer rows stay full-width.
  *
  * Two voices in one feed, SAME row format:
  *   • A PINNED founding comment — Stephen's own words to his students
@@ -190,7 +196,18 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 const BODY_CLASS =
   "font-sans font-normal text-[clamp(14px,1.6vw,16px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
 
-const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: boolean }) => {
+const CommentRow = ({
+  memory,
+  pinned = false,
+  tile = false,
+}: {
+  memory: WallMemory;
+  pinned?: boolean;
+  /** Masonry-tile variant: the visitor card register. The row sits on a subtle
+   *  surface + hairline ring so the dense `columns` masonry reads as distinct
+   *  framed cards instead of run-together text. Body rendering is unchanged. */
+  tile?: boolean;
+}) => {
   const [expanded, setExpanded] = useState(false);
   const paragraphs = splitParagraphs(memory.message);
   const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
@@ -200,7 +217,14 @@ const CommentRow = ({ memory, pinned = false }: { memory: WallMemory; pinned?: b
   const plain = pinned ? memory.message.replace(/\s+/g, " ").trim() : "";
   const needsFold = pinned && plain.length > 280;
   return (
-    <article className="group flex gap-[clamp(0.625rem,2vw,0.8rem)] py-[clamp(0.7rem,2vw,0.95rem)]">
+    <article
+      className={cn(
+        "group flex gap-[clamp(0.625rem,2vw,0.8rem)]",
+        tile
+          ? "rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.3rem)] transition-colors duration-300 hover:ring-line-strong"
+          : "py-[clamp(0.7rem,2vw,0.95rem)]",
+      )}
+    >
       {/* AVATAR GUTTER — same monogram + scale for everyone, pinned NOT enlarged */}
       <Monogram name={memory.name} />
       {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
@@ -286,15 +310,27 @@ const ShareMemoryModal = ({
   const panelRef = useRef<HTMLDivElement>(null);
 
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  // Keep the ref pointing at the latest onClose so the keydown handler can call
+  // it without re-subscribing. Mirrored in an effect (not during render) per the
+  // react-hooks/refs rule — behaviour is identical to the prior render-time
+  // assignment. Modal focus-trap behaviour is otherwise UNCHANGED.
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) {
+      // Intentional synchronous reset when the modal closes — the form must be
+      // blank the next time it opens. This is the documented exception to
+      // set-state-in-effect (syncing to an external "open" prop), not a
+      // cascading-render bug, so the rule is disabled for these resets only.
+      /* eslint-disable react-hooks/set-state-in-effect */
       setStatus("idle");
       setErrorMsg("");
       setAutoPublished(false);
       setImageName("");
       setImageError("");
+      /* eslint-enable react-hooks/set-state-in-effect */
       imageDataRef.current = "";
       return;
     }
@@ -636,6 +672,73 @@ const ShareMemoryModal = ({
   );
 };
 
+// ---------------------------------------------------------------------------
+// MemoriesMasthead — the bold front cover (the AboutMasthead recipe, applied to
+// the Book of Memories). A meta rule, then the page statement set ENORMOUS and
+// edge-to-edge (Fraunces 700, opsz 48), then the "names he answered to"
+// invitation packed immediately beneath as the lead under a border-t. No timid
+// sub-scale centred title floating in a narrow band; no dead vertical air.
+// `onShare` opens the same modal the composer does, surfaced as a primary CTA
+// in the masthead so the share affordance reads from the very first screen.
+// ---------------------------------------------------------------------------
+const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(4.5rem,10vw,6rem)] pb-[clamp(1.25rem,3vw,2rem)]">
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <span
+        className={EYEBROW}
+        style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+      >
+        Book of Memories
+      </span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+    </Reveal>
+
+    <Reveal as="div" className="mt-4 md:mt-6">
+      <h1
+        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] text-balance"
+        style={{
+          fontVariationSettings: '"opsz" 48, "wght" 700',
+          fontSize: "clamp(52px, 12vw, 200px)",
+          textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
+        }}
+      >
+        Memories of Steve.
+      </h1>
+    </Reveal>
+
+    <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-7">
+      <Reveal as="div" className="lg:col-span-3">
+        <p
+          className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+          style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+        >
+          A wall, in his own words &amp; yours
+        </p>
+      </Reveal>
+      <Reveal as="div" delay={0.06} className="lg:col-span-6">
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
+          style={{
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(20px, 2.4vw, 32px)",
+            lineHeight: 1.32,
+            textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+          }}
+        >
+          Stephen to some, SEM to the art world, Steve to his family. If he
+          touched your life, add a memory below — the family reads every one.
+        </p>
+      </Reveal>
+      <Reveal as="div" delay={0.12} className="lg:col-span-3 lg:justify-self-end">
+        <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
+          Share a memory <span aria-hidden="true" className="ml-2">→</span>
+        </button>
+      </Reveal>
+    </div>
+  </section>
+);
+
 export const Memories = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [published, setPublished] = useState<WallMemory[]>([]);
@@ -700,132 +803,105 @@ export const Memories = () => {
       <Nav overlay />
 
       <main className="relative z-10 flex-1">
-        {/* 1 · HEADER — the dignified opening. Eyebrow + display title + the
-            "names he answered to" intro + a gentle first invitation. */}
-        <header className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(5rem,11vw,6.5rem)] pb-[clamp(1.25rem,3.5vw,2rem)]">
-          <Reveal as="div" className="max-w-[42ch]">
-            <p
-              className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}
-              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-            >
-              Book of Memories
-            </p>
-            {/* TITLE_SM — the feed legitimately needs a quieter display title
-                than the canonical TITLE clamp, so this is the full TITLE
-                recipe (family / weight / tracking / ink / balance) at the
-                sub-scale clamp, spelled out locally instead of !important
-                arbitrary values fighting the token (cn doesn't resolve
-                conflicting text-size utilities — the old bang-override was
-                load-bearing by accident). tokens.ts is owned by another task:
-                when a TITLE_SM lands there, swap this string for the token. */}
-            <h1
-              className="font-display font-bold tracking-[-0.04em] text-[clamp(26px,3.6vw,44px)] leading-[1.05] text-ink text-balance m-0"
-              style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-            >
-              Memories of Steve.
-            </h1>
-          </Reveal>
+        {/* 1 · MASTHEAD — bold left-aligned front cover (the AboutMasthead
+            recipe). Replaces the old timid 640px-band centred header that
+            floated a sub-scale h1 in dead horizontal space. */}
+        <MemoriesMasthead onShare={() => setModalOpen(true)} />
 
-          <Reveal as="div" className="mt-[clamp(0.75rem,2vw,1.1rem)] max-w-[60ch]" delay={0.05}>
-            <p
-              className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted m-0"
-              style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-            >
-              Stephen to some, SEM to the art world, Steve to his family. If he
-              touched your life, add a memory below — the family reads every one.
-            </p>
-          </Reveal>
-        </header>
-
-        {/* 2 · THE FEED — a single centred ~640px channel the page steps INTO
-            (narrower than the 860px header band) so the feed reads as a focused
-            single-thread comments section (the comfortable width X/YouTube use).
-            The pinned artist comment always leads; visitor comments (or a
-            dignified empty-state row) follow under a quiet eyebrow. Spacing is
-            per-row padding + divide-y hairlines — what turns "stack of cards"
-            into "feed". */}
+        {/* 2 · THE WALL — full-width now (NOT a stranded 640px channel). The
+            pinned artist comment leads as ONE wide feature row; visitor
+            memories then TILE into a balanced CSS-`columns` masonry so they
+            fill the width as dense framed cards (PAGE NOTE: tile densely, not a
+            tall single column). Container widths track the rest of the site
+            (max-w-[1320px]→[1720px]) so the wall reads edge-to-edge, never a
+            lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pb-[clamp(3rem,7vw,4.5rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2.5rem,6vw,4rem)]"
         >
-          {/* composer — the "add a comment" box (X / YouTube idiom): a generic
-              avatar + a rounded input placeholder that opens the share modal. It
-              leads the feed like YouTube's "Add a comment…", and is the single
-              share affordance on the page. */}
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left border-b border-line pb-[clamp(0.8rem,2.2vw,1rem)]"
-          >
-            <span
-              aria-hidden="true"
-              className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] bg-bg-elevated ring-1 ring-line text-ink-muted transition-colors group-hover:ring-accent group-hover:text-accent"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M12 20h9" />
-                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-              </svg>
-            </span>
-            <span className="min-w-0 flex-1 rounded-full bg-bg-soft ring-1 ring-line px-[clamp(0.875rem,3vw,1.1rem)] py-[clamp(0.5rem,1.8vw,0.7rem)] font-sans text-[clamp(13.5px,1.6vw,14.5px)] text-ink-muted transition-colors group-hover:text-ink group-hover:ring-line-strong">
-              Share a memory of Steve…
-            </span>
-          </button>
+          {/* a · PINNED artist comment — Stephen's own words lead the wall as a
+              single wide feature row (its long letter folds; it would never
+              tile cleanly in a column). Composer sits inline to its right on
+              lg+ so the share affordance + the founding voice share one band —
+              no separate full-width composer strip eating vertical air. */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-6 items-start border-b border-line pb-[clamp(1.25rem,3vw,2rem)]">
+            <Reveal as="div" delay={0} className="lg:col-span-8">
+              <CommentRow memory={ARTIST_MEMORY} pinned />
+            </Reveal>
+            {/* composer — the "add a comment" box (X / YouTube idiom): a generic
+                avatar + a rounded input placeholder that opens the share modal,
+                held in a quiet panel beside the pinned voice. */}
+            <div className="lg:col-span-4">
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.25rem)] transition-colors hover:ring-line-strong"
+              >
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] bg-bg-elevated ring-1 ring-line text-ink-muted transition-colors group-hover:ring-accent group-hover:text-accent"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1 font-sans text-[clamp(13.5px,1.6vw,14.5px)] text-ink-muted transition-colors group-hover:text-ink">
+                  Share a memory of Steve…
+                </span>
+              </button>
+            </div>
+          </div>
 
-          {/* a · the pinned artist comment — always rendered, the page is never empty */}
-          <Reveal as="div" delay={0} className="pt-[clamp(0.7rem,2vw,0.95rem)]">
-            <CommentRow memory={ARTIST_MEMORY} pinned />
-          </Reveal>
-
-          {/* b · quiet section eyebrow — a hairline under the pinned comment, like
-              a thread divider, then the label */}
-          <Reveal
-            as="div"
-            delay={0.04}
-            className="mt-[clamp(0.9rem,2.5vw,1.25rem)] mb-[clamp(0.3rem,1.2vw,0.5rem)] border-t border-line pt-[clamp(0.9rem,2.5vw,1.25rem)]"
-          >
+          {/* b · quiet section eyebrow — a thread divider under the pinned band */}
+          <Reveal as="div" className="mt-[clamp(1.25rem,3vw,1.75rem)] mb-[clamp(0.75rem,2vw,1rem)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>
           </Reveal>
 
-          {/* c · visitor comments as a hairline-divided feed. divide-y sits on
-              the .map container so the rule falls BETWEEN the Reveal wrappers
-              (no per-row border-b — that would double up); border-t opens the
-              list under the pinned comment so the pinned row reads anchored.
-              Each reveals with a small staggered delay capped at 0.2s so a long
-              feed never accumulates visible lag; Reveal short-circuits under
-              reduced motion. */}
+          {/* c · visitor comments TILED into a balanced masonry. CSS `columns`
+              (1 → 2 → 3 → 4 with width) packs the cards densely; each tile is
+              break-inside-avoid so a card never splits across a column. Each
+              reveals with a small staggered delay capped at 0.2s so a long wall
+              never accumulates visible lag; Reveal short-circuits under reduced
+              motion. The CommentRow body rendering of the verbatim memory text
+              is unchanged — only the row's surface (the `tile` variant) frames
+              it inside the column. */}
           {hasVisitorMemories ? (
-            <div className="divide-y divide-line">
+            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-[clamp(0.75rem,2vw,1.25rem)] [column-fill:_balance]">
               {visitorMemories.map((memory, i) => (
-                <Reveal key={memory.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
-                  <CommentRow memory={memory} />
+                <Reveal
+                  key={memory.id}
+                  as="div"
+                  delay={Math.min(i * 0.04, 0.2)}
+                  className="mb-[clamp(0.75rem,2vw,1.25rem)] break-inside-avoid"
+                >
+                  <CommentRow memory={memory} tile />
                 </Reveal>
               ))}
             </div>
           ) : (
-            // Empty state recast in the feed idiom — one row in the same grammar,
-            // a dashed-ring "+" avatar + a SANS invitation (no italic). Composed,
-            // not broken.
+            // Empty state recast in the tile idiom — one card in the same
+            // grammar, a dashed-ring "+" avatar + a SANS invitation (no italic).
+            // Composed, not broken; sits left so it never floats centred.
             <Reveal as="div" delay={0.08}>
-              <div>
-                <article className="flex gap-[clamp(0.625rem,2vw,0.8rem)] py-[clamp(0.7rem,2vw,0.95rem)]">
-                  <span
-                    aria-hidden="true"
-                    className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] border border-dashed border-line bg-bg-elevated"
-                  >
-                    <span className="font-display not-italic text-ink-faint text-[clamp(12.5px,3vw,14px)] leading-none">
-                      +
-                    </span>
+              <article className="flex gap-[clamp(0.625rem,2vw,0.8rem)] rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.3rem)] max-w-[480px]">
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] border border-dashed border-line bg-bg-elevated"
+                >
+                  <span className="font-display not-italic text-ink-faint text-[clamp(12.5px,3vw,14px)] leading-none">
+                    +
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.55] text-ink-muted m-0">
-                      No memories have been shared yet — be the first to leave one
-                      for Steve, using the box above.
-                    </p>
-                  </div>
-                </article>
-              </div>
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.55] text-ink-muted m-0">
+                    No memories have been shared yet — be the first to leave one
+                    for Steve, using the box above.
+                  </p>
+                </div>
+              </article>
             </Reveal>
           )}
         </section>

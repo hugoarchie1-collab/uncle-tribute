@@ -4,9 +4,8 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Separator } from "../components/ui/separator";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED, TITLE, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, BTN_PRIMARY } from "../components/ui/tokens";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 
@@ -79,12 +78,19 @@ const ContactBackdrop = () => {
  * page so it shows in the Nav / Footer and can be deep-linked from press,
  * partnerships, and customer enquiries.
  *
- * Visual register: a calm, well-spaced centred 640px column on the shared dark
- * shell — tuned to match the /memories header (a small display H1 + a compact
- * muted-sans intro, fluid clamp() rhythm), NOT the loud big-TITLE/large-SUBTITLE
- * stack. The form fields mirror the /memories share modal (solid bg-bg-soft,
- * py-3, named-token placeholder). Home design system throughout: Fraunces +
- * Hanken Grotesk, cream-on-near-black, accent reserved for eyebrow + focus/hover.
+ * Visual register (rebuilt 2026-06-15 to the About-page LAW): NO timid centred
+ * 640px column, NO blank space. A BOLD left-aligned masthead — a meta rule
+ * (eyebrow + hairline + place tag), then "Write to / the family." set ENORMOUS
+ * edge-to-edge (Fraunces 700, opsz 48, font-synthesis none) filling the width,
+ * the intro packed immediately beneath under a border-t. Below, a DENSE
+ * asymmetric two-column working surface: the form fills the wide left column
+ * while the estate details (by post / direct line / our promise) sit packed in
+ * a hairline rail on the right — no centred void on either flank. Compressed
+ * vertical rhythm (pt-28 md:pt-36, py-9..py-12), never the old clamp(6rem,…)
+ * spacer. Commerce-free page, but the SUBMISSION PATH is untouched: same
+ * Web3Forms POST, same honeypot, same mailto + clipboard fallback, same
+ * verbatim postal address. Home design system throughout: Fraunces + Hanken
+ * Grotesk, cream-on-near-black, accent reserved for eyebrow + focus/hover.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -175,193 +181,285 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[640px] 2xl:max-w-[760px] 3xl:max-w-[820px] px-[clamp(1rem,5vw,2rem)] pt-[clamp(6rem,11vw,6.5rem)] pb-[clamp(3rem,7vw,4.5rem)]">
-        <Reveal as="header">
-          {/* Header copy floats directly over the photo backdrop, so it carries
-              the EXACT legibility text-shadows Collections uses on its intro
-              header (eyebrow / title / subtitle tiers) — no invented values. */}
-          <p
-            className={cn(EYEBROW, "m-0 mb-[clamp(0.625rem,2vw,0.875rem)]")}
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-          >
-            Contact the estate
-          </p>
-          <h1
-            className={cn(TITLE, "m-0 !text-[clamp(26px,3.6vw,44px)] !leading-[1.05]")}
-            style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            Write to the family.
-          </h1>
-          <p
-            className="font-sans font-normal text-[14.5px] md:text-[15px] 2xl:text-[16px] leading-[1.55] text-ink-muted mt-[clamp(0.75rem,2vw,1.1rem)] m-0"
-            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            For commissions, partnerships, press, or a question about a
-            particular work, write to The Mandala Company. We are a small
-            estate; every message is read by the family, and answered within a
-            day or two.
-          </p>
-          <p
-            className={cn(EYEBROW_MUTED, "mt-[clamp(1.1rem,3vw,1.5rem)] mb-[clamp(0.4rem,1.2vw,0.55rem)]")}
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-          >
-            By post
-          </p>
-          <address
-            className="font-sans font-normal not-italic text-[14px] leading-[1.55] text-ink-muted m-0"
-            style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-          >
-            The Mandala Company — 213 Elm Drive, Hove,
-            East Sussex, BN3 7JD, United Kingdom
-          </address>
-          <Separator className="bg-line mt-[clamp(1.25rem,3.5vw,2rem)]" />
-        </Reveal>
-
-        <Reveal as="section" className="mt-[clamp(1.25rem,3.5vw,2rem)]">
-          {status === "success" ? (
-            <div
-              ref={successRef}
-              tabIndex={-1}
-              role="status"
-              aria-live="polite"
-              className="py-[clamp(0.5rem,2vw,1rem)] outline-none"
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-36 pb-12 md:pb-20">
+        {/* MASTHEAD — bold left-aligned front cover (no timid centred header).
+            A meta rule, then "Write to / the family." set ENORMOUS edge-to-edge
+            (Fraunces 700, opsz 48, font-synthesis none), the intro packed
+            immediately beneath under a border-t. Copy floats over the photo
+            backdrop, so each tier carries the EXACT legibility text-shadows
+            Collections uses on its intro header — no invented values. */}
+        <header>
+          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+              Contact the estate
+            </span>
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
+            <span
+              className={cn(EYEBROW_MUTED, "shrink-0")}
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
             >
+              The Mandala Company
+            </span>
+          </Reveal>
+
+          <Reveal as="div" className="mt-4 md:mt-6">
+            <h1
+              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
+              style={{
+                fontVariationSettings: '"opsz" 48, "wght" 700',
+                fontSynthesis: "none",
+                fontSize: "clamp(60px, 13vw, 220px)",
+                textShadow: "0 3px 28px rgba(0,0,0,0.7)",
+              }}
+            >
+              Write to<br />the family.
+            </h1>
+          </Reveal>
+
+          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+            <Reveal as="div" className="lg:col-span-3">
               <p
-                className="font-display font-semibold tracking-[-0.025em] text-[clamp(22px,2.8vw,28px)] leading-[1.15] text-ink m-0 mb-[clamp(0.5rem,1.5vw,0.75rem)]"
-                style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
               >
-                Thank you.
+                Commissions · partnerships · press
               </p>
+            </Reveal>
+            <Reveal as="div" delay={0.06} className="lg:col-span-9">
               <p
-                className="font-sans font-normal text-[14.5px] md:text-[15px] leading-[1.55] text-ink-muted m-0 max-w-[56ch]"
-                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-              >
-                Your message is on its way to{" "}
-                <span className="text-ink">info@themandalacompany.com</span>.
-                If your mail client did not open, we have copied the message to
-                your clipboard; paste it into a new email from anywhere.
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate>
-              {/* Honeypot */}
-              <input
-                type="text"
-                name="botcheck"
-                tabIndex={-1}
-                autoComplete="off"
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
                 style={{
-                  position: "absolute",
-                  width: "1px",
-                  height: "1px",
-                  padding: 0,
-                  margin: "-1px",
-                  overflow: "hidden",
-                  clip: "rect(0,0,0,0)",
-                  whiteSpace: "nowrap",
-                  border: 0,
+                  fontVariationSettings: '"opsz" 32, "wght" 400',
+                  fontSize: "clamp(22px, 2.6vw, 36px)",
+                  lineHeight: 1.3,
+                  textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
                 }}
-                aria-hidden="true"
-              />
+              >
+                For commissions, partnerships, press, or a question about a
+                particular work, write to The Mandala Company. We are a small
+                estate; every message is read by the family, and answered within
+                a day or two.
+              </p>
+            </Reveal>
+          </div>
+        </header>
 
-              {/* Each label is a focus-within `group`: the muted eyebrow above
-                  a field eases to full ink while its input is focused — the
-                  label answers the focus, not just the input ring. */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <label className="group block">
-                  <span
-                    className={cn(
-                      EYEBROW_MUTED,
-                      "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
-                    )}
-                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-                  >
-                    Name
-                  </span>
-                  <input
-                    ref={firstFieldRef}
-                    name="name"
-                    required
-                    autoComplete="name"
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
-                    placeholder="Jane Smith"
-                  />
-                </label>
-                <label className="group block">
-                  <span
-                    className={cn(
-                      EYEBROW_MUTED,
-                      "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
-                    )}
-                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-                  >
-                    Email
-                  </span>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
-                    placeholder="jane@example.com"
-                  />
-                </label>
-              </div>
-
-              <label className="group block mb-5">
-                <span
-                  className={cn(
-                    EYEBROW_MUTED,
-                    "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
-                  )}
-                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+        {/* THE WORKING SURFACE — a dense, asymmetric two-column block: the form
+            fills the wide left column; the estate details (by post / the direct
+            line / our promise) sit packed in a hairline rail on the right, so
+            neither flank is a centred void. On success the form is swapped for
+            the thank-you region in the same left column. */}
+        <section className="mt-10 md:mt-14 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
+          <Reveal as="div" className="lg:col-span-7">
+            <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+              {status === "success" ? "Message sent" : "Send a message"}
+            </p>
+            {status === "success" ? (
+              <div
+                ref={successRef}
+                tabIndex={-1}
+                role="status"
+                aria-live="polite"
+                className="outline-none"
+              >
+                <p
+                  className="font-display font-semibold tracking-[-0.025em] text-[clamp(30px,4vw,52px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
+                  style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
-                  Message
-                </span>
-                <textarea
-                  name="message"
-                  required
-                  rows={6}
-                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
-                  placeholder="A few lines about the work or enquiry."
-                />
-              </label>
-
-              {errorMsg && (
-                <p role="alert" className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
-              )}
-
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
-                <button
-                  type="submit"
-                  disabled={status === "submitting"}
-                  className={cn(BTN_PRIMARY, "group")}
-                >
-                  {status === "submitting" ? "Sending…" : "Send your message"}
-                  <span
-                    aria-hidden="true"
-                    className="ml-2 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
-                  >
-                    →
-                  </span>
-                </button>
-                <a
-                  href="mailto:info@themandalacompany.com"
-                  className="group inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                  Thank you.
+                </p>
+                <p
+                  className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.65] text-ink-muted m-0 max-w-[56ch]"
                   style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
-                  Or write directly
-                  <span
-                    aria-hidden="true"
-                    className="ml-1.5 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[2px]"
-                  >
-                    →
-                  </span>
-                </a>
+                  Your message is on its way to{" "}
+                  <span className="text-ink">info@themandalacompany.com</span>.
+                  If your mail client did not open, we have copied the message to
+                  your clipboard; paste it into a new email from anywhere.
+                </p>
               </div>
-            </form>
-          )}
-        </Reveal>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate>
+                {/* Honeypot */}
+                <input
+                  type="text"
+                  name="botcheck"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  style={{
+                    position: "absolute",
+                    width: "1px",
+                    height: "1px",
+                    padding: 0,
+                    margin: "-1px",
+                    overflow: "hidden",
+                    clip: "rect(0,0,0,0)",
+                    whiteSpace: "nowrap",
+                    border: 0,
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Each label is a focus-within `group`: the muted eyebrow above
+                    a field eases to full ink while its input is focused — the
+                    label answers the focus, not just the input ring. */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <label className="group block">
+                    <span
+                      className={cn(
+                        EYEBROW_MUTED,
+                        "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                      )}
+                      style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                    >
+                      Name
+                    </span>
+                    <input
+                      ref={firstFieldRef}
+                      name="name"
+                      required
+                      autoComplete="name"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                      placeholder="Jane Smith"
+                    />
+                  </label>
+                  <label className="group block">
+                    <span
+                      className={cn(
+                        EYEBROW_MUTED,
+                        "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                      )}
+                      style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                    >
+                      Email
+                    </span>
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                      placeholder="jane@example.com"
+                    />
+                  </label>
+                </div>
+
+                <label className="group block mb-5">
+                  <span
+                    className={cn(
+                      EYEBROW_MUTED,
+                      "block mb-2 transition-colors duration-200 group-focus-within:text-ink",
+                    )}
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                  >
+                    Message
+                  </span>
+                  <textarea
+                    name="message"
+                    required
+                    rows={8}
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                    placeholder="A few lines about the work or enquiry."
+                  />
+                </label>
+
+                {errorMsg && (
+                  <p role="alert" className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                )}
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className={cn(BTN_PRIMARY, "group")}
+                  >
+                    {status === "submitting" ? "Sending…" : "Send your message"}
+                    <span
+                      aria-hidden="true"
+                      className="ml-2 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
+                    >
+                      →
+                    </span>
+                  </button>
+                  <a
+                    href="mailto:info@themandalacompany.com"
+                    className="group inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  >
+                    Or write directly
+                    <span
+                      aria-hidden="true"
+                      className="ml-1.5 inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[2px]"
+                    >
+                      →
+                    </span>
+                  </a>
+                </div>
+              </form>
+            )}
+          </Reveal>
+
+          {/* ESTATE DETAILS RAIL — packs the right flank so the form never
+              floats next to empty space. A hairline ledger of dt/dd facts:
+              the direct line, the verbatim postal address, and the response
+              promise. Drops below the form on a single column. */}
+          <Reveal as="div" delay={0.08} className="mt-12 lg:mt-0 lg:col-span-4 lg:col-start-9">
+            <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+              The estate
+            </p>
+            <dl className="m-0 lg:border-l lg:border-line lg:pl-7">
+              <div className="border-t border-line pt-4 pb-5">
+                <dt
+                  className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
+                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                >
+                  Direct line
+                </dt>
+                <dd className="m-0">
+                  <a
+                    href="mailto:info@themandalacompany.com"
+                    className="font-sans text-[15px] md:text-[16px] text-ink hover:text-accent transition-colors break-words"
+                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  >
+                    info@themandalacompany.com
+                  </a>
+                </dd>
+              </div>
+              <div className="border-t border-line pt-4 pb-5">
+                <dt
+                  className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
+                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                >
+                  By post
+                </dt>
+                <dd className="m-0">
+                  <address
+                    className={cn(META, "not-italic m-0 text-ink-soft")}
+                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  >
+                    The Mandala Company — 213 Elm Drive, Hove,
+                    East Sussex, BN3 7JD, United Kingdom
+                  </address>
+                </dd>
+              </div>
+              <div className="border-t border-b border-line pt-4 pb-5">
+                <dt
+                  className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
+                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                >
+                  Our promise
+                </dt>
+                <dd
+                  className={cn(META, "m-0 text-ink-soft")}
+                  style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                >
+                  Every message is read by the family, and answered within a day
+                  or two.
+                </dd>
+              </div>
+            </dl>
+          </Reveal>
+        </section>
       </main>
       <FooterCatalogue />
       <Footer />
