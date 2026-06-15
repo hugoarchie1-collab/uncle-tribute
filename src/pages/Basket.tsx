@@ -27,7 +27,7 @@ import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { useNoindexHead } from "../lib/useNoindexHead";
 
 /**
@@ -313,20 +313,28 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.4} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-16 pb-20 md:pb-28">
-        <Reveal>
-          <p className={cn(EYEBROW, "m-0 mb-5")}>
-            Made to order
-          </p>
-          <h1 className={cn(TITLE, "m-0 mb-10 hero-text-shadow")}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-20 md:pb-28">
+        {/* MASTHEAD — bold page-level header on the AboutMasthead grammar: a
+            meta rule band, the title set large left-aligned (Fraunces 700,
+            opsz 48), then the line count packed under a hairline. Replaces the
+            timid EYEBROW → small-TITLE → mb-10 dead gap. */}
+        <Reveal as="div" className="mb-8 md:mb-10">
+          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span className={EYEBROW}>Made to order</span>
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
+            <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
+          </div>
+          <h1
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.85] hero-text-shadow"
+            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(52px, 9vw, 132px)" }}
+          >
             Your basket.
           </h1>
         </Reveal>
 
         {isEmpty ? (
           <Reveal as="div" className="max-w-[640px]">
-            <Separator className="bg-line mb-8" />
-            <p className={cn(SUBTITLE, "m-0 mb-8")}>
+            <p className={cn(SUBTITLE, "m-0 mb-6")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
             </p>
@@ -337,7 +345,7 @@ export const Basket = () => {
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
                 beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
             {BEGIN_WITH_PICKS.length > 0 && (
-              <div className="mt-14">
+              <div className="mt-10 md:mt-12">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
@@ -381,7 +389,7 @@ export const Basket = () => {
           <>
             {lines.length > 0 && (
             <Reveal as="div">
-              <Separator className="bg-line mb-8" />
+              <Separator className="bg-line mb-6" />
               <ul className="list-none p-0 m-0 flex flex-col">
                 {lines.map((line, i) => {
                   const framingPence = lineFramingPence(line);
@@ -502,7 +510,7 @@ export const Basket = () => {
 
             {giftCards.length > 0 && (
               <Reveal as="div" className={lines.length > 0 ? "mt-2" : ""}>
-                {lines.length === 0 && <Separator className="bg-line mb-8" />}
+                {lines.length === 0 && <Separator className="bg-line mb-6" />}
                 <ul className="list-none p-0 m-0 flex flex-col">
                   {giftCards.map((g: GiftBasketItem) => (
                     <li

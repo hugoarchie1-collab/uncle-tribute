@@ -7,7 +7,7 @@ import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, TITLE, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -231,8 +231,8 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
   if (companions.length === 0) return null;
 
   return (
-    <Reveal as="div" className="mt-20 md:mt-28 text-left">
-      <div className="text-center mb-9">
+    <Reveal as="div" className="mt-12 md:mt-16 text-left">
+      <div className="text-center mb-8">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Complete the set</p>
         <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0 mb-3">
           A companion piece
@@ -288,24 +288,27 @@ export const OrderSuccess = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>
-          <p className={cn(EYEBROW, "m-0 mb-5")}>
+          <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order confirmed
           </p>
-          <h1 className={cn(TITLE, "my-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
+          <h1
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mx-auto leading-[0.82] hero-text-shadow"
+            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 12vw, 168px)" }}
+          >
             Thank you.
           </h1>
-          <p className={cn(SUBTITLE, "my-0 mb-5 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-6 md:mt-7 mb-5 mx-auto text-center max-w-[640px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted my-0 mb-10 mx-auto max-w-[640px]">
+          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted my-0 mb-7 mx-auto max-w-[640px]">
             Each print is made to order. We place yours with our atelier, Point 101 in London,
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
           </p>
           {sessionId && (
-            <p className="font-sans text-[13px] leading-[1.6] text-ink-muted m-0 mb-10">
+            <p className="font-sans text-[13px] leading-[1.6] text-ink-muted m-0 mb-8">
               Reference: {sessionId.slice(0, 18)}…
             </p>
           )}
@@ -358,15 +361,18 @@ export const OrderCancel = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <AmbientBackdrop opacity={0.45} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-20 md:py-28 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>
-          <p className={cn(EYEBROW, "m-0 mb-5")}>
+          <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order cancelled
           </p>
-          <h1 className={cn(TITLE, "my-0 mb-7 mx-auto max-w-[820px] hero-text-shadow")}>
+          <h1
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mx-auto leading-[0.82] hero-text-shadow"
+            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(56px, 10vw, 140px)" }}
+          >
             No charge taken.
           </h1>
-          <p className={cn(SUBTITLE, "my-0 mb-10 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-6 md:mt-7 mb-8 mx-auto text-center max-w-[640px]")}>
             You left checkout before completing the order, so nothing was charged.
             {hasBasket && " Your basket is saved — return when you're ready."}
             {" "}If a detail was unclear, or you would like help choosing a
