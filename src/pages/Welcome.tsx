@@ -25,12 +25,12 @@ import { usePageTitle } from "../lib/usePageTitle";
 // the page — it holds through the Sacred Geometry finale (Hugo's direction:
 // revert the brief Mary-Pink close back to the extended purple).
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-blur.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v2.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v2.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v2.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v8.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v9.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
