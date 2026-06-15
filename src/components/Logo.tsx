@@ -44,7 +44,16 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wor
         }}
       />
       {wordmark && (
-        <span className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-[16px] font-normal tracking-tight text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "min-w-0 whitespace-normal leading-[1.2]" : "whitespace-nowrap leading-none"}`}>
+        // NAV wordmark sized to MATCH the weight of the deep-red seal beside it
+        // (Hugo: the old 16px/normal text read small + un-impactful). In the nav
+        // it's bold Fraunces that grows responsively across the screen
+        // (clamp 20→28px, opsz 28, semibold). The FOOTER (wordmarkWrap) keeps the
+        // original tidy 16px/normal so it still wraps cleanly to two lines inside
+        // the narrow brand column — only the header logo gets the big treatment.
+        <span
+          className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(20px,1.9vw,28px)] font-semibold tracking-[-0.015em] whitespace-nowrap leading-none"}`}
+          style={wordmarkWrap ? undefined : { fontVariationSettings: '"opsz" 28' }}
+        >
           The Art of Stephen Meakin
         </span>
       )}
