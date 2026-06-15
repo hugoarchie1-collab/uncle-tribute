@@ -177,9 +177,8 @@ export const NEWS: NewsEntry[] = [
     ctaTo: "#notify",
   },
   {
-    // Wild Rose's Black Rose colourway — in preparation. No print image on disk
-    // yet, so `cover` is deliberately omitted and the row renders lean; add the
-    // cover (a real /img/paintings stem) once the file is in the catalogue.
+    // Wild Rose's Black Rose colourway — in preparation. Cover is the real
+    // Black Rose mandala (Hugo, 2026-06-16); AssetImage swaps to the .webp.
     id: "wild-rose-black-rose",
     type: "release",
     kind: "single",
@@ -188,6 +187,7 @@ export const NEWS: NewsEntry[] = [
     displayDate: "Coming soon",
     summary:
       "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, and issued in a numbered drop.",
+    cover: "/img/paintings/wild-rose-black-rose.jpg",
     ctaLabel: "Be the first to know",
     ctaTo: "#notify",
   },
