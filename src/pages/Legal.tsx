@@ -693,7 +693,7 @@ export const Privacy = () => (
     sections={PRIVACY}
     updated={UPDATED}
     // Home "Mary Pink" peacock colourway, blurred — matches the home backdrop.
-    backdrop="/img/paintings/peacock-mary-pink-blur-v10.webp"
+    backdrop="/img/paintings/peacock-mary-pink-blur-v11.webp"
   />
 );
 export const Terms = () => (

@@ -30,7 +30,7 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-moroccan-purple-blur-v3.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v10.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v11.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
