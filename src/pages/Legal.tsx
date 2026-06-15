@@ -693,7 +693,7 @@ export const Privacy = () => (
     sections={PRIVACY}
     updated={UPDATED}
     // Home "Mary Pink" peacock colourway, blurred — matches the home backdrop.
-    backdrop="/img/paintings/peacock-mary-pink-blur-v9.webp"
+    backdrop="/img/paintings/peacock-mary-pink-blur-v10.webp"
   />
 );
 export const Terms = () => (
@@ -711,7 +711,7 @@ export const Returns = () => (
     sections={RETURNS}
     updated={UPDATED}
     // Home "Blood Moon Red" peacock colourway, blurred — matches the home backdrop.
-    backdrop="/img/paintings/peacock-blood-moon-red-blur-v2.webp"
+    backdrop="/img/paintings/peacock-blood-moon-red-blur-v3.webp"
   />
 );
 
