@@ -20,7 +20,6 @@ import {
   CREDENTIALS,
   DEATH_DATE,
   INTERVIEW,
-  PASSING_DATE,
   TRIBUTE,
   MEMORIAL_QUOTE,
   LIFE_DATES,
@@ -429,95 +428,52 @@ const ContainImage = ({
   );
 };
 
-// ─── AboutHero ────────────────────────────────────────────────────────────────
-// The unnumbered front cover before Chapter I — kept exactly as shipped.
-// Full-bleed cover image with the SAME atmosphere as the home page: object-cover
-// (never crops/distorts at any width), the shared radial scrim used site-wide,
-// The source is the 2048px LANDSCAPE studio photograph (02-painting-table) —
-// the only frame wide and large enough for a viewport-wide cover slot. The old
-// 800×1200 portrait gallery shot upscaled ~2–3× here (visibly soft) and now
-// lives at its native size beside the interview instead.
-// plus a soft top+bottom gradient so the cream type and the overlay Nav stay
-// legible over any part of the photograph. Type is the canonical home register —
-// font-display headline (not 700, which isn't loaded), accent-free eyebrows in
-// the muted-ink token, `.hero-text-shadow` for legibility. Scroll-scrubbed scale
-// + opacity on the image and a gentle upward translate on the title; reduced-
-// motion short-circuits every transform. Poster beat #1 of exactly two.
-const AboutHero = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const imgScale = useTransform(scrollYProgress, [0, 1], [1.0, 1.08]);
-  const imgOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.55]);
-  const titleY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
+// ─── AboutMasthead ──────────────────────────────────────────────────────────
+// The front cover — IMAGE-FREE by design (the owner cut the photo hero and the
+// name-stamped-on-a-photo title). A bold gallery-monograph masthead: a meta
+// rule, the name set ENORMOUS edge-to-edge (Fraunces 700, opsz 48), then the
+// opening passage packed immediately beneath as the lead — so the very first
+// screen is dense, confident type over the indigo peacock glow. No photo, no
+// dead space, no centred-over-a-picture treatment. The opening passage lifts
+// out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
+const AboutMasthead = () => (
+  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-36 pb-8 md:pb-12">
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <span className={EYEBROW}>In memoriam</span>
+      <span aria-hidden className="h-px flex-1 bg-ink/15" />
+      <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+    </Reveal>
 
-  return (
-    <section className="relative">
-      <div
-        ref={ref}
-        className="relative h-[68vh] md:h-[78vh] min-h-[560px] max-h-[820px] w-full overflow-hidden bg-bg"
+    <Reveal as="div" className="mt-4 md:mt-6">
+      <h1
+        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.8]"
+        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(76px, 18.5vw, 360px)" }}
       >
-        <motion.div
-          className="absolute inset-0 will-change-transform"
-          style={reduceMotion ? undefined : { scale: imgScale, opacity: imgOpacity }}
-        >
-          <AssetImage
-            src="/img/about/02-painting-table.jpg"
-            alt="Stephen Meakin and a companion at work on a large mandala painting laid flat across the studio table"
-            loading="eager"
-            decoding="sync"
-            fetchPriority="high"
-            sizes="100vw"
-            className="absolute inset-0 w-full h-full object-cover object-[center_30%]"
-          />
-        </motion.div>
-        {/* Shared radial scrim — the EXACT focal recipe used on Welcome /
-            Collections / the AmbientBackdrop, so the hero reads as the same
-            world rather than a bolted-on banner. */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
+        Stephen<br />Meakin
+      </h1>
+    </Reveal>
+
+    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+      <Reveal as="div" className="lg:col-span-3">
+        <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+          SEM · Mandala artist &amp; sacred geometer
+        </p>
+      </Reveal>
+      <Reveal as="div" delay={0.06} className="lg:col-span-9">
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0"
           style={{
-            background:
-              "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(23px, 2.7vw, 38px)",
+            lineHeight: 1.3,
           }}
-        />
-        {/* Edge feathering — darkens under the overlay Nav and beneath the
-            title so cream type holds at any viewport without crushing the
-            mid-image. */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(10,9,8,0.6) 0%, rgba(10,9,8,0) 30%, rgba(10,9,8,0) 60%, rgba(10,9,8,0.72) 100%)",
-          }}
-        />
-        <Reveal as="div" className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 text-center px-4">
-          <p className={cn(EYEBROW_MUTED, "m-0 hero-text-shadow")}>
-            In memoriam · 1966–{PASSING_DATE}
-          </p>
-        </Reveal>
-        <motion.div
-          style={reduceMotion ? undefined : { y: titleY }}
-          className="absolute inset-x-0 bottom-[7vh] md:bottom-[8vh] text-center px-4"
         >
-          <Reveal as="div">
-            <h1 className="font-display font-semibold tracking-[-0.04em] text-[clamp(48px,11vw,160px)] leading-[0.88] text-ink m-0 hero-text-shadow">
-              Stephen<br />Meakin
-            </h1>
-            <p className={cn(EYEBROW_MUTED, "mt-4 md:mt-5 hero-text-shadow")}>
-              SEM · Mandala artist &amp; sacred geometer
-            </p>
-          </Reveal>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+          {ABOUT.opening[0]}
+        </p>
+      </Reveal>
+    </div>
+  </section>
+);
 
 // ─── AnegadaPoster ────────────────────────────────────────────────────────────
 // The turning point — the page's SOLE giant moment (poster beat #2 of exactly
@@ -531,7 +487,7 @@ const AboutHero = () => {
 // owner's PDF; its venue/date are unconfirmed, so the caption must never
 // claim Anegada, 1995, or "the first".
 const AnegadaPoster = () => (
-  <div className="min-h-[88svh] flex items-center mt-16 md:mt-24">
+  <div className="mt-8 md:mt-12">
     <div className="w-full">
       <Reveal as="div">
         <p className={cn(EYEBROW, "m-0 mb-6")}>Anegada · 1995</p>
@@ -809,38 +765,27 @@ export const About = () => {
       <ChapterRail />
 
       <main className="relative isolate z-10">
-        {/* 1 · HERO — the unnumbered front cover (poster beat #1 of two). */}
-        <AboutHero />
+        {/* 1 · MASTHEAD — image-free bold front cover (the opening passage
+            lives here now). */}
+        <AboutMasthead />
 
-        {/* 2 · OPENING — the prologue (deliberately NO chapter motif: the
-            first hairline+kicker appearing at Chapter I is what makes the
-            system legible). ABOUT.opening[0] set as the editorial dek;
-            ABOUT.opening[1] framed "As he described himself —" (quote styling
-            only, the words verbatim from content.ts); the older portrait with
-            the facts rail beneath it (every value a content.ts constant).
-            Captions stay CLAIM-FREE — the PDF shows these photos uncaptioned,
-            so no dates, venues or who-is-who until the family confirms. */}
-        <section className={cn(SECTION, "py-16 md:py-24")}>
+        {/* 2 · SELF-DESCRIPTION + PORTRAIT — a dense two-column block: his own
+            words ("As he described himself —", ABOUT.opening[1] VERBATIM) tight
+            beside the portrait + the facts rail (every value a content.ts
+            constant). No dek here anymore — the opening passage is the masthead
+            lead, so nothing repeats. Caption CLAIM-FREE (PDF shows it
+            uncaptioned). */}
+        <section className={cn(SECTION, "py-9 md:py-12")}>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 items-start">
-            <div className="lg:col-span-7">
-              <Reveal as="div">
-                <p
-                  className="font-display font-normal tracking-[-0.01em] text-[clamp(22px,2.6vw,34px)] leading-[1.5] text-ink m-0 max-w-[26ch] lg:max-w-[680px]"
-                  style={{ fontVariationSettings: '"opsz" 24, "wght" 400' }}
-                >
-                  {ABOUT.opening[0]}
+            <Reveal as="div" className="lg:col-span-7">
+              <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
+              <blockquote className="m-0 pl-5 md:pl-7 border-l-2 border-accent/40 max-w-[64ch]">
+                <p className="quote-hang font-display italic tracking-[-0.01em] text-[clamp(20px,2.3vw,30px)] leading-[1.5] text-ink m-0">
+                  &ldquo;{ABOUT.opening[1]}&rdquo;
                 </p>
-              </Reveal>
-              <Reveal as="div" delay={0.06} className="mt-10">
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>As he described himself —</p>
-                <blockquote className="m-0 pl-5 md:pl-7 border-l border-line max-w-[62ch]">
-                  <p className="quote-hang font-display italic tracking-[-0.01em] text-[clamp(17px,1.9vw,21px)] leading-[1.65] text-ink m-0">
-                    &ldquo;{ABOUT.opening[1]}&rdquo;
-                  </p>
-                </blockquote>
-              </Reveal>
-            </div>
-            <Reveal as="div" delay={0.12} className="mt-14 lg:mt-0 lg:col-span-4 lg:col-start-9">
+              </blockquote>
+            </Reveal>
+            <Reveal as="div" delay={0.1} className="mt-10 lg:mt-0 lg:col-span-4 lg:col-start-9">
               <figure className="m-0 max-w-[460px] lg:max-w-none mx-auto lg:mx-0">
                 <ContainImage
                   src="/img/about/12-stephen-portrait.jpg"
@@ -853,7 +798,7 @@ export const About = () => {
               {/* Facts rail — dt/dd from content.ts constants; Staffordshire is
                   earlyLife[0]'s word, Phoenix Place legacy[0]'s. Collapses to a
                   horizontal hairline strip below lg. */}
-              <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4 border-y border-line py-6 lg:block lg:space-y-5 lg:border-y-0 lg:border-l lg:border-line lg:py-0 lg:pl-6">
+              <dl className="mt-7 flex flex-wrap gap-x-10 gap-y-4 border-y border-line py-5 lg:block lg:space-y-5 lg:border-y-0 lg:border-l lg:border-line lg:py-0 lg:pl-6">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
                   <dd className={cn(META, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
@@ -877,7 +822,7 @@ export const About = () => {
             precious people shots → Plate (whole frame, native ratio, warm
             mat). The portrait's caption is right-set so the family-group
             print pulled up beside it never covers it. */}
-        <section className={cn(SECTION, "py-12 md:py-16")}>
+        <section className={cn(SECTION, "py-8 md:py-10")}>
           <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-start">
             <Reveal as="div" className="col-span-2 md:col-span-7">
               <Plate
@@ -917,7 +862,7 @@ export const About = () => {
             Brighton (ABOUT.earlyLife[0]) at the LEAD scale with the drop cap,
             beside the two family prints from PDF p3 — the second dropped
             off-grid below the first. */}
-        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-12 md:py-20")}>
+        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
           <ChapterHead id="beginnings" title="Bath, Brighton, and a different aesthetic." />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-5">
@@ -953,7 +898,7 @@ export const About = () => {
             passage (ABOUT.earlyLife[1]) pushed down a half-beat right, the
             café print straddling the baseline below. Document order preserved
             top-to-bottom: photo → text → photo. */}
-        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-12 md:py-20")}>
+        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
           <ChapterHead id="bournemouth" title="A dusty old hardback." />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-7">
@@ -991,7 +936,7 @@ export const About = () => {
             overlapped depths read as stacked framed prints). All five are
             people shots → Plate, never cropped. One shared caption under the
             run (its fact verbatim from earlyLife[2]). */}
-        <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-16 md:py-24")}>
+        <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="wandering" title="The wandering years." />
 
           <div className="grid grid-cols-2 md:grid-cols-12 gap-4 md:gap-6 items-start">
@@ -1060,7 +1005,7 @@ export const About = () => {
             years (ABOUT.earlyLife[3]) at LEAD + drop cap; ABOUT.earlyLife[4]
             ("In 1999… He never stopped.") promoted VERBATIM to the off-axis
             pull-line; then the poster. */}
-        <section id="return" className={cn(SECTION, "scroll-mt-28 py-16 md:py-28")}>
+        <section id="return" className={cn(SECTION, "scroll-mt-28 py-10 md:py-16")}>
           <ChapterHead id="return" title="Architecture, fine art, and the first mandala." />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-6">
@@ -1090,7 +1035,7 @@ export const About = () => {
             palette of my being") — never shorten or paraphrase it; the
             attribution line presents it as his words. parallax 0 here by law:
             sticky + transform fight. */}
-        <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-16 md:py-24")}>
+        <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="ritual" title="The very palette of my being." />
           <Reveal as="div" className="-mt-5 md:-mt-8 mb-10 md:mb-14">
             <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen, on his practice, in his own words</p>
@@ -1139,7 +1084,7 @@ export const About = () => {
             ABOUT.legacy[0] at LEAD, the TRADITIONS I–IV hairline strip, and
             the two tradition reference photographs. Caption on the cairn is
             CLAIM-FREE (no place, no date). */}
-        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-12 md:py-20")}>
+        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
           <ChapterHead id="lewes" title="Four traditions, one language." />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
             <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
@@ -1208,7 +1153,7 @@ export const About = () => {
             "CYGNUS - 2012" — it's a LATER Mystic Rose exhibition at the
             Fairmont, presented by the Majlis Gallery. Caption only what the
             flyer itself says; never date it January 2011. */}
-        <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-16 md:py-24")}>
+        <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="exhibitions" title="From the Majlis in Dubai to a Formula One car." />
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-7">
@@ -1455,7 +1400,7 @@ export const About = () => {
             board), whole sheets at native ratio, one claim-free caption (the
             commission is established verbatim by legacy[1]). The purple→pink
             backdrop crossfade midpoint is tuned to land here. */}
-        <section className={cn(SECTION, "py-16 md:py-24")}>
+        <section className={cn(SECTION, "py-10 md:py-14")}>
           <Reveal as="div" className="max-w-[1040px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
@@ -1496,7 +1441,7 @@ export const About = () => {
             the academyQuote at BODY, then over the dinkus the palestine
             passage — it belongs INSIDE this chapter per the PDF, and its
             mention of Az-Zarqa is the hinge into Chapter IX. */}
-        <section id="academy" className={cn(SECTION, "scroll-mt-28 py-16 md:py-24")}>
+        <section id="academy" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="academy" title="The Art of Geometry Academy." />
           <div className="max-w-[62ch] mx-auto">
             <Reveal as="div">
@@ -1533,7 +1478,7 @@ export const About = () => {
             line.
             ⚠️ CAPTION IS CLAIM-FREE — school/Petra/Bedouin facts live in the
             verbatim palestine paragraph above; the caption claims nothing. */}
-        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-16 md:py-28")}>
+        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-10 md:py-16")}>
           <ChapterHead id="azzarqa" title="To his students." />
 
           <Reveal as="figure" className="m-0 max-w-[860px] mx-auto">
@@ -1577,7 +1522,7 @@ export const About = () => {
             TAGA group promoted with generous clear air, then the studio and
             the classroom at cluster scale. The group photo MUST show in full
             (heads + all the mandalas) → contained, never cropped. */}
-        <section className={cn(SECTION, "py-16 md:py-24")}>
+        <section className={cn(SECTION, "py-10 md:py-14")}>
           <Reveal as="figure" className="m-0 max-w-[1100px] mx-auto mb-6 md:mb-8">
             <ContainImage
               src="/img/about/08-taga-group.jpg"
@@ -1623,8 +1568,8 @@ export const About = () => {
             wrapper: max-w 1320/1500/1720 minus the horizontal padding at each
             step, so the 800/1400w WebP variants actually get picked instead
             of the full-size file. The backdrop is fully Mary Pink here. */}
-        <section className={cn(SECTION, "py-12 md:py-20")}>
-          <Reveal as="div" className="text-center mb-6 md:mb-8">
+        <section className={cn(SECTION, "py-9 md:py-12")}>
+          <Reveal as="div" className="text-center mb-5 md:mb-7">
             <p className={cn(EYEBROW, "m-0")}>The body of work</p>
           </Reveal>
           <Reveal as="figure" className="my-0">
@@ -1646,7 +1591,7 @@ export const About = () => {
             tribute, opened by Stephen's own "everything is connected" words.
             UNTOUCHABLE — its border-t now reads as the final chapter hairline,
             the motif closing the system. */}
-        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-16 md:py-24 border-t border-line">
+        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-11 md:py-16 border-t border-line">
           <Reveal as="div" className="text-center mb-10 md:mb-14">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
