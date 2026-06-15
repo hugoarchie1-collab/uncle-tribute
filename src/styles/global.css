@@ -626,16 +626,16 @@
   pointer-events: none;
   width: 34px;
   height: 34px;
-  /* The new Tudor-rose mark in its crisp white line treatment (the seal itself
-     is too dark/detailed to read as a tiny moving cursor). brightness(0)
-     invert(1) forces it to pure WHITE regardless of source, so the cursor is
-     always a crisp white flower; the drop-shadow keeps it legible on pale
-     rose/pink. Same rose as the wax seal — just the mono companion mark. */
-  background-image: url("/logo/logo-rose-line-v1-w128.png");
+  /* The actual deep-red wax-seal mark (Hugo: match the cursor to the new red
+     logo) — same seal PNG the header uses, shown in its TRUE red (no
+     white-forcing filter). A soft cream halo + dark shadow keep the red rose
+     legible on BOTH the near-black sections AND the pale peacock/rose washes
+     (deep red alone would vanish on #0a0908). */
+  background-image: url("/logo/logo-seal-v1-w96.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: brightness(0) invert(1) drop-shadow(0 1px 4px rgba(10, 9, 8, 0.65));
+  filter: drop-shadow(0 0 2.5px rgba(237, 230, 214, 0.6)) drop-shadow(0 1px 3px rgba(10, 9, 8, 0.6));
   will-change: transform;
   transition:
     width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),

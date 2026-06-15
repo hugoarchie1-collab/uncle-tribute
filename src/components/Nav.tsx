@@ -196,7 +196,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-label="The Art of Stephen Meakin — home"
           className="press inline-flex items-center shrink-0"
         >
-          <Logo size={32} wordmark />
+          <Logo size={50} wordmark />
         </Link>
 
         <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">
