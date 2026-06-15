@@ -33,7 +33,7 @@ const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ defaul
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
-const Verify = lazy(() => import("./pages/Verify").then((m) => ({ default: m.Verify })));
+const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -111,7 +111,11 @@ const AnimatedRoutes = () => {
           <Route path="/news" element={<News />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/verify" element={<Verify />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/:certId" element={<Auth />} />
+          {/* /verify kept as a permanent redirect to the renamed Authentication
+              page so old links + printed certificates keep resolving. */}
+          <Route path="/verify" element={<Navigate to="/auth" replace />} />
           <Route path="/gift" element={<Gift />} />
           <Route path="/trade" element={<Trade />} />
           <Route path="/basket" element={<Basket />} />

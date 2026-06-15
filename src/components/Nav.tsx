@@ -27,7 +27,7 @@ const NAV_LINKS = [
  *  in the top bar, so listing it again read as a stray highlighted chip. */
 const SECONDARY_LINKS = [
   { to: "/faq", label: "FAQ" },
-  { to: "/verify", label: "Verify" },
+  { to: "/auth", label: "Authenticate" },
   { to: "/gift", label: "Gift cards" },
   { to: "/trade", label: "Trade" },
   { to: "/privacy", label: "Privacy" },

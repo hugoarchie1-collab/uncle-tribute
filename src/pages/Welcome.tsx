@@ -81,19 +81,7 @@ export const Welcome = () => {
       const cover = pick.colourway
         ? painting.colourways.find((c) => c.name === pick.colourway) ?? painting.colourways[0]
         : painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
-      // Polène-style "turn shot": on hover the tile crossfades to the NEXT
-      // available colourway — Stephen's own alternates are the estate
-      // equivalent of the luxury packshot turn, and they quietly advertise
-      // that colourways exist before the visitor reaches the detail page.
-      // Only for paintings with 2+ AVAILABLE colourways (single-colourway
-      // tiles keep today's scale-only hover, a graceful no-op); the .jpg
-      // guard keeps the -w800 stem maths honest.
-      const available = painting.colourways.filter((c) => c.available);
-      const hoverCover =
-        available.length >= 2
-          ? available.find((c) => c.name !== cover.name && c.image.endsWith(".jpg"))
-          : undefined;
-      return { painting, cover, hoverCover };
+      return { painting, cover };
     })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
@@ -551,7 +539,7 @@ export const Welcome = () => {
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
             <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-7 md:mb-9">
-              {featured.map(({ painting, cover, hoverCover }) => {
+              {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
@@ -569,48 +557,18 @@ export const Welcome = () => {
                     className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                      {/* Shared transform wrapper: the existing 1.05 hover scale
-                          lives HERE so the cover and the turn-shot crossfade
-                          move as one layer (no scale mismatch mid-fade). */}
+                      {/* Gentle zoom on hover only — a small scale-up of the
+                          cover. Hugo: hover should zoom in a little, never flick
+                          to another colourway. */}
                       <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
                         <AssetImage
                           src={cover.image}
                           alt={`${painting.title} — ${cover.name}`}
                           loading="lazy"
                           decoding="async"
-                          // Same orphan-centring grid as /collections: each card is
-                          // flex-[0_1_clamp(280px,30%,420px)] in the
-                          // max-w-[1320px]→[1720px] container — ~one-up (≈90vw) on
-                          // phones, ~30vw at mid widths, capped at the 420px ceiling.
                           sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
                           className="absolute inset-0 w-full h-full object-cover"
                         />
-                        {hoverCover && (
-                          // Polène-style turn-shot: the next available colourway
-                          // crossfades in over the cover (450ms house ease).
-                          // Decorative duplicate → aria-hidden + empty alt; lazy +
-                          // async so the grid payload doesn't double up front.
-                          // Single -w800 webp candidate (~110–260KB vs ~660KB
-                          // full-res; every colourway has one on disk, verified)
-                          // with the .jpg fallback for WebP-less browsers.
-                          // Reduced-motion: global.css zeroes transition-duration
-                          // sitewide, so the swap is instant — exactly the same
-                          // pattern the scale hover above already relies on.
-                          <picture style={{ display: "contents" }}>
-                            <source
-                              srcSet={asset(`${hoverCover.image.slice(0, -4)}-w800.webp`)}
-                              type="image/webp"
-                            />
-                            <img
-                              src={asset(hoverCover.image)}
-                              alt=""
-                              aria-hidden="true"
-                              loading="lazy"
-                              decoding="async"
-                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[450ms] ease-smooth group-hover:opacity-100"
-                            />
-                          </picture>
-                        )}
                       </div>
                       {/* Price chip — scroll-revealed (visible on mobile,
                           where there's no hover, and on desktop as soon as

@@ -78,13 +78,13 @@ export const AuthenticationCard = () => (
       <li className="grid grid-cols-[16px_1fr] gap-3 items-start pt-2.5">
         <span aria-hidden="true" />
         <Link
-          to="/verify"
+          to="/auth"
           className={cn(
             META,
             "underline underline-offset-4 hover:text-ink transition-colors",
           )}
         >
-          Verify a certificate →
+          Authenticate this print →
         </Link>
       </li>
     </ul>

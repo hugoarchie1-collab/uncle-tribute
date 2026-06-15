@@ -68,7 +68,7 @@
  */
 
 import type { IncomingMessage } from "node:http";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import Stripe from "stripe";
 import { Resend } from "resend";
 
@@ -1106,6 +1106,264 @@ const metaCapiPurchase = async (args: {
 };
 
 // ---------------------------------------------------------------------------
+// ESTATE LEDGER — the single source of truth for provenance (issued on order)
+// ---------------------------------------------------------------------------
+// Each purchased print gets a non-guessable Certificate ID and, for numbered
+// tiers, the next SEQUENTIAL print number WITHIN ITS DROP — written to Vercel
+// KV / Upstash (already provisioned for memories + webhook dedup). A Supabase
+// migration is a documented drop-in upgrade (supabase/estate_ledger.sql). Keys:
+//   ledger:cert:<CERT_ID>                    → JSON LedgerEntry (the record)
+//   ledger:seq:<artwork>:<tier>:<dropId>     → int via INCR    (atomic numbering)
+//   ledger:order:<sessionId>:<lineIndex>     → CERT_ID         (idempotency)
+// Self-contained (gotcha #5): inline raw-fetch Upstash REST, reusing
+// kvDedupConfig(). FAIL-OPEN — missing env / KV error → returns [] and the order
+// still completes; the webhook ALWAYS 200s. The /auth page + /api/auth-lookup
+// read these same records back.
+
+const LEDGER_DROP = { id: "drop-i", label: "Drop I" }; // mirror of CURRENT_DROP (paintings.ts)
+
+// Open Edition (atelier) is NOT numbered; the others carry a per-drop allocation
+// (mirror of PRINT_TIERS editionTotal — gotcha #9).
+const TIER_ALLOCATION: Record<string, number | null> = {
+  atelier: null,
+  collector: 200,
+  "atelier-grande": 75,
+  heirloom: 18,
+  studio: 1,
+};
+
+// 3-letter artwork codes for the Certificate ID, e.g. MANDALA-OPI-7F3K91.
+const ARTWORK_CODE: Record<string, string> = {
+  "wild-rose": "WRO",
+  "english-bluebells": "EBB",
+  "orchis-7": "OR7",
+  "flower-of-life": "FOL",
+  "slipper-orchids": "SLO",
+  "peacock-minerva": "PCK",
+  "ophiuchus": "OPI",
+  "tridecagon-moon-star": "TMS",
+  "lulin": "LUL",
+  "enneagon-swans": "ENS",
+};
+
+// Crockford base32 (no I/L/O/U) — unambiguous read off a printed certificate.
+const CERT_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+const certSuffix = (len = 6): string => {
+  const bytes = randomBytes(len);
+  let out = "";
+  for (let i = 0; i < len; i += 1) out += CERT_ALPHABET[bytes[i] % CERT_ALPHABET.length];
+  return out;
+};
+
+interface LedgerEntry {
+  certificate_id: string;
+  artwork_id: string;
+  artwork_name: string;
+  colourway: string;
+  drop_id: string;
+  drop_label: string;
+  tier_id: string;
+  tier_label: string;
+  print_number: number | null;
+  allocation: number | null;
+  issued_date: string; // ISO 8601
+  order_id: string;
+  status: string;
+}
+
+// Generic Upstash REST command (mirror of kvClaimEventId's transport). Returns
+// the `result`, or null on any error / timeout (fail-open).
+async function kvCmd(cmd: (string | number)[]): Promise<unknown> {
+  const cfg = kvDedupConfig();
+  if (!cfg) return null;
+  try {
+    const resp = await fetch(cfg.url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${cfg.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cmd.map(String)),
+      signal: AbortSignal.timeout(2500),
+    });
+    if (!resp.ok) return null;
+    const json = (await resp.json()) as { result?: unknown; error?: string };
+    if (json.error) return null;
+    return json.result ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Parse the PRINT lines (painting_id / tier_id / colourway / title) out of the
+// session metadata — handles BOTH the single-item and multi-item shapes
+// checkout.ts writes. Gift lines (no painting_id) are excluded.
+const ledgerLinesFromMetadata = (
+  m: Stripe.Metadata | null,
+): Array<{ paintingId: string; tierId: string; colourway: string; title: string }> => {
+  if (!m) return [];
+  if (m.painting_id && !m.painting_ids) {
+    return [
+      {
+        paintingId: m.painting_id,
+        tierId: m.tier_id || "collector",
+        colourway: m.colourway_name || "Original",
+        title: m.painting_title || m.painting_id,
+      },
+    ];
+  }
+  const ids = (m.painting_ids || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const tiers = (m.tier_ids || "").split(",").map((s) => s.trim());
+  const cols = (m.colourway_names || "").split(",").map((s) => s.trim());
+  const titles = (m.painting_titles || "").split(",").map((s) => s.trim());
+  return ids.map((paintingId, i) => ({
+    paintingId,
+    tierId: tiers[i] || "collector",
+    colourway: cols[i] || "Original",
+    title: titles[i] || paintingId,
+  }));
+};
+
+// Issue (or, on a retry, re-read) a ledger entry for every print line in the
+// order. Idempotent per (sessionId, lineIndex) via a KV claim key, so a Stripe
+// redelivery can never double-issue a certificate or burn a print number.
+async function issueLedgerEntries(
+  sessionId: string,
+  m: Stripe.Metadata | null,
+): Promise<LedgerEntry[]> {
+  if (!kvDedupConfig()) {
+    console.warn(
+      "[stripe-webhook] estate ledger: KV not configured — certificates NOT issued for",
+      sessionId,
+    );
+    return [];
+  }
+  const lines = ledgerLinesFromMetadata(m);
+  const out: LedgerEntry[] = [];
+  for (let idx = 0; idx < lines.length; idx += 1) {
+    const line = lines[idx];
+    const idemKey = `ledger:order:${sessionId}:${idx}`;
+    try {
+      // Idempotency: if this line already issued a certificate, re-read + reuse.
+      const existingCert = await kvCmd(["GET", idemKey]);
+      if (typeof existingCert === "string" && existingCert) {
+        const rec = await kvCmd(["GET", `ledger:cert:${existingCert}`]);
+        if (typeof rec === "string") {
+          try {
+            out.push(JSON.parse(rec) as LedgerEntry);
+          } catch {
+            /* corrupt record — skip, but don't re-issue under a new id */
+          }
+        }
+        continue;
+      }
+      const allocation = TIER_ALLOCATION[line.tierId] ?? null;
+      // Open Edition (allocation null) is NOT numbered. Numbered tiers take the
+      // next sequential number WITHIN THE DROP via an atomic INCR.
+      let printNumber: number | null = null;
+      if (allocation !== null) {
+        const seq = await kvCmd([
+          "INCR",
+          `ledger:seq:${line.paintingId}:${line.tierId}:${LEDGER_DROP.id}`,
+        ]);
+        const n = typeof seq === "number" ? seq : Number(seq);
+        printNumber = Number.isFinite(n) ? n : null;
+      }
+      const code =
+        ARTWORK_CODE[line.paintingId] || line.paintingId.slice(0, 3).toUpperCase();
+      const cert = `MANDALA-${code}-${certSuffix()}`;
+      const entry: LedgerEntry = {
+        certificate_id: cert,
+        artwork_id: line.paintingId,
+        artwork_name: line.title,
+        colourway: line.colourway,
+        drop_id: LEDGER_DROP.id,
+        drop_label: LEDGER_DROP.label,
+        tier_id: line.tierId,
+        tier_label: TIER_LABEL[line.tierId] || line.tierId,
+        print_number: printNumber,
+        allocation,
+        issued_date: new Date().toISOString(),
+        order_id: sessionId,
+        status: "issued",
+      };
+      // Write the record FIRST, then claim the idempotency key (so a crash
+      // between the two re-issues cleanly on retry rather than orphaning a key).
+      await kvCmd(["SET", `ledger:cert:${cert}`, JSON.stringify(entry)]);
+      await kvCmd(["SET", idemKey, cert]);
+      out.push(entry);
+      console.log("[stripe-webhook] estate ledger entry issued", {
+        order_id: sessionId,
+        cert,
+        artwork: line.paintingId,
+        tier: line.tierId,
+        print_number: printNumber,
+        allocation,
+      });
+    } catch (err) {
+      console.error(
+        "[stripe-webhook] estate ledger write failed for line",
+        idx,
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+  return out;
+}
+
+// Format a print number for display, e.g. 37 + allocation 150 → "037/150".
+const formatPrintNo = (e: LedgerEntry): string => {
+  if (e.print_number === null) return "—";
+  const n = String(e.print_number).padStart(3, "0");
+  return e.allocation ? `${n}/${e.allocation}` : n;
+};
+
+// The estate fulfilment email — the structured Point 101 payload. Plain,
+// utilitarian (this goes to the estate inbox, not a buyer): one row per print,
+// carrying everything needed to print the COA + back-of-print label and place
+// the Point 101 order. The /auth URL is the QR target for that print's COA.
+const renderEstateFulfilmentHtml = (p: {
+  orderRef: string;
+  shippingName?: string | null;
+  entries: LedgerEntry[];
+  siteUrl: string;
+}): string => {
+  const rows = p.entries
+    .map((e) => {
+      const authUrl = `${p.siteUrl}/auth/${e.certificate_id}`;
+      const cell = "padding:8px 10px;border-top:1px solid #ddd;vertical-align:top;";
+      return (
+        `<tr>` +
+        `<td style="${cell}">${esc(e.artwork_name)}<br/><span style="color:#666;">${esc(e.colourway)}</span></td>` +
+        `<td style="${cell}">${esc(e.tier_label)}</td>` +
+        `<td style="${cell}">${esc(e.drop_label)}</td>` +
+        `<td style="${cell}">${formatPrintNo(e)}</td>` +
+        `<td style="${cell}font-family:monospace;">${esc(e.certificate_id)}</td>` +
+        `<td style="${cell}"><a href="${authUrl}">${esc(authUrl)}</a></td>` +
+        `</tr>`
+      );
+    })
+    .join("");
+  const th = "padding:8px 10px;text-align:left;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:#666;";
+  return (
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/></head>` +
+    `<body style="font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;padding:24px;">` +
+    `<h2 style="margin:0 0 4px 0;">Estate fulfilment — Point 101 print instructions</h2>` +
+    `<p style="margin:0 0 16px 0;color:#444;">Order <strong>${esc(p.orderRef)}</strong>` +
+    (p.shippingName ? ` · ship to <strong>${esc(p.shippingName)}</strong>` : "") +
+    `</p>` +
+    `<p style="margin:0 0 16px 0;color:#444;">Each line below has been issued a Certificate ID and (for numbered tiers) the next sequential print number within its drop, recorded in the estate ledger. Generate the Certificate of Authenticity + back-of-print label for each, then place the Point 101 order with the buyer's shipping address.</p>` +
+    `<table style="border-collapse:collapse;width:100%;font-size:13px;">` +
+    `<thead><tr>` +
+    `<th style="${th}">Artwork</th><th style="${th}">Tier</th><th style="${th}">Drop</th>` +
+    `<th style="${th}">Print&nbsp;No.</th><th style="${th}">Certificate&nbsp;ID</th><th style="${th}">Verify&nbsp;URL (QR target)</th>` +
+    `</tr></thead><tbody>${rows}</tbody></table>` +
+    `<p style="margin:18px 0 0 0;font-size:12px;color:#888;">The Mandala Company · estate ledger · generated automatically on payment.</p>` +
+    `</body></html>`
+  );
+};
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -1413,6 +1671,77 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             console.error("[stripe-webhook] meta CAPI Purchase failed:", message, {
               session_id: session.id,
             });
+          }
+        }
+      }
+
+      // -- 0d. Estate ledger — issue Certificate IDs + print numbers --------
+      // Writes a ledger entry per print line (idempotent per session+line),
+      // then emails the estate the structured Point 101 fulfilment payload
+      // (artwork, tier, drop, print number, Certificate ID, /auth verify URL —
+      // the QR target). Fully fail-open: a KV/Resend outage logs + continues,
+      // never blocking the 200. Gift-only orders have no print lines → no certs.
+      let ledgerEntries: LedgerEntry[] = [];
+      try {
+        ledgerEntries = await issueLedgerEntries(session.id, m);
+      } catch (err) {
+        console.error(
+          "[stripe-webhook] estate ledger issue failed:",
+          err instanceof Error ? err.message : err,
+        );
+      }
+      if (ledgerEntries.length > 0) {
+        const siteUrlLedger = (
+          process.env.SITE_URL || "https://themandalacompany.com"
+        ).replace(/\/$/, "");
+        // Log the structured payload regardless of email — durable audit trail.
+        console.log("[stripe-webhook] estate ledger payload", {
+          order_id: session.id,
+          certificates: ledgerEntries.map((e) => ({
+            cert: e.certificate_id,
+            artwork: e.artwork_id,
+            tier: e.tier_id,
+            print_number: e.print_number,
+            auth_url: `${siteUrlLedger}/auth/${e.certificate_id}`,
+          })),
+        });
+        const resendKeyLedger = process.env.RESEND_API_KEY;
+        if (resendKeyLedger) {
+          try {
+            const fromEmailL = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+            const toEmailL = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+            const resendL = new Resend(resendKeyLedger);
+            const sendL = await resendL.emails.send({
+              from: `${FROM_NAME} <${fromEmailL}>`,
+              to: [toEmailL],
+              replyTo: DEFAULT_FROM,
+              subject: `Fulfilment — ${ledgerEntries.length} print${
+                ledgerEntries.length > 1 ? "s" : ""
+              } to place · order ${session.id.slice(0, 12)}…`,
+              html: renderEstateFulfilmentHtml({
+                orderRef: session.id,
+                shippingName: shipping?.name ?? null,
+                entries: ledgerEntries,
+                siteUrl: siteUrlLedger,
+              }),
+            });
+            if (sendL.error) {
+              console.error(
+                "[stripe-webhook] estate fulfilment email error:",
+                sendL.error,
+              );
+            } else {
+              console.log("[stripe-webhook] estate fulfilment email sent", {
+                order_id: session.id,
+                to: toEmailL,
+                count: ledgerEntries.length,
+              });
+            }
+          } catch (err) {
+            console.error(
+              "[stripe-webhook] estate fulfilment email failed:",
+              err instanceof Error ? err.message : err,
+            );
           }
         }
       }

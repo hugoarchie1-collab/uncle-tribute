@@ -76,28 +76,20 @@ export const FindAPrint = () => {
   );
 
   // Filter + swap each matching tile's cover to the colourway that matched.
-  // Each tile also carries a `hoverCover` — the NEXT available colourway,
-  // crossfaded in on hover (Polène-style "turn shot"), which quietly
-  // advertises that alternates exist before the visitor reaches the detail
-  // page. Only paintings with 2+ available colourways get one; the rest keep
-  // today's scale-only hover. Recomputed against whichever colourway the
-  // active filter has put on the tile, so cover and hover never duplicate.
+  // Hover is zoom-only (Hugo: hover should zoom in a little, never flick to
+  // another colourway), so each tile carries just its painting + cover.
   const filtered = useMemo(() => {
-    const withTurnShot = (e: (typeof entries)[number], cover: typeof e.original) => ({
+    const withCover = (e: (typeof entries)[number], cover: typeof e.original) => ({
       painting: e.painting,
       cover,
-      hoverCover:
-        e.avail.length >= 2
-          ? e.avail.find((c) => c.name !== cover.name && c.image.endsWith(".jpg"))
-          : undefined,
     });
     if (active.size === 0) {
-      return entries.map((e) => withTurnShot(e, e.original));
+      return entries.map((e) => withCover(e, e.original));
     }
     return entries
       .filter((e) => [...active].some((f) => e.families.has(f)))
       .map((e) =>
-        withTurnShot(
+        withCover(
           e,
           e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex))) ?? e.original,
         ),
@@ -316,16 +308,16 @@ export const FindAPrint = () => {
           className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-14"
           style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))" }}
         >
-          {filtered.map(({ painting, cover, hoverCover }) => (
+          {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
               className="m-0 min-w-0"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                  {/* Shared transform wrapper: the existing 1.04 hover scale
-                      lives HERE so the cover and the turn-shot crossfade move
-                      as one layer (no scale mismatch mid-fade). */}
+                  {/* Gentle zoom on hover only — a small scale-up of the cover.
+                      Hugo: hover should zoom in a little, never flick to another
+                      colourway. */}
                   <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
                     <AssetImage
                       src={cover.image}
@@ -334,32 +326,6 @@ export const FindAPrint = () => {
                       decoding="async"
                       className="w-full h-full object-cover"
                     />
-                    {hoverCover && (
-                      // Polène-style turn-shot: the next available colourway
-                      // crossfades in over the cover (450ms house ease).
-                      // Decorative duplicate → aria-hidden + empty alt; lazy +
-                      // async so the results payload doesn't double up front.
-                      // Single -w800 webp candidate (~110–260KB vs ~660KB
-                      // full-res; every colourway has one on disk, verified)
-                      // with the .jpg fallback for WebP-less browsers.
-                      // Reduced-motion: global.css zeroes transition-duration
-                      // sitewide, so the swap is instant — the same pattern the
-                      // scale hover above already relies on.
-                      <picture style={{ display: "contents" }}>
-                        <source
-                          srcSet={asset(`${hoverCover.image.slice(0, -4)}-w800.webp`)}
-                          type="image/webp"
-                        />
-                        <img
-                          src={asset(hoverCover.image)}
-                          alt=""
-                          aria-hidden="true"
-                          loading="lazy"
-                          decoding="async"
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[450ms] ease-smooth group-hover:opacity-100"
-                        />
-                      </picture>
-                    )}
                   </div>
                 </div>
                 <figcaption className="pt-4 md:pt-5">

@@ -29,3 +29,6 @@ dist-ssr
 # Environment / secrets — never commit these to git.
 .env*
 .image-backups/
+
+# Agent worktrees (transient, embedded git repos)
+.claude/worktrees/

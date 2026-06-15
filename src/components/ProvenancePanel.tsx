@@ -44,8 +44,8 @@ export const ProvenancePanel = () => (
         <li className={META}>{ESTATE_AUTHENTICATION.printer}</li>
         <li className={cn(META, "text-ink/55")}>Original · {ORIGINAL_PROVENANCE}</li>
         <li className={META}>
-          <Link to="/verify" className="underline underline-offset-4 hover:text-ink transition-colors">
-            Verify a certificate →
+          <Link to="/auth" className="underline underline-offset-4 hover:text-ink transition-colors">
+            Authenticate a print →
           </Link>
         </li>
       </ul>

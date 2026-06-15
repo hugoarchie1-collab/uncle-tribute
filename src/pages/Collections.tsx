@@ -404,18 +404,6 @@ export const Collections = () => {
                     const cover =
                       painting.colourways.find((c) => c.isOriginal) ??
                       painting.colourways[0];
-                    // Polène-style "turn shot": on hover the tile crossfades to
-                    // the NEXT available colourway — quietly advertising that
-                    // alternates exist before the visitor reaches the detail
-                    // page. Only for paintings with 2+ AVAILABLE colourways;
-                    // single-colourway tiles keep today's scale-only hover.
-                    const available = painting.colourways.filter((c) => c.available);
-                    const hoverCover =
-                      available.length >= 2
-                        ? available.find(
-                            (c) => c.name !== cover.name && c.image.endsWith(".jpg"),
-                          )
-                        : undefined;
                     return (
                       <motion.figure
                         key={painting.id}
@@ -451,52 +439,18 @@ export const Collections = () => {
                           aria-label={`View ${painting.title}`}
                         >
                           <div className="aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
-                            {/* Shared transform wrapper: the existing 1.04 hover
-                                scale lives HERE so the cover and the turn-shot
-                                crossfade move as one layer (no scale mismatch
-                                mid-fade). */}
+                            {/* Gentle zoom on hover only — a small scale-up of the
+                                cover. Hugo: hover should zoom in a little, never
+                                flick to another colourway. */}
                             <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
                               <AssetImage
                                 src={cover.image}
                                 alt={painting.title}
                                 loading="lazy"
                                 decoding="async"
-                                // Tile width is flex-[0_1_clamp(280px,30%,420px)]
-                                // inside the max-w-[1320px]→[1720px] grid: floors
-                                // to ~one-up (≈90vw) on phones, ~30vw of the row at
-                                // mid widths, capped at the 420px clamp ceiling on
-                                // wide screens.
                                 sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
                                 className="w-full h-full object-cover"
                               />
-                              {hoverCover && (
-                                // Polène-style turn-shot: the next available
-                                // colourway crossfades in over the cover (450ms
-                                // house ease). Decorative duplicate → aria-hidden
-                                // + empty alt; lazy + async so the catalogue
-                                // payload doesn't double up front. Single -w800
-                                // webp candidate (~110–260KB vs ~660KB full-res;
-                                // every colourway has one on disk, verified) with
-                                // the .jpg fallback for WebP-less browsers.
-                                // Reduced-motion: global.css zeroes
-                                // transition-duration sitewide, so the swap is
-                                // instant — the same pattern the scale hover
-                                // above already relies on.
-                                <picture style={{ display: "contents" }}>
-                                  <source
-                                    srcSet={asset(`${hoverCover.image.slice(0, -4)}-w800.webp`)}
-                                    type="image/webp"
-                                  />
-                                  <img
-                                    src={asset(hoverCover.image)}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-[450ms] ease-smooth group-hover:opacity-100"
-                                  />
-                                </picture>
-                              )}
                             </div>
                           </div>
                           <figcaption className="pt-4 text-center">

@@ -37,7 +37,7 @@ const EXPLORE_LINKS = [
 const ESTATE_LINKS = [
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
-  { to: "/verify", label: "Verify a certificate" },
+  { to: "/auth", label: "Authentication" },
   { to: "/gift", label: "Gift cards" },
   { to: "/trade", label: "Trade & interiors" },
 ];
