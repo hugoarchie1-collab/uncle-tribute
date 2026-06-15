@@ -1731,7 +1731,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-16 md:pb-24">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
