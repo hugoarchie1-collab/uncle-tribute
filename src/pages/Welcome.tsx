@@ -777,50 +777,49 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 8 · ARISTA SUNSTAR — text left, smaller framed image right.
-              Single section (no longer split). Image is intentionally
-              contained inside a dark mat + ring frame because the source
-              photograph is low-res, and the frame lifts it into a
-              gallery object instead of a stretched full-bleed. */}
+          {/* 8 · ARISTA SUNSTAR — text, then the archive photograph BELOW it,
+              enlarged (Hugo). It was a small image BESIDE the text, which left
+              two blank columns; now the copy leads and the photo sits under it
+              at a generous width. The soft-edge feather is REMOVED
+              (edges="none") because it read as "blurry/murky" dissolving into
+              the peacock wash — a clean ring frame lifts the photo OFF the busy
+              backdrop into a crisp gallery object. The source is low-res
+              (641×353, 16:9), so the width is capped (~920px) rather than blown
+              full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
-              <Reveal as="div" className="md:col-span-6">
-                <p className={cn(EYEBROW, "m-0 mb-5")}>
-                  Arista SunStar · 2016
-                </p>
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(34px,4vw,58px)] leading-[1.08] text-ink m-0 mb-5">
-                  A 3.6&#8209;metre commission for Notting Hill.
-                </h2>
-                {/* Key-fact strip — surfaces the commission's
-                    provenance up front instead of burying it in prose. */}
-                <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
-                  Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
-                </p>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
-                  {WELCOME.bio[2]}
-                </p>
-              </Reveal>
-              <Reveal as="figure" className="m-0 md:col-span-6 max-w-[560px] md:max-w-none mx-auto md:mx-0">
-                {/* Feathered edge (Hugo): the archive photo now dissolves into
-                    the page through the SAME ImageReveal soft-edge (4-side
-                    feather) + gentle parallax every other editorial photo uses
-                    (Featured, Craft) — no more hard rectangular mat. Native
-                    16:9 source (641×353) so the aspect crops next to nothing. */}
+            <Reveal as="div" className="max-w-[760px]">
+              <p className={cn(EYEBROW, "m-0 mb-5")}>
+                Arista SunStar · 2016
+              </p>
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(34px,4vw,58px)] leading-[1.08] text-ink m-0 mb-5">
+                A 3.6&#8209;metre commission for Notting Hill.
+              </h2>
+              {/* Key-fact strip — surfaces the commission's provenance up
+                  front instead of burying it in prose. */}
+              <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
+                Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
+              </p>
+              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
+                {WELCOME.bio[2]}
+              </p>
+            </Reveal>
+            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto max-w-[920px]">
+              <div className="overflow-hidden rounded-[3px] ring-1 ring-line/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
                   aspect="aspect-[16/9]"
-                  edges="all"
-                  parallax={0.08}
+                  edges="none"
+                  parallax={0.06}
                 />
-                <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.28em] uppercase text-ink/65 mt-4 text-center">
-                  Farmacy · Notting Hill · London
-                </figcaption>
-                <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">
-                  Photograph from Stephen's archive, c. 2016.
-                </p>
-              </Reveal>
-            </div>
+              </div>
+              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.28em] uppercase text-ink/65 mt-4 text-center">
+                Farmacy · Notting Hill · London
+              </figcaption>
+              <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">
+                Photograph from Stephen's archive, c. 2016.
+              </p>
+            </Reveal>
           </section>
 
           {/* 9 · SACRED GEOMETRY — the bold closing statement.
