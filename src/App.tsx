@@ -92,6 +92,13 @@ const AnimatedRoutes = () => {
   return (
     <PageTransition>
       <Suspense fallback={<LoadingFallback />}>
+        {/* Declared in the canonical nav order so this list reads the same as
+            the Nav / Footer / sitemap: primary pages first (Home · Collections
+            · For You · About · Memories · News · Contact), then the secondary /
+            utility pages (FAQ · Verify · Gift · Trade), then transactional, then
+            legal (Privacy · Terms · Returns), then the catch-all. Route order is
+            not functional in React Router 7 — paths are matched exactly — so
+            this is purely for legibility, but it keeps every surface in step. */}
         <Routes location={location}>
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
@@ -102,17 +109,17 @@ const AnimatedRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
-          <Route path="/trade" element={<Trade />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/verify" element={<Verify />} />
           <Route path="/gift" element={<Gift />} />
+          <Route path="/trade" element={<Trade />} />
           <Route path="/basket" element={<Basket />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route path="/order/cancel" element={<OrderCancel />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/returns" element={<Returns />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/verify" element={<Verify />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

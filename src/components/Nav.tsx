@@ -17,12 +17,19 @@ const NAV_LINKS = [
   { to: "/contact", label: "Contact" },
 ];
 
-/** Estate meta secondary links — the quiet footer set (real routes only).
+/** Estate meta secondary links — the quiet drawer-footer set (real routes
+ *  only). Mirrors the Footer's Estate column + legal tail in the same order so
+ *  the two chrome surfaces never drift: utility (FAQ · Verify · Gift · Trade)
+ *  then legal (Privacy · Terms · Returns). /verify, /gift and /trade were
+ *  previously missing here — /verify was reachable on desktop but not the
+ *  mobile menu, and /gift + /trade were linked from nowhere in the chrome.
  *  Basket is intentionally NOT here: it already has its own always-visible icon
- *  in the top bar, so listing it again in the menu footer was redundant (and
- *  read as a stray highlighted chip with an odd gap beside it — Hugo). */
+ *  in the top bar, so listing it again read as a stray highlighted chip. */
 const SECONDARY_LINKS = [
   { to: "/faq", label: "FAQ" },
+  { to: "/verify", label: "Verify" },
+  { to: "/gift", label: "Gift cards" },
+  { to: "/trade", label: "Trade" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
   { to: "/returns", label: "Returns" },
