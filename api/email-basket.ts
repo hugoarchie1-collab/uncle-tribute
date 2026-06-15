@@ -102,7 +102,10 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A0 (84 × 84 cm)",
     editionLabel: "Heirloom Drop — allocation of 18 per drop",
     pricePence: 175000,
-    available: false,
+    // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
+    // both available:true. When this read false, a saved A0 basket was
+    // silently downgraded to the A2 anchor in the email (£450 vs £1,750).
+    available: true,
   },
   studio: {
     // £2,450 unique hand-painted one-off by Polly Wedge — no add-ons.
