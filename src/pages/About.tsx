@@ -803,7 +803,7 @@ export const About = () => {
             print pulled up beside it never covers it. */}
         <section className={cn(SECTION, "py-8 md:py-10")}>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start">
-            <Reveal as="div" className="col-span-2 md:col-span-7">
+            <Reveal as="div" className="col-span-1 md:col-span-7">
               <Plate
                 src="/img/about/13-stephen-outdoor-portrait.jpg"
                 alt="Stephen Meakin outdoors in sunlight, sunglasses resting on his head and earphones in, palms and greenery behind him."
@@ -919,7 +919,7 @@ export const About = () => {
           <ChapterHead id="wandering" title="The wandering years." />
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start">
-            <Reveal as="div" className="col-span-2 md:col-span-7">
+            <Reveal as="div" className="col-span-1 md:col-span-7">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
                 alt="Three friends in white shirts at a party table at night, balloons strung from the beam behind them, Stephen Meakin among them."
@@ -964,7 +964,7 @@ export const About = () => {
                 sizes="(min-width: 768px) 32vw, 50vw"
               />
             </Reveal>
-            <Reveal as="div" delay={0.18} className="col-span-2 md:col-span-4 md:-mt-6">
+            <Reveal as="div" delay={0.18} className="col-span-1 md:col-span-4 md:-mt-6">
               <Plate
                 src="/img/about/23-costume-evening.jpg"
                 alt="Stephen Meakin smiling with his arm around a friend dressed in a gold costume headdress at an evening gathering."
