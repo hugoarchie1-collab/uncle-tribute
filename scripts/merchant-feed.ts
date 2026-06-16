@@ -38,6 +38,21 @@ const PRODUCT_TYPE =
 // listing ranking. https://support.google.com/merchants/answer/6324436
 const GOOGLE_PRODUCT_CATEGORY = "500044";
 
+// Print substrate — improves Shopping matching + informs the buyer. Mirrors
+// ORIGINAL_PRINT_SPEC in src/data/paintings.ts (the paper named there).
+const MATERIAL = "Giclée print on 350gsm Hahnemühle archival paper";
+
+// Short bullet highlights surfaced in Shopping listings (g:product_highlight).
+// TIER-AGNOSTIC by design: every SKU spans the drop ladder incl. the un-numbered
+// Open Edition, so NO "numbered"/"limited" claim here (it would be false for the
+// Open Edition tier under the drop model). All four are true for every tier.
+const PRODUCT_HIGHLIGHTS = [
+  "Estate-stamped by The Mandala Company",
+  "Ships with a Certificate of Authenticity",
+  "Archival giclée on 350gsm Hahnemühle paper",
+  "Made to order in Lewes — free worldwide delivery",
+];
+
 /** Escape the five XML entities for element text content. */
 const escapeXml = (s: string): string =>
   s
@@ -134,6 +149,16 @@ export function buildMerchantFeed(): MerchantFeed {
             "        <g:country>GB</g:country>",
             "        <g:price>0.00 GBP</g:price>",
             "      </g:shipping>",
+            `      <g:material>${escapeXml(MATERIAL)}</g:material>`,
+            // Short Shopping bullet highlights (tier-agnostic — see PRODUCT_HIGHLIGHTS).
+            ...PRODUCT_HIGHLIGHTS.map(
+              (h) => `      <g:product_highlight>${escapeXml(h)}</g:product_highlight>`,
+            ),
+            // Advertiser bid-bucketing labels (the estate's own Google Ads
+            // segmentation): collection family + drop tier. No customer-facing
+            // effect; purely for campaign structure once paid Shopping is live.
+            `      <g:custom_label_0>${escapeXml(painting.collection)}</g:custom_label_0>`,
+            `      <g:custom_label_1>${escapeXml(tier.label)}</g:custom_label_1>`,
             "    </item>",
           ].join("\n"),
         );
