@@ -682,7 +682,7 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(4.5rem,8vw,5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(7rem,11vw,8.5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
     <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
       <span
         className={EYEBROW}
