@@ -178,7 +178,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-32 pb-8 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-20">
         {/* MASTHEAD — bold left-aligned wayfinder cover (replacing the timid
             centred eyebrow + floating title). A meta rule, a giant Fraunces
             statement filling the width, the verbatim guidance packed

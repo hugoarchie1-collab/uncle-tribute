@@ -761,7 +761,7 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto max-w-[920px]">
+            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto max-w-[780px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-line/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"

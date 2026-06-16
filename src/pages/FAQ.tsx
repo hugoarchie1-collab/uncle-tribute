@@ -188,7 +188,7 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // border-t — so the first screen is dense confident type filling the width,
 // not a shrunk centred title floating in a thin column.
 const FaqMasthead = () => (
-  <section className={cn(SECTION, "pt-28 md:pt-36 pb-8 md:pb-12")}>
+  <section className={cn(SECTION, "pt-8 md:pt-10 pb-8 md:pb-12")}>
     <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
       <span className={EYEBROW}>Before you buy</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />

@@ -44,7 +44,7 @@ export const NotFound = () => {
           the column, the message packed immediately beneath under a border-t,
           and the day's painting interleaved as an asymmetric editorial plate —
           no centered afterthought, no dead vertical air. */}
-      <main className="relative z-10 flex-1 px-4 pt-28 pb-12 sm:px-6 md:px-8 md:pt-32 md:pb-16 lg:px-12">
+      <main className="relative z-10 flex-1 px-4 pt-10 pb-12 sm:px-6 md:px-8 md:pt-12 md:pb-16 lg:px-12">
         <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px]">
           {/* Meta rule — the AboutMasthead recipe: eyebrow · hairline · tag. */}
           <Reveal

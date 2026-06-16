@@ -167,7 +167,7 @@ export const Gift = () => {
         url="/gift"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-16">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             Bold left-aligned front cover (the AboutMasthead recipe): a meta
             rule → a giant Fraunces statement filling the width → the

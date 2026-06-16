@@ -437,7 +437,7 @@ const ContainImage = ({
 // dead space, no centred-over-a-picture treatment. The opening passage lifts
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
-  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-36 pb-8 md:pb-12">
+  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-12">
     {/* Meta rule. On mobile the 31-char date can't share a line with the label
         + connecting rule, so they STACK (label, then date on its own line at
         gently reduced tracking — no clip). From sm:+ it's the intended single

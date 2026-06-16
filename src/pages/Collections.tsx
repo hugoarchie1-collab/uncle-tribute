@@ -244,7 +244,7 @@ export const Collections = () => {
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-32 pb-6 md:pb-8"
+          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-6 md:pb-8"
         >
           <div
             className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
