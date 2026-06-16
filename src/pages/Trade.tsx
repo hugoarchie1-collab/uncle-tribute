@@ -106,7 +106,7 @@ export const Trade = () => {
       />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-12 md:pb-16">
         {/* ── MASTHEAD ── A bold left-aligned front cover: meta rule → giant
             Fraunces statement filling the width → the framing passage packed
             immediately beneath under a border-t, no floating gap. Mirrors

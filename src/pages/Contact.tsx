@@ -86,7 +86,7 @@ const ContactBackdrop = () => {
  * asymmetric two-column working surface: the form fills the wide left column
  * while the estate details (by post / direct line / our promise) sit packed in
  * a hairline rail on the right — no centred void on either flank. Compressed
- * vertical rhythm (pt-8 md:pt-10, py-9..py-12), never the old clamp(6rem,…)
+ * vertical rhythm (pt-28 md:pt-32, py-9..py-12), never the old clamp(6rem,…)
  * spacer. Commerce-free page, but the SUBMISSION PATH is untouched: same
  * Web3Forms POST, same honeypot, same mailto + clipboard fallback, same
  * verbatim postal address. Home design system throughout: Fraunces + Hanken
@@ -181,7 +181,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-20">
         {/* MASTHEAD — bold left-aligned front cover (no timid centred header).
             A meta rule, then "Write to / the family." set ENORMOUS edge-to-edge
             (Fraunces 700, opsz 48, font-synthesis none), the intro packed
