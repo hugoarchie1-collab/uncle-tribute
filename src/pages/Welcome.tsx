@@ -179,6 +179,16 @@ export const Welcome = () => {
             className="absolute inset-0"
             style={{
               opacity: reduceMotion ? 0 : maryPinkOpacity,
+              // PERFECTION PASS: bring this finale darken layer to parity with the
+              // backdrop layers. (1) `visibility: hidden` while its opacity is 0
+              // (the first ~72% of scroll) so it is NOT composited at all until the
+              // finale; (2) translateZ(0) + will-change:opacity so when it fades in
+              // over the last 25% its opacity animates on the compositor rather than
+              // repainting this full-screen gradient every scroll frame. Was the
+              // only scroll-animated full-screen layer still painting per frame.
+              visibility: reduceMotion ? "hidden" : maryPinkVis,
+              willChange: "opacity",
+              transform: "translateZ(0)",
               background:
                 "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
             }}
