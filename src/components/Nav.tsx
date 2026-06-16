@@ -14,21 +14,23 @@ const NAV_LINKS = [
   { to: "/about", label: "About" },
   { to: "/memories", label: "Memories" },
   { to: "/news", label: "News" },
+  // Gift cards + Authenticate promoted from the quiet secondary set onto the
+  // primary menu (Hugo). They now show in the mobile drawer's main list AND the
+  // desktop inline bar — the inline bar moves to a 2xl breakpoint below so nine
+  // links never crowd/overflow a laptop-width bar (it gets the drawer instead).
+  { to: "/gift", label: "Gift cards" },
+  { to: "/auth", label: "Authenticate" },
   { to: "/contact", label: "Contact" },
 ];
 
 /** Estate meta secondary links — the quiet drawer-footer set (real routes
- *  only). Mirrors the Footer's Estate column + legal tail in the same order so
- *  the two chrome surfaces never drift: utility (FAQ · Verify · Gift · Trade)
- *  then legal (Privacy · Terms · Returns). /verify, /gift and /trade were
- *  previously missing here — /verify was reachable on desktop but not the
- *  mobile menu, and /gift + /trade were linked from nowhere in the chrome.
- *  Basket is intentionally NOT here: it already has its own always-visible icon
- *  in the top bar, so listing it again read as a stray highlighted chip. */
+ *  only): utility (FAQ · Trade) then legal (Privacy · Terms · Returns). Gift
+ *  cards + Authenticate were promoted OUT of this set onto the primary NAV_LINKS
+ *  menu above. Basket is intentionally NOT here: it already has its own
+ *  always-visible icon in the top bar, so listing it again read as a stray
+ *  highlighted chip. */
 const SECONDARY_LINKS = [
   { to: "/faq", label: "FAQ" },
-  { to: "/auth", label: "Authenticate" },
-  { to: "/gift", label: "Gift cards" },
   { to: "/trade", label: "Trade" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
@@ -185,9 +187,13 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         // legible; the bottom hairline fades the seam rather than drawing a line.
         scrolled
           ? "py-3 bg-[#0a0908]/55 supports-[backdrop-filter]:bg-[#0a0908]/40 backdrop-blur-xl border-b border-white/10"
+          // Always a soft top-down scrim behind the header (Hugo: the deep-red
+          // seal + cream links must never get swallowed by the busy
+          // peacock/photo backdrops). Overlay pages get a slightly stronger one;
+          // plain sticky pages — previously fully transparent — now get one too.
           : overlay
-            ? "py-5 bg-gradient-to-b from-[#0a0908]/55 via-[#0a0908]/15 to-transparent border-b border-transparent"
-            : "py-5 bg-transparent border-b border-transparent",
+            ? "py-5 bg-gradient-to-b from-[#0a0908]/70 via-[#0a0908]/28 to-transparent border-b border-transparent"
+            : "py-5 bg-gradient-to-b from-[#0a0908]/55 via-[#0a0908]/16 to-transparent border-b border-transparent",
       )}
     >
       <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
@@ -203,7 +209,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           {/* Primary links — inline from `lg` up; collapsed into the accessible
               menu below `lg`. */}
           <nav
-            className="hidden xl:flex items-center gap-8 2xl:gap-10"
+            className="hidden 2xl:flex items-center gap-7 3xl:gap-9"
             aria-label="Primary"
           >
             {NAV_LINKS.map((l) => (
@@ -289,7 +295,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((o) => !o)}
-            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+            className="press 2xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
           >
             <svg
               width="22"
@@ -366,7 +372,7 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
-            className="xl:hidden fixed inset-0 z-[120] bg-black/60"
+            className="2xl:hidden fixed inset-0 z-[120] bg-black/60"
           />
 
           {/* PANEL — opaque drawer sliding in from the right. */}
@@ -380,7 +386,7 @@ const NavMenu = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: reduceMotion ? 0 : 0.42, ease: EASE_SMOOTH }}
-            className="xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
+            className="2xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
