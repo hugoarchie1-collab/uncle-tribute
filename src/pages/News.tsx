@@ -150,7 +150,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
     ) : null;
 
   return (
-    <article className="group grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start py-7 md:py-9">
+    <article className="group grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start py-5 md:py-6">
       {/* DATE — human state line as a quiet left rail (top line on mobile). */}
       <p className={cn(EYEBROW_TIGHT, "m-0 md:col-span-3 md:pt-1")}>
         {entry.isoDate ? (
@@ -215,7 +215,7 @@ const NewsMasthead = () => (
       <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
     </Reveal>
 
-    <Reveal as="div" className="mt-4 md:mt-6">
+    <Reveal as="div" className="mt-4 md:mt-5">
       <h1
         className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
         style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(60px, 13vw, 220px)" }}
@@ -224,7 +224,7 @@ const NewsMasthead = () => (
       </h1>
     </Reveal>
 
-    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+    <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
       <Reveal as="div" className="lg:col-span-3">
         <p
           className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -309,7 +309,7 @@ export const News = () => {
             paragraph stacked above a lonely panel. Everything here is announced
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <section className="border-t border-line pt-8 md:pt-12">
+          <section className="border-t border-line pt-6 md:pt-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
               {/* The programme note — estate voice, set as a designed lead, NOT a
                   thin centred ribbon. */}
@@ -332,7 +332,7 @@ export const News = () => {
                 </p>
                 {/* Programme spine — a quiet ledger so the column reads dense, not
                     half-empty. Page framing microcopy (no sourced content). */}
-                <ul className="list-none p-0 m-0 mt-8 md:mt-10">
+                <ul className="list-none p-0 m-0 mt-6 md:mt-8">
                   {[
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
@@ -371,7 +371,7 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="border-t border-line pt-8 md:pt-12 mb-8 md:mb-16"
+            className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
               <div className="md:col-span-5 w-full max-w-[460px] md:max-w-none overflow-hidden rounded-xl ring-1 ring-line bg-bg">
@@ -408,7 +408,7 @@ export const News = () => {
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-8 md:mb-12 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
+              className="mb-6 md:mb-8 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
@@ -444,12 +444,12 @@ export const News = () => {
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-8 md:mt-14")}
+                  className={cn(gi > 0 && "mt-6 md:mt-8")}
                 >
                   <Reveal
                     as="div"
                     delay={Math.min(gi * 0.05, 0.2)}
-                    className="flex items-baseline gap-4 flex-wrap border-t border-line pt-7 md:pt-9"
+                    className="flex items-baseline gap-4 flex-wrap border-t border-line pt-5 md:pt-6"
                   >
                     <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.4vw,48px)] leading-[1.0] text-ink m-0">
                       {group.heading}
@@ -474,7 +474,7 @@ export const News = () => {
             in the empty-state above is the single, leading capture (no duplicate
             panel) and there are no entry CTAs pointing at #notify yet. */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-8 md:mt-16 scroll-mt-28 border-t border-line pt-8 md:pt-12">
+          <Reveal as="section" delay={0.05} className="mt-6 md:mt-8 scroll-mt-28 border-t border-line pt-6 md:pt-8">
             <div id="notify">
               <NewsletterSignup
                 variant="panel"

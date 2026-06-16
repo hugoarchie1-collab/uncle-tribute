@@ -181,7 +181,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
         {/* MASTHEAD — bold left-aligned front cover (no timid centred header).
             A meta rule, then "Write to / the family." set ENORMOUS edge-to-edge
             (Fraunces 700, opsz 48, font-synthesis none), the intro packed
@@ -202,7 +202,7 @@ export const Contact = () => {
             </span>
           </Reveal>
 
-          <Reveal as="div" className="mt-4 md:mt-6">
+          <Reveal as="div" className="mt-3 md:mt-4">
             <h1
               className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
               style={{
@@ -216,7 +216,7 @@ export const Contact = () => {
             </h1>
           </Reveal>
 
-          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
             <Reveal as="div" className="lg:col-span-3">
               <p
                 className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -249,7 +249,7 @@ export const Contact = () => {
             line / our promise) sit packed in a hairline rail on the right, so
             neither flank is a centred void. On success the form is swapped for
             the thank-you region in the same left column. */}
-        <section className="mt-10 md:mt-14 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
+        <section className="mt-8 md:mt-10 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
           <Reveal as="div" className="lg:col-span-7">
             <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               {status === "success" ? "Message sent" : "Send a message"}
@@ -403,7 +403,7 @@ export const Contact = () => {
               floats next to empty space. A hairline ledger of dt/dd facts:
               the direct line, the verbatim postal address, and the response
               promise. Drops below the form on a single column. */}
-          <Reveal as="div" delay={0.08} className="mt-12 lg:mt-0 lg:col-span-4 lg:col-start-9">
+          <Reveal as="div" delay={0.08} className="mt-8 lg:mt-0 lg:col-span-4 lg:col-start-9">
             <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               The estate
             </p>

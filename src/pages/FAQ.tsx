@@ -188,7 +188,7 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // border-t — so the first screen is dense confident type filling the width,
 // not a shrunk centred title floating in a thin column.
 const FaqMasthead = () => (
-  <section className={cn(SECTION, "pt-28 md:pt-32 pb-8 md:pb-12")}>
+  <section className={cn(SECTION, "pt-20 md:pt-24 pb-6 md:pb-8")}>
     <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
       <span className={EYEBROW}>Before you buy</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -197,7 +197,7 @@ const FaqMasthead = () => (
       </span>
     </Reveal>
 
-    <Reveal as="div" className="mt-4 md:mt-6">
+    <Reveal as="div" className="mt-3 md:mt-4">
       <h1
         className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
         style={{
@@ -210,7 +210,7 @@ const FaqMasthead = () => (
       </h1>
     </Reveal>
 
-    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
       <Reveal as="div" className="lg:col-span-3">
         <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
           Provenance · paper · editions · care
@@ -265,15 +265,15 @@ export const FAQ = () => {
             self-densifying — items flow two-up on md+ filling the horizontal
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
-        <section className={cn(SECTION, "pb-8 md:pb-16")}>
+        <section className={cn(SECTION, "pb-10 md:pb-14")}>
           <Reveal
             as="div"
-            className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-10 md:gap-y-12 border-t border-line"
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-8 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-col gap-3.5 pt-7 md:pt-9 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col gap-3.5 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

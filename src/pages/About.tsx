@@ -150,12 +150,12 @@ const ChapterHead = ({ id, title }: { id: ChapterId; title: string }) => {
   const chapter = CHAPTERS[index];
   const numeral = ROMAN_NUMERALS[index];
   return (
-    <header className="mb-10 md:mb-14">
+    <header className="mb-6 md:mb-8">
       <Reveal as="div">
         <div aria-hidden className="h-px w-full bg-ink/15" />
       </Reveal>
       <Reveal as="div" delay={0.06}>
-        <p className="m-0 mt-5 mb-4">
+        <p className="m-0 mt-4 mb-3">
           <span className={EYEBROW}>Chapter {numeral}</span>
           <span className={cn(EYEBROW_MUTED, "ml-3")}>
             {chapter.kicker} · {chapter.tag}
@@ -304,7 +304,7 @@ const Plate = ({
 // The quiet section-break mark — used exactly THREE times on the page
 // (Art as ritual, the exhibitions→interview turn, TAGA→palestine). Static.
 const Dinkus = () => (
-  <div role="separator" aria-hidden className="mx-auto my-12 md:my-16 flex w-fit items-center gap-4">
+  <div role="separator" aria-hidden className="mx-auto my-8 md:my-10 flex w-fit items-center gap-4">
     <span className="h-px w-12 bg-ink/15" />
     <span className="block h-1.5 w-1.5 rotate-45 bg-accent/50" />
     <span className="h-px w-12 bg-ink/15" />
@@ -437,7 +437,7 @@ const ContainImage = ({
 // dead space, no centred-over-a-picture treatment. The opening passage lifts
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
-  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-12">
+  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-6 md:pb-8">
     {/* Meta rule. On mobile the 31-char date can't share a line with the label
         + connecting rule, so they STACK (label, then date on its own line at
         gently reduced tracking — no clip). From sm:+ it's the intended single
@@ -448,7 +448,7 @@ const AboutMasthead = () => (
       <span className={cn(EYEBROW_MUTED, "shrink-0 !tracking-[0.18em] sm:!tracking-[0.32em]")}>{LIFE_DATES}</span>
     </Reveal>
 
-    <Reveal as="div" className="mt-4 md:mt-6">
+    <Reveal as="div" className="mt-3 md:mt-4">
       <h1
         className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.8]"
         style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(76px, 18.5vw, 360px)" }}
@@ -457,7 +457,7 @@ const AboutMasthead = () => (
       </h1>
     </Reveal>
 
-    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+    <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
       <Reveal as="div" className="lg:col-span-3">
         <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
           SEM · Mandala artist &amp; sacred geometer
@@ -491,10 +491,10 @@ const AboutMasthead = () => (
 // owner's PDF; its venue/date are unconfirmed, so the caption must never
 // claim Anegada, 1995, or "the first".
 const AnegadaPoster = () => (
-  <div className="mt-8 md:mt-12">
+  <div className="mt-6 md:mt-8">
     <div className="w-full">
       <Reveal as="div">
-        <p className={cn(EYEBROW, "m-0 mb-6")}>Anegada · 1995</p>
+        <p className={cn(EYEBROW, "m-0 mb-5")}>Anegada · 1995</p>
         <h3
           className="font-display font-bold tracking-[-0.03em] text-[clamp(56px,10vw,150px)] leading-[0.92] text-ink m-0"
           style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
@@ -508,13 +508,13 @@ const AnegadaPoster = () => (
         </h3>
       </Reveal>
 
-      <Reveal as="div" className="mt-8 md:mt-16">
+      <Reveal as="div" className="mt-6 md:mt-8">
         <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.anegada[0]}</p>
       </Reveal>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
           content.ts (ABOUT.anegadaQuote), never truncated or re-typed. */}
-      <Reveal as="div" className="relative md:ml-[16.666%] max-w-[26ch] mt-12 md:mt-16">
+      <Reveal as="div" className="relative md:ml-[16.666%] max-w-[26ch] mt-6 md:mt-8">
         <span
           aria-hidden
           className="block md:absolute md:right-full md:mr-5 md:-top-[0.08em] font-display font-semibold leading-[0.8] text-accent/60 select-none"
@@ -616,8 +616,8 @@ const BEAT_ANSWER_MAX_CHARS = 64;
 const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
   return (
-    <Reveal as="div" className="border-b border-line py-8 md:py-10">
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-4 md:mb-5 leading-[1.9]")}>{item.q}</p>
+    <Reveal as="div" className="border-b border-line py-6 md:py-8">
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-3 md:mb-4 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
         <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,44px)] leading-[1.15] text-ink m-0 text-balance">
           &ldquo;{item.a}&rdquo;
@@ -767,17 +767,17 @@ export const About = () => {
             constant). No dek here anymore — the opening passage is the masthead
             lead, so nothing repeats. Caption CLAIM-FREE (PDF shows it
             uncaptioned). */}
-        <section className={cn(SECTION, "py-9 md:py-12")}>
+        <section className={cn(SECTION, "py-8 md:py-10")}>
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 items-start">
             <Reveal as="div" className="lg:col-span-7">
-              <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
+              <p className={cn(EYEBROW, "m-0 mb-4")}>As he described himself —</p>
               <blockquote className="m-0 pl-5 md:pl-7 border-l-2 border-accent/40 max-w-[64ch]">
                 <p className="quote-hang font-display italic tracking-[-0.01em] text-[clamp(20px,2.3vw,30px)] leading-[1.5] text-ink m-0">
                   &ldquo;{ABOUT.opening[1]}&rdquo;
                 </p>
               </blockquote>
             </Reveal>
-            <Reveal as="div" delay={0.1} className="mt-8 lg:mt-0 lg:col-span-4 lg:col-start-9">
+            <Reveal as="div" delay={0.1} className="mt-6 lg:mt-0 lg:col-span-4 lg:col-start-9">
               {/* Facts rail — dt/dd from content.ts constants; Staffordshire is
                   earlyLife[0]'s word, Phoenix Place legacy[0]'s. Collapses to a
                   horizontal hairline strip below lg. */}
@@ -817,7 +817,7 @@ export const About = () => {
                 caption="In the sun"
               />
             </Reveal>
-            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-5 md:mt-16 lg:mt-24">
+            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-5 md:mt-8 lg:mt-12">
               <Plate
                 src="/img/about/01-stephen-at-gallery.jpg"
                 alt="Stephen Meakin standing beside one of his framed mandala paintings in a gallery."
@@ -845,9 +845,9 @@ export const About = () => {
             Brighton (ABOUT.earlyLife[0]) at the LEAD scale with the drop cap,
             beside the two family prints from PDF p3 — the second dropped
             off-grid below the first. */}
-        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
+        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-8 md:py-10")}>
           <ChapterHead id="beginnings" title="Bath, Brighton, and a different aesthetic." />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-5">
               <p className={cn(LEAD, "drop-cap max-w-[62ch]")}>{ABOUT.earlyLife[0]}</p>
             </Reveal>
@@ -881,9 +881,9 @@ export const About = () => {
             passage (ABOUT.earlyLife[1]) pushed down a half-beat right, the
             café print straddling the baseline below. Document order preserved
             top-to-bottom: photo → text → photo. */}
-        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
+        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-8 md:py-10")}>
           <ChapterHead id="bournemouth" title="A dusty old hardback." />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-7">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
@@ -894,7 +894,7 @@ export const About = () => {
                 caption="Bournemouth"
               />
             </Reveal>
-            <Reveal as="div" delay={0.06} className="md:col-span-5 md:col-start-8 lg:mt-20">
+            <Reveal as="div" delay={0.06} className="md:col-span-5 md:col-start-8 lg:mt-10">
               <p className={cn(LEAD, "drop-cap max-w-[62ch]")}>{ABOUT.earlyLife[1]}</p>
             </Reveal>
             <Reveal as="figure" delay={0.09} className="m-0 md:col-span-5 md:col-start-2 md:-mt-8 lg:-mt-14">
@@ -933,7 +933,7 @@ export const About = () => {
                 caption="An evening with friends"
               />
             </Reveal>
-            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-4 md:col-start-9 md:mt-14">
+            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-4 md:col-start-9 md:mt-8">
               <Plate
                 src="/img/about/20-island-evening.jpg"
                 alt="Stephen Meakin in a loose white shirt and jeans, seated outdoors at night during his years abroad."
@@ -945,11 +945,11 @@ export const About = () => {
             </Reveal>
           </div>
 
-          <Reveal as="div" className="max-w-[62ch] mx-auto mt-8 md:mt-16">
+          <Reveal as="div" className="max-w-[62ch] mx-auto mt-6 md:mt-8">
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start mt-8 md:mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-start mt-6 md:mt-8">
             <Reveal as="div" className="col-span-1 md:col-span-4">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -959,7 +959,7 @@ export const About = () => {
                 sizes="(min-width: 768px) 32vw, 50vw"
               />
             </Reveal>
-            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-4 md:mt-12">
+            <Reveal as="div" delay={0.09} className="col-span-1 md:col-span-4 md:mt-6">
               <Plate
                 src="/img/about/22-fancy-dress-party.jpg"
                 alt="Stephen Meakin in pirate fancy dress with a toy parrot on his shoulder, a friend in an eyepatch reclining in front of him."
@@ -988,13 +988,13 @@ export const About = () => {
             years (ABOUT.earlyLife[3]) at LEAD + drop cap; ABOUT.earlyLife[4]
             ("In 1999… He never stopped.") promoted VERBATIM to the off-axis
             pull-line; then the poster. */}
-        <section id="return" className={cn(SECTION, "scroll-mt-28 py-10 md:py-16")}>
+        <section id="return" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="return" title="Architecture, fine art, and the first mandala." />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-6">
               <p className={cn(LEAD, "drop-cap max-w-[62ch]")}>{ABOUT.earlyLife[3]}</p>
             </Reveal>
-            <Reveal as="div" delay={0.08} className="md:col-span-5 md:col-start-8 lg:mt-24">
+            <Reveal as="div" delay={0.08} className="md:col-span-5 md:col-start-8 lg:mt-12">
               <p
                 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,40px)] leading-[1.2] text-ink m-0 text-balance"
                 style={{ fontVariationSettings: '"opsz" 36, "wght" 600' }}
@@ -1020,7 +1020,7 @@ export const About = () => {
             sticky + transform fight. */}
         <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="ritual" title="The very palette of my being." />
-          <Reveal as="div" className="-mt-5 md:-mt-8 mb-10 md:mb-14">
+          <Reveal as="div" className="-mt-4 md:-mt-6 mb-6 md:mb-8">
             <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
@@ -1034,7 +1034,7 @@ export const About = () => {
                 <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.anegada[2]}</p>
               </Reveal>
             </div>
-            <div className="mt-12 lg:mt-0 lg:col-span-4 lg:col-start-9">
+            <div className="mt-8 lg:mt-0 lg:col-span-4 lg:col-start-9">
               {/* Pure-CSS sticky — inherently reduced-motion safe; releases
                   below lg. The chart is small/low-res, so the mat stays
                   contained at 440px. */}
@@ -1067,9 +1067,9 @@ export const About = () => {
             ABOUT.legacy[0] at LEAD, the TRADITIONS I–IV hairline strip, and
             the two tradition reference photographs. Caption on the cairn is
             CLAIM-FREE (no place, no date). */}
-        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-9 md:py-12")}>
+        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-8 md:py-10")}>
           <ChapterHead id="lewes" title="Four traditions, one language." />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-6 items-start">
             <Reveal as="figure" className="m-0 md:col-span-5 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1079,13 +1079,13 @@ export const About = () => {
               />
               <PlateCaption>On the cairn</PlateCaption>
             </Reveal>
-            <Reveal as="div" delay={0.08} className="md:col-span-6 md:col-start-7 lg:mt-16">
+            <Reveal as="div" delay={0.08} className="md:col-span-6 md:col-start-7 lg:mt-8">
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[0]}</p>
             </Reveal>
           </div>
 
           {/* The four key components, named exactly as in legacy[0]. */}
-          <Reveal as="div" className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 mt-8 md:mt-20 mb-10 md:mb-14">
+          <Reveal as="div" className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 mt-6 md:mt-8 mb-6 md:mb-8">
             {TRADITIONS.map((t) => (
               <div key={t.numeral} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
@@ -1138,7 +1138,7 @@ export const About = () => {
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="exhibitions" title="From the Majlis in Dubai to a Formula One car." />
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-x-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-x-6 items-start">
             <Reveal as="div" className="md:col-span-7">
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
             </Reveal>
@@ -1161,7 +1161,7 @@ export const About = () => {
           {/* THE INTERVIEW — sub-head a half-step under the chapter head (the
               internal title is demoted from TITLE so the chapter title
               outranks it; no other internal edits). */}
-          <Reveal as="div" className="mb-10 md:mb-14">
+          <Reveal as="div" className="mb-6 md:mb-8">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
             <h3 className="font-display font-semibold tracking-[-0.04em] text-[clamp(30px,3.6vw,52px)] leading-[1.05] text-ink text-balance m-0 max-w-[760px]">
               In conversation.
@@ -1172,7 +1172,7 @@ export const About = () => {
               turquoise mandala filling the studio wall behind him (PDF p11,
               paired with the geometrist question that follows). Native 3:2 so
               cover never crops. */}
-          <Reveal as="figure" className="m-0 mb-12 md:mb-16 max-w-[1180px] mx-auto">
+          <Reveal as="figure" className="m-0 mb-8 md:mb-10 max-w-[1180px] mx-auto">
             <ImageReveal
               src="/img/about/28-at-the-drafting-table.jpg"
               alt="Stephen Meakin in glasses bent over a mandala print on the studio worktable, pencil in hand, a large turquoise mandala painting filling the wall behind him"
@@ -1188,7 +1188,7 @@ export const About = () => {
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
               right (the flyer's own wording only — see the Fairmont note). */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-14 md:mb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 md:mb-10">
             <Reveal as="div" className="lg:col-span-7 flex flex-col gap-5 max-w-[62ch]">
               {INTERVIEW.context.map((p, i) => (
                 <p key={i} className={BODY}>
@@ -1221,7 +1221,7 @@ export const About = () => {
 
           {/* Q2 beside the portrait easel shot (PDF p12 top) — Stephen seated
               at the tilted circular canvas. Portrait + people → contained. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-12 md:mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-8 md:mt-10">
             <Reveal as="figure" className="m-0 md:col-span-5 max-w-[440px] mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
@@ -1239,7 +1239,7 @@ export const About = () => {
 
           {/* Q3 beside the rose-window painting in progress (PDF p12 bottom) —
               mirrored composition. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-12 md:mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-8 md:mt-10">
             <div className="md:col-span-7 order-2 md:order-1">
               <div className="border-t border-line">
                 <InterviewQA item={INTERVIEW.qa[2]} />
@@ -1259,10 +1259,10 @@ export const About = () => {
 
           {/* Q4, then the pair the PDF places with it — the studio wall
               crowded with finished paintings, and the paintings at home. */}
-          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[3]} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-10 md:mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-6 md:mt-8">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/31-studio-wall.jpg"
@@ -1320,10 +1320,10 @@ export const About = () => {
 
           {/* Q5 — the wonderment beat, answered by the gathering: the crowd
               photograph lands directly beneath it (PDF p14 bottom). */}
-          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
-          <Reveal as="figure" className="m-0 mt-10 md:mt-12">
+          <Reveal as="figure" className="m-0 mt-6 md:mt-8">
             <ImageReveal
               src="/img/about/35-gathering-at-the-gallery.jpg"
               alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
@@ -1339,10 +1339,10 @@ export const About = () => {
 
           {/* Q6 — the tea line, then the exhibition room beside the source
               credit (PDF p15). */}
-          <div className="max-w-[860px] mx-auto mt-12 md:mt-16 border-t border-line">
+          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[5]} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 md:items-center mt-10 md:mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-6 md:mt-8">
             <Reveal as="figure" className="m-0 md:col-span-5">
               <ImageReveal
                 src="/img/about/36-mystic-rose-exhibition.jpg"
@@ -1435,7 +1435,7 @@ export const About = () => {
                 {ABOUT.legacy[2]}
               </p>
             </Reveal>
-            <Reveal as="div" className="mt-10 md:mt-12">
+            <Reveal as="div" className="mt-6 md:mt-8">
               <blockquote className="m-0">
                 <p className={BODY}>{ABOUT.academyQuote}</p>
                 <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
@@ -1461,7 +1461,7 @@ export const About = () => {
             line.
             ⚠️ CAPTION IS CLAIM-FREE — school/Petra/Bedouin facts live in the
             verbatim palestine paragraph above; the caption claims nothing. */}
-        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-10 md:py-16")}>
+        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-10 md:py-14")}>
           <ChapterHead id="azzarqa" title="To his students." />
 
           <Reveal as="figure" className="m-0 max-w-[860px] mx-auto">
@@ -1475,12 +1475,12 @@ export const About = () => {
             <PlateCaption className="justify-center">With children and their mandalas</PlateCaption>
           </Reveal>
 
-          <Reveal as="div" className="mt-12 md:mt-16 text-center">
+          <Reveal as="div" className="mt-6 md:mt-8 text-center">
             <p className={cn(SUBTITLE, "mx-auto max-w-[52ch]")}>{ABOUT.studentsIntro}</p>
           </Reveal>
 
           {/* THE LETTER — one whole-element Reveal. */}
-          <Reveal as="div" className="max-w-[720px] mx-auto mt-10 md:mt-12">
+          <Reveal as="div" className="max-w-[720px] mx-auto mt-6 md:mt-8">
             <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14">
               <p
                 className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] leading-[1.85] text-ink m-0"
@@ -1551,7 +1551,7 @@ export const About = () => {
             wrapper: max-w 1320/1500/1720 minus the horizontal padding at each
             step, so the 800/1400w WebP variants actually get picked instead
             of the full-size file. The backdrop is fully Mary Pink here. */}
-        <section className={cn(SECTION, "py-9 md:py-12")}>
+        <section className={cn(SECTION, "py-8 md:py-10")}>
           <Reveal as="div" className="text-center mb-5 md:mb-7">
             <p className={cn(EYEBROW, "m-0")}>The body of work</p>
           </Reveal>
@@ -1574,8 +1574,8 @@ export const About = () => {
             tribute, opened by Stephen's own "everything is connected" words.
             UNTOUCHABLE — its border-t now reads as the final chapter hairline,
             the motif closing the system. */}
-        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-11 md:py-16 border-t border-line">
-          <Reveal as="div" className="text-center mb-10 md:mb-14">
+        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-10 md:py-14 border-t border-line">
+          <Reveal as="div" className="text-center mb-6 md:mb-8">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
               Stephen Meakin
@@ -1583,7 +1583,7 @@ export const About = () => {
             <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
           </Reveal>
 
-          <Reveal as="figure" className="my-0 mb-12 md:mb-16 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
+          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
             <blockquote className="m-0">
               <p className="quote-hang font-display italic text-[clamp(20px,2.6vw,28px)] leading-[1.45] text-ink m-0">
                 “{MEMORIAL_QUOTE}”
@@ -1605,7 +1605,7 @@ export const About = () => {
         </section>
 
         {/* 17 · CLOSING CTA */}
-        <section className={cn(SECTION, "pb-16 md:pb-24 pt-4")}>
+        <section className={cn(SECTION, "pb-10 md:pb-14 pt-4")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
       </main>

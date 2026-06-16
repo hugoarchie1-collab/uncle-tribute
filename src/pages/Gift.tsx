@@ -167,7 +167,7 @@ export const Gift = () => {
         url="/gift"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-8 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-8 md:pb-12">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             Bold left-aligned front cover (the AboutMasthead recipe): a meta
             rule → a giant Fraunces statement filling the width → the
@@ -175,7 +175,7 @@ export const Gift = () => {
             No timid centred header, no dead vertical air. The denomination
             range is surfaced in the meta row as a confident commerce fact
             (figures read LIVE from GIFT_MIN/MAX_PENCE — never re-typed). */}
-        <Reveal as="header" className="mb-9 md:mb-12">
+        <Reveal as="header" className="mb-6 md:mb-8">
           <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span className={EYEBROW}>Gift an edition</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -186,7 +186,7 @@ export const Gift = () => {
           </div>
 
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-5 md:mt-7 leading-[0.86]"
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-5 leading-[0.86]"
             style={{
               fontVariationSettings: '"opsz" 48, "wght" 700',
               fontSize: "clamp(52px, 11vw, 168px)",
@@ -195,7 +195,7 @@ export const Gift = () => {
             Give a piece<br />of Stephen's work.
           </h1>
 
-          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+          <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
             <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
               A digital gift card · redeemed against any edition
             </p>
@@ -217,7 +217,7 @@ export const Gift = () => {
 
         {added ? (
           // ---- Confirmation ---------------------------------------------
-          <Reveal as="section" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start">
+          <Reveal as="section" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-5 items-start">
             <p className={cn(EYEBROW, "m-0 lg:col-span-3 lg:pt-3")}>In your basket</p>
             <div className="lg:col-span-9 max-w-[64ch]">
               <p
@@ -230,11 +230,11 @@ export const Gift = () => {
                 </span>{" "}
                 is in your basket.
               </p>
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.65] text-ink-muted m-0 mt-5">
+              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.65] text-ink-muted m-0 mt-4">
                 The amount you see is exactly what you'll pay — nothing is added
                 at checkout. You can add another, or proceed when you're ready.
               </p>
-              <div className="mt-7 md:mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="mt-5 md:mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
                 <Link to="/basket" className={BTN_PRIMARY}>
                   Go to basket
                   <span aria-hidden="true" className="ml-2">→</span>
@@ -256,10 +256,10 @@ export const Gift = () => {
           // optional recipient details + a sticky "your gift" summary. Section
           // headings carry a numeral so the two acts read as a deliberate
           // sequence, not a stack of separators floating in air.
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-8 md:gap-y-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-8 md:gap-y-10">
             {/* ACT 01 — Choose an amount (the denser denomination grid) */}
             <Reveal as="section" className="lg:col-span-7">
-              <div className="flex items-baseline gap-3 border-t border-line pt-4 mb-6 md:mb-7">
+              <div className="flex items-baseline gap-3 border-t border-line pt-4 mb-5 md:mb-6">
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
@@ -354,7 +354,7 @@ export const Gift = () => {
 
               {/* Recipient + message (all optional) — packed directly under
                   the ladder so the left rail reads as one continuous act. */}
-              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-8 md:mt-12 mb-6 md:mb-7">
+              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-6 md:mt-8 mb-5 md:mb-6">
                 <span className={cn(EYEBROW, "shrink-0")}>02</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>
                   For someone in particular?{" "}
@@ -430,7 +430,7 @@ export const Gift = () => {
                 <button
                   type="button"
                   onClick={handleAdd}
-                  className={cn(BTN_PRIMARY, "mt-7 w-full")}
+                  className={cn(BTN_PRIMARY, "mt-6 w-full")}
                 >
                   Add gift card to basket
                   <span aria-hidden="true" className="ml-2">→</span>

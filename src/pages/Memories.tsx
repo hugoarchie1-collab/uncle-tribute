@@ -682,8 +682,8 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(4.5rem,10vw,6rem)] pb-[clamp(1.25rem,3vw,2rem)]">
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(4.5rem,8vw,5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
+    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
       <span
         className={EYEBROW}
         style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -694,7 +694,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
       <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
     </Reveal>
 
-    <Reveal as="div" className="mt-4 md:mt-6">
+    <Reveal as="div" className="mt-3 md:mt-4">
       <h1
         className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] text-balance"
         style={{
@@ -707,7 +707,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
       </h1>
     </Reveal>
 
-    <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-7">
+    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
       <Reveal as="div" className="lg:col-span-3">
         <p
           className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -817,14 +817,14 @@ export const Memories = () => {
             lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2.5rem,6vw,4rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,2.75rem)]"
         >
           {/* a · PINNED artist comment — Stephen's own words lead the wall as a
               single wide feature row (its long letter folds; it would never
               tile cleanly in a column). Composer sits inline to its right on
               lg+ so the share affordance + the founding voice share one band —
               no separate full-width composer strip eating vertical air. */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-6 items-start border-b border-line pb-[clamp(1.25rem,3vw,2rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-4 items-start border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
             <Reveal as="div" delay={0} className="lg:col-span-8">
               <CommentRow memory={ARTIST_MEMORY} pinned />
             </Reveal>
@@ -854,7 +854,7 @@ export const Memories = () => {
           </div>
 
           {/* b · quiet section eyebrow — a thread divider under the pinned band */}
-          <Reveal as="div" className="mt-[clamp(1.25rem,3vw,1.75rem)] mb-[clamp(0.75rem,2vw,1rem)]">
+          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.25rem)] mb-[clamp(0.5rem,1.5vw,0.75rem)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>

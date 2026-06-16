@@ -244,7 +244,7 @@ export const Collections = () => {
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-6 md:pb-8"
+          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8"
         >
           <div
             className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
@@ -256,7 +256,7 @@ export const Collections = () => {
           </div>
 
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.82]"
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-3 md:mt-4 leading-[0.82]"
             style={{
               fontVariationSettings: '"opsz" 48, "wght" 700',
               fontSize: "clamp(60px, 11vw, 184px)",
@@ -266,7 +266,7 @@ export const Collections = () => {
             The complete works.
           </h1>
 
-          <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-7">
+          <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
             <p
               className={cn(SUBTITLE, "lg:col-span-8 max-w-none my-0")}
               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
@@ -292,7 +292,7 @@ export const Collections = () => {
               in BUNDLE_TIERS), so the advertised £ always equals what checkout
               charges at that size. */}
           {BUNDLE_TIERS.length > 1 && (
-            <div className="mt-7 md:mt-8">
+            <div className="mt-5 md:mt-6">
               <p
                 className={cn(EYEBROW, "m-0 mb-3")}
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -371,9 +371,9 @@ export const Collections = () => {
               className="relative scroll-mt-24"
             >
               <div className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
-                <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-7 md:mb-9">
+                <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-6 md:mb-8">
                   <p
-                    className={cn(EYEBROW, "m-0 mb-5")}
+                    className={cn(EYEBROW, "m-0 mb-4")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                   >
                     {["I", "II", "III"][collIndex]}
@@ -381,7 +381,7 @@ export const Collections = () => {
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-6")}
+                    className={cn(TITLE, "max-w-[820px] mx-auto my-0 mb-4")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
@@ -398,7 +398,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-10 md:gap-y-14"
+                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-8"
                 >
                   {items.map((painting) => {
                     const cover =
@@ -501,7 +501,7 @@ export const Collections = () => {
                 {bundle && items.length > 1 && (
                   <Reveal
                     as="div"
-                    className="mt-8 md:mt-12 mx-auto max-w-[820px]"
+                    className="mt-6 md:mt-8 mx-auto max-w-[820px]"
                   >
                     <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 py-8 md:py-10 text-center">
                       <p className={cn(EYEBROW, "m-0 mb-4")}>
@@ -515,7 +515,7 @@ export const Collections = () => {
                         {editionWord(bundleTier)} edition ({sizeCode(bundleTier)})
                         — the collection entire, for one home.
                       </p>
-                      <p className="font-sans text-[13.5px] leading-[1.6] text-ink-muted m-0 mb-7">
+                      <p className="font-sans text-[13.5px] leading-[1.6] text-ink-muted m-0 mb-6">
                         <span className="font-semibold text-ink">
                           {formatGBP(bundle.bundlePricePence).replace(".00", "")}
                         </span>
@@ -550,10 +550,10 @@ export const Collections = () => {
             the basket holds one line of every painting. */}
         <Reveal
           as="section"
-          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-16"
+          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
         >
-          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 py-8 md:py-14 lg:py-16 text-center">
-            <p className={cn(EYEBROW, "m-0 mb-5")}>
+          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 py-8 md:py-12 lg:py-14 text-center">
+            <p className={cn(EYEBROW, "m-0 mb-4")}>
               The complete catalogue
             </p>
             <h2 className={cn(TITLE, "max-w-[640px] mx-auto my-0 mb-4")}>
@@ -565,7 +565,7 @@ export const Collections = () => {
               Stephen's paintings: the entire, finite body of his work, gathered
               for one home.
             </p>
-            <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-8">
+            <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-6">
               <span className="font-display font-semibold text-[22px] md:text-[26px] text-ink align-middle">
                 {fmtCatalogue(catalogue.bundlePricePence)}
               </span>

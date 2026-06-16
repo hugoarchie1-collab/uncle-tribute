@@ -106,12 +106,12 @@ export const Trade = () => {
       />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-28 md:pt-32 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
         {/* ── MASTHEAD ── A bold left-aligned front cover: meta rule → giant
             Fraunces statement filling the width → the framing passage packed
             immediately beneath under a border-t, no floating gap. Mirrors
             AboutMasthead's recipe. */}
-        <section className="pb-9 md:pb-12">
+        <section className="pb-6 md:pb-8">
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span className={EYEBROW}>Trade &amp; Interior Design</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -120,7 +120,7 @@ export const Trade = () => {
             </span>
           </Reveal>
 
-          <Reveal as="div" className="mt-5 md:mt-7">
+          <Reveal as="div" className="mt-4 md:mt-5">
             <h1
               className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] text-balance"
               style={{
@@ -134,7 +134,7 @@ export const Trade = () => {
             </h1>
           </Reveal>
 
-          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-6 md:pt-8">
+          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
             <Reveal as="div" className="lg:col-span-4">
               <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
                 The estate of Stephen Meakin · SEM
@@ -165,13 +165,13 @@ export const Trade = () => {
             each opening with a big ghost numeral + hairline so they read as
             composed plates rather than an endless scroll. Verbatim body copy
             unchanged. */}
-        <section className="py-9 md:py-12">
-          <Reveal as="div" className="border-t border-line pt-6 md:pt-8 mb-9 md:mb-12 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <section className="py-7 md:py-10">
+          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
             <p className={cn(EYEBROW, "m-0")}>How the estate works with projects</p>
             <p className={cn(EYEBROW_MUTED, "m-0")}>Three ways in</p>
           </Reveal>
 
-          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-10 md:gap-y-0 items-start">
+          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 md:gap-y-0 items-start">
             {OFFERINGS.map((item) => (
               <section
                 key={item.index}
@@ -212,8 +212,8 @@ export const Trade = () => {
             Fraunces statement filling the left, the supporting note packed in
             a second column on the right, under a full-measure rule. Breaks the
             single-column monotony and fills the horizontal space. */}
-        <section className="py-9 md:py-12">
-          <Reveal as="div" className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10">
+        <section className="py-7 md:py-10">
+          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-8">
             <p className={cn(EYEBROW_MUTED, "m-0")}>The precedent</p>
           </Reveal>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-7 items-start">
@@ -250,8 +250,8 @@ export const Trade = () => {
             and the direct-email fallback on the right. Commerce-free — opens
             the shared EnquireModal; quiet /contact + mailto paths preserved
             byte-for-byte. */}
-        <section className="py-9 md:py-12">
-          <Reveal as="div" className="border-t border-line pt-7 md:pt-9 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-end">
+        <section className="py-7 md:py-10">
+          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-end">
             <div className="lg:col-span-7">
               <p className={cn(EYEBROW, "m-0 mb-5")}>Start a project</p>
               <h2

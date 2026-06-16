@@ -178,7 +178,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-14">
         {/* MASTHEAD — bold left-aligned wayfinder cover (replacing the timid
             centred eyebrow + floating title). A meta rule, a giant Fraunces
             statement filling the width, the verbatim guidance packed
@@ -194,7 +194,7 @@ export const FindAPrint = () => {
             <span className={cn(EYEBROW_MUTED, "shrink-0")}>{PAINTINGS.length} works</span>
           </Reveal>
 
-          <Reveal as="div" className="mt-4 md:mt-6">
+          <Reveal as="div" className="mt-4 md:mt-5">
             <h1
               className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
               style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 14vw, 240px)" }}
@@ -205,7 +205,7 @@ export const FindAPrint = () => {
 
           {/* Guidance packed under a border-t, dense — no centred column, no
               dead gap. The verbatim copy is unchanged; only its framing moves. */}
-          <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-7">
+          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
             <Reveal as="div" className="lg:col-span-3">
               <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
                 Filter by the tones<br className="hidden lg:block" /> you are drawn to
@@ -240,7 +240,7 @@ export const FindAPrint = () => {
           {/* Colour controls — a bold left-aligned panel under a hairline, with
               the live count sitting INLINE on the rule (no centred orphan row,
               no big gap before the grid). */}
-          <Reveal as="div" className="mt-7 md:mt-9 border-t border-line pt-5 md:pt-6">
+          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
             <div className="flex items-baseline justify-between gap-4 mb-4 md:mb-5">
               <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
                 The colour lens
@@ -297,7 +297,7 @@ export const FindAPrint = () => {
             foot, so the page ends on the garden rather than bare black. The grid
             sits tight under the masthead's hairline — no min-h spacer, no big
             gap — so the page reads as one dense editorial block. */}
-        <section className="mt-8 md:mt-12">
+        <section className="mt-8 md:mt-10">
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of
             floating centred with dead gutters. auto-fill + minmax keeps the old
@@ -305,7 +305,7 @@ export const FindAPrint = () => {
             rather than orphaning to the centre. */}
         <div
           aria-live="polite"
-          className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-14"
+          className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-10"
           style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))" }}
         >
           {filtered.map(({ painting, cover }) => (
@@ -348,7 +348,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="font-sans text-[16px] leading-[1.7] text-ink-muted mt-10">
+          <p className="font-sans text-[16px] leading-[1.7] text-ink-muted mt-6">
             Nothing holds those tones at once.{" "}
             <button
               type="button"

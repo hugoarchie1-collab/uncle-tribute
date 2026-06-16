@@ -190,7 +190,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-12 md:space-y-16 lg:space-y-20">
+        <main className="relative isolate z-10 space-y-8 md:space-y-10">
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
@@ -257,11 +257,11 @@ export const Welcome = () => {
                 the centring (no more clamp top-pad — that was fighting the old
                 dark band). */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:min-h-[60svh] md:pb-0"
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[60svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[48%]">
-                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-7 text-balance hero-text-shadow">
+                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-4 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(52px,6.6vw,140px)] leading-[1.0]">
                     So here we are on Earth
                   </span>
@@ -273,7 +273,7 @@ export const Welcome = () => {
                 {/* Hero is headline + CTAs only (Hugo: delete the top reminder
                     line — the reminder lives once, in the "A reminder" section
                     below). */}
-                <div className="mt-8 flex flex-wrap items-center gap-3">
+                <div className="mt-6 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
                     className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
@@ -291,7 +291,7 @@ export const Welcome = () => {
                 </div>
 
                 {/* MOBILE image — below the copy, full landscape, soft-edged. */}
-                <Reveal as="figure" className="m-0 mt-10 md:hidden max-w-[560px]">
+                <Reveal as="figure" className="m-0 mt-6 md:hidden max-w-[560px]">
                   <ImageReveal
                     src="/img/welcome/01-painting-wild-rose.jpg"
                     alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -337,8 +337,8 @@ export const Welcome = () => {
                   "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
               }}
             />
-            <Reveal as="header" className="mb-7 md:mb-9 mx-auto max-w-[820px]">
-              <p className={cn(EYEBROW, "m-0 mb-7 text-center")}>A reminder</p>
+            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[820px]">
+              <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust drop cap (pure
                   CSS — the word itself is untouched). The cap recipe lives in
@@ -363,7 +363,7 @@ export const Welcome = () => {
                 below then renders only the REMAINDER of that paragraph (see the
                 slice in the map), so the full passage appears exactly once across
                 the feature + body — never read twice. opsz 44. */}
-            <Reveal delay={0.05} className="my-8 md:my-10 mx-auto max-w-[760px] text-center">
+            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[760px] text-center">
               <p
                 className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
                 style={{
@@ -413,7 +413,7 @@ export const Welcome = () => {
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
             <Reveal delay={0.1}>
-              <div aria-hidden="true" className="mt-7 md:mt-9 mb-5 md:mb-6 h-px w-12 bg-ink/15" />
+              <div aria-hidden="true" className="mt-5 md:mt-6 mb-4 h-px w-12 bg-ink/15" />
               <p className="m-0 mx-auto max-w-[820px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
@@ -476,7 +476,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-12 md:min-h-[42svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:min-h-[42svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-8 md:hidden max-w-[460px]">
@@ -626,7 +626,7 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-9 md:py-12 lg:py-14">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-8 md:py-10 lg:py-12">
               <Reveal as="div" className="text-center mb-6 md:mb-8">
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
@@ -641,7 +641,7 @@ export const Welcome = () => {
                   the 4:3 documentary source (sm+) trims only a sliver of ceiling
                   and foreground — the subjects + mandala are never touched, and
                   full 4:3 shows on phones. Clean feather, no box-shadow. */}
-              <Reveal as="figure" className="m-0 mb-8 md:mb-12">
+              <Reveal as="figure" className="m-0 mb-6 md:mb-8">
                 <ImageReveal
                   src="/img/about/02-painting-table.jpg"
                   alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -671,7 +671,7 @@ export const Welcome = () => {
                   void to its left where the shorter image ended — Hugo's "gap
                   next to highlighted"). Three columns on md+ so the six facts
                   read as a clean ledger across the whole panel. */}
-              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-10 md:mt-12 items-start">
+              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-6 md:mt-8 items-start">
                     {/* ONE consistent register for all six facts — same eyebrow
                         label + same Hanken value at one size, no mixed serif/
                         italic lines (Hugo: "different sizes, different fonts,
@@ -761,7 +761,7 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto max-w-[780px]">
+            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto max-w-[780px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-line/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"

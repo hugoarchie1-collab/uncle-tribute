@@ -313,7 +313,7 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <AmbientBackdrop opacity={0.4} />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14">
         {/* MASTHEAD — bold page-level header on the AboutMasthead grammar: a
             meta rule band, the title set large left-aligned (Fraunces 700,
             opsz 48), then the line count packed under a hairline. Replaces the
@@ -345,7 +345,7 @@ export const Basket = () => {
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
                 beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
             {BEGIN_WITH_PICKS.length > 0 && (
-              <div className="mt-10 md:mt-12">
+              <div className="mt-6 md:mt-8">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
@@ -551,8 +551,8 @@ export const Basket = () => {
               </Reveal>
             )}
 
-            <Reveal as="div" className="mt-10">
-              <Separator className="bg-line mb-8" />
+            <Reveal as="div" className="mt-6">
+              <Separator className="bg-line mb-6" />
 
               {/* PRICE BREAKDOWN — DMCC #13: the genuine pre-discount subtotal,
                   the bundle discount (the SAME percent Stripe charges), the
