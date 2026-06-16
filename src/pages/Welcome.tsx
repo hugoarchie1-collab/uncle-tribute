@@ -9,7 +9,7 @@ import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
-import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence } from "../data/paintings";
+import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence, paintingImageAlt } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { EYEBROW } from "../components/ui/tokens";
@@ -563,7 +563,7 @@ export const Welcome = () => {
                       <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
                         <AssetImage
                           src={cover.image}
-                          alt={`${painting.title} — ${cover.name}`}
+                          alt={paintingImageAlt(painting.title, cover.name)}
                           loading="lazy"
                           decoding="async"
                           sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"

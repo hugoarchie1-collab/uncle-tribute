@@ -28,6 +28,7 @@ import {
   getLowestTierPricePence,
   getPaintingById,
   getPrintTiers,
+  paintingImageAlt,
   ORIGINAL_PRINT_SPEC,
   ORIGINAL_PROVENANCE,
   COLOURWAY_NOTE,
@@ -1832,7 +1833,7 @@ export const PaintingDetail = () => {
                         <img
                           ref={heroImgRef}
                           src={asset(selected.image)}
-                          alt={`${painting.title} — ${selected.name}`}
+                          alt={paintingImageAlt(painting.title, selected.name)}
                           width={heroDims.w}
                           height={heroDims.h}
                           className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[calc(100vh-88px-2rem)] 2xl:max-h-[86vh]"

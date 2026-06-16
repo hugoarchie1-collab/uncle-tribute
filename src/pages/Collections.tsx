@@ -13,6 +13,7 @@ import {
   getCollectionBundle,
   getCompleteCatalogueBundle,
   formatGBP,
+  paintingImageAlt,
   type PrintTier,
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
@@ -445,7 +446,7 @@ export const Collections = () => {
                             <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
                               <AssetImage
                                 src={cover.image}
-                                alt={painting.title}
+                                alt={paintingImageAlt(painting.title, cover.name)}
                                 loading="lazy"
                                 decoding="async"
                                 sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"

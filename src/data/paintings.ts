@@ -835,6 +835,16 @@ export const getPaintingById = (id: string): Painting | undefined =>
 export const getPaintingsByCollection = (collectionId: Collection["id"]): Painting[] =>
   PAINTINGS.filter((p) => p.collection === collectionId);
 
+/**
+ * Descriptive alt text for a painting image. Google Images is a real discovery
+ * channel for wall art, and the bare title told it nothing — this names the
+ * work, colourway, medium and artist. Single source so the PDP hero,
+ * Collections tiles and the Welcome featured grid stay consistent. Visual only
+ * (no price/edition claims), so it's safe under the drop model.
+ */
+export const paintingImageAlt = (title: string, colourwayName?: string): string =>
+  `${title}${colourwayName ? ` — ${colourwayName}` : ""} — sacred-geometry mandala giclée print by Stephen Meakin`;
+
 // -----------------------------------------------------------------------------
 // COLLECTION BUNDLES — acquire a whole collection as a curated set
 // -----------------------------------------------------------------------------
