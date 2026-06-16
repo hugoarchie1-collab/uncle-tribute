@@ -12,6 +12,11 @@
       "has": [{ "type": "host", "value": "www.themandalacompany.com" }],
       "destination": "https://themandalacompany.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/verify",
+      "destination": "/auth",
+      "permanent": true
     }
   ],
   "headers": [
