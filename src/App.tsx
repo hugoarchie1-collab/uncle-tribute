@@ -34,6 +34,7 @@ const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })
 const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
+const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -104,6 +105,8 @@ const AnimatedRoutes = () => {
           <Route path="/collections" element={<Collections />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
           <Route path="/for-you" element={<FindAPrint />} />
+          {/* Site-wide search — header SearchBar + this results page. */}
+          <Route path="/search" element={<Search />} />
           {/* Old /quiz URL preserved so existing links never 404. */}
           <Route path="/quiz" element={<Navigate to="/for-you" replace />} />
           <Route path="/about" element={<About />} />

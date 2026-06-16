@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Logo } from "./Logo";
+import { SearchBar } from "./SearchBar";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
@@ -204,6 +205,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         >
           <Logo size={50} wordmark />
         </Link>
+
+        {/* Site search — Amazon-pattern (search anything on the site), skinned
+            to the estate. Grows to fill the middle of the bar on md+; on mobile
+            it drops into the drawer below. */}
+        <SearchBar
+          variant="header"
+          className="hidden md:block flex-1 mx-3 lg:mx-6 max-w-[440px] lg:max-w-[560px]"
+        />
 
         <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">
           {/* Primary links — inline from `lg` up; collapsed into the accessible
@@ -419,6 +428,8 @@ const NavMenu = ({
               aria-label="Primary"
               className="flex-1 overflow-y-auto px-7 sm:px-8 py-7 flex flex-col gap-0.5"
             >
+              {/* Search at the top of the drawer — committing a result closes it. */}
+              <SearchBar variant="page" onNavigate={onClose} className="mb-6" />
               {NAV_LINKS.map((l, i) => (
                 <motion.div
                   key={l.to}
