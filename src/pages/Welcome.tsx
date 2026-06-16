@@ -25,12 +25,19 @@ import { Seo } from "../components/Seo";
 // the page — it holds through the Sacred Geometry finale (Hugo's direction:
 // revert the brief Mary-Pink close back to the extended purple).
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-blur-v3.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v3.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v3.webp", name: "Moroccan Purple" },
+  // PERFECTION PASS: these washes are σ8-blurred, so 1200px was massively
+  // oversampled. Served at 600px (`-sm`, the SAME darkened v3/v11 assets just
+  // downscaled — mean luminance verified identical) they upscale to fill the
+  // viewport with ZERO visible difference at ~4× less GPU texture memory per
+  // composited layer. The 600px file is the texture the compositor samples on
+  // every scroll frame, so a smaller texture is a cheaper, cache-friendlier
+  // composite. Full-size originals kept on disk for the immutable-cache rule.
+  { url: "/img/paintings/peacock-persian-indigo-blur-v3-sm.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v3-sm.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v3-sm.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v11.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v11-sm.webp", name: "Mary Pink" },
 ];
 
 export const Welcome = () => {
