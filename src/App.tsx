@@ -35,6 +35,8 @@ const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
+const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
+const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -121,6 +123,9 @@ const AnimatedRoutes = () => {
           <Route path="/verify" element={<Navigate to="/auth" replace />} />
           <Route path="/gift" element={<Gift />} />
           <Route path="/trade" element={<Trade />} />
+          {/* Account (passwordless) + Orders & Returns — Amazon-IA header. */}
+          <Route path="/account" element={<Account />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/basket" element={<Basket />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route path="/order/cancel" element={<OrderCancel />} />

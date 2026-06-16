@@ -31,6 +31,8 @@ const NAV_LINKS = [
  *  always-visible icon in the top bar, so listing it again read as a stray
  *  highlighted chip. */
 const SECONDARY_LINKS = [
+  { to: "/account", label: "Your account" },
+  { to: "/orders", label: "Orders & returns" },
   { to: "/faq", label: "FAQ" },
   { to: "/trade", label: "Trade" },
   { to: "/privacy", label: "Privacy" },
@@ -246,6 +248,33 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             ))}
             <ReturningVisitorChip />
           </nav>
+
+          {/* Account — Amazon "Account & Lists" entry. Reachable on md+; on
+              small screens it lives in the drawer's links. */}
+          <NavLink
+            to="/account"
+            aria-label="Your account"
+            className={({ isActive }) =>
+              cn(
+                "press hidden md:inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
+                isActive ? "text-ink" : "text-ink/55 hover:text-accent",
+              )
+            }
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]"
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-3.4 3.6-6 8-6s8 2.6 8 6" />
+            </svg>
+          </NavLink>
 
           {/* Basket — icon + count badge (count appears only when ≥ 1). */}
           <NavLink
