@@ -416,13 +416,19 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   if (req.method === "GET") {
     try {
       const stored = await readPublishedMemories();
-      const memories = stored.map((m) => ({
-        id: m.id,
-        name: m.name,
-        relationship: m.relationship,
-        location: m.location,
-        message: m.message,
-      }));
+      const memories = stored
+        // Belt-and-braces: never SERVE a memory that reads like a test/placeholder,
+        // even if it was published to KV before the auto-publish guard existed.
+        // This hides the QA/test entries that reached the wall on 2026-06-17
+        // WITHOUT needing a manual KV purge — they stay in storage but never show.
+        .filter((m) => !looksLikeTestJunk(m.message, m.name))
+        .map((m) => ({
+          id: m.id,
+          name: m.name,
+          relationship: m.relationship,
+          location: m.location,
+          message: m.message,
+        }));
       return send(200, { memories });
     } catch (err) {
       console.error(
