@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useScroll,
@@ -36,7 +36,6 @@ import {
   SUBTITLE,
   BTN_PRIMARY,
   BTN_SECONDARY,
-  EASE_CSS,
 } from "../components/ui/tokens";
 
 // =============================================================================
@@ -195,68 +194,9 @@ const ChapterHead = ({ id, title }: { id: ChapterId; title: string }) => {
   );
 };
 
-// ─── ChapterRail ─────────────────────────────────────────────────────────────
-// Whisper-quiet fixed rail of Roman numerals (xl+ only) — native anchor jumps,
-// active chapter tracked with an IntersectionObserver band across the viewport
-// middle (the repo's sentinel/IO convention — no scroll listeners, no
-// transforms, nothing to short-circuit under reduced motion).
-const ChapterRail = () => {
-  const [active, setActive] = useState<ChapterId>(CHAPTERS[0].id);
-
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id as ChapterId);
-        }
-      },
-      // A thin band around the viewport middle: the chapter crossing it is
-      // the active one. Tall chapters keep intersecting the band for their
-      // whole pass, so the numeral holds.
-      { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
-    );
-    for (const c of CHAPTERS) {
-      const el = document.getElementById(c.id);
-      if (el) io.observe(el);
-    }
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <nav
-      aria-label="Chapters"
-      className="hidden xl:flex fixed left-6 2xl:left-10 top-1/2 -translate-y-1/2 z-20 flex-col gap-3"
-    >
-      {CHAPTERS.map((c, i) => {
-        const isActive = active === c.id;
-        return (
-          <a
-            key={c.id}
-            href={`#${c.id}`}
-            aria-label={`Chapter ${ROMAN_NUMERALS[i]} — ${c.kicker}`}
-            className={cn(EYEBROW_TIGHT, "group flex items-center gap-2")}
-          >
-            <span
-              aria-hidden
-              className={cn("h-px bg-accent transition-all duration-300", isActive ? "w-4" : "w-0")}
-              style={{ transitionTimingFunction: EASE_CSS }}
-            />
-            <span
-              className={cn(
-                "transition-colors duration-300",
-                isActive ? "text-accent" : "text-ink/35 group-hover:text-ink/70",
-              )}
-              style={{ transitionTimingFunction: EASE_CSS }}
-            >
-              {ROMAN_NUMERALS[i]}
-            </span>
-          </a>
-        );
-      })}
-    </nav>
-  );
-};
+// (ChapterRail removed — the fixed I–IX numeral rail overlapped the masthead
+// at xl widths and read as clutter; the chapter sequence is carried by the
+// ChapterHead headers themselves.)
 
 // ─── PlateCaption ────────────────────────────────────────────────────────────
 // THE one caption convention for every figure on the page: a short warm
@@ -763,9 +703,6 @@ export const About = () => {
       />
       {/* Intro film header — owned by another task; left exactly as-is. */}
       <Nav overlay />
-
-      {/* Chapter rail — whisper-quiet Roman numerals, xl+ only. */}
-      <ChapterRail />
 
       <main className="relative isolate z-10">
         {/* 1 · MASTHEAD — image-free bold front cover (the opening passage
