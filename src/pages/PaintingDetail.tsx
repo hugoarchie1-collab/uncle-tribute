@@ -69,6 +69,14 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
   .toISOString()
   .slice(0, 10);
 
+// True-Size room view needs a composited room photo per painting at
+// /public/img/truesize/<id>-<size>.jpg(+webp). NONE exist yet, so the "True
+// size" toggle is gated to this allowlist — until a painting's asset lands the
+// toggle is hidden, rather than offering a "To scale · coming soon" dead-end on
+// a £245–£1,750 page (audit fix). ⚠️HUGO: add a painting id here the moment its
+// room composite is in /public/img/truesize/, and the toggle self-enables.
+const TRUESIZE_PAINTING_IDS = new Set<string>([]);
+
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.
  * -----------------------------------------------------------------------------
@@ -1777,23 +1785,28 @@ export const PaintingDetail = () => {
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[88px]">
-              {/* View toggle — the artwork, or the True Size room view (#11). */}
-              <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full">
-                {(["art", "true-size"] as const).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setView(v)}
-                    aria-pressed={view === v}
-                    className={cn(
-                      "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
-                      view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
-                    )}
-                  >
-                    {v === "art" ? "Painting" : "True size"}
-                  </button>
-                ))}
-              </div>
+              {/* View toggle — the artwork, or the True Size room view (#11).
+                  Shown ONLY when this painting has a real room composite (see
+                  TRUESIZE_PAINTING_IDS); otherwise hidden so the buyer never
+                  hits the "coming soon" placeholder on an expensive page. */}
+              {TRUESIZE_PAINTING_IDS.has(painting.id) && (
+                <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full">
+                  {(["art", "true-size"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setView(v)}
+                      aria-pressed={view === v}
+                      className={cn(
+                        "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
+                        view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
+                      )}
+                    >
+                      {v === "art" ? "Painting" : "True size"}
+                    </button>
+                  ))}
+                </div>
+              )}
               {view === "true-size" ? (
                 <TrueSizeViewer
                   painting={painting}
