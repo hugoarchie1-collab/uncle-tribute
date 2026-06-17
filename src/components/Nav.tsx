@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Logo } from "./Logo";
 import { SearchBar } from "./SearchBar";
+import { DeliverTo } from "./DeliverTo";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
@@ -207,6 +208,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         >
           <Logo size={50} wordmark />
         </Link>
+
+        {/* Deliver-to — Amazon-pattern location control sitting left of the
+            search. Free worldwide delivery, so it's an informational preference
+            only (never touches pricing). lg+ in the bar; in the drawer below. */}
+        <DeliverTo variant="header" className="hidden lg:flex shrink-0" />
 
         {/* Site search — Amazon-pattern (search anything on the site), skinned
             to the estate. Grows to fill the middle of the bar on md+; on mobile
@@ -458,7 +464,9 @@ const NavMenu = ({
               className="flex-1 overflow-y-auto px-7 sm:px-8 py-7 flex flex-col gap-0.5"
             >
               {/* Search at the top of the drawer — committing a result closes it. */}
-              <SearchBar variant="page" onNavigate={onClose} className="mb-6" />
+              <SearchBar variant="page" onNavigate={onClose} className="mb-4" />
+              {/* Deliver-to — the header control's drawer home on small screens. */}
+              <DeliverTo variant="menu" className="mb-5" />
               {NAV_LINKS.map((l, i) => (
                 <motion.div
                   key={l.to}
