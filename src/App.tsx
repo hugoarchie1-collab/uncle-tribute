@@ -8,6 +8,7 @@ import { BasketToast } from "./components/BasketToast";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
@@ -167,7 +168,12 @@ export default function App() {
               z-[180]: above grain/consent/toasts, below modals (z-200) and
               the cursor (z-250). Skipped on prefers-reduced-motion. */}
           <SiteEntrance />
-          <AnimatedRoutes />
+          {/* Any uncaught render error below would otherwise unmount the whole
+              root → a blank, frozen page. The boundary converts that into a
+              dignified, recoverable fallback so the site can never silently die. */}
+          <ErrorBoundary>
+            <AnimatedRoutes />
+          </ErrorBoundary>
           {/* Global "Added to basket" confirmation toast. Listens to the
               basket store's add side-channel, so every add path triggers it
               with no per-button wiring. Mounted once; sits at z-[120], below
