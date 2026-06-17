@@ -189,6 +189,28 @@ const builtInModerate = (text: string): ModerationDecision => {
   return { status: "clean" };
 };
 
+/**
+ * Heuristic: does a submission read like a functional/QA test or empty filler
+ * rather than a genuine memory? A memorial wall must never AUTO-publish junk
+ * (QA/test entries reached the live wall 2026-06-17). Deliberately conservative
+ * — only obvious test/placeholder text; when in doubt it returns false
+ * (publishes). A false positive only HOLDS for the family's review (never
+ * rejects, never lost), so a real short memory is safe.
+ */
+const looksLikeTestJunk = (message: string, name: string): boolean => {
+  const m = message.trim().toLowerCase().replace(/\s+/g, " ");
+  const n = name.trim().toLowerCase();
+  if (m.length < 12) return true; // too sparse to be a genuine memory
+  const JUNK = [
+    "test memory", "test message", "qa test", "qa reviewer", "functional check",
+    "check the endpoint", "check that it works", "please disregard", "ignore this",
+    "lorem ipsum", "asdf", "testing 123", "this is a test", "just a test",
+  ];
+  if (JUNK.some((p) => m.includes(p))) return true;
+  if (/^(qa|test|tester|reviewer|admin|bot)\b/.test(n)) return true;
+  return false;
+};
+
 async function moderateMemory(
   text: string,
   imageDataUrl?: string,
@@ -488,6 +510,15 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         ? "Clean text, but an image is attached — held for your one-tap OK."
         : null;
       break;
+  }
+
+  // Even clean, image-free text HOLDS if it reads like a functional/QA test or
+  // is too sparse to be a genuine memory — a memorial wall must never auto-
+  // publish junk (QA test posts reached the live wall 2026-06-17). Held, never
+  // lost: the family reviews it and publishes if it's real.
+  if (!holdReason && looksLikeTestJunk(message, name)) {
+    holdReason =
+      "Held for review — reads like a test or placeholder rather than a memory.";
   }
 
   // Turn an attached image into an email attachment for the family. Because an
