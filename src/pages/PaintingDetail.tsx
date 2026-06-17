@@ -209,13 +209,24 @@ const SizePicker = ({
           {/* Allocation register line — dignified provenance, never urgency.
               Reads from the estate ledger (data/editions.ts); recomputes as the
               buyer switches size or colourway. Skipped for the Open Edition
-              (editionTotal null, not numbered) and one-off pieces. */}
-          {isSelected && !tier.isOneOff && tier.editionTotal !== null && (
-            <span className={cn(META, "col-span-2 mt-1 text-ink-muted")}>
-              Next to be allocated in this drop: No.{" "}
-              {nextNumber(paintingId, colourwayName, tier.id)} of {tier.editionTotal}
-            </span>
-          )}
+              (editionTotal null, not numbered) and one-off pieces. GATED at
+              >= 5: until a drop has genuine momentum, "No. 1 of 200" broadcasts
+              "nobody has bought this" to a cautious high-AOV buyer — the neutral
+              "numbered within its drop" summary above already conveys the
+              provenance, so the explicit number only appears once it reassures
+              rather than deters. (Audit fix — never fabricate allocations.) */}
+          {isSelected &&
+            !tier.isOneOff &&
+            tier.editionTotal !== null &&
+            (() => {
+              const allocated = nextNumber(paintingId, colourwayName, tier.id);
+              return allocated >= 5 ? (
+                <span className={cn(META, "col-span-2 mt-1 text-ink-muted")}>
+                  Next to be allocated in this drop: No. {allocated} of{" "}
+                  {tier.editionTotal}
+                </span>
+              ) : null;
+            })()}
         </button>
       );
     })}
