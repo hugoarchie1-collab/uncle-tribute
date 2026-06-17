@@ -245,10 +245,10 @@ export const Collections = () => {
             collections / colourways are released. */}
         <Reveal
           as="header"
-          className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8"
+          className="relative mx-auto max-w-[860px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8 text-center"
         >
           <div
-            className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
+            className="flex items-center justify-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
             <span className={EYEBROW}>Everything he finished</span>
@@ -257,32 +257,30 @@ export const Collections = () => {
           </div>
 
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-3 md:mt-4 leading-[0.82]"
+            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-3 md:mt-4 leading-[0.86]"
             style={{
               fontVariationSettings: '"opsz" 48, "wght" 700',
-              fontSize: "clamp(60px, 11vw, 184px)",
+              fontSize: "clamp(56px, 9vw, 128px)",
               textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
             }}
           >
             The complete works.
           </h1>
 
-          <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
+          <div className="mt-4 md:mt-6 flex flex-col items-center gap-4 border-t border-line pt-5 md:pt-6">
             <p
-              className={cn(SUBTITLE, "lg:col-span-8 max-w-none my-0")}
+              className={cn(SUBTITLE, "mx-auto max-w-[640px] my-0")}
               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
             >
               Every painting Stephen completed, offered as an estate-stamped giclée and made to order. New colourways are released as the estate brings them to print.
             </p>
-            <div className="lg:col-span-4 lg:text-right">
-              <Link
-                to="/for-you"
-                className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
-                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-              >
-                Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
-              </Link>
-            </div>
+            <Link
+              to="/for-you"
+              className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+            >
+              Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
+            </Link>
           </div>
 
           {/* BUNDLE SIZE — one page-level control that re-prices every set deal
@@ -293,7 +291,7 @@ export const Collections = () => {
               in BUNDLE_TIERS), so the advertised £ always equals what checkout
               charges at that size. */}
           {BUNDLE_TIERS.length > 1 && (
-            <div className="mt-5 md:mt-6">
+            <div className="mt-5 md:mt-6 flex flex-col items-center">
               <p
                 className={cn(EYEBROW, "m-0 mb-3")}
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -371,7 +369,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className="relative mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-10 md:pb-14">
+              <div className="relative mx-auto max-w-[1180px] 2xl:max-w-[1280px] 3xl:max-w-[1380px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-9 md:pb-12">
                 <Reveal as="header" className="max-w-[820px] mx-auto text-center mb-6 md:mb-8">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
@@ -399,7 +397,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-8"
+                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-7 md:gap-y-8"
                 >
                   {items.map((painting) => {
                     const cover =

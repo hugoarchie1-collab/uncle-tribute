@@ -6,7 +6,7 @@ import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import {
   PAINTINGS,
@@ -179,45 +179,36 @@ export const FindAPrint = () => {
 
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-14">
-        {/* MASTHEAD — bold left-aligned wayfinder cover (replacing the timid
-            centred eyebrow + floating title). A meta rule, a giant Fraunces
-            statement filling the width, the verbatim guidance packed
-            immediately beneath, and the colour controls promoted to a
-            confident editorial panel — all over the woodland tunnel, which owns
-            the top of the page (full opacity until ~0.40 of page scroll). */}
-        <section>
+        {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
+            cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
+            rule, headline, guidance and colour controls all share one centred
+            reading measure (mx-auto) so the top of the page reads as one calm
+            axis-centred block over the woodland tunnel. Verbatim copy unchanged;
+            only the framing moves. */}
+        <section className="mx-auto w-full max-w-[860px] text-center">
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+            <span aria-hidden className="h-px flex-1 bg-ink/15" />
             <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               For you · Where to begin
             </span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0")}>{PAINTINGS.length} works</span>
           </Reveal>
 
           <Reveal as="div" className="mt-4 md:mt-5">
             <h1
-              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
-              style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 14vw, 240px)" }}
+              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] hero-text-shadow"
+              style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(56px, 11vw, 168px)" }}
             >
               Begin with<br />a colour.
             </h1>
           </Reveal>
 
-          {/* Guidance packed under a border-t, dense — no centred column, no
-              dead gap. The verbatim copy is unchanged; only its framing moves. */}
-          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
-            <Reveal as="div" className="lg:col-span-3">
-              <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
-                Filter by the tones<br className="hidden lg:block" /> you are drawn to
-              </p>
-            </Reveal>
-            <Reveal
-              as="div"
-              delay={0.06}
-              className="lg:col-span-9 columns-1 md:columns-2 gap-x-10"
-            >
+          {/* Guidance — one centred reading measure under a hairline, no side
+              column, no dead gap. The verbatim copy is unchanged. */}
+          <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+            <Reveal as="div">
               <p
-                className="font-sans font-normal text-[17px] md:text-[19px] leading-[1.7] text-ink/85 text-pretty m-0"
+                className="mx-auto max-w-[68ch] font-sans font-normal text-[17px] md:text-[19px] leading-[1.7] text-ink/85 text-pretty m-0"
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
@@ -237,33 +228,15 @@ export const FindAPrint = () => {
             </Reveal>
           </div>
 
-          {/* Colour controls — a bold left-aligned panel under a hairline, with
-              the live count sitting INLINE on the rule (no centred orphan row,
-              no big gap before the grid). */}
-          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
-            <div className="flex items-baseline justify-between gap-4 mb-4 md:mb-5">
-              <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
-                The colour lens
-              </p>
-              <div className="flex items-center gap-4 shrink-0">
-                <p
-                  className={cn(EYEBROW_TIGHT, "m-0")}
-                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-                >
-                  {filtered.length} of {PAINTINGS.length}
-                </p>
-                {active.size > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setActive(new Set())}
-                    className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
-                  >
-                    Show all {PAINTINGS.length}
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          {/* Colour controls — a CENTRED panel under a hairline; the lens label
+              sits above a centred swatch row, with the live count + reset
+              centred below (no off-axis justify-between row, no big gap before
+              the grid). */}
+          <Reveal as="div" className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
+            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+              The colour lens
+            </p>
+            <div className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
               {COLOUR_FAMILIES.map((f) => {
                 const on = active.has(f.key);
                 return (
@@ -288,6 +261,23 @@ export const FindAPrint = () => {
                   </button>
                 );
               })}
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+              <p
+                className={cn(EYEBROW_TIGHT, "m-0")}
+                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+              >
+                {filtered.length} of {PAINTINGS.length}
+              </p>
+              {active.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActive(new Set())}
+                  className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
+                >
+                  Show all {PAINTINGS.length}
+                </button>
+              )}
             </div>
           </Reveal>
         </section>

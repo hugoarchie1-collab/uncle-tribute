@@ -188,58 +188,62 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // border-t — so the first screen is dense confident type filling the width,
 // not a shrunk centred title floating in a thin column.
 const FaqMasthead = () => (
-  <section className={cn(SECTION, "pt-20 md:pt-24 pb-6 md:pb-8")}>
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-      <span className={EYEBROW}>Before you buy</span>
-      <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0")}>
-        {ordinal(FAQS.length - 1)} questions
-      </span>
-    </Reveal>
-
-    <Reveal as="div" className="mt-3 md:mt-4">
-      <h1
-        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
-        style={{
-          fontVariationSettings: '"opsz" 48, "wght" 700',
-          fontSynthesis: "none",
-          fontSize: "clamp(58px, 12vw, 220px)",
-        }}
-      >
-        What people<br />ask.
-      </h1>
-    </Reveal>
-
-    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
-      <Reveal as="div" className="lg:col-span-3">
-        <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
-          Provenance · paper · editions · care
-        </p>
+  <section className={cn(SECTION, "pt-16 md:pt-20 pb-5 md:pb-6")}>
+    <div className="mx-auto w-full max-w-[860px] text-center">
+      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span className={cn(EYEBROW_MUTED, "shrink-0")}>
+          {ordinal(FAQS.length - 1)} questions
+        </span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </Reveal>
-      <Reveal as="div" delay={0.06} className="lg:col-span-9">
-        <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[40ch]"
+
+      <Reveal as="div" className="mt-3 md:mt-4">
+        <h1
+          className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
           style={{
-            fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(21px, 2.5vw, 34px)",
-            lineHeight: 1.32,
+            fontVariationSettings: '"opsz" 48, "wght" 700',
+            fontSynthesis: "none",
+            fontSize: "clamp(58px, 12vw, 220px)",
           }}
         >
-          On provenance, paper, editions, framing, hand-finishing, shipping
-          and after-sale care. For anything not covered here, write to{" "}
-          <a
-            href="mailto:info@themandalacompany.com"
-            className="text-accent hover:underline"
-          >
-            info@themandalacompany.com
-          </a>
-          {" "}or use the{" "}
-          <Link to="/contact" className="text-accent hover:underline">
-            contact page
-          </Link>
-          .
-        </p>
+          What people<br />ask.
+        </h1>
       </Reveal>
+
+      <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+        <Reveal as="div">
+          <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+            Provenance · paper · editions · care
+          </p>
+        </Reveal>
+        <Reveal as="div" delay={0.06} className="mt-3">
+          <p
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[46ch]"
+            style={{
+              fontVariationSettings: '"opsz" 32, "wght" 400',
+              fontSize: "clamp(21px, 2.5vw, 34px)",
+              lineHeight: 1.32,
+            }}
+          >
+            On provenance, paper, editions, framing, hand-finishing, shipping
+            and after-sale care. For anything not covered here, write to{" "}
+            <a
+              href="mailto:info@themandalacompany.com"
+              className="text-accent hover:underline"
+            >
+              info@themandalacompany.com
+            </a>
+            {" "}or use the{" "}
+            <Link to="/contact" className="text-accent hover:underline">
+              contact page
+            </Link>
+            .
+          </p>
+        </Reveal>
+      </div>
     </div>
   </section>
 );
@@ -265,15 +269,15 @@ export const FAQ = () => {
             self-densifying — items flow two-up on md+ filling the horizontal
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
-        <section className={cn(SECTION, "pb-10 md:pb-14")}>
+        <section className={cn(SECTION, "pb-8 md:pb-10")}>
           <Reveal
             as="div"
-            className="grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-16 gap-y-8 border-t border-line"
+            className="mx-auto flex w-full max-w-[1100px] flex-wrap justify-center gap-x-10 lg:gap-x-16 gap-y-7 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-col gap-3.5 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-[0_1_clamp(300px,44%,480px)] flex-col gap-3 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

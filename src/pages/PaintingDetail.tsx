@@ -608,7 +608,7 @@ const TrueSizeRoom = ({
 
   if (state === "missing" || !src) {
     return (
-      <div className="relative w-full min-h-[clamp(300px,60vw,420px)] py-10 overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
+      <div className="relative w-full min-h-[clamp(280px,48vw,380px)] py-8 overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
         {/* Proportional outline of the print, drawn from real cm, centred on a
             quiet ground — a dignified placeholder until the room photo exists. */}
         {dims && (
@@ -1233,14 +1233,14 @@ const Story = ({ painting }: { painting: Painting }) => (
 
     <Reveal
       as="div"
-      className="mt-8 md:mt-12 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
+      className="mt-7 md:mt-9 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
       ))}
     </Reveal>
 
-    <Reveal as="div" className="mt-8 md:mt-12">
+    <Reveal as="div" className="mt-7 md:mt-9">
       <Separator className="bg-line mb-7" />
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Original print</p>
       <p className="font-sans font-normal text-[16px] leading-[1.75] text-ink/85 m-0">
@@ -1752,11 +1752,11 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-16 md:pb-24">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-14 md:pb-16">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
-          <div className="flex items-center justify-between gap-4 mb-6 md:mb-8">
+          <div className="flex items-center justify-between gap-4 mb-5 md:mb-6">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
               className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-ink")}
@@ -1928,8 +1928,8 @@ export const PaintingDetail = () => {
 
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
-          <div className="mt-10 md:mt-16">
-            <Separator className="bg-line mb-8 md:mb-12 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
+          <div className="mt-12 md:mt-14">
+            <Separator className="bg-line mb-8 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

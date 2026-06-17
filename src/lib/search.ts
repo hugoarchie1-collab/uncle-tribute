@@ -295,11 +295,23 @@ interface IndexedDoc {
   bodyLc: string;
 }
 
+/**
+ * Fold diacritics so accented words index/search as their plain-ASCII form:
+ * "Hahnemühle" → "hahnemuhle", "giclée" → "giclee", "Miró" → "miro". Decompose
+ * to base char + combining marks (NFKD), then drop the marks. Applied to BOTH
+ * the indexed fields and the query (always paired with `.toLowerCase()`), so an
+ * un-accented query matches accented source text and vice-versa. The word regex
+ * (`/[a-z0-9£]+/`) then keeps the whole word intact ("hahnemuhle", not the old
+ * "hahnem" + "hle" split on the ü). `£` carries no diacritic, so it's untouched.
+ */
+const foldDiacritics = (s: string): string =>
+  s.normalize("NFKD").replace(/\p{Diacritic}/gu, "");
+
 const toIndexed = (doc: SearchDoc): IndexedDoc => ({
   doc,
-  titleLc: doc.title.toLowerCase(),
-  subtitleLc: (doc.subtitle ?? "").toLowerCase(),
-  bodyLc: doc.body.toLowerCase(),
+  titleLc: foldDiacritics(doc.title.toLowerCase()),
+  subtitleLc: foldDiacritics((doc.subtitle ?? "").toLowerCase()),
+  bodyLc: foldDiacritics(doc.body.toLowerCase()),
 });
 
 function buildIndex(): IndexedDoc[] {
@@ -443,9 +455,11 @@ export const SEARCH_DOC_COUNT = INDEX.length;
 // SCORER
 // -----------------------------------------------------------------------------
 
-/** Lowercase + split a string into word tokens (≥1 char, alnum runs). */
+/** Lowercase + diacritic-fold + split a string into word tokens (≥1 char,
+ *  alnum runs). Folding here keeps the query side consistent with the indexed
+ *  fields (also folded in `toIndexed`), so "hahnemuhle" matches "Hahnemühle". */
 const tokenise = (s: string): string[] =>
-  s.toLowerCase().match(/[a-z0-9£]+/gi)?.map((t) => t.toLowerCase()) ?? [];
+  foldDiacritics(s.toLowerCase()).match(/[a-z0-9£]+/gi)?.map((t) => t.toLowerCase()) ?? [];
 
 // Field weights — title matters most, then subtitle, then body.
 const W_TITLE = 5;
@@ -509,7 +523,7 @@ function scoreDoc(indexed: IndexedDoc, tokens: string[], phraseLc: string): numb
  *               faq → page authoring order).
  */
 export function searchSite(query: string, limit = 24): SearchResult[] {
-  const phraseLc = query.trim().toLowerCase();
+  const phraseLc = foldDiacritics(query.trim().toLowerCase());
   const tokens = tokenise(query);
   if (tokens.length === 0) return [];
 

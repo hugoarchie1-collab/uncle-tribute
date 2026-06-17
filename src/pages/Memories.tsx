@@ -682,59 +682,63 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(7rem,11vw,8.5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
-      <span
-        className={EYEBROW}
-        style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-      >
-        Book of Memories
-      </span>
-      <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
-    </Reveal>
-
-    <Reveal as="div" className="mt-3 md:mt-4">
-      <h1
-        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] text-balance"
-        style={{
-          fontVariationSettings: '"opsz" 48, "wght" 700',
-          fontSize: "clamp(52px, 12vw, 200px)",
-          textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
-        }}
-      >
-        Memories of Steve.
-      </h1>
-    </Reveal>
-
-    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
-      <Reveal as="div" className="lg:col-span-3">
-        <p
-          className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
+    <div className="mx-auto w-full max-w-[920px] flex flex-col items-center text-center">
+      <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span
+          className={cn(EYEBROW, "shrink-0")}
           style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
         >
-          A wall, in his own words &amp; yours
-        </p>
+          Book of Memories
+        </span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </Reveal>
-      <Reveal as="div" delay={0.06} className="lg:col-span-6">
-        <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
+
+      <Reveal as="div" className="mt-3 md:mt-4 w-full">
+        <h1
+          className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] text-balance"
           style={{
-            fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(20px, 2.4vw, 32px)",
-            lineHeight: 1.32,
-            textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+            fontVariationSettings: '"opsz" 48, "wght" 700',
+            fontSize: "clamp(52px, 12vw, 200px)",
+            textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
           }}
         >
-          Stephen to some, SEM to the art world, Steve to his family. If he
-          touched your life, add a memory below — the family reads every one.
-        </p>
+          Memories of Steve.
+        </h1>
       </Reveal>
-      <Reveal as="div" delay={0.12} className="lg:col-span-3 lg:justify-self-end">
-        <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
-          Share a memory <span aria-hidden="true" className="ml-2">→</span>
-        </button>
-      </Reveal>
+
+      <div className="mt-4 md:mt-5 w-full flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
+        <Reveal as="div">
+          <p
+            className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
+            A wall, in his own words &amp; yours
+          </p>
+        </Reveal>
+        <Reveal as="div" delay={0.06} className="mx-auto max-w-[720px]">
+          <p
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
+            style={{
+              fontVariationSettings: '"opsz" 32, "wght" 400',
+              fontSize: "clamp(20px, 2.4vw, 32px)",
+              lineHeight: 1.32,
+              textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+            }}
+          >
+            Stephen to some, SEM to the art world, Steve to his family. If he
+            touched your life, add a memory below — the family reads every one.
+          </p>
+        </Reveal>
+        <Reveal as="div" delay={0.12}>
+          <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
+            Share a memory <span aria-hidden="true" className="ml-2">→</span>
+          </button>
+        </Reveal>
+      </div>
     </div>
   </section>
 );
