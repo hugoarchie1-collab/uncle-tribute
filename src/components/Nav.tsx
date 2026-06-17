@@ -183,14 +183,15 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       className={cn(
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
         "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
-        // Scrolled: a FROSTED translucent bar (blurred so the warm pink backdrop
-        // shows softly through) instead of the old opaque near-black slab, which
-        // read as a hard "black banner" rectangle sitting on the soft pink wash
-        // (Hugo — same hard-black-rectangle problem we removed from the craft
-        // card). Dark enough at /55 over the blur to keep the cream logo + links
-        // legible; the bottom hairline fades the seam rather than drawing a line.
+        // Scrolled: a soft top-down dark GRADIENT (no backdrop-filter). A
+        // `backdrop-blur` on this always-visible fixed bar forced the browser to
+        // re-sample + re-blur the entire viewport-width strip on EVERY scroll
+        // frame — the single biggest "2005-laggy scroll" cost on large screens
+        // (it scales with width). A gradient costs nothing per frame, still
+        // fades the seam (so it never reads as a hard black rectangle), and the
+        // strong top keeps the cream logo + links legible over busy backdrops.
         scrolled
-          ? "py-3 bg-[#0a0908]/55 supports-[backdrop-filter]:bg-[#0a0908]/40 backdrop-blur-xl border-b border-white/10"
+          ? "py-3 bg-gradient-to-b from-[#0a0908]/94 via-[#0a0908]/82 to-[#0a0908]/55 border-b border-white/10"
           // Always a soft top-down scrim behind the header (Hugo: the deep-red
           // seal + cream links must never get swallowed by the busy
           // peacock/photo backdrops). Overlay pages get a slightly stronger one;
