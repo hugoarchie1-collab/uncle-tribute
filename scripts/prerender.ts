@@ -38,11 +38,13 @@ import path from "node:path";
 import type { Plugin } from "vite";
 import {
   PAINTINGS,
+  COLLECTIONS,
   getPrintTiers,
   getLowestTierPricePence,
   parseSizeCm,
   formatGBP,
 } from "../src/data/paintings";
+import { ABOUT } from "../src/data/content";
 import { SITE_URL, absoluteUrl, pageTitle, firstSentence } from "../src/lib/seo";
 
 // Mirror of lib/headMeta.ts HEAD_DEFAULTS.description — the site-default meta
@@ -70,6 +72,14 @@ interface RouteHead {
   ogImageAlt?: string;
   /** schema.org blocks for the single #route-jsonld script. */
   jsonLd?: object[];
+  /**
+   * Semantic prose injected (visually-hidden) INSIDE #root, so non-JS crawlers
+   * (Bing, GPTBot/ClaudeBot/PerplexityBot, AI Overviews, social unfurlers) read
+   * the route's REAL content — not the empty SPA shell. main.tsx's createRoot
+   * replaces #root on mount, so JS visitors (incl. Googlebot's renderer) never
+   * see it; it carries the SAME content React renders, so it isn't cloaking.
+   */
+  bodyHtml?: string;
 }
 
 // ---- Static routes (mirror each page's <Seo>/usePageTitle copy) -------------
@@ -260,17 +270,112 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
     ogImage: absoluteUrl(ogImagePath),
     ogImageAlt: `${p.title} — ${ogColourway?.name ?? "Original"} — sacred-geometry mandala giclée print by Stephen Meakin`,
     jsonLd: [productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd],
+    bodyHtml: paintingBody(p),
   };
 }
 
 function buildRoutes(): RouteHead[] {
-  return [...STATIC_ROUTES, ...PAINTINGS.map(paintingRoute)];
+  // Attach crawlable body prose to the content-bearing static routes at RENDER
+  // time (not in the STATIC_ROUTES literal — the body builders reference escHtml
+  // which is defined later in module load).
+  const statics = STATIC_ROUTES.map((r) => {
+    if (r.routePath === "/collections") return { ...r, bodyHtml: collectionsBody() };
+    if (r.routePath === "/about")
+      return { ...r, bodyHtml: aboutBody(), jsonLd: [aboutJsonLd()] };
+    return r;
+  });
+  return [...statics, ...PAINTINGS.map(paintingRoute)];
 }
 
 // ---- HTML head rewriting ----------------------------------------------------
 const escHtml = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escAttr = (s: string): string => escHtml(s).replace(/"/g, "&quot;");
+
+// ---- Crawlable body prose (visually-hidden, injected into #root) ------------
+// These run at render time (via buildRoutes/paintingRoute), AFTER module load,
+// so referencing escHtml above is safe. The output is the SAME content React
+// renders — present for non-JS crawlers, cleared by createRoot for JS visitors.
+
+/** \n-delimited copy block → escaped <p> paragraphs. */
+const paras = (text: string): string =>
+  text
+    .split(/\n+/)
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((t) => `<p>${escHtml(t)}</p>`)
+    .join("");
+
+/** string[] of paragraphs → escaped <p> paragraphs. */
+const pArr = (arr: string[]): string =>
+  arr.map((t) => `<p>${escHtml(t)}</p>`).join("");
+
+const collectionTitle = (id: string): string =>
+  COLLECTIONS.find((c) => c.id === id)?.title ?? id;
+
+/** Per-painting crawlable body — title, facts, the full story, the artist's
+ *  own words, and the print ladder. Mirrors what PaintingDetail renders. */
+const paintingBody = (p: (typeof PAINTINGS)[number]): string => {
+  const facts = [p.year, p.size, collectionTitle(p.collection), "by Stephen Meakin"]
+    .filter(Boolean)
+    .join(" · ");
+  return [
+    `<h1>${escHtml(p.title)}</h1>`,
+    `<p>${escHtml(facts)}</p>`,
+    paras(p.description),
+    p.artistQuote
+      ? `<blockquote>${escHtml(p.artistQuote)} — Stephen Meakin</blockquote>`
+      : "",
+    `<h2>Estate-stamped giclée prints</h2>`,
+    `<ul>${getPrintTiers(p)
+      .map(
+        (t) =>
+          `<li>${escHtml(t.label)} — ${escHtml(t.size)} — ${escHtml(formatGBP(t.pricePence))} (${escHtml(t.editionLabel)})</li>`,
+      )
+      .join("")}</ul>`,
+    `<p><a href="/collections">Browse all collections</a></p>`,
+  ]
+    .filter(Boolean)
+    .join("");
+};
+
+/** /collections body — the three collection essays + links to all 10 works. */
+const collectionsBody = (): string =>
+  [
+    `<h1>The complete works of Stephen Meakin</h1>`,
+    ...COLLECTIONS.map(
+      (c) =>
+        `<section><h2>${escHtml(c.title)}</h2>${paras(c.description)}</section>`,
+    ),
+    `<h2>All paintings</h2>`,
+    `<ul>${PAINTINGS.map(
+      (p) =>
+        `<li><a href="/collections/${p.id}">${escHtml(p.title)}</a> (${escHtml(p.year)})</li>`,
+    ).join("")}</ul>`,
+  ].join("");
+
+/** /about body — the chaptered monograph prose (verbatim estate copy). */
+const aboutBody = (): string =>
+  [
+    `<h1>Stephen Meakin — the life and work</h1>`,
+    pArr(ABOUT.opening),
+    pArr(ABOUT.earlyLife),
+    pArr(ABOUT.anegada),
+    pArr(ABOUT.legacy),
+    `<p>${escHtml(ABOUT.academyQuote)}</p>`,
+    `<p>${escHtml(ABOUT.palestine)}</p>`,
+  ].join("");
+
+/** AboutPage JSON-LD for /about — grounds the bio to the artist Person node. */
+const aboutJsonLd = (): object => ({
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  name: "About Stephen Meakin — the life and work",
+  url: absoluteUrl("/about"),
+  about: { "@id": `${SITE_URL}/#person` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  inLanguage: "en-GB",
+});
 
 /** Replace a single self-contained tag matched by `re`; record a miss. */
 const setTag = (
@@ -325,6 +430,25 @@ function renderRouteHtml(
     inject.push(`    <script id="route-jsonld" type="application/ld+json">${json}</script>`);
   }
   html = html.replace("</head>", `${inject.join("\n")}\n  </head>`);
+
+  // Body prose: inject the route's real content INSIDE #root, visually-hidden,
+  // so non-JS crawlers read it. main.tsx's createRoot replaces #root on mount,
+  // so JS visitors (incl. Googlebot's renderer) never see it — and it carries
+  // the SAME content React renders, so it isn't cloaking. clip-based hidden (a
+  // standard .sr-only recipe) keeps it readable to non-JS screen readers too.
+  if (r.bodyHtml) {
+    const ROOT = '<div id="root"></div>';
+    if (html.includes(ROOT)) {
+      const hidden =
+        "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0";
+      html = html.replace(
+        ROOT,
+        `<div id="root"><div id="seo-prerender" style="${hidden}">${r.bodyHtml}</div></div>`,
+      );
+    } else {
+      warnings.push("root div not matched — body prose not injected");
+    }
+  }
 
   return { html, warnings };
 }

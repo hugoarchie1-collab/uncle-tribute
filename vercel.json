@@ -17,6 +17,21 @@
       "source": "/verify",
       "destination": "/auth",
       "permanent": true
+    },
+    {
+      "source": "/stephen-meakin-biography/:path*",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/mandala-shop/:path*",
+      "destination": "/collections",
+      "permanent": true
+    },
+    {
+      "source": "/what-is-mandala/:path*",
+      "destination": "/about",
+      "permanent": true
     }
   ],
   "headers": [
