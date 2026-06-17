@@ -17,6 +17,7 @@ import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
+import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { CloserLook } from "../components/CloserLook";
 import {
@@ -1933,6 +1934,12 @@ export const PaintingDetail = () => {
             <ProvenancePanel />
           </div>
         </main>
+        {/* Exhibited & commissioned — Stephen's real, documented provenance
+            (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).
+            For a cold-start estate with no reviews yet, this is the legitimate
+            trust signal that underwrites a £245–£1,750 purchase; it was built
+            but mounted nowhere (audit fix). Quiet, reverent, text-only. */}
+        <CredentialsStrip />
         <FooterCatalogue />
         <Footer />
       </div>
