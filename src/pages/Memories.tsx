@@ -473,7 +473,7 @@ const ShareMemoryModal = ({
             type="button"
             aria-label="Close the share-a-memory form"
             onClick={onClose}
-            className="absolute inset-0 bg-black/72 backdrop-blur-md cursor-pointer"
+            className="absolute inset-0 bg-black/72 backdrop-blur-sm cursor-pointer"
           />
 
           <motion.div

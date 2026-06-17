@@ -73,7 +73,10 @@ const ScrollBackdrop = ({
     }
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { rootMargin: "20% 0px" },
+      // 10% (was 20%): release the GPU-promoted backdrop layer sooner once it
+      // scrolls away, without dropping so low (5%) that it promotes too late
+      // and stalls/flashes on the way in.
+      { rootMargin: "10% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
