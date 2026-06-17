@@ -73,6 +73,29 @@ export const ImageReveal = ({
   const px = noParallax ? 0 : Math.round(parallax * 60);
   const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
 
+  // GPU-layer gate: `will-change: transform` promotes the image to its own
+  // compositor layer, which is only worth its memory cost while the image is
+  // actually (about to be) parallaxing. With ~5 ImageReveal instances per page
+  // (Welcome/About), promoting all of them at mount keeps 5+ layers alive even
+  // for images far off-screen. So we only flag the layer once the element is
+  // within ~half a viewport of entry, via a cheap IntersectionObserver. Skipped
+  // entirely when there's no parallax (reduced-motion / coarse pointer).
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    if (noParallax || !ref.current || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+    const el = ref.current;
+    const io = new IntersectionObserver(
+      ([entry]) => setNear(entry.isIntersecting),
+      // 50% viewport of slack on top + bottom: arm the layer just before the
+      // image scrolls into view, disarm it once it's well past.
+      { rootMargin: "50% 0px 50% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [noParallax]);
+
   // Mouse tilt
   const [tiltState, setTiltState] = useState({ rx: 0, ry: 0 });
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -125,14 +148,16 @@ export const ImageReveal = ({
           loading={eager ? "eager" : "lazy"}
           decoding={eager ? "sync" : "async"}
           fetchPriority={eager ? "high" : "auto"}
-          // `will-change: transform` only when the image actually parallaxes —
-          // promotes it to its own GPU layer so the scroll-driven `y` composites
-          // instead of repainting against the soft-edge mask. Omitted under
-          // reduced motion to avoid needless layers.
+          // `will-change: transform` only when the image actually parallaxes
+          // AND is near the viewport (`near`, from the IntersectionObserver
+          // above) — promotes it to its own GPU layer so the scroll-driven `y`
+          // composites instead of repainting against the soft-edge mask, while
+          // not holding a layer alive for every off-screen instance. Omitted
+          // under reduced motion / coarse pointer to avoid needless layers.
           style={{
             y,
             objectPosition,
-            willChange: noParallax ? undefined : "transform",
+            willChange: !noParallax && near ? "transform" : undefined,
           }}
           animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
           transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}

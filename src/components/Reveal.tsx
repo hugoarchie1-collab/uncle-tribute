@@ -38,7 +38,7 @@ export const Reveal = ({
   delay = 0,
   className,
   as = "div",
-  offset = 28,
+  offset = 32,
   once = true,
   id,
 }: RevealProps) => {
@@ -93,8 +93,14 @@ export const Reveal = ({
     ? undefined
     : {
         opacity: shown ? 1 : 0,
+        // Settle the rise to rest (translateY(0)) from just below; the opacity
+        // leads slightly faster than the travel so the element reads as
+        // "arriving" rather than sliding. Transform + opacity only (GPU).
         transform: shown ? "translateY(0)" : `translateY(${offset}px)`,
-        transition: `opacity 700ms cubic-bezier(0.22,0.61,0.36,1) ${delay}s, transform 700ms cubic-bezier(0.22,0.61,0.36,1) ${delay}s`,
+        // A longer, more elegant deceleration curve (a refined ease-out-quint
+        // ramp). The transform lingers ~120ms past the fade so motion lands
+        // softly; both are GPU-composited, so this stays scroll-cheap.
+        transition: `opacity 820ms cubic-bezier(0.16,0.84,0.32,1) ${delay}s, transform 940ms cubic-bezier(0.16,0.84,0.32,1) ${delay}s`,
         willChange: shown ? "auto" : "opacity, transform",
       };
 

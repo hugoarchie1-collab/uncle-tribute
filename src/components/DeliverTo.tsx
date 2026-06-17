@@ -191,7 +191,12 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           aria-activedescendant={`${panelId}-${regionId}`}
           className={cn(
             "absolute z-[130] mt-2 overflow-hidden rounded-xl",
-            "bg-[#0a0908]/95 supports-[backdrop-filter:blur(0)]:backdrop-blur-md",
+            // Scroll-perf: backdrop-blur on the panel re-samples the ~180px
+            // dropdown region every frame while the user scrolls (browsers that
+            // support backdrop-filter still pay it even behind the supports-gate).
+            // Dropped in favour of a near-opaque fill — the shadow below already
+            // gives the panel its visual separation.
+            "bg-[#0a0908]/98",
             "ring-1 ring-line shadow-[0_18px_50px_-12px_rgba(0,0,0,0.75)]",
             "motion-safe:animate-[deliverto-in_180ms_cubic-bezier(0.22,0.61,0.36,1)]",
             isMenu

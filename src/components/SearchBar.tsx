@@ -250,7 +250,7 @@ export const SearchBar = ({
         <div
           className={cn(
             "absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl",
-            "bg-bg/95 backdrop-blur-md ring-1 ring-line",
+            "bg-bg ring-1 ring-line",
             "shadow-[0_24px_60px_rgba(0,0,0,0.55)]",
           )}
         >

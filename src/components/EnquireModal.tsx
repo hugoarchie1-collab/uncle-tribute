@@ -181,7 +181,7 @@ export const EnquireModal = ({
             type="button"
             aria-label="Close enquiry form"
             onClick={onClose}
-            className="absolute inset-0 bg-black/72 backdrop-blur-md cursor-pointer"
+            className="absolute inset-0 bg-black/72 backdrop-blur-sm cursor-pointer"
           />
 
           {/* Modal panel */}

@@ -5,8 +5,9 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer
 /**
  * PageTransition — a fast, dignified crossfade between routes.
  *
- * Outgoing page fades to 0 (160ms, ease-in) into the house #0a0908 canvas,
- * then the incoming page fades up from 0 (300ms, cubic-bezier(0.22,1,0.36,1)).
+ * Outgoing page fades to 0 (200ms, soft ease-in) into the house #0a0908
+ * canvas, then — after a 40ms beat — the incoming page fades up from 0
+ * (420ms, cubic-bezier(0.16,0.84,0.32,1), the house deceleration tail).
  * AnimatePresence mode="wait" means the two pages are NEVER in the document
  * flow together, so there is zero layout shift and no scrollbar churn.
  *
@@ -45,10 +46,12 @@ import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer
 
 type RouteTransitionCustom = { instant: boolean };
 
-/** House deceleration curve — matches the site's signature easing. */
-const ENTER_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-/** Gentle accelerate for the outgoing page — quick and unceremonious. */
-const EXIT_EASE: [number, number, number, number] = [0.4, 0, 1, 1];
+/** House deceleration curve — matches the site's signature easing. A long,
+ *  soft tail so the incoming page settles to full opacity gracefully. */
+const ENTER_EASE: [number, number, number, number] = [0.16, 0.84, 0.32, 1];
+/** Gentle accelerate for the outgoing page — quick and unceremonious, easing
+ *  INTO the fade so the old page doesn't snap off the moment you click. */
+const EXIT_EASE: [number, number, number, number] = [0.5, 0, 0.85, 0.5];
 
 const routeVariants: Variants = {
   initial: ({ instant }: RouteTransitionCustom) =>
@@ -57,13 +60,16 @@ const routeVariants: Variants = {
     opacity: 1,
     transition: instant
       ? { duration: 0 }
-      : { duration: 0.3, ease: ENTER_EASE },
+      // A touch longer + a small lead-in delay so the incoming page rises
+      // cleanly out of the house canvas after the exit clears, not on top of
+      // it — a calmer, more deliberate dissolve. Opacity only (invariant 1).
+      : { duration: 0.42, ease: ENTER_EASE, delay: 0.04 },
   }),
   exit: ({ instant }: RouteTransitionCustom) => ({
     // Instant navigations keep the old page fully opaque for its zero-length
     // exit so back/forward reads as today's immediate swap.
     opacity: instant ? 1 : 0,
-    transition: instant ? { duration: 0 } : { duration: 0.16, ease: EXIT_EASE },
+    transition: instant ? { duration: 0 } : { duration: 0.2, ease: EXIT_EASE },
   }),
 };
 
