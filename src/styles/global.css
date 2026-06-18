@@ -665,19 +665,13 @@
   background-color: rgba(10, 9, 8, 0.97);
 }
 
-/* ── Sun limb mask ──────────────────────────────────────────────────────────
-   Radial dissolve for the home's top sun limb (mirror of the Earth limb's mask,
-   re-centred to the TOP). On phones the solid core is held LONGER + taller so
-   the thin overscanned corona doesn't pre-fade behind the overlay nav. */
-.sun-limb-mask {
-  -webkit-mask-image: radial-gradient(82% 135% at 50% 0%, #000 52%, rgba(0, 0, 0, 0.35) 78%, transparent 96%);
-  mask-image: radial-gradient(82% 135% at 50% 0%, #000 52%, rgba(0, 0, 0, 0.35) 78%, transparent 96%);
-}
-@media (max-width: 639px) {
-  .sun-limb-mask {
-    -webkit-mask-image: radial-gradient(84% 152% at 50% 0%, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 99%);
-    mask-image: radial-gradient(84% 152% at 50% 0%, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 99%);
-  }
+/* ── Sun band fade ──────────────────────────────────────────────────────────
+   Dissolves the BOTTOM edge of the home's top sun-limb band into the peacock
+   painting (the sun's dark sky is already keyed off the asset; this just melts
+   the lower flares into the page so there's no hard horizontal cut). */
+.sun-band-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0.45) 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, rgba(0, 0, 0, 0.45) 80%, transparent 100%);
 }
 
 /* Estate rose brand-mark glow — a quiet warm halo so the white line-rose reads
