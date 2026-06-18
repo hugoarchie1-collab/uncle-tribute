@@ -25,7 +25,7 @@ import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
 import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { useNoindexHead } from "../lib/useNoindexHead";
@@ -320,7 +320,7 @@ export const Basket = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <AmbientBackdrop opacity={0.4} />
+      <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v1.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14">
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same

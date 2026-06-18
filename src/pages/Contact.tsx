@@ -10,10 +10,11 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, BTN_PRIMARY } from "../com
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 
-// Single backdrop scene for /contact — a blurred autumn tree with raked leaf
-// circles. webp referenced directly because it's a CSS background-image (this
-// matches Collections; the <picture> jpg-swap rule applies only to <img> tags).
-const BACKDROP = asset("/img/scenes/contact-autumn-tree-blur-v4.webp");
+// Single backdrop scene for /contact — the blue-hour Hazrat Ali mosque
+// (Mazar-i-Sharif), pre-blurred + darkened to the dark-family band so the cream
+// copy stays legible. webp referenced directly because it's a CSS background-image
+// (this matches Collections; the <picture> jpg-swap rule applies only to <img>).
+const BACKDROP = asset("/img/scenes/contact-blue-mosque-blur-v1.webp");
 
 /**
  * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment

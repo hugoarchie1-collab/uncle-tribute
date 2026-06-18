@@ -789,7 +789,7 @@ export const Memories = () => {
           relative z-10. The z-[200] share modal sits well above this z-0 layer,
           so its stacking is undisturbed. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-plumage-blur-v4.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-aurora-beach-blur-v1.webp")} />
         {/* Shared scrim — the EXACT site-wide gradient (matches Collections /
             Welcome) so the cream copy stays legible over the photo while the
             backdrop reads as a subdued, moody texture. */}

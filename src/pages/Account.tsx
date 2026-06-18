@@ -11,7 +11,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
@@ -76,7 +76,7 @@ export const Account = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.4} />
+      <SceneBackdrop src="/img/scenes/account-temple-moon-blur-v1.webp" />
       <Seo
         title="Your account"
         description="Sign in to The Art of Stephen Meakin to view your orders. Passwordless — we email you a secure one-time link."

@@ -17,13 +17,11 @@ import {
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
-// Two backdrop scenes the /for-you page cross-dissolves between as the reader
-// scrolls the WHOLE page: a woodland tunnel (top) into a dusk wildflower garden
-// (foot). Treatment values (blur/scrim) are cropped + baked into the files.
-const FORYOU_BACKDROPS = {
-  woodland: "/img/scenes/foryou-woodland-blur-v3.webp",
-  garden: "/img/scenes/foryou-dusk-garden-blur-v4.webp",
-} as const;
+// Single backdrop scene for /for-you — a rainbow over a cresting ocean wave,
+// pre-blurred + darkened to the dark-family band so the cream copy stays legible.
+// Treatment (blur/scrim) is baked into the file. (Was a woodland→garden
+// cross-dissolve; collapsed to one image to match the rest of the scene pages.)
+const FORYOU_BACKDROP = "/img/scenes/foryou-rainbow-wave-blur-v1.webp";
 
 /**
  * /for-you — a calm "find a piece that's right for you, by colour" wayfinder
@@ -39,22 +37,9 @@ export const FindAPrint = () => {
   const reduceMotion = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
 
-  // WHOLE-PAGE-progress crossfade (home page's PEACOCK_BACKDROPS pattern), NOT
-  // Collections' per-section refs. The reason is structural: the results grid
-  // STARTS INSIDE the first viewport (~y760 on a 980px screen), so a "lower
-  // half" section ref can't express "the bottom of the page" — its scroll
-  // progress is already >0 at the very top, which bled the garden over the
-  // woodland on first paint. One useScroll over the document gives both layers
-  // a single honest 0→1 timeline instead.
+  // Whole-document parallax — no `target`, so the single backdrop drifts ±6%
+  // across the entire page, exactly like Collections / the other scene pages.
   const { scrollYProgress } = useScroll();
-  // Woodland OWNS the top: full from first paint (the page is never bare black
-  // before the first scroll), holding until 0.40, then fading out by 0.62.
-  const woodlandOpacity = useTransform(scrollYProgress, [0, 0.4, 0.62], [1, 1, 0]);
-  // Garden fades in across the middle (the 0.40–0.62 overlap is the soft
-  // cross-dissolve — no dead gap, no double-bright flash) and HOLDS at 1 to the
-  // foot, since there's no third scene to dissolve into below it.
-  const gardenOpacity = useTransform(scrollYProgress, [0.4, 0.62, 1], [0, 1, 1]);
-  // Shared parallax: a gentle ±6% drift on both layers, exactly like Collections.
   const backdropY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
 
   const toggle = (k: ColourFamily) =>
@@ -106,65 +91,34 @@ export const FindAPrint = () => {
         url="/for-you"
       />
 
-      {/* FIXED BACKDROP LAYER — covers viewport, cross-fades the woodland tunnel
-          (top of page) into the dusk wildflower garden (foot) on WHOLE-PAGE
-          scroll. Treatment (overscan + parallax) cloned from Collections'
-          ScrollBackdrop, but the crossfade is driven by one document-level
-          useScroll (the home page's PEACOCK_BACKDROPS pattern) rather than
-          per-section refs — the grid starts inside the first viewport, so a
-          per-section "lower half" ref can't express "the foot of the page". */}
+      {/* FIXED BACKDROP LAYER — one rainbow-wave scene drifting ±6% over the
+          WHOLE-PAGE scroll. Treatment (overscan + parallax + scrim) cloned from
+          Collections' ScrollBackdrop; a single bg-cover layer at full opacity. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {reduceMotion ? (
-          // Reduced-motion: drop the parallax + scroll crossfade entirely, hold
-          // both scenes at a calm static opacity, and release the GPU layer
-          // (will-change:auto) — matches Collections' fallback, which renders
-          // every layer at 0.5.
-          <>
-            <div
-              style={{
-                opacity: 0.5,
-                backgroundImage: `url("${asset(FORYOU_BACKDROPS.woodland)}")`,
-                willChange: "auto",
-              }}
-              className="absolute inset-0 bg-cover bg-center"
-              aria-hidden="true"
-            />
-            <div
-              style={{
-                opacity: 0.5,
-                backgroundImage: `url("${asset(FORYOU_BACKDROPS.garden)}")`,
-                willChange: "auto",
-              }}
-              className="absolute inset-0 bg-cover bg-center"
-              aria-hidden="true"
-            />
-          </>
+          // Reduced-motion: drop the parallax entirely and hold the scene static,
+          // releasing the GPU layer (will-change:auto) — matches the other scenes.
+          <div
+            style={{
+              backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
+              willChange: "auto",
+            }}
+            className="absolute inset-0 bg-cover bg-center"
+            aria-hidden="true"
+          />
         ) : (
-          <>
-            <motion.div
-              style={{
-                opacity: woodlandOpacity,
-                y: backdropY,
-                backgroundImage: `url("${asset(FORYOU_BACKDROPS.woodland)}")`,
-                willChange: "transform, opacity",
-              }}
-              // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can
-              // NEVER expose an uncovered strip — the parent is overflow-hidden,
-              // so the overscan is clipped (Collections' "black bar" fix).
-              className="absolute inset-[-8%] bg-cover bg-center"
-              aria-hidden="true"
-            />
-            <motion.div
-              style={{
-                opacity: gardenOpacity,
-                y: backdropY,
-                backgroundImage: `url("${asset(FORYOU_BACKDROPS.garden)}")`,
-                willChange: "transform, opacity",
-              }}
-              className="absolute inset-[-8%] bg-cover bg-center"
-              aria-hidden="true"
-            />
-          </>
+          <motion.div
+            style={{
+              y: backdropY,
+              backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
+              willChange: "transform",
+            }}
+            // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can
+            // NEVER expose an uncovered strip — the parent is overflow-hidden,
+            // so the overscan is clipped (Collections' "black bar" fix).
+            className="absolute inset-[-8%] bg-cover bg-center"
+            aria-hidden="true"
+          />
         )}
         {/* Shared scrim — EXACT gradient used on Collections / the rest of the
             site, so the colour swatches + tile copy read clearly over the
@@ -185,7 +139,7 @@ export const FindAPrint = () => {
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
             reading measure (mx-auto) so the top of the page reads as one calm
-            axis-centred block over the woodland tunnel. Verbatim copy unchanged;
+            axis-centred block over the rainbow-wave scene. Verbatim copy unchanged;
             only the framing moves. */}
         <section className="mx-auto w-full max-w-[860px] 3xl:max-w-[1000px] text-center">
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
@@ -286,11 +240,10 @@ export const FindAPrint = () => {
           </Reveal>
         </section>
 
-        {/* LOWER HALF — the results grid. The dusk-garden backdrop fades in
-            across the back half of page scroll (0.40–0.62) and HOLDS to the
-            foot, so the page ends on the garden rather than bare black. The grid
-            sits tight under the masthead's hairline — no min-h spacer, no big
-            gap — so the page reads as one dense editorial block. */}
+        {/* LOWER HALF — the results grid, over the same single rainbow-wave
+            scene (it drifts ±6% across the whole page, no per-section fade). The
+            grid sits tight under the masthead's hairline — no min-h spacer, no
+            big gap — so the page reads as one dense editorial block. */}
         <section className="mt-8 md:mt-10">
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of

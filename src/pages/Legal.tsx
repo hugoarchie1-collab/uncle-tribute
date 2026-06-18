@@ -3,7 +3,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
 import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
@@ -693,8 +693,8 @@ export const Privacy = () => (
     lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
     sections={PRIVACY}
     updated={UPDATED}
-    // Home "Mary Pink" peacock colourway, blurred — matches the home backdrop.
-    backdrop="/img/paintings/peacock-mary-pink-blur-v11.webp"
+    // Lava flowing into the sea — pre-blurred + darkened to the dark-family band.
+    backdrop="/img/scenes/privacy-lava-blur-v1.webp"
   />
 );
 export const Terms = () => (
@@ -703,6 +703,8 @@ export const Terms = () => (
     lead="The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights."
     sections={TERMS}
     updated={UPDATED}
+    // Patagonian marble caves — pre-blurred + darkened to the dark-family band.
+    backdrop="/img/scenes/terms-marble-cave-blur-v1.webp"
   />
 );
 export const Returns = () => (
@@ -711,8 +713,8 @@ export const Returns = () => (
     lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
     sections={RETURNS}
     updated={UPDATED}
-    // Home "Blood Moon Red" peacock colourway, blurred — matches the home backdrop.
-    backdrop="/img/paintings/peacock-blood-moon-red-blur-v3.webp"
+    // Pink azaleas + ferns at night — pre-blurred + darkened to the dark-family band.
+    backdrop="/img/scenes/returns-azalea-blur-v1.webp"
   />
 );
 
@@ -800,15 +802,15 @@ const LegalPage = ({
   lead: string;
   sections: Section[];
   updated: string;
-  /** Optional per-page blurred backdrop. Falls back to the default peacock. */
-  backdrop?: string;
+  /** Per-page blurred scene backdrop (pre-darkened to the dark-family band). */
+  backdrop: string;
 }) => {
   // Strip HTML entities + the canonical trailing full stop for the tab title.
   const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
   usePageTitle(plainTitle);
   return (
     <div className="relative flex flex-col">
-      <AmbientBackdrop src={backdrop} opacity={0.36} />
+      <SceneBackdrop src={backdrop} />
       <Nav />
 
       {/* 1 · MASTHEAD — bold left-aligned front cover (lead + document index). */}
