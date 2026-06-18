@@ -686,7 +686,7 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(2rem,3.5vw,3rem)]">
     <div className="mx-auto w-full max-w-[920px] 3xl:max-w-[1080px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -713,7 +713,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
         </h1>
       </Reveal>
 
-      <div className="mt-4 md:mt-5 w-full flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
+      <div className="mt-5 md:mt-6 w-full flex flex-col items-center border-t border-line pt-5 md:pt-6">
         <Reveal as="div">
           <p
             className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -722,7 +722,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             A wall, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mx-auto max-w-[720px] 3xl:max-w-[860px]">
+        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[720px] 3xl:max-w-[860px]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
@@ -736,7 +736,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             touched your life, add a memory below — the family reads every one.
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.12}>
+        <Reveal as="div" delay={0.12} className="mt-7 md:mt-8">
           <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
             Share a memory <span aria-hidden="true" className="ml-2">→</span>
           </button>

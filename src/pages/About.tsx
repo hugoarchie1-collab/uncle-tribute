@@ -970,8 +970,8 @@ export const About = () => {
             sticky + transform fight. */}
         <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="ritual" title="The very palette of my being." />
-          <Reveal as="div" className="-mt-4 md:-mt-6 mb-6 md:mb-8">
-            <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen, on his practice, in his own words</p>
+          <Reveal as="div" className="text-center mt-5 md:mt-6 mb-8 md:mb-10">
+            <p className={cn(SUBTITLE, "mx-auto")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
           <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
@@ -1530,7 +1530,7 @@ export const About = () => {
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
               Stephen Meakin
             </h2>
-            <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
+            <p className={cn(EYEBROW_MUTED, "mt-5 md:mt-6")}>{LIFE_DATES}</p>
           </Reveal>
 
           <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[680px] 3xl:max-w-[800px] mx-auto border-l border-line pl-6 md:pl-8">

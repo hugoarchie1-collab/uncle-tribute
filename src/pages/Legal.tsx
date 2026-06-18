@@ -828,7 +828,7 @@ const LegalPage = ({
               as="section"
               key={i}
               id={`legal-${i}`}
-              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-4 border-t border-line py-8 md:py-10"
+              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 border-t border-line py-8 md:py-10"
             >
               {/* Left rail — the section number + heading, sticky on lg so the
                   reader always knows which clause they're in. */}
@@ -842,8 +842,10 @@ const LegalPage = ({
               </div>
 
               {/* Right column — the verbatim blocks, unchanged copy, at the
-                  legal reading register. */}
-              <div className="lg:col-span-8 flex flex-col gap-4">
+                  legal reading register. Even, comfortable vertical rhythm
+                  between blocks (gap-5) so multi-paragraph clauses read with a
+                  deliberate cadence — never cramped, never gappy. */}
+              <div className="lg:col-span-8 flex flex-col gap-5">
                 {section.blocks.map((block, j) => {
                   if (block.kind === "p") {
                     return (
@@ -858,7 +860,7 @@ const LegalPage = ({
                   return (
                     <ul
                       key={j}
-                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3.5 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                     >
                       {block.items.map((item, k) => (
                         <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">

@@ -216,7 +216,7 @@ const FaqMasthead = () => (
             Provenance · paper · editions · care
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-3">
+        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[46ch] 3xl:max-w-[52ch]"
             style={{
@@ -274,7 +274,7 @@ export const FAQ = () => {
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,44%,620px)] flex-col gap-3 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,44%,620px)] flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span
@@ -291,13 +291,13 @@ export const FAQ = () => {
                 </div>
                 <h2
                   className={cn(
-                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0",
+                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-3",
                     "text-[clamp(23px,2.5vw,42px)] leading-[1.08]",
                   )}
                 >
                   {qa.question}
                 </h2>
-                <div className={cn(SUBTITLE, "max-w-none !text-[clamp(17px,1.05vw,23px)] md:!text-[clamp(18px,1.05vw,23px)] !leading-[1.7]")}>
+                <div className={cn(SUBTITLE, "max-w-none mt-5 md:mt-6 !text-[clamp(18px,1.1vw,25px)] !leading-[1.7]")}>
                   {qa.answer}
                 </div>
               </section>

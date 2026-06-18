@@ -367,34 +367,38 @@ export const News = () => {
             className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 items-center">
-              {/* ROSE-MANDALA COVER — the dominant focal point. Takes the LARGER
-                  column and fills it edge-to-edge (max-width cap removed) so the
-                  upcoming rose/orchid mandala leads the page. */}
-              <div className="md:col-span-7 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
+              {/* ROSE-MANDALA COVER — the large focal point. col-6 keeps it big
+                  and square (mandalas read best square) while staying balanced
+                  with the text beside it (the col-7 square towered and forced the
+                  text column to stretch). */}
+              <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
                 <AssetImage
                   src={featured.cover}
                   alt={featured.title}
                   className="block aspect-square w-full object-cover"
                 />
               </div>
-              <div className="md:col-span-5">
+              <div className="md:col-span-6">
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {pillLabel(featured)} · {featured.displayDate}
                 </p>
                 <h2
-                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.8vw,66px)] leading-[1.02] text-ink text-balance m-0 mb-5 hero-text-shadow"
+                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.8vw,66px)] leading-[1.02] text-ink text-balance m-0 hero-text-shadow"
                   style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
                 >
                   {featured.title}
                 </h2>
-                <p className={cn(SUBTITLE, "my-0")}>{featured.summary}</p>
-                {/* The "be the first to know" hook — inline variant takes only
-                    eyebrow + intro (title is ignored on the inline variant). */}
-                <NewsletterSignup
-                  variant="inline"
-                  eyebrow="Be the first to know"
-                  intro="Leave your name and we'll write the moment this edition is released."
-                />
+                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0")}>{featured.summary}</p>
+                {/* A single quiet CTA to the Friends & Family sign-up at the foot
+                    (#notify) — the full form lives there, so the hero stays clean
+                    (no crammed/oversized inline form beside the artwork). */}
+                <a
+                  href="#notify"
+                  className="mt-7 md:mt-8 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
+                >
+                  Be the first to know
+                  <span aria-hidden="true" className="text-accent">→</span>
+                </a>
               </div>
             </div>
           </Reveal>
@@ -455,7 +459,7 @@ export const News = () => {
                     </h2>
                     <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>{group.note}</p>
                   </Reveal>
-                  <div className="mt-1 divide-y divide-line">
+                  <div className="mt-5 md:mt-6 divide-y divide-line">
                     {group.entries.map((entry, i) => (
                       <Reveal key={entry.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
                         <EntryRow entry={entry} />

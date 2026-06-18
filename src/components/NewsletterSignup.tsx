@@ -210,14 +210,17 @@ export const NewsletterSignup = ({
             <p className="font-sans font-normal text-[14.5px] leading-[1.7] text-ink/75 m-0 mb-4">
               {intro}
             </p>
-            <div className="flex flex-col sm:flex-row gap-2.5">
+            {/* sm:items-center → the inputs keep their natural height (never
+                stretch to a tall parent column); min-w-0 → they can shrink in a
+                narrow column instead of overflowing. */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
               <input
                 name="name"
                 type="text"
                 autoComplete="name"
                 aria-label="Your name"
                 placeholder="Your name"
-                className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -226,7 +229,7 @@ export const NewsletterSignup = ({
                 autoComplete="email"
                 aria-label="Email address"
                 placeholder="you@example.com"
-                className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <button
                 type="submit"
@@ -298,7 +301,7 @@ export const NewsletterSignup = ({
             {intro}
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 items-start gap-3 mb-4">
             {/* Focus-within `group`: the muted field label warms to full ink
                 while its input is focused (matches Contact's form focus). */}
             <label className="group block">

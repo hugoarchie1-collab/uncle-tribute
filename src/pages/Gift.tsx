@@ -202,7 +202,7 @@ export const Gift = () => {
               </>
             }
           >
-            <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
+            <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
               <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
                 A digital gift card · redeemed against any edition
               </p>
@@ -238,7 +238,7 @@ export const Gift = () => {
                 </span>{" "}
                 is in your basket.
               </p>
-              <p className="font-sans font-normal text-[clamp(15px,0.9vw,20px)] leading-[1.65] text-ink-muted m-0 mt-4">
+              <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.65] text-ink-muted m-0 mt-5 md:mt-6">
                 The amount you see is exactly what you'll pay — nothing is added
                 at checkout. You can add another, or proceed when you're ready.
               </p>

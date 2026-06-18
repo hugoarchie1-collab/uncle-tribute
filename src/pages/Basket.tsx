@@ -343,7 +343,7 @@ export const Basket = () => {
 
         {isEmpty ? (
           <Reveal as="div" className="max-w-[640px] 3xl:max-w-[760px]">
-            <p className={cn(SUBTITLE, "m-0 mb-6")}>
+            <p className={cn(SUBTITLE, "m-0 mb-7 md:mb-8")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
             </p>

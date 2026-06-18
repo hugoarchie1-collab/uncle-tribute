@@ -493,13 +493,13 @@ export const Collections = () => {
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className={cn(TITLE, "max-w-[820px] 3xl:max-w-[980px] mx-auto my-0 mb-4")}
+                    className={cn(TITLE, "max-w-[820px] 3xl:max-w-[980px] mx-auto my-0")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className={cn(SUBTITLE, "flex flex-col gap-4 max-w-[640px] 3xl:max-w-[760px] mx-auto")}
+                    className={cn(SUBTITLE, "mt-5 md:mt-6 flex flex-col gap-4 max-w-[640px] 3xl:max-w-[760px] mx-auto")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -619,22 +619,22 @@ export const Collections = () => {
                       <p className={cn(EYEBROW, "m-0 mb-4")}>
                         The complete collection
                       </p>
-                      <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0 mb-3">
+                      <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
                         The complete {shortName}
                       </h3>
-                      <p className="font-sans font-normal text-[15px] md:text-[clamp(16px,0.95vw,21px)] leading-[1.7] text-ink-muted my-0 mb-2 max-w-[640px] 3xl:max-w-[760px] mx-auto">
+                      <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[640px] 3xl:max-w-[760px] mx-auto">
                         All {bundle.paintingIds.length} paintings at the{" "}
                         {editionWord(bundleTier)} edition ({sizeCode(bundleTier)})
                         — the collection entire, for one home.
                       </p>
-                      <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
+                      <p className="mt-6 md:mt-7 font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
                         <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
                           {fmtBundle(bundle.bundlePricePence)}
                         </span>
                         <span className="mx-3 text-ink/35">·</span>
                         the set, offered together
                       </p>
-                      <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-6">
+                      <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
                         Taken individually, {fmtBundle(bundle.fullPricePence)} —
                         a saving of {fmtBundle(bundle.savePence)} as a set.
                       </p>
@@ -672,16 +672,16 @@ export const Collections = () => {
             <p className={cn(EYEBROW, "m-0 mb-4")}>
               The complete catalogue
             </p>
-            <h2 className={cn(TITLE, "max-w-[640px] 3xl:max-w-[780px] mx-auto my-0 mb-4")}>
+            <h2 className={cn(TITLE, "max-w-[640px] 3xl:max-w-[780px] mx-auto my-0")}>
               His life's work, in one collection.
             </h2>
-            <p className={cn(SUBTITLE, "max-w-[560px] 3xl:max-w-[700px] mx-auto my-0 mb-6")}>
+            <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[560px] 3xl:max-w-[700px] mx-auto my-0")}>
               One estate-stamped {editionWord(bundleTier)} print (
               {sizeCode(bundleTier)}) of all {catalogue.paintingCount} of
               Stephen's paintings: the entire, finite body of his work, gathered
               for one home.
             </p>
-            <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-6">
+            <p className="mt-7 md:mt-8 font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-7">
               <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
                 {fmtCatalogue(catalogue.bundlePricePence)}
               </span>

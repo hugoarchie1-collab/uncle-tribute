@@ -187,7 +187,7 @@ export const Trade = () => {
                 <div
                   className={cn(
                     SUBTITLE,
-                    "max-w-none mt-4 !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.7]",
+                    "max-w-none mt-5 md:mt-6 !text-[clamp(17px,0.55vw_+_13.5px,23px)] !leading-[1.72]",
                   )}
                 >
                   {item.body}
@@ -223,7 +223,7 @@ export const Trade = () => {
               </blockquote>
             </Reveal>
             <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
-              <p className={cn(SUBTITLE, "max-w-none !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.75]")}>
+              <p className={cn(SUBTITLE, "max-w-none !text-[clamp(18px,0.55vw_+_14.5px,25px)] !leading-[1.75]")}>
                 Stephen's largest realised work was made for a public
                 hospitality space — proof that this geometry holds at
                 architectural scale. Bespoke commissions for projects continue
@@ -252,7 +252,7 @@ export const Trade = () => {
               >
                 Make a trade enquiry.
               </h2>
-              <p className={cn(SUBTITLE, "max-w-none mt-5 !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.7]")}>
+              <p className={cn(SUBTITLE, "max-w-none mt-5 md:mt-6 !text-[clamp(18px,0.6vw_+_14.4px,25px)] !leading-[1.7]")}>
                 Tell us about the project — the spaces, the scale, and whether
                 you are after editions, framing or a bespoke commission. We
                 will reply personally, usually within a day or two, with

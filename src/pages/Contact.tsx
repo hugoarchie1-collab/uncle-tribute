@@ -268,7 +268,7 @@ export const Contact = () => {
                   Thank you.
                 </p>
                 <p
-                  className="font-sans font-normal text-[16px] md:text-[clamp(17px,0.95vw,22px)] leading-[1.65] text-ink-muted m-0 max-w-[56ch] 3xl:max-w-[64ch]"
+                  className="font-sans font-normal text-[18px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted m-0 max-w-[56ch] 3xl:max-w-[64ch]"
                   style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Your message is on its way to{" "}
@@ -302,7 +302,7 @@ export const Contact = () => {
                 {/* Each label is a focus-within `group`: the muted eyebrow above
                     a field eases to full ink while its input is focused — the
                     label answers the focus, not just the input ring. */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                   <label className="group block">
                     <span
                       className={cn(
@@ -366,7 +366,7 @@ export const Contact = () => {
                   <p role="alert" className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
                 )}
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
                   <button
                     type="submit"
                     disabled={status === "submitting"}

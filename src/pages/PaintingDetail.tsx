@@ -977,8 +977,8 @@ const BuyBox = ({
             applies to an all-one-painting basket is size-independent. */}
         {colourwaySet && (
           <div className="mt-7 ring-1 ring-line px-4 py-4">
-            <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>The complete colourway set</p>
-            <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.55] text-ink-muted m-0 mb-3">
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5")}>The complete colourway set</p>
+            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink-muted m-0 mb-4">
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
               for this work — {colourwaySetNames} — each an estate-stamped{" "}
               {selectedTier.label} {selectedTier.size.split(" ")[0]} print, the
@@ -1036,12 +1036,12 @@ const BuyBox = ({
             presentation moved. */}
         {showAddOns && (
           <fieldset className="border-0 p-0 m-0 mt-8 ring-1 ring-line px-4 py-4 sm:px-5 sm:py-5">
-            <legend className="float-none p-0 mb-1 w-full">
+            <legend className="float-none p-0 mb-2.5 w-full">
               <span className={cn(EYEBROW_MUTED, "block")}>
                 Finish your piece
               </span>
             </legend>
-            <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink/70 m-0 mb-4">
+            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink/70 m-0 mb-5">
               Take it further than the print alone — framed ready to hang, or
               hand-finished by the estate. Both are optional and made to order.
             </p>
@@ -1242,7 +1242,7 @@ const Story = ({ painting }: { painting: Painting }) => (
 
     <Reveal
       as="div"
-      className="mt-7 md:mt-9 flex flex-col gap-5 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
+      className="mt-7 md:mt-9 flex flex-col gap-5 md:gap-6 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>

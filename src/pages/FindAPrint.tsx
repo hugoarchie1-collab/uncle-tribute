@@ -205,12 +205,14 @@ export const FindAPrint = () => {
             </h1>
           </Reveal>
 
-          {/* Guidance — one centred reading measure under a hairline, no side
-              column, no dead gap. The verbatim copy is unchanged. */}
-          <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+          {/* Guidance — the page subtitle: one centred reading measure sitting a
+              clear, generous step below the headline (canonical heading→subtitle
+              gap), under a hairline. Sized in proportion to the masthead as a true
+              lead, not a caption. The verbatim copy is unchanged. */}
+          <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
             <Reveal as="div">
               <p
-                className="mx-auto max-w-[68ch] font-sans font-normal text-[17px] md:text-[clamp(19px,1.35vw,25px)] leading-[1.7] text-ink/85 text-pretty m-0"
+                className="mx-auto max-w-[68ch] font-sans font-normal text-[18px] md:text-[clamp(19px,1.1vw,25px)] leading-[1.7] text-ink/85 text-pretty m-0"
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was

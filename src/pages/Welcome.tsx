@@ -513,7 +513,7 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,68px)] leading-[1.02] text-ink m-0 mb-5 hero-text-shadow">
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,68px)] leading-[1.02] text-ink m-0 mb-5 md:mb-6 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
@@ -651,7 +651,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 max-w-[720px] 3xl:max-w-[880px] mx-auto">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[720px] 3xl:max-w-[880px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -677,7 +677,7 @@ export const Welcome = () => {
 
               {/* Two paragraphs in a balanced two-column measure below the image —
                   same body register as the rest of the page. */}
-              <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5">
+              <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5 md:gap-y-6">
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
                   Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                 </p>

@@ -235,12 +235,12 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
 
   return (
     <Reveal as="div" className="mt-12 md:mt-16 text-left">
-      <div className="text-center mb-8">
+      <div className="text-center mb-10 md:mb-12">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Complete the set</p>
-        <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0 mb-3">
+        <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0">
           A companion piece
         </h2>
-        <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mx-auto max-w-[560px]">
+        <p className="font-sans font-normal text-[clamp(18px,1.1vw,25px)] leading-[1.6] text-ink-muted m-0 mt-5 md:mt-6 mx-auto max-w-[600px]">
           Stephen often worked in pairs and in series — a colourway beside its
           twin, a flower beside its collection. With no obligation, here are a
           few of his works that sit naturally alongside the one you&rsquo;ve
@@ -302,10 +302,10 @@ export const OrderSuccess = () => {
           >
             Thank you.
           </h1>
-          <p className={cn(SUBTITLE, "mt-6 md:mt-7 mb-5 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted my-0 mb-7 mx-auto max-w-[640px]">
+          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px]">
             Each print is made to order. We place yours with our atelier, Point 101 in London,
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
@@ -375,7 +375,7 @@ export const OrderCancel = () => {
           >
             No charge taken.
           </h1>
-          <p className={cn(SUBTITLE, "mt-6 md:mt-7 mb-8 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-8 mx-auto text-center max-w-[640px]")}>
             You left checkout before completing the order, so nothing was charged.
             {hasBasket && " Your basket is saved — return when you're ready."}
             {" "}If a detail was unclear, or you would like help choosing a

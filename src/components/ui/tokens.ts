@@ -56,11 +56,13 @@ export const TITLE =
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
- *  FLUID (2026-06-18): font-size + measure grow with the viewport so the lead
- *  scales on large/fullscreen screens (no tiny text in a sea of dead space)
- *  while staying readable on mobile. */
+ *  FLUID + PROPORTIONAL (2026-06-18): sized as a true subtitle in proportion to
+ *  the TITLE above it (~slightly larger than plain body so it reads as a lead,
+ *  not a caption), and it grows with the viewport so it never looks tiny in a
+ *  sea of dead space on large screens. Sits a clear, generous step below its
+ *  heading — pair with `mt-5 md:mt-6` (the canonical heading→subtitle gap). */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(17px,0.5vw_+_13.2px,24px)] leading-[1.75] text-ink-muted max-w-[clamp(680px,58vw,900px)]";
+  "font-sans font-normal text-[clamp(18.5px,0.62vw_+_14.3px,27px)] leading-[1.65] text-ink-muted max-w-[clamp(680px,58vw,920px)]";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
