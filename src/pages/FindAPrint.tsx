@@ -6,12 +6,13 @@ import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { EYEBROW, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
   getLowestTierPricePence,
-  formatGBP,
 } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
@@ -36,6 +37,7 @@ const FORYOU_BACKDROPS = {
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
   const reduceMotion = useReducedMotion();
+  const { formatPretty: fmtP } = useCurrency();
 
   // WHOLE-PAGE-progress crossfade (home page's PEACOCK_BACKDROPS pattern), NOT
   // Collections' per-section refs. The reason is structural: the results grid
@@ -178,14 +180,14 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-14">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
             reading measure (mx-auto) so the top of the page reads as one calm
             axis-centred block over the woodland tunnel. Verbatim copy unchanged;
             only the framing moves. */}
-        <section className="mx-auto w-full max-w-[860px] text-center">
+        <section className="mx-auto w-full max-w-[860px] 3xl:max-w-[1000px] text-center">
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
             <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
@@ -194,12 +196,12 @@ export const FindAPrint = () => {
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </Reveal>
 
-          <Reveal as="div" className="mt-4 md:mt-5">
+          <Reveal as="div" className="mt-5 md:mt-7">
             <h1
-              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] hero-text-shadow"
-              style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(56px, 11vw, 168px)" }}
+              className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
+              style={MASTHEAD_TITLE_STYLE}
             >
-              Begin with<br />a colour.
+              Begin with a <em className="italic font-normal">colour</em>.
             </h1>
           </Reveal>
 
@@ -208,7 +210,7 @@ export const FindAPrint = () => {
           <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
             <Reveal as="div">
               <p
-                className="mx-auto max-w-[68ch] font-sans font-normal text-[17px] md:text-[19px] leading-[1.7] text-ink/85 text-pretty m-0"
+                className="mx-auto max-w-[68ch] font-sans font-normal text-[17px] md:text-[clamp(19px,1.35vw,25px)] leading-[1.7] text-ink/85 text-pretty m-0"
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
@@ -296,7 +298,7 @@ export const FindAPrint = () => {
         <div
           aria-live="polite"
           className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-10"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))" }}
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, clamp(300px, 23vw, 380px)), 1fr))" }}
         >
           {filtered.map(({ painting, cover }) => (
             <figure
@@ -320,16 +322,16 @@ export const FindAPrint = () => {
                 </div>
                 <figcaption className="pt-4 md:pt-5">
                   <h3
-                    className="font-display font-bold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
+                    className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                   >
                     {painting.title}
                   </h3>
                   <p
-                    className="mt-2 font-sans text-[11px] md:text-[12px] font-bold tracking-[0.16em] uppercase text-ink/70 m-0"
+                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.16em] uppercase text-ink/70 m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
-                    Estate-stamped giclée · from {formatGBP(getLowestTierPricePence(painting)).replace(".00", "")}
+                    Estate-stamped giclée · from {fmtP(getLowestTierPricePence(painting))}
                   </p>
                 </figcaption>
               </Link>
@@ -338,7 +340,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="font-sans text-[16px] leading-[1.7] text-ink-muted mt-6">
+          <p className="font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.7] text-ink-muted mt-6">
             Nothing holds those tones at once.{" "}
             <button
               type="button"

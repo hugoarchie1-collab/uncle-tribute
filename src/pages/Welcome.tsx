@@ -9,9 +9,10 @@ import { ImageReveal } from "../components/ImageReveal";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
-import { PAINTINGS, COLLECTIONS, formatGBP, getLowestTierPricePence, paintingImageAlt } from "../data/paintings";
+import { PAINTINGS, COLLECTIONS, getLowestTierPricePence, paintingImageAlt } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
+import { useCurrency } from "../lib/currency";
 import { EYEBROW } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 
@@ -42,6 +43,8 @@ const PEACOCK_BACKDROPS = [
 
 export const Welcome = () => {
   const reduceMotion = useReducedMotion();
+  // Presentment currency — the "from £…" chips convert with the header picker.
+  const { formatPretty: fmtPrice } = useCurrency();
 
   // Whole-page scroll drives three peacock backdrops crossfading in turn:
   // Indigo → Blood-Moon Red → Moroccan Purple, the purple holding through the
@@ -339,7 +342,7 @@ export const Welcome = () => {
               close, never on body-size glyphs where it fuzzed the edges.
               Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
               only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1340px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* Local reading scrim — a soft radial deepening behind the essay
                 (the About reading-veil / finale-radial recipe, localised). It
                 replaces the per-glyph text-shadow on the lead + two-column
@@ -354,7 +357,7 @@ export const Welcome = () => {
                   "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
               }}
             />
-            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[820px]">
+            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[820px] 3xl:max-w-[960px]">
               <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust drop cap (pure
@@ -367,7 +370,7 @@ export const Welcome = () => {
                 className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty"
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
-                  fontSize: "clamp(24px, 2.4vw, 34px)",
+                  fontSize: "clamp(24px, 2.5vw, 40px)",
                   lineHeight: 1.42,
                 }}
               >
@@ -380,12 +383,12 @@ export const Welcome = () => {
                 below then renders only the REMAINDER of that paragraph (see the
                 slice in the map), so the full passage appears exactly once across
                 the feature + body — never read twice. opsz 44. */}
-            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[760px] text-center">
+            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[760px] 3xl:max-w-[920px] text-center">
               <p
                 className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
                 style={{
                   fontVariationSettings: '"opsz" 44, "wght" 400',
-                  fontSize: "clamp(28px, 3.6vw, 46px)",
+                  fontSize: "clamp(28px, 3.8vw, 60px)",
                   letterSpacing: "-0.02em",
                   lineHeight: 1.14,
                 }}
@@ -416,7 +419,7 @@ export const Welcome = () => {
                   <p
                     key={para.slice(0, 24)}
                     lang="en-GB"
-                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
                   >
                     {text}
                   </p>
@@ -431,7 +434,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1}>
               <div aria-hidden="true" className="mt-5 md:mt-6 mb-4 h-px w-12 bg-ink/15" />
-              <p className="m-0 mx-auto max-w-[820px] hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[820px] 3xl:max-w-[960px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
                   style={{
@@ -450,7 +453,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 36, "wght" 400',
                     fontWeight: 400,
-                    fontSize: "clamp(20px, 2.6vw, 36px)",
+                    fontSize: "clamp(20px, 2.7vw, 44px)",
                     letterSpacing: "-0.015em",
                     lineHeight: 1.2,
                   }}
@@ -513,7 +516,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,68px)] leading-[1.02] text-ink m-0 mb-5 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -570,7 +573,7 @@ export const Welcome = () => {
                     // Spell the price into the link's accessible name — the visual
                     // price chip below is aria-hidden (it animates in), so without
                     // this a screen-reader user would get no price for any tile.
-                    aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${formatGBP(fromPrice).replace(".00", "")}`}
+                    aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
                     className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
@@ -604,7 +607,7 @@ export const Welcome = () => {
                         }}
                         className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/90 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
                       >
-                        From {formatGBP(fromPrice).replace(".00", "")}
+                        From {fmtPrice(fromPrice)}
                       </motion.span>
                     </div>
                     <div className="pt-4">
@@ -648,7 +651,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 my-0 mt-5 max-w-[720px] mx-auto">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 max-w-[720px] 3xl:max-w-[880px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -675,10 +678,10 @@ export const Welcome = () => {
               {/* Two paragraphs in a balanced two-column measure below the image —
                   same body register as the rest of the page. */}
               <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5">
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
                   Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                 </p>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
                   When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                 </p>
               </Reveal>
@@ -746,7 +749,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 max-w-[860px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[860px] 3xl:max-w-[1040px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -762,7 +765,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[760px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[760px] 3xl:max-w-[920px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
@@ -774,7 +777,7 @@ export const Welcome = () => {
               <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
+              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
                 {WELCOME.bio[2]}
               </p>
             </Reveal>

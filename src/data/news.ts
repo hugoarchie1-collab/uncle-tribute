@@ -39,7 +39,7 @@ export type NewsType =
   | "workshop"
   | "event";
 
-/** Release sub-kind — a Collection drops like an album, a Single like a single. */
+/** Release sub-kind — a Collection releases like an album, a Single like a single. */
 export type ReleaseKind = "collection" | "single";
 
 /** Forward-looking status spine. "next" = coming next, "soon" = on the horizon,
@@ -118,7 +118,7 @@ export const NEWS_FILTERS: { id: NewsType | "all"; label: string }[] = [
 
 export const isRelease = (e: NewsEntry): boolean => e.type === "release";
 
-/** The single most imminent release — the featured next-drop hero. One hero,
+/** The single most imminent release — the featured next-release hero. One hero,
  *  never a carousel: the first "next" release, else the first "next" entry. */
 export const getFeaturedEntry = (entries: NewsEntry[]): NewsEntry | undefined =>
   entries.find((e) => e.status === "next" && e.type === "release") ??
@@ -171,7 +171,7 @@ export const NEWS: NewsEntry[] = [
     title: "Orchis 7 — Aquamarine",
     displayDate: "Coming soon",
     summary:
-      "Stephen's septagon mandala of thirty Lady's Slipper Orchids, in the cool aquamarine colourway he kept in his own studio files — sea-glass blues set against gold leaf. Issued as a numbered drop.",
+      "Stephen's septagon mandala of thirty Lady's Slipper Orchids, in the cool aquamarine colourway he kept in his own studio files — sea-glass blues set against gold leaf. Issued as a numbered edition.",
     cover: "/img/paintings/orchis7-aquamarine-blue.jpg",
     ctaLabel: "Be the first to know",
     ctaTo: "#notify",
@@ -186,7 +186,7 @@ export const NEWS: NewsEntry[] = [
     title: "Wild Rose — Black Rose",
     displayDate: "Coming soon",
     summary:
-      "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, and issued in a numbered drop.",
+      "A new Black Rose colourway of the Wild Rose mandala — the opening flower of the Habundia series, painted with wild rose oil — is being prepared. Quiet, and issued in a numbered edition.",
     cover: "/img/paintings/wild-rose-black-rose.jpg",
     ctaLabel: "Be the first to know",
     ctaTo: "#notify",

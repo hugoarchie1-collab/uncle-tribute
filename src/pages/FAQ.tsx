@@ -6,28 +6,29 @@ import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
  * /faq — frequently asked questions.
  *
- * Redesigned to the bold/dense house pattern (the AboutMasthead law): a meta
- * rule + a LARGE left-aligned Fraunces statement filling the width, supporting
- * copy packed immediately beneath under a hairline — NOT a timid eyebrow +
- * shrunk centred title floating in a narrow column. The eight questions then
- * run as a NUMBERED two-column editorial register (a bordered question grid),
- * densifying what was a single thin column of stacked paragraphs into dense
- * horizontal blocks. Compressed vertical rhythm throughout (no big gap-14 air,
- * no clamp(5rem,…) hero pad). Visual register sits between About and Legal —
- * readable long-form copy, not cinematic. Designed to be the first place a
- * curious buyer lands when they want to know "is this real?".
+ * Set to the refined-masthead house pattern (the shared MASTHEAD_TITLE_STYLE
+ * cut, opsz 144 / wght 560): a meta rule + a Fraunces statement with prestige
+ * restraint — large but never shouting, one word italic at regular weight —
+ * supporting copy packed immediately beneath under a hairline. The eight
+ * questions then run as a NUMBERED two-column editorial register (a bordered
+ * question grid), densifying what was a single thin column of stacked
+ * paragraphs into dense horizontal blocks. Compressed vertical rhythm
+ * throughout. Visual register sits between About and Legal — readable
+ * long-form copy, not cinematic. Designed to be the first place a curious
+ * buyer lands when they want to know "is this real?".
  *
  * ⚠️ EVERY answer / eyebrow / question below is verbatim — restructure LAYOUT
  * only; never edit the copy, links, emails or prices.
  */
 
 const SECTION =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 interface QA {
   eyebrow: string;
@@ -43,7 +44,7 @@ const FAQS: QA[] = [
       <>
         No — Stephen passed in 2021, so prints cannot be signed in his hand.
         Every print is <strong>estate-stamped</strong> by The Mandala Company
-        and numbered within its drop. Each ships with a Certificate
+        and numbered within its edition. Each ships with a Certificate
         of Authenticity carrying a unique Certificate ID. This is the convention
         used by the estates of Picasso, Hepworth and Hilma af Klint, and
         is the standard for works released posthumously by an estate.
@@ -99,16 +100,16 @@ const FAQS: QA[] = [
     ),
   },
   {
-    eyebrow: "Sizes & drops",
+    eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four tiers, each estate-stamped and issued within the estate's drop
+        Four tiers, each estate-stamped and issued within the estate's release
         cycle. <strong>Open Edition A3</strong> at £245 (issued within each
-        drop, no fixed allocation). <strong>Collector Drop A2</strong> at £450
-        (200 allocated per drop). <strong>Atelier Drop A1</strong> at £850
-        (75 per drop). <strong>Heirloom Drop A0</strong> at £1,750 (18 per
-        drop).
+        edition, no fixed allocation). <strong>Collector Edition A2</strong> at
+        £450 (edition of 200). <strong>Atelier Edition A1</strong> at £850
+        (edition of 75). <strong>Heirloom Edition A0</strong> at £1,750
+        (edition of 18).
       </>
     ),
   },
@@ -181,15 +182,15 @@ const FAQS: QA[] = [
 const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 
 // ─── FaqMasthead ─────────────────────────────────────────────────────────────
-// The bold front cover — the AboutMasthead recipe ported to FAQ: a meta rule
-// (eyebrow + hairline + question count), the page statement set ENORMOUS and
-// edge-to-edge in Fraunces (opsz 48, real loaded weight 700, font-synthesis
-// none), then the supporting passage packed immediately beneath under a
-// border-t — so the first screen is dense confident type filling the width,
-// not a shrunk centred title floating in a thin column.
+// The refined front cover — the shared MASTHEAD_TITLE_STYLE cut (opsz 144,
+// real loaded weight 560, font-synthesis none): a meta rule (eyebrow + hairline
+// + question count), then the page statement set with prestige restraint — large
+// but never shouting — with one word italic at regular weight (the auction-house
+// "title of a work" signal), then the supporting passage packed immediately
+// beneath under a border-t.
 const FaqMasthead = () => (
-  <section className={cn(SECTION, "pt-16 md:pt-20 pb-5 md:pb-6")}>
-    <div className="mx-auto w-full max-w-[860px] text-center">
+  <section className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}>
+    <div className="mx-auto w-full max-w-[860px] 3xl:max-w-[1000px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>
@@ -202,14 +203,10 @@ const FaqMasthead = () => (
 
       <Reveal as="div" className="mt-3 md:mt-4">
         <h1
-          className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
-          style={{
-            fontVariationSettings: '"opsz" 48, "wght" 700',
-            fontSynthesis: "none",
-            fontSize: "clamp(58px, 12vw, 220px)",
-          }}
+          className="font-display text-ink m-0"
+          style={{ ...MASTHEAD_TITLE_STYLE, fontSynthesis: "none" }}
         >
-          What people<br />ask.
+          What people <em className="italic font-normal">ask</em>.
         </h1>
       </Reveal>
 
@@ -221,10 +218,10 @@ const FaqMasthead = () => (
         </Reveal>
         <Reveal as="div" delay={0.06} className="mt-3">
           <p
-            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[46ch]"
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[46ch] 3xl:max-w-[52ch]"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(21px, 2.5vw, 34px)",
+              fontSize: "clamp(21px, 2.5vw, 38px)",
               lineHeight: 1.32,
             }}
           >
@@ -272,12 +269,12 @@ export const FAQ = () => {
         <section className={cn(SECTION, "pb-8 md:pb-10")}>
           <Reveal
             as="div"
-            className="mx-auto flex w-full max-w-[1100px] flex-wrap justify-center gap-x-10 lg:gap-x-16 gap-y-7 border-t border-line"
+            className="mx-auto flex w-full max-w-[1100px] 3xl:max-w-[1380px] 4xl:max-w-[1560px] flex-wrap justify-center gap-x-10 lg:gap-x-16 3xl:gap-x-24 gap-y-7 3xl:gap-y-9 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-[0_1_clamp(300px,44%,480px)] flex-col gap-3 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,44%,620px)] flex-col gap-3 pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span
@@ -295,12 +292,12 @@ export const FAQ = () => {
                 <h2
                   className={cn(
                     "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0",
-                    "text-[clamp(23px,2.4vw,34px)] leading-[1.08]",
+                    "text-[clamp(23px,2.5vw,42px)] leading-[1.08]",
                   )}
                 >
                   {qa.question}
                 </h2>
-                <div className={cn(SUBTITLE, "max-w-none !text-[17px] md:!text-[18px] 2xl:!text-[19px] !leading-[1.7]")}>
+                <div className={cn(SUBTITLE, "max-w-none !text-[clamp(17px,1.05vw,23px)] md:!text-[clamp(18px,1.05vw,23px)] !leading-[1.7]")}>
                   {qa.answer}
                 </div>
               </section>

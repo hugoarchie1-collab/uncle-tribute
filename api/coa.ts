@@ -9,7 +9,7 @@
  * Both are populated from the ledger record + a QR code that deep-links the
  * public verification page /auth/<CERTIFICATE_ID>. This is the "template
  * renderer" stage: the layout is fixed here once; the values ({ARTWORK},
- * {DROP}, {PRINT_NUMBER}, {CERTIFICATE_ID}, {DATE}) are filled per order, with
+ * {EDITION}, {PRINT_NUMBER}, {CERTIFICATE_ID}, {DATE}) are filled per order, with
  * NO manual intervention. Estate-only (ADMIN_API_KEY) — production material,
  * not public; the public path is the /auth lookup.
  *
@@ -168,7 +168,7 @@ async function buildCertificate(
   // print number — the focal figure
   drawCentered(page, printNoDisplay(rec), 286, serif, 34, INK);
   if (rec.print_number !== null) {
-    drawCentered(page, "PRINT NUMBER WITHIN THE DROP", 268, sansB, 7, MUTED, 2);
+    drawCentered(page, "PRINT NUMBER WITHIN THE EDITION", 268, sansB, 7, MUTED, 2);
   }
 
   // certificate id block

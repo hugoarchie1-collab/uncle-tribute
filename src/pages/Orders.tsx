@@ -11,10 +11,11 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { PageMasthead } from "../components/PageMasthead";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, META } from "../components/ui/tokens";
 
 interface FoundOrder {
   ref: string;
@@ -72,20 +73,16 @@ export const Orders = () => {
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
-        <Reveal as="header">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-            <span className={EYEBROW}>Orders &amp; returns</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <Link to="/account" className={cn(EYEBROW_MUTED, "shrink-0 hover:text-accent transition-colors")}>
-              Sign in for full history →
-            </Link>
-          </div>
-          <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.9] text-balance"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(46px, 9vw, 132px)" }}
-          >
-            Track an order.
-          </h1>
+        <Reveal>
+          <PageMasthead
+            eyebrow="Orders & returns"
+            meta={
+              <Link to="/account" className="hover:text-accent transition-colors">
+                Sign in for full history →
+              </Link>
+            }
+            title={<>Track an order</>}
+          />
         </Reveal>
 
         <div className="mt-7 md:mt-9 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start border-t border-line pt-6 md:pt-8">

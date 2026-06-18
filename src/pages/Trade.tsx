@@ -7,6 +7,7 @@ import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { EnquireModal } from "../components/EnquireModal";
+import { PageMasthead } from "../components/PageMasthead";
 import {
   EYEBROW,
   EYEBROW_MUTED,
@@ -52,7 +53,7 @@ const OFFERINGS: Offering[] = [
     body: (
       <>
         Every work in the catalogue is available as an estate-stamped giclée
-        print, numbered within its drop, on 350gsm Hahnemühle archival paper,
+        print, numbered within its edition, on 350gsm Hahnemühle archival paper,
         printed to order at Point 101, London. For multi-room schemes, repeat
         placements or a full suite across a property, volume and project
         pricing is offered <strong>on request</strong> — tell us the spaces
@@ -106,59 +107,47 @@ export const Trade = () => {
       />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
-        {/* ── MASTHEAD ── A bold left-aligned front cover: meta rule → giant
-            Fraunces statement filling the width → the framing passage packed
-            immediately beneath under a border-t, no floating gap. Mirrors
-            AboutMasthead's recipe. */}
-        <section className="pb-6 md:pb-8">
-          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-            <span className={EYEBROW}>Trade &amp; Interior Design</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>
-              By introduction
-            </span>
-          </Reveal>
-
-          <Reveal as="div" className="mt-4 md:mt-5">
-            <h1
-              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] text-balance"
-              style={{
-                fontVariationSettings: '"opsz" 48, "wght" 700',
-                fontSize: "clamp(46px, 8.2vw, 132px)",
-              }}
-            >
-              For designers and
-              <br />
-              considered spaces.
-            </h1>
-          </Reveal>
-
-          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
-            <Reveal as="div" className="lg:col-span-4">
-              <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
-                The estate of Stephen Meakin · SEM
-              </p>
-            </Reveal>
-            <Reveal as="div" delay={0.06} className="lg:col-span-8">
-              <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0"
-                style={{
-                  fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(21px, 2.5vw, 34px)",
-                  lineHeight: 1.32,
-                }}
-              >
-                The estate works directly with interior designers, art
-                consultants and hospitality buyers — hotels, restaurants and
-                wellness spaces. Whether you are placing a suite of
-                estate-stamped prints across a property or commissioning a
-                single defining piece, the conversation starts here and is
-                handled, quietly and personally, by the family.
-              </p>
-            </Reveal>
-          </div>
-        </section>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
+        {/* ── MASTHEAD ── The refined shared front cover: meta rule (eyebrow +
+            "By introduction") → a composed Fraunces display title (wght 560,
+            opsz 144 — never the old bold logo) → the framing passage packed
+            immediately beneath under a border-t, no floating gap. */}
+        <Reveal as="div" className="pb-6 md:pb-8">
+          <PageMasthead
+            eyebrow="Trade & Interior Design"
+            meta="By introduction"
+            title={
+              <>
+                For designers and <em className="italic font-normal">considered</em> spaces.
+              </>
+            }
+          >
+            <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
+              <Reveal as="div" className="lg:col-span-4">
+                <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+                  The estate of Stephen Meakin · SEM
+                </p>
+              </Reveal>
+              <Reveal as="div" delay={0.06} className="lg:col-span-8">
+                <p
+                  className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+                  style={{
+                    fontVariationSettings: '"opsz" 32, "wght" 400',
+                    fontSize: "clamp(21px, 2.5vw, 34px)",
+                    lineHeight: 1.32,
+                  }}
+                >
+                  The estate works directly with interior designers, art
+                  consultants and hospitality buyers — hotels, restaurants and
+                  wellness spaces. Whether you are placing a suite of
+                  estate-stamped prints across a property or commissioning a
+                  single defining piece, the conversation starts here and is
+                  handled, quietly and personally, by the family.
+                </p>
+              </Reveal>
+            </div>
+          </PageMasthead>
+        </Reveal>
 
         {/* ── WHAT'S OFFERED ── A dense numbered grid, not a tall single
             column: three offerings as editorial blocks side by side from md,
@@ -192,13 +181,13 @@ export const Trade = () => {
                     {item.eyebrow}
                   </span>
                 </div>
-                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-5 text-[clamp(23px,2.4vw,32px)] leading-[1.12]">
+                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-5 text-[clamp(23px,2.6vw,40px)] leading-[1.12]">
                   {item.title}
                 </h2>
                 <div
                   className={cn(
                     SUBTITLE,
-                    "max-w-none mt-4 !text-[16px] md:!text-[17px] 2xl:!text-[18px] !leading-[1.7]",
+                    "max-w-none mt-4 !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.7]",
                   )}
                 >
                   {item.body}
@@ -223,7 +212,7 @@ export const Trade = () => {
                   className="font-display font-normal not-italic text-ink m-0 tracking-[-0.02em]"
                   style={{
                     fontVariationSettings: '"opsz" 40, "wght" 400',
-                    fontSize: "clamp(28px,4.2vw,56px)",
+                    fontSize: "clamp(28px,4.4vw,68px)",
                     lineHeight: 1.14,
                   }}
                 >
@@ -234,7 +223,7 @@ export const Trade = () => {
               </blockquote>
             </Reveal>
             <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
-              <p className={cn(SUBTITLE, "max-w-none !text-[16px] md:!text-[17px] !leading-[1.75]")}>
+              <p className={cn(SUBTITLE, "max-w-none !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.75]")}>
                 Stephen's largest realised work was made for a public
                 hospitality space — proof that this geometry holds at
                 architectural scale. Bespoke commissions for projects continue
@@ -255,15 +244,15 @@ export const Trade = () => {
             <div className="lg:col-span-7">
               <p className={cn(EYEBROW, "m-0 mb-5")}>Start a project</p>
               <h2
-                className="font-display font-bold tracking-[-0.04em] text-balance text-ink m-0 leading-[0.92]"
+                className="font-display tracking-[-0.018em] text-balance text-ink m-0 leading-[1.0]"
                 style={{
-                  fontVariationSettings: '"opsz" 48, "wght" 700',
-                  fontSize: "clamp(34px,5.4vw,76px)",
+                  fontVariationSettings: '"opsz" 120, "wght" 560',
+                  fontSize: "clamp(34px,5.4vw,92px)",
                 }}
               >
                 Make a trade enquiry.
               </h2>
-              <p className={cn(SUBTITLE, "max-w-none mt-5 !text-[16px] md:!text-[17px] !leading-[1.7]")}>
+              <p className={cn(SUBTITLE, "max-w-none mt-5 !text-[clamp(16px,0.95vw,21px)] md:!text-[clamp(17px,1vw,22px)] !leading-[1.7]")}>
                 Tell us about the project — the spaces, the scale, and whether
                 you are after editions, framing or a bespoke commission. We
                 will reply personally, usually within a day or two, with
@@ -278,13 +267,13 @@ export const Trade = () => {
                 </button>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                  className="inline-flex items-center min-h-[44px] font-sans text-[clamp(14px,0.8vw,17px)] text-ink-muted hover:text-accent transition-colors"
                 >
                   Or use the contact page
                   <span aria-hidden="true" className="ml-1.5">→</span>
                 </Link>
               </div>
-              <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-faint mt-6 m-0">
+              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-faint mt-6 m-0">
                 Or write directly to{" "}
                 <a
                   href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"

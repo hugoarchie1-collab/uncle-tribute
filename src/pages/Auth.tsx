@@ -1,12 +1,12 @@
 // src/pages/Auth.tsx — /auth and /auth/:certId — the Estate Registry lookup.
 //
 // An estate-issued, publicly verifiable record of every print issued within a
-// controlled drop cycle is what lets a Certificate of Authenticity hold its
+// numbered edition is what lets a Certificate of Authenticity hold its
 // provenance and resale value. A buyer enters the Certificate ID printed on
 // their COA (or arrives via the QR code, which deep-links /auth/<id> with the
 // id prefilled) and the registry returns the verified record.
 //
-// Source of truth: the estate ledger written by api/stripe-webhook.ts on every
+// Source of truth: the estate registry written by api/stripe-webhook.ts on every
 // order, read back through GET /api/auth-lookup. If that store isn't
 // provisioned in an environment, OR a certificate predates it, the page falls
 // back to the static, hand-curated ledger in src/data/editions.ts — so a
@@ -23,11 +23,12 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
+import { PageMasthead } from "../components/PageMasthead";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
 import {
   ESTATE_AUTHENTICATION,
-  CURRENT_DROP,
+  CURRENT_EDITION,
   PRINT_TIERS,
   getPaintingById,
 } from "../data/paintings";
@@ -39,7 +40,7 @@ interface RegistryRecord {
   certificateId: string;
   artworkName: string;
   colourway?: string;
-  dropLabel: string;
+  editionLabel: string;
   tierLabel: string;
   printNumber: number | null;
   allocation: number | null;
@@ -66,7 +67,7 @@ const fromApi = (r: Record<string, unknown>): RegistryRecord => ({
   certificateId: String(r.certificate_id ?? ""),
   artworkName: String(r.artwork_name ?? ""),
   colourway: r.colourway ? String(r.colourway) : undefined,
-  dropLabel: String(r.drop_label ?? CURRENT_DROP.label),
+  editionLabel: String(r.drop_label ?? CURRENT_EDITION.label),
   tierLabel: String(r.tier_label ?? ""),
   printNumber: typeof r.print_number === "number" ? r.print_number : null,
   allocation: typeof r.allocation === "number" ? r.allocation : null,
@@ -85,7 +86,7 @@ const fromStatic = (cert: string): RegistryRecord | null => {
     certificateId: a.certificate,
     artworkName: painting?.title ?? a.paintingId,
     colourway: a.colourwayName,
-    dropLabel: CURRENT_DROP.label,
+    editionLabel: CURRENT_EDITION.label,
     tierLabel: tier?.label ?? a.tierId,
     printNumber: a.number,
     allocation: tier?.editionTotal ?? null,
@@ -126,7 +127,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
           </h2>
           <p className={cn(META, "m-0 mt-3")}>
             {record.colourway ? <>{record.colourway} · </> : null}
-            {record.tierLabel} · {record.dropLabel}
+            {record.tierLabel} · {record.editionLabel}
           </p>
         </div>
         <div className="lg:col-span-4 lg:text-right lg:border-l lg:border-line lg:pl-8">
@@ -143,7 +144,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
               </p>
               {record.allocation ? (
                 <p className={cn(EYEBROW_MUTED, "m-0 mt-2 lg:justify-end")}>
-                  of {record.allocation} in {record.dropLabel}
+                  of {record.allocation} in the {record.editionLabel}
                 </p>
               ) : null}
             </>
@@ -184,7 +185,7 @@ const UnlistedNote = () => (
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
     <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-soft text-pretty m-0 mt-5 max-w-[58ch]">
-      The Estate Ledger records prints issued from June 2026 onward. For an
+      The Estate Registry records prints issued from June 2026 onward. For an
       earlier or unlisted Certificate ID, write to{" "}
       <a
         href="mailto:info@themandalacompany.com"
@@ -206,7 +207,7 @@ const UnavailableNote = () => (
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
     <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-soft text-pretty m-0 mt-5 max-w-[58ch]">
-      We couldn&rsquo;t reach the Estate Ledger just now. Please try again in a
+      We couldn&rsquo;t reach the Estate Registry just now. Please try again in a
       moment — your certificate may well be valid. If it persists, write to{" "}
       <a
         href="mailto:info@themandalacompany.com"
@@ -294,28 +295,17 @@ export const Auth = () => {
       <AmbientBackdrop opacity={0.4} />
       <Seo
         title="Authentication"
-        description="The Mandala Company Estate Ledger — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, drop, tier, print number and issuance date."
+        description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."
         url="/auth"
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
-        <Reveal as="header">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-            <span className={EYEBROW}>Authentication</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>
-              The estate ledger
-            </span>
-          </div>
-          <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.86] text-balance"
-            style={{
-              fontVariationSettings: '"opsz" 48, "wght" 700',
-              fontSize: "clamp(52px, 11vw, 168px)",
-            }}
-          >
-            Estate<br />Registry.
-          </h1>
+        <Reveal as="div">
+          <PageMasthead
+            eyebrow="Authentication"
+            meta="The estate registry"
+            title={<>Estate <em className="italic font-normal">registry</em></>}
+          />
         </Reveal>
 
         <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start border-t border-line pt-6 md:pt-8">
@@ -346,7 +336,7 @@ export const Auth = () => {
 
               <div aria-live="polite" className="mt-6 md:mt-8 empty:mt-0">
                 {result.state === "loading" ? (
-                  <p className={cn(META, "m-0")}>Searching the Estate Ledger…</p>
+                  <p className={cn(META, "m-0")}>Searching the Estate Registry…</p>
                 ) : null}
                 {result.state === "found" ? <FoundCard record={result.record} /> : null}
                 {result.state === "unlisted" ? <UnlistedNote /> : null}
@@ -364,8 +354,8 @@ export const Auth = () => {
                 lineHeight: 1.3,
               }}
             >
-              The Estate Ledger is the estate&rsquo;s register of every print
-              issued within its controlled drop cycles. Enter your Certificate ID
+              The Estate Registry is the estate&rsquo;s record of every print
+              issued within its numbered editions. Enter your Certificate ID
               to confirm its provenance and allocation.
             </p>
           </Reveal>

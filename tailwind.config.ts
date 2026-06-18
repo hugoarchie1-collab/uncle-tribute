@@ -17,12 +17,15 @@ const config: Config = {
       },
     },
     extend: {
-      // (#15) Higher breakpoint so QHD/4K/TV layouts can widen past 2xl
-      // instead of freezing in a narrow column with vast dead margins.
-      // Section wrappers step max-w at 2xl + 3xl; prose measures bump one
-      // gentle step at 2xl only (readability).
+      // (#15) Higher breakpoints so large laptops (16" MBP = 1728px), QHD/4K/TV
+      // widen instead of freezing in a narrow column with vast dead margins
+      // ("the page goes super gappy and spaced out on fullscreen"). 3xl LOWERED
+      // 2200→1700 (2026-06-18) so the common 1728/1920 fullscreen case actually
+      // gets the wide content widths + larger type, not the cramped 2xl column.
+      // 4xl added for true 4K/ultrawide. Section wrappers step max-w at 2xl/3xl/4xl.
       screens: {
-        "3xl": "2200px",
+        "3xl": "1700px",
+        "4xl": "2400px",
       },
       fontFamily: {
         // Two families only (#10). Fraunces = editorial display serif with a
@@ -61,8 +64,11 @@ const config: Config = {
         h1: ["clamp(40px, 5.6vw, 80px)", { lineHeight: "1.05", letterSpacing: "-0.04em" }],
         h2: ["clamp(32px, 4.2vw, 56px)", { lineHeight: "1.1", letterSpacing: "-0.035em" }],
         h3: ["clamp(24px, 2.6vw, 36px)", { lineHeight: "1.2", letterSpacing: "-0.025em" }],
-        body: ["18px", { lineHeight: "1.8" }],
-        "body-sm": ["16px", { lineHeight: "1.75" }],
+        // Fluid body — grows gently on large screens so prose scales with the
+        // viewport (dynamic cross-platform unison) instead of looking tiny in a
+        // sea of dead space at fullscreen. Mobile/laptop ≈ the old 18/16px.
+        body: ["clamp(17px, 0.4vw + 13.6px, 22px)", { lineHeight: "1.8" }],
+        "body-sm": ["clamp(15px, 0.3vw + 12.2px, 18px)", { lineHeight: "1.75" }],
         label: ["12px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {

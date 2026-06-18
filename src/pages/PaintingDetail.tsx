@@ -45,6 +45,7 @@ import {
 // colourwayName, tierId) = allocatedCount + 1 — the next certificate number
 // the estate would allocate for that edition. Read-only here.
 import { nextNumber } from "../data/editions";
+import { useCurrency } from "../lib/currency";
 import { asset, webp, webpSrcSet } from "../lib/asset";
 import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 import { cn } from "../lib/cn";
@@ -168,7 +169,9 @@ const SizePicker = ({
   /** For the allocation line — the edition register is per painting + colourway + tier. */
   paintingId: string;
   colourwayName: string;
-}) => (
+}) => {
+  const { formatPretty: fmtP } = useCurrency();
+  return (
   <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-2.5 gap-y-4">
     {tiers.map((tier) => {
       const isSelected = tier.id === selectedTier.id;
@@ -202,7 +205,7 @@ const SizePicker = ({
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
           <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
-            {formatGBP(tier.pricePence).replace(".00", "")}
+            {fmtP(tier.pricePence)}
           </span>
           {/* Selected summary — the card's own editionLabel line already sits
               two lines above, so it is NOT repeated here (mobile made the
@@ -211,7 +214,7 @@ const SizePicker = ({
           {isSelected && !tier.isOneOff && (
             <span className={cn(META, "col-span-2 mt-3")}>
               Estate-stamped
-              {tier.editionTotal !== null ? " · numbered within its drop" : ""}
+              {tier.editionTotal !== null ? " · numbered within its edition" : ""}
               {tier.editionPromise ? ` · ${tier.editionPromise}` : ""}
             </span>
           )}
@@ -219,9 +222,9 @@ const SizePicker = ({
               Reads from the estate ledger (data/editions.ts); recomputes as the
               buyer switches size or colourway. Skipped for the Open Edition
               (editionTotal null, not numbered) and one-off pieces. GATED at
-              >= 5: until a drop has genuine momentum, "No. 1 of 200" broadcasts
+              >= 5: until an edition has genuine momentum, "No. 1 of 200" broadcasts
               "nobody has bought this" to a cautious high-AOV buyer — the neutral
-              "numbered within its drop" summary above already conveys the
+              "numbered within its edition" summary above already conveys the
               provenance, so the explicit number only appears once it reassures
               rather than deters. (Audit fix — never fabricate allocations.) */}
           {isSelected &&
@@ -231,7 +234,7 @@ const SizePicker = ({
               const allocated = nextNumber(paintingId, colourwayName, tier.id);
               return allocated >= 5 ? (
                 <span className={cn(META, "col-span-2 mt-1 text-ink-muted")}>
-                  Next to be allocated in this drop: No. {allocated} of{" "}
+                  Next to be allocated in this edition: No. {allocated} of{" "}
                   {tier.editionTotal}
                 </span>
               ) : null;
@@ -240,7 +243,8 @@ const SizePicker = ({
       );
     })}
   </div>
-);
+  );
+};
 
 /**
  * OneOffCard — the singular hand-painted piece (`isOneOff: true`). Rendered as
@@ -258,7 +262,9 @@ const OneOffCard = ({
   tier: PrintTier;
   isSelected: boolean;
   onSelect: (id: PrintTier["id"]) => void;
-}) => (
+}) => {
+  const { formatPretty: fmtP } = useCurrency();
+  return (
   <button
     type="button"
     role="radio"
@@ -276,7 +282,7 @@ const OneOffCard = ({
         Unique · one of one
       </span>
       <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
-        {formatGBP(tier.pricePence).replace(".00", "")}
+        {fmtP(tier.pricePence)}
       </span>
     </span>
     <span className="block font-sans text-[15px] font-semibold leading-[1.3] text-ink mb-1">
@@ -288,7 +294,8 @@ const OneOffCard = ({
       There is only this one.
     </span>
   </button>
-);
+  );
+};
 
 /**
  * Colourways — swatch row (hover-revealed name) + selected name caption.
@@ -569,7 +576,7 @@ const TrueSizeViewer = ({
       />
 
       <figcaption className="mt-3 text-center">
-        <span className="block font-sans text-[13.5px] leading-[1.5] text-ink/70">
+        <span className="block font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.5] text-ink/70">
           {activeTier.label} · {activeTier.size}
           {dims ? ` — shown at true size on the wall` : ""}
         </span>
@@ -624,7 +631,7 @@ const TrueSizeRoom = ({
           />
         )}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>To scale · coming soon</p>
-        <p className="font-sans text-[13.5px] leading-[1.6] text-ink/70 m-0 max-w-[320px]">
+        <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink/70 m-0 max-w-[320px] 3xl:max-w-[400px]">
           We&rsquo;re photographing {painting.title} on the wall at each size.
           {dims
             ? ` ${tier.size.split(" ")[0]} measures ${dims.w} × ${dims.h} cm${
@@ -697,6 +704,7 @@ const BuyBox = ({
   onEmbellishedChange: (next: boolean) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
+  const { formatPretty: fmtP, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   // The confirmation pill records *which* selection was last added + when.
@@ -736,11 +744,11 @@ const BuyBox = ({
   const embellishPricePence = getEmbellishmentPricePence(selectedTier);
   const framingPriceLabel =
     framingPricePence !== null
-      ? formatGBP(framingPricePence).replace(".00", "")
+      ? fmtP(framingPricePence)
       : null;
   const embellishPriceLabel =
     embellishPricePence !== null
-      ? formatGBP(embellishPricePence).replace(".00", "")
+      ? fmtP(embellishPricePence)
       : null;
 
   // Running line total = print + (frame if active) + (hand-finish if active).
@@ -832,6 +840,7 @@ const BuyBox = ({
           tierId: selectedTier.id,
           framing: framingActive,
           embellished: embellishActive,
+          currency: currencyCode,
           ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
@@ -875,23 +884,23 @@ const BuyBox = ({
         {painting.year !== "[ DATE ]" && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Date</dt>
-            <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink">{painting.year}</dd>
+            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.year}</dd>
           </>
         )}
         {painting.size && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Size</dt>
-            <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink">{painting.size}</dd>
+            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.size}</dd>
           </>
         )}
         {painting.location && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Painted in</dt>
-            <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink">{painting.location}</dd>
+            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.location}</dd>
           </>
         )}
         <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Original</dt>
-        <dd className="m-0 font-sans text-[13.5px] leading-[1.6] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
+        <dd className="m-0 font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
       </dl>
 
       {/* Hushed register for the privately-held original — sits directly
@@ -910,8 +919,8 @@ const BuyBox = ({
             jump in size/weight carries the hierarchy, not colour. */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Order a print</p>
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-3">
-          <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,40px)] text-ink m-0">
-            {formatGBP(selectedTier.pricePence).replace(".00", "")}
+          <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,52px)] text-ink m-0">
+            {fmtP(selectedTier.pricePence)}
           </p>
           <p className={cn(META, "m-0")}>
             {selectedTier.size}
@@ -969,7 +978,7 @@ const BuyBox = ({
         {colourwaySet && (
           <div className="mt-7 ring-1 ring-line px-4 py-4">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>The complete colourway set</p>
-            <p className="font-sans text-[13.5px] leading-[1.55] text-ink-muted m-0 mb-3">
+            <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.55] text-ink-muted m-0 mb-3">
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
               for this work — {colourwaySetNames} — each an estate-stamped{" "}
               {selectedTier.label} {selectedTier.size.split(" ")[0]} print, the
@@ -977,14 +986,14 @@ const BuyBox = ({
             </p>
             <p className="font-sans text-[14px] text-ink m-0 mb-1.5">
               <span className="font-display font-semibold tracking-[-0.02em] text-[22px] mr-2.5">
-                {formatGBP(colourwaySet.bundlePricePence).replace(".00", "")}
+                {fmtP(colourwaySet.bundlePricePence)}
               </span>
               the complete set, together
             </p>
             <p className={cn(META, "m-0 mb-3.5")}>
-              {formatGBP(colourwaySet.fullPricePence).replace(".00", "")} bought
+              {fmtP(colourwaySet.fullPricePence)} bought
               singly · a complete-set saving of{" "}
-              {formatGBP(colourwaySet.savePence).replace(".00", "")}
+              {fmtP(colourwaySet.savePence)}
             </p>
             <button
               type="button"
@@ -1032,7 +1041,7 @@ const BuyBox = ({
                 Finish your piece
               </span>
             </legend>
-            <p className="font-sans text-[13.5px] leading-[1.6] text-ink/70 m-0 mb-4">
+            <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink/70 m-0 mb-4">
               Take it further than the print alone — framed ready to hang, or
               hand-finished by the estate. Both are optional and made to order.
             </p>
@@ -1137,7 +1146,7 @@ const BuyBox = ({
                   </span>
                 </span>
                 <span className="font-display font-semibold tracking-[-0.02em] text-[22px] text-ink whitespace-nowrap">
-                  {formatGBP(lineTotalPence).replace(".00", "")}
+                  {fmtP(lineTotalPence)}
                 </span>
               </div>
             )}
@@ -1209,7 +1218,7 @@ const BuyBox = ({
  * desktop; flows directly after the buy box on mobile.
  */
 const Story = ({ painting }: { painting: Painting }) => (
-  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto">
+  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto">
     {painting.artistQuote && (
       <Reveal as="div">
         {/* AboutMasthead grammar adapted to the monochrome PDP: a full-measure
@@ -1221,7 +1230,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         <p className={cn(EYEBROW_MUTED, "m-0 mt-5 mb-5")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3.1vw,40px)] leading-[1.25] text-ink m-0 mb-4 text-balance"
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3.3vw,52px)] leading-[1.25] text-ink m-0 mb-4 text-balance"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
           >
             &ldquo;{painting.artistQuote}&rdquo;
@@ -1233,7 +1242,7 @@ const Story = ({ painting }: { painting: Painting }) => (
 
     <Reveal
       as="div"
-      className="mt-7 md:mt-9 flex flex-col gap-5 font-sans font-normal text-[16px] md:text-[17px] leading-[1.8] text-ink/85"
+      className="mt-7 md:mt-9 flex flex-col gap-5 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
@@ -1243,7 +1252,7 @@ const Story = ({ painting }: { painting: Painting }) => (
     <Reveal as="div" className="mt-7 md:mt-9">
       <Separator className="bg-line mb-7" />
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Original print</p>
-      <p className="font-sans font-normal text-[16px] leading-[1.75] text-ink/85 m-0">
+      <p className="font-sans font-normal text-[clamp(16px,1vw,20px)] leading-[1.75] text-ink/85 m-0">
         {ORIGINAL_PRINT_SPEC}
       </p>
     </Reveal>
@@ -1273,6 +1282,7 @@ const StickyAddBar = ({
   heroSentinelRef: React.RefObject<HTMLDivElement | null>;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
+  const { formatPretty: fmtP } = useCurrency();
   const reduceMotion = useReducedMotion();
   const [pastHero, setPastHero] = useState(false);
   const [atOrder, setAtOrder] = useState(false);
@@ -1374,7 +1384,7 @@ const StickyAddBar = ({
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
-              {formatGBP(selectedTier.pricePence).replace(".00", "")}
+              {fmtP(selectedTier.pricePence)}
             </span>
           </span>
           <button
@@ -1407,7 +1417,7 @@ const StickyAddBar = ({
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
-              {formatGBP(selectedTier.pricePence).replace(".00", "")}
+              {fmtP(selectedTier.pricePence)}
             </span>
           </span>
           <button
@@ -1425,6 +1435,7 @@ const StickyAddBar = ({
 };
 
 export const PaintingDetail = () => {
+  const { formatPretty: fmtP } = useCurrency();
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
 
@@ -1571,7 +1582,7 @@ export const PaintingDetail = () => {
   // ⚠️ "estate-stamped" is the ONE provenance claim true across EVERY visible
   // tier. Do NOT say "signed" (Stephen is deceased — estate stamp + COA, not a
   // hand signature) and do NOT say "numbered"/"limited edition" here: the
-  // from-price tier is the Open Edition (no cap, NOT numbered) under the drop
+  // from-price tier is the Open Edition (no cap, NOT numbered) under the edition
   // model (PRINT_TIERS / ESTATE_AUTHENTICATION / GLOBAL_DROP_NOTE).
   const fromPriceLabel = formatGBP(getLowestTierPricePence(painting));
   const metaDescription = `Estate-stamped giclée print of ${painting.title} by British mandala artist Stephen Meakin — sacred geometry, made to order, from ${fromPriceLabel}. Free worldwide delivery.`;
@@ -1770,7 +1781,7 @@ export const PaintingDetail = () => {
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
-                {formatGBP(pricePence).replace(".00", "")}
+                {fmtP(pricePence)}
               </span>
               <span aria-hidden="true" className="text-ink/35">·</span>
               <span>Order print</span>
@@ -1929,7 +1940,7 @@ export const PaintingDetail = () => {
           {/* THE STORY — below the two-column region, centred. Read after the
               buyer has seen the price + options. */}
           <div className="mt-12 md:mt-14">
-            <Separator className="bg-line mb-8 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] mx-auto" />
+            <Separator className="bg-line mb-8 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

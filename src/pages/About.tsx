@@ -85,22 +85,25 @@ import {
  *  the 0.85 `text-ink-soft` token; `text-ink-muted` is reserved for captions /
  *  cites / meta, so brightest→quietest (body > caption) reads. */
 const BODY =
-  "font-sans font-normal text-[18px] md:text-[19px] 3xl:text-[21px] leading-[1.7] text-ink-soft text-pretty m-0";
+  "font-sans font-normal text-[18px] md:text-[19px] 3xl:text-[clamp(19px,1.18vw,24px)] leading-[1.7] text-ink-soft text-pretty m-0";
 
 /** LEAD scale — the FIRST body paragraph of a chapter lifts one step above
  *  BODY (the two-scale drop that kills uniform-stack monotony). Never used on
  *  two consecutive paragraphs. */
 const LEAD =
-  "font-sans font-normal text-[19px] md:text-[21px] leading-[1.75] text-ink/85 text-pretty m-0";
+  "font-sans font-normal text-[19px] md:text-[21px] 3xl:text-[clamp(21px,1.35vw,27px)] leading-[1.75] text-ink/85 text-pretty m-0";
 
-const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12";
+const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 /** ONE centred reading measure for the whole monograph — every chapter body,
  *  heading, caption and pull-line sits in this single calm column on the page
  *  axis (mx-auto, equal left/right margins). ~760px ≈ 62–68ch at the BODY
- *  scale; feature photos open one step wider via READING_WIDE, also centred. */
-const READING = "mx-auto w-full max-w-[760px]";
-const READING_WIDE = "mx-auto w-full max-w-[960px]";
+ *  scale; feature photos open one step wider via READING_WIDE, also centred.
+ *  On large screens the measure opens proportionally (3xl/4xl) so the prose
+ *  fills the viewport instead of stranding it in a narrow column — kept
+ *  COMFORTABLE (never full-bleed), just one step wider as the type grows. */
+const READING = "mx-auto w-full max-w-[760px] 3xl:max-w-[880px] 4xl:max-w-[960px]";
+const READING_WIDE = "mx-auto w-full max-w-[960px] 3xl:max-w-[1120px] 4xl:max-w-[1240px]";
 
 // ─── CHAPTERS — the page's editorial signature ("the rule and the year") ─────
 // One config array drives every ChapterHead AND the fixed chapter rail, so the
@@ -418,7 +421,7 @@ const AboutMasthead = () => (
           className="font-display font-normal tracking-[-0.01em] text-ink m-0"
           style={{
             fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(23px, 2.7vw, 38px)",
+            fontSize: "clamp(23px, 2.7vw, 48px)",
             lineHeight: 1.3,
           }}
         >
@@ -446,7 +449,7 @@ const AnegadaPoster = () => (
       <Reveal as="div">
         <p className={cn(EYEBROW, "m-0 mb-5")}>Anegada · 1995</p>
         <h3
-          className="font-display font-bold tracking-[-0.03em] text-[clamp(56px,10vw,150px)] leading-[0.92] text-ink m-0"
+          className="font-display font-bold tracking-[-0.03em] text-[clamp(56px,10vw,210px)] leading-[0.92] text-ink m-0"
           style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
         >
           <span className="block">
@@ -469,13 +472,13 @@ const AnegadaPoster = () => (
         <span
           aria-hidden
           className="block font-display font-semibold leading-[0.8] text-accent/60 select-none"
-          style={{ fontVariationSettings: '"opsz" 48, "wght" 600', fontSize: "clamp(64px,7vw,110px)" }}
+          style={{ fontVariationSettings: '"opsz" 48, "wght" 600', fontSize: "clamp(64px,7vw,150px)" }}
         >
           &ldquo;
         </span>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.01em] text-[clamp(26px,3.2vw,44px)] text-ink m-0"
+            className="font-display italic font-normal tracking-[-0.01em] text-[clamp(26px,3.3vw,58px)] text-ink m-0"
             style={{ lineHeight: 1.18 }}
           >
             {ABOUT.anegadaQuote}
@@ -570,11 +573,11 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
     <Reveal as="div" className="border-b border-line py-6 md:py-8">
       <p className={cn(EYEBROW_MUTED, "m-0 mb-3 md:mb-4 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
-        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,44px)] leading-[1.15] text-ink m-0 text-balance">
+        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] leading-[1.15] text-ink m-0 text-balance">
           &ldquo;{item.a}&rdquo;
         </p>
       ) : (
-        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.9vw,20px)] leading-[1.6] text-ink m-0">
+        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.9vw,26px)] leading-[1.6] text-ink m-0">
           {item.a}
         </p>
       )}
@@ -720,7 +723,7 @@ export const About = () => {
             <Reveal as="div">
               <p className={cn(EYEBROW, "m-0 mb-4")}>As he described himself —</p>
               <blockquote className="m-0">
-                <p className="font-display italic tracking-[-0.01em] text-[clamp(20px,2.3vw,30px)] leading-[1.5] text-ink m-0 text-balance">
+                <p className="font-display italic tracking-[-0.01em] text-[clamp(20px,2.4vw,40px)] leading-[1.5] text-ink m-0 text-balance">
                   &ldquo;{ABOUT.opening[1]}&rdquo;
                 </p>
               </blockquote>
@@ -754,7 +757,7 @@ export const About = () => {
             mat). The portrait's caption is right-set so the family-group
             print pulled up beside it never covers it. */}
         <section className={cn(SECTION, "py-6 md:py-8")}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1400px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/13-stephen-outdoor-portrait.jpg"
@@ -794,7 +797,7 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
           <ChapterHead id="beginnings" title="Bath, Brighton, and a different aesthetic." />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[0]}</p>
             </Reveal>
@@ -830,7 +833,7 @@ export const About = () => {
             top-to-bottom: photo → text → photo. */}
         <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
           <ChapterHead id="bournemouth" title="A dusty old hardback." />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
@@ -869,7 +872,7 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="wandering" title="The wandering years." />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[780px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[780px] 3xl:max-w-[920px] 4xl:max-w-[1020px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
@@ -896,7 +899,7 @@ export const About = () => {
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start mt-6 md:mt-8 max-w-[860px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1020px] 4xl:max-w-[1140px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -937,13 +940,13 @@ export const About = () => {
             pull-line; then the poster. */}
         <section id="return" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="return" title="Architecture, fine art, and the first mandala." />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
             </Reveal>
             <Reveal as="div" delay={0.08}>
               <p
-                className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,40px)] leading-[1.2] text-ink m-0 text-balance"
+                className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,52px)] leading-[1.2] text-ink m-0 text-balance"
                 style={{ fontVariationSettings: '"opsz" 36, "wght" 600' }}
               >
                 {ABOUT.earlyLife[4]}
@@ -971,7 +974,7 @@ export const About = () => {
             <p className={cn(EYEBROW_MUTED, "m-0")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
-          <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-12 items-start max-w-[1180px] mx-auto">
+          <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
             <div>
               <Reveal as="div">
                 <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.anegada[1]}</p>
@@ -1016,7 +1019,7 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
           <ChapterHead id="lewes" title="Four traditions, one language." />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center max-w-[1080px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1036,14 +1039,14 @@ export const About = () => {
             {TRADITIONS.map((t) => (
               <div key={t.numeral} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
-                <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.7vw,22px)] leading-[1.3] text-ink m-0 text-balance">
+                <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.7vw,28px)] leading-[1.3] text-ink m-0 text-balance">
                   {t.name}
                 </p>
               </div>
             ))}
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/26-persian-geometry.jpg"
@@ -1085,7 +1088,7 @@ export const About = () => {
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="exhibitions" title="From the Majlis in Dubai to a Formula One car." />
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
             </Reveal>
@@ -1110,7 +1113,7 @@ export const About = () => {
               outranks it; no other internal edits). */}
           <Reveal as="div" className="mb-6 md:mb-8">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
-            <h3 className="font-display font-semibold tracking-[-0.04em] text-[clamp(30px,3.6vw,52px)] leading-[1.05] text-ink text-balance m-0 max-w-[760px]">
+            <h3 className="font-display font-semibold tracking-[-0.04em] text-[clamp(30px,3.7vw,66px)] leading-[1.05] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
               In conversation.
             </h3>
           </Reveal>
@@ -1119,7 +1122,7 @@ export const About = () => {
               turquoise mandala filling the studio wall behind him (PDF p11,
               paired with the geometrist question that follows). Native 3:2 so
               cover never crops. */}
-          <Reveal as="figure" className="m-0 mb-8 md:mb-10 max-w-[1180px] mx-auto">
+          <Reveal as="figure" className="m-0 mb-8 md:mb-10 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto">
             <ImageReveal
               src="/img/about/28-at-the-drafting-table.jpg"
               alt="Stephen Meakin in glasses bent over a mandala print on the studio worktable, pencil in hand, a large turquoise mandala painting filling the wall behind him"
@@ -1162,7 +1165,7 @@ export const About = () => {
           </div>
 
           {/* Q1 — the geometrist answer, full reading measure under the opener. */}
-          <div className="max-w-[860px] mx-auto border-t border-line">
+          <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto border-t border-line">
             <InterviewQA item={INTERVIEW.qa[0]} />
           </div>
 
@@ -1206,10 +1209,10 @@ export const About = () => {
 
           {/* Q4, then the pair the PDF places with it — the studio wall
               crowded with finished paintings, and the paintings at home. */}
-          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
+          <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[3]} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-6 md:mt-8 max-w-[1000px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mt-6 md:mt-8 max-w-[1000px] 3xl:max-w-[1200px] 4xl:max-w-[1340px] mx-auto">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/31-studio-wall.jpg"
@@ -1267,7 +1270,7 @@ export const About = () => {
 
           {/* Q5 — the wonderment beat, answered by the gathering: the crowd
               photograph lands directly beneath it (PDF p14 bottom). */}
-          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
+          <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
           <Reveal as="figure" className="m-0 mt-6 md:mt-8">
@@ -1286,7 +1289,7 @@ export const About = () => {
 
           {/* Q6 — the tea line, then the exhibition room beside the source
               credit (PDF p15). */}
-          <div className="max-w-[860px] mx-auto mt-8 md:mt-10 border-t border-line">
+          <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-8 md:mt-10 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[5]} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-6 md:mt-8">
@@ -1301,7 +1304,7 @@ export const About = () => {
               />
             </Reveal>
             <Reveal as="div" className="md:col-span-7" delay={0.08}>
-              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.8vw,22px)] leading-[1.55] text-ink m-0 mb-5 max-w-[56ch]">
+              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] leading-[1.55] text-ink m-0 mb-5 max-w-[56ch]">
                 {INTERVIEW.source.note}
               </p>
               <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
@@ -1331,7 +1334,7 @@ export const About = () => {
             commission is established verbatim by legacy[1]). The purple→pink
             backdrop crossfade midpoint is tuned to land here. */}
         <section className={cn(SECTION, "py-7 md:py-10")}>
-          <Reveal as="div" className="max-w-[1040px] mx-auto">
+          <Reveal as="div" className="max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
               <div className="bg-cream p-3 md:p-5 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
@@ -1376,7 +1379,7 @@ export const About = () => {
           <div className="max-w-[62ch] mx-auto">
             <Reveal as="div">
               <p
-                className="font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,34px)] leading-[1.3] text-ink m-0 text-balance"
+                className="font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,44px)] leading-[1.3] text-ink m-0 text-balance"
                 style={{ fontVariationSettings: '"opsz" 32, "wght" 600' }}
               >
                 {ABOUT.legacy[2]}
@@ -1411,7 +1414,7 @@ export const About = () => {
         <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="azzarqa" title="To his students." />
 
-          <Reveal as="figure" className="m-0 max-w-[1080px] mx-auto">
+          <Reveal as="figure" className="m-0 max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <ContainImage
               src="/img/about/07-az-zarqa-students.jpg"
               alt="Stephen seated among a group of children, the mandalas they made held up around them"
@@ -1427,17 +1430,17 @@ export const About = () => {
           </Reveal>
 
           {/* THE LETTER — one whole-element Reveal. */}
-          <Reveal as="div" className="max-w-[720px] mx-auto mt-6 md:mt-8">
-            <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14">
+          <Reveal as="div" className="max-w-[720px] 3xl:max-w-[840px] 4xl:max-w-[920px] mx-auto mt-6 md:mt-8">
+            <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14 3xl:p-16">
               <p
-                className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] leading-[1.85] text-ink m-0"
+                className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.85] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 18, "wght" 400' }}
               >
                 {LETTER_BODY}
               </p>
               <div aria-hidden className="h-px w-12 bg-ink/15 my-8" />
               <p
-                className="font-display italic font-normal text-[clamp(22px,2.8vw,36px)] leading-[1.25] text-ink m-0"
+                className="font-display italic font-normal text-[clamp(22px,2.8vw,46px)] leading-[1.25] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
               >
                 {LETTER_CLOSE}
@@ -1453,7 +1456,7 @@ export const About = () => {
             the classroom at cluster scale. The group photo MUST show in full
             (heads + all the mandalas) → contained, never cropped. */}
         <section className={cn(SECTION, "py-7 md:py-10")}>
-          <Reveal as="figure" className="m-0 max-w-[1100px] mx-auto mb-6 md:mb-8">
+          <Reveal as="figure" className="m-0 max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto mb-6 md:mb-8">
             <ContainImage
               src="/img/about/08-taga-group.jpg"
               alt="Stephen with a group of TAGA students, each holding a mandala they painted"
@@ -1465,7 +1468,7 @@ export const About = () => {
               A TAGA group with their finished mandalas · Phoenix Place, Lewes
             </PlateCaption>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/09-taga-studio.jpg"
@@ -1521,7 +1524,7 @@ export const About = () => {
             tribute, opened by Stephen's own "everything is connected" words.
             UNTOUCHABLE — its border-t now reads as the final chapter hairline,
             the motif closing the system. */}
-        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-10 border-t border-line">
+        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] 4xl:max-w-[1160px] px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-10 border-t border-line">
           <Reveal as="div" className="text-center mb-6 md:mb-8">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
@@ -1530,9 +1533,9 @@ export const About = () => {
             <p className={cn(EYEBROW_MUTED, "mt-4")}>{LIFE_DATES}</p>
           </Reveal>
 
-          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[680px] mx-auto border-l border-line pl-6 md:pl-8">
+          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[680px] 3xl:max-w-[800px] mx-auto border-l border-line pl-6 md:pl-8">
             <blockquote className="m-0">
-              <p className="quote-hang font-display italic text-[clamp(20px,2.6vw,28px)] leading-[1.45] text-ink m-0">
+              <p className="quote-hang font-display italic text-[clamp(20px,2.6vw,38px)] leading-[1.45] text-ink m-0">
                 “{MEMORIAL_QUOTE}”
               </p>
             </blockquote>

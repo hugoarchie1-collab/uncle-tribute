@@ -1,9 +1,10 @@
 // src/pages/Search.tsx — /search — the full results page.
 //
-// The Amazon "search results" destination, skinned to the estate: a bold
+// The Amazon "search results" destination, skinned to the estate: a refined
 // left-aligned masthead echoing Collections/FAQ/Contact (eyebrow + hairline +
-// an ENORMOUS Fraunces statement carrying the query, plus a result count),
-// then results GROUPED by type in a fixed editorial order:
+// a composed Fraunces display statement carrying the query — MASTHEAD_TITLE_STYLE,
+// never shouty — plus a result count), then results GROUPED by type in a fixed
+// editorial order:
 //
 //   Artworks → Collections → Pages → News → From the writing → Help
 //
@@ -28,6 +29,7 @@ import { SearchBar } from "../components/SearchBar";
 import { AssetImage } from "../components/AssetImage";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import {
   searchSite,
   SEARCH_TYPE_LABELS,
@@ -217,7 +219,8 @@ export const Search = () => {
       <Nav overlay />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
-        {/* MASTHEAD — bold left-aligned front cover carrying the query. */}
+        {/* MASTHEAD — the refined estate front cover carrying the query (eyebrow
+            + hairline meta rule → a composed Fraunces display title, never shouty). */}
         <header>
           <Reveal
             as="div"
@@ -232,23 +235,19 @@ export const Search = () => {
             </span>
           </Reveal>
 
-          <Reveal as="div" className="mt-3 md:mt-4">
+          <Reveal as="div" className="mt-5 md:mt-7">
             <h1
-              className="m-0 font-display font-bold tracking-[-0.045em] text-ink leading-[0.84]"
-              style={{
-                fontVariationSettings: '"opsz" 48, "wght" 700',
-                fontSynthesis: "none",
-                fontSize: "clamp(48px, 10vw, 168px)",
-              }}
+              className="m-0 font-display text-ink text-balance text-pretty"
+              style={MASTHEAD_TITLE_STYLE}
             >
               {trimmed ? (
                 <>
                   <span className="text-ink-muted">Results for</span>
                   <br />
-                  <span className="break-words">“{trimmed}”</span>
+                  <span className="break-words italic font-normal">“{trimmed}”</span>
                 </>
               ) : (
-                <>Search the<br />estate.</>
+                <>Search the estate</>
               )}
             </h1>
           </Reveal>

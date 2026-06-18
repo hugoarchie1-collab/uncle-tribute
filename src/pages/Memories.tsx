@@ -6,18 +6,19 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT, LIFE_DATES } from "../data/content";
 
 /**
- * /memories — the Book of Memories. Redesigned 2026-06-15 to the home/About
- * LAW (bold, dense, NO blank space): a BOLD left-aligned masthead (the
- * AboutMasthead recipe — a meta rule, a giant edge-to-edge Fraunces statement,
- * the invitation packed immediately beneath under a border-t) opens the page at
- * full width, killing the old timid 640px-band centred header that floated a
- * sub-scale h1 in a sea of dead horizontal space. Below it the wall TILES
+ * /memories — the Book of Memories. A refined masthead (a meta rule, then the
+ * page statement in the shared MASTHEAD_TITLE_STYLE display cut — Fraunces
+ * opsz 144 / wght 560, "Steve" in true italic — with the invitation packed
+ * immediately beneath under a border-t) opens the page, replacing the earlier
+ * over-bold Fraunces-700 logo the owner found "too bold and unprofessional".
+ * Below it the wall TILES
  * DENSELY: the pinned artist comment leads as a single wide feature; visitor
  * memories then flow into a balanced MASONRY (CSS `columns`) so they fill the
  * width as dense editorial cards instead of one endless thin single column.
@@ -194,7 +195,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(14px,1.6vw,16px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(14px,1.6vw,19px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 const CommentRow = ({
   memory,
@@ -239,11 +240,11 @@ const CommentRow = ({
         ) : null}
         {/* HEADER LINE — bold name + quiet inline meta on one wrapping baseline */}
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,16.5px)] leading-[1.3] text-ink break-words">
+          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,19px)] leading-[1.3] text-ink break-words">
             {memory.name}
           </span>
           {meta ? (
-            <span className="font-sans font-normal text-[clamp(12.5px,1.5vw,13px)] leading-[1.3] text-ink-muted break-words">
+            <span className="font-sans font-normal text-[clamp(12.5px,1.5vw,15px)] leading-[1.3] text-ink-muted break-words">
               {meta}
             </span>
           ) : null}
@@ -265,7 +266,7 @@ const CommentRow = ({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(13px,1.5vw,13.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
+            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(13px,1.5vw,15.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
             {expanded ? "Show less" : "Read more"}
           </button>
@@ -673,17 +674,20 @@ const ShareMemoryModal = ({
 };
 
 // ---------------------------------------------------------------------------
-// MemoriesMasthead — the bold front cover (the AboutMasthead recipe, applied to
-// the Book of Memories). A meta rule, then the page statement set ENORMOUS and
-// edge-to-edge (Fraunces 700, opsz 48), then the "names he answered to"
-// invitation packed immediately beneath as the lead under a border-t. No timid
+// MemoriesMasthead — the refined front cover of the Book of Memories. A meta
+// rule, then the page statement set in the shared MASTHEAD_TITLE_STYLE cut
+// (Fraunces opsz 144 / wght 560, the elegant high-contrast display master —
+// authority through RESTRAINT, never the old crude 700 logo the owner flagged
+// as "too bold and unprofessional"), with "Steve" carried in true-italic
+// regular weight as the one emphasised word. The "names he answered to"
+// invitation packs immediately beneath as the lead under a border-t. No timid
 // sub-scale centred title floating in a narrow band; no dead vertical air.
 // `onShare` opens the same modal the composer does, surfaced as a primary CTA
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
   <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(1rem,2vw,1.5rem)]">
-    <div className="mx-auto w-full max-w-[920px] flex flex-col items-center text-center">
+    <div className="mx-auto w-full max-w-[920px] 3xl:max-w-[1080px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span
@@ -697,16 +701,15 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </Reveal>
 
-      <Reveal as="div" className="mt-3 md:mt-4 w-full">
+      <Reveal as="div" className="mt-4 md:mt-6 w-full">
         <h1
-          className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] text-balance"
+          className="font-display text-ink m-0 text-balance"
           style={{
-            fontVariationSettings: '"opsz" 48, "wght" 700',
-            fontSize: "clamp(52px, 12vw, 200px)",
+            ...MASTHEAD_TITLE_STYLE,
             textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
           }}
         >
-          Memories of Steve.
+          Memories of <em className="italic font-normal">Steve</em>
         </h1>
       </Reveal>
 
@@ -719,12 +722,12 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             A wall, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mx-auto max-w-[720px]">
+        <Reveal as="div" delay={0.06} className="mx-auto max-w-[720px] 3xl:max-w-[860px]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(20px, 2.4vw, 32px)",
+              fontSize: "clamp(20px, 2.4vw, 36px)",
               lineHeight: 1.32,
               textShadow: "0 2px 14px rgba(0,0,0,0.7)",
             }}
@@ -821,7 +824,7 @@ export const Memories = () => {
             lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,2.75rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,2.75rem)]"
         >
           {/* a · PINNED artist comment — Stephen's own words lead the wall as a
               single wide feature row (its long letter folds; it would never
@@ -850,7 +853,7 @@ export const Memories = () => {
                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                   </svg>
                 </span>
-                <span className="min-w-0 flex-1 font-sans text-[clamp(13.5px,1.6vw,14.5px)] text-ink-muted transition-colors group-hover:text-ink">
+                <span className="min-w-0 flex-1 font-sans text-[clamp(13.5px,1.6vw,17px)] text-ink-muted transition-colors group-hover:text-ink">
                   Share a memory of Steve…
                 </span>
               </button>
@@ -873,7 +876,7 @@ export const Memories = () => {
               is unchanged — only the row's surface (the `tile` variant) frames
               it inside the column. */}
           {hasVisitorMemories ? (
-            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 gap-[clamp(0.75rem,2vw,1.25rem)] [column-fill:_balance]">
+            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 4xl:columns-5 gap-[clamp(0.75rem,2vw,1.25rem)] [column-fill:_balance]">
               {visitorMemories.map((memory, i) => (
                 <Reveal
                   key={memory.id}
@@ -900,7 +903,7 @@ export const Memories = () => {
                   </span>
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-sans font-normal text-[clamp(14px,1.6vw,15.5px)] leading-[1.55] text-ink-muted m-0">
+                  <p className="font-sans font-normal text-[clamp(14px,1.6vw,18px)] leading-[1.55] text-ink-muted m-0">
                     No memories have been shared yet — be the first to leave one
                     for Steve, using the box above.
                   </p>

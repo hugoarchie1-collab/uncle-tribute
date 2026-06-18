@@ -12,6 +12,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
+import { CurrencyProvider } from "./components/CurrencyProvider";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -155,6 +156,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <BrowserRouter basename={basename}>
+        <CurrencyProvider>
         <RouteHeadDefaults />
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
@@ -188,6 +190,7 @@ export default function App() {
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />
+        </CurrencyProvider>
       </BrowserRouter>
     </MotionConfig>
   );

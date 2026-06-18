@@ -7,8 +7,10 @@ import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { useCurrency } from "../lib/currency";
 import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 import { getBasket, clearBasket, useBasket, type BasketItem } from "../lib/basket";
@@ -19,7 +21,6 @@ import {
   getPaintingById,
   getPaintingsByCollection,
   getAnchorTier,
-  formatGBP,
   type Painting,
 } from "../data/paintings";
 
@@ -133,6 +134,7 @@ const buildCompanions = (justBought: BasketItem[], max = 3): Companion[] => {
 const CompanionCard = ({ companion }: { companion: Companion }) => {
   const { painting, colourwayName, image, note } = companion;
   const anchor = getAnchorTier(painting);
+  const { formatPretty: fmtP, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -155,6 +157,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           tierId: anchor.id,
           framing: false,
           embellished: false,
+          currency: currencyCode,
           ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
@@ -198,7 +201,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
       <p className={cn(META, "mt-2 mb-3")}>{note}</p>
       <div className="mt-auto flex items-baseline justify-between gap-3">
         <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink">
-          {formatGBP(anchor.pricePence).replace(".00", "")}
+          {fmtP(anchor.pricePence)}
         </span>
         <span className={cn(EYEBROW_TIGHT)}>{anchor.size.split(" ")[0]}</span>
       </div>
@@ -294,8 +297,8 @@ export const OrderSuccess = () => {
             Order confirmed
           </p>
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mx-auto leading-[0.82] hero-text-shadow"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 12vw, 168px)" }}
+            className="font-display text-ink m-0 mx-auto hero-text-shadow"
+            style={MASTHEAD_TITLE_STYLE}
           >
             Thank you.
           </h1>
@@ -367,8 +370,8 @@ export const OrderCancel = () => {
             Order cancelled
           </p>
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mx-auto leading-[0.82] hero-text-shadow"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(56px, 10vw, 140px)" }}
+            className="font-display text-ink m-0 mx-auto hero-text-shadow"
+            style={MASTHEAD_TITLE_STYLE}
           >
             No charge taken.
           </h1>

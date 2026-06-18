@@ -87,35 +87,35 @@ const TIERS: Record<TierId, TierDef> = {
     label: "Open Edition",
     size: "A3 (29.5 × 29.5 cm)",
     pricePence: 24500,
-    editionLabel: "Open Edition — issued within each drop",
+    editionLabel: "Open Edition — unnumbered, issued to order",
     available: true,
   },
   collector: {
     id: "collector",
-    label: "Collector Drop",
+    label: "Collector Edition",
     size: "A2 (42 × 42 cm)",
     pricePence: 45000,
-    editionLabel: "Collector Drop — allocation of 200 per drop",
+    editionLabel: "Collector Edition — edition of 200, hand-numbered",
     framingPricePence: 29500,
     embellishmentPricePence: 35000,
     available: true,
   },
   "atelier-grande": {
     id: "atelier-grande",
-    label: "Atelier Drop",
+    label: "Atelier Edition",
     size: "A1 (59.5 × 59.5 cm)",
     pricePence: 85000,
-    editionLabel: "Atelier Drop — allocation of 75 per drop",
+    editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     framingPricePence: 39500,
     embellishmentPricePence: 49500,
     available: true,
   },
   heirloom: {
     id: "heirloom",
-    label: "Heirloom Drop",
+    label: "Heirloom Edition",
     size: "A0 (84 × 84 cm)",
     pricePence: 175000,
-    editionLabel: "Heirloom Drop — allocation of 18 per drop",
+    editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,750 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
     available: true,
@@ -208,16 +208,53 @@ const lineRetailPence = (item: NormalisedItem): number => {
 
 // Boilerplate spec line used in Stripe product description.
 const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, numbered within its drop. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at Point 101, London.";
+  "Estate-stamped by The Mandala Company, numbered within its edition. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at Point 101, London.";
 
-// The drop the catalogue is currently issuing under (mirror of CURRENT_DROP in
-// src/data/paintings.ts — gotcha #5 forbids importing it here). Surfaced on the
-// Stripe line so each checkout line reads "… · Drop I".
-const DROP_LABEL = "Drop I";
+// The edition the catalogue is currently issuing under (mirror of
+// CURRENT_EDITION in src/data/paintings.ts — gotcha #5 forbids importing it
+// here). Surfaced on the Stripe line so each checkout line reads "… · First
+// Edition".
+const EDITION_LABEL = "First Edition";
 
 // Hard cap on a single Stripe checkout — sane upper bound for a 10-painting
 // catalogue; protects against an absurd POST body from a broken client.
 const MAX_ITEMS = 20;
+
+// ---- Presentment currency (mirror of src/lib/currency.tsx) ----------------
+// The catalogue is priced in GBP pence (the source of truth). A buyer can pick
+// a presentment currency in the header; the client forwards `currency` on the
+// checkout body, and we charge the Stripe session in that currency at the SAME
+// converted amount the buyer was shown — so advertised == charged in every
+// currency. ⚠️ MIRROR (gotcha #9 family): CURRENCY_RATES + the convert rule +
+// CURRENCY_FX_VERSION below MUST stay byte-identical to src/lib/currency.tsx
+// (CURRENCIES[*].rate / convertFromGbpPence / CURRENCY_FX_VERSION). Change both
+// in the same commit or the displayed price and the charged price drift.
+// ⚠️HUGO: these are ESTATE-SET fixed rates, not a live feed — see the note in
+// src/lib/currency.tsx. All supported currencies are 2-decimal.
+const CURRENCY_FX_VERSION = "2026-06-17.1";
+type CurrencyCode = "gbp" | "usd" | "eur" | "aud" | "cad";
+const CURRENCY_RATES: Record<CurrencyCode, number> = {
+  gbp: 1,
+  usd: 1.27,
+  eur: 1.17,
+  aud: 1.94,
+  cad: 1.74,
+};
+const isCurrencyCode = (v: unknown): v is CurrencyCode =>
+  typeof v === "string" &&
+  Object.prototype.hasOwnProperty.call(CURRENCY_RATES, v.toLowerCase());
+
+/**
+ * Convert a GBP price (pence) into the target currency's MINOR units. GBP is
+ * exact; every other currency rounds to the nearest WHOLE major unit (multiple
+ * of 100 minor) so the figure reads clean ($572, not $571.50). EXACT mirror of
+ * convertFromGbpPence in src/lib/currency.tsx — keep both rules identical.
+ */
+const convertFromGbpMinor = (gbpPence: number, code: CurrencyCode): number => {
+  if (code === "gbp") return Math.round(gbpPence);
+  const raw = gbpPence * CURRENCY_RATES[code];
+  return Math.round(raw / 100) * 100;
+};
 
 // ---- Gift-card bounds (mirror of src/lib/basket.ts) -----------------------
 // Whole pounds only; min £25, max £5,000. Re-validated here so a tampered
@@ -492,27 +529,30 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
  *
  * `items` is retained in the signature (call-site compatibility) even though the
  * rate no longer depends on the basket contents — every order ships free.
+ *
+ * `currency` MUST match the session currency (Stripe rejects a shipping rate in
+ * a different currency than the line items). Every band is £0 → 0 in any
+ * currency, so the displayed "Free" is exact regardless of presentment currency.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature kept for call-site compatibility
-const buildShippingOptions = (_items: NormalisedItem[]) => [
+const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) => [
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
-      fixed_amount: { amount: 0, currency: "gbp" },
+      fixed_amount: { amount: 0, currency },
       display_name: "United Kingdom — free delivery (5-7 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
-      fixed_amount: { amount: 0, currency: "gbp" },
+      fixed_amount: { amount: 0, currency },
       display_name: "Europe — free delivery (7-10 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
-      fixed_amount: { amount: 0, currency: "gbp" },
+      fixed_amount: { amount: 0, currency },
       display_name: "Worldwide — free delivery (10-14 working days)",
     },
   },
@@ -564,6 +604,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }>;
     // First-touch attribution (contract C1) — optional on BOTH body shapes.
     utm?: unknown;
+    // Presentment currency (mirror of src/lib/currency.tsx). Optional; invalid
+    // / missing defaults to GBP. The session is charged in this currency at the
+    // converted amount the buyer was shown.
+    currency?: unknown;
   };
   try {
     body =
@@ -594,6 +638,15 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   if (rawItems.length > MAX_ITEMS) {
     return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
   }
+
+  // Presentment currency — validated against the mirror table; anything else
+  // (incl. absent) falls back to GBP. `toMinor` converts a GBP-pence figure to
+  // this currency's minor units, matching what the buyer saw on the site.
+  const currencyCode: CurrencyCode = isCurrencyCode(body.currency)
+    ? ((body.currency as string).toLowerCase() as CurrencyCode)
+    : "gbp";
+  const toMinor = (gbpPence: number): number =>
+    convertFromGbpMinor(gbpPence, currencyCode);
 
   // Split + normalise. A line with kind === "gift" is a digital gift card;
   // everything else is a print (kind absent / "print" — preserves the legacy
@@ -640,11 +693,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     lineItems.push({
       quantity: 1,
       price_data: {
-        currency: "gbp",
-        unit_amount: item.tier.pricePence,
+        currency: currencyCode,
+        unit_amount: toMinor(item.tier.pricePence),
         product_data: {
-          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${DROP_LABEL}`}`,
-          description: `${item.tier.size}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in ${DROP_LABEL}.`} ${PRINT_SPEC}`,
+          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
+          description: `${item.tier.size}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`} ${PRINT_SPEC}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).
@@ -655,8 +708,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       lineItems.push({
         quantity: 1,
         price_data: {
-          currency: "gbp",
-          unit_amount: item.tier.framingPricePence,
+          currency: currencyCode,
+          unit_amount: toMinor(item.tier.framingPricePence),
           product_data: {
             name: `Framing — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
             description: `Hand-finished frame for the ${item.tier.label} edition.`,
@@ -671,8 +724,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       lineItems.push({
         quantity: 1,
         price_data: {
-          currency: "gbp",
-          unit_amount: item.tier.embellishmentPricePence,
+          currency: currencyCode,
+          unit_amount: toMinor(item.tier.embellishmentPricePence),
           product_data: {
             name: `Hand-finished by Polly Wedge — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
             // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 —
@@ -700,8 +753,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     lineItems.push({
       quantity: 1,
       price_data: {
-        currency: "gbp",
-        unit_amount: gift.amountPence, // advertised == charged
+        currency: currencyCode,
+        unit_amount: toMinor(gift.amountPence), // advertised == charged
         product_data: {
           name: `Gift card — ${gift.label}`,
           description:
@@ -901,7 +954,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             "US", "CA", "AU", "NZ",
           ],
         },
-        shipping_options: buildShippingOptions(normalised),
+        shipping_options: buildShippingOptions(normalised, currencyCode),
       };
 
   // Base session params — the proven checkout shape. The marketing add-ons
@@ -969,6 +1022,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
 
     console.log("[/api/checkout] session created", {
       id: session.id,
+      currency: currencyCode,
+      fxVersion: CURRENCY_FX_VERSION,
       itemCount: normalised.length,
       paintings: normalised.map((i) => i.paintingId).join(","),
       tiers: normalised.map((i) => i.tier.id).join(","),

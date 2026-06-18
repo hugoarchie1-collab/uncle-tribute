@@ -6,9 +6,10 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { PageMasthead } from "../components/PageMasthead";
+import { useCurrency } from "../lib/currency";
 import {
   PRINT_TIERS,
-  formatGBP,
   type PrintTier,
 } from "../data/paintings";
 import {
@@ -64,13 +65,24 @@ const tierToDenomination = (tier: PrintTier): Denomination => ({
   amountPence: tier.pricePence,
 });
 
-/** The metadata label a denomination carries into the basket / Stripe. */
-const denominationCardLabel = (d: Denomination): string =>
-  `${d.sizeShort} ${d.label} — ${formatGBP(d.amountPence)}`;
+/**
+ * The metadata label a denomination carries into the basket / Stripe. Takes the
+ * active currency formatter (from useCurrency) so the label reads in the buyer's
+ * chosen presentment currency — the figure shown equals the figure charged.
+ */
+const denominationCardLabel = (
+  d: Denomination,
+  fmt: (gbpPence: number) => string,
+): string => `${d.sizeShort} ${d.label} — ${fmt(d.amountPence)}`;
 
 type Selection = { kind: "tier"; id: PrintTier["id"] } | { kind: "custom" };
 
 export const Gift = () => {
+  // Presentment currency — every figure on this page (and the label carried into
+  // the basket) reads in the buyer's chosen currency; the same conversion is
+  // applied server-side at checkout, so advertised == charged.
+  const { format: fmt, formatPretty: fmtP } = useCurrency();
+
   // Size-pegged denominations: available, non-one-off tiers, in ladder order.
   const denominations = useMemo<Denomination[]>(
     () =>
@@ -107,7 +119,7 @@ export const Gift = () => {
     if (selection.kind === "tier") {
       const d = denominations.find((x) => x.id === selection.id);
       if (!d) return null;
-      return { amountPence: d.amountPence, label: denominationCardLabel(d) };
+      return { amountPence: d.amountPence, label: denominationCardLabel(d, fmt) };
     }
     // Custom — parse whole pounds.
     const pounds = Number.parseInt(customAmount, 10);
@@ -120,8 +132,8 @@ export const Gift = () => {
     ) {
       return null;
     }
-    return { amountPence, label: `Custom amount — ${formatGBP(amountPence)}` };
-  }, [selection, customAmount, denominations]);
+    return { amountPence, label: `Custom amount — ${fmt(amountPence)}` };
+  }, [selection, customAmount, denominations, fmt]);
 
   const handleAdd = () => {
     setError("");
@@ -167,52 +179,48 @@ export const Gift = () => {
         url="/gift"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-8 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-8 md:pb-12">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
-            Bold left-aligned front cover (the AboutMasthead recipe): a meta
-            rule → a giant Fraunces statement filling the width → the
-            supporting passage packed immediately beneath under a border-t.
-            No timid centred header, no dead vertical air. The denomination
-            range is surfaced in the meta row as a confident commerce fact
-            (figures read LIVE from GIFT_MIN/MAX_PENCE — never re-typed). */}
-        <Reveal as="header" className="mb-6 md:mb-8">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-            <span className={EYEBROW}>Gift an edition</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:block")}>
-              {formatGBP(GIFT_MIN_PENCE).replace(".00", "")} –{" "}
-              {formatGBP(GIFT_MAX_PENCE).replace(".00", "")}
-            </span>
-          </div>
-
-          <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-5 leading-[0.86]"
-            style={{
-              fontVariationSettings: '"opsz" 48, "wght" 700',
-              fontSize: "clamp(52px, 11vw, 168px)",
-            }}
+            The refined shared <PageMasthead>: eyebrow + hairline meta rule →
+            a composed Fraunces statement (wght 560, one italic emphasis word,
+            NOT a bold logo) → the supporting passage beneath under a border-t.
+            The denomination range is surfaced in the meta row as a quiet
+            commerce fact (figures read LIVE from GIFT_MIN/MAX_PENCE in the
+            buyer's currency — never re-typed). */}
+        <Reveal className="mb-6 md:mb-8">
+          <PageMasthead
+            eyebrow="Gift an edition"
+            meta={
+              <>
+                {fmtP(GIFT_MIN_PENCE)} – {fmtP(GIFT_MAX_PENCE)}
+              </>
+            }
+            title={
+              <>
+                Give a <em className="italic font-normal">piece</em> of
+                Stephen's work.
+              </>
+            }
           >
-            Give a piece<br />of Stephen's work.
-          </h1>
-
-          <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
-            <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
-              A digital gift card · redeemed against any edition
-            </p>
-            <p
-              className="font-display font-normal tracking-[-0.01em] text-ink m-0 lg:col-span-9"
-              style={{
-                fontVariationSettings: '"opsz" 32, "wght" 400',
-                fontSize: "clamp(21px, 2.5vw, 34px)",
-                lineHeight: 1.3,
-              }}
-            >
-              A gift towards any estate-stamped print of Stephen Meakin's
-              mandala paintings. Choose an amount pegged to a print size — or
-              set your own — add a few words if you wish, and let the person
-              you're thinking of choose the work that speaks to them.
-            </p>
-          </div>
+            <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
+              <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
+                A digital gift card · redeemed against any edition
+              </p>
+              <p
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 lg:col-span-9"
+                style={{
+                  fontVariationSettings: '"opsz" 32, "wght" 400',
+                  fontSize: "clamp(21px, 2.6vw, 40px)",
+                  lineHeight: 1.3,
+                }}
+              >
+                A gift towards any estate-stamped print of Stephen Meakin's
+                mandala paintings. Choose an amount pegged to a print size — or
+                set your own — add a few words if you wish, and let the person
+                you're thinking of choose the work that speaks to them.
+              </p>
+            </div>
+          </PageMasthead>
         </Reveal>
 
         {added ? (
@@ -221,16 +229,16 @@ export const Gift = () => {
             <p className={cn(EYEBROW, "m-0 lg:col-span-3 lg:pt-3")}>In your basket</p>
             <div className="lg:col-span-9 max-w-[64ch]">
               <p
-                className="font-display font-semibold tracking-[-0.025em] text-[clamp(28px,4vw,52px)] leading-[1.05] text-ink m-0"
+                className="font-display font-semibold tracking-[-0.025em] text-[clamp(28px,4.2vw,64px)] leading-[1.05] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
               >
                 A gift card of{" "}
                 <span className="text-accent">
-                  {formatGBP(added.amountPence).replace(".00", "")}
+                  {fmtP(added.amountPence)}
                 </span>{" "}
                 is in your basket.
               </p>
-              <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.65] text-ink-muted m-0 mt-4">
+              <p className="font-sans font-normal text-[clamp(15px,0.9vw,20px)] leading-[1.65] text-ink-muted m-0 mt-4">
                 The amount you see is exactly what you'll pay — nothing is added
                 at checkout. You can add another, or proceed when you're ready.
               </p>
@@ -263,7 +271,7 @@ export const Gift = () => {
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 md:gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 3xl:grid-cols-4 gap-2.5 md:gap-3 3xl:gap-4">
                 {denominations.map((d) => {
                   const isSelected =
                     selection.kind === "tier" && selection.id === d.id;
@@ -287,8 +295,8 @@ export const Gift = () => {
                       <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
                         {d.sizeShort} · {d.label}
                       </span>
-                      <span className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,38px)] text-ink leading-none block">
-                        {formatGBP(d.amountPence).replace(".00", "")}
+                      <span className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,46px)] text-ink leading-none block">
+                        {fmtP(d.amountPence)}
                       </span>
                     </button>
                   );
@@ -304,7 +312,7 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 sm:col-span-3",
+                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 sm:col-span-3 3xl:col-span-4",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"
@@ -314,22 +322,22 @@ export const Gift = () => {
                   <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
                     Custom amount
                   </span>
-                  <span className="font-sans font-normal text-[14px] text-ink-muted">
-                    Any whole-pound value from {formatGBP(GIFT_MIN_PENCE).replace(".00", "")} to{" "}
-                    {formatGBP(GIFT_MAX_PENCE).replace(".00", "")}.
+                  <span className="font-sans font-normal text-[clamp(14px,0.85vw,18px)] text-ink-muted">
+                    Any whole-pound value from {fmtP(GIFT_MIN_PENCE)} to{" "}
+                    {fmtP(GIFT_MAX_PENCE)}.
                   </span>
                 </button>
               </div>
 
               {selection.kind === "custom" && (
-                <label className="block mt-4 max-w-[280px]">
+                <label className="block mt-4 max-w-[280px] 3xl:max-w-[340px]">
                   <span className={cn(EYEBROW_MUTED, "block mb-2")}>
                     Amount (£)
                   </span>
                   <div className="relative">
                     <span
                       aria-hidden="true"
-                      className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-[15px] text-ink-muted"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-[clamp(15px,0.85vw,18px)] text-ink-muted"
                     >
                       £
                     </span>
@@ -345,7 +353,7 @@ export const Gift = () => {
                         setCustomAmount(e.target.value);
                         setError("");
                       }}
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={String(minPounds)}
                     />
                   </div>
@@ -373,7 +381,7 @@ export const Gift = () => {
                     autoComplete="name"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="Their name"
                   />
                 </label>
@@ -387,7 +395,7 @@ export const Gift = () => {
                     autoComplete="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="them@example.com"
                   />
                 </label>
@@ -402,11 +410,11 @@ export const Gift = () => {
                   value={giftMessage}
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={400}
-                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                   placeholder="A few words to go with the gift."
                 />
               </label>
-              <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-2.5 max-w-[56ch]">
+              <p className="font-sans font-normal text-[clamp(12.5px,0.7vw,15px)] leading-[1.55] text-ink-muted m-0 mt-2.5 max-w-[56ch]">
                 Leave these blank to gift the card to yourself to pass on by
                 hand. The amount is charged at checkout exactly as shown — there
                 is no delivery cost on a gift card.
@@ -419,11 +427,11 @@ export const Gift = () => {
             <Reveal as="div" className="lg:col-span-5 lg:col-start-8">
               <div className="lg:sticky lg:top-28 rounded-2xl bg-bg-soft ring-1 ring-line p-6 md:p-8">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
-                <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,92px)] text-ink m-0 leading-[0.85]"
+                <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,116px)] text-ink m-0 leading-[0.85]"
                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}>
-                  {resolved ? formatGBP(resolved.amountPence).replace(".00", "") : "—"}
+                  {resolved ? fmtP(resolved.amountPence) : "—"}
                 </p>
-                <p className="font-sans font-normal text-[13.5px] leading-[1.6] text-ink-muted m-0 mt-5 max-w-[40ch]">
+                <p className="font-sans font-normal text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted m-0 mt-5 max-w-[40ch]">
                   The figure you choose is exactly what you pay — nothing is
                   added at checkout, and a gift card carries no delivery cost.
                 </p>
@@ -436,7 +444,7 @@ export const Gift = () => {
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
                 {error && (
-                  <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">
+                  <p role="alert" className="mt-4 font-sans text-[clamp(13px,0.75vw,16px)] text-accent m-0">
                     {error}
                   </p>
                 )}

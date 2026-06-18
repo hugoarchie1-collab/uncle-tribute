@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Logo } from "./Logo";
 import { SearchBar } from "./SearchBar";
 import { DeliverTo } from "./DeliverTo";
+import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
@@ -82,6 +83,14 @@ const BasketIcon = ({ className }: { className?: string }) => (
  */
 export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const [scrolled, setScrolled] = useState(false);
+  // Smart hide-on-scroll (the premium pattern): the bar SLIDES AWAY on scroll
+  // DOWN and slides back in on scroll UP, so the top panel is always cleanly
+  // distinguished from the content moving under it — and never floats as a
+  // persistent banner over the reading column. Transform + opacity only
+  // (compositor-cheap); NO backdrop-filter on this always-mounted fixed element
+  // (that re-samples the full-width strip every scroll frame — the "2005-lag").
+  const [hidden, setHidden] = useState(false);
+  const lastYRef = useRef(0);
   // Count ALL basket lines — prints AND gift cards — so the badge reflects a
   // gift-only basket too.
   const basket = useBasketLines();
@@ -110,10 +119,35 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   }, [basketCount, location.pathname]);
 
   useEffect(() => {
-    const handle = () => setScrolled(window.scrollY > 40);
-    handle();
-    window.addEventListener("scroll", handle, { passive: true });
-    return () => window.removeEventListener("scroll", handle);
+    // Always reveal above this — the top zone (hero / intro film) shows the bar.
+    const SHOW_ABOVE = 90;
+    // Direction deadband so micro-jitter / trackpad inertia never flickers it.
+    const DELTA = 6;
+    let raf = 0;
+    lastYRef.current = window.scrollY;
+    const evaluate = () => {
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      const last = lastYRef.current;
+      if (y < SHOW_ABOVE) {
+        setHidden(false);
+      } else if (y > last + DELTA) {
+        setHidden(true); // scrolling down → slide away
+      } else if (y < last - DELTA) {
+        setHidden(false); // scrolling up → slide back in
+      }
+      lastYRef.current = y;
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(evaluate);
+    };
+    evaluate();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   // Close the mobile menu whenever the route changes.
@@ -182,23 +216,29 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     <header
       className={cn(
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
-        "z-50 px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 text-ink",
-        // Scrolled: a soft top-down dark GRADIENT (no backdrop-filter). A
-        // `backdrop-blur` on this always-visible fixed bar forced the browser to
-        // re-sample + re-blur the entire viewport-width strip on EVERY scroll
-        // frame — the single biggest "2005-laggy scroll" cost on large screens
-        // (it scales with width). A gradient costs nothing per frame, still
-        // fades the seam (so it never reads as a hard black rectangle), and the
-        // strong top keeps the cream logo + links legible over busy backdrops.
+        "z-50 px-4 sm:px-6 md:px-8 lg:px-12 text-ink",
+        // Slide-away on scroll-down / slide-in on scroll-up. Transform + opacity
+        // are GPU-composited, so the hide/reveal costs nothing on the main
+        // thread. Slightly slower reveal than hide reads as deliberate, premium.
+        "transition-[transform,opacity,padding,background-color] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] will-change-transform",
+        // Keep the bar pinned while the mobile menu is open (the drawer needs its
+        // toggle reachable) and whenever it's revealed.
+        hidden && !menuOpen
+          ? "-translate-y-full opacity-0 pointer-events-none"
+          : "translate-y-0 opacity-100",
+        // Scrolled: a NEAR-SOLID dark fill (real CSS class — see global.css
+        // .nav-bg-scrolled) so content moving under the bar is cleanly separated
+        // and never bleeds through — the distinct "top panel" the brief asks for.
+        // No backdrop-filter (the banned per-frame "2005-lag"); the fill keeps the
+        // cream logo + links legible and the shadow softens the seam.
         scrolled
-          ? "py-3 bg-gradient-to-b from-[#0a0908]/94 via-[#0a0908]/82 to-[#0a0908]/55 border-b border-white/10"
-          // Always a soft top-down scrim behind the header (Hugo: the deep-red
-          // seal + cream links must never get swallowed by the busy
-          // peacock/photo backdrops). Overlay pages get a slightly stronger one;
-          // plain sticky pages — previously fully transparent — now get one too.
+          ? "py-3 nav-bg-scrolled border-b border-white/10 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.9)]"
+          // At the very top: a soft top-down scrim (real CSS) so the deep-red seal
+          // + cream links never get swallowed by the busy peacock/photo backdrops,
+          // while the hero/film still reads through. Overlay pages get a touch more.
           : overlay
-            ? "py-5 bg-gradient-to-b from-[#0a0908]/70 via-[#0a0908]/28 to-transparent border-b border-transparent"
-            : "py-5 bg-gradient-to-b from-[#0a0908]/55 via-[#0a0908]/16 to-transparent border-b border-transparent",
+            ? "py-5 nav-bg-top border-b border-transparent"
+            : "py-5 nav-bg-top-plain border-b border-transparent",
       )}
     >
       <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
@@ -227,7 +267,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           {/* Primary links — inline from `lg` up; collapsed into the accessible
               menu below `lg`. */}
           <nav
-            className="hidden 2xl:flex items-center gap-7 3xl:gap-9"
+            className="hidden 3xl:flex items-center gap-6 3xl:gap-8"
             aria-label="Primary"
           >
             {NAV_LINKS.map((l) => (
@@ -255,6 +295,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             ))}
             <ReturningVisitorChip />
           </nav>
+
+          {/* Currency — presentment-currency picker. lg+ in the bar; in the
+              drawer below. Converts every price live AND charges in the chosen
+              currency at checkout (advertised == charged). */}
+          <CurrencySelect variant="header" className="hidden lg:inline-block shrink-0" />
 
           {/* Account — Amazon "Account & Lists" entry. Reachable on md+; on
               small screens it lives in the drawer's links. */}
@@ -340,7 +385,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((o) => !o)}
-            className="press 2xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+            className="press 3xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
           >
             <svg
               width="22"
@@ -417,7 +462,7 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
-            className="2xl:hidden fixed inset-0 z-[120] bg-black/60"
+            className="3xl:hidden fixed inset-0 z-[120] bg-black/60"
           />
 
           {/* PANEL — opaque drawer sliding in from the right. */}
@@ -431,7 +476,7 @@ const NavMenu = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: reduceMotion ? 0 : 0.42, ease: EASE_SMOOTH }}
-            className="2xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
+            className="3xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
@@ -466,8 +511,10 @@ const NavMenu = ({
             >
               {/* Search at the top of the drawer — committing a result closes it. */}
               <SearchBar variant="page" onNavigate={onClose} className="mb-4" />
-              {/* Deliver-to — the header control's drawer home on small screens. */}
-              <DeliverTo variant="menu" className="mb-5" />
+              {/* Deliver-to + Currency — the header controls' drawer home on
+                  small screens. */}
+              <DeliverTo variant="menu" className="mb-3" />
+              <CurrencySelect variant="menu" className="mb-5" />
               {NAV_LINKS.map((l, i) => (
                 <motion.div
                   key={l.to}

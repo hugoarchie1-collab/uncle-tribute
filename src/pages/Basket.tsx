@@ -11,7 +11,6 @@ import { EmailMyBasket } from "../components/EmailMyBasket";
 import { ExitSaveBasket } from "../components/ExitSaveBasket";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import {
-  formatGBP,
   getAnchorTier,
   getLowestTierPricePence,
   getPaintingById,
@@ -20,6 +19,7 @@ import {
   PAINTINGS,
   type PrintTier,
 } from "../data/paintings";
+import { useCurrency } from "../lib/currency";
 import { useBasket, useGiftCards, removeItem, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
@@ -29,6 +29,7 @@ import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { useNoindexHead } from "../lib/useNoindexHead";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 
 /**
  * Hydrated basket line — joins a stored item against the live catalogue so
@@ -203,6 +204,10 @@ export const Basket = () => {
   usePageTitle("Your Basket");
   // Transactional route — noindex + default meta (see useNoindexHead).
   useNoindexHead();
+  // Presentment currency (header picker). `fmt` charges-parity formatting,
+  // `fmtP` the pretty (no .00) variant; `currencyCode` rides along on the
+  // checkout POST so Stripe charges in the SAME currency shown here.
+  const { format: fmt, formatPretty: fmtP, code: currencyCode } = useCurrency();
   const items = useBasket();
   const lines = resolveLines(items);
 
@@ -284,6 +289,10 @@ export const Basket = () => {
               ...(g.giftMessage ? { giftMessage: g.giftMessage } : {}),
             })),
           ],
+          // Presentment currency from the header picker — api/checkout.ts
+          // converts every pence figure into it so the Stripe charge matches
+          // the price shown on this page (advertised == charged, any currency).
+          currency: currencyCode,
           ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
@@ -314,10 +323,10 @@ export const Basket = () => {
       <AmbientBackdrop opacity={0.4} />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14">
-        {/* MASTHEAD — bold page-level header on the AboutMasthead grammar: a
-            meta rule band, the title set large left-aligned (Fraunces 700,
-            opsz 48), then the line count packed under a hairline. Replaces the
-            timid EYEBROW → small-TITLE → mb-10 dead gap. */}
+        {/* MASTHEAD — the refined estate register (see PageMasthead): the same
+            eyebrow-left + hairline + muted-right meta rule, then the title in
+            the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
+            clamp ≤116px) instead of the old over-bold 700/opsz-48 logo. */}
         <Reveal as="div" className="mb-8 md:mb-10">
           <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span className={EYEBROW}>Made to order</span>
@@ -325,15 +334,15 @@ export const Basket = () => {
             <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
           </div>
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.85] hero-text-shadow"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(52px, 9vw, 132px)" }}
+            className="font-display text-ink m-0 mt-5 md:mt-7 text-balance text-pretty"
+            style={MASTHEAD_TITLE_STYLE}
           >
-            Your basket.
+            Your basket
           </h1>
         </Reveal>
 
         {isEmpty ? (
-          <Reveal as="div" className="max-w-[640px]">
+          <Reveal as="div" className="max-w-[640px] 3xl:max-w-[760px]">
             <p className={cn(SUBTITLE, "m-0 mb-6")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
@@ -353,7 +362,7 @@ export const Basket = () => {
                       <Link
                         to={`/collections/${painting.id}`}
                         className="group block"
-                        aria-label={`${painting.title} — from ${formatGBP(fromPence).replace(".00", "")}`}
+                        aria-label={`${painting.title} — from ${fmtP(fromPence)}`}
                       >
                         <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
                           <AssetImage
@@ -370,11 +379,11 @@ export const Basket = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                           />
                         </div>
-                        <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[16px] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                        <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,0.9vw,20px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
                           {painting.title}
                         </h3>
-                        <p className="font-sans font-normal text-[12.5px] leading-[1.5] text-ink-muted m-0 mt-1">
-                          From {formatGBP(fromPence).replace(".00", "")}
+                        <p className="font-sans font-normal text-[clamp(12.5px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
+                          From {fmtP(fromPence)}
                         </p>
                       </Link>
                     </li>
@@ -427,7 +436,7 @@ export const Basket = () => {
                           )}
                           <Link
                             to={`/collections/${line.paintingId}`}
-                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,26px)] text-ink leading-tight hover:text-accent transition-colors"
+                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2.2vw,30px)] text-ink leading-tight hover:text-accent transition-colors"
                           >
                             {line.title}
                           </Link>
@@ -437,7 +446,7 @@ export const Basket = () => {
                             {line.tier.label} · {line.tier.size.split(" ")[0]}
                             <span className="hidden sm:inline"> · {line.tier.editionLabel}</span>
                           </p>
-                          <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
+                          <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
                             {line.colourwayName}
                           </p>
                           <button
@@ -452,8 +461,8 @@ export const Basket = () => {
                             this is the PRINT-ONLY figure and the line subtotal
                             is shown below — so nothing is hidden (DMCC #13:
                             no drip-pricing). */}
-                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,24px)] text-ink m-0 flex-shrink-0">
-                          {formatGBP(line.tier.pricePence)}
+                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
+                          {fmt(line.tier.pricePence)}
                         </p>
                       </div>
 
@@ -464,30 +473,30 @@ export const Basket = () => {
                       {hasAddOns && (
                         <div className="mt-4 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
-                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
+                            <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                               {line.tier.label} print ({line.tier.size.split(" ")[0]})
                             </span>
-                            <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                              {formatGBP(line.tier.pricePence)}
+                            <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                              {fmt(line.tier.pricePence)}
                             </span>
                           </div>
                           {framingPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                                 Framing (black-stained oak)
                               </span>
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                + {formatGBP(framingPence)}
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                                + {fmt(framingPence)}
                               </span>
                             </div>
                           )}
                           {embellishPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted min-w-0">
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                                 Hand-finished by Polly Wedge
                               </span>
-                              <span className="font-sans text-[13px] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                + {formatGBP(embellishPence)}
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                                + {fmt(embellishPence)}
                               </span>
                             </div>
                           )}
@@ -495,8 +504,8 @@ export const Basket = () => {
                             <span className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted min-w-0">
                               Line total
                             </span>
-                            <span className="font-sans text-[13px] font-semibold text-ink tabular-nums flex-shrink-0">
-                              {formatGBP(lineTotalPence(line))}
+                            <span className="font-sans text-[clamp(13px,0.78vw,16px)] font-semibold text-ink tabular-nums flex-shrink-0">
+                              {fmt(lineTotalPence(line))}
                             </span>
                           </div>
                         </div>
@@ -519,17 +528,17 @@ export const Basket = () => {
                     >
                       <div className="flex gap-5 sm:gap-7 items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2vw,26px)] text-ink leading-tight m-0">
+                          <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2.2vw,30px)] text-ink leading-tight m-0">
                             Gift card
                           </p>
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>{g.label}</p>
                           {(g.recipientName || g.recipientEmail) && (
-                            <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 mt-1.5">
+                            <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
                               For {g.recipientName || g.recipientEmail}
                             </p>
                           )}
                           {g.giftMessage && (
-                            <p className="font-display italic text-[13px] leading-[1.55] text-ink/55 m-0 mt-1.5">
+                            <p className="font-display italic text-[clamp(13px,0.78vw,16px)] leading-[1.55] text-ink/55 m-0 mt-1.5">
                               “{g.giftMessage}”
                             </p>
                           )}
@@ -541,8 +550,8 @@ export const Basket = () => {
                             Remove
                           </button>
                         </div>
-                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.6vw,24px)] text-ink m-0 flex-shrink-0">
-                          {formatGBP(g.amountPence)}
+                        <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
+                          {fmt(g.amountPence)}
                         </p>
                       </div>
                     </li>
@@ -560,31 +569,31 @@ export const Basket = () => {
                   prominence, nothing first revealed at Stripe. */}
               <dl className="m-0 flex flex-col gap-2.5 mb-5">
                 <div className="flex items-baseline justify-between gap-6">
-                  <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0 min-w-0">
+                  <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
                     Subtotal{" "}
-                    <span className="text-[12px]">(prints + selected add-ons)</span>
+                    <span className="text-[clamp(12px,0.7vw,15px)]">(prints + selected add-ons)</span>
                   </dt>
-                  <dd className="font-sans text-[15px] text-ink m-0 tabular-nums flex-shrink-0">
-                    {formatGBP(subtotalPence)}
+                  <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
+                    {fmt(subtotalPence)}
                   </dd>
                 </div>
                 {bundleDiscountPercent > 0 && (
                   <div className="flex items-baseline justify-between gap-6">
-                    <dt className="font-sans text-[14px] leading-[1.5] text-accent m-0 min-w-0">
+                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-accent m-0 min-w-0">
                       Estate bundle thank-you ({bundleDiscountPercent}%)
                     </dt>
-                    <dd className="font-sans text-[15px] text-accent m-0 tabular-nums flex-shrink-0">
-                      − {formatGBP(bundleDiscountPence)}
+                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-accent m-0 tabular-nums flex-shrink-0">
+                      − {fmt(bundleDiscountPence)}
                     </dd>
                   </div>
                 )}
                 {giftTotalPence > 0 && (
                   <div className="flex items-baseline justify-between gap-6">
-                    <dt className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0 min-w-0">
+                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
                       Gift cards
                     </dt>
-                    <dd className="font-sans text-[15px] text-ink m-0 tabular-nums flex-shrink-0">
-                      {formatGBP(giftTotalPence)}
+                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
+                      {fmt(giftTotalPence)}
                     </dd>
                   </div>
                 )}
@@ -592,10 +601,10 @@ export const Basket = () => {
 
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
-                  Total <span className="text-[12px] normal-case tracking-normal">(delivery free)</span>
+                  Total <span className="text-[clamp(12px,0.7vw,15px)] normal-case tracking-normal">(delivery free)</span>
                 </p>
-                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3vw,44px)] text-ink m-0 tabular-nums flex-shrink-0">
-                  {formatGBP(grandTotalPence)}
+                <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] text-ink m-0 tabular-nums flex-shrink-0">
+                  {fmt(grandTotalPence)}
                 </p>
               </div>
 
@@ -620,22 +629,22 @@ export const Basket = () => {
                       key={region}
                       className="flex items-baseline justify-between gap-4"
                     >
-                      <span className="font-sans text-[13.5px] leading-[1.5] text-ink-muted min-w-0">
+                      <span className="font-sans text-[clamp(13.5px,0.8vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                         {region}
                       </span>
-                      <span className="font-sans text-[13.5px] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                        {pence === 0 ? "Free" : formatGBP(pence)}
+                      <span className="font-sans text-[clamp(13.5px,0.8vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
+                        {pence === 0 ? "Free" : fmt(pence)}
                       </span>
                     </li>
                   ))}
                 </ul>
-                <p className="font-sans font-normal text-[12.5px] leading-[1.55] text-ink-muted m-0 mt-3">
+                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.55] text-ink-muted m-0 mt-3">
                   Free delivery on every order — framed or unframed — with nothing
                   added at checkout. Each print ships within 7–10 working days.
                 </p>
               </div>
 
-              <p className="font-sans font-normal text-[12px] leading-[1.6] text-ink-muted m-0 mb-7">
+              <p className="font-sans font-normal text-[clamp(12px,0.68vw,14px)] leading-[1.6] text-ink-muted m-0 mb-7">
                 International buyers may be charged local import duties on delivery.
               </p>
 
@@ -654,7 +663,7 @@ export const Basket = () => {
                 </Link>
               </div>
               {status === "error" && (
-                <p role="alert" className="mt-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                <p role="alert" className="mt-4 font-sans text-[clamp(13px,0.78vw,16px)] text-accent m-0">{errorMsg}</p>
               )}
 
               {/* TRUST CLUSTER AT THE MONEY CLICK — quiet, text-led reassurance
@@ -691,8 +700,8 @@ export const Basket = () => {
                 </p>
                 {/* pl-[25px] = 15px glyph + 10px gap, so the second line
                     aligns with the first line's text, not the glyph. */}
-                <p className="font-sans font-normal text-[12.5px] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
-                  Estate-stamped &amp; numbered within the drop · Free delivery worldwide ·
+                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
+                  Estate-stamped &amp; numbered within the edition · Free delivery worldwide ·
                   Damaged-in-transit replacement
                 </p>
               </div>

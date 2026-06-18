@@ -35,11 +35,11 @@ export interface Colourway {
  */
 export interface PrintTier {
   id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
-  label: string;                // "Open Edition", "Collector Drop", "Atelier Drop", "Heirloom Drop", "Original — One of One"
+  label: string;                // "Open Edition", "Collector Edition", "Atelier Edition", "Heirloom Edition", "Original — One of One"
   size: string;                 // "A3 (29.5 × 29.5 cm)"
   pricePence: number;           // integer pence
-  editionTotal: number | null;  // per-DROP allocation cap; null = Open Edition (no cap, not numbered)
-  editionLabel: string;         // neutral drop language, e.g. "Collector Drop — allocation of 200 per drop"
+  editionTotal: number | null;  // per-edition allocation cap; null = Open Edition (no cap, not numbered)
+  editionLabel: string;         // neutral edition language, e.g. "Collector Edition — edition of 200, hand-numbered"
   /** Provenance line shown on the SELECTED tier — institutional, never scarcity/urgency. */
   editionPromise?: string;
   framingPricePence?: number;   // optional framing surcharge (A2 + A1 only)
@@ -94,18 +94,22 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its drop, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order in Lewes, East Sussex.";
+  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order in Lewes, East Sussex.";
 
 /**
- * The drop the catalogue is CURRENTLY issuing under. Every artwork is released
- * in named drop cycles — this is the live one. Future drops increment the
- * numeral (Drop II, Drop III), or run as an Archive Drop / Seasonal Release.
- * Surfaced as the drop identifier on product metadata, the COA, and the estate
- * ledger.
+ * The edition the catalogue is CURRENTLY issuing under. Every artwork is
+ * released in named, numbered editions — this is the live one. Subsequent
+ * editions increment (Second Edition, Third Edition) or run as a Seasonal /
+ * Archive Edition. Surfaced as the edition identifier on product metadata, the
+ * Certificate of Authenticity, and the estate registry.
+ *
+ * `id` is the STABLE internal ledger key (kept "edition-i" across the
+ * registry / KV / Supabase shape); `label` is the user-facing name. ⚠️ Mirror
+ * of LEDGER_EDITION in api/stripe-webhook.ts (gotcha #9).
  */
-export const CURRENT_DROP = {
-  id: "drop-i",
-  label: "Drop I",
+export const CURRENT_EDITION = {
+  id: "edition-i",
+  label: "First Edition",
 };
 
 /**
@@ -113,8 +117,8 @@ export const CURRENT_DROP = {
  * lifetime-edition / permanent-scarcity copy. Neutral, archival register: no
  * urgency, no countdowns, no "never reopened".
  */
-export const GLOBAL_DROP_NOTE =
-  "Each work is issued as part of a controlled drop cycle, with a limited allocation per release. Future drops may introduce new allocations or variations.";
+export const GLOBAL_EDITION_NOTE =
+  "Each work is issued in numbered editions, with a limited allocation per release. Future editions may introduce new allocations or variations.";
 
 export const COLOURWAY_NOTE =
   "Each colourway was created by Stephen himself and discovered on his computer in his studio. These are his own colour variations of the work, exactly as he left them.";
@@ -154,8 +158,8 @@ export const STUDIO_ONE_OFF_NOTE =
 export const ESTATE_AUTHENTICATION = {
   stamp: "Estate-stamped by The Mandala Company",
   stampLabel: "Estate stamp",
-  numbering: "Numbered within its drop",
-  numberingLabel: "Numbered within the drop",
+  numbering: "Numbered within its edition",
+  numberingLabel: "Numbered within the edition",
   coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
   printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
@@ -163,20 +167,21 @@ export const ESTATE_AUTHENTICATION = {
 };
 
 /**
- * The canonical DROP-BASED tier ladder. Every artwork is released in named drop
- * cycles (see CURRENT_DROP); each tier carries its own per-DROP allocation —
- * inventory is managed per drop batch, NEVER globally capped across all time.
- * Future restocks come only as NEW drops, never by reopening a prior one.
+ * The canonical EDITION-BASED tier ladder. Every artwork is released in named,
+ * numbered editions (see CURRENT_EDITION); each tier carries its own per-edition
+ * allocation — inventory is managed per edition, NEVER globally capped across
+ * all time. Subsequent runs come only as NEW editions, never by reopening a
+ * prior one.
  *
- *   Open Edition   (A3) — no allocation cap, not numbered
- *   Collector Drop (A2) — 200 per drop · the anchor / conversion target
- *   Atelier Drop   (A1) — 75 per drop
- *   Heirloom Drop  (A0) — 18 per drop · statement piece
+ *   Open Edition      (A3) — no allocation cap, not numbered
+ *   Collector Edition (A2) — edition of 200 · the anchor / conversion target
+ *   Atelier Edition   (A1) — edition of 75
+ *   Heirloom Edition  (A0) — edition of 18 · statement piece
  *
- * Internal tier `id`s, prices and SKUs are UNCHANGED from the prior edition
- * model so existing checkout / ledger references keep working. `editionTotal`
- * is now the per-DROP allocation (null = Open Edition, no cap). Prices mirrored
- * in the three /api files (gotcha #9).
+ * Internal tier `id`s, prices and SKUs are UNCHANGED so existing checkout /
+ * ledger references keep working. `editionTotal` is the per-edition allocation
+ * (null = Open Edition, no cap). Prices mirrored in the three /api files
+ * (gotcha #9).
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
@@ -185,59 +190,59 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "A3 (29.5 × 29.5 cm)",
     pricePence: 24500, // £245
     editionTotal: null, // Open Edition — no allocation cap, not numbered
-    editionLabel: "Open Edition — issued within each drop, no fixed allocation",
-    editionPromise: "issued on demand within the current drop",
+    editionLabel: "Open Edition — unnumbered, issued to order",
+    editionPromise: "issued to order in the current edition",
     description:
-      "Open Edition, estate-stamped, issued within a controlled drop cycle, ships with a Certificate of Authenticity",
+      "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
     available: true,
   },
   {
     id: "collector",
-    label: "Collector Drop",
+    label: "Collector Edition",
     size: "A2 (42 × 42 cm)",
     pricePence: 45000, // £450
-    editionTotal: 200, // per-drop allocation
-    editionLabel: "Collector Drop — allocation of 200 per drop",
-    editionPromise: "allocated within the current drop",
+    editionTotal: 200, // per-edition allocation
+    editionLabel: "Collector Edition — edition of 200, hand-numbered",
+    editionPromise: "allocated within the current edition",
     framingPricePence: 29500, // £295 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
     description:
-      "Collector Drop, allocation of 200 per drop, estate-stamped, numbered within the drop, COA",
+      "Collector Edition of 200, estate-stamped, hand-numbered, COA",
     available: true,
     isAnchor: true,
   },
   {
     id: "atelier-grande",
-    label: "Atelier Drop",
+    label: "Atelier Edition",
     size: "A1 (59.5 × 59.5 cm)",
     pricePence: 85000, // £850
-    editionTotal: 75, // per-drop allocation
-    editionLabel: "Atelier Drop — allocation of 75 per drop",
-    editionPromise: "allocated within the current drop",
+    editionTotal: 75, // per-edition allocation
+    editionLabel: "Atelier Edition — edition of 75, hand-numbered",
+    editionPromise: "allocated within the current edition",
     framingPricePence: 39500, // £395 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
     description:
-      "Atelier Drop, allocation of 75 per drop, estate-stamped, numbered within the drop, COA",
+      "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
     available: true,
   },
   {
     id: "heirloom",
-    label: "Heirloom Drop",
+    label: "Heirloom Edition",
     size: "A0 (84 × 84 cm)",
     pricePence: 175000, // £1,750
-    editionTotal: 18, // per-drop allocation
-    editionLabel: "Heirloom Drop — allocation of 18 per drop",
-    editionPromise: "allocated within the current drop",
+    editionTotal: 18, // per-edition allocation
+    editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
+    editionPromise: "allocated within the current edition",
     description:
-      "Heirloom Drop, allocation of 18 per drop, estate-stamped, numbered within the drop, COA, optional gold-leaf detail",
+      "Heirloom Edition of 18, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,
   },
   {
-    // Studio — a singular, hand-painted one-off. OUTSIDE the drop model: there
-    // is only ever one, so it is not issued in drops. Kept hidden until the
-    // estate chooses to sell unique originals.
+    // Studio — a singular, hand-painted one-off. OUTSIDE the edition model:
+    // there is only ever one, so it is not issued in editions. Kept hidden
+    // until the estate chooses to sell unique originals.
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.5 × 59.5 cm)",
@@ -269,8 +274,8 @@ export const PRINT_TIERS: PrintTier[] = [
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 45000, // £450 — anchor tier (A2 Collector Drop)
-  size: "Giclée print, A2 (42 × 42 cm), Collector Drop, estate-stamped",
+  pricePence: 45000, // £450 — anchor tier (A2 Collector Edition)
+  size: "Giclée print, A2 (42 × 42 cm), Collector Edition, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
 
@@ -840,7 +845,7 @@ export const getPaintingsByCollection = (collectionId: Collection["id"]): Painti
  * channel for wall art, and the bare title told it nothing — this names the
  * work, colourway, medium and artist. Single source so the PDP hero,
  * Collections tiles and the Welcome featured grid stay consistent. Visual only
- * (no price/edition claims), so it's safe under the drop model.
+ * (no price/edition claims), so it's safe under the edition model.
  */
 export const paintingImageAlt = (title: string, colourwayName?: string): string =>
   `${title}${colourwayName ? ` — ${colourwayName}` : ""} — sacred-geometry mandala giclée print by Stephen Meakin`;

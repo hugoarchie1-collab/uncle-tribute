@@ -6,6 +6,7 @@ import { Reveal } from "../components/Reveal";
 import { AmbientBackdrop } from "../components/AmbientBackdrop";
 import { usePageTitle } from "../lib/usePageTitle";
 import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
@@ -23,7 +24,7 @@ import { cn } from "../lib/cn";
  * standard consumer-sale boilerplate. NB: trader postal address still pending.
  *
  * DECIDED 2026-06-12 (Hugo): the A3 Open Edition KEEPS the full 14-day
- * change-of-mind right — it is an Open Edition issued within drops, made to
+ * change-of-mind right — it is an Open Edition issued in editions, made to
  * order (PRINT_TIERS). Rationale: (a) the
  * reg 28(1)(b) "consumer's specifications" exemption is unlikely to cover a
  * standard catalogue print where the buyer only picks size/colourway from
@@ -397,8 +398,8 @@ const TERMS: Section[] = [
         text: (
           <>
             <strong>A3 "Open Edition" prints.</strong> The A3 Open
-            Edition is estate-stamped and issued within the estate's drop
-            cycle (not numbered). For this tier
+            Edition is estate-stamped and issued in the estate's
+            editions (not numbered). For this tier
             you have the full statutory <strong>14-day cancellation right</strong>{" "}
             under the{" "}
             <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>.
@@ -424,11 +425,11 @@ const TERMS: Section[] = [
         text: (
           <>
             <strong>Made-to-order prints (the A2 Collector, A1 Atelier and
-            A0 Heirloom Drops, the hand-painted Studio piece, and any framed or
+            A0 Heirloom Editions, the hand-painted Studio piece, and any framed or
             hand-finished order).</strong>{" "}
             These are made to your specification — your chosen colourway, tier
             and add-ons are sent to the atelier for an individual,
-            estate-stamped print run numbered within its drop, and the Studio
+            estate-stamped print run numbered within its edition, and the Studio
             piece is hand-painted uniquely for you. Under the same Regulations,{" "}
             <em>regulation 28(1)(b)</em>, goods "made to the consumer's
             specifications or clearly personalised" are exempt from the 14-day
@@ -562,7 +563,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the A3 Open Edition print carries the full 14-day right to change your mind; the larger Collector, Atelier and Heirloom Drops, the hand-painted piece and any framed or hand-finished order are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
+        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the A3 Open Edition print carries the full 14-day right to change your mind; the larger Collector, Atelier and Heirloom Editions, the hand-painted piece and any framed or hand-finished order are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
       },
     ],
   },
@@ -596,7 +597,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "The A2 Collector, A1 Atelier and A0 Heirloom Drops, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped print run numbered within its drop, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
+        text: "The A2 Collector, A1 Atelier and A0 Heirloom Editions, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped print run numbered within its edition, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
       },
       {
         kind: "p",
@@ -648,7 +649,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "For the A3 Open Edition print you can change your mind within 14 days of receiving it, as set out above. For the made-to-order prints — the Collector, Atelier and Heirloom Drops, the hand-painted piece, and any framed or hand-finished order, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
+        text: "For the A3 Open Edition print you can change your mind within 14 days of receiving it, as set out above. For the made-to-order prints — the Collector, Atelier and Heirloom Editions, the hand-painted piece, and any framed or hand-finished order, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
       },
     ],
   },
@@ -716,9 +717,9 @@ export const Returns = () => (
 );
 
 // ─── LegalMasthead ───────────────────────────────────────────────────────────
-// The bold front cover for a legal page — modelled on AboutMasthead (the
-// just-approved pattern): a meta rule, the title set ENORMOUS edge-to-edge
-// (Fraunces 700, opsz 48), then the lead packed immediately beneath under a
+// The refined front cover for a legal page — a meta rule, the title set in the
+// shared MASTHEAD_TITLE_STYLE register (Fraunces opsz 144, wght 560 — composed,
+// not the old crude logo-bold), then the lead packed immediately beneath under a
 // border-t — dense, left-aligned, no centred-floating-header timidity and no
 // clamp-driven dead air. The numbered section index sits in the left rail so
 // the reader can see the whole document's shape at a glance before scrolling.
@@ -742,8 +743,8 @@ const LegalMasthead = ({
 
     <Reveal as="div" className="mt-4 md:mt-6">
       <h1
-        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.86] [&_br]:hidden sm:[&_br]:block"
-        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(54px, 11vw, 200px)" }}
+        className="font-display text-ink m-0 text-balance text-pretty [&_br]:hidden sm:[&_br]:block"
+        style={MASTHEAD_TITLE_STYLE}
         dangerouslySetInnerHTML={{ __html: title }}
       />
     </Reveal>
@@ -751,10 +752,10 @@ const LegalMasthead = ({
     <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-start border-t border-line pt-6 md:pt-8">
       <Reveal as="div" className="lg:col-span-8">
         <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch] 3xl:max-w-[40ch]"
           style={{
             fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(21px, 2.4vw, 34px)",
+            fontSize: "clamp(21px, 2.4vw, 40px)",
             lineHeight: 1.32,
           }}
         >
@@ -772,7 +773,7 @@ const LegalMasthead = ({
               <li key={i} className="break-inside-avoid mb-1.5">
                 <a
                   href={`#legal-${i}`}
-                  className="group flex items-baseline gap-2 font-sans text-[13.5px] md:text-[14px] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
+                  className="group flex items-baseline gap-2 font-sans text-[13.5px] md:text-[14px] 3xl:text-[clamp(14px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
                 >
                   <span aria-hidden className="font-sans text-[11px] font-bold tracking-[0.18em] tabular-nums text-ink/40 group-hover:text-accent">
                     {String(i + 1).padStart(2, "0")}
@@ -820,7 +821,7 @@ const LegalPage = ({
           legibility of the legal copy stays paramount (the right column never
           goes multi-column — clauses must read linearly). Compressed py so the
           whole page reads tight, never an endless scroll. */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
         <article className="flex flex-col">
           {sections.map((section, i) => (
             <Reveal
@@ -835,7 +836,7 @@ const LegalPage = ({
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5 tabular-nums")}>
                   {String(i + 1).padStart(2, "0")} / {String(sections.length).padStart(2, "0")}
                 </p>
-                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(26px,2.6vw,42px)] leading-[1.08] text-ink m-0">
+                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(26px,2.8vw,52px)] leading-[1.08] text-ink m-0">
                   {section.heading}
                 </h2>
               </div>
@@ -848,7 +849,7 @@ const LegalPage = ({
                     return (
                       <p
                         key={j}
-                        className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] max-w-[72ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                        className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                       >
                         {block.text}
                       </p>
@@ -857,7 +858,7 @@ const LegalPage = ({
                   return (
                     <ul
                       key={j}
-                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[18px] max-w-[72ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                     >
                       {block.items.map((item, k) => (
                         <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">

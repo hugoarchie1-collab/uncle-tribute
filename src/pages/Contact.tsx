@@ -5,6 +5,7 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, BTN_PRIMARY } from "../components/ui/tokens";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
@@ -78,19 +79,19 @@ const ContactBackdrop = () => {
  * page so it shows in the Nav / Footer and can be deep-linked from press,
  * partnerships, and customer enquiries.
  *
- * Visual register (rebuilt 2026-06-15 to the About-page LAW): NO timid centred
- * 640px column, NO blank space. A BOLD left-aligned masthead — a meta rule
- * (eyebrow + hairline + place tag), then "Write to / the family." set ENORMOUS
- * edge-to-edge (Fraunces 700, opsz 48, font-synthesis none) filling the width,
- * the intro packed immediately beneath under a border-t. Below, a DENSE
- * asymmetric two-column working surface: the form fills the wide left column
- * while the estate details (by post / direct line / our promise) sit packed in
- * a hairline rail on the right — no centred void on either flank. Compressed
- * vertical rhythm (pt-28 md:pt-32, py-9..py-12), never the old clamp(6rem,…)
- * spacer. Commerce-free page, but the SUBMISSION PATH is untouched: same
- * Web3Forms POST, same honeypot, same mailto + clipboard fallback, same
- * verbatim postal address. Home design system throughout: Fraunces + Hanken
- * Grotesk, cream-on-near-black, accent reserved for eyebrow + focus/hover.
+ * Visual register: NO timid centred 640px column, NO blank space. A
+ * left-aligned masthead — a meta rule (eyebrow + hairline + place tag), then
+ * "Write to the family" set in the refined shared masthead cut (the
+ * MASTHEAD_TITLE_STYLE recipe: Fraunces opsz 144 / wght 560, composed not
+ * shouty, one italic word at regular weight), the intro packed immediately
+ * beneath under a border-t. Below, a DENSE asymmetric two-column working
+ * surface: the form fills the wide left column while the estate details (by
+ * post / direct line / our promise) sit packed in a hairline rail on the right
+ * — no centred void on either flank. Commerce-free page, but the SUBMISSION
+ * PATH is untouched: same Web3Forms POST, same honeypot, same mailto +
+ * clipboard fallback, same verbatim postal address. Home design system
+ * throughout: Fraunces + Hanken Grotesk, cream-on-near-black, accent reserved
+ * for eyebrow + focus/hover.
  */
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -181,13 +182,14 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
-        {/* MASTHEAD — bold left-aligned front cover (no timid centred header).
-            A meta rule, then "Write to / the family." set ENORMOUS edge-to-edge
-            (Fraunces 700, opsz 48, font-synthesis none), the intro packed
-            immediately beneath under a border-t. Copy floats over the photo
-            backdrop, so each tier carries the EXACT legibility text-shadows
-            Collections uses on its intro header — no invented values. */}
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
+        {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
+            rule, then "Write to the family" set in the refined shared masthead
+            cut (MASTHEAD_TITLE_STYLE — Fraunces opsz 144 / wght 560, one italic
+            word at regular weight), the intro packed immediately beneath under a
+            border-t. Copy floats over the photo backdrop, so each tier carries
+            the EXACT legibility text-shadows Collections uses on its intro
+            header — no invented values. */}
         <header>
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
@@ -202,17 +204,16 @@ export const Contact = () => {
             </span>
           </Reveal>
 
-          <Reveal as="div" className="mt-3 md:mt-4">
+          <Reveal as="div" className="mt-5 md:mt-7">
             <h1
-              className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
+              className="font-display text-ink m-0 text-balance text-pretty"
               style={{
-                fontVariationSettings: '"opsz" 48, "wght" 700',
+                ...MASTHEAD_TITLE_STYLE,
                 fontSynthesis: "none",
-                fontSize: "clamp(60px, 13vw, 220px)",
                 textShadow: "0 3px 28px rgba(0,0,0,0.7)",
               }}
             >
-              Write to<br />the family.
+              Write to the <em className="italic font-normal">family</em>
             </h1>
           </Reveal>
 
@@ -227,18 +228,16 @@ export const Contact = () => {
             </Reveal>
             <Reveal as="div" delay={0.06} className="lg:col-span-9">
               <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[26ch] 3xl:max-w-[30ch]"
                 style={{
                   fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(22px, 2.6vw, 36px)",
+                  fontSize: "clamp(22px, 2.6vw, 42px)",
                   lineHeight: 1.3,
                   textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
                 }}
               >
-                For commissions, partnerships, press, or a question about a
-                particular work, write to The Mandala Company. We are a small
-                estate; every message is read by the family, and answered within
-                a day or two.
+                Write to The Mandala Company about a particular work, a
+                commission, or working together.
               </p>
             </Reveal>
           </div>
@@ -263,13 +262,13 @@ export const Contact = () => {
                 className="outline-none"
               >
                 <p
-                  className="font-display font-semibold tracking-[-0.025em] text-[clamp(30px,4vw,52px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
+                  className="font-display font-semibold tracking-[-0.025em] text-[clamp(30px,4.2vw,64px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
                   style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Thank you.
                 </p>
                 <p
-                  className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.65] text-ink-muted m-0 max-w-[56ch]"
+                  className="font-sans font-normal text-[16px] md:text-[clamp(17px,0.95vw,22px)] leading-[1.65] text-ink-muted m-0 max-w-[56ch] 3xl:max-w-[64ch]"
                   style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Your message is on its way to{" "}
@@ -319,7 +318,7 @@ export const Contact = () => {
                       name="name"
                       required
                       autoComplete="name"
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
                       placeholder="Jane Smith"
                     />
                   </label>
@@ -338,7 +337,7 @@ export const Contact = () => {
                       type="email"
                       required
                       autoComplete="email"
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
                       placeholder="jane@example.com"
                     />
                   </label>
@@ -358,7 +357,7 @@ export const Contact = () => {
                     name="message"
                     required
                     rows={8}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                     placeholder="A few lines about the work or enquiry."
                   />
                 </label>
@@ -383,7 +382,7 @@ export const Contact = () => {
                   </button>
                   <a
                     href="mailto:info@themandalacompany.com"
-                    className="group inline-flex items-center min-h-[44px] font-sans text-[14px] text-ink-muted hover:text-accent transition-colors"
+                    className="group inline-flex items-center min-h-[44px] font-sans text-[14px] md:text-[clamp(14px,0.8vw,18px)] text-ink-muted hover:text-accent transition-colors"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     Or write directly
@@ -418,7 +417,7 @@ export const Contact = () => {
                 <dd className="m-0">
                   <a
                     href="mailto:info@themandalacompany.com"
-                    className="font-sans text-[15px] md:text-[16px] text-ink hover:text-accent transition-colors break-words"
+                    className="font-sans text-[15px] md:text-[clamp(15px,0.85vw,19px)] text-ink hover:text-accent transition-colors break-words"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     info@themandalacompany.com

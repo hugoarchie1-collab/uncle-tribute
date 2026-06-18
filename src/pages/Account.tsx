@@ -16,6 +16,7 @@ import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
 
 const formatDate = (iso: string | null): string => {
@@ -98,8 +99,8 @@ export const Account = () => {
             )}
           </div>
           <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 mt-4 md:mt-6 leading-[0.9] text-balance"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(46px, 9vw, 132px)" }}
+            className="font-display text-ink m-0 mt-5 md:mt-7 text-balance text-pretty"
+            style={MASTHEAD_TITLE_STYLE}
           >
             {signedIn ? "Your orders." : "Your account."}
           </h1>

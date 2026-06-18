@@ -7,6 +7,37 @@
 // cn(); never re-type the recipe inline.
 // =============================================================================
 
+import type { CSSProperties } from "react";
+
+// =============================================================================
+// PAGE MASTHEAD TYPE — the refined display cut for every page's front-cover h1.
+// -----------------------------------------------------------------------------
+// Replaces the old "Fraunces 700, opsz 48, clamp(...,11–13vw,168–220px)" recipe
+// that read "way too bold and unprofessional" (2026-06-18). The fix, from a
+// study of blue-chip galleries / auction houses / museums: weight DOWN (560,
+// never ≥700), optical size UP (opsz 144 — the elegant high-contrast display
+// master), scale tighter (~7.6vw capped 116px), sentence case, one italic
+// regular-weight word for emphasis. Consumed by <PageMasthead> and by pages with
+// a bespoke masthead. Lives here (not in PageMasthead.tsx) so the component file
+// only exports a component (React Fast Refresh).
+// =============================================================================
+
+/** The canonical page-masthead (h1) title cut, as an inline style. */
+export const MASTHEAD_TITLE_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 144, "wght" 560',
+  fontSize: "clamp(42px, 7.6vw, 116px)",
+  lineHeight: 0.96,
+  letterSpacing: "-0.018em",
+};
+
+/** A smaller companion cut for secondary mastheads / large section heads. */
+export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
+  fontVariationSettings: '"opsz" 120, "wght" 560',
+  fontSize: "clamp(34px, 5.2vw, 76px)",
+  lineHeight: 1.0,
+  letterSpacing: "-0.016em",
+};
+
 /** Section / chapter label — accent tone (Welcome's section eyebrow).
  *  The signature element: 11px bold uppercase, 0.32em tracking, accent-toned.
  *  Sits ABOVE a TITLE (gap mb-4/mb-5). This is the canonical home value. */
@@ -24,10 +55,12 @@ export const TITLE =
   "font-display font-bold tracking-[-0.04em] text-[clamp(38px,5vw,72px)] leading-[1.02] md:leading-[0.98] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
- *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token,
- *  17px / 1.8, capped + centered for the centered header (add mx-auto). */
+ *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
+ *  FLUID (2026-06-18): font-size + measure grow with the viewport so the lead
+ *  scales on large/fullscreen screens (no tiny text in a sea of dead space)
+ *  while staying readable on mobile. */
 export const SUBTITLE =
-  "font-sans font-normal text-[18px] md:text-[20px] 2xl:text-[22px] leading-[1.8] text-ink-muted max-w-[720px] 2xl:max-w-[760px] 3xl:max-w-[860px]";
+  "font-sans font-normal text-[clamp(17px,0.5vw_+_13.2px,24px)] leading-[1.75] text-ink-muted max-w-[clamp(680px,58vw,900px)]";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */

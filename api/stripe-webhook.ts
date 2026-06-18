@@ -297,9 +297,9 @@ const TIER_PRICE_PENCE: Record<string, number> = {
 };
 const TIER_LABEL: Record<string, string> = {
   atelier: "Open Edition",
-  collector: "Collector Drop",
-  "atelier-grande": "Atelier Drop",
-  heirloom: "Heirloom Drop",
+  collector: "Collector Edition",
+  "atelier-grande": "Atelier Edition",
+  heirloom: "Heirloom Edition",
   studio: "Original — One of One",
 };
 const TIER_SIZE: Record<string, string> = {
@@ -310,10 +310,10 @@ const TIER_SIZE: Record<string, string> = {
   studio: "A1 (59.5 × 59.5 cm)",
 };
 const TIER_EDITION: Record<string, string> = {
-  atelier: "Open Edition — issued within each drop",
-  collector: "Collector Drop — allocation of 200 per drop",
-  "atelier-grande": "Atelier Drop — allocation of 75 per drop",
-  heirloom: "Heirloom Drop — allocation of 18 per drop",
+  atelier: "Open Edition — unnumbered, issued to order",
+  collector: "Collector Edition — edition of 200, hand-numbered",
+  "atelier-grande": "Atelier Edition — edition of 75, hand-numbered",
+  heirloom: "Heirloom Edition — edition of 18, hand-numbered",
   studio: "Unique — one of one",
 };
 // Per-tier ADD-ON price lookups (mirror of framingPricePence /
@@ -681,7 +681,7 @@ const renderOrderConfirmationHtml = (p: {
   })();
   const ESTATE = {
     stamp: "Estate-stamped by The Mandala Company",
-    numbering: "Numbered within its drop",
+    numbering: "Numbered within its edition",
     coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
     printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
   };
@@ -1109,21 +1109,25 @@ const metaCapiPurchase = async (args: {
 // ESTATE LEDGER — the single source of truth for provenance (issued on order)
 // ---------------------------------------------------------------------------
 // Each purchased print gets a non-guessable Certificate ID and, for numbered
-// tiers, the next SEQUENTIAL print number WITHIN ITS DROP — written to Vercel
+// tiers, the next SEQUENTIAL print number WITHIN ITS EDITION — written to Vercel
 // KV / Upstash (already provisioned for memories + webhook dedup). A Supabase
 // migration is a documented drop-in upgrade (supabase/estate_ledger.sql). Keys:
-//   ledger:cert:<CERT_ID>                    → JSON LedgerEntry (the record)
-//   ledger:seq:<artwork>:<tier>:<dropId>     → int via INCR    (atomic numbering)
-//   ledger:order:<sessionId>:<lineIndex>     → CERT_ID         (idempotency)
+//   ledger:cert:<CERT_ID>                       → JSON LedgerEntry (the record)
+//   ledger:seq:<artwork>:<tier>:<editionId>     → int via INCR    (atomic numbering)
+//   ledger:order:<sessionId>:<lineIndex>        → CERT_ID         (idempotency)
 // Self-contained (gotcha #5): inline raw-fetch Upstash REST, reusing
 // kvDedupConfig(). FAIL-OPEN — missing env / KV error → returns [] and the order
 // still completes; the webhook ALWAYS 200s. The /auth page + /api/auth-lookup
 // read these same records back.
+//
+// NOTE: the persisted LedgerEntry field names (drop_id / drop_label) are kept
+// as legacy internal keys so the dormant KV / Supabase record shape stays
+// stable; they now CARRY the edition id/label ("edition-i" / "First Edition").
 
-const LEDGER_DROP = { id: "drop-i", label: "Drop I" }; // mirror of CURRENT_DROP (paintings.ts)
+const LEDGER_EDITION = { id: "edition-i", label: "First Edition" }; // mirror of CURRENT_EDITION (paintings.ts)
 
-// Open Edition (atelier) is NOT numbered; the others carry a per-drop allocation
-// (mirror of PRINT_TIERS editionTotal — gotcha #9).
+// Open Edition (atelier) is NOT numbered; the others carry a per-edition
+// allocation (mirror of PRINT_TIERS editionTotal — gotcha #9).
 const TIER_ALLOCATION: Record<string, number | null> = {
   atelier: null,
   collector: 200,
@@ -1270,13 +1274,13 @@ async function issueLedgerEntries(
         }
         continue;
       }
-      // We own this line. Assign the sequential number WITHIN THE DROP.
+      // We own this line. Assign the sequential number WITHIN THE EDITION.
       const allocation = TIER_ALLOCATION[line.tierId] ?? null;
       let printNumber: number | null = null;
       if (allocation !== null) {
         const seq = await kvCmd([
           "INCR",
-          `ledger:seq:${line.paintingId}:${line.tierId}:${LEDGER_DROP.id}`,
+          `ledger:seq:${line.paintingId}:${line.tierId}:${LEDGER_EDITION.id}`,
         ]);
         const n = typeof seq === "number" ? seq : Number.parseInt(String(seq), 10);
         if (!Number.isFinite(n) || n <= 0) {
@@ -1297,8 +1301,8 @@ async function issueLedgerEntries(
         artwork_id: line.paintingId,
         artwork_name: line.title,
         colourway: line.colourway,
-        drop_id: LEDGER_DROP.id,
-        drop_label: LEDGER_DROP.label,
+        drop_id: LEDGER_EDITION.id, // legacy field name; carries the edition id
+        drop_label: LEDGER_EDITION.label, // legacy field name; carries the edition label
         tier_id: line.tierId,
         tier_label: TIER_LABEL[line.tierId] || line.tierId,
         print_number: printNumber,
@@ -1372,10 +1376,10 @@ const renderEstateFulfilmentHtml = (p: {
     `<p style="margin:0 0 16px 0;color:#444;">Order <strong>${esc(p.orderRef)}</strong>` +
     (p.shippingName ? ` · ship to <strong>${esc(p.shippingName)}</strong>` : "") +
     `</p>` +
-    `<p style="margin:0 0 16px 0;color:#444;">Each line below has been issued a Certificate ID and (for numbered tiers) the next sequential print number within its drop, recorded in the estate ledger. Generate the Certificate of Authenticity + back-of-print label for each, then place the Point 101 order with the buyer's shipping address.</p>` +
+    `<p style="margin:0 0 16px 0;color:#444;">Each line below has been issued a Certificate ID and (for numbered tiers) the next sequential print number within its edition, recorded in the estate registry. Generate the Certificate of Authenticity + back-of-print label for each, then place the Point 101 order with the buyer's shipping address.</p>` +
     `<table style="border-collapse:collapse;width:100%;font-size:13px;">` +
     `<thead><tr>` +
-    `<th style="${th}">Artwork</th><th style="${th}">Tier</th><th style="${th}">Drop</th>` +
+    `<th style="${th}">Artwork</th><th style="${th}">Tier</th><th style="${th}">Edition</th>` +
     `<th style="${th}">Print&nbsp;No.</th><th style="${th}">Certificate&nbsp;ID</th><th style="${th}">Verify&nbsp;URL (QR target)</th>` +
     `</tr></thead><tbody>${rows}</tbody></table>` +
     `<p style="margin:18px 0 0 0;font-size:12px;color:#888;">The Mandala Company · estate ledger · generated automatically on payment.</p>` +
@@ -1698,7 +1702,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       // -- 0d. Estate ledger — issue Certificate IDs + print numbers --------
       // Writes a ledger entry per print line (idempotent per session+line),
       // then emails the estate the structured Point 101 fulfilment payload
-      // (artwork, tier, drop, print number, Certificate ID, /auth verify URL —
+      // (artwork, tier, edition, print number, Certificate ID, /auth verify URL —
       // the QR target). Fully fail-open: a KV/Resend outage logs + continues,
       // never blocking the 200. Gift-only orders have no print lines → no certs.
       let ledgerEntries: LedgerEntry[] = [];

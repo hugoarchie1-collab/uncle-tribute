@@ -37,6 +37,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
+import { PageMasthead } from "../components/PageMasthead";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
@@ -163,7 +164,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
       {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
       <div className="md:col-span-9 flex flex-col sm:flex-row gap-5 md:gap-7 items-start">
         {isRelease(entry) && entry.cover ? (
-          <div className="shrink-0 w-[132px] sm:w-[148px] md:w-[168px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
+          <div className="shrink-0 w-[132px] sm:w-[148px] md:w-[168px] 3xl:w-[200px] 4xl:w-[232px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
             <AssetImage
               src={entry.cover}
               alt={entry.title}
@@ -177,7 +178,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
         <div className="min-w-0">
           <TypePill entry={entry} />
 
-          <h3 className="mt-3 mb-2 font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,32px)] leading-[1.1] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
+          <h3 className="mt-3 mb-2 font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.8vw,40px)] leading-[1.1] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
             {entry.title}
           </h3>
 
@@ -185,7 +186,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2 tracking-[0.22em]")}>{entry.location}</p>
           ) : null}
 
-          <p className={cn(META, "m-0 max-w-[58ch] text-[14.5px]")}>{entry.summary}</p>
+          <p className={cn(META, "m-0 max-w-[58ch] 3xl:max-w-[68ch] text-[clamp(14.5px,0.9vw,18px)]")}>{entry.summary}</p>
 
           {cta}
         </div>
@@ -195,36 +196,26 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 };
 
 // ─── NewsMasthead ────────────────────────────────────────────────────────────
-// The front cover — the AboutMasthead recipe, ported to the estate calendar: a
-// meta rule (eyebrow · hairline · place tag), then a giant left-aligned Fraunces
-// statement set edge-to-edge (opsz 48, real loaded weight, font-synthesis none),
-// then the programme note packed immediately beneath under a border-t — dense,
-// confident type over the indigo carpet. No timid centred header floating in
-// space. The verbatim Seo/description copy is unchanged; this is page framing
-// microcopy only (the page owns its own headings, never sourced content).
+// The front cover — now built on the shared, refined <PageMasthead> (the
+// blue-chip-gallery recipe: Fraunces opsz 144 / wght 560, composed clamp, NOT
+// the old crude 700/opsz-48 logo the owner flagged as "way too bold and
+// unprofessional"). A meta rule (eyebrow · hairline · house tag), then a
+// confident-but-composed title with ONE italic word at regular weight (the
+// auction-house "title of a work" signal), then the programme note packed
+// beneath under a border-t. The verbatim Seo/description copy is unchanged; this
+// is page-framing microcopy only (the page owns its own headings).
 const NewsMasthead = () => (
-  <section className="relative pt-8 md:pt-10 pb-7 md:pb-9">
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-      <span
-        className={EYEBROW}
-        style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-      >
-        The estate calendar
-      </span>
-      <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
-    </Reveal>
-
-    <Reveal as="div" className="mt-4 md:mt-5">
-      <h1
-        className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.82] hero-text-shadow"
-        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(60px, 13vw, 220px)" }}
-      >
-        News &amp;<br />releases.
-      </h1>
-    </Reveal>
-
-    <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
+  <PageMasthead
+    className="relative pt-8 md:pt-10 pb-7 md:pb-9"
+    eyebrow="The estate calendar"
+    meta="The Mandala Company"
+    title={
+      <>
+        News &amp; <em className="italic font-normal">releases</em>
+      </>
+    }
+  >
+    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
       <Reveal as="div" className="lg:col-span-3">
         <p
           className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -238,8 +229,8 @@ const NewsMasthead = () => (
           className="font-display font-normal tracking-[-0.01em] text-ink m-0"
           style={{
             fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(22px, 2.6vw, 36px)",
-            lineHeight: 1.3,
+            fontSize: "clamp(20px, 2.2vw, 38px)",
+            lineHeight: 1.34,
             textShadow: "0 2px 14px rgba(0,0,0,0.7)",
           }}
         >
@@ -249,7 +240,7 @@ const NewsMasthead = () => (
         </p>
       </Reveal>
     </div>
-  </section>
+  </PageMasthead>
 );
 
 export const News = () => {
@@ -298,7 +289,7 @@ export const News = () => {
         url="/news"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-12 md:pb-16">
         {/* MASTHEAD — bold left-aligned front cover (replaces the old timid
             centred eyebrow + title + subtitle floating in space). */}
         <NewsMasthead />
@@ -321,7 +312,7 @@ export const News = () => {
                   className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
                   style={{
                     fontVariationSettings: '"opsz" 36, "wght" 400',
-                    fontSize: "clamp(24px, 2.6vw, 38px)",
+                    fontSize: "clamp(24px, 2.6vw, 48px)",
                     lineHeight: 1.28,
                     textShadow: "0 2px 14px rgba(0,0,0,0.7)",
                   }}
@@ -349,43 +340,51 @@ export const News = () => {
 
               {/* WAITLIST — the primary action while NEWS is empty. Reuses the
                   NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
-                  framing is provenance, not hype: early access to each new drop,
+                  framing is provenance, not hype: early access to each new edition,
                   never countdowns or "SALE". Sits beside the note, not below it. */}
               <Reveal as="div" delay={0.06} className="lg:col-span-7 lg:sticky lg:top-28">
                 <NewsletterSignup
                   variant="panel"
                   eyebrow="Join the waitlist"
                   title="Be first to know about the next release."
-                  intro="When the next drop is released, those on the waitlist hear first — an early window before the allocation is taken. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
+                  intro="When the next edition is released, those on the waitlist hear first — an early window before the allocation is taken. Leave your name and we'll write before each collection, single, exhibition or workshop, and never more often than that."
                 />
               </Reveal>
             </div>
           </section>
         ) : null}
 
-        {/* FEATURED NEXT-DROP HERO — one item, never a carousel. A BOLD asymmetric
-            spread: the album cover fills the left, the ONE rust eyebrow + Fraunces
-            title + summary + inline Friends & Family hook pack the right. Reads as
-            a designed feature, not a tall centred stack. */}
+        {/* FEATURED NEXT-EDITION HERO — one item, never a carousel. A BOLD
+            asymmetric spread: the rose-mandala cover is the dominant focal point,
+            filling the LARGER column edge-to-edge (no max-width cap); the ONE rust
+            eyebrow + Fraunces title + summary + inline Friends & Family hook pack
+            the SMALLER column. Reads as a designed feature, not a tall centred
+            stack — the cover leads the page. */}
         {hasNews && featured && isRelease(featured) && featured.cover ? (
           <Reveal
             as="section"
             delay={0.05}
             className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
-              <div className="md:col-span-5 w-full max-w-[460px] md:max-w-none overflow-hidden rounded-xl ring-1 ring-line bg-bg">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 items-center">
+              {/* ROSE-MANDALA COVER — the dominant focal point. Takes the LARGER
+                  column and fills it edge-to-edge (max-width cap removed) so the
+                  upcoming rose/orchid mandala leads the page. */}
+              <div className="md:col-span-7 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
                 <AssetImage
                   src={featured.cover}
                   alt={featured.title}
                   className="block aspect-square w-full object-cover"
                 />
               </div>
-              <div className="md:col-span-7">
+              <div className="md:col-span-5">
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {pillLabel(featured)} · {featured.displayDate}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,64px)] leading-[0.98] text-ink text-balance m-0 mb-5 hero-text-shadow">
+                <h2
+                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.8vw,66px)] leading-[1.02] text-ink text-balance m-0 mb-5 hero-text-shadow"
+                  style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
+                >
                   {featured.title}
                 </h2>
                 <p className={cn(SUBTITLE, "my-0")}>{featured.summary}</p>
@@ -451,7 +450,7 @@ export const News = () => {
                     delay={Math.min(gi * 0.05, 0.2)}
                     className="flex items-baseline gap-4 flex-wrap border-t border-line pt-5 md:pt-6"
                   >
-                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.4vw,48px)] leading-[1.0] text-ink m-0">
+                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.6vw,60px)] leading-[1.0] text-ink m-0">
                       {group.heading}
                     </h2>
                     <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>{group.note}</p>

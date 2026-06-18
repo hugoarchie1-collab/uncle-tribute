@@ -50,7 +50,7 @@ export const ProvenancePanel = () => (
         </li>
       </ul>
     </Disclosure>
-    <Disclosure summary="The drop & materials">
+    <Disclosure summary="The edition & materials">
       <p className={cn(META, "m-0")}>{ORIGINAL_PRINT_SPEC}</p>
     </Disclosure>
     <Disclosure summary="Shipping & care">
