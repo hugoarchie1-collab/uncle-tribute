@@ -20,7 +20,7 @@ import { useParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { PageMasthead } from "../components/PageMasthead";
@@ -292,7 +292,7 @@ export const Auth = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.4} />
+      <SceneBackdrop src="/img/scenes/auth-solar-blur-v1.webp" />
       <Seo
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."
