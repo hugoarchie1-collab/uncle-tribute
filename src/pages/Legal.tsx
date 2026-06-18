@@ -694,7 +694,7 @@ export const Privacy = () => (
     sections={PRIVACY}
     updated={UPDATED}
     // Lava flowing into the sea — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/privacy-lava-blur-v1.webp"
+    backdrop="/img/scenes/privacy-lava-blur-v2.webp"
   />
 );
 export const Terms = () => (
@@ -704,7 +704,7 @@ export const Terms = () => (
     sections={TERMS}
     updated={UPDATED}
     // Patagonian marble caves — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/terms-marble-cave-blur-v1.webp"
+    backdrop="/img/scenes/terms-marble-cave-blur-v2.webp"
   />
 );
 export const Returns = () => (
@@ -714,7 +714,7 @@ export const Returns = () => (
     sections={RETURNS}
     updated={UPDATED}
     // Pink azaleas + ferns at night — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/returns-azalea-blur-v1.webp"
+    backdrop="/img/scenes/returns-azalea-blur-v2.webp"
   />
 );
 

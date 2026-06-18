@@ -320,7 +320,7 @@ export const Basket = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v1.webp" />
+      <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v2.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14">
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same

@@ -21,7 +21,7 @@ import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colo
 // pre-blurred + darkened to the dark-family band so the cream copy stays legible.
 // Treatment (blur/scrim) is baked into the file. (Was a woodland→garden
 // cross-dissolve; collapsed to one image to match the rest of the scene pages.)
-const FORYOU_BACKDROP = "/img/scenes/foryou-rainbow-wave-blur-v1.webp";
+const FORYOU_BACKDROP = "/img/scenes/foryou-rainbow-wave-blur-v2.webp";
 
 /**
  * /for-you — a calm "find a piece that's right for you, by colour" wayfinder

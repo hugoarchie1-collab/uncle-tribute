@@ -256,7 +256,7 @@ const FaqBackdrop = () => {
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const url = asset("/img/scenes/faq-palm-sunset-blur-v1.webp");
+  const url = asset("/img/scenes/faq-palm-sunset-blur-v2.webp");
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">

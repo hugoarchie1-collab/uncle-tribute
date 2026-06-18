@@ -16,7 +16,7 @@ import { asset } from "../lib/asset";
  * other scene pages — same DOM, same scrim string, byte-for-byte. Render it as
  * the FIRST child of a `relative` page root; put `relative z-10` on the <main>.
  *
- * Usage: <SceneBackdrop src="/img/scenes/<name>-blur-v1.webp" />
+ * Usage: <SceneBackdrop src="/img/scenes/<name>-blur-v2.webp" />
  */
 export const SCENE_SCRIM =
   "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)";
