@@ -112,6 +112,116 @@ export const Welcome = () => {
           when scrolling back up from anywhere on the page. Every other page
           uses the in-flow sticky Nav. */}
       <Nav overlay />
+
+      {/* ── THE SUN — opening bookend to the Earth finale ──────────────────────
+          The estate's sun pinned to the VERY TOP of the page, flipped to face
+          DOWNWARD (limb curving into the page), its black sky baked transparent
+          (alpha = luminance) so only the lit sun composites onto the deep bg —
+          the EXACT mirror of the natural Earth limb that closes the page
+          (bottom-pinned there; top-pinned, inverted here). Same full-bleed
+          overscan + soft radial dissolve (no box), same warm halo, and the same
+          layered two-tier Fraunces 700 statement — reading the estate wordmark. */}
+      <section
+        className="relative z-20 isolate flex min-h-[58svh] md:min-h-[64svh] w-full items-end overflow-hidden bg-bg pt-0 pb-9 md:pb-12 lg:pb-14"
+        aria-label="The Mandala Company"
+      >
+        {/* Sun limb pinned to top-0 (its own absolute layer), uncropped. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
+        >
+          {/* Warm sun halo behind the limb — atmosphere only; the rust period in
+              the statement stays the one literal accent. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-[42%]"
+            style={{
+              background:
+                "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0) 70%)",
+            }}
+          />
+          <img
+            src={asset("/img/scenes/sun-limb-v1.webp")}
+            alt=""
+            loading="eager"
+            decoding="async"
+            className="block h-auto select-none"
+            style={{
+              // Mirror of the Earth limb: a centred, slightly-overscanned full
+              // image (width 124% with an equal -12% marginLeft centres it so it
+              // reaches BOTH edges); maxWidth:none lifts the global img clamp.
+              display: "block",
+              width: "124%",
+              maxWidth: "none",
+              marginLeft: "-12%",
+              height: "auto",
+              // Radial dissolve so the sun melts into the bg on every edge — a
+              // soft horizon, never a hard box (mirror of the Earth's mask,
+              // re-centred to the TOP since the sun is top-pinned).
+              WebkitMaskImage:
+                "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+              maskImage:
+                "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+            }}
+          />
+        </div>
+
+        {/* Content — the estate wordmark layered over the sun (z-10). Same
+            two-tier composition as the Sacred Geometry close. */}
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center pb-1 md:pb-2">
+          <Reveal delay={0}>
+            <h2 className="font-display m-0">
+              {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
+                  on the open. opsz 48 keeps the strokes clean at this scale. */}
+              <span
+                className="block text-balance"
+                style={{
+                  fontVariationSettings: '"opsz" 48, "wght" 700',
+                  fontWeight: 700,
+                  fontSize: "clamp(42px, 9.2vw, 140px)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 0.92,
+                  textTransform: "uppercase",
+                  color: "#ede6d6",
+                  textShadow:
+                    "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6)",
+                }}
+              >
+                The Mandala{" "}
+                <em
+                  style={{
+                    fontStyle: "normal",
+                    fontVariationSettings: '"opsz" 48, "wght" 700',
+                    fontWeight: 700,
+                  }}
+                >
+                  Company
+                </em>
+              </span>
+              {/* "the art of stephen meakin." — the SUBORDINATE clause, a
+                  fraction of the title size (mirror of the finale's clause). */}
+              <span
+                className="block text-balance"
+                style={{
+                  fontVariationSettings: '"opsz" 36, "wght" 600',
+                  fontWeight: 600,
+                  fontSize: "clamp(20px, 3.2vw, 50px)",
+                  letterSpacing: "-0.005em",
+                  lineHeight: 1.1,
+                  color: "#ede6d6",
+                  marginTop: "clamp(4px, 0.8vw, 14px)",
+                  textShadow:
+                    "0 2px 16px rgba(8,6,12,0.96), 0 1px 3px rgba(8,6,12,0.9), 0 0 40px rgba(8,6,12,0.55)",
+                }}
+              >
+                the art of stephen meakin
+                <span style={{ color: "#c97844" }}>.</span>
+              </span>
+            </h2>
+          </Reveal>
+        </div>
+      </section>
+
       <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
