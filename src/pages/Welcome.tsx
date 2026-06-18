@@ -122,53 +122,53 @@ export const Welcome = () => {
           overscan + soft radial dissolve (no box), same warm halo, and the same
           layered two-tier Fraunces 700 statement — reading the estate wordmark. */}
       <section
-        className="relative z-20 isolate flex min-h-[58svh] md:min-h-[64svh] w-full items-end overflow-hidden bg-bg pt-0 pb-9 md:pb-12 lg:pb-14"
+        className="relative z-20 isolate w-full overflow-hidden bg-bg flex items-start pt-[30svh] sm:pt-[29svh] md:pt-[31svh] pb-10 md:pb-14 lg:pb-16"
         aria-label="The Mandala Company"
       >
-        {/* Sun limb pinned to top-0 (its own absolute layer), uncropped. */}
+        {/* Sun band pinned to the TOP — a controlled-height object-cover band so
+            the limb + prominences sit at the very top and the title lands in the
+            optimal upper position (not pushed half-way down). The real sun photo,
+            flipped to face DOWNWARD, its dark sky baked seamlessly transparent
+            (alpha = luminance + a feathered disk floor so the surface never
+            holes) — the exact mirror of the Earth limb that closes the page. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[44svh] md:h-[50svh] overflow-hidden"
         >
-          {/* Warm sun halo behind the limb — atmosphere only; the rust period in
-              the statement stays the one literal accent. */}
+          {/* Warm sun halo — atmosphere only; the rust period in the statement
+              stays the one literal accent. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-[42%]"
+            className="absolute inset-x-0 top-0 h-[52%]"
             style={{
               background:
-                "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0) 70%)",
+                "radial-gradient(120% 90% at 50% 0%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0) 64%)",
             }}
           />
           <img
-            src={asset("/img/scenes/sun-limb-v1.webp")}
+            src={asset("/img/scenes/sun-real-v2.webp")}
             alt=""
             loading="eager"
             decoding="async"
-            className="block h-auto select-none"
+            fetchPriority="high"
+            className="block w-full h-full object-cover select-none"
             style={{
-              // Mirror of the Earth limb: a centred, slightly-overscanned full
-              // image (width 124% with an equal -12% marginLeft centres it so it
-              // reaches BOTH edges); maxWidth:none lifts the global img clamp.
-              display: "block",
-              width: "124%",
-              maxWidth: "none",
-              marginLeft: "-12%",
-              height: "auto",
+              // Show the limb + prominences (lower part of the flipped frame).
+              objectPosition: "center 70%",
               // Radial dissolve so the sun melts into the bg on every edge — a
               // soft horizon, never a hard box (mirror of the Earth's mask,
               // re-centred to the TOP since the sun is top-pinned).
               WebkitMaskImage:
-                "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                "radial-gradient(112% 130% at 50% 0%, #000 50%, rgba(0,0,0,0.4) 80%, transparent 97%)",
               maskImage:
-                "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                "radial-gradient(112% 130% at 50% 0%, #000 50%, rgba(0,0,0,0.4) 80%, transparent 97%)",
             }}
           />
         </div>
 
-        {/* Content — the estate wordmark layered over the sun (z-10). Same
-            two-tier composition as the Sacred Geometry close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center pb-1 md:pb-2">
+        {/* Content — the estate wordmark layered over the sun (z-10), lifted into
+            the optimal upper position. Same two-tier composition as the close. */}
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           <Reveal delay={0}>
             <h2 className="font-display m-0">
               {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
@@ -178,13 +178,13 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 700',
                   fontWeight: 700,
-                  fontSize: "clamp(42px, 9.2vw, 140px)",
+                  fontSize: "clamp(44px, 10vw, 150px)",
                   letterSpacing: "-0.03em",
                   lineHeight: 0.92,
                   textTransform: "uppercase",
                   color: "#ede6d6",
                   textShadow:
-                    "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6)",
+                    "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6), 0 0 24px rgba(8,6,12,0.5)",
                 }}
               >
                 The Mandala{" "}
