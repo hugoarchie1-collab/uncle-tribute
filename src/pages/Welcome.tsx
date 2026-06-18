@@ -123,7 +123,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[90svh] md:min-h-[94svh] pb-[7svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[84svh] md:min-h-[88svh] pb-[6svh]"
         aria-label="The Mandala Company"
       >
         {/* The home's own peacock painting shows THROUGH the transparent sun
@@ -168,7 +168,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[44svh] sm:mt-[48svh] md:mt-[52svh]">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[32svh] sm:mt-[34svh] md:mt-[37svh]">
           <Reveal delay={0}>
             <h2 className="font-display m-0">
               {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
