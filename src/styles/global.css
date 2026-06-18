@@ -634,7 +634,7 @@
      carried a baked dark rounded-square TILE. Asset: keyed white-on-transparent
      PNG at /logo (NEW filename → immutable-cache safe). The soft drop-shadow
      keeps the white line-rose legible on the pale peacock / Mary-Pink washes. */
-  background-image: url("/logo/cursor-rose-v1-w256.png");
+  background-image: url("/logo/cursor-rose-v2-w256.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -663,6 +663,28 @@
    backdrop-filter (the banned per-frame "2005-lag" on the always-mounted bar). */
 .nav-bg-scrolled {
   background-color: rgba(10, 9, 8, 0.97);
+}
+
+/* ── Sun limb mask ──────────────────────────────────────────────────────────
+   Radial dissolve for the home's top sun limb (mirror of the Earth limb's mask,
+   re-centred to the TOP). On phones the solid core is held LONGER + taller so
+   the thin overscanned corona doesn't pre-fade behind the overlay nav. */
+.sun-limb-mask {
+  -webkit-mask-image: radial-gradient(82% 135% at 50% 0%, #000 52%, rgba(0, 0, 0, 0.35) 78%, transparent 96%);
+  mask-image: radial-gradient(82% 135% at 50% 0%, #000 52%, rgba(0, 0, 0, 0.35) 78%, transparent 96%);
+}
+@media (max-width: 639px) {
+  .sun-limb-mask {
+    -webkit-mask-image: radial-gradient(84% 152% at 50% 0%, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 99%);
+    mask-image: radial-gradient(84% 152% at 50% 0%, #000 62%, rgba(0, 0, 0, 0.35) 84%, transparent 99%);
+  }
+}
+
+/* Estate rose brand-mark glow — a quiet warm halo so the white line-rose reads
+   on busy/bright backdrops (the sun banner, the header search). */
+.rose-glow {
+  filter: drop-shadow(0 1px 10px rgba(201, 120, 68, 0.45))
+    drop-shadow(0 2px 18px rgba(8, 6, 12, 0.55));
 }
 .nav-bg-top {
   background-image: linear-gradient(

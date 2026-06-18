@@ -119,72 +119,109 @@ export const Welcome = () => {
           (alpha = luminance) so only the lit sun composites onto the deep bg —
           the EXACT mirror of the natural Earth limb that closes the page
           (bottom-pinned there; top-pinned, inverted here). Same full-bleed
-          overscan + soft radial dissolve (no box), same warm halo, and the same
-          layered two-tier Fraunces 700 statement — reading the estate wordmark. */}
+          overscan + soft radial dissolve (no box) + warm halo. A small estate
+          rose is cradled in the sun's glow; the big two-tier wordmark now lands
+          AFTER the intro film below (Hugo's flow: banner → video → the name),
+          leaving this an open cinematic title card with room for the film. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden bg-bg flex items-start pt-[30svh] sm:pt-[29svh] md:pt-[31svh] pb-10 md:pb-14 lg:pb-16"
+        className="relative z-20 isolate w-full overflow-hidden flex items-start justify-center min-h-[54svh] md:min-h-[60svh] pt-[24svh] sm:pt-[23svh] md:pt-[25svh] pb-12 md:pb-16"
         aria-label="The Mandala Company"
       >
-        {/* Sun band pinned to the TOP — a controlled-height object-cover band so
-            the limb + prominences sit at the very top and the title lands in the
-            optimal upper position (not pushed half-way down). The real sun photo,
-            flipped to face DOWNWARD, its dark sky baked seamlessly transparent
-            (alpha = luminance + a feathered disk floor so the surface never
-            holes) — the exact mirror of the Earth limb that closes the page. */}
+        {/* The home's own peacock painting shows THROUGH the transparent sun
+            (no bg-bg) — the sun composites onto the painting exactly like the
+            Earth limb composites onto it at the close. The fixed peacock layer
+            (inside #welcome-anchor) covers the viewport; this z-20 section sits
+            over it and reveals it wherever the sun is transparent. */}
+        {/* Sun limb pinned to the TOP — the mirror of the Earth limb that closes
+            the page (bottom-pinned there). The real sun photo, its dark sky baked
+            seamlessly transparent (alpha = luminance) so ONLY the lit sun + its
+            flares composite onto the home's peacock painting — flipped so the
+            flares curve DOWN into the page. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[44svh] md:h-[50svh] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-[58px] sm:top-0 z-[1] overflow-hidden"
         >
-          {/* Warm sun halo — atmosphere only; the rust period in the statement
-              stays the one literal accent. */}
+          {/* Warm sun halo behind the limb — STRONGER + TALLER on phones (0.24 /
+              h-56%) so the thin overscanned corona separates from the busy indigo
+              painting; the Earth's calmer values (0.17 / h-44%) from sm up. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-[52%]"
+            className="absolute inset-x-0 top-0 h-[56%] sm:h-[44%]"
             style={{
               background:
-                "radial-gradient(120% 90% at 50% 0%, rgba(201,120,68,0.18) 0%, rgba(201,120,68,0) 64%)",
+                "radial-gradient(120% 88% at 50% 0%, rgba(201,120,68,0.24) 0%, rgba(201,120,68,0) 70%)",
             }}
           />
           <img
-            src={asset("/img/scenes/sun-real-v2.webp")}
+            src={asset("/img/scenes/sun-real-v3.webp")}
             alt=""
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="block w-full h-full object-cover select-none"
+            className="sun-limb-mask block h-auto select-none w-[150%] -ml-[25%] sm:w-[124%] sm:-ml-[12%] [filter:brightness(1.15)_contrast(1.09)_saturate(1.04)] sm:[filter:none]"
             style={{
-              // Show the limb + prominences (lower part of the flipped frame).
-              objectPosition: "center 70%",
-              // Radial dissolve so the sun melts into the bg on every edge — a
-              // soft horizon, never a hard box (mirror of the Earth's mask,
-              // re-centred to the TOP since the sun is top-pinned).
-              WebkitMaskImage:
-                "radial-gradient(112% 130% at 50% 0%, #000 50%, rgba(0,0,0,0.4) 80%, transparent 97%)",
-              maskImage:
-                "radial-gradient(112% 130% at 50% 0%, #000 50%, rgba(0,0,0,0.4) 80%, transparent 97%)",
+              // Mirror of the Earth limb: a centred, slightly-overscanned full
+              // image (width N% with an equal-half negative marginLeft centres it
+              // so it reaches BOTH edges). LESS overscan on phones (150%/-25%) so
+              // the hot corona core stays in frame; the Earth's exact 124%/-12%
+              // from sm up. maxWidth:none lifts the clamp. The radial dissolve is
+              // .sun-limb-mask (mobile holds the solid core longer + taller so the
+              // thin corona doesn't pre-fade behind the overlay nav).
+              display: "block",
+              maxWidth: "none",
+              height: "auto",
             }}
           />
         </div>
 
-        {/* Content — the estate wordmark layered over the sun (z-10), lifted into
-            the optimal upper position. Same two-tier composition as the close. */}
+        {/* Content — a quiet estate rose brand-mark cradled in the sun's glow.
+            The big wordmark now lands AFTER the intro film below (Hugo's flow:
+            sun banner → intro video → the name), leaving this banner an open,
+            cinematic title card with aesthetic room for the film beneath it. */}
+        <div className="relative z-10 mx-auto flex w-full max-w-[1320px] flex-col items-center px-4 text-center">
+          <Reveal delay={0}>
+            <img
+              src={asset("/logo/cursor-rose-v2-w256.png")}
+              alt="The Mandala Company"
+              className="rose-glow block h-auto w-[clamp(56px,8vw,100px)] select-none"
+              style={{ opacity: 0.96 }}
+              loading="eager"
+              decoding="async"
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      <VideoIntro />
+
+      {/* ── THE WORDMARK — the estate statement, AFTER the intro film ──────────
+          Moved out of the sun banner so Hugo's intro video sits between the sun
+          and the name (his flow: banner → video → wordmark). Sits over the home's
+          peacock painting (z-20, no bg) exactly like the sun + the Earth finale —
+          the fixed peacock layer paints at root z-0, this z-20 section reveals it.
+          Same two-tier Fraunces composition as the close. */}
+      <section
+        className="relative z-20 isolate w-full overflow-hidden flex items-center justify-center py-[13svh] md:py-[15svh]"
+        aria-label="The Mandala Company — the art of Stephen Meakin"
+      >
         <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           <Reveal delay={0}>
             <h2 className="font-display m-0">
-              {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
-                  on the open. opsz 48 keeps the strokes clean at this scale. */}
+              {/* "THE MANDALA COMPANY" — the DOMINANT statement. opsz 48 keeps the
+                  strokes clean at this scale. A hairline contact-shadow (first
+                  layer) sets the cream glyphs into the scene. */}
               <span
                 className="block text-balance"
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 700',
                   fontWeight: 700,
-                  fontSize: "clamp(44px, 10vw, 150px)",
+                  fontSize: "clamp(46px, 11vw, 172px)",
                   letterSpacing: "-0.03em",
                   lineHeight: 0.92,
                   textTransform: "uppercase",
                   color: "#ede6d6",
                   textShadow:
-                    "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6), 0 0 24px rgba(8,6,12,0.5)",
+                    "0 1px 1px rgba(8,6,12,0.92), 0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6), 0 0 24px rgba(8,6,12,0.5)",
                 }}
               >
                 The Mandala{" "}
@@ -205,7 +242,7 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 36, "wght" 600',
                   fontWeight: 600,
-                  fontSize: "clamp(20px, 3.2vw, 50px)",
+                  fontSize: "clamp(19px, 2.9vw, 44px)",
                   letterSpacing: "-0.005em",
                   lineHeight: 1.1,
                   color: "#ede6d6",
@@ -215,14 +252,19 @@ export const Welcome = () => {
                 }}
               >
                 the art of stephen meakin
-                <span style={{ color: "#c97844" }}>.</span>
+                <span
+                  style={{
+                    color: "#c97844",
+                    textShadow: "0 0 14px rgba(201,120,68,0.45)",
+                  }}
+                >
+                  .
+                </span>
               </span>
             </h2>
           </Reveal>
         </div>
       </section>
-
-      <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
         {/* PEACOCK BACKDROP LAYER — four colourways crossfading on

@@ -277,7 +277,7 @@ export const Collections = () => {
             name or count the collections, so it never goes stale. */}
         <Reveal
           as="div"
-          className="relative mx-auto max-w-[1100px] 3xl:max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8"
+          className="relative mx-auto max-w-[1100px] 2xl:max-w-[1240px] 3xl:max-w-[1420px] 4xl:max-w-[1640px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8"
         >
           <PageMasthead
             eyebrow="Everything he finished"
@@ -613,7 +613,7 @@ export const Collections = () => {
                 {bundle && items.length > 1 && (
                   <Reveal
                     as="div"
-                    className="mt-6 md:mt-8 mx-auto max-w-[820px] 3xl:max-w-[980px]"
+                    className="mt-6 md:mt-8 mx-auto max-w-[820px] 3xl:max-w-[980px] 4xl:max-w-[1100px]"
                   >
                     <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
                       <p className={cn(EYEBROW, "m-0 mb-4")}>

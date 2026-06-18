@@ -309,7 +309,7 @@ export const Auth = () => {
         </Reveal>
 
         <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start border-t border-line pt-6 md:pt-8">
-          <Reveal as="div" className="lg:col-span-7">
+          <Reveal as="div" className="lg:col-span-7 3xl:col-span-8">
             <form onSubmit={handleSubmit} noValidate>
               <span className={cn(EYEBROW, "block mb-3")}>Certificate ID</span>
               <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
@@ -345,7 +345,7 @@ export const Auth = () => {
             </form>
           </Reveal>
 
-          <Reveal as="div" delay={0.06} className="lg:col-span-5">
+          <Reveal as="div" delay={0.06} className="lg:col-span-5 3xl:col-span-4">
             <p
               className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
               style={{

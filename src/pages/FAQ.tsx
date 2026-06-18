@@ -309,12 +309,12 @@ export const FAQ = () => {
         <section className={cn(SECTION, "pb-8 md:pb-10")}>
           <Reveal
             as="div"
-            className="mx-auto flex w-full max-w-[1100px] 3xl:max-w-[1380px] 4xl:max-w-[1560px] flex-wrap justify-center gap-x-10 lg:gap-x-16 3xl:gap-x-24 gap-y-7 3xl:gap-y-9 border-t border-line"
+            className="mx-auto flex w-full max-w-[1100px] 3xl:max-w-[1500px] 4xl:max-w-[1720px] flex-wrap justify-center gap-x-10 lg:gap-x-16 3xl:gap-x-24 gap-y-7 3xl:gap-y-9 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,44%,620px)] flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,46%,700px)] 4xl:flex-[0_1_clamp(300px,46%,800px)] flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

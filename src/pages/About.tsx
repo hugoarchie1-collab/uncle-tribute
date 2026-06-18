@@ -872,7 +872,7 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="wandering" title="The wandering years." />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[780px] 3xl:max-w-[920px] 4xl:max-w-[1020px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[780px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
@@ -899,7 +899,7 @@ export const About = () => {
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1020px] 4xl:max-w-[1140px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1180px] 4xl:max-w-[1340px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
