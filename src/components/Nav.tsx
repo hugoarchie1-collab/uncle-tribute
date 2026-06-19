@@ -13,30 +13,34 @@ import { useBasketLines } from "../lib/basket";
 const NAV_LINKS = [
   { to: "/", label: "Home", end: true },
   { to: "/collections", label: "Collections" },
+  { to: "/gallery", label: "Virtual Gallery" },
   { to: "/for-you", label: "For You" },
   { to: "/about", label: "About" },
   { to: "/memories", label: "Memories" },
   { to: "/news", label: "News" },
   // Gift cards + Authenticate promoted from the quiet secondary set onto the
   // primary menu (Hugo). They now show in the mobile drawer's main list AND the
-  // desktop inline bar — the inline bar moves to a 2xl breakpoint below so nine
+  // desktop inline bar — the inline bar moves to a 2xl breakpoint below so the
   // links never crowd/overflow a laptop-width bar (it gets the drawer instead).
   { to: "/gift", label: "Gift cards" },
   { to: "/auth", label: "Authenticate" },
+  // Trade & Interiors promoted onto the primary menu (Hugo's request — "add
+  // Trade & Interiors to the main contents"); removed from SECONDARY_LINKS below.
+  { to: "/trade", label: "Trade & Interiors" },
   { to: "/contact", label: "Contact" },
 ];
 
 /** Estate meta secondary links — the quiet drawer-footer set (real routes
- *  only): utility (FAQ · Trade) then legal (Privacy · Terms · Returns). Gift
- *  cards + Authenticate were promoted OUT of this set onto the primary NAV_LINKS
- *  menu above. Basket is intentionally NOT here: it already has its own
- *  always-visible icon in the top bar, so listing it again read as a stray
- *  highlighted chip. */
+ *  only): account/orders, the Library reading room, FAQ, then legal (Privacy ·
+ *  Terms · Returns). Gift cards + Authenticate + Trade & Interiors were promoted
+ *  OUT of this set onto the primary NAV_LINKS menu above. Basket is intentionally
+ *  NOT here: it already has its own always-visible icon in the top bar, so
+ *  listing it again read as a stray highlighted chip. */
 const SECONDARY_LINKS = [
   { to: "/account", label: "Your account" },
   { to: "/orders", label: "Orders & returns" },
+  { to: "/library", label: "Library" },
   { to: "/faq", label: "FAQ" },
-  { to: "/trade", label: "Trade" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
   { to: "/returns", label: "Returns" },
@@ -128,15 +132,24 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     const evaluate = () => {
       const y = window.scrollY;
       setScrolled(y > 40);
-      const last = lastYRef.current;
       if (y < SHOW_ABOVE) {
+        // Top zone — always show.
         setHidden(false);
-      } else if (y > last + DELTA) {
-        setHidden(true); // scrolling down → slide away
-      } else if (y < last - DELTA) {
-        setHidden(false); // scrolling up → slide back in
+        lastYRef.current = y;
+        return;
       }
-      lastYRef.current = y;
+      // Accumulate small scrolls: only RE-BASE lastYRef once the DELTA deadband
+      // is crossed. (The old code re-based every frame, so a SLOW scroll-up never
+      // built up enough delta to cross −DELTA — the bar only reappeared at the very
+      // top. Now ANY scroll-up reveals it, fast or slow — Hugo's ask.)
+      const delta = y - lastYRef.current;
+      if (delta > DELTA) {
+        setHidden(true); // scrolling down → slide away
+        lastYRef.current = y;
+      } else if (delta < -DELTA) {
+        setHidden(false); // scrolling up → slide back in
+        lastYRef.current = y;
+      }
     };
     const onScroll = () => {
       cancelAnimationFrame(raf);
