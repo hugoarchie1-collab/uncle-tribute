@@ -1,22 +1,26 @@
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  type MotionValue,
+} from "framer-motion";
 import { asset } from "../lib/asset";
 
 /**
  * SceneBackdrop — the canonical fixed page-scene backdrop.
  *
- * The single shared source for the treatment every scene page uses: one
- * pre-blurred + pre-darkened WebP (baked to the site's dark-family band so it
- * never out-shouts the cream copy) rendered full-bleed under the EXACT shared
- * scrim. The image drifts ±6% over the WHOLE-PAGE scroll (target-less useScroll),
- * overscanned inset-[-8%] so the parallax can never expose an uncovered strip
- * (the parent is overflow-hidden, so the overscan is clipped). Reduced-motion
- * drops the parallax and holds the layer static, releasing the GPU promotion.
+ * Pass ONE pre-blurred WebP (`src="..."`) for a single static scene that drifts
+ * ±6% over the whole-page scroll, OR an ARRAY (`src={[a, b, c]}`) for several
+ * scenes that CROSS-FADE into one another across the page scroll — the home
+ * peacock pattern — so a long page (e.g. the legal pages) carries every scene
+ * Hugo assigned it, in order. Either way it sits full-bleed under the EXACT
+ * shared scrim, overscanned inset-[-8%] so the parallax never exposes a strip,
+ * clipped by the overflow-hidden parent. Reduced-motion drops the parallax +
+ * crossfade and holds the first scene static.
  *
- * Mirrors the inline ScrollBackdrop/ContactBackdrop/FaqBackdrop pattern on the
- * other scene pages — same DOM, same scrim string, byte-for-byte. Render it as
- * the FIRST child of a `relative` page root; put `relative z-10` on the <main>.
- *
- * Usage: <SceneBackdrop src="/img/scenes/<name>-blur-v2.webp" />
+ * Render as the FIRST child of a `relative` page root; put `relative z-10` on
+ * the <main>.
  */
 // Darkened 2026-06-19 (Hugo: the scene photos were "too bright to even read
 // text"). Stronger top + mid so the cream copy always reads, while the (already
@@ -24,29 +28,87 @@ import { asset } from "../lib/asset";
 export const SCENE_SCRIM =
   "linear-gradient(180deg, rgba(8,7,6,0.60) 0%, rgba(8,7,6,0.72) 45%, rgba(8,7,6,0.88) 100%)";
 
-export const SceneBackdrop = ({ src }: { src: string }) => {
+/** One crossfade layer — full during its scroll band, ramping in/out at the
+ *  band boundaries (first holds from the top, last holds to the foot). Each
+ *  instance owns exactly one useTransform, so the hook count stays stable. */
+const CrossfadeLayer = ({
+  url,
+  index,
+  count,
+  scrollYProgress,
+  y,
+}: {
+  url: string;
+  index: number;
+  count: number;
+  scrollYProgress: MotionValue<number>;
+  y: MotionValue<string>;
+}) => {
+  const w = Math.min(0.06, 0.4 / count); // half-width of each crossfade window
+  const b = (k: number) => k / count; // band boundary k
+  let frames: number[];
+  let vals: number[];
+  if (index === 0) {
+    frames = [0, b(1) - w, b(1) + w];
+    vals = [1, 1, 0];
+  } else if (index === count - 1) {
+    frames = [b(index) - w, b(index) + w, 1];
+    vals = [0, 1, 1];
+  } else {
+    frames = [b(index) - w, b(index) + w, b(index + 1) - w, b(index + 1) + w];
+    vals = [0, 1, 1, 0];
+  }
+  const opacity = useTransform(scrollYProgress, frames, vals);
+  return (
+    <motion.div
+      style={{
+        opacity,
+        y,
+        backgroundImage: `url("${url}")`,
+        willChange: "transform, opacity",
+      }}
+      className="absolute inset-[-8%] bg-cover bg-center"
+      aria-hidden="true"
+    />
+  );
+};
+
+export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
   const reduceMotion = useReducedMotion();
   // No `target` → tracks the whole-document scroll for one page-wide drift.
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const url = asset(src);
+  const urls = (Array.isArray(src) ? src : [src]).map((s) => asset(s));
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       {reduceMotion ? (
+        // Reduced-motion: drop the parallax + crossfade, hold the FIRST scene
+        // static, and release the GPU promotion (will-change:auto).
         <div
-          style={{ backgroundImage: `url("${url}")`, willChange: "auto" }}
+          style={{ backgroundImage: `url("${urls[0]}")`, willChange: "auto" }}
           className="absolute inset-0 bg-cover bg-center"
           aria-hidden="true"
         />
-      ) : (
+      ) : urls.length === 1 ? (
         <motion.div
-          style={{ y, backgroundImage: `url("${url}")`, willChange: "transform" }}
-          // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can NEVER
-          // expose an uncovered strip — the parent is overflow-hidden, so it clips.
+          style={{ y, backgroundImage: `url("${urls[0]}")`, willChange: "transform" }}
+          // OVERSCAN 8% so the ±6% parallax `y` can never expose an uncovered
+          // strip — the parent is overflow-hidden, so it clips.
           className="absolute inset-[-8%] bg-cover bg-center"
           aria-hidden="true"
         />
+      ) : (
+        urls.map((url, i) => (
+          <CrossfadeLayer
+            key={url}
+            url={url}
+            index={i}
+            count={urls.length}
+            scrollYProgress={scrollYProgress}
+            y={y}
+          />
+        ))
       )}
       {/* Shared scrim — the EXACT gradient every scene page uses. */}
       <div aria-hidden="true" className="absolute inset-0" style={{ background: SCENE_SCRIM }} />

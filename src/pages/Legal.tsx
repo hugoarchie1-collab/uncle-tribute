@@ -693,8 +693,11 @@ export const Privacy = () => (
     lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
     sections={PRIVACY}
     updated={UPDATED}
-    // Lava flowing into the sea — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/privacy-lava-blur-v2.webp"
+    // Lava → Teton dusk — both scenes Hugo assigned to privacy, crossfading on scroll.
+    backdrop={[
+      "/img/scenes/privacy-lava-blur-v2.webp",
+      "/img/scenes/privacy-teton-blur-v2.webp",
+    ]}
   />
 );
 export const Terms = () => (
@@ -703,8 +706,12 @@ export const Terms = () => (
     lead="The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights."
     sections={TERMS}
     updated={UPDATED}
-    // Patagonian marble caves — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/terms-marble-cave-blur-v2.webp"
+    // Marble caves → Nile → Himalaya — Hugo's three terms scenes, crossfading on scroll.
+    backdrop={[
+      "/img/scenes/terms-marble-cave-blur-v2.webp",
+      "/img/scenes/terms-nile-blur-v2.webp",
+      "/img/scenes/terms-himalaya-blur-v2.webp",
+    ]}
   />
 );
 export const Returns = () => (
@@ -713,8 +720,11 @@ export const Returns = () => (
     lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
     sections={RETURNS}
     updated={UPDATED}
-    // Pink azaleas + ferns at night — pre-blurred + darkened to the dark-family band.
-    backdrop="/img/scenes/returns-azalea-blur-v2.webp"
+    // Azaleas → spider-web/DNA — both scenes Hugo assigned to returns, crossfading on scroll.
+    backdrop={[
+      "/img/scenes/returns-azalea-blur-v2.webp",
+      "/img/scenes/returns-spider-blur-v2.webp",
+    ]}
   />
 );
 
@@ -802,8 +812,8 @@ const LegalPage = ({
   lead: string;
   sections: Section[];
   updated: string;
-  /** Per-page blurred scene backdrop (pre-darkened to the dark-family band). */
-  backdrop: string;
+  /** Per-page blurred scene backdrop — one src, or several that crossfade on scroll. */
+  backdrop: string | string[];
 }) => {
   // Strip HTML entities + the canonical trailing full stop for the tab title.
   const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
