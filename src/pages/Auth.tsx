@@ -292,10 +292,11 @@ export const Auth = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      {/* A calm dark peacock wash — Hugo: "I never asked for the sun on estate
-          registry." The deep Moroccan-purple mandala wash is on-brand + recedes
-          quietly behind the registry form (no solar image). */}
-      <SceneBackdrop src="/img/paintings/peacock-moroccan-purple-blur-v3.webp" />
+      {/* Genetic-sequence-through-a-spider-web (Hugo: "use this image" for the
+          registry) — the code + the web of connection reads for an authentication
+          / provenance page. Pre-blurred + darkened; recedes behind the form. NOT
+          the solar image (Hugo: "I never asked for the sun on estate registry"). */}
+      <SceneBackdrop src="/img/scenes/auth-dna-blur-v2.webp" />
       <Seo
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."
