@@ -103,6 +103,18 @@ const STATIC_ROUTES: RouteHead[] = [
       "The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected.",
   },
   {
+    routePath: "/gallery",
+    title: "Virtual Gallery — The Exhibition",
+    description:
+      "Walk the complete exhibition of Stephen Meakin's ten mandala paintings — a cinematic online viewing room. See each work at the scale it was painted, then place it on your own wall in augmented reality.",
+  },
+  {
+    routePath: "/library",
+    title: "The Reading Room — the books that shaped Stephen Meakin",
+    description:
+      "The books that shaped Stephen Meakin (SEM, 1966–2021), British mandala artist and sacred geometer — a reading room from the estate. The titles he returned to, gathered by The Mandala Company.",
+  },
+  {
     routePath: "/for-you",
     title: "Find a piece for you",
     description:
