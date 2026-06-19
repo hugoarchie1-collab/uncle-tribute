@@ -235,6 +235,21 @@ export const Collections = () => {
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* BASE WASH — an always-on dark mandala wash UNDER the cross-fading
+            collection scenes. Each ScrollBackdrop's opacity is tied to its
+            section being in view, so once you scroll PAST all three collections
+            (the complete-catalogue panel + footer) every scene has faded to 0 —
+            which used to drop the page to PURE BLACK (Hugo: "fix how the
+            background randomly disappears and goes black"). This constant layer
+            guarantees there is always a soft, on-brand backdrop behind the
+            content; the bright collection scenes simply ride on top of it. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url("${asset("/img/paintings/peacock-moroccan-purple-blur-v3.webp")}")`,
+          }}
+        />
         {COLLECTIONS.map((coll, i) =>
           coll.backdropImage ? (
             <ScrollBackdrop
