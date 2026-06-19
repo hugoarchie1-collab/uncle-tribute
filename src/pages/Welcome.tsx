@@ -129,6 +129,18 @@ export const Welcome = () => {
         {/* The home's own peacock painting shows THROUGH the transparent sun
             (no bg-bg) — the sun composites onto the painting exactly like the
             Earth limb composites onto it at the close. */}
+        {/* Softening scrim — darkens the busy peacock detail in the TOP banner so
+            it recedes behind the sun + wordmark (Hugo: "you can read behind the
+            sun"). A plain dark gradient, NOT backdrop-blur (banned here for the
+            scroll-lag it causes); z-0, below the sun (z-1) + the text (z-10). */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 z-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(9,7,13,0.50) 0%, rgba(9,7,13,0.58) 42%, rgba(9,7,13,0.82) 100%)",
+          }}
+        />
         {/* Sun limb band pinned to the TOP — Hugo's REAL sun photo, FLIPPED so the
             limb sits up top and the flares curve DOWN into the page, its dark sky
             baked transparent (alpha = luminance) so only the warm sun composites
