@@ -5,7 +5,7 @@
   "framework": "vite",
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/((?!api/|assets/|img/|video/|fonts/|logo/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|assets/|img/|video/|fonts/|logo/|ar/).*)", "destination": "/index.html" }
   ],
   "redirects": [
     {
@@ -69,6 +69,12 @@
     },
     {
       "source": "/fonts/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/ar/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]

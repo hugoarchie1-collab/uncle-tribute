@@ -4,6 +4,7 @@ import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
 import { clearConsent } from "../lib/consent";
 import { EYEBROW_MUTED } from "./ui/tokens";
+import { ScanToVisit } from "./ScanToVisit";
 
 const YEAR = new Date().getFullYear();
 
@@ -28,8 +29,10 @@ const FOOTER_TEXT = "font-sans text-[14px] leading-[1.6]";
 const EXPLORE_LINKS = [
   { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
+  { to: "/gallery", label: "Virtual Gallery" },
   { to: "/for-you", label: "For You" },
   { to: "/about", label: "About" },
+  { to: "/library", label: "Library" },
   { to: "/memories", label: "Memories" },
   { to: "/news", label: "News" },
 ];
@@ -39,7 +42,7 @@ const ESTATE_LINKS = [
   { to: "/faq", label: "FAQ" },
   { to: "/auth", label: "Authentication" },
   { to: "/gift", label: "Gift cards" },
-  { to: "/trade", label: "Trade & interiors" },
+  { to: "/trade", label: "Trade & Interiors" },
 ];
 
 const LinkColumn = ({
@@ -102,6 +105,9 @@ export const Footer = () => (
           <br />
           213 Elm Drive, Hove, East Sussex, BN3 7JD, UK
         </p>
+        {/* Scan-to-visit QR chip — links the dark site to a scannable cream
+            tile (the QR is always dark-on-cream, never inverted). */}
+        <ScanToVisit variant="footer" className="mt-6" />
       </div>
 
       {/* Explore — the primary pages (canonical nav order, minus Home). */}

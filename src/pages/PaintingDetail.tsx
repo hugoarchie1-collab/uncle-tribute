@@ -20,6 +20,9 @@ import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { CloserLook } from "../components/CloserLook";
+import { RoomVisualizer } from "../components/RoomVisualizer";
+import { ArtworkAR, hasArAsset } from "../components/ArtworkAR";
+import type { FrameFinish } from "../lib/trueScale";
 import {
   COLLECTIONS,
   EMBELLISHMENT_NOTE,
@@ -70,14 +73,6 @@ import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
   .toISOString()
   .slice(0, 10);
-
-// True-Size room view needs a composited room photo per painting at
-// /public/img/truesize/<id>-<size>.jpg(+webp). NONE exist yet, so the "True
-// size" toggle is gated to this allowlist — until a painting's asset lands the
-// toggle is hidden, rather than offering a "To scale · coming soon" dead-end on
-// a £245–£1,750 page (audit fix). ⚠️HUGO: add a painting id here the moment its
-// room composite is in /public/img/truesize/, and the toggle self-enables.
-const TRUESIZE_PAINTING_IDS = new Set<string>([]);
 
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.
@@ -478,187 +473,6 @@ const Colourways = ({
           </span>
         )}
       </p>
-    </div>
-  );
-};
-
-/* =============================================================================
- * #11 TRUE SIZE — each painting shown at REAL size on a wall in a room.
- * -----------------------------------------------------------------------------
- * Replaces the old vector ScaleViewer ("to scale" diagram beside a doorway).
- * This is the data-driven version: a size selector swaps a room photograph in
- * which THIS painting hangs at its true printed size, so a buyer can read the
- * presence of A2 vs A1 against real furniture / a real wall.
- *
- * Images are expected at  /img/truesize/<paintingId>-<sizeSlug>.jpg  (with a
- * WebP sibling — the <picture> swaps automatically). sizeSlug is the lowercased
- * A-size token from the tier (a3/a2/a1/a0). Until those photographs exist the
- * slot shows a dignified coming-soon state with the real dimensions, so the
- * section keeps its shape and never looks broken.
- *
- * Presentational ONLY — it never touches price, the JSON-LD offer, or the
- * basket. Reduced-motion-safe by construction (a simple crossfade, no scroll
- * animation). ⚠️HUGO: drop the room photos in /public/img/truesize/ when ready;
- * confirm each painting's true sheet orientation against the printed file.
- * ========================================================================== */
-
-/** Lowercased A-size slug from a tier's size string ("A2 (…)" → "a2"). */
-const trueSizeSlug = (tier: PrintTier): string | null => {
-  const token = tier.size.split(" ")[0]; // "A2", "A1", …
-  return /^A\d$/.test(token) ? token.toLowerCase() : null;
-};
-
-const TrueSizeViewer = ({
-  painting,
-  sizeTiers,
-  selectedTier,
-  onSelectTier,
-}: {
-  painting: Painting;
-  sizeTiers: PrintTier[];
-  selectedTier: PrintTier;
-  onSelectTier: (id: PrintTier["id"]) => void;
-}) => {
-  const reduceMotion = useReducedMotion();
-  // Only standard A-size tiers can be shown to scale (a one-off / non-A size
-  // has no room photo slot). Fall back to the first such tier if the currently
-  // selected tier isn't a standard A-size.
-  const scaleTiers = sizeTiers.filter((t) => trueSizeSlug(t) !== null);
-  const activeTier =
-    trueSizeSlug(selectedTier) !== null ? selectedTier : scaleTiers[0];
-  if (!activeTier) return null;
-
-  const slug = trueSizeSlug(activeTier);
-  const dims = parseSizeCm(activeTier.size);
-  // Room photo for this painting at this size. Image-state is tracked per src
-  // so a missing file degrades to the coming-soon placeholder rather than a
-  // broken-image icon.
-  const roomSrc = slug ? `/img/truesize/${painting.id}-${slug}.jpg` : null;
-
-  return (
-    <figure className="m-0">
-      {/* Size selector — swaps the room image. Mirrors the SizePicker's radio
-          semantics but as a compact pill row so it sits cleanly above the
-          photo. Selecting here drives the SAME selectedTier the buy box uses,
-          so the size shown to scale is the size being ordered. */}
-      <div
-        role="radiogroup"
-        aria-label="Show print to scale at size"
-        className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full"
-      >
-        {scaleTiers.map((t) => {
-          const isActive = t.id === activeTier.id;
-          const token = t.size.split(" ")[0];
-          return (
-            <button
-              key={t.id}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              onClick={() => onSelectTier(t.id)}
-              className={cn(
-                "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
-                isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
-              )}
-            >
-              {token}
-            </button>
-          );
-        })}
-      </div>
-
-      <TrueSizeRoom
-        key={roomSrc ?? "no-room"}
-        src={roomSrc}
-        reduceMotion={!!reduceMotion}
-        painting={painting}
-        tier={activeTier}
-      />
-
-      <figcaption className="mt-3 text-center">
-        <span className="block font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.5] text-ink/70">
-          {activeTier.label} · {activeTier.size}
-          {dims ? ` — shown at true size on the wall` : ""}
-        </span>
-        <span className={cn(EYEBROW_TIGHT, "block mt-1.5")}>
-          A guide to real-world presence · screen scale varies by device
-        </span>
-      </figcaption>
-    </figure>
-  );
-};
-
-/**
- * TrueSizeRoom — one room photograph slot. Attempts to load the dignified room
- * image; if it's absent (not yet shot) it shows a calm coming-soon panel with
- * the print's real dimensions, on-brand, never a broken-image glyph.
- */
-const TrueSizeRoom = ({
-  src,
-  reduceMotion,
-  painting,
-  tier,
-}: {
-  src: string | null;
-  reduceMotion: boolean;
-  painting: Painting;
-  tier: PrintTier;
-}) => {
-  // "ok" once the image loads; "missing" if it errors (file not dropped in
-  // yet) or there's no slug. Start "loading" so we don't flash the placeholder.
-  const [state, setState] = useState<"loading" | "ok" | "missing">(
-    src ? "loading" : "missing",
-  );
-  const dims = parseSizeCm(tier.size);
-  const inW = dims ? (dims.w / 2.54).toFixed(0) : null;
-  const inH = dims ? (dims.h / 2.54).toFixed(0) : null;
-
-  if (state === "missing" || !src) {
-    return (
-      <div className="relative w-full min-h-[clamp(280px,48vw,380px)] py-8 overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
-        {/* Proportional outline of the print, drawn from real cm, centred on a
-            quiet ground — a dignified placeholder until the room photo exists. */}
-        {dims && (
-          <div
-            aria-hidden="true"
-            className="ring-1 ring-ink/25 mb-5"
-            style={{
-              width: `${Math.min(38, (dims.w / dims.h) * 38)}vmin`,
-              height: `${Math.min(38, (dims.h / dims.w) * 38)}vmin`,
-              maxWidth: "180px",
-              maxHeight: "180px",
-            }}
-          />
-        )}
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>To scale · coming soon</p>
-        <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink/70 m-0 max-w-[320px] 3xl:max-w-[400px]">
-          We&rsquo;re photographing {painting.title} on the wall at each size.
-          {dims
-            ? ` ${tier.size.split(" ")[0]} measures ${dims.w} × ${dims.h} cm${
-                inW && inH ? ` (about ${inW} × ${inH} in)` : ""
-              }.`
-            : ""}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line">
-      <picture>
-        <source srcSet={asset(webp(src))} type="image/webp" />
-        <img
-          src={asset(src)}
-          alt={`${painting.title} shown at ${tier.size} on a wall, for true-size scale`}
-          onLoad={() => setState("ok")}
-          onError={() => setState("missing")}
-          className={cn(
-            "absolute inset-0 h-full w-full object-contain",
-            reduceMotion ? "" : "transition-opacity duration-500",
-            state === "ok" ? "opacity-100" : "opacity-0",
-          )}
-        />
-      </picture>
     </div>
   );
 };
@@ -1529,15 +1343,18 @@ export const PaintingDetail = () => {
   const [framing, setFraming] = useState(false);
   const [embellished, setEmbellished] = useState(false);
 
+  // VISUAL-ONLY frame finish for the true-size RoomVisualizer preview (oak /
+  // black-stained oak / unframed). ⚠️ NEVER passed to addItem / onBuyNow /
+  // /api/checkout / any pricing — it is purely a presentational preview, fully
+  // independent of the paid "Bespoke framing" add-on below.
+  const [frameFinish, setFrameFinish] = useState<FrameFinish>("unframed");
+
   // Deep-zoom viewer state for the hero image — plus a ref on the on-page
   // artwork <img> so the viewer can FLIP-lift from its measured rect (and read
   // the already-decoded source's natural pixel size).
   const [viewerOpen, setViewerOpen] = useState(false);
   const closeViewer = useCallback(() => setViewerOpen(false), []);
   const heroImgRef = useRef<HTMLImageElement>(null);
-  // Left-column view: the artwork itself, or the True Size room view (#11) —
-  // the painting shown at its real printed size on a wall in a room.
-  const [view, setView] = useState<"art" | "true-size">("art");
 
   // Sticky bar sentinels — see StickyAddBar.
   const heroSentinelRef = useRef<HTMLDivElement>(null);
@@ -1563,6 +1380,12 @@ export const PaintingDetail = () => {
   // the rendered size is still governed by the h-auto/max-h classes. Falls back
   // to a square slot when the size string isn't in cm.
   const heroDims = parseSizeCm(painting.size ?? "") ?? { w: 1, h: 1 };
+
+  // AR true-size dimensions (cm) — the A2 anchor print size, NOT the selected
+  // tier: only one GLB per painting was generated, at the anchor. Ophiuchus is
+  // the lone portrait 60×80; every other painting is the 42×42 square sheet.
+  const arW = painting.id === "ophiuchus" ? 60 : 42;
+  const arH = painting.id === "ophiuchus" ? 80 : 42;
 
   const scrollToOrder = () => {
     const el = document.getElementById("order-print");
@@ -1794,40 +1617,11 @@ export const PaintingDetail = () => {
               image first, then the buy box (so buyers reach the controls
               quickly, before the story). */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6 lg:gap-14 xl:gap-20 items-start">
-            {/* LEFT — painting image. Sticky on desktop so it stays in view
-                while the buy box scrolls. Click opens the fullscreen lightbox. */}
-            <div className="lg:sticky lg:top-[88px]">
-              {/* View toggle — the artwork, or the True Size room view (#11).
-                  Shown ONLY when this painting has a real room composite (see
-                  TRUESIZE_PAINTING_IDS); otherwise hidden so the buyer never
-                  hits the "coming soon" placeholder on an expensive page. */}
-              {TRUESIZE_PAINTING_IDS.has(painting.id) && (
-                <div className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full">
-                  {(["art", "true-size"] as const).map((v) => (
-                    <button
-                      key={v}
-                      type="button"
-                      onClick={() => setView(v)}
-                      aria-pressed={view === v}
-                      className={cn(
-                        "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
-                        view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
-                      )}
-                    >
-                      {v === "art" ? "Painting" : "True size"}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {view === "true-size" ? (
-                <TrueSizeViewer
-                  painting={painting}
-                  sizeTiers={sizeTiers}
-                  selectedTier={selectedTier}
-                  onSelectTier={setSelectedTierId}
-                />
-              ) : (
-              <>
+            {/* LEFT — painting image, then the true-size preview + AR. (No longer
+                sticky: the column now holds the tall RoomVisualizer + AR blocks
+                below the image, so it scrolls with the buy box.) Click on the
+                image opens the fullscreen lightbox. */}
+            <div>
               <Reveal>
                 <div className="relative overflow-hidden">
                   <button
@@ -1909,8 +1703,54 @@ export const PaintingDetail = () => {
                   Take a closer look
                 </button>
               </div>
-              </>
+
+              {/* SEE IT TRUE TO SIZE (#11) — the print drawn at its REAL printed
+                  size against a human-scale silhouette + ruler (asset-free
+                  "scale" mode is the default since there are no room photos
+                  yet), with a frame-finish picker. PRESENTATIONAL ONLY: the
+                  visual `frameFinish` and the size pills here never touch
+                  pricing / addItem / checkout — the size pills drive the SAME
+                  selectedTier the buy box orders, the finish picker is purely a
+                  visual preview. */}
+              <div className="mt-10">
+                <RoomVisualizer
+                  painting={painting}
+                  colourway={selected}
+                  tier={selectedTier}
+                  finish={frameFinish}
+                  onFinishChange={setFrameFinish}
+                  sizeTiers={sizeTiers}
+                  // RoomVisualizer only ever emits ids from the sizeTiers it was
+                  // handed, so the id is always a valid PrintTier["id"]; the cast
+                  // bridges its wider (id: string) signature to setSelectedTierId.
+                  onSelectTier={(tierId) =>
+                    setSelectedTierId(tierId as PrintTier["id"])
+                  }
+                  defaultMode="scale"
+                  variant="inline"
+                />
+              </div>
+
+              {/* VIEW IN YOUR ROOM — web AR (true-size framed print via Android
+                  Scene Viewer + iOS Quick Look, plus in-page 3D). Gated to
+                  paintings with a generated GLB. AR dims are the A2 anchor size
+                  (one GLB per painting, at the anchor), NOT the selected tier.
+                  Monochrome chrome; reduced-motion handled inside ArtworkAR. */}
+              {hasArAsset(painting.id) && (
+                <div className="mt-8">
+                  <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
+                    View in your room — augmented reality
+                  </p>
+                  <ArtworkAR
+                    paintingId={painting.id}
+                    colourwayName={selected.name}
+                    alt={paintingImageAlt(painting.title, selected.name)}
+                    widthCm={arW}
+                    heightCm={arH}
+                  />
+                </div>
               )}
+
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
               <div ref={heroSentinelRef} aria-hidden="true" className="h-px w-full" />

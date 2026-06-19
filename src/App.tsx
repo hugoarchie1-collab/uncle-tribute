@@ -39,6 +39,8 @@ const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
 const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
 const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
+const Gallery = lazy(() => import("./pages/Gallery").then((m) => ({ default: m.Gallery })));
+const Library = lazy(() => import("./pages/Library").then((m) => ({ default: m.Library })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -108,6 +110,8 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
+          {/* Virtual Gallery / Exhibition — cinematic online viewing room + AR. */}
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/for-you" element={<FindAPrint />} />
           {/* Site-wide search — header SearchBar + this results page. */}
           <Route path="/search" element={<Search />} />
@@ -116,6 +120,8 @@ const AnimatedRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
+          {/* Library — the reading room: the books that shaped Stephen. */}
+          <Route path="/library" element={<Library />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/auth" element={<Auth />} />
