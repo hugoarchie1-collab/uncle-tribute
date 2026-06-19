@@ -277,10 +277,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         />
 
         <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">
-          {/* Primary links — inline from `lg` up; collapsed into the accessible
-              menu below `lg`. */}
+          {/* Primary links live in the always-on MENU drawer now (Hugo: the
+              inline bar "all overlaps" — 11 links never fit a single row, so they
+              crammed/overlapped at wide widths). The hamburger below is shown at
+              EVERY width and opens the full-screen drawer that lists every page.
+              This inline nav is kept hidden (so the markup/chip stay available if
+              we ever want a curated desktop subset). */}
           <nav
-            className="hidden 3xl:flex items-center gap-6 3xl:gap-8"
+            className="hidden"
             aria-label="Primary"
           >
             {NAV_LINKS.map((l) => (
@@ -398,7 +402,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             onClick={() => setMenuOpen((o) => !o)}
-            className="press 3xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
+            className="press inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
           >
             <svg
               width="22"
@@ -475,7 +479,7 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
-            className="3xl:hidden fixed inset-0 z-[120] bg-black/60"
+            className="fixed inset-0 z-[120] bg-black/60"
           />
 
           {/* PANEL — opaque drawer sliding in from the right. */}
@@ -489,7 +493,7 @@ const NavMenu = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: reduceMotion ? 0 : 0.42, ease: EASE_SMOOTH }}
-            className="3xl:hidden fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
+            className="fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
