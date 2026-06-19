@@ -18,8 +18,11 @@ import { asset } from "../lib/asset";
  *
  * Usage: <SceneBackdrop src="/img/scenes/<name>-blur-v2.webp" />
  */
+// Darkened 2026-06-19 (Hugo: the scene photos were "too bright to even read
+// text"). Stronger top + mid so the cream copy always reads, while the (already
+// blurred) image stays visible through it — distinguishable, never out-shouting.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.60) 0%, rgba(8,7,6,0.72) 45%, rgba(8,7,6,0.88) 100%)";
 
 export const SceneBackdrop = ({ src }: { src: string }) => {
   const reduceMotion = useReducedMotion();

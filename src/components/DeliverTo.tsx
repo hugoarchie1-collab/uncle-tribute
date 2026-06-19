@@ -190,18 +190,20 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           aria-label="Delivery region"
           aria-activedescendant={`${panelId}-${regionId}`}
           className={cn(
-            "absolute z-[130] mt-2 overflow-hidden rounded-xl",
+            "overflow-hidden rounded-xl",
             // Scroll-perf: backdrop-blur on the panel re-samples the ~180px
             // dropdown region every frame while the user scrolls (browsers that
             // support backdrop-filter still pay it even behind the supports-gate).
             // Dropped in favour of a near-opaque fill — the shadow below already
             // gives the panel its visual separation.
             "bg-[#0a0908]/98",
-            "ring-1 ring-line shadow-[0_18px_50px_-12px_rgba(0,0,0,0.75)]",
-            "motion-safe:animate-[deliverto-in_180ms_cubic-bezier(0.22,0.61,0.36,1)]",
+            "ring-1 ring-line",
+            // Menu/drawer variant: render INLINE (in normal flow) so the options
+            // push the nav links below down instead of floating over them.
+            // Header variant: keep the original floating dropdown unchanged.
             isMenu
-              ? "left-0 right-0 w-full"
-              : "left-0 w-[clamp(248px,80vw,288px)]",
+              ? "relative z-0 mt-2 left-0 right-0 w-full motion-safe:animate-[deliverto-expand_180ms_cubic-bezier(0.22,0.61,0.36,1)]"
+              : "absolute z-[130] mt-2 left-0 w-[clamp(248px,80vw,288px)] shadow-[0_18px_50px_-12px_rgba(0,0,0,0.75)] motion-safe:animate-[deliverto-in_180ms_cubic-bezier(0.22,0.61,0.36,1)]",
           )}
         >
           <ul className="py-1.5">
@@ -263,6 +265,10 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
         @keyframes deliverto-in {
           from { opacity: 0; transform: translateY(-4px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes deliverto-expand {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
       `}</style>
     </div>

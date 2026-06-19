@@ -8,7 +8,6 @@ import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
-import { asset } from "../lib/asset";
 import { useBasketLines } from "../lib/basket";
 
 const NAV_LINKS = [
@@ -256,23 +255,12 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
         <DeliverTo variant="header" className="hidden lg:flex shrink-0" />
 
-        {/* Estate rose mark — a small warm brand accent immediately LEFT of the
-            search field (replaces the bland grey-blur gap there). Decorative
-            only (the home link is the logo); md+, where the search bar shows. */}
-        <img
-          src={asset("/logo/cursor-rose-v2-w256.png")}
-          alt=""
-          aria-hidden="true"
-          decoding="async"
-          className="rose-glow hidden md:block h-7 w-7 lg:h-8 lg:w-8 shrink-0 select-none opacity-90"
-        />
-
         {/* Site search — Amazon-pattern (search anything on the site), skinned
             to the estate. Grows to fill the middle of the bar on md+; on mobile
             it drops into the drawer below. */}
         <SearchBar
           variant="header"
-          className="hidden md:block flex-1 ml-2.5 mr-3 lg:ml-4 lg:mr-6 max-w-[440px] lg:max-w-[560px]"
+          className="hidden md:block flex-1 mx-3 lg:mx-6 max-w-[440px] lg:max-w-[560px]"
         />
 
         <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">

@@ -173,11 +173,15 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
           aria-label="Currency"
           aria-activedescendant={`${panelId}-${code}`}
           className={cn(
-            "absolute z-[130] mt-2 overflow-hidden rounded-xl",
+            "overflow-hidden rounded-xl",
             "bg-[#0a0908]/98",
-            "ring-1 ring-line shadow-[0_18px_50px_-12px_rgba(0,0,0,0.75)]",
-            "motion-safe:animate-[currency-in_180ms_cubic-bezier(0.22,0.61,0.36,1)]",
-            isMenu ? "left-0 right-0 w-full" : "right-0 w-[clamp(232px,80vw,264px)]",
+            "ring-1 ring-line",
+            // Menu/drawer variant: render INLINE (in normal flow) so the options
+            // push the nav links below down instead of floating over them.
+            // Header variant: keep the original floating dropdown unchanged.
+            isMenu
+              ? "relative z-0 mt-2 left-0 right-0 w-full motion-safe:animate-[currency-expand_180ms_cubic-bezier(0.22,0.61,0.36,1)]"
+              : "absolute z-[130] mt-2 right-0 w-[clamp(232px,80vw,264px)] shadow-[0_18px_50px_-12px_rgba(0,0,0,0.75)] motion-safe:animate-[currency-in_180ms_cubic-bezier(0.22,0.61,0.36,1)]",
           )}
         >
           <ul className="py-1.5">
@@ -244,6 +248,10 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
         @keyframes currency-in {
           from { opacity: 0; transform: translateY(-4px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes currency-expand {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
       `}</style>
     </div>

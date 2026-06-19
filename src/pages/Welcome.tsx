@@ -547,7 +547,7 @@ export const Welcome = () => {
                   <p
                     key={para.slice(0, 24)}
                     lang="en-GB"
-                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 text-pretty hyphens-auto"
                   >
                     {text}
                   </p>
