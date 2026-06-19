@@ -7,9 +7,8 @@
 // mounts until the visitor actually asks for it, and an act with no AR model
 // shows nothing (returns null) rather than a dead control.
 //
-// The real-world AR size is the artwork's true dimensions: every mandala is
-// square (42 × 42 cm catalogue reference) except Ophiuchus, which is a 60 × 80
-// portrait — those bespoke cm values are passed so the model lands at scale.
+// The real-world AR size is the square A-size print the shop sells — 42 × 42 cm
+// for every painting (incl. Ophiuchus) — so the model lands at true scale.
 //
 // CONTRACT consumed (from ../ArtworkAR):
 //   hasArAsset(paintingId: string): boolean
@@ -27,12 +26,10 @@ interface ArSlotProps {
   cover: Colourway;
 }
 
-// The bespoke real-world print dimensions (cm) for the AR model. Square at 42cm
-// for every mandala; Ophiuchus is the lone portrait (60 × 80). Driven by the
-// painting id so a new portrait piece is a one-line addition here.
-const AR_DIMENSIONS_CM: Record<string, { widthCm: number; heightCm: number }> = {
-  ophiuchus: { widthCm: 60, heightCm: 80 },
-};
+// Real-world print dimensions (cm) for the AR model — the square A-size sheet the
+// shop sells, 42 × 42 cm for every painting. Per-id overrides can be added here
+// only if a genuinely non-square print is ever offered.
+const AR_DIMENSIONS_CM: Record<string, { widthCm: number; heightCm: number }> = {};
 const DEFAULT_AR_CM = { widthCm: 42, heightCm: 42 };
 
 export const ArSlot = ({ painting, cover }: ArSlotProps) => {

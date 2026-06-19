@@ -30,6 +30,7 @@ import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { asset } from "../lib/asset";
+import { absoluteUrl } from "../lib/seo";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE, META } from "../components/ui/tokens";
 import { BOOKS, getLeadBook, getShelfBooks, type Book } from "../data/books";
@@ -299,7 +300,7 @@ export const Library = () => {
     name: book.title,
     author: { "@type": "Person", name: book.author },
     datePublished: String(book.year),
-    image: asset(book.coverImage),
+    image: absoluteUrl(asset(book.coverImage)),
   }));
 
   const wired: ReactNode = (
@@ -319,7 +320,7 @@ export const Library = () => {
         jsonLd={jsonLd}
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-12 md:pb-16">
         <LibraryMasthead />
         {wired}
       </main>

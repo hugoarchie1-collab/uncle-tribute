@@ -144,13 +144,16 @@ export const RoomOverture = ({ collection, paintings, roman }: RoomOvertureProps
             const cover =
               painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
             return (
-              <a
+              <div
                 key={painting.id}
-                href={`#act-${painting.id}`}
                 role="listitem"
+                className="shrink-0 snap-start w-[148px] sm:w-[172px] md:w-[200px] 3xl:w-[232px]"
+              >
+              <a
+                href={`#act-${painting.id}`}
                 onClick={(e) => jumpTo(painting.id, e)}
                 aria-label={`Jump to ${painting.title}`}
-                className="group block shrink-0 snap-start w-[148px] sm:w-[172px] md:w-[200px] 3xl:w-[232px]"
+                className="group block"
               >
                 <div className="aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
                   <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.05]">
@@ -172,6 +175,7 @@ export const RoomOverture = ({ collection, paintings, roman }: RoomOvertureProps
                   {painting.title}
                 </p>
               </a>
+              </div>
             );
           })}
         </div>

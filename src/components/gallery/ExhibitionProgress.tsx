@@ -86,9 +86,9 @@ export const ExhibitionProgress = ({ paintingIds, titles }: ExhibitionProgressPr
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed right-4 lg:right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end gap-3"
+    <nav
+      aria-label="Exhibition progress"
+      className="pointer-events-none fixed right-4 2xl:right-6 top-1/2 -translate-y-1/2 z-40 hidden 2xl:flex flex-col items-end gap-3"
     >
       {/* NN / 10 — the live count. */}
       <p
@@ -121,6 +121,6 @@ export const ExhibitionProgress = ({ paintingIds, titles }: ExhibitionProgressPr
           );
         })}
       </div>
-    </div>
+    </nav>
   );
 };

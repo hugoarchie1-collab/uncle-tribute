@@ -172,7 +172,10 @@ export const FramedArtwork = ({
           <div
             className="relative box-border h-full w-full overflow-hidden"
             style={{
-              padding: lip,
+              // The lip is a VISUAL bevel (the inset shadow below), NOT a size
+              // cost — padding it would shrink the print's content box by ~0.5cm
+              // and clip the art, breaking true scale. So no padding: the print
+              // fills this box at exactly artW×artH (its real size).
               background: MAT_FACE,
               boxShadow: `inset 0 0 ${Math.max(lip, 1)}px rgba(0,0,0,0.28)`,
             }}

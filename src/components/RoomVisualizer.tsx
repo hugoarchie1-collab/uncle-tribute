@@ -275,6 +275,23 @@ export const RoomVisualizer = ({
     });
   }, [mode, uploadUrl, framedDims, uploadPxPerCm, stage, printPos]);
 
+  // Re-clamp the placed print back onto the stage when the frame finish or size
+  // changes its footprint, so a larger framed size can never strand it off-stage.
+  // The (cx/cy !== current) guard means it only fires when a clamp is actually
+  // needed — never an update loop.
+  useEffect(() => {
+    if (printPos === null || !framedDims) return;
+    if (stage.w === 0 || stage.h === 0 || uploadPxPerCm === 0) return;
+    const w = framedDims.w * uploadPxPerCm;
+    const h = framedDims.h * uploadPxPerCm;
+    const cx = clamp(printPos.x, 0, Math.max(0, stage.w - w));
+    const cy = clamp(printPos.y, 0, Math.max(0, stage.h - h));
+    if (cx !== printPos.x || cy !== printPos.y) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPrintPos({ x: cx, y: cy });
+    }
+  }, [framedDims, uploadPxPerCm, stage, printPos]);
+
   // -- drag-to-reposition the print (pointer) ---------------------------------
   const dragState = useRef<{
     pointerId: number;
@@ -352,10 +369,31 @@ export const RoomVisualizer = ({
   const onRefHandleMove = (e: React.PointerEvent<HTMLButtonElement>) => {
     const d = refDrag.current;
     if (!d || d.pointerId !== e.pointerId) return;
-    setRefPx(clamp(d.startPx + (e.clientX - d.startX) * 2, 24, stage.w || 600));
+    // 1:1 with the pointer (no ×2) so the calibration box can be aligned exactly
+    // to a real object held against the photo.
+    setRefPx(clamp(d.startPx + (e.clientX - d.startX), 24, stage.w || 600));
   };
   const onRefHandleUp = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (refDrag.current?.pointerId === e.pointerId) refDrag.current = null;
+  };
+  // Keyboard calibration (the handle is a real slider): arrows resize the
+  // reference box, Home/End jump to min/max. Mirrors the print's nudge pattern.
+  const onRefHandleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const maxPx = stage.w || 600;
+    const step = e.shiftKey ? 20 : 4;
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setRefPx((p) => clamp(p + step, 24, maxPx));
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      setRefPx((p) => clamp(p - step, 24, maxPx));
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setRefPx(24);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setRefPx(maxPx);
+    }
   };
 
   // The tabs actually available (Room only when presets exist).
@@ -526,12 +564,18 @@ export const RoomVisualizer = ({
                   </span>
                   <button
                     type="button"
-                    aria-label={`Resize the ${SCALE_REFERENCES[refKey].label} reference`}
+                    role="slider"
+                    aria-label={`Resize the ${SCALE_REFERENCES[refKey].label} reference to match the real object in your photo`}
+                    aria-valuemin={24}
+                    aria-valuemax={Math.round(stage.w || 600)}
+                    aria-valuenow={Math.round(refPx)}
+                    aria-valuetext={`${Math.round(refPx)} px wide`}
                     onPointerDown={onRefHandleDown}
                     onPointerMove={onRefHandleMove}
                     onPointerUp={onRefHandleUp}
                     onPointerCancel={onRefHandleUp}
-                    className="absolute -right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-accent ring-2 ring-[#0a0908] cursor-ew-resize touch-none outline-none focus-visible:ring-ink"
+                    onKeyDown={onRefHandleKeyDown}
+                    className="absolute -right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full bg-accent ring-2 ring-[#0a0908] cursor-ew-resize touch-none outline-none focus-visible:ring-ink before:absolute before:-inset-[10px] before:content-['']"
                   />
                 </div>
 
@@ -583,7 +627,7 @@ export const RoomVisualizer = ({
                           aria-checked={isSel}
                           onClick={() => setRefKey(k)}
                           className={cn(
-                            "inline-flex min-h-[36px] items-center rounded-full px-3 font-sans text-[10px] font-bold tracking-[0.14em] uppercase transition-colors duration-300 outline-none focus-visible:ring-1 focus-visible:ring-accent",
+                            "inline-flex min-h-[44px] items-center rounded-full px-3 font-sans text-[10px] font-bold tracking-[0.14em] uppercase transition-colors duration-300 outline-none focus-visible:ring-1 focus-visible:ring-accent",
                             isSel ? "bg-ink text-bg" : "text-ink-muted hover:text-ink",
                           )}
                         >
@@ -595,7 +639,7 @@ export const RoomVisualizer = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex min-h-[36px] items-center rounded-full ring-1 ring-line bg-[#0a0908]/70 px-3.5 font-sans text-[10px] font-bold tracking-[0.14em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 outline-none focus-visible:ring-accent focus-visible:text-accent"
+                    className="inline-flex min-h-[44px] items-center rounded-full ring-1 ring-line bg-[#0a0908]/70 px-3.5 font-sans text-[10px] font-bold tracking-[0.14em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 outline-none focus-visible:ring-accent focus-visible:text-accent"
                   >
                     Change photo
                   </button>

@@ -33,6 +33,9 @@ interface ModelViewerAttributes {
   "ar-modes"?: string;
   /** "auto" | "fixed" — "fixed" keeps the model at its authored real-world size. */
   "ar-scale"?: "auto" | "fixed";
+  /** "floor" | "wall" — where Scene Viewer / WebXR anchors the model. A framed
+   *  print belongs on the wall, not the floor. */
+  "ar-placement"?: "floor" | "wall";
   /** Enable orbit / zoom user controls (boolean attribute). */
   "camera-controls"?: boolean;
   /** Initial camera orbit, e.g. "0deg 75deg 105%". */

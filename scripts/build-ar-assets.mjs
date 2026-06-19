@@ -39,8 +39,11 @@ const USDZIP = "/usr/bin/usdzip";
 const USDCHECKER = "/usr/bin/usdchecker";
 const SIPS = "/usr/bin/sips";
 
-/** Asset version — bump (and update ArtworkAR.tsx) to bust the immutable cache. */
-const V = "v1";
+/** Asset version — bump (and update ArtworkAR.tsx) to bust the immutable cache.
+ *  v2: USDZ + GLB now anchor to a VERTICAL plane (wall placement, not floor),
+ *  and Ophiuchus is square A2 like every other print (the catalogue sells square
+ *  A-sizes for all paintings). */
+const V = "v2";
 
 // -----------------------------------------------------------------------------
 // PAINTING TABLE
@@ -76,15 +79,16 @@ const PAINTINGS = [
   { id: "slipper-orchids", jpg: "orchids30-nebula-purple.jpg", widthM: A2, heightM: A2 },
   { id: "peacock-minerva", jpg: "peacock-persian-indigo.jpg", widthM: A2, heightM: A2 },
   {
-    // Ophiuchus is the one non-square print: 60 × 80 cm PORTRAIT, but the source
-    // JPG is 2000×1622 LANDSCAPE. Centre-crop a 3:4 portrait (1216×1622) first
-    // so full-frame UV (0..1) maps without distortion.
+    // Ophiuchus's source JPG is 2000×1622 LANDSCAPE, but the shop sells a SQUARE
+    // A-size print for EVERY painting (PRINT_TIERS are square for all), so its
+    // AR/print is shown SQUARE like the rest. Centre-crop a square (1622×1622)
+    // first so full-frame UV (0..1) maps without distortion.
     id: "ophiuchus",
     jpg: "ophiuchus-ar.jpg",
-    widthM: 0.6,
-    heightM: 0.8,
+    widthM: A2,
+    heightM: A2,
     cropFrom: "ophiuchus-original.jpg",
-    cropPx: [1216, 1622],
+    cropPx: [1622, 1622],
   },
   { id: "tridecagon-moon-star", jpg: "tridecagon-sage-green.jpg", widthM: A2, heightM: A2 },
   { id: "lulin", jpg: "lulin-original.jpg", widthM: A2, heightM: A2 },
@@ -480,6 +484,9 @@ def Xform "FramedPrint" (
     kind = "component"
 )
 {
+    token preliminary:anchoring:type = "plane"
+    token preliminary:planeAnchoring:alignment = "vertical"
+
     def Mesh "Artwork" (
         prepend apiSchemas = ["MaterialBindingAPI"]
     )
@@ -551,7 +558,7 @@ function ensureOphiuchusCrop() {
   }
   const [cw, ch] = p.cropPx;
   // sips -c <height> <width> centre-crops to HEIGHT × WIDTH.
-  log(`  cropping ${p.cropFrom} → ${p.jpg} (${cw}×${ch} portrait, centred)`);
+  log(`  cropping ${p.cropFrom} → ${p.jpg} (${cw}×${ch} centred crop)`);
   execFileSync(SIPS, ["-c", String(ch), String(cw), src, "--out", out], { stdio: "pipe" });
 }
 

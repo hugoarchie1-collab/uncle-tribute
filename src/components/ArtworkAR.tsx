@@ -7,10 +7,11 @@
 // bar convention), so it never bloats other pages. Until it loads, and on
 // devices without WebGL, the poster image is shown — never a blank box.
 //
-// The committed /ar assets are sized in real-world metres at the A2 anchor size
-// (Ophiuchus at 0.6×0.8 m), so `ar-scale="fixed"` places the print at its actual
-// size on the wall. On iOS, `ios-src` (USDZ) drives Quick Look; if a painting
-// has no USDZ, omit ios-src and model-viewer auto-hides Quick Look there.
+// The committed /ar assets are sized in real-world metres at the square A2 anchor
+// size (0.42×0.42 m for every painting — the shop sells square A-size prints), so
+// `ar-scale="fixed"` + `ar-placement="wall"` place the print at its actual size on
+// the user's WALL. On iOS, `ios-src` (USDZ, vertical-plane anchored) drives Quick
+// Look; if a painting has no USDZ, omit ios-src and model-viewer hides Quick Look.
 //
 // Chrome is strictly on-palette (monochrome ink, Fraunces/Hanken). No auto-orbit
 // under reduced motion.
@@ -24,14 +25,28 @@ import { getPaintingById } from "../data/paintings";
 import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 
 // -----------------------------------------------------------------------------
-// Which paintings have committed /ar assets. Derived from PAINTINGS so it can
-// never drift from the catalogue — the build script generates one GLB+USDZ per
-// painting id, so every id qualifies. (Kept as a Set lookup for O(1) checks.)
+// Which paintings have committed /ar assets. EXPLICIT list mirroring the ids the
+// build script (scripts/build-ar-assets.mjs) actually writes a GLB+USDZ for — so
+// a NEW catalogue painting WITHOUT a built asset returns false here (never 404s a
+// model) until its assets are generated. Same mirror discipline as the pricing
+// tables (gotcha #9). `AR_USDZ_IDS` tracks which ids also ship a USDZ (iOS Quick
+// Look) — currently all of them; gate `ios-src` on it so a future GLB-only
+// painting doesn't advertise a missing Quick Look file.
 // -----------------------------------------------------------------------------
-import { PAINTINGS } from "../data/paintings";
-
-const AR_ASSET_VERSION = "v1"; // mirror scripts/build-ar-assets.mjs `V`
-const AR_IDS = new Set(PAINTINGS.map((p) => p.id));
+const AR_ASSET_VERSION = "v2"; // mirror scripts/build-ar-assets.mjs `V`
+const AR_IDS = new Set<string>([
+  "wild-rose",
+  "english-bluebells",
+  "orchis-7",
+  "flower-of-life",
+  "slipper-orchids",
+  "peacock-minerva",
+  "ophiuchus",
+  "tridecagon-moon-star",
+  "lulin",
+  "enneagon-swans",
+]);
+const AR_USDZ_IDS = AR_IDS; // every committed AR asset currently ships a USDZ too
 
 /** True when a painting has committed /ar GLB (+ USDZ) assets.
  *  Co-located with the component by the orchestrator's spec (one file exports
@@ -95,6 +110,9 @@ export function ArtworkAR({
   // poster). Until `loaded`, we show ONLY the poster image — never a blank box.
   const [loaded, setLoaded] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  // `failed` = the model errored (bad/missing GLB, WebGL fault) → keep the poster
+  // and drop the viewer, so the user never sees a broken/empty canvas.
+  const [failed, setFailed] = useState(false);
 
   const poster = resolvePoster(paintingId, posterSrc);
   const glbSrc = asset(`/ar/${paintingId}-${AR_ASSET_VERSION}.glb`);
@@ -125,17 +143,27 @@ export function ArtworkAR({
     return () => io.disconnect();
   }, [loaded]);
 
-  // --- Dismiss the poster (reveal="manual") once the model fires 'load'. ---
+  // --- Fade the React poster out on 'load' (model-viewer's own poster auto-
+  //     dismisses since reveal defaults to "auto"); fall back to poster-only on
+  //     'error' so a failed model never shows a blank/broken canvas. ---
   useEffect(() => {
     if (!loaded) return;
     const v = viewerRef.current;
     if (!v) return;
     const onLoad = () => setRevealed(true);
+    const onError = () => {
+      setFailed(true);
+      setRevealed(false);
+    };
     v.addEventListener("load", onLoad);
+    v.addEventListener("error", onError);
     // If it already loaded before this listener attached, reveal now.
     // (model-viewer sets `.loaded` once the model is ready.)
     if ((v as unknown as { loaded?: boolean }).loaded) setRevealed(true);
-    return () => v.removeEventListener("load", onLoad);
+    return () => {
+      v.removeEventListener("load", onLoad);
+      v.removeEventListener("error", onError);
+    };
   }, [loaded]);
 
   return (
@@ -151,7 +179,9 @@ export function ArtworkAR({
             src={poster}
             alt={alt}
             className={cn(
-              "absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
+              // pointer-events-none so the (faded) poster never sits on top of and
+              // swallows taps/drag once the interactive model is revealed.
+              "pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
               revealed ? "opacity-0" : "opacity-100",
             )}
             loading="lazy"
@@ -160,24 +190,24 @@ export function ArtworkAR({
           />
         )}
 
-        {loaded && (
+        {loaded && !failed && (
           <model-viewer
             ref={viewerRef}
             src={glbSrc}
-            // Only advertise Quick Look when a USDZ exists. We always emit one on
-            // macOS builds, so ios-src is set; if a future painting ships without
-            // USDZ, gate this on a per-id check. (All current 10 have USDZ.)
-            ios-src={usdzSrc}
+            // Only advertise Quick Look when a USDZ actually exists for this id
+            // (gated on AR_USDZ_IDS) — a GLB-only painting omits ios-src and
+            // model-viewer hides Quick Look on iOS rather than 404-ing it.
+            ios-src={AR_USDZ_IDS.has(paintingId) ? usdzSrc : undefined}
             alt={alt}
             poster={poster || undefined}
             ar
             ar-modes="webxr scene-viewer quick-look"
+            ar-placement="wall"
             ar-scale="fixed"
             camera-controls
             shadow-intensity="1"
             environment-image="neutral"
             exposure="1"
-            reveal="manual"
             loading="eager"
             // No auto-rotate under reduced motion (and model-viewer's default is
             // already no auto-rotate — we simply never opt in).

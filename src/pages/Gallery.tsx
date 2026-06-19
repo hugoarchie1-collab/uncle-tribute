@@ -17,7 +17,7 @@
 // firstSentence) — never an invented line.
 // =============================================================================
 
-import { useState, type RefObject } from "react";
+import { useMemo, useState, type RefObject } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -74,15 +74,30 @@ export const Gallery = () => {
 
   // The ten acts, in exhibition order (collection order, catalogue order within).
   // Pre-flattened so the progress rail + the act loop share one ordering.
-  const rooms = COLLECTIONS.map((collection, roomIndex) => ({
-    collection,
-    roman: ROOM_ROMAN[roomIndex] ?? String(roomIndex + 1),
-    paintings: getPaintingsByCollection(collection.id),
-  }));
-  const orderedPaintings: Painting[] = rooms.flatMap((r) => r.paintings);
+  // Memoised on the (module-constant) catalogue so the derived arrays keep a
+  // stable identity across re-renders (CloserLook open/close) — otherwise the
+  // ExhibitionProgress IntersectionObserver would tear down + rebuild every render.
+  const rooms = useMemo(
+    () =>
+      COLLECTIONS.map((collection, roomIndex) => ({
+        collection,
+        roman: ROOM_ROMAN[roomIndex] ?? String(roomIndex + 1),
+        paintings: getPaintingsByCollection(collection.id),
+      })),
+    [],
+  );
+  const orderedPaintings = useMemo<Painting[]>(
+    () => rooms.flatMap((r) => r.paintings),
+    [rooms],
+  );
+  const progressIds = useMemo(() => orderedPaintings.map((p) => p.id), [orderedPaintings]);
+  const progressTitles = useMemo(
+    () => orderedPaintings.map((p) => p.title),
+    [orderedPaintings],
+  );
 
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       <Seo
         title="Virtual Gallery — The Exhibition · The Art of Stephen Meakin"
         description="Walk the complete exhibition of Stephen Meakin's ten mandala paintings — a cinematic online viewing room. See each work at scale, then on your own wall."
@@ -94,10 +109,7 @@ export const Gallery = () => {
       <Nav overlay />
 
       {/* Right-edge act index (lg-only; pointer-events-none wrapper). */}
-      <ExhibitionProgress
-        paintingIds={orderedPaintings.map((p) => p.id)}
-        titles={orderedPaintings.map((p) => p.title)}
-      />
+      <ExhibitionProgress paintingIds={progressIds} titles={progressTitles} />
 
       <main className="relative z-10">
         {/* MASTHEAD — the viewing room front cover. */}

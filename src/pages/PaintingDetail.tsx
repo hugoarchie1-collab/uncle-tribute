@@ -1382,10 +1382,11 @@ export const PaintingDetail = () => {
   const heroDims = parseSizeCm(painting.size ?? "") ?? { w: 1, h: 1 };
 
   // AR true-size dimensions (cm) — the A2 anchor print size, NOT the selected
-  // tier: only one GLB per painting was generated, at the anchor. Ophiuchus is
-  // the lone portrait 60×80; every other painting is the 42×42 square sheet.
-  const arW = painting.id === "ophiuchus" ? 60 : 42;
-  const arH = painting.id === "ophiuchus" ? 80 : 42;
+  // tier: only one GLB per painting was generated, at the anchor. Every print
+  // the shop sells is a square A-size sheet (PRINT_TIERS are square for all
+  // paintings, incl. Ophiuchus), so the AR print is 42×42 cm everywhere.
+  const arW = 42;
+  const arH = 42;
 
   const scrollToOrder = () => {
     const el = document.getElementById("order-print");
