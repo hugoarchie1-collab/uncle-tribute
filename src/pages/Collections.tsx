@@ -410,7 +410,7 @@ export const Collections = () => {
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("${asset("/img/paintings/peacock-moroccan-purple-blur-v3.webp")}")`,
+            backgroundImage: `url("${asset("/img/scenes/born-in-the-sky-blur-v2.webp")}")`,
           }}
         />
         {COLLECTIONS.map((coll, i) =>

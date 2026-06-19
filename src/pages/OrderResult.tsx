@@ -6,7 +6,7 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
@@ -289,7 +289,7 @@ export const OrderSuccess = () => {
 
   return (
     <div className="relative min-h-[100svh] flex flex-col">
-      <AmbientBackdrop opacity={0.45} />
+      <SceneBackdrop src="/img/scenes/order-seahorizon-blur-v2.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>
@@ -362,7 +362,7 @@ export const OrderCancel = () => {
   const hasBasket = basketItems.length > 0;
   return (
     <div className="relative min-h-[100svh] flex flex-col">
-      <AmbientBackdrop opacity={0.45} />
+      <SceneBackdrop src="/img/scenes/order-seahorizon-blur-v2.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>

@@ -783,7 +783,7 @@ export const Memories = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      {/* FIXED BACKDROP LAYER — a single full-page blurred peacock-plumage scene
+      {/* FIXED BACKDROP LAYER — a single full-page blurred aurora-beach scene
           drifting with the document scroll, cloned from the Collections
           treatment (one image, no cross-fade). The whole feed reads over it at
           relative z-10. The z-[200] share modal sits well above this z-0 layer,

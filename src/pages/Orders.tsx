@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
@@ -65,7 +65,7 @@ export const Orders = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <AmbientBackdrop opacity={0.4} />
+      <SceneBackdrop src="/img/scenes/orders-lupine-blur-v2.webp" />
       <Seo
         title="Orders & returns"
         description="Track a Stephen Meakin estate-print order by its reference, and read how returns, damage and after-sale care are handled."

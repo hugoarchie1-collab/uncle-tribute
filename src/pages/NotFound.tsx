@@ -4,7 +4,7 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import {
   EYEBROW,
   EYEBROW_MUTED,
@@ -36,7 +36,7 @@ export const NotFound = () => {
     painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
   return (
     <div className="relative flex min-h-[100svh] flex-col">
-      <AmbientBackdrop opacity={0.45} />
+      <SceneBackdrop src="/img/scenes/notfound-mist-blur-v2.webp" />
       <Nav />
       {/* BOLD MASTHEAD — the old timid centered EYEBROW + TITLE floating in a
           min-h-screen flex-center VOID is gone. In its place: a meta rule, a

@@ -22,7 +22,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { AmbientBackdrop } from "../components/AmbientBackdrop";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { SearchBar } from "../components/SearchBar";
@@ -210,7 +210,7 @@ export const Search = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden">
-      <AmbientBackdrop src="/img/paintings/peacock-moroccan-purple-blur-v3.webp" opacity={0.4} />
+      <SceneBackdrop src="/img/scenes/search-woodland-blur-v2.webp" />
       <Seo
         title={trimmed ? `Search — ${trimmed}` : "Search"}
         description="Search the estate of Stephen Meakin — artworks, collections, the writing, and everything across the site."
