@@ -175,6 +175,195 @@ const SET_TIERS_ASCENDING: PrintTier[] = [...BUNDLE_TIERS].sort(
   (a, b) => a.pricePence - b.pricePence,
 );
 
+// ── PER-BUNDLE SIZE SELECTOR ──────────────────────────────────────────────────
+// Hugo: "instead of [a global] take-a-set-in size [toggle], have it so you can
+// SCROLL ACROSS on each bundle for different sizes." So every set card now owns
+// its own size, chosen from a horizontal snap row (swipe on mobile) that re-prices
+// THAT card only. Same hard guard as before: only the three editioned sizes
+// (A3/A2/A1) are selectable, so advertised £ always equals what checkout charges.
+const SetSizeSelector = ({
+  value,
+  onChange,
+}: {
+  value: PrintTier;
+  onChange: (tier: PrintTier) => void;
+}) => (
+  <div className="my-6 md:my-7 flex justify-center">
+    <div
+      role="radiogroup"
+      aria-label="Choose the print size for this set — scroll across the sizes"
+      className="flex max-w-full gap-1.5 overflow-x-auto snap-x snap-mandatory px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {BUNDLE_TIERS.map((tier) => {
+        const active = tier.id === value.id;
+        return (
+          <button
+            key={tier.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(tier)}
+            className={cn(
+              "snap-start shrink-0 px-4 sm:px-5 py-2.5 font-sans text-[12.5px] md:text-[clamp(12.5px,0.75vw,15px)] leading-none ring-1 transition-colors duration-300",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              active
+                ? "bg-ink text-bg ring-ink font-semibold"
+                : "bg-[rgba(10,9,8,0.5)] text-ink-muted ring-line hover:text-ink",
+            )}
+          >
+            <span className="font-semibold tracking-[0.04em]">{sizeCode(tier)}</span>
+            <span
+              className={cn("ml-2", active ? "text-bg/70" : "text-ink-muted/70")}
+            >
+              {editionWord(tier)}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
+
+// A single collection's "offered as a set" card — holds its OWN size state so the
+// scroll-across selector re-prices just this set. getCollectionBundle is pure, so
+// advertised == charged: the £ shown is the bundle at the card's tier, and
+// acquireCollection adds every painting at that SAME tier id.
+const CollectionSetCard = ({
+  coll,
+  items,
+  fmt,
+  fmtP,
+}: {
+  coll: (typeof COLLECTIONS)[number];
+  items: (typeof PAINTINGS)[number][];
+  fmt: (pence: number) => string;
+  fmtP: (pence: number) => string;
+}) => {
+  const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const bundle = getCollectionBundle(coll.id, tier.id);
+  if (!bundle || items.length <= 1) return null;
+  const shortName = coll.title.split(" — ")[0];
+  const acquireCollection = () => {
+    items.forEach((p) => {
+      const original =
+        p.colourways.find((c) => c.isOriginal && c.available) ??
+        p.colourways.find((c) => c.available) ??
+        p.colourways[0];
+      if (original) addItem(p.id, original.name, tier.id);
+    });
+  };
+  const bundleWhole =
+    bundle.bundlePricePence % 100 === 0 &&
+    bundle.fullPricePence % 100 === 0 &&
+    bundle.savePence % 100 === 0;
+  const fmtBundle = (pence: number) => (bundleWhole ? fmtP(pence) : fmt(pence));
+  return (
+    <Reveal
+      as="div"
+      className="mt-6 md:mt-8 mx-auto max-w-[820px] 3xl:max-w-[980px] 4xl:max-w-[1100px]"
+    >
+      <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
+        <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
+        <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
+          The complete {shortName}
+        </h3>
+        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[640px] 3xl:max-w-[760px] mx-auto">
+          All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
+          edition ({sizeCode(tier)}) — the collection entire, for one home.
+        </p>
+        <SetSizeSelector value={tier} onChange={setTier} />
+        <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
+          <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
+            {fmtBundle(bundle.bundlePricePence)}
+          </span>
+          <span className="mx-3 text-ink/35">·</span>
+          the set, offered together
+        </p>
+        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
+          Taken individually, {fmtBundle(bundle.fullPricePence)} — a saving of{" "}
+          {fmtBundle(bundle.savePence)} as a set.
+        </p>
+        <button
+          type="button"
+          onClick={acquireCollection}
+          className={cn(BTN_PRIMARY, "gap-2")}
+        >
+          Add the complete collection to basket
+          <span aria-hidden="true">→</span>
+        </button>
+        <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+          The set saving is applied automatically at checkout.
+        </p>
+      </div>
+    </Reveal>
+  );
+};
+
+// The flagship "complete catalogue" set — its own size state + scroll-across
+// selector. getCompleteCatalogueBundle is pure; acquireCatalogue adds one of every
+// painting at the SAME tier so checkout's 15% applies — advertised == charged.
+const CatalogueSetCard = ({
+  fmt,
+  fmtP,
+}: {
+  fmt: (pence: number) => string;
+  fmtP: (pence: number) => string;
+}) => {
+  const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const catalogue = getCompleteCatalogueBundle(tier.id);
+  const catalogueWhole =
+    catalogue.bundlePricePence % 100 === 0 &&
+    catalogue.fullPricePence % 100 === 0 &&
+    catalogue.savePence % 100 === 0;
+  const fmtCatalogue = (pence: number) =>
+    catalogueWhole ? fmtP(pence) : fmt(pence);
+  const acquireCatalogue = () => {
+    catalogue.items.forEach((it) =>
+      addItem(it.paintingId, it.colourwayName, tier.id),
+    );
+  };
+  return (
+    <Reveal
+      as="section"
+      className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
+    >
+      <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 3xl:px-20 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
+        <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
+        <h2 className={cn(TITLE, "max-w-[640px] 3xl:max-w-[780px] mx-auto my-0")}>
+          His life&rsquo;s work, in one collection.
+        </h2>
+        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[560px] 3xl:max-w-[700px] mx-auto my-0")}>
+          One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
+          {catalogue.paintingCount} of Stephen&rsquo;s paintings: the entire,
+          finite body of his work, gathered for one home.
+        </p>
+        <SetSizeSelector value={tier} onChange={setTier} />
+        <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-7">
+          <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
+            {fmtCatalogue(catalogue.bundlePricePence)}
+          </span>
+          <span className="mx-3 text-ink/35">·</span>
+          <span>
+            individually {fmtCatalogue(catalogue.fullPricePence)}, a saving of{" "}
+            {fmtCatalogue(catalogue.savePence)}
+          </span>
+        </p>
+        <button
+          type="button"
+          onClick={acquireCatalogue}
+          className={cn(BTN_PRIMARY, "gap-2")}
+        >
+          Add the complete catalogue to basket
+          <span aria-hidden="true">→</span>
+        </button>
+        <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+          The set saving is applied automatically at checkout.
+        </p>
+      </div>
+    </Reveal>
+  );
+};
+
 export const Collections = () => {
   // Presentment currency — every £ on the page renders (and checkout charges) in
   // the buyer's chosen currency. fmt = full ("£450.00"/"$572.00"), fmtP = pretty
@@ -189,36 +378,10 @@ export const Collections = () => {
     useRef<HTMLElement>(null),
   ];
 
-  // Page-level bundle SIZE — governs BOTH the complete-catalogue panel and every
-  // per-collection set card, so one toggle re-prices every set deal in step.
-  // Defaults to the A2 Collector anchor (prior behaviour). Only ever holds one
-  // of the three editioned sizes (see BUNDLE_TIERS guard) — never A0/studio.
-  const [bundleTier, setBundleTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
-
-  // Flagship "complete catalogue" set — one print of every painting at the
-  // SELECTED size, at the deepest bundle (15%). The £ figures track the size;
-  // adding pushes every painting (original colourway, SELECTED tier) to the
-  // basket, so checkout's bundlePercentOff sees one line of every painting and
-  // applies the matching 15% — advertised == charged at this size.
-  const catalogue = getCompleteCatalogueBundle(bundleTier.id);
-  // Render the catalogue's three figures (set price · individual total · saving)
-  // with ONE decimal style: strip ".00" when they are all whole pounds, but keep
-  // full pence the moment any one lands on a half-pound (e.g. the A3 tier's
-  // 15%-off total) so the trio never reads as a ragged "£2,450 / £2,082.50" mix.
-  // Nothing is rounded — advertised still equals charged. Currency-aware: the GBP
-  // pence are the source of truth; fmt/fmtP convert + format into the buyer's
-  // chosen presentment currency (the same conversion checkout charges).
-  const catalogueWhole =
-    catalogue.bundlePricePence % 100 === 0 &&
-    catalogue.fullPricePence % 100 === 0 &&
-    catalogue.savePence % 100 === 0;
-  const fmtCatalogue = (pence: number) =>
-    catalogueWhole ? fmtP(pence) : fmt(pence);
-  const acquireCatalogue = () => {
-    catalogue.items.forEach((it) =>
-      addItem(it.paintingId, it.colourwayName, bundleTier.id),
-    );
-  };
+  // Bundle SIZE is now PER-CARD: each <CollectionSetCard> + the <CatalogueSetCard>
+  // holds its own size + scroll-across selector (Hugo's "scroll across on each
+  // bundle for different sizes"). The pure helpers (getCollectionBundle /
+  // getCompleteCatalogueBundle) keep advertised == charged inside each card.
 
   return (
     <div className="relative">
@@ -398,98 +561,13 @@ export const Collections = () => {
               </ul>
             </div>
 
-            {/* TAKE A SET IN — one page-level control that re-prices every set
-                (the per-collection cards + the complete-catalogue panel) in
-                step. Dignified register: "Take a set in", a quiet segmented
-                control in the brand palette — never a loud "CHOOSE SIZE" CTA.
-                Only the three editioned sizes appear (A0/studio are guarded out
-                in BUNDLE_TIERS), so the advertised £ always equals what checkout
-                charges at that size. */}
-            {BUNDLE_TIERS.length > 1 && (
-              <div className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-7 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                <p
-                  className={cn(EYEBROW, "m-0 shrink-0")}
-                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-                >
-                  Take a set in
-                </p>
-                <div
-                  role="radiogroup"
-                  aria-label="Choose the print size for the collection sets"
-                  className="inline-flex flex-wrap gap-1 p-1 bg-[rgba(10,9,8,0.72)] ring-1 ring-line"
-                >
-                  {BUNDLE_TIERS.map((tier) => {
-                    const active = tier.id === bundleTier.id;
-                    return (
-                      <button
-                        key={tier.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        onClick={() => setBundleTier(tier)}
-                        className={cn(
-                          "px-4 sm:px-5 py-2.5 font-sans text-[12.5px] md:text-[clamp(12.5px,0.75vw,16px)] leading-none transition-colors duration-300",
-                          "focus:outline-none focus-visible:ring-1 focus-visible:ring-accent",
-                          active
-                            ? "bg-ink text-bg font-semibold"
-                            : "text-ink-muted hover:text-ink",
-                        )}
-                      >
-                        <span className="font-semibold tracking-[0.04em]">
-                          {sizeCode(tier)}
-                        </span>
-                        <span
-                          className={cn(
-                            "ml-2",
-                            active ? "text-bg/70" : "text-ink-muted/70",
-                          )}
-                        >
-                          {editionWord(tier)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            {/* The size choice now lives ON each set card below (scroll-across
+                per-bundle selector) — no single page-level toggle. */}
           </PageMasthead>
         </Reveal>
 
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
-          // Bundle priced at the page-selected SIZE — the £ figures track the
-          // toggle, the discount % (5% at 2 paintings / 10% at 3+) is
-          // size-independent and mirrors api/checkout.ts.
-          const bundle = getCollectionBundle(coll.id, bundleTier.id);
-          // Short collection name for the CTA copy ("the complete Habundia"),
-          // dropping the long subtitle after the em-dash.
-          const shortName = coll.title.split(" — ")[0];
-          // Add every painting in the collection to the basket at the SELECTED
-          // tier, preserving each painting's original colourway. basket.ts is
-          // the single source of truth for the store. Pushing one line per
-          // painting at this tier is exactly what makes checkout's
-          // bundlePercentOff return the advertised % at this size.
-          const acquireCollection = () => {
-            items.forEach((p) => {
-              const original =
-                p.colourways.find((c) => c.isOriginal && c.available) ??
-                p.colourways.find((c) => c.available) ??
-                p.colourways[0];
-              if (original) addItem(p.id, original.name, bundleTier.id);
-            });
-          };
-          // Harmonise the set card's figures (set price · individual total ·
-          // saving) to ONE decimal style, exactly as the catalogue panel does:
-          // strip ".00" when all three are whole pounds, keep full pence the
-          // moment any one lands on a half-pound. Currency-aware; nothing rounded
-          // — advertised still equals charged.
-          const bundleWhole =
-            !!bundle &&
-            bundle.bundlePricePence % 100 === 0 &&
-            bundle.fullPricePence % 100 === 0 &&
-            bundle.savePence % 100 === 0;
-          const fmtBundle = (pence: number) =>
-            bundleWhole ? fmtP(pence) : fmt(pence);
           return (
             <section
               key={coll.id}
@@ -614,111 +692,22 @@ export const Collections = () => {
                   })}
                 </RevealStagger>
 
-                {/* COMPLETE-COLLECTION CARD — offer the whole collection as a
-                    curated set. Dignified estate register: "offered as a set",
-                    not a sale. The saving shown (save figure + net price) is
-                    computed by getCollectionBundle to match exactly what the
-                    checkout's bundle coupon applies for this collection's item
-                    count — 5% at 2 paintings (Habundia), 10% at 3+ (Genesis,
-                    Born in the Sky) — so the number is always honest. The %
-                    is size-independent; the £ figures track the page-selected
-                    bundle size (bundleTier). Clicking adds every painting at
-                    that selected tier to the basket; the buyer reviews +
-                    completes on /basket. */}
-                {bundle && items.length > 1 && (
-                  <Reveal
-                    as="div"
-                    className="mt-6 md:mt-8 mx-auto max-w-[820px] 3xl:max-w-[980px] 4xl:max-w-[1100px]"
-                  >
-                    <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
-                      <p className={cn(EYEBROW, "m-0 mb-4")}>
-                        The complete collection
-                      </p>
-                      <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
-                        The complete {shortName}
-                      </h3>
-                      <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[640px] 3xl:max-w-[760px] mx-auto">
-                        All {bundle.paintingIds.length} paintings at the{" "}
-                        {editionWord(bundleTier)} edition ({sizeCode(bundleTier)})
-                        — the collection entire, for one home.
-                      </p>
-                      <p className="mt-6 md:mt-7 font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
-                        <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-                          {fmtBundle(bundle.bundlePricePence)}
-                        </span>
-                        <span className="mx-3 text-ink/35">·</span>
-                        the set, offered together
-                      </p>
-                      <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
-                        Taken individually, {fmtBundle(bundle.fullPricePence)} —
-                        a saving of {fmtBundle(bundle.savePence)} as a set.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={acquireCollection}
-                        className={cn(BTN_PRIMARY, "gap-2")}
-                      >
-                        Add the complete collection to basket
-                        <span aria-hidden="true">→</span>
-                      </button>
-                      <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
-                        The set saving is applied automatically at checkout.
-                      </p>
-                    </div>
-                  </Reveal>
-                )}
+                {/* COMPLETE-COLLECTION CARD — its own size + scroll-across
+                    selector; getCollectionBundle keeps advertised == charged. */}
+                <CollectionSetCard
+                  coll={coll}
+                  items={items}
+                  fmt={fmt}
+                  fmtP={fmtP}
+                />
               </div>
             </section>
           );
         })}
 
-        {/* COMPLETE CATALOGUE — the flagship set: one estate-stamped print of
-            every painting. Deepest bundle (15%), framed as a dignified
-            "complete works" set price with the individual total shown small as
-            an anchor and the saving in absolute £ (never a "% OFF" badge — per
-            the 2026-05-29 pricing research). getCompleteCatalogueBundle
-            computes the figure; api/checkout.ts applies the matching 15% when
-            the basket holds one line of every painting. */}
-        <Reveal
-          as="section"
-          className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
-        >
-          <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 3xl:px-20 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
-            <p className={cn(EYEBROW, "m-0 mb-4")}>
-              The complete catalogue
-            </p>
-            <h2 className={cn(TITLE, "max-w-[640px] 3xl:max-w-[780px] mx-auto my-0")}>
-              His life's work, in one collection.
-            </h2>
-            <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[560px] 3xl:max-w-[700px] mx-auto my-0")}>
-              One estate-stamped {editionWord(bundleTier)} print (
-              {sizeCode(bundleTier)}) of all {catalogue.paintingCount} of
-              Stephen's paintings: the entire, finite body of his work, gathered
-              for one home.
-            </p>
-            <p className="mt-7 md:mt-8 font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-7">
-              <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-                {fmtCatalogue(catalogue.bundlePricePence)}
-              </span>
-              <span className="mx-3 text-ink/35">·</span>
-              <span>
-                individually {fmtCatalogue(catalogue.fullPricePence)},
-                a saving of {fmtCatalogue(catalogue.savePence)}
-              </span>
-            </p>
-            <button
-              type="button"
-              onClick={acquireCatalogue}
-              className={cn(BTN_PRIMARY, "gap-2")}
-            >
-              Add the complete catalogue to basket
-              <span aria-hidden="true">→</span>
-            </button>
-            <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
-              The set saving is applied automatically at checkout.
-            </p>
-          </div>
-        </Reveal>
+        {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across
+            selector; getCompleteCatalogueBundle keeps advertised == charged. */}
+        <CatalogueSetCard fmt={fmt} fmtP={fmtP} />
       </main>
 
       <Footer />
