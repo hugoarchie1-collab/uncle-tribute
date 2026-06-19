@@ -145,16 +145,18 @@ export const Welcome = () => {
               "linear-gradient(180deg, rgba(9,7,13,0.42) 0%, rgba(9,7,13,0.32) 50%, rgba(9,7,13,0.28) 100%)",
           }}
         />
-        {/* Sun limb band pinned to the TOP — Hugo's REAL sun photo, FLIPPED so the
-            limb sits up top and the flares curve DOWN into the page, its dark sky
-            baked transparent (alpha = luminance) so only the warm sun composites
-            onto the peacock painting. A controlled-height cover band keeps it a
-            defined limb (not a viewport-filling disk); warm, never blown-out. */}
+        {/* Earth limb pinned to the TOP — the natural Earth SPUN AROUND (scaleY -1)
+            so the limb sits up top and curves DOWN into the page (the exact mirror
+            of the SUN that now closes the page at the finale). Its black space is
+            baked transparent (alpha = luminance); the same radial mask the finale
+            uses is flipped with the image, so it stays solid at the pinned TOP edge
+            and dissolves into the peacock painting below. (Swapped 2026-06-19 at
+            Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[50svh] md:h-[54svh] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
         >
-          {/* Warm sun halo behind the limb — atmosphere only. */}
+          {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
             aria-hidden="true"
             className="absolute inset-x-0 top-0 h-[45%]"
@@ -163,20 +165,31 @@ export const Welcome = () => {
                 "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
             }}
           />
-          {/* The warm sun in a viewport-HEIGHT band (svh) so it is EQUALLY present
-              on every screen (a width-tied natural image went tiny on phones). Its
-              dark sky is keyed off + lower flares feathered in the asset, plus the
-              CSS bottom fade, so it dissolves straight onto the peacock painting. */}
+          {/* Hugo's natural Earth limb, the same asset that closes the page — here
+              top-pinned + scaleY(-1) so it curves down from the top. width 124% +
+              -12% marginLeft centres a slightly-overscanned limb reaching both
+              edges; maxWidth:none lifts the global img clamp (gotcha). */}
           <img
-            src={asset("/img/scenes/sun-real-v4.webp")}
+            src={asset("/img/scenes/earth-cutout.png")}
             alt=""
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
+            className="block h-auto select-none"
             style={{
-              objectPosition: "center 30%",
-              filter: "brightness(0.88) saturate(0.97)",
+              display: "block",
+              width: "124%",
+              maxWidth: "none",
+              marginLeft: "-12%",
+              height: "auto",
+              // SPIN AROUND — limb at the top, curving down into the page.
+              transform: "scaleY(-1)",
+              // Same radial dissolve as the finale Earth; scaleY(-1) flips it so it
+              // is solid at the pinned TOP edge and melts into the backdrop below.
+              WebkitMaskImage:
+                "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+              maskImage:
+                "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
             }}
           />
         </div>
@@ -969,47 +982,32 @@ export const Welcome = () => {
                 the content (z-10). */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[50svh] md:h-[54svh] overflow-hidden"
             >
-              {/* Faint rust sunrise halo behind the limb — atmosphere only; the
-                  rust period in the finale type stays the one literal accent. */}
+              {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
+                  the rust period in the finale type stays the one literal accent. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-[42%]"
+                className="absolute inset-x-0 bottom-0 h-[45%]"
                 style={{
                   background:
                     "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.16) 0%, rgba(201,120,68,0) 70%)",
                 }}
               />
               <img
-                src={asset("/img/scenes/earth-cutout.png")}
+                src={asset("/img/scenes/sun-real-v4.webp")}
                 alt=""
                 loading="lazy"
                 decoding="async"
-                className="block h-auto select-none"
+                className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
                 style={{
-                  // DEAD-SIMPLE centred wide image: the FULL symmetric Earth
-                  // limb, never half-cut. width 124% with an equal negative
-                  // marginLeft of HALF the overshoot (-12%) mathematically
-                  // centres it (left edge -12%, right edge 112% → centre 50%);
-                  // height:auto keeps its natural aspect. NO objectFit / no
-                  // maxHeight — those were letterboxing it off-centre.
-                  display: "block",
-                  // maxWidth:none is ESSENTIAL — the global `img{max-width:100%}`
-                  // reset was clamping every width we set back to 100%, so the
-                  // negative marginLeft shoved the limb left and left a dead gap
-                  // on the RIGHT. With the clamp lifted, 124% + -12% truly
-                  // centres a slightly-overscanned limb that reaches BOTH edges.
-                  width: "124%",
-                  maxWidth: "none",
-                  marginLeft: "-12%",
-                  height: "auto",
-                  // Radial dissolve so the limb melts into the backdrop on every
-                  // edge (top + both sides) — a soft horizon, never a hard box.
-                  WebkitMaskImage:
-                    "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
-                  maskImage:
-                    "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  objectPosition: "center 30%",
+                  filter: "brightness(0.88) saturate(0.97)",
+                  // SPIN AROUND — the sun curves UP from the pinned bottom edge,
+                  // the exact mirror of the sun that now OPENS the page at the top.
+                  // scaleY(-1) also flips the sun-band-fade so it is solid at the
+                  // bottom edge and melts up into the peacock backdrop.
+                  transform: "scaleY(-1)",
                 }}
               />
             </div>
