@@ -227,6 +227,8 @@ const Plate = ({
   sizes,
   caption,
   captionClassName,
+  fill = false,
+  aspect = "aspect-[4/3]",
 }: {
   src: string;
   alt: string;
@@ -235,19 +237,39 @@ const Plate = ({
   sizes?: string;
   caption?: ReactNode;
   captionClassName?: string;
+  /** FILL mode (Hugo: "fill the images like the home page, no gaps"): the photo
+   *  covers a FIXED-aspect slot (object-cover) so a row of plates reads as ONE
+   *  aligned grid with equal heights — no jigsaw. Default off = whole native ratio. */
+  fill?: boolean;
+  aspect?: string;
 }) => (
-  <figure className="m-0">
+  <figure className="m-0 flex h-full flex-col">
     <div className="bg-ink/[0.04] ring-1 ring-ink/10 p-3 md:p-4 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-      <AssetImage
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        loading="lazy"
-        decoding="async"
-        sizes={sizes}
-        className="block w-full h-auto"
-      />
+      {fill ? (
+        <div className={cn("relative w-full overflow-hidden", aspect)}>
+          <AssetImage
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            sizes={sizes}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+      ) : (
+        <AssetImage
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          loading="lazy"
+          decoding="async"
+          sizes={sizes}
+          className="block w-full h-auto"
+        />
+      )}
     </div>
     {caption ? <PlateCaption className={captionClassName}>{caption}</PlateCaption> : null}
   </figure>
@@ -757,7 +779,7 @@ export const About = () => {
             mat). The portrait's caption is right-set so the family-group
             print pulled up beside it never covers it. */}
         <section className={cn(SECTION, "py-6 md:py-8")}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1400px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/13-stephen-outdoor-portrait.jpg"
@@ -766,6 +788,8 @@ export const About = () => {
                 height={1200}
                 sizes="(min-width: 768px) 33vw, 100vw"
                 caption="In the sun"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
             <Reveal as="div" delay={0.09}>
@@ -776,6 +800,8 @@ export const About = () => {
                 height={1200}
                 sizes="(min-width: 768px) 33vw, 50vw"
                 caption="Beside the work"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
             <Reveal as="div" delay={0.18}>
@@ -786,6 +812,8 @@ export const About = () => {
                 height={852}
                 sizes="(min-width: 768px) 33vw, 50vw"
                 caption="With his family"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
           </div>
@@ -881,6 +909,8 @@ export const About = () => {
                 height={1200}
                 sizes="(min-width: 768px) 48vw, 100vw"
                 caption="An evening with friends"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
             <Reveal as="div" delay={0.09}>
@@ -891,6 +921,8 @@ export const About = () => {
                 height={1134}
                 sizes="(min-width: 768px) 32vw, 50vw"
                 caption="After dark"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
           </div>
@@ -899,7 +931,7 @@ export const About = () => {
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-start mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1180px] 4xl:max-w-[1340px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1180px] 4xl:max-w-[1340px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -907,6 +939,8 @@ export const About = () => {
                 width={1200}
                 height={1600}
                 sizes="(min-width: 640px) 32vw, 100vw"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
             <Reveal as="div" delay={0.09}>
@@ -916,6 +950,8 @@ export const About = () => {
                 width={1200}
                 height={1600}
                 sizes="(min-width: 640px) 32vw, 100vw"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
             <Reveal as="div" delay={0.18}>
@@ -925,6 +961,8 @@ export const About = () => {
                 width={1600}
                 height={1411}
                 sizes="(min-width: 768px) 32vw, 100vw"
+                fill
+                aspect="aspect-[4/5]"
               />
             </Reveal>
           </div>
