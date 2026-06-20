@@ -1,24 +1,27 @@
 // =============================================================================
-// ArSlot — the quiet "View in your room (AR)" affordance on an exhibition act.
+// ArSlot — the "See it in your room" affordance on an exhibition act.
 // -----------------------------------------------------------------------------
-// A COMPACT text link, not a giant viewer: when an AR asset exists for the
-// painting, a quiet on-palette link REVEALS <ArtworkAR/> (built in parallel by
-// a teammate, exact signature below) inline — so the heavy model-viewer never
-// mounts until the visitor actually asks for it, and an act with no AR model
-// shows nothing (returns null) rather than a dead control.
+// PRIMARY web-AR is now the in-page CAMERA experience (CameraAR): tap, the
+// browser asks for the camera, the rear camera opens full-screen, and the
+// visitor drags the framed painting onto their own wall (Pokémon-Go style),
+// resizes it, and saves a photo. No model-viewer, no 3D bundle — dead simple.
 //
-// The real-world AR size is the square A-size print the shop sells — 42 × 42 cm
-// for every painting (incl. Ophiuchus) — so the model lands at true scale.
+// The button is always shown (every painting can be placed via the camera) — a
+// quiet on-palette text link warming to accent on hover, the act's register.
+// When the camera is unavailable (desktop / no camera / denied) CameraAR ITSELF
+// shows the clean explainer, so the affordance is never a dead control.
 //
-// CONTRACT consumed (from ../ArtworkAR):
-//   hasArAsset(paintingId: string): boolean
-//   <ArtworkAR paintingId colourwayName alt widthCm heightCm />
-// If the prop names drift slightly, the orchestrator reconciles during the build.
+// `onUsePhotoInstead` is wired to the existing RoomVisualizer upload mode
+// (RoomVisualizerModal in "scale"/"My room"), so a desktop visitor hitting the
+// explainer can still place the print using a photo of their room.
 // =============================================================================
 
 import { useState } from "react";
-import { ArtworkAR, hasArAsset } from "../ArtworkAR";
-import { paintingImageAlt, type Colourway, type Painting } from "../../data/paintings";
+import { CameraAR } from "../CameraAR";
+import { RoomVisualizerModal } from "../RoomVisualizer";
+import { getAnchorTier, type Colourway, type Painting } from "../../data/paintings";
+import { BTN_PRIMARY } from "../ui/tokens";
+import { cn } from "../../lib/cn";
 
 interface ArSlotProps {
   painting: Painting;
@@ -26,45 +29,44 @@ interface ArSlotProps {
   cover: Colourway;
 }
 
-// Real-world print dimensions (cm) for the AR model — the square A-size sheet the
-// shop sells, 42 × 42 cm for every painting. Per-id overrides can be added here
-// only if a genuinely non-square print is ever offered.
-const AR_DIMENSIONS_CM: Record<string, { widthCm: number; heightCm: number }> = {};
-const DEFAULT_AR_CM = { widthCm: 42, heightCm: 42 };
-
 export const ArSlot = ({ painting, cover }: ArSlotProps) => {
-  const [revealed, setRevealed] = useState(false);
-
-  // No AR model for this painting → render nothing (a compact affordance only
-  // appears when it can actually do something).
-  if (!hasArAsset(painting.id)) return null;
-
-  const { widthCm, heightCm } = AR_DIMENSIONS_CM[painting.id] ?? DEFAULT_AR_CM;
-
-  // Quiet text link until asked — then the inline viewer mounts (and lazy-loads
-  // model-viewer itself). On-palette: muted ink, warming to accent on hover.
-  if (!revealed) {
-    return (
-      <button
-        type="button"
-        onClick={() => setRevealed(true)}
-        className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
-        data-cursor-label="View in your room"
-      >
-        View in your room (AR) <span aria-hidden="true">↗</span>
-      </button>
-    );
-  }
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [photoOpen, setPhotoOpen] = useState(false);
+  const tier = getAnchorTier(painting);
 
   return (
-    <div className="max-w-[clamp(220px,40vw,340px)]">
-      <ArtworkAR
-        paintingId={painting.id}
-        colourwayName={cover.name}
-        alt={paintingImageAlt(painting.title, cover.name)}
-        widthCm={widthCm}
-        heightCm={heightCm}
-      />
-    </div>
+    <>
+      <button
+        type="button"
+        onClick={() => setCameraOpen(true)}
+        className={cn(BTN_PRIMARY, "gap-2")}
+        data-cursor-label="See it in your room"
+      >
+        See it in your room <span aria-hidden="true">↗</span>
+      </button>
+
+      {cameraOpen && (
+        <CameraAR
+          open={cameraOpen}
+          onClose={() => setCameraOpen(false)}
+          painting={painting}
+          colourway={cover}
+          onUsePhotoInstead={() => {
+            setCameraOpen(false);
+            setPhotoOpen(true);
+          }}
+        />
+      )}
+
+      {photoOpen && (
+        <RoomVisualizerModal
+          open={photoOpen}
+          onClose={() => setPhotoOpen(false)}
+          painting={painting}
+          colourway={cover}
+          tier={tier}
+        />
+      )}
+    </>
   );
 };

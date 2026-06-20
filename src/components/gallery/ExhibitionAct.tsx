@@ -12,17 +12,16 @@
 // short-circuited to a static value under useReducedMotion (CLAUDE.md gotcha #1:
 // scroll props are transform/opacity only, and reduced-motion must kill them).
 //
-// CTAs wire the REAL components built in parallel by teammates:
-//   - RoomVisualizerSlot  "See it on your wall"      (BTN_PRIMARY → RoomVisualizerModal)
-//   - "Closer look"        BTN_SECONDARY → the page-level CloserLook (one mount)
-//   - ArSlot               quiet "View in your room (AR)" link, or null
+// CTAs:
+//   - ArSlot     "See it in your room" (PRIMARY) → the live in-page camera AR
+//                (CameraAR): place the print on your own wall through the camera.
+//   - "Closer look"  BTN_SECONDARY → the page-level CloserLook (one mount)
 // The page owns the CloserLook; this act only ASKS it to open with this plate's
 // painting + colourway + the live <img> ref (so the deep-zoom fit is exact).
 // =============================================================================
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { RoomVisualizerSlot } from "./RoomVisualizerSlot";
 import { ArSlot } from "./ArSlot";
 import {
   COLLECTIONS,
@@ -203,9 +202,13 @@ export const ExhibitionAct = ({
               {curatorialLine}
             </p>
 
-            {/* CTAs — wall to your wall, the deep-zoom, and (if it exists) AR. */}
+            {/* CTAs — the PRIMARY is "See it in your room": the live in-page
+                camera AR (ArSlot → CameraAR), where the visitor places the print
+                on their own wall through the camera. Then the deep-zoom. (The
+                true-scale photo/room visualizer is offered inside CameraAR's
+                explainer for desktop / no-camera visitors.) */}
             <div className="mt-7 md:mt-8 flex flex-wrap items-center gap-3">
-              <RoomVisualizerSlot painting={painting} colourway={cover} />
+              <ArSlot painting={painting} cover={cover} />
               <button
                 type="button"
                 onClick={() =>
@@ -216,11 +219,6 @@ export const ExhibitionAct = ({
               >
                 Closer look
               </button>
-            </div>
-
-            {/* AR — a quiet text affordance below the pills, or nothing. */}
-            <div className="mt-5">
-              <ArSlot painting={painting} cover={cover} />
             </div>
           </div>
         </div>

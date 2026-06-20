@@ -20,6 +20,7 @@ import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { CloserLook } from "../components/CloserLook";
+import { CameraAR } from "../components/CameraAR";
 import { RoomVisualizer } from "../components/RoomVisualizer";
 import { ArtworkAR, hasArAsset } from "../components/ArtworkAR";
 import type { FrameFinish } from "../lib/trueScale";
@@ -1356,6 +1357,15 @@ export const PaintingDetail = () => {
   const closeViewer = useCallback(() => setViewerOpen(false), []);
   const heroImgRef = useRef<HTMLImageElement>(null);
 
+  // In-page camera AR ("See it in your room") — the PRIMARY web-AR. Drags the
+  // framed painting onto the visitor's own wall through the live rear camera;
+  // the legacy <model-viewer> ArtworkAR below is demoted to a quiet secondary.
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const closeCamera = useCallback(() => setCameraOpen(false), []);
+  // The demoted secondary: the visitor must opt in before the heavy
+  // model-viewer bundle (ArtworkAR) mounts.
+  const [nativeArOpen, setNativeArOpen] = useState(false);
+
   // Sticky bar sentinels — see StickyAddBar.
   const heroSentinelRef = useRef<HTMLDivElement>(null);
   const orderSentinelRef = useRef<HTMLDivElement>(null);
@@ -1732,25 +1742,72 @@ export const PaintingDetail = () => {
                 />
               </div>
 
-              {/* VIEW IN YOUR ROOM — web AR (true-size framed print via Android
-                  Scene Viewer + iOS Quick Look, plus in-page 3D). Gated to
-                  paintings with a generated GLB. AR dims are the A2 anchor size
-                  (one GLB per painting, at the anchor), NOT the selected tier.
-                  Monochrome chrome; reduced-motion handled inside ArtworkAR. */}
-              {hasArAsset(painting.id) && (
-                <div className="mt-8">
-                  <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
-                    View in your room — augmented reality
-                  </p>
-                  <ArtworkAR
-                    paintingId={painting.id}
-                    colourwayName={selected.name}
-                    alt={paintingImageAlt(painting.title, selected.name)}
-                    widthCm={arW}
-                    heightCm={arH}
-                  />
-                </div>
-              )}
+              {/* SEE IT IN YOUR ROOM — the PRIMARY web-AR: the in-page camera
+                  experience. Tap → the browser asks for the camera → the rear
+                  camera opens full-screen → drag the framed painting onto your
+                  own wall, resize, save a photo. CameraAR itself shows a clean
+                  explainer on desktop / no-camera / denied, so this is never a
+                  dead control. The legacy <model-viewer> native AR is demoted
+                  to the quiet secondary link below (opt-in mount). */}
+              <div className="mt-8">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
+                  View in your room — augmented reality
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setCameraOpen(true)}
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-ink px-7 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                  data-cursor-label="See it in your room"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    aria-hidden="true"
+                    className="shrink-0"
+                  >
+                    <path
+                      d="M1.75 5.5A1.25 1.25 0 0 1 3 4.25h1.4l.8-1.3h5.6l.8 1.3H13A1.25 1.25 0 0 1 14.25 5.5v6A1.25 1.25 0 0 1 13 12.75H3A1.25 1.25 0 0 1 1.75 11.5v-6Z"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="8" cy="8.4" r="2.4" stroke="currentColor" strokeWidth="1.3" />
+                  </svg>
+                  See it in your room
+                </button>
+                <p className="mt-3 font-sans text-[12.5px] leading-[1.6] text-ink/45">
+                  Point your camera at a wall and place {painting.title} where
+                  you'd hang it — best on your phone.
+                </p>
+
+                {/* Demoted SECONDARY — native device AR (Android Scene Viewer /
+                    iOS Quick Look) via the model-viewer bundle. Opt-in so the
+                    heavy bundle never mounts unless the visitor asks. */}
+                {hasArAsset(painting.id) && (
+                  <div className="mt-4">
+                    {!nativeArOpen ? (
+                      <button
+                        type="button"
+                        onClick={() => setNativeArOpen(true)}
+                        className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted transition-colors duration-300 hover:text-accent"
+                      >
+                        Prefer your device's native AR?{" "}
+                        <span aria-hidden="true">→</span>
+                      </button>
+                    ) : (
+                      <ArtworkAR
+                        paintingId={painting.id}
+                        colourwayName={selected.name}
+                        alt={paintingImageAlt(painting.title, selected.name)}
+                        widthCm={arW}
+                        heightCm={arH}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
@@ -1822,6 +1879,17 @@ export const PaintingDetail = () => {
         colourwayName={selected.name}
         sourceImgRef={heroImgRef}
       />
+
+      {/* In-page camera AR — the primary "See it in your room". Mounted only
+          while open so the camera is never requested until asked. */}
+      {cameraOpen && (
+        <CameraAR
+          open={cameraOpen}
+          onClose={closeCamera}
+          painting={painting}
+          colourway={selected}
+        />
+      )}
     </div>
   );
 };
