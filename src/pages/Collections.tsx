@@ -437,7 +437,7 @@ export const Collections = () => {
             // toward the foot for the catalogue/footer seam; the page-intro +
             // tile copy carry their own text-shadow for legibility.
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
           }}
         />
       </div>

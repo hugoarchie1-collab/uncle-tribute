@@ -22,11 +22,13 @@ import { asset } from "../lib/asset";
  * Render as the FIRST child of a `relative` page root; put `relative z-10` on
  * the <main>.
  */
-// Darkened 2026-06-19 (Hugo: the scene photos were "too bright to even read
-// text"). Stronger top + mid so the cream copy always reads, while the (already
-// blurred) image stays visible through it — distinguishable, never out-shouting.
+// Unified site-wide scrim 2026-06-20 (Hugo: "whatever's best looking"). The
+// best balance from an A/B: the dark 0.60→0.88 buried the (bright) photos, the
+// light 0.38→0.80 risked text on busy images — this MIDDLE keeps every scene
+// vivid + visible while the cream copy still reads. EVERY scene page uses this
+// exact value so the site is coherent across pages + platforms.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.60) 0%, rgba(8,7,6,0.72) 45%, rgba(8,7,6,0.88) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)";
 
 /** One crossfade layer — full during its scroll band, ramping in/out at the
  *  band boundaries (first holds from the top, last holds to the foot). Each

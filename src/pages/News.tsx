@@ -279,7 +279,7 @@ export const News = () => {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.38) 0%, rgba(8,7,6,0.60) 42%, rgba(8,7,6,0.80) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
           }}
         />
       </div>
