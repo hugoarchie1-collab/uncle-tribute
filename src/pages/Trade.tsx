@@ -273,7 +273,7 @@ export const Trade = () => {
                   <span aria-hidden="true" className="ml-1.5">→</span>
                 </Link>
               </div>
-              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-faint mt-6 m-0">
+              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-fade mt-6 m-0">
                 Or write directly to{" "}
                 <a
                   href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"

@@ -645,6 +645,18 @@ export const About = () => {
   const purpleOpacity = useTransform(scrollYProgress, [0.31, 0.39, 0.65, 0.73], [0, 1, 1, 0]);
   const maryPinkOpacity = useTransform(scrollYProgress, [0.65, 0.73, 0.97, 1], [0, 1, 1, 1]);
   const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
+  // Cull each backdrop layer from compositing the instant it's fully transparent
+  // (visibility:hidden) — the per-frame scroll-jank fix ported verbatim from
+  // Welcome.tsx so About (the site's LONGEST page) scrolls as smoothly as home.
+  // A layer left at opacity 0 otherwise stays a composited full-screen bitmap the
+  // GPU re-blends every scroll frame for nothing; hiding it drops it from the
+  // layer tree until it's needed again.
+  const toVis = (v: number): "visible" | "hidden" => (v < 0.004 ? "hidden" : "visible");
+  const indigoVis = useTransform(indigoOpacity, toVis);
+  const redVis = useTransform(redOpacity, toVis);
+  const purpleVis = useTransform(purpleOpacity, toVis);
+  const maryPinkVis = useTransform(maryPinkOpacity, toVis);
+  const backdropVisibilities = [indigoVis, redVis, purpleVis, maryPinkVis];
 
   return (
     <div className="relative">
@@ -665,6 +677,13 @@ export const About = () => {
               // backdrop (the opening indigo) instead of colour-shifting the
               // whole viewport on every scroll frame.
               opacity: reduceMotion ? (i === 0 ? 1 : 0) : backdropOpacities[i],
+              // Cull from compositing while fully transparent (see toVis note) —
+              // the per-frame scroll-jank fix that brings About to home parity.
+              visibility: reduceMotion
+                ? i === 0
+                  ? "visible"
+                  : "hidden"
+                : backdropVisibilities[i],
               backgroundImage: `url("${asset(bd.url)}")`,
               // Promote to its own GPU layer so the scroll-driven crossfade
               // composites the (pre-blurred) image instead of repainting it.
@@ -716,6 +735,14 @@ export const About = () => {
           className="absolute inset-0"
           style={{
             opacity: reduceMotion ? 0 : maryPinkOpacity,
+            // Parity with Welcome's finale darken: hide it from compositing for
+            // the first ~72% of scroll (opacity 0) and animate its fade-in on the
+            // compositor (translateZ) instead of repainting this full-screen
+            // gradient every frame — it was the only scroll-animated full-screen
+            // layer on About still painting per frame.
+            visibility: reduceMotion ? "hidden" : maryPinkVis,
+            willChange: "opacity",
+            transform: "translateZ(0)",
             background:
               "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
           }}
