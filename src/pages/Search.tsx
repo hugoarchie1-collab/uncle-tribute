@@ -210,7 +210,7 @@ export const Search = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden">
-      <SceneBackdrop src="/img/scenes/search-woodland-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/search-woodland-blur-v3.webp" />
       <Seo
         title={trimmed ? `Search — ${trimmed}` : "Search"}
         description="Search the estate of Stephen Meakin — artworks, collections, the writing, and everything across the site."
