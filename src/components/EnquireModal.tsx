@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "../lib/cn";
+import { EYEBROW } from "./ui/tokens";
 
 interface EnquireModalProps {
   open: boolean;
@@ -196,7 +198,7 @@ export const EnquireModal = ({
             <div className="px-7 sm:px-9 py-9 sm:py-11">
               <div className="flex items-start justify-between gap-4 mb-7">
                 <div>
-                  <p className="font-sans text-[11px] font-bold tracking-[0.34em] uppercase text-accent m-0 mb-3">
+                  <p className={cn(EYEBROW, "m-0 mb-3")}>
                     {eyebrow}
                   </p>
                   <h2

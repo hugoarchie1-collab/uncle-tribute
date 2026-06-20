@@ -366,7 +366,7 @@ export const Gift = () => {
                 <span className={cn(EYEBROW, "shrink-0")}>02</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>
                   For someone in particular?{" "}
-                  <span className="font-normal tracking-normal normal-case text-ink-faint">
+                  <span className="font-normal tracking-normal normal-case text-ink-muted">
                     Optional
                   </span>
                 </span>

@@ -557,7 +557,7 @@ const ShareMemoryModal = ({
                           name="name"
                           required
                           autoComplete="name"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Jane Smith"
                         />
                       </label>
@@ -568,7 +568,7 @@ const ShareMemoryModal = ({
                         <input
                           name="relationship"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Student, friend, collector…"
                         />
                       </label>
@@ -583,7 +583,7 @@ const ShareMemoryModal = ({
                         <input
                           name="location"
                           autoComplete="off"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="Lewes, East Sussex"
                         />
                       </label>
@@ -596,7 +596,7 @@ const ShareMemoryModal = ({
                           name="email"
                           type="email"
                           autoComplete="email"
-                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                          className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="So the family can thank you"
                         />
                       </label>
@@ -610,7 +610,7 @@ const ShareMemoryModal = ({
                         name="message"
                         required
                         rows={6}
-                        className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[15px] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                         placeholder="A moment with Steve, something he said, what his work means to you…"
                       />
                     </label>

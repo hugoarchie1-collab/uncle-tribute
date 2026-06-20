@@ -387,7 +387,7 @@ const ContainImage = ({
       )}
     >
       <motion.div
-        className="absolute inset-0 will-change-transform"
+        className={cn("absolute inset-0", !reduceMotion && "will-change-transform")}
         style={reduceMotion ? undefined : { y }}
       >
         <AssetImage
@@ -529,7 +529,7 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
     <motion.div
       ref={ref}
       style={reduceMotion ? undefined : { scale, opacity }}
-      className="flex flex-col items-center gap-4 will-change-transform"
+      className={cn("flex flex-col items-center gap-4", !reduceMotion && "will-change-transform")}
     >
       <div className="flex flex-wrap items-center justify-center gap-3">
         <MagneticLink

@@ -92,6 +92,14 @@ export const convertFromGbpPence = (gbpPence: number, code: CurrencyCode): numbe
   return Math.round(raw / 100) * 100; // → nearest whole major unit
 };
 
+// One Intl.NumberFormat instance per currency, reused across every price render.
+// Constructing a formatter is ~70× slower than calling .format() on an existing
+// one, and the commerce pages (Collections especially) format dozens of prices
+// per pass + re-run them on every bundle-size switch. The locale is a pure
+// function of the code, so caching by code yields byte-identical output. The map
+// is bounded by the closed CurrencyCode union (≤5 entries) — no unbounded growth.
+const MONEY_FORMATTERS = new Map<CurrencyCode, Intl.NumberFormat>();
+
 /**
  * Format a GBP price (pence) in the target currency.
  *  - pretty:true drops a trailing ".00" (so "£450" / "$572", but "£12.50" keeps).
@@ -101,13 +109,17 @@ export const formatMoney = (
   code: CurrencyCode,
   opts: { pretty?: boolean } = {},
 ): string => {
-  const meta = CURRENCIES[code];
   const minor = convertFromGbpPence(gbpPence, code);
   const major = minor / 100;
-  const formatted = new Intl.NumberFormat(meta.locale, {
-    style: "currency",
-    currency: code,
-  }).format(major);
+  let nf = MONEY_FORMATTERS.get(code);
+  if (!nf) {
+    nf = new Intl.NumberFormat(CURRENCIES[code].locale, {
+      style: "currency",
+      currency: code,
+    });
+    MONEY_FORMATTERS.set(code, nf);
+  }
+  const formatted = nf.format(major);
   if (opts.pretty) return formatted.replace(/[.,]00(?=\D*$)/, "");
   return formatted;
 };

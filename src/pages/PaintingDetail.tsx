@@ -716,6 +716,11 @@ const BuyBox = ({
     at: number;
   } | null>(null);
   const fadeTimerRef = useRef<number | null>(null);
+  // The "complete colourway set" CTA does a MULTI-add, so the global basket
+  // toast (which titles itself off a single line) under-reads it — give it its
+  // own local confirmation pill, the same grammar as the primary CTA's.
+  const [colourwaySetAdded, setColourwaySetAdded] = useState(false);
+  const setFadeTimerRef = useRef<number | null>(null);
 
   const isOneOffSelected = selectedTier.isOneOff === true;
   // Framing / hand-finishing are offered ONLY at the sizes the data layer prices
@@ -762,7 +767,7 @@ const BuyBox = ({
   const hasAddOnSelected = framingActive || embellishActive;
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
-  // hand-finishing 4 wks. Nothing selected → the standard print lead time.
+  // hand-finishing 2 wks. Nothing selected → the standard print lead time.
   const leadWeeks = Math.max(
     framingActive ? FRAME_LEAD_WEEKS : 0,
     embellishActive ? FINISH_LEAD_WEEKS : 0,
@@ -790,6 +795,7 @@ const BuyBox = ({
 
   useEffect(() => () => {
     if (fadeTimerRef.current !== null) window.clearTimeout(fadeTimerRef.current);
+    if (setFadeTimerRef.current !== null) window.clearTimeout(setFadeTimerRef.current);
   }, []);
 
   const onAdd = () => {
@@ -817,6 +823,25 @@ const BuyBox = ({
     fadeTimerRef.current = window.setTimeout(() => {
       setAddedFor((current) => (current?.at === stamp ? null : current));
       fadeTimerRef.current = null;
+    }, 2500);
+  };
+
+  const onAddColourwaySet = () => {
+    if (!colourwaySet) return;
+    colourwaySet.colourwayNames.forEach((name) =>
+      addItem(painting.id, name, selectedTier.id),
+    );
+    // One AddToCart for the set (at its bundle price) — parity with onAdd, which
+    // fires it for a single print; the set path previously fired none.
+    trackAddToCart(
+      { id: painting.id, title: painting.title },
+      colourwaySet.bundlePricePence,
+    );
+    setColourwaySetAdded(true);
+    if (setFadeTimerRef.current !== null) window.clearTimeout(setFadeTimerRef.current);
+    setFadeTimerRef.current = window.setTimeout(() => {
+      setColourwaySetAdded(false);
+      setFadeTimerRef.current = null;
     }, 2500);
   };
 
@@ -997,16 +1022,35 @@ const BuyBox = ({
             </p>
             <button
               type="button"
-              onClick={() =>
-                colourwaySet.colourwayNames.forEach((name) =>
-                  addItem(painting.id, name, selectedTier.id),
-                )
-              }
+              onClick={onAddColourwaySet}
               className={BTN_PRIMARY}
             >
               Add the complete set
               <span aria-hidden="true" className="ml-2">→</span>
             </button>
+            {/* Local confirmation — reserves space (always-rendered, opacity-only)
+                so the layout never jumps, matching the primary CTA's pill. */}
+            <p
+              aria-live="polite"
+              className={cn(
+                "mt-2.5 font-sans text-[13px] tracking-[0.04em] text-ink-muted m-0 transition-opacity duration-500",
+                colourwaySetAdded ? "opacity-100" : "opacity-0",
+              )}
+            >
+              {colourwaySetAdded ? (
+                <>
+                  Complete set added —{" "}
+                  <Link
+                    to="/basket"
+                    className="text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+                  >
+                    view basket
+                  </Link>
+                </>
+              ) : (
+                " "
+              )}
+            </p>
             <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
               The set saving is applied automatically at checkout.
             </p>

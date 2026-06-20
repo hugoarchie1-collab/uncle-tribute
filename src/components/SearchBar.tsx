@@ -235,7 +235,14 @@ export const SearchBar = ({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           className={cn(
-            "w-full rounded-full bg-bg-soft/60 backdrop-blur-sm",
+            "w-full rounded-full",
+            // The header instance lives in the fixed, always-on Nav — a permanent
+            // backdrop-blur there re-samples the region every scroll frame (the
+            // per-frame cost DeliverTo already dropped). Keep the blur only for the
+            // large /search "page" variant (not always-mounted); the always-on
+            // header pill takes a near-opaque dark fill instead — the ring + nav
+            // scrim already separate it. /90 is darker than the old /60, never brighter.
+            isPage ? "bg-bg-soft/60 backdrop-blur-sm" : "bg-bg-soft/90",
             "font-sans text-ink placeholder:text-ink-faint",
             "ring-1 ring-line transition-shadow duration-200",
             "focus:outline-none focus:ring-2 focus:ring-accent",

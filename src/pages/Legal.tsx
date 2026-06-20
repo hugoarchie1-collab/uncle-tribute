@@ -4,7 +4,7 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { SceneBackdrop } from "../components/SceneBackdrop";
-import { usePageTitle } from "../lib/usePageTitle";
+import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
@@ -817,9 +817,12 @@ const LegalPage = ({
 }) => {
   // Strip HTML entities + the canonical trailing full stop for the tab title.
   const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
-  usePageTitle(plainTitle);
   return (
     <div className="relative flex flex-col">
+      {/* Per-route meta — without this the three policy pages fall through to
+          App's homepage default description (same wrong meta on all three).
+          Seo auto-canonicalises to the current pathname, so no url prop needed. */}
+      <Seo title={plainTitle} description={lead} />
       <SceneBackdrop src={backdrop} />
       <Nav />
 

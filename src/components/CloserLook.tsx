@@ -143,6 +143,8 @@ export const CloserLook = ({
   const lastTap = useRef<{ t: number; x: number; y: number } | null>(null);
   const wheelTimer = useRef<number | null>(null);
   const indicatorTimer = useRef<number | null>(null);
+  const stepTimer = useRef<number | null>(null);
+  const tapCloseTimer = useRef<number | null>(null);
 
   // Render-state: full-res decode readiness (drives the crossfade), the fitted
   // box (for the loading frame), the transient zoom indicator, and whether the
@@ -305,7 +307,13 @@ export const CloserLook = ({
     const z = rubber(currentZoom() * factor, MIN_ZOOM, maxZoom, 0.1);
     zoomTowards(cw / 2, ch / 2, z, false);
     // Buttons / keys are discrete — settle the rubber edge immediately after.
-    window.setTimeout(settle, 50);
+    // Tracked so the lifecycle cleanup can cancel it, and a fast +/- mash never
+    // piles up settle calls (mirrors the wheelTimer/indicatorTimer discipline).
+    if (stepTimer.current !== null) window.clearTimeout(stepTimer.current);
+    stepTimer.current = window.setTimeout(() => {
+      settle();
+      stepTimer.current = null;
+    }, 50);
   };
 
   /** Double-click / double-tap: fit ↔ 1:1, anchored at the cursor point. */
@@ -475,6 +483,8 @@ export const CloserLook = ({
       if (indicatorTimer.current !== null)
         window.clearTimeout(indicatorTimer.current);
       window.clearTimeout(focusTimer);
+      if (stepTimer.current !== null) window.clearTimeout(stepTimer.current);
+      if (tapCloseTimer.current !== null) window.clearTimeout(tapCloseTimer.current);
       pointersMap.clear();
       pointerOrder.current = [];
       pinch.current = null;
@@ -638,7 +648,8 @@ export const CloserLook = ({
     if (e.target === e.currentTarget) {
       const tapX = e.clientX;
       const tapY = e.clientY;
-      window.setTimeout(() => {
+      tapCloseTimer.current = window.setTimeout(() => {
+        tapCloseTimer.current = null;
         const lt = lastTap.current;
         if (lt && Math.abs(lt.x - tapX) < 1 && Math.abs(lt.y - tapY) < 1) {
           onCloseRef.current();

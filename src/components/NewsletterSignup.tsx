@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
-import { EYEBROW_MUTED } from "./ui/tokens";
+import { EYEBROW, EYEBROW_MUTED } from "./ui/tokens";
 
 /**
  * Newsletter signup ("Friends & Family" list).
@@ -109,7 +109,7 @@ export const NewsletterSignup = ({
       <div>
         <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Friends &amp; Family</h3>
         {status === "success" ? (
-          <p className="font-sans text-[13px] leading-[1.65] text-ink-muted m-0">
+          <p role="status" aria-live="polite" className="font-sans text-[13px] leading-[1.65] text-ink-muted m-0">
             Thank you. We'll be in touch when the next edition is released.
           </p>
         ) : (
@@ -183,7 +183,7 @@ export const NewsletterSignup = ({
           {eyebrow}
         </p>
         {status === "success" ? (
-          <p className="font-sans text-[14.5px] leading-[1.7] text-ink/75 m-0 max-w-[520px]">
+          <p role="status" aria-live="polite" className="font-sans text-[14.5px] leading-[1.7] text-ink/75 m-0 max-w-[520px]">
             Thank you. Your name has been added to Friends &amp; Family. We'll write when
             the next edition is released.
           </p>
@@ -260,7 +260,7 @@ export const NewsletterSignup = ({
   // -----------------------------------------------------------------------
   return (
     <div className="border border-white/10 bg-bg-soft/30 p-7 sm:p-9 md:p-10 max-w-[640px]">
-      <p className="font-sans text-[11px] font-bold tracking-[0.34em] uppercase text-accent m-0 mb-4">
+      <p className={cn(EYEBROW, "m-0 mb-4")}>
         {eyebrow}
       </p>
       <h3 className="font-display font-bold tracking-[-0.025em] text-[clamp(22px,2.6vw,30px)] leading-[1.15] text-ink m-0 mb-5">
@@ -268,7 +268,7 @@ export const NewsletterSignup = ({
       </h3>
 
       {status === "success" ? (
-        <div>
+        <div role="status" aria-live="polite">
           <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] leading-[1.7] text-ink/80 m-0 mb-2">
             Thank you. Your name has been added to Friends &amp; Family.
           </p>
