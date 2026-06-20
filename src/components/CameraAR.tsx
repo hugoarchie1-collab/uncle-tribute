@@ -1,12 +1,16 @@
 // =============================================================================
-// CameraAR — the Virtual Exhibition. JUST the camera (Hugo): tap, the browser
-// asks for the camera, the rear camera opens full-screen, and you point it at
-// your wall and see the painting in your own room. Drag to place it; a strip of
-// every work lets you flip through them all on your wall. No frame options, no
-// save button, no model-viewer — just the camera and the art.
+// CameraAR — the Virtual Exhibition. JUST the camera: point your phone at your
+// wall and see the painting in your own room. Drag to place it; a strip flips
+// through every work. No frame options, no save button, no model-viewer — just
+// the camera and the art. No camera → a clean "open it on your phone" + QR.
 //
-// No camera (desktop / denied) → a clean "you need a camera, open it on your
-// phone" page with a QR of the page. That's it.
+// PREMIUM polish (competitor-grade): the placed work is moved/resized by writing
+// a GPU translate3d straight to the DOM node inside ONE rAF per frame (never a
+// React re-render per pointermove — that is the "cheap drag" tell); a layered
+// ambient+key+contact shadow + a print edge so it reads as HUNG on the wall, not
+// a floating sticker; an HD camera feed gated on the first real frame; a snap +
+// scroll-into-view + lifted work strip; safe-area + rotate handling; a tiny
+// haptic on place/switch. Camera is ALWAYS released on close/unmount/tab-hide.
 // =============================================================================
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
@@ -18,7 +22,6 @@ import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { EASE_SIGNATURE, EYEBROW_MUTED, EYEBROW_TIGHT } from "./ui/tokens";
 
-/** One work the visitor can place on their wall. */
 export interface CameraAROption {
   painting: Painting;
   colourway: Colourway;
@@ -29,7 +32,6 @@ export interface CameraARProps {
   onClose: () => void;
   /** Every work that can be placed — the strip lets the visitor flip through. */
   options: CameraAROption[];
-  /** Which work to show first. */
   startIndex?: number;
 }
 
@@ -43,6 +45,18 @@ interface Placement {
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+
+// Ambient + key + contact — never one flat blur; reads as hung on a surface.
+const PRINT_SHADOW =
+  "0 1px 2px rgba(0,0,0,0.38), 0 8px 16px rgba(0,0,0,0.28), 0 30px 60px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10)";
+
+const vibrate = (ms: number) => {
+  try {
+    navigator.vibrate?.(ms);
+  } catch {
+    /* unsupported (iOS) — harmless */
+  }
+};
 
 const reasonFromError = (err: unknown): Reason => {
   const name =
@@ -104,6 +118,8 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const pieceRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const [phase, setPhase] = useState<Phase>("requesting");
@@ -116,8 +132,6 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
   const current = options[index] ?? options[0];
   const alt = current ? paintingImageAlt(current.painting.title, current.colourway.name) : "";
 
-  // Image aspect of the CURRENT work (recomputed when switching), so the placed
-  // image is never stretched. Defaults square until the image decodes.
   const aspectRef = useRef(1);
   const [aspect, setAspect] = useState(1);
 
@@ -146,16 +160,31 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     setPhase("requesting");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
+        // `ideal` (never exact) so it gracefully gives the best the device has —
+        // iOS caps ~720p, many Android up to 1080p; a sharp feed sells the room.
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+        },
         audio: false,
       });
       streamRef.current = stream;
       const v = videoRef.current;
-      if (v) {
-        v.srcObject = stream;
-        void v.play().catch(() => undefined);
+      if (!v) {
+        setPhase("live");
+        return;
       }
-      setPhase("live");
+      v.srcObject = stream;
+      // Flip to "live" on the FIRST real frame (not the instant getUserMedia
+      // resolves) so the stage is never black during the ~200–400ms warm-up.
+      const goLive = () => {
+        if (streamRef.current === stream) setPhase("live");
+      };
+      v.addEventListener("playing", goLive, { once: true });
+      v.addEventListener("loadeddata", goLive, { once: true });
+      void v.play().catch(() => undefined);
+      window.setTimeout(goLive, 1400); // safety net if neither event fires
     } catch (err) {
       setReason(reasonFromError(err));
       setPhase("error");
@@ -260,9 +289,22 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     if (!stage) return;
     const r = stage.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) return;
-    const w = Math.round(Math.min(r.width, r.height) * 0.42);
+    const w = Math.round(Math.min(r.width, r.height) * 0.4);
     setPlacement({ x: r.width / 2, y: r.height / 2, w });
   }, [phase, placement]);
+
+  // Re-clamp the placement into the new bounds on rotate / resize (keep position).
+  useEffect(() => {
+    if (!open) return;
+    const onResize = () => setPlacement((p) => (p ? clampPlacement(p) : p));
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // Auto-fade the coaching hint.
   useEffect(() => {
@@ -270,6 +312,14 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     const t = window.setTimeout(() => setHintVisible(false), 4200);
     return () => window.clearTimeout(t);
   }, [phase, hintVisible]);
+
+  // Keep the selected thumbnail in view as you flip through.
+  useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    const el = strip.querySelector<HTMLElement>(`[data-thumb="${index}"]`);
+    el?.scrollIntoView({ inline: "center", block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+  }, [index, reduceMotion]);
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -280,11 +330,15 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     }
   };
 
-  /* ── gestures: drag to place, pinch + corner handle to resize ───────────── */
+  /* ── gestures — drag + pinch + corner handle, written STRAIGHT to the DOM via
+   *    one rAF per frame (no React re-render per move = buttery, GPU-composited).
+   *    React state is re-synced only on pointer-up. ───────────────────────────*/
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const dragRef = useRef<{ id: number; sx: number; sy: number; ox: number; oy: number } | null>(null);
   const pinchRef = useRef<{ d0: number; w0: number } | null>(null);
   const handleRef = useRef<{ id: number; sx: number; w0: number } | null>(null);
+  const workRef = useRef<Placement | null>(null);
+  const rafRef = useRef(0);
 
   const stageSize = () => {
     const r = stageRef.current?.getBoundingClientRect();
@@ -292,7 +346,37 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
   };
   const clampPlacement = (p: Placement): Placement => {
     const { w: sw, h: sh } = stageSize();
-    return { w: clamp(p.w, 80, sw * 1.5), x: clamp(p.x, 0, sw), y: clamp(p.y, 0, sh) };
+    return { w: clamp(p.w, 90, sw * 1.5), x: clamp(p.x, 0, sw), y: clamp(p.y, 0, sh) };
+  };
+
+  // Write the working placement directly to the node (translate3d = GPU only).
+  const flush = () => {
+    rafRef.current = 0;
+    const p = workRef.current;
+    const el = pieceRef.current;
+    if (!p || !el) return;
+    const h = p.w / (aspectRef.current || 1);
+    el.style.width = `${p.w}px`;
+    el.style.height = `${h}px`;
+    el.style.transform = `translate3d(${p.x - p.w / 2}px, ${p.y - h / 2}px, 0)`;
+  };
+  const schedule = () => {
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(flush);
+  };
+  const beginGesture = () => {
+    if (!workRef.current && placement) workRef.current = { ...placement };
+    if (pieceRef.current) pieceRef.current.style.willChange = "transform, width, height";
+  };
+  const endGesture = () => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
+    }
+    if (pieceRef.current) pieceRef.current.style.willChange = "";
+    if (workRef.current) {
+      setPlacement(clampPlacement(workRef.current));
+      workRef.current = null;
+    }
   };
 
   const onStageDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -301,54 +385,72 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     setHintVisible(false);
+    beginGesture();
+    const base = workRef.current ?? placement;
     if (pointers.current.size === 2) {
       const [a, b] = [...pointers.current.values()];
-      pinchRef.current = { d0: Math.hypot(a.x - b.x, a.y - b.y), w0: placement.w };
+      pinchRef.current = { d0: Math.hypot(a.x - b.x, a.y - b.y), w0: base.w };
       dragRef.current = null;
     } else if (pointers.current.size === 1) {
-      dragRef.current = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: placement.x, oy: placement.y };
+      dragRef.current = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: base.x, oy: base.y };
     }
   };
   const onStageMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const tracked = pointers.current.get(e.pointerId);
-    if (!tracked) return;
+    if (!tracked || !workRef.current) return;
     tracked.x = e.clientX;
     tracked.y = e.clientY;
     if (pinchRef.current && pointers.current.size >= 2) {
       const [a, b] = [...pointers.current.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      const next = pinchRef.current.w0 * (d / Math.max(pinchRef.current.d0, 1));
-      setPlacement((p) => (p ? clampPlacement({ ...p, w: next }) : p));
+      workRef.current = clampPlacement({
+        ...workRef.current,
+        w: pinchRef.current.w0 * (d / Math.max(pinchRef.current.d0, 1)),
+      });
+      schedule();
       return;
     }
     const drag = dragRef.current;
     if (drag && drag.id === e.pointerId && pointers.current.size === 1) {
-      setPlacement((p) =>
-        p ? clampPlacement({ ...p, x: drag.ox + (e.clientX - drag.sx), y: drag.oy + (e.clientY - drag.sy) }) : p,
-      );
+      workRef.current = clampPlacement({
+        ...workRef.current,
+        x: drag.ox + (e.clientX - drag.sx),
+        y: drag.oy + (e.clientY - drag.sy),
+      });
+      schedule();
     }
   };
   const onStageUp = (e: React.PointerEvent<HTMLDivElement>) => {
     pointers.current.delete(e.pointerId);
     if (dragRef.current?.id === e.pointerId) dragRef.current = null;
     if (pointers.current.size < 2) pinchRef.current = null;
+    if (pointers.current.size === 0) {
+      vibrate(8);
+      endGesture();
+    }
   };
 
   const onHandleDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (!placement) return;
     e.stopPropagation();
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    handleRef.current = { id: e.pointerId, sx: e.clientX, w0: placement.w };
+    beginGesture();
+    handleRef.current = { id: e.pointerId, sx: e.clientX, w0: (workRef.current ?? placement).w };
     setHintVisible(false);
   };
   const onHandleMove = (e: React.PointerEvent<HTMLButtonElement>) => {
     const h = handleRef.current;
-    if (!h || h.id !== e.pointerId) return;
+    if (!h || h.id !== e.pointerId || !workRef.current) return;
     e.stopPropagation();
-    setPlacement((p) => (p ? clampPlacement({ ...p, w: h.w0 + (e.clientX - h.sx) * 2 }) : p));
+    workRef.current = clampPlacement({ ...workRef.current, w: h.w0 + (e.clientX - h.sx) * 2 });
+    schedule();
   };
   const onHandleUp = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (handleRef.current?.id === e.pointerId) handleRef.current = null;
+    if (handleRef.current?.id === e.pointerId) {
+      handleRef.current = null;
+      vibrate(8);
+      endGesture();
+    }
   };
 
   const onPieceKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -368,8 +470,15 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
     }
   };
 
+  const pickWork = (i: number) => {
+    if (i === index) return;
+    setIndex(i);
+    vibrate(8);
+  };
+
   if (typeof document === "undefined" || !current) return null;
 
+  const safeTop = "max(1rem, env(safe-area-inset-top))";
   const w = placement?.w ?? 0;
   const h = w / (aspect || 1);
 
@@ -411,31 +520,38 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
 
             {phase === "live" && placement && (
               <div
+                ref={pieceRef}
                 role="button"
                 tabIndex={0}
                 aria-label={`${current.painting.title} — drag to place it on your wall, arrow keys to nudge`}
                 onKeyDown={onPieceKey}
-                className="absolute touch-none outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="absolute left-0 top-0 touch-none outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 style={{
-                  left: placement.x - w / 2,
-                  top: placement.y - h / 2,
                   width: w,
                   height: h,
+                  transform: `translate3d(${placement.x - w / 2}px, ${placement.y - h / 2}px, 0)`,
                   cursor: "grab",
-                  filter: "drop-shadow(0 14px 30px rgba(0,0,0,0.55))",
                 }}
               >
-                <picture>
-                  <source srcSet={asset(webp(current.colourway.image))} type="image/webp" />
-                  <img
-                    src={asset(current.colourway.image)}
-                    alt={alt}
-                    onLoad={onImageLoad}
-                    draggable={false}
-                    className="block h-full w-full select-none object-cover ring-1 ring-white/15"
-                    style={{ pointerEvents: "none" }}
-                  />
-                </picture>
+                <motion.div
+                  key={current.painting.id}
+                  initial={reduceMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.965 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SIGNATURE }}
+                  className="h-full w-full"
+                >
+                  <picture>
+                    <source srcSet={asset(webp(current.colourway.image))} type="image/webp" />
+                    <img
+                      src={asset(current.colourway.image)}
+                      alt={alt}
+                      onLoad={onImageLoad}
+                      draggable={false}
+                      className="block h-full w-full select-none object-cover ring-1 ring-black/25"
+                      style={{ pointerEvents: "none", boxShadow: PRINT_SHADOW }}
+                    />
+                  </picture>
+                </motion.div>
 
                 {/* corner resize handle */}
                 <button
@@ -539,21 +655,22 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
                   className="pointer-events-none absolute left-1/2 top-[16%] -translate-x-1/2 px-4"
                 >
                   <p className="m-0 rounded-full bg-[#0a0908]/75 px-5 py-2.5 text-center font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-ink ring-1 ring-line">
-                    Drag to place it on your wall · pinch to resize
+                    Drag to place it · pinch to resize
                   </p>
                 </motion.div>
               )}
             </AnimatePresence>
           )}
 
-          {/* TITLE caption (top-left) */}
+          {/* TITLE caption (top-left, safe-area aware) */}
           {phase !== "error" && (
             <p
               id={titleId}
               data-chrome
+              style={{ top: safeTop }}
               className={cn(
                 EYEBROW_MUTED,
-                "pointer-events-none absolute left-4 top-5 m-0 max-w-[58vw] truncate md:left-6 md:top-7",
+                "pointer-events-none absolute left-4 m-0 max-w-[58vw] truncate pt-1 md:left-6",
               )}
             >
               <span className="text-ink">{current.painting.title}</span>
@@ -567,7 +684,8 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
             data-chrome
             onClick={onClose}
             aria-label="Close the virtual exhibition"
-            className="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink-muted ring-1 ring-line outline-none transition-colors duration-300 hover:text-ink focus-visible:text-accent focus-visible:ring-accent md:right-6 md:top-6"
+            style={{ top: safeTop }}
+            className="absolute right-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink-muted ring-1 ring-line outline-none transition-colors duration-300 hover:text-ink focus-visible:text-accent focus-visible:ring-accent md:right-6"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               <path d="M3 3 15 15M15 3 3 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -577,11 +695,12 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
           {/* WORK STRIP (live only) — flip through every work, place it on your wall */}
           {phase === "live" && options.length > 1 && (
             <div
+              ref={stripRef}
               data-chrome
               role="listbox"
               aria-label="Choose a work to place on your wall"
-              className="absolute inset-x-0 bottom-0 flex items-center gap-2.5 overflow-x-auto px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              style={{ background: "linear-gradient(0deg, rgba(8,7,6,0.85) 0%, rgba(8,7,6,0) 100%)" }}
+              className="absolute inset-x-0 bottom-0 flex snap-x snap-mandatory items-end gap-2.5 overflow-x-auto px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ background: "linear-gradient(0deg, rgba(8,7,6,0.88) 0%, rgba(8,7,6,0) 100%)" }}
             >
               {options.map((o, i) => {
                 const sel = i === index;
@@ -590,22 +709,20 @@ export const CameraAR = ({ open, onClose, options, startIndex = 0 }: CameraARPro
                     key={o.painting.id}
                     type="button"
                     role="option"
+                    data-thumb={i}
                     aria-selected={sel}
                     aria-label={o.painting.title}
-                    onClick={() => setIndex(i)}
+                    onClick={() => pickWork(i)}
                     className={cn(
-                      "relative h-14 w-14 shrink-0 overflow-hidden rounded-md outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                      sel ? "ring-2 ring-accent" : "ring-1 ring-white/25 opacity-80 hover:opacity-100",
+                      "relative h-16 w-16 shrink-0 origin-bottom snap-center overflow-hidden rounded-md outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                      sel
+                        ? "scale-[1.08] ring-2 ring-accent"
+                        : "opacity-70 ring-1 ring-white/25 hover:opacity-100",
                     )}
                   >
                     <picture>
                       <source srcSet={asset(webp(o.colourway.image))} type="image/webp" />
-                      <img
-                        src={asset(o.colourway.image)}
-                        alt=""
-                        draggable={false}
-                        className="h-full w-full object-cover"
-                      />
+                      <img src={asset(o.colourway.image)} alt="" draggable={false} className="h-full w-full object-cover" />
                     </picture>
                   </button>
                 );
