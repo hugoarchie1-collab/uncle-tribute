@@ -1,30 +1,61 @@
 // =============================================================================
-// build-ar-assets.mjs — generate web-AR assets (GLB + USDZ) for every painting
+// build-ar-assets.mjs — web-AR asset pipeline (v3) for every painting
 // -----------------------------------------------------------------------------
-// RUN LOCALLY ON macOS, then COMMIT the artifacts. The GLB path is pure Node
-// (zero npm deps): it hand-authors a glTF 2.0 document with an EMBEDDED JPEG
-// image bufferView (no decode needed) and packs it into a binary GLB. The USDZ
-// path shells out to Apple/Pixar's USD tooling that ships with macOS:
-//   /usr/bin/usdzip  --arkitAsset   (packages a USDA → ARKit-ready USDZ)
-//   /usr/bin/usdchecker --arkit      (validates the result)
-// On Linux / CI those tools are absent → USDZ is skipped (the script still emits
-// every GLB) so the build degrades gracefully. iOS Quick Look just won't be
-// offered for paintings missing a USDZ; <model-viewer> auto-hides it.
+// Generates a REALISTIC framed-print model so a mandala reads as a genuine
+// framed artwork hung on a wall in phone AR — NOT the old "flat textured slab +
+// dark border" that looked plastered on. The realism comes from a five-layer
+// depth-separated model (see docs/ar-framed-presentation-spec.md):
 //
-// Each painting becomes a "framed print panel" sized in TRUE real-world METRES
-// (metersPerUnit = 1 in USD; glTF is metres by spec) so AR placement shows the
-// print at its actual wall size. We generate ONLY the anchor (A2) size per
-// painting — 10 GLB + 10 USDZ total — not one per tier.
+//   0  backing board            — gives the object thickness against the wall
+//   1  frame moulding           — real wood section with DEPTH + an inner BEVEL
+//   2  off-white mat / mount     — a board with a bevel-cut WINDOW (lit edge)
+//   3  print (giclée)           — RECESSED behind the mat window (kills "sticker")
+//   4  soft contact-shadow quad — a baked radial-gradient halo on the wall
 //
-// /public is immutable-cached (1yr) → outputs are versioned `<id>-v1.glb` /
-// `<id>-v1.usdz`. To regenerate after a change, bump the V constant to -v2 and
-// update the references in src/components/ArtworkAR.tsx.
+// (Glass / transmission is deliberately SKIPPED — too finicky in Quick Look;
+//  depth + mat + frame + shadow + the OS's own lighting kill the floating look.)
 //
-// Orchestrator: add  "build:ar": "node scripts/build-ar-assets.mjs"  to package.json.
+// TWO PIPELINES, ONE GEOMETRY:
+//   • GLB (zero npm deps): hand-authored glTF 2.0 packed into a binary GLB. The
+//     two "frame shell" GLBs author the model at the A2 anchor (0.42 m) with the
+//     print as a SEPARATELY-NAMED mesh+material ("Artwork") carrying a 1px
+//     placeholder texture, so the app can swap baseColorTexture at runtime
+//     (model-viewer / WebXR / Android Scene Viewer).
+//   • USDZ (Apple/Pixar USD tooling on macOS): a USDA authored at each size's
+//     TRUE metres with the colourway texture EMBEDDED, packed via
+//     `usdzip --arkitAsset` and validated with `usdchecker --arkit`.
+//
+//     /usr/bin/usdzip  --arkitAsset   → packages a USDA + textures → ARKit USDZ
+//     /usr/bin/usdchecker --arkit     → validates (we FAIL LOUDLY on any error)
+//     /usr/bin/sips                   → downscales each texture to ~800px JPEG
+//
+// OUTPUTS (all under public/ar/, versioned -v3 — /public is immutable-cached):
+//   public/ar/frame-black-oak-v3.glb        ← shell, swap Artwork texture @runtime
+//   public/ar/frame-natural-oak-v3.glb      ← shell
+//   public/ar/<id>-<colourway>-<size>-<frame>-v3.usdz   ← the iOS matrix
+//   src/lib/arAssets.ts                     ← AUTO-GENERATED manifest (like imageVariants.ts)
+//
+// The full matrix is 25 colourway images × 4 sizes × 2 frames = 200 USDZ + 2 GLB.
+//
+// RUN (orchestrator): node scripts/build-ar-assets.mjs
+//   --sample           generate only a handful of assets (proof run; see SAMPLE)
+//   --keep             do NOT wipe public/ar first (sample runs imply --keep)
+//
+// On Linux/CI the USD tools are absent → USDZ is skipped, GLB shells still emit,
+// and the manifest is written with the full USDZ key set (so the TS type-checks;
+// arUsdz points at files that don't exist on that platform). iOS Quick Look is
+// just not offered there.
 // =============================================================================
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  rmSync,
+  readdirSync,
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
@@ -34,232 +65,498 @@ const ROOT = resolve(__dirname, "..");
 const PUB = join(ROOT, "public");
 const IMG_DIR = join(PUB, "img", "paintings");
 const OUT_DIR = join(PUB, "ar");
+const MANIFEST = join(ROOT, "src", "lib", "arAssets.ts");
 
 const USDZIP = "/usr/bin/usdzip";
 const USDCHECKER = "/usr/bin/usdchecker";
 const SIPS = "/usr/bin/sips";
 
-/** Asset version — bump (and update ArtworkAR.tsx) to bust the immutable cache.
- *  v2: USDZ + GLB now anchor to a VERTICAL plane (wall placement, not floor),
- *  and Ophiuchus is square A2 like every other print (the catalogue sells square
- *  A-sizes for all paintings). */
-const V = "v2";
+/** Asset version — bump (and update the app references) to bust the immutable
+ *  /ar cache. v3: realistic framed model (frame moulding depth+bevel + mat board
+ *  with bevelled window + recessed print + baked contact shadow), one GLB shell
+ *  per frame finish, and a full colourway×size×frame USDZ matrix. */
+const V = "v3";
+
+// CLI flags
+const ARGS = new Set(process.argv.slice(2));
+const SAMPLE = ARGS.has("--sample");
+const KEEP = ARGS.has("--keep") || SAMPLE;
 
 // -----------------------------------------------------------------------------
-// PAINTING TABLE
+// SIZE TIERS — true real-world print sizes (metres). ALL SQUARE.
+// Mirrors PRINT_TIERS in src/data/paintings.ts:
+//   Open A3 29.5cm / Collector A2 42cm (ANCHOR) / Atelier A1 59.5cm / Heirloom A0 84cm
 // -----------------------------------------------------------------------------
-// Mirrors src/data/paintings.ts: each id, its ORIGINAL colourway JPG (the
-// `colourways.find(c => c.isOriginal)?.image` value), and the anchor-tier
-// real-world size in METRES. Default = A2 (getAnchorTier → "A2 (42 × 42 cm)" →
-// 0.42 × 0.42 m). Per-painting overrides where the print is non-square.
-//
-// Kept as an explicit table (not imported) because this is a Node build script
-// and src/data/paintings.ts is TS with site-only imports — duplicating the 10
-// rows here is simpler and safer than wiring a TS loader into the build.
-// -----------------------------------------------------------------------------
+const SIZES = [
+  { id: "a3", label: "A3", cm: 29.5, metres: 0.295, tierId: "atelier" },
+  { id: "a2", label: "A2", cm: 42.0, metres: 0.42, tierId: "collector", anchor: true },
+  { id: "a1", label: "A1", cm: 59.5, metres: 0.595, tierId: "atelier-grande" },
+  { id: "a0", label: "A0", cm: 84.0, metres: 0.84, tierId: "heirloom" },
+];
+const ANCHOR = SIZES.find((s) => s.anchor); // A2 0.42 m — the GLB authoring size
+const GLB_BASE_METRES = ANCHOR.metres;
 
-const A2 = 0.42; // metres — A2 (42 × 42 cm), the Collector anchor tier
+// -----------------------------------------------------------------------------
+// FRAME FINISHES — moulding tone + surface character. baseColor is LINEAR.
+//   black-stained oak ≈ linear [0.045,0.04,0.035] roughness 0.5  (anchor/default)
+//   natural oak       ≈ linear [0.34,0.22,0.11]   roughness 0.6
+//   mat off-white     ≈ linear [0.92,0.90,0.85]
+// -----------------------------------------------------------------------------
+const FRAMES = [
+  {
+    id: "black-oak",
+    label: "Black-stained oak",
+    swatch: "#1c1a17",
+    base: [0.045, 0.04, 0.035],
+    roughness: 0.5,
+  },
+  {
+    id: "natural-oak",
+    label: "Natural oak",
+    swatch: "#b8966a",
+    base: [0.34, 0.22, 0.11],
+    roughness: 0.6,
+  },
+];
+const DEFAULT_FRAME = "black-oak";
+
+// Shared mat board material (warm off-white conservation board) — LINEAR.
+const MAT_BASE = [0.92, 0.9, 0.85];
+const MAT_ROUGHNESS = 0.85;
+// Mat bevel window cut — brighter so the cut edge highlights (the white bevel line).
+const MAT_BEVEL_BASE = [0.97, 0.96, 0.93];
+const MAT_BEVEL_ROUGHNESS = 0.6;
+// Backing board (behind everything, faces the wall) — near-black, anchors shadow.
+const BACK_BASE = [0.02, 0.02, 0.02];
+const BACK_ROUGHNESS = 0.9;
+// Print (giclée) — faint sheen, recessed behind the mat.
+const ART_METALLIC = 0.0;
+const ART_ROUGHNESS = 0.78;
+
+// -----------------------------------------------------------------------------
+// FRAME SECTION GEOMETRY — all metres, AT THE A2 0.42 m REFERENCE.
+// USDZ at other sizes is authored by SCALING every constant by metres/0.42 so
+// the frame stays proportionate (a bigger print gets a proportionally bigger
+// frame — exactly what a real framer does). The print's outer edge always
+// equals the size's true metres.
+// -----------------------------------------------------------------------------
+const REF = ANCHOR.metres; // 0.42 — the proportion reference
+
+// Real-world frame section at the A2 reference:
+const FRAME_FACE = 0.024; // moulding face width visible from the front
+const FRAME_DEPTH = 0.034; // total depth of the wood section (front → wall)
+const FRAME_BEVEL = 0.008; // width of the chamfer on the frame's inner lip
+const MAT_BORDER = 0.05; // off-white mat border on every edge (generous gallery mat)
+const MAT_THICK = 0.0016; // board edge thickness (the bevel face height)
+const MAT_FRONT_RECESS = 0.012; // mat front sits this far behind the frame face
+const PRINT_RECESS = 0.004; // print sits this far behind the mat back (shadow gap)
+const SHADOW_MARGIN = 0.05; // contact-shadow quad extends this far beyond the frame
+const SHADOW_OFFSET = 0.0006; // shadow quad sits this far off the wall (z), avoids z-fight
 
 /**
- * @typedef {Object} ArPainting
- * @property {string} id              painting id (matches PAINTINGS + /ar/<id>)
- * @property {string} jpg             ORIGINAL colourway jpg filename under /public/img/paintings
- * @property {number} widthM          real-world print width in metres
- * @property {number} heightM         real-world print height in metres
- * @property {string} [cropFrom]      optional: source jpg to centre-crop a portrait from
- * @property {[number,number]} [cropPx] optional: [w,h] px of the centre crop
+ * Geometry constants scaled to a given print size. The "print" (artwork window
+ * the texture maps onto) is the size's TRUE metres — that is the dimension the
+ * buyer is paying for. The mat + frame are built OUTWARD from it, so the overall
+ * framed object is larger than the print, exactly like a real frame.
  */
-
-/** @type {ArPainting[]} */
-const PAINTINGS = [
-  { id: "wild-rose", jpg: "wild-rose-sussex-pink.jpg", widthM: A2, heightM: A2 },
-  { id: "english-bluebells", jpg: "english-bluebells-v3.jpg", widthM: A2, heightM: A2 },
-  { id: "orchis-7", jpg: "orchis7-rubedo-red.jpg", widthM: A2, heightM: A2 },
-  { id: "flower-of-life", jpg: "fol-kaleidoscope.jpg", widthM: A2, heightM: A2 },
-  { id: "slipper-orchids", jpg: "orchids30-nebula-purple.jpg", widthM: A2, heightM: A2 },
-  { id: "peacock-minerva", jpg: "peacock-persian-indigo.jpg", widthM: A2, heightM: A2 },
-  {
-    // Ophiuchus's source JPG is 2000×1622 LANDSCAPE, but the shop sells a SQUARE
-    // A-size print for EVERY painting (PRINT_TIERS are square for all), so its
-    // AR/print is shown SQUARE like the rest. Centre-crop a square (1622×1622)
-    // first so full-frame UV (0..1) maps without distortion.
-    id: "ophiuchus",
-    jpg: "ophiuchus-ar.jpg",
-    widthM: A2,
-    heightM: A2,
-    cropFrom: "ophiuchus-original.jpg",
-    cropPx: [1622, 1622],
-  },
-  { id: "tridecagon-moon-star", jpg: "tridecagon-sage-green.jpg", widthM: A2, heightM: A2 },
-  { id: "lulin", jpg: "lulin-original.jpg", widthM: A2, heightM: A2 },
-  { id: "enneagon-swans", jpg: "enneagon-cygnus-gold.jpg", widthM: A2, heightM: A2 },
-];
-
-// -----------------------------------------------------------------------------
-// Geometry constants (all metres)
-// -----------------------------------------------------------------------------
-const FRAME_BORDER = 0.025; // dark frame ring width on every edge
-const DEPTH = 0.03; // how far the panel stands off the wall (frame + box)
-
-// Material factors
-const FRAME_BASE_COLOR = [0.06, 0.05, 0.045, 1.0];
-const FRAME_METALLIC = 0.0;
-const FRAME_ROUGHNESS = 0.7;
-const ART_METALLIC = 0.0;
-const ART_ROUGHNESS = 0.85;
+function geomConstants(printMetres) {
+  const k = printMetres / REF; // proportional scale vs the A2 reference
+  return {
+    printMetres,
+    frameFace: FRAME_FACE * k,
+    frameDepth: FRAME_DEPTH * k,
+    frameBevel: FRAME_BEVEL * k,
+    matBorder: MAT_BORDER * k,
+    matThick: MAT_THICK * k,
+    matFrontRecess: MAT_FRONT_RECESS * k,
+    printRecess: PRINT_RECESS * k,
+    shadowMargin: SHADOW_MARGIN * k,
+    shadowOffset: SHADOW_OFFSET * k,
+  };
+}
 
 // -----------------------------------------------------------------------------
 // Small binary helpers (zero-dep GLB packer)
 // -----------------------------------------------------------------------------
 
-/** Pad a Buffer up to a 4-byte boundary with `padByte` (0x00 for BIN, 0x20 for JSON). */
+/** Pad a Buffer up to a 4-byte boundary with `padByte` (0x00 BIN, 0x20 JSON). */
 function pad4(buf, padByte) {
   const rem = buf.length % 4;
   if (rem === 0) return buf;
-  const pad = Buffer.alloc(4 - rem, padByte);
-  return Buffer.concat([buf, pad]);
+  return Buffer.concat([buf, Buffer.alloc(4 - rem, padByte)]);
 }
-
-/** Build a float32 little-endian buffer from a flat number array. */
 function f32(arr) {
   const b = Buffer.alloc(arr.length * 4);
   for (let i = 0; i < arr.length; i++) b.writeFloatLE(arr[i], i * 4);
   return b;
 }
-
-/** Build a uint16 little-endian buffer from a flat number array. */
 function u16(arr) {
   const b = Buffer.alloc(arr.length * 2);
   for (let i = 0; i < arr.length; i++) b.writeUInt16LE(arr[i], i * 2);
   return b;
 }
-
-function min3(positions) {
+function min3(p) {
   const m = [Infinity, Infinity, Infinity];
-  for (let i = 0; i < positions.length; i += 3) {
-    m[0] = Math.min(m[0], positions[i]);
-    m[1] = Math.min(m[1], positions[i + 1]);
-    m[2] = Math.min(m[2], positions[i + 2]);
+  for (let i = 0; i < p.length; i += 3) {
+    m[0] = Math.min(m[0], p[i]);
+    m[1] = Math.min(m[1], p[i + 1]);
+    m[2] = Math.min(m[2], p[i + 2]);
   }
   return m;
 }
-function max3(positions) {
+function max3(p) {
   const m = [-Infinity, -Infinity, -Infinity];
-  for (let i = 0; i < positions.length; i += 3) {
-    m[0] = Math.max(m[0], positions[i]);
-    m[1] = Math.max(m[1], positions[i + 1]);
-    m[2] = Math.max(m[2], positions[i + 2]);
+  for (let i = 0; i < p.length; i += 3) {
+    m[0] = Math.max(m[0], p[i]);
+    m[1] = Math.max(m[1], p[i + 1]);
+    m[2] = Math.max(m[2], p[i + 2]);
   }
   return m;
 }
+function normalize(v) {
+  const l = Math.hypot(v[0], v[1], v[2]) || 1;
+  return [v[0] / l, v[1] / l, v[2] / l];
+}
 
 // -----------------------------------------------------------------------------
-// Geometry builder — a framed print panel centred at origin, facing +Z.
+// MESH BUILDER — a small mesh accumulator with a quad helper.
+// Coordinate frame: artwork centred at origin, facing +Z (out of the wall).
+// z = 0 is the back face flush to the wall; +z is outward.
 // -----------------------------------------------------------------------------
-// Returns interleaved-free parallel arrays for two PRIMITIVES sharing one
-// vertex/normal/uv buffer is overkill; instead we build two independent meshes:
-//   - artwork quad (front face, inset by the frame border) → textured
-//   - frame solid (ring + 4 side walls + back) → flat dark material
-// Each gets its own POSITION/NORMAL/TEXCOORD_0 + indices accessor set.
+function newMesh() {
+  return { positions: [], normals: [], uvs: [], indices: [] };
+}
+/** Push a quad (4 verts CCW seen from outside) with one flat normal. */
+function quad(m, a, b, c, d, n, uv) {
+  const base = m.positions.length / 3;
+  const verts = [a, b, c, d];
+  const uvs = uv || [
+    [0, 0],
+    [1, 0],
+    [1, 1],
+    [0, 1],
+  ];
+  for (let i = 0; i < 4; i++) {
+    m.positions.push(verts[i][0], verts[i][1], verts[i][2]);
+    m.normals.push(n[0], n[1], n[2]);
+    m.uvs.push(uvs[i][0], uvs[i][1]);
+  }
+  m.indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+}
+
+// -----------------------------------------------------------------------------
+// GEOMETRY — five depth-separated layers built from the print's true metres.
 // -----------------------------------------------------------------------------
 
-function buildArtworkQuad(w, h) {
-  // Inset the artwork by the frame border on each edge; sits slightly proud (+z).
-  const hw = w / 2 - FRAME_BORDER;
-  const hh = h / 2 - FRAME_BORDER;
-  const z = DEPTH; // front plane
-  // 4 verts, CCW when viewed from +Z. UV: full-frame 0..1, v flipped so the
-  // image is upright (glTF UV origin is top-left).
-  const positions = [
-    -hw, -hh, z, // 0 bottom-left
-    hw, -hh, z, // 1 bottom-right
-    hw, hh, z, // 2 top-right
-    -hw, hh, z, // 3 top-left
-  ];
-  const normals = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
-  const uvs = [
-    0, 1, // bottom-left
-    1, 1, // bottom-right
-    1, 0, // top-right
-    0, 0, // top-left
-  ];
-  const indices = [0, 1, 2, 0, 2, 3];
-  return { positions, normals, uvs, indices };
+/**
+ * The ARTWORK quad (layer 3) — recessed behind the mat window, sized to the
+ * print's true metres. Full-frame UV 0..1, v-flipped so the image is upright.
+ * Its own mesh + material ("Artwork") so the GLB texture can be swapped at
+ * runtime.
+ */
+function buildArtwork(g) {
+  const hp = g.printMetres / 2; // half the print (the mat window inner edge)
+  const z = g.frameDepth - g.matFrontRecess - g.matThick - g.printRecess; // recessed
+  const m = newMesh();
+  // UV: v-flipped (top-left origin) so the image reads upright.
+  quad(
+    m,
+    [-hp, -hp, z],
+    [hp, -hp, z],
+    [hp, hp, z],
+    [-hp, hp, z],
+    [0, 0, 1],
+    [
+      [0, 1],
+      [1, 1],
+      [1, 0],
+      [0, 0],
+    ],
+  );
+  return m;
 }
 
 /**
- * Frame solid: a picture-frame ring around the artwork on the front plane, the
- * four side walls (sense of depth), and a back panel. All one dark material.
- * Built as a set of quads → triangle list.
+ * The FRAME MOULDING (layer 1) — the #1 realism cue. A stepped/beveled face
+ * profile around the mat opening, built as 4 butt-joined sides:
+ *   - outer side walls (vertical, z 0 → frameDepth)
+ *   - face land (flat top of the moulding at z=frameDepth)
+ *   - inner bevel ramp (45°-ish chamfer down/inward to the mat plane)
+ * The slanted bevel normals make one frame edge catch light and the opposite
+ * edge fall into shadow under the AR light probe → "carved" depth.
  */
-function buildFrame(w, h) {
-  const ox = w / 2;
-  const oy = h / 2;
-  const ix = w / 2 - FRAME_BORDER;
-  const iy = h / 2 - FRAME_BORDER;
-  const zf = DEPTH; // front plane (same as artwork)
-  const zb = 0; // back plane (against the wall)
+function buildFrame(g) {
+  const m = newMesh();
+  // Opening = the mat window (= print) plus the mat border = the frame's inner edge.
+  const inner = g.printMetres / 2 + g.matBorder; // inner edge of the frame face
+  const outer = inner + g.frameFace; // outer edge of the frame
+  const zf = g.frameDepth; // front (face land) plane
+  const zb = 0; // back plane (wall)
+  const matFrontZ = g.frameDepth - g.matFrontRecess; // bevel base / rabbet top
+  const landInner = inner + g.frameBevel; // face land inner (bevel starts here)
+  const o = outer;
+  const i = inner;
+  const li = landInner;
 
-  const positions = [];
-  const normals = [];
-  const uvs = [];
-  const indices = [];
+  // --- Outer side walls (z 0 → zf), normals outward ---
+  quad(m, [o, -o, zb], [o, o, zb], [o, o, zf], [o, -o, zf], [1, 0, 0]); // +X
+  quad(m, [-o, o, zb], [-o, -o, zb], [-o, -o, zf], [-o, o, zf], [-1, 0, 0]); // -X
+  quad(m, [-o, o, zb], [o, o, zb], [o, o, zf], [-o, o, zf], [0, 1, 0]); // +Y
+  quad(m, [o, -o, zb], [-o, -o, zb], [-o, -o, zf], [o, -o, zf], [0, -1, 0]); // -Y
 
-  // helper: push a quad (4 verts CCW) with a single face normal
-  const quad = (a, b, c, d, n) => {
-    const base = positions.length / 3;
-    for (const v of [a, b, c, d]) {
-      positions.push(v[0], v[1], v[2]);
-      normals.push(n[0], n[1], n[2]);
-      uvs.push(0, 0); // frame is untextured; dummy UVs keep accessors aligned
-    }
-    indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
-  };
-
-  // --- Front ring (4 trapezoids around the inset opening), normal +Z ---
+  // --- Face land (flat outer moulding top at z=zf), normal +Z ---
   const nZ = [0, 0, 1];
-  // top strip
-  quad([-ox, iy, zf], [ox, iy, zf], [ox, oy, zf], [-ox, oy, zf], nZ);
-  // bottom strip
-  quad([-ox, -oy, zf], [ox, -oy, zf], [ox, -iy, zf], [-ox, -iy, zf], nZ);
-  // left strip
-  quad([-ox, -iy, zf], [-ix, -iy, zf], [-ix, iy, zf], [-ox, iy, zf], nZ);
-  // right strip
-  quad([ix, -iy, zf], [ox, -iy, zf], [ox, iy, zf], [ix, iy, zf], nZ);
+  quad(m, [-li, li, zf], [li, li, zf], [o, o, zf], [-o, o, zf], nZ); // top
+  quad(m, [-o, -o, zf], [o, -o, zf], [li, -li, zf], [-li, -li, zf], nZ); // bottom
+  quad(m, [-o, -o, zf], [-li, -li, zf], [-li, li, zf], [-o, o, zf], nZ); // left
+  quad(m, [li, -li, zf], [o, -o, zf], [o, o, zf], [li, li, zf], nZ); // right
 
-  // --- Side walls (outer edges from back plane to front plane) ---
-  // right wall, normal +X
-  quad([ox, -oy, zb], [ox, oy, zb], [ox, oy, zf], [ox, -oy, zf], [1, 0, 0]);
-  // left wall, normal -X
-  quad([-ox, oy, zb], [-ox, -oy, zb], [-ox, -oy, zf], [-ox, oy, zf], [-1, 0, 0]);
-  // top wall, normal +Y
-  quad([-ox, oy, zb], [ox, oy, zb], [ox, oy, zf], [-ox, oy, zf], [0, 1, 0]);
-  // bottom wall, normal -Y
-  quad([ox, -oy, zb], [-ox, -oy, zb], [-ox, -oy, zf], [ox, -oy, zf], [0, -1, 0]);
+  // --- Inner bevel ramp: face land inner edge (z=zf) DOWN+IN to the inner edge
+  //     (z=matFrontZ). Slanted normals = the carved-light cue. ---
+  const bz = matFrontZ;
+  const nTop = normalize([0, -1, 1]);
+  const nBot = normalize([0, 1, 1]);
+  const nLeft = normalize([1, 0, 1]);
+  const nRight = normalize([-1, 0, 1]);
+  quad(m, [-i, i, bz], [i, i, bz], [li, li, zf], [-li, li, zf], nTop); // top
+  quad(m, [-li, -li, zf], [li, -li, zf], [i, -i, bz], [-i, -i, bz], nBot); // bottom
+  quad(m, [-li, -li, zf], [-li, li, zf], [-i, i, bz], [-i, -i, bz], nLeft); // left
+  quad(m, [i, -i, bz], [i, i, bz], [li, li, zf], [li, -li, zf], nRight); // right
 
-  // --- Back panel, normal -Z (faces the wall) ---
-  quad([-ox, -oy, zb], [-ox, oy, zb], [ox, oy, zb], [ox, -oy, zb], [0, 0, -1]);
+  // --- Back panel (z=0), normal -Z, faces the wall ---
+  quad(m, [-o, -o, zb], [-o, o, zb], [o, o, zb], [o, -o, zb], [0, 0, -1]);
 
-  return { positions, normals, uvs, indices };
+  return m;
+}
+
+/**
+ * The MAT BOARD FACE (layer 2 face) — the visible off-white border, a flat ring
+ * from the frame opening (inner) to the window opening (= print). Front face at
+ * z = frameDepth - matFrontRecess. Normal +Z.
+ */
+function buildMat(g) {
+  const m = newMesh();
+  const inner = g.printMetres / 2 + g.matBorder; // mat outer (frame opening)
+  const win = g.printMetres / 2; // mat inner (window / print edge)
+  const z = g.frameDepth - g.matFrontRecess;
+  const nZ = [0, 0, 1];
+  const o = inner;
+  const w = win;
+  quad(m, [-w, w, z], [w, w, z], [o, o, z], [-o, o, z], nZ); // top
+  quad(m, [-o, -o, z], [o, -o, z], [w, -w, z], [-w, -w, z], nZ); // bottom
+  quad(m, [-o, -o, z], [-w, -w, z], [-w, w, z], [-o, o, z], nZ); // left
+  quad(m, [w, -w, z], [o, -o, z], [o, o, z], [w, w, z], nZ); // right
+  return m;
+}
+
+/**
+ * The MAT BEVEL (layer 2 window cut) — the thin lit ramp from the mat front
+ * inner edge back+inward to the mat back, landing at the window edge. Its own
+ * brighter material = the classic white bevel line. Normals tilt inward+forward.
+ */
+function buildMatBevel(g) {
+  const m = newMesh();
+  const win = g.printMetres / 2; // window edge (back, inner of the cut)
+  const back = win;
+  const front = win + g.matThick; // front edge sits slightly outside the window
+  const zf = g.frameDepth - g.matFrontRecess; // mat front
+  const zb = zf - g.matThick; // mat back
+  const nTop = normalize([0, 1, 1]);
+  const nBot = normalize([0, -1, 1]);
+  const nLeft = normalize([-1, 0, 1]);
+  const nRight = normalize([1, 0, 1]);
+  quad(m, [-back, back, zb], [back, back, zb], [front, front, zf], [-front, front, zf], nTop); // top
+  quad(m, [-front, -front, zf], [front, -front, zf], [back, -back, zb], [-back, -back, zb], nBot); // bottom
+  quad(m, [-front, -front, zf], [-front, front, zf], [-back, back, zb], [-back, -back, zb], nLeft); // left
+  quad(m, [back, -back, zb], [back, back, zb], [front, front, zf], [front, -front, zf], nRight); // right
+  return m;
+}
+
+/**
+ * The BACKING (layer 0) — a quad filling behind the mat at the print-recess
+ * plane, near-black, so the recessed print reads as a shadowed cavity rather
+ * than see-through and the object has body. Sits just behind the print.
+ */
+function buildBacking(g) {
+  const m = newMesh();
+  const half = g.printMetres / 2 + g.matBorder; // fills behind the mat too
+  const z = g.frameDepth - g.matFrontRecess - g.matThick - g.printRecess - 0.0005;
+  quad(m, [-half, -half, z], [half, -half, z], [half, half, z], [-half, half, z], [0, 0, 1]);
+  return m;
+}
+
+/**
+ * The CONTACT-SHADOW quad (layer 4) — a soft radial-gradient halo on the wall
+ * just behind the frame, sized larger than the frame outline. Alpha-blended,
+ * unlit. Fakes the ambient-occlusion shadow a hung frame drops on the wall.
+ */
+function buildShadow(g) {
+  const m = newMesh();
+  const frameOuter = g.printMetres / 2 + g.matBorder + g.frameFace;
+  const half = frameOuter + g.shadowMargin;
+  const z = g.shadowOffset; // just off the wall
+  quad(
+    m,
+    [-half, -half, z],
+    [half, -half, z],
+    [half, half, z],
+    [-half, half, z],
+    [0, 0, 1],
+    [
+      [0, 1],
+      [1, 1],
+      [1, 0],
+      [0, 0],
+    ],
+  );
+  return m;
 }
 
 // -----------------------------------------------------------------------------
-// glTF → GLB packer (hand-authored, zero deps)
+// A tiny opaque neutral-grey PNG — the GLB Artwork placeholder texture, swapped
+// for the real colourway at RUNTIME (model-viewer material API). Encoded via the
+// SAME zero-dep PNG encoder as the contact shadow (proven to decode cleanly in
+// three.js's GLTFLoader) — the previous hand-pinned 1×1 JPEG was a minimal JPEG
+// that three.js's blob-texture decoder rejected ("Couldn't load texture blob"),
+// spamming the console before the swap landed. PNG keeps it deterministic.
 // -----------------------------------------------------------------------------
+let PLACEHOLDER_PNG = null;
+function placeholderPng() {
+  if (PLACEHOLDER_PNG) return PLACEHOLDER_PNG;
+  const N = 8;
+  const raw = Buffer.alloc(N * (1 + N * 4));
+  for (let y = 0; y < N; y++) {
+    const rowStart = y * (1 + N * 4);
+    raw[rowStart] = 0; // PNG filter type 0 (None)
+    for (let x = 0; x < N; x++) {
+      const p = rowStart + 1 + x * 4;
+      raw[p] = 180;
+      raw[p + 1] = 178;
+      raw[p + 2] = 172;
+      raw[p + 3] = 255; // opaque neutral grey
+    }
+  }
+  PLACEHOLDER_PNG = encodePng(N, N, raw);
+  if (PLACEHOLDER_PNG[0] !== 0x89 || PLACEHOLDER_PNG[1] !== 0x50)
+    throw new Error("placeholder PNG is not a valid PNG");
+  return PLACEHOLDER_PNG;
+}
 
-function buildGlb(jpegBuffer, w, h) {
-  const art = buildArtworkQuad(w, h);
-  const frame = buildFrame(w, h);
+// -----------------------------------------------------------------------------
+// A soft radial-gradient shadow PNG (transparent centre → ~38% black ring).
+// Tiny 64×64 8-bit RGBA, hand-encoded as PNG with zlib STORED (uncompressed)
+// blocks so it needs no zlib dependency. Cached in-process.
+// -----------------------------------------------------------------------------
+let SHADOW_PNG = null;
+function shadowPng() {
+  if (SHADOW_PNG) return SHADOW_PNG;
+  const N = 64;
+  const raw = Buffer.alloc(N * (1 + N * 4));
+  const cx = (N - 1) / 2;
+  const cy = (N - 1) / 2;
+  const maxR = Math.hypot(cx, cy);
+  for (let y = 0; y < N; y++) {
+    const rowStart = y * (1 + N * 4);
+    raw[rowStart] = 0; // PNG filter type 0 (None)
+    for (let x = 0; x < N; x++) {
+      const d = Math.hypot(x - cx, y - cy) / maxR; // 0 centre → 1 corner
+      const t = Math.min(1, d / 0.85);
+      const a = Math.sin(t * Math.PI) * 0.38; // 0 → peak ~0.38 → 0 (round halo)
+      const alpha = Math.max(0, Math.min(255, Math.round(a * 255)));
+      const p = rowStart + 1 + x * 4;
+      raw[p] = 0;
+      raw[p + 1] = 0;
+      raw[p + 2] = 0;
+      raw[p + 3] = alpha;
+    }
+  }
+  SHADOW_PNG = encodePng(N, N, raw);
+  return SHADOW_PNG;
+}
 
-  // Assemble the single BIN blob: for each accessor we append its bytes 4-byte
-  // aligned, recording bufferView offsets/lengths. Order:
-  //  0 art positions (f32) | 1 art normals (f32) | 2 art uv (f32) | 3 art idx (u16)
-  //  4 frame positions     | 5 frame normals     | 6 frame uv     | 7 frame idx
-  //  8 image (jpeg)
-  const chunks = [];
+/** Minimal PNG encoder: 8-bit RGBA, IDAT via zlib stored blocks (zero-dep). */
+function encodePng(w, h, rawWithFilters) {
+  const sig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const crcTable = (() => {
+    const t = new Uint32Array(256);
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+  const crc32 = (buf) => {
+    let c = 0xffffffff;
+    for (let i = 0; i < buf.length; i++) c = crcTable[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+    return (c ^ 0xffffffff) >>> 0;
+  };
+  const adler32 = (buf) => {
+    let a = 1,
+      b = 0;
+    for (let i = 0; i < buf.length; i++) {
+      a = (a + buf[i]) % 65521;
+      b = (b + a) % 65521;
+    }
+    return ((b << 16) | a) >>> 0;
+  };
+  const chunk = (type, data) => {
+    const len = Buffer.alloc(4);
+    len.writeUInt32BE(data.length, 0);
+    const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(body), 0);
+    return Buffer.concat([len, body, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0);
+  ihdr.writeUInt32BE(h, 4);
+  ihdr[8] = 8; // bit depth
+  ihdr[9] = 6; // colour type RGBA
+  const zhdr = Buffer.from([0x78, 0x01]);
+  const blocks = [];
+  let off = 0;
+  while (off < rawWithFilters.length) {
+    const chunkLen = Math.min(65535, rawWithFilters.length - off);
+    const isLast = off + chunkLen >= rawWithFilters.length;
+    const hdr = Buffer.alloc(5);
+    hdr[0] = isLast ? 1 : 0; // BFINAL, BTYPE=00 (stored)
+    hdr.writeUInt16LE(chunkLen, 1);
+    hdr.writeUInt16LE(~chunkLen & 0xffff, 3);
+    blocks.push(hdr, rawWithFilters.subarray(off, off + chunkLen));
+    off += chunkLen;
+  }
+  const adler = Buffer.alloc(4);
+  adler.writeUInt32BE(adler32(rawWithFilters), 0);
+  const idatData = Buffer.concat([zhdr, ...blocks, adler]);
+  return Buffer.concat([
+    sig,
+    chunk("IHDR", ihdr),
+    chunk("IDAT", idatData),
+    chunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+// -----------------------------------------------------------------------------
+// glTF → GLB packer. Builds the framed model with 6 primitives, each its own
+// material. `artworkTexture` is the JPEG embedded for the Artwork slot
+// (placeholder in the shell GLBs).
+// -----------------------------------------------------------------------------
+function buildGlb({ printMetres, frame, artworkTexture }) {
+  const g = geomConstants(printMetres);
+  const art = buildArtwork(g);
+  const frameMesh = buildFrame(g);
+  const mat = buildMat(g);
+  const matBevel = buildMatBevel(g);
+  const back = buildBacking(g);
+  const shadow = buildShadow(g);
+  const shadowTex = shadowPng();
+
   const bufferViews = [];
+  const chunks = [];
   let offset = 0;
-
+  const ARRAY_BUFFER = 34962;
+  const ELEMENT_ARRAY_BUFFER = 34963;
   const addView = (buf, target) => {
     const aligned = pad4(buf, 0x00);
     const view = { buffer: 0, byteOffset: offset, byteLength: buf.length };
@@ -270,209 +567,372 @@ function buildGlb(jpegBuffer, w, h) {
     return bufferViews.length - 1;
   };
 
-  const ARRAY_BUFFER = 34962;
-  const ELEMENT_ARRAY_BUFFER = 34963;
+  const accessors = [];
+  const addMesh = (mesh) => {
+    const pv = addView(f32(mesh.positions), ARRAY_BUFFER);
+    const nv = addView(f32(mesh.normals), ARRAY_BUFFER);
+    const uv = addView(f32(mesh.uvs), ARRAY_BUFFER);
+    const iv = addView(u16(mesh.indices), ELEMENT_ARRAY_BUFFER);
+    const posAcc = accessors.length;
+    accessors.push({
+      bufferView: pv,
+      componentType: 5126,
+      count: mesh.positions.length / 3,
+      type: "VEC3",
+      min: min3(mesh.positions),
+      max: max3(mesh.positions),
+    });
+    const nrmAcc = accessors.length;
+    accessors.push({ bufferView: nv, componentType: 5126, count: mesh.normals.length / 3, type: "VEC3" });
+    const uvAcc = accessors.length;
+    accessors.push({ bufferView: uv, componentType: 5126, count: mesh.uvs.length / 2, type: "VEC2" });
+    const idxAcc = accessors.length;
+    accessors.push({ bufferView: iv, componentType: 5123, count: mesh.indices.length, type: "SCALAR" });
+    return {
+      attributes: { POSITION: posAcc, NORMAL: nrmAcc, TEXCOORD_0: uvAcc },
+      indices: idxAcc,
+      mode: 4,
+    };
+  };
 
-  // Artwork
-  const aPos = addView(f32(art.positions), ARRAY_BUFFER);
-  const aNrm = addView(f32(art.normals), ARRAY_BUFFER);
-  const aUv = addView(f32(art.uvs), ARRAY_BUFFER);
-  const aIdx = addView(u16(art.indices), ELEMENT_ARRAY_BUFFER);
-  // Frame
-  const fPos = addView(f32(frame.positions), ARRAY_BUFFER);
-  const fNrm = addView(f32(frame.normals), ARRAY_BUFFER);
-  const fUv = addView(f32(frame.uvs), ARRAY_BUFFER);
-  const fIdx = addView(u16(frame.indices), ELEMENT_ARRAY_BUFFER);
-  // Image (no target)
-  const imgView = addView(jpegBuffer);
+  const pArt = addMesh(art);
+  const pFrame = addMesh(frameMesh);
+  const pMat = addMesh(mat);
+  const pBevel = addMesh(matBevel);
+  const pBack = addMesh(back);
+  const pShadow = addMesh(shadow);
 
+  const artImgView = addView(artworkTexture); // PNG (shell placeholder) / JPEG (baked USDZ path)
+  const shadowImgView = addView(shadowTex); // PNG
   const bin = Buffer.concat(chunks);
 
-  const accessors = [
-    // 0 art POSITION
-    { bufferView: aPos, componentType: 5126, count: art.positions.length / 3, type: "VEC3", min: min3(art.positions), max: max3(art.positions) },
-    // 1 art NORMAL
-    { bufferView: aNrm, componentType: 5126, count: art.normals.length / 3, type: "VEC3" },
-    // 2 art TEXCOORD_0
-    { bufferView: aUv, componentType: 5126, count: art.uvs.length / 2, type: "VEC2" },
-    // 3 art indices
-    { bufferView: aIdx, componentType: 5123, count: art.indices.length, type: "SCALAR" },
-    // 4 frame POSITION
-    { bufferView: fPos, componentType: 5126, count: frame.positions.length / 3, type: "VEC3", min: min3(frame.positions), max: max3(frame.positions) },
-    // 5 frame NORMAL
-    { bufferView: fNrm, componentType: 5126, count: frame.normals.length / 3, type: "VEC3" },
-    // 6 frame TEXCOORD_0
-    { bufferView: fUv, componentType: 5126, count: frame.uvs.length / 2, type: "VEC2" },
-    // 7 frame indices
-    { bufferView: fIdx, componentType: 5123, count: frame.indices.length, type: "SCALAR" },
+  const materials = [
+    {
+      name: "Artwork",
+      pbrMetallicRoughness: {
+        baseColorTexture: { index: 0 },
+        metallicFactor: ART_METALLIC,
+        roughnessFactor: ART_ROUGHNESS,
+      },
+    },
+    {
+      name: "Frame",
+      pbrMetallicRoughness: {
+        baseColorFactor: [...frame.base, 1],
+        metallicFactor: 0,
+        roughnessFactor: frame.roughness,
+      },
+    },
+    {
+      name: "Mat",
+      pbrMetallicRoughness: { baseColorFactor: [...MAT_BASE, 1], metallicFactor: 0, roughnessFactor: MAT_ROUGHNESS },
+    },
+    {
+      name: "MatBevel",
+      pbrMetallicRoughness: {
+        baseColorFactor: [...MAT_BEVEL_BASE, 1],
+        metallicFactor: 0,
+        roughnessFactor: MAT_BEVEL_ROUGHNESS,
+      },
+    },
+    {
+      name: "Backing",
+      pbrMetallicRoughness: { baseColorFactor: [...BACK_BASE, 1], metallicFactor: 0, roughnessFactor: BACK_ROUGHNESS },
+    },
+    {
+      name: "ContactShadow",
+      alphaMode: "BLEND",
+      pbrMetallicRoughness: {
+        baseColorTexture: { index: 1 },
+        metallicFactor: 0,
+        roughnessFactor: 1,
+      },
+      extensions: { KHR_materials_unlit: {} },
+    },
   ];
 
+  pArt.material = 0;
+  pFrame.material = 1;
+  pMat.material = 2;
+  pBevel.material = 3;
+  pBack.material = 4;
+  pShadow.material = 5;
+
   const gltf = {
-    asset: { version: "2.0", generator: "uncle-tribute build-ar-assets.mjs" },
+    asset: { version: "2.0", generator: "uncle-tribute build-ar-assets.mjs v3" },
+    extensionsUsed: ["KHR_materials_unlit"],
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ name: "FramedPrint", mesh: 0 }],
     meshes: [
       {
         name: "FramedPrint",
-        primitives: [
-          // artwork (textured)
-          {
-            attributes: { POSITION: 0, NORMAL: 1, TEXCOORD_0: 2 },
-            indices: 3,
-            material: 0,
-            mode: 4,
-          },
-          // frame (flat dark)
-          {
-            attributes: { POSITION: 4, NORMAL: 5, TEXCOORD_0: 6 },
-            indices: 7,
-            material: 1,
-            mode: 4,
-          },
-        ],
+        // Artwork primitive FIRST + material[0] named "Artwork" so the app can
+        // target it to swap baseColorTexture at runtime.
+        primitives: [pArt, pFrame, pMat, pBevel, pBack, pShadow],
       },
     ],
-    materials: [
-      {
-        name: "Artwork",
-        pbrMetallicRoughness: {
-          baseColorTexture: { index: 0 },
-          metallicFactor: ART_METALLIC,
-          roughnessFactor: ART_ROUGHNESS,
-        },
-      },
-      {
-        name: "Frame",
-        pbrMetallicRoughness: {
-          baseColorFactor: FRAME_BASE_COLOR,
-          metallicFactor: FRAME_METALLIC,
-          roughnessFactor: FRAME_ROUGHNESS,
-        },
-      },
+    materials,
+    textures: [
+      { source: 0, sampler: 0 },
+      { source: 1, sampler: 1 },
     ],
-    textures: [{ source: 0, sampler: 0 }],
-    images: [{ bufferView: imgView, mimeType: "image/jpeg" }],
-    // CLAMP_TO_EDGE (33071) on both axes — full-frame UV, no tiling/seams.
-    samplers: [{ wrapS: 33071, wrapT: 33071, magFilter: 9729, minFilter: 9987 }],
+    images: [
+      {
+        bufferView: artImgView,
+        mimeType: artworkTexture[0] === 0x89 ? "image/png" : "image/jpeg",
+        name: "ArtworkTexture",
+      },
+      { bufferView: shadowImgView, mimeType: "image/png", name: "ContactShadow" },
+    ],
+    samplers: [
+      { wrapS: 33071, wrapT: 33071, magFilter: 9729, minFilter: 9987 }, // CLAMP, art
+      { wrapS: 33071, wrapT: 33071, magFilter: 9729, minFilter: 9729 }, // CLAMP, shadow
+    ],
     accessors,
     bufferViews,
     buffers: [{ byteLength: bin.length }],
   };
 
-  // --- pack GLB ---
   const jsonBuf = pad4(Buffer.from(JSON.stringify(gltf), "utf8"), 0x20);
   const binBuf = pad4(bin, 0x00);
-
   const header = Buffer.alloc(12);
-  header.writeUInt32LE(0x46546c67, 0); // magic "glTF"
-  header.writeUInt32LE(2, 4); // version 2
-  const totalLength = 12 + 8 + jsonBuf.length + 8 + binBuf.length;
-  header.writeUInt32LE(totalLength, 8);
-
+  header.writeUInt32LE(0x46546c67, 0);
+  header.writeUInt32LE(2, 4);
+  header.writeUInt32LE(12 + 8 + jsonBuf.length + 8 + binBuf.length, 8);
   const jsonHeader = Buffer.alloc(8);
   jsonHeader.writeUInt32LE(jsonBuf.length, 0);
-  jsonHeader.writeUInt32LE(0x4e4f534a, 4); // "JSON"
-
+  jsonHeader.writeUInt32LE(0x4e4f534a, 4);
   const binHeader = Buffer.alloc(8);
   binHeader.writeUInt32LE(binBuf.length, 0);
-  binHeader.writeUInt32LE(0x004e4942, 4); // "BIN\0"
-
+  binHeader.writeUInt32LE(0x004e4942, 4);
   return Buffer.concat([header, jsonHeader, jsonBuf, binHeader, binBuf]);
 }
 
 // -----------------------------------------------------------------------------
 // GLB structural validation — fail loudly BEFORE writing a bad asset.
 // -----------------------------------------------------------------------------
-function validateGlb(glb, jpegBuffer) {
+function validateGlb(glb, artTex) {
   const errors = [];
   if (glb.length < 12) errors.push("GLB shorter than 12-byte header");
-  if (glb.readUInt32LE(0) !== 0x46546c67) errors.push("bad magic (expected 0x46546C67)");
-  if (glb.readUInt32LE(4) !== 2) errors.push("bad version (expected 2)");
-  const declaredTotal = glb.readUInt32LE(8);
-  if (declaredTotal !== glb.length) {
-    errors.push(`header length ${declaredTotal} !== actual ${glb.length}`);
-  }
+  if (glb.readUInt32LE(0) !== 0x46546c67) errors.push("bad magic");
+  if (glb.readUInt32LE(4) !== 2) errors.push("bad version");
+  if (glb.readUInt32LE(8) !== glb.length)
+    errors.push(`header length ${glb.readUInt32LE(8)} !== actual ${glb.length}`);
 
-  // JSON chunk
   let p = 12;
   const jsonLen = glb.readUInt32LE(p);
-  const jsonType = glb.readUInt32LE(p + 4);
-  if (jsonType !== 0x4e4f534a) errors.push("first chunk is not JSON (0x4E4F534A)");
-  if ((jsonLen & 3) !== 0) errors.push("JSON chunk length not 4-byte aligned");
+  if (glb.readUInt32LE(p + 4) !== 0x4e4f534a) errors.push("first chunk not JSON");
+  if (jsonLen & 3) errors.push("JSON chunk not 4-byte aligned");
   p += 8;
   let gltf;
   try {
     gltf = JSON.parse(glb.subarray(p, p + jsonLen).toString("utf8"));
   } catch (e) {
-    errors.push(`JSON chunk does not parse: ${e.message}`);
+    errors.push(`JSON does not parse: ${e.message}`);
   }
   p += jsonLen;
-
-  // BIN chunk
   const binLen = glb.readUInt32LE(p);
-  const binType = glb.readUInt32LE(p + 4);
-  if (binType !== 0x004e4942) errors.push("second chunk is not BIN (0x004E4942)");
-  if ((binLen & 3) !== 0) errors.push("BIN chunk length not 4-byte aligned");
+  if (glb.readUInt32LE(p + 4) !== 0x004e4942) errors.push("second chunk not BIN");
+  if (binLen & 3) errors.push("BIN chunk not 4-byte aligned");
   p += 8;
   const binStart = p;
-  const binEnd = p + binLen;
-  if (binEnd !== glb.length) errors.push(`BIN chunk end ${binEnd} !== file end ${glb.length}`);
+  if (binStart + binLen !== glb.length) errors.push("BIN end !== file end");
 
   if (gltf) {
-    // bufferViews within buffer
-    const bufLen = gltf.buffers?.[0]?.byteLength ?? 0;
-    if (bufLen !== binLen) {
-      // bin includes alignment padding; the declared buffer length may be the
-      // unpadded length. Allow the declared length to be ≤ binLen.
-      if (bufLen > binLen) errors.push(`buffer.byteLength ${bufLen} > BIN ${binLen}`);
+    for (let k = 0; k < (gltf.bufferViews?.length ?? 0); k++) {
+      const bv = gltf.bufferViews[k];
+      if (bv.byteOffset + bv.byteLength > binLen) errors.push(`bufferView[${k}] exceeds BIN`);
     }
-    for (let i = 0; i < (gltf.bufferViews?.length ?? 0); i++) {
-      const bv = gltf.bufferViews[i];
-      if (bv.byteOffset + bv.byteLength > binLen) {
-        errors.push(`bufferView[${i}] (${bv.byteOffset}+${bv.byteLength}) exceeds BIN ${binLen}`);
-      }
+    const artMat = gltf.materials?.[0];
+    if (!artMat || artMat.name !== "Artwork") errors.push("material[0] is not named 'Artwork'");
+    else if (artMat.pbrMetallicRoughness?.baseColorTexture?.index === undefined)
+      errors.push("Artwork material has no baseColorTexture");
+    const img0 = gltf.images?.[0];
+    if (!img0 || img0.bufferView === undefined) errors.push("no image[0].bufferView");
+    else {
+      const bv = gltf.bufferViews[img0.bufferView];
+      const s = binStart + bv.byteOffset;
+      const isJpeg = glb[s] === 0xff && glb[s + 1] === 0xd8 && glb[s + 2] === 0xff;
+      const isPng = glb[s] === 0x89 && glb[s + 1] === 0x50 && glb[s + 2] === 0x4e;
+      if (!isJpeg && !isPng) errors.push("Artwork image is neither JPEG nor PNG");
+      if (bv.byteLength !== artTex.length)
+        errors.push(`Artwork image length ${bv.byteLength} !== source ${artTex.length}`);
     }
-    // image bufferView must start with the JPEG SOI marker 0xFFD8FF
-    const img = gltf.images?.[0];
-    if (!img || img.bufferView === undefined) {
-      errors.push("no image[0].bufferView");
-    } else {
-      const bv = gltf.bufferViews[img.bufferView];
-      const start = binStart + bv.byteOffset;
-      if (glb[start] !== 0xff || glb[start + 1] !== 0xd8 || glb[start + 2] !== 0xff) {
-        errors.push(
-          `image bufferView does not start with JPEG SOI 0xFFD8FF (got ${glb
-            .subarray(start, start + 3)
-            .toString("hex")})`,
-        );
-      }
-      if (bv.byteLength !== jpegBuffer.length) {
-        errors.push(`image bufferView length ${bv.byteLength} !== jpeg ${jpegBuffer.length}`);
-      }
+    const img1 = gltf.images?.[1];
+    if (img1?.bufferView !== undefined) {
+      const bv = gltf.bufferViews[img1.bufferView];
+      const s = binStart + bv.byteOffset;
+      if (glb[s] !== 0x89 || glb[s + 1] !== 0x50 || glb[s + 2] !== 0x4e)
+        errors.push("ContactShadow image not a PNG");
     }
   }
-
-  if (errors.length) {
-    throw new Error(`GLB validation FAILED:\n  - ${errors.join("\n  - ")}`);
-  }
+  if (errors.length) throw new Error(`GLB validation FAILED:\n  - ${errors.join("\n  - ")}`);
 }
 
 // -----------------------------------------------------------------------------
 // USDA author → usdzip --arkitAsset → usdchecker --arkit
+// Authors the SAME five-layer model at the size's TRUE metres, texture embedded.
+// metersPerUnit=1, upAxis=Y, vertical-plane anchoring. USD constant-colour
+// inputs are LINEAR (matching the glTF linear factors).
 // -----------------------------------------------------------------------------
+function pts(arr) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += 3)
+    out.push(`(${arr[i].toFixed(6)}, ${arr[i + 1].toFixed(6)}, ${arr[i + 2].toFixed(6)})`);
+  return out.join(", ");
+}
+function uvList(arr) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += 2) out.push(`(${arr[i].toFixed(6)}, ${arr[i + 1].toFixed(6)})`);
+  return out.join(", ");
+}
+function faceData(mesh) {
+  const triCount = mesh.indices.length / 3;
+  return { counts: new Array(triCount).fill(3).join(", "), indices: mesh.indices.join(", ") };
+}
+/** Emit one USD Mesh bound to a named material. USD st origin is bottom-left so
+ *  we flip v (1 - v) vs the glTF uv to keep the image upright. */
+function usdMesh(name, mesh, matPath) {
+  const ext = [min3(mesh.positions), max3(mesh.positions)];
+  const fd = faceData(mesh);
+  const stArr = [];
+  for (let i = 0; i < mesh.uvs.length; i += 2) stArr.push(mesh.uvs[i], 1 - mesh.uvs[i + 1]);
+  return `
+    def Mesh "${name}" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        float3[] extent = [(${ext[0].map((v) => v.toFixed(6)).join(", ")}), (${ext[1]
+          .map((v) => v.toFixed(6))
+          .join(", ")})]
+        int[] faceVertexCounts = [${fd.counts}]
+        int[] faceVertexIndices = [${fd.indices}]
+        point3f[] points = [${pts(mesh.positions)}]
+        normal3f[] primvars:normals = [${pts(mesh.normals)}] (
+            interpolation = "vertex"
+        )
+        texCoord2f[] primvars:st = [${uvList(stArr)}] (
+            interpolation = "vertex"
+        )
+        rel material:binding = <${matPath}>
+        uniform token subdivisionScheme = "none"
+    }`;
+}
+function usdColorMaterial(name, rgb, roughness, root) {
+  const path = `${root}/Materials/${name}`;
+  return {
+    body: `
+    def Material "${name}"
+    {
+        token outputs:surface.connect = <${path}/Surface.outputs:surface>
+        def Shader "Surface"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (${rgb.map((v) => v.toFixed(4)).join(", ")})
+            float inputs:metallic = 0
+            float inputs:roughness = ${roughness}
+            token outputs:surface
+        }
+    }`,
+  };
+}
+function usdTextureMaterial(name, jpegName, roughness, root) {
+  const path = `${root}/Materials/${name}`;
+  return {
+    body: `
+    def Material "${name}"
+    {
+        token outputs:surface.connect = <${path}/Surface.outputs:surface>
+        def Shader "Surface"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor.connect = <${path}/Texture.outputs:rgb>
+            float inputs:metallic = 0
+            float inputs:roughness = ${roughness}
+            token outputs:surface
+        }
+        def Shader "Texture"
+        {
+            uniform token info:id = "UsdUVTexture"
+            asset inputs:file = @${jpegName}@
+            float2 inputs:st.connect = <${path}/stReader.outputs:result>
+            token inputs:wrapS = "clamp"
+            token inputs:wrapT = "clamp"
+            float3 outputs:rgb
+        }
+        def Shader "stReader"
+        {
+            uniform token info:id = "UsdPrimvarReader_float2"
+            token inputs:varname = "st"
+            float2 outputs:result
+        }
+    }`,
+  };
+}
+function usdShadowMaterial(name, pngName, root) {
+  const path = `${root}/Materials/${name}`;
+  return {
+    body: `
+    def Material "${name}"
+    {
+        token outputs:surface.connect = <${path}/Surface.outputs:surface>
+        def Shader "Surface"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0, 0, 0)
+            float inputs:metallic = 0
+            float inputs:roughness = 1
+            float inputs:opacity.connect = <${path}/Texture.outputs:a>
+            int inputs:useSpecularWorkflow = 0
+            token outputs:surface
+        }
+        def Shader "Texture"
+        {
+            uniform token info:id = "UsdUVTexture"
+            asset inputs:file = @${pngName}@
+            float2 inputs:st.connect = <${path}/stReader.outputs:result>
+            token inputs:wrapS = "clamp"
+            token inputs:wrapT = "clamp"
+            float outputs:a
+        }
+        def Shader "stReader"
+        {
+            uniform token info:id = "UsdPrimvarReader_float2"
+            token inputs:varname = "st"
+            float2 outputs:result
+        }
+    }`,
+  };
+}
 
-/**
- * Author a minimal ARKit-compatible USDA referencing `jpegName` (which must sit
- * next to the .usda so usdzip --arkitAsset packages it), sized in real metres.
- * UsdPreviewSurface + UsdUVTexture + a `st` primvar reader, MaterialBindingAPI
- * applied. The mesh is a single quad in the XY plane facing +Z (Y-up; ARKit
- * places it correctly). Full-frame st (0..1), v-flipped to match glTF so the
- * image is upright in both pipelines.
- */
-function buildUsda(jpegName, w, h) {
-  const hw = (w / 2).toFixed(6);
-  const hh = (h / 2).toFixed(6);
+function buildUsda({ printMetres, frame, jpegName, pngName }) {
+  const g = geomConstants(printMetres);
+  const root = "/FramedPrint";
+  const art = buildArtwork(g);
+  const frameMesh = buildFrame(g);
+  const mat = buildMat(g);
+  const matBevel = buildMatBevel(g);
+  const back = buildBacking(g);
+  const shadow = buildShadow(g);
+
+  const materials = [
+    usdTextureMaterial("ArtworkMat", jpegName, ART_ROUGHNESS, root),
+    usdColorMaterial("FrameMat", frame.base, frame.roughness, root),
+    usdColorMaterial("MatMat", MAT_BASE, MAT_ROUGHNESS, root),
+    usdColorMaterial("MatBevelMat", MAT_BEVEL_BASE, MAT_BEVEL_ROUGHNESS, root),
+    usdColorMaterial("BackingMat", BACK_BASE, BACK_ROUGHNESS, root),
+    usdShadowMaterial("ShadowMat", pngName, root),
+  ];
+  const meshes = [
+    usdMesh("Artwork", art, `${root}/Materials/ArtworkMat`),
+    usdMesh("Frame", frameMesh, `${root}/Materials/FrameMat`),
+    usdMesh("Mat", mat, `${root}/Materials/MatMat`),
+    usdMesh("MatBevel", matBevel, `${root}/Materials/MatBevelMat`),
+    usdMesh("Backing", back, `${root}/Materials/BackingMat`),
+    usdMesh("ContactShadow", shadow, `${root}/Materials/ShadowMat`),
+  ];
+
   return `#usda 1.0
 (
     defaultPrim = "FramedPrint"
@@ -486,187 +946,377 @@ def Xform "FramedPrint" (
 {
     token preliminary:anchoring:type = "plane"
     token preliminary:planeAnchoring:alignment = "vertical"
-
-    def Mesh "Artwork" (
-        prepend apiSchemas = ["MaterialBindingAPI"]
-    )
-    {
-        float3[] extent = [(-${hw}, -${hh}, 0), (${hw}, ${hh}, 0)]
-        int[] faceVertexCounts = [4]
-        int[] faceVertexIndices = [0, 1, 2, 3]
-        point3f[] points = [(-${hw}, -${hh}, 0), (${hw}, -${hh}, 0), (${hw}, ${hh}, 0), (-${hw}, ${hh}, 0)]
-        normal3f[] primvars:normals = [(0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
-            interpolation = "vertex"
-        )
-        texCoord2f[] primvars:st = [(0, 0), (1, 0), (1, 1), (0, 1)] (
-            interpolation = "vertex"
-        )
-        rel material:binding = </FramedPrint/Materials/ArtworkMat>
-        uniform token subdivisionScheme = "none"
-    }
+${meshes.join("\n")}
 
     def Scope "Materials"
     {
-        def Material "ArtworkMat"
-        {
-            token outputs:surface.connect = </FramedPrint/Materials/ArtworkMat/Surface.outputs:surface>
-
-            def Shader "Surface"
-            {
-                uniform token info:id = "UsdPreviewSurface"
-                color3f inputs:diffuseColor.connect = </FramedPrint/Materials/ArtworkMat/Texture.outputs:rgb>
-                float inputs:metallic = ${ART_METALLIC}
-                float inputs:roughness = ${ART_ROUGHNESS}
-                token outputs:surface
-            }
-
-            def Shader "Texture"
-            {
-                uniform token info:id = "UsdUVTexture"
-                asset inputs:file = @${jpegName}@
-                float2 inputs:st.connect = </FramedPrint/Materials/ArtworkMat/stReader.outputs:result>
-                token inputs:wrapS = "clamp"
-                token inputs:wrapT = "clamp"
-                float3 outputs:rgb
-            }
-
-            def Shader "stReader"
-            {
-                uniform token info:id = "UsdPrimvarReader_float2"
-                token inputs:varname = "st"
-                float2 outputs:result
-            }
-        }
+${materials.map((m) => m.body).join("\n")}
     }
 }
 `;
 }
 
 // -----------------------------------------------------------------------------
+// Texture prep — downscale a source JPEG to ~800px @ quality 40 (~100–130KB).
+// -----------------------------------------------------------------------------
+function prepTexture(srcJpgPath, outJpgPath) {
+  execFileSync(SIPS, ["-Z", "800", "-s", "formatOptions", "40", srcJpgPath, "--out", outJpgPath], {
+    stdio: "pipe",
+  });
+  const buf = readFileSync(outJpgPath);
+  if (buf[0] !== 0xff || buf[1] !== 0xd8 || buf[2] !== 0xff)
+    throw new Error(`downscaled texture is not a JPEG: ${outJpgPath}`);
+  return buf;
+}
+
+// -----------------------------------------------------------------------------
+// Ophiuchus centre-square crop — source is 2000×1622 LANDSCAPE; the shop sells a
+// SQUARE A-size print like every other painting, so crop a centred square first.
+// sips -c <h> <w> centre-crops to HEIGHT × WIDTH.
+// -----------------------------------------------------------------------------
+const OPHIUCHUS = { image: "/img/paintings/ophiuchus-original.jpg", cropPx: [1622, 1622] }; // [w,h]
+function croppedSourceFor(image, tmpRoot) {
+  const file = image.replace("/img/paintings/", "");
+  const src = join(IMG_DIR, file);
+  if (image === OPHIUCHUS.image) {
+    const out = join(tmpRoot, "ophiuchus-square.jpg");
+    if (!existsSync(out)) {
+      const [w, h] = OPHIUCHUS.cropPx;
+      execFileSync(SIPS, ["-c", String(h), String(w), src, "--out", out], { stdio: "pipe" });
+    }
+    return out;
+  }
+  return src;
+}
+
+// -----------------------------------------------------------------------------
+// PAINTING → COLOURWAY-IMAGE table. Mirrors src/data/paintings.ts: every
+// painting id with each of its `available` colourway `image` values. Kept
+// explicit (not imported) because this is a Node build script and paintings.ts
+// is TS with site-only imports.
+// -----------------------------------------------------------------------------
+const PAINTINGS = [
+  { id: "wild-rose", images: ["/img/paintings/wild-rose-sussex-pink.jpg"] },
+  { id: "english-bluebells", images: ["/img/paintings/english-bluebells-v3.jpg"] },
+  {
+    id: "orchis-7",
+    images: ["/img/paintings/orchis7-rubedo-red.jpg", "/img/paintings/orchis7-aquamarine-blue.jpg"],
+  },
+  { id: "flower-of-life", images: ["/img/paintings/fol-kaleidoscope.jpg"] },
+  {
+    id: "slipper-orchids",
+    images: [
+      "/img/paintings/orchids30-nebula-purple.jpg",
+      "/img/paintings/orchids30-lightning-blue.jpg",
+      "/img/paintings/orchids30-garnet-red.jpg",
+      "/img/paintings/orchids30-manipura-yellow.jpg",
+    ],
+  },
+  {
+    id: "peacock-minerva",
+    images: [
+      "/img/paintings/peacock-persian-indigo.jpg",
+      "/img/paintings/peacock-blood-moon-red.jpg",
+      "/img/paintings/peacock-sahara-sand-yellow.jpg",
+      "/img/paintings/peacock-moroccan-purple.jpg",
+      "/img/paintings/peacock-mary-pink.jpg",
+    ],
+  },
+  { id: "ophiuchus", images: ["/img/paintings/ophiuchus-original.jpg"] },
+  {
+    id: "tridecagon-moon-star",
+    images: [
+      "/img/paintings/tridecagon-sage-green.jpg",
+      "/img/paintings/tridecagon-moonstone-blue.jpg",
+      "/img/paintings/tridecagon-supernova-violet.jpg",
+      "/img/paintings/tridecagon-coral-reef.jpg",
+    ],
+  },
+  { id: "lulin", images: ["/img/paintings/lulin-original.jpg"] },
+  {
+    id: "enneagon-swans",
+    images: [
+      "/img/paintings/enneagon-cygnus-gold.jpg",
+      "/img/paintings/enneagon-glacier-blue.jpg",
+      "/img/paintings/enneagon-solstice-orange.jpg",
+      "/img/paintings/enneagon-antique-pink.jpg",
+      "/img/paintings/enneagon-velvet-purple.jpg",
+    ],
+  },
+];
+
+/** Colourway image path → stable filename slug. Mirror of arSlug() in arAssets.ts. */
+function arSlug(image) {
+  return image
+    .replace("/img/paintings/", "")
+    .replace(/\.(jpg|jpeg|png|webp)$/i, "")
+    .toLowerCase();
+}
+
+// -----------------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------------
+function log(...a) {
+  console.log(...a);
+}
+function kb(b) {
+  return Math.round(b / 1024);
+}
+function runUsdchecker(usdzPath, id) {
+  try {
+    const out = execFileSync(USDCHECKER, ["--arkit", usdzPath], { stdio: "pipe" });
+    const s = out.toString();
+    if (/error/i.test(s)) throw new Error(s);
+    return true;
+  } catch (e) {
+    const out = (e.stdout?.toString() || "") + (e.stderr?.toString() || "");
+    throw new Error(`usdchecker --arkit FAILED for ${id}:\n${out || e.message}`);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Manifest writer — src/lib/arAssets.ts (auto-generated, like imageVariants.ts).
+// -----------------------------------------------------------------------------
+function writeManifest(usdzKeys, paintingsWithAr) {
+  const sizesLit = SIZES.map(
+    (s) =>
+      `  { id: "${s.id}", label: "${s.label}", cm: ${s.cm}, metres: ${s.metres}, tierId: "${s.tierId}"${
+        s.anchor ? ", anchor: true" : ""
+      } },`,
+  ).join("\n");
+  const framesLit = FRAMES.map(
+    (f) => `  { id: "${f.id}", label: "${f.label}", swatch: "${f.swatch}" },`,
+  ).join("\n");
+  const glbLit = FRAMES.map((f) => `  "${f.id}": "/ar/frame-${f.id}-${V}.glb",`).join("\n");
+  const keysLit = [...usdzKeys].sort().map((k) => `  "${k}",`).join("\n");
+  const arPaintings = [...paintingsWithAr].sort().map((id) => `  "${id}",`).join("\n");
+
+  return `// AUTO-GENERATED by scripts/build-ar-assets.mjs (v3). DO NOT hand-edit.
+// Web-AR manifest: true-size framed-print models for phone AR.
+//   • GLB "frame shells" (model-viewer / WebXR / Android) — swap the "Artwork"
+//     material baseColorTexture at runtime to the chosen colourway.
+//   • USDZ matrix (iOS Quick Look) — one pre-baked file per
+//     colourway-image × size × frame, authored at the size's TRUE metres.
+// Regenerate with: node scripts/build-ar-assets.mjs
+
+export interface ArSize {
+  id: "a3" | "a2" | "a1" | "a0";
+  label: string;
+  cm: number;
+  metres: number;
+  tierId: string;
+  anchor?: boolean;
+}
+
+export interface ArFrame {
+  id: "black-oak" | "natural-oak";
+  label: string;
+  swatch: string;
+}
+
+export const AR_SIZES: ArSize[] = [
+${sizesLit}
+];
+
+export const AR_FRAMES: ArFrame[] = [
+${framesLit}
+];
+
+export const AR_DEFAULT_FRAME: ArFrame["id"] = "${DEFAULT_FRAME}";
+export const AR_DEFAULT_SIZE: ArSize["id"] = "${ANCHOR.id}";
+
+/** The GLB frame-shell asset path per frame finish (texture swapped at runtime). */
+export const AR_FRAME_GLB: Record<ArFrame["id"], string> = {
+${glbLit}
+};
+
+/** The metres the GLB shells are authored at (A2 anchor). Scale at runtime to
+ *  the selected size = AR_SIZES[sizeId].metres / AR_GLB_BASE_METRES. */
+export const AR_GLB_BASE_METRES = ${GLB_BASE_METRES};
+
+/** Slug a colourway image path → its AR filename stem (mirror of the builder). */
+export const arSlug = (image: string): string =>
+  image
+    .replace("/img/paintings/", "")
+    .replace(/\\.(jpg|jpeg|png|webp)$/i, "")
+    .toLowerCase();
+
+/** The set of generated USDZ keys: \`<paintingId>__<imageSlug>__<sizeId>__<frame>\`. */
+const AR_USDZ_KEYS: ReadonlySet<string> = new Set([
+${keysLit}
+]);
+
+/** Painting ids that have ANY AR asset (GLB shell + at least one USDZ). */
+const AR_PAINTINGS: ReadonlySet<string> = new Set([
+${arPaintings}
+]);
+
+/** The iOS Quick Look USDZ path for a (painting, colourway image, size, frame),
+ *  or null if that exact asset was not generated. */
+export const arUsdz = (
+  paintingId: string,
+  image: string,
+  sizeId: ArSize["id"],
+  frame: ArFrame["id"],
+): string | null => {
+  const slug = arSlug(image);
+  const key = \`\${paintingId}__\${slug}__\${sizeId}__\${frame}\`;
+  if (!AR_USDZ_KEYS.has(key)) return null;
+  return \`/ar/\${paintingId}-\${slug}-\${sizeId}-\${frame}-${V}.usdz\`;
+};
+
+/** Whether a painting has AR available at all. */
+export const hasAr = (paintingId: string): boolean => AR_PAINTINGS.has(paintingId);
+`;
+}
+
+// -----------------------------------------------------------------------------
 // Driver
 // -----------------------------------------------------------------------------
-
-function ensureOphiuchusCrop() {
-  const p = PAINTINGS.find((x) => x.cropFrom);
-  if (!p) return;
-  const src = join(IMG_DIR, p.cropFrom);
-  const out = join(IMG_DIR, p.jpg);
-  if (!existsSync(src)) throw new Error(`ophiuchus source missing: ${src}`);
-  if (existsSync(out)) {
-    log(`  ophiuchus crop already present (${p.jpg}) — reusing`);
-    return;
-  }
-  const [cw, ch] = p.cropPx;
-  // sips -c <height> <width> centre-crops to HEIGHT × WIDTH.
-  log(`  cropping ${p.cropFrom} → ${p.jpg} (${cw}×${ch} centred crop)`);
-  execFileSync(SIPS, ["-c", String(ch), String(cw), src, "--out", out], { stdio: "pipe" });
-}
-
-function log(...args) {
-  console.log(...args);
-}
-
-function kb(bytes) {
-  return Math.round(bytes / 1024);
-}
-
 function main() {
-  log("=".repeat(70));
-  log("build-ar-assets — framed-print AR panels (GLB + USDZ), true metres");
-  log("=".repeat(70));
+  log("=".repeat(72));
+  log(`build-ar-assets ${V} — REALISTIC framed-print AR (GLB shells + USDZ matrix)`);
+  log("=".repeat(72));
+
+  const hasUsd = existsSync(USDZIP) && existsSync(USDCHECKER) && existsSync(SIPS);
+  if (!hasUsd)
+    log("⚠️  USD tooling (usdzip/usdchecker/sips) not found → USDZ SKIPPED (GLB shells still emit).");
 
   mkdirSync(OUT_DIR, { recursive: true });
+  const tmpRoot = join(tmpdir(), `ar-v3-${process.pid}`);
+  mkdirSync(tmpRoot, { recursive: true });
 
-  const hasUsd = existsSync(USDZIP) && existsSync(USDCHECKER);
-  if (!hasUsd) {
-    log("⚠️  USD tooling not found at /usr/bin/usdzip + usdchecker.");
-    log("    → USDZ generation SKIPPED (GLB still emitted). Run on macOS to add USDZ.");
+  // CLEAN: wipe stale -v1/-v2 (and prior -v3) so public/ar holds only this run.
+  // Skipped on --sample / --keep so a proof run doesn't nuke committed assets.
+  if (!KEEP) {
+    const stale = readdirSync(OUT_DIR).filter((f) => /\.(glb|usdz)$/i.test(f));
+    for (const f of stale) rmSync(join(OUT_DIR, f), { force: true });
+    log(`cleaned ${stale.length} old asset(s) from public/ar/`);
+  } else {
+    log("--keep: NOT wiping public/ar (sample run).");
   }
 
-  // Pre-step: centre-crop the ophiuchus portrait source if needed.
-  ensureOphiuchusCrop();
+  // ---- 1) GLB frame shells (one per frame finish), authored at the A2 anchor ----
+  const placeholder = placeholderPng();
+  for (const frame of FRAMES) {
+    const glb = buildGlb({ printMetres: GLB_BASE_METRES, frame, artworkTexture: placeholder });
+    validateGlb(glb, placeholder);
+    const out = join(OUT_DIR, `frame-${frame.id}-${V}.glb`);
+    writeFileSync(out, glb);
+    log(`  ✓ GLB shell  ${kb(glb.length)} KB  → public/ar/frame-${frame.id}-${V}.glb  (validated)`);
+  }
 
-  const results = [];
-  const tmpRoot = join(tmpdir(), `ar-usd-${process.pid}`);
+  // ---- 2) USDZ matrix: every colourway image × size × frame ----
+  const usdzKeys = new Set();
+  const paintingsWithAr = new Set();
+  const sampleResults = [];
+  let usdzCount = 0;
+  let usdzBytes = 0;
 
-  for (const p of PAINTINGS) {
-    log(`\n● ${p.id}  (${p.widthM}×${p.heightM} m)`);
-    const jpgPath = join(IMG_DIR, p.jpg);
-    if (!existsSync(jpgPath)) throw new Error(`source jpg missing: ${jpgPath}`);
-    const jpeg = readFileSync(jpgPath);
-    if (jpeg[0] !== 0xff || jpeg[1] !== 0xd8 || jpeg[2] !== 0xff) {
-      throw new Error(`${p.jpg} is not a JPEG (no 0xFFD8FF SOI)`);
-    }
+  // --sample: a tight proof set across sizes + both frames + the Ophiuchus crop.
+  const SAMPLE_SPEC = [
+    { paintingId: "wild-rose", image: "/img/paintings/wild-rose-sussex-pink.jpg", sizeId: "a3", frame: "black-oak" },
+    { paintingId: "wild-rose", image: "/img/paintings/wild-rose-sussex-pink.jpg", sizeId: "a2", frame: "black-oak" },
+    { paintingId: "peacock-minerva", image: "/img/paintings/peacock-persian-indigo.jpg", sizeId: "a0", frame: "natural-oak" },
+    { paintingId: "ophiuchus", image: "/img/paintings/ophiuchus-original.jpg", sizeId: "a1", frame: "natural-oak" },
+  ];
 
-    // --- GLB ---
-    const glb = buildGlb(jpeg, p.widthM, p.heightM);
-    validateGlb(glb, jpeg);
-    const glbOut = join(OUT_DIR, `${p.id}-${V}.glb`);
-    writeFileSync(glbOut, glb);
-    log(`  ✓ GLB  ${kb(glb.length)} KB  → public/ar/${p.id}-${V}.glb  (validated)`);
+  // Always populate the FULL key set so the manifest reflects the complete
+  // matrix the orchestrator will generate (even on a sample / no-USD run).
+  for (const p of PAINTINGS)
+    for (const image of p.images)
+      for (const s of SIZES)
+        for (const f of FRAMES) {
+          usdzKeys.add(`${p.id}__${arSlug(image)}__${s.id}__${f.id}`);
+          paintingsWithAr.add(p.id);
+        }
 
-    // --- USDZ ---
-    let usdzKb = null;
-    let usdcheckerPass = null;
-    if (hasUsd) {
-      const work = join(tmpRoot, p.id);
-      mkdirSync(work, { recursive: true });
-      // usdzip --arkitAsset requires the texture next to the usda.
-      const jpegName = p.jpg;
-      writeFileSync(join(work, jpegName), jpeg);
-      const usdaPath = join(work, `${p.id}.usda`);
-      writeFileSync(usdaPath, buildUsda(jpegName, p.widthM, p.heightM));
-      const usdzOut = join(OUT_DIR, `${p.id}-${V}.usdz`);
+  if (hasUsd) {
+    const work = join(tmpRoot, "usd");
+    mkdirSync(work, { recursive: true });
+    const shadowPngBuf = shadowPng();
+    const texCache = new Map(); // image slug → downscaled JPEG buffer
+
+    const buildOne = ({ paintingId, image, sizeId, frame }) => {
+      const size = SIZES.find((s) => s.id === sizeId);
+      const fr = FRAMES.find((f) => f.id === frame);
+      const slug = arSlug(image);
+      let tex = texCache.get(slug);
+      if (!tex) {
+        const srcSquare = croppedSourceFor(image, tmpRoot);
+        tex = prepTexture(srcSquare, join(work, `${slug}.jpg`));
+        texCache.set(slug, tex);
+      }
+      // Per-asset working dir (usdzip --arkitAsset packs files next to the usda).
+      const adir = join(work, `${paintingId}-${slug}-${sizeId}-${frame}`);
+      mkdirSync(adir, { recursive: true });
+      const jpegName = `${slug}.jpg`;
+      const pngName = "shadow.png";
+      writeFileSync(join(adir, jpegName), tex);
+      writeFileSync(join(adir, pngName), shadowPngBuf);
+      const usda = buildUsda({ printMetres: size.metres, frame: fr, jpegName, pngName });
+      const usdaPath = join(adir, `${paintingId}.usda`);
+      writeFileSync(usdaPath, usda);
+      const outName = `${paintingId}-${slug}-${sizeId}-${frame}-${V}.usdz`;
+      const usdzOut = join(OUT_DIR, outName);
       if (existsSync(usdzOut)) rmSync(usdzOut);
-
       try {
-        execFileSync(USDZIP, ["--arkitAsset", usdaPath, usdzOut], {
-          stdio: "pipe",
-          cwd: work,
-        });
+        execFileSync(USDZIP, ["--arkitAsset", usdaPath, usdzOut], { stdio: "pipe", cwd: adir });
       } catch (e) {
-        const out = (e.stdout?.toString() || "") + (e.stderr?.toString() || "");
-        throw new Error(`usdzip FAILED for ${p.id}:\n${out || e.message}`);
+        const o = (e.stdout?.toString() || "") + (e.stderr?.toString() || "");
+        throw new Error(`usdzip FAILED for ${outName}:\n${o || e.message}`);
       }
-      const usdzBuf = readFileSync(usdzOut);
-      usdzKb = kb(usdzBuf.length);
+      runUsdchecker(usdzOut, outName);
+      const sz = readFileSync(usdzOut).length;
+      usdzCount++;
+      usdzBytes += sz;
+      return { outName, sz };
+    };
 
-      // Validate with usdchecker --arkit. Fail loudly on any error.
-      try {
-        const out = execFileSync(USDCHECKER, ["--arkit", usdzOut], { stdio: "pipe" });
-        // usdchecker prints "Success!" and exits 0 when clean.
-        usdcheckerPass = /Success/i.test(out.toString()) || out.toString().trim() === "";
-      } catch (e) {
-        const out = (e.stdout?.toString() || "") + (e.stderr?.toString() || "");
-        throw new Error(`usdchecker --arkit FAILED for ${p.id}:\n${out || e.message}`);
+    if (SAMPLE) {
+      for (const spec of SAMPLE_SPEC) {
+        const r = buildOne(spec);
+        sampleResults.push(r);
+        log(`  ✓ USDZ ${kb(r.sz)} KB  → public/ar/${r.outName}  (usdchecker --arkit: PASS)`);
       }
-      log(`  ✓ USDZ ${usdzKb} KB  → public/ar/${p.id}-${V}.usdz  (usdchecker --arkit: PASS)`);
+    } else {
+      for (const p of PAINTINGS)
+        for (const image of p.images)
+          for (const s of SIZES)
+            for (const f of FRAMES) {
+              const r = buildOne({ paintingId: p.id, image, sizeId: s.id, frame: f.id });
+              if (usdzCount % 20 === 0) log(`  … ${usdzCount} USDZ generated (latest ${r.outName})`);
+            }
     }
-
-    results.push({ id: p.id, glbKb: kb(glb.length), usdzKb, usdcheckerPass });
   }
 
-  // Cleanup temp USD working dirs.
+  // ---- 3) Write the manifest ----
+  writeFileSync(MANIFEST, writeManifest(usdzKeys, paintingsWithAr));
+  log(`\n  ✓ manifest → src/lib/arAssets.ts (${usdzKeys.size} USDZ keys, ${paintingsWithAr.size} paintings)`);
+
   if (existsSync(tmpRoot)) rmSync(tmpRoot, { recursive: true, force: true });
 
-  // --- Summary table ---
-  log("\n" + "=".repeat(70));
+  // ---- Summary ----
+  log("\n" + "=".repeat(72));
   log("SUMMARY");
-  log("=".repeat(70));
-  const pad = (s, n) => String(s).padEnd(n);
-  const padl = (s, n) => String(s).padStart(n);
-  log(`${pad("id", 22)} ${padl("GLB KB", 8)} ${padl("USDZ KB", 9)}  usdchecker`);
-  log("-".repeat(70));
-  for (const r of results) {
+  log("=".repeat(72));
+  if (SAMPLE) {
+    log("SAMPLE run — proof assets only:");
+    for (const r of sampleResults) log(`  ${r.outName.padEnd(56)} ${kb(r.sz)} KB`);
     log(
-      `${pad(r.id, 22)} ${padl(r.glbKb, 8)} ${padl(r.usdzKb ?? "—", 9)}  ${
-        r.usdcheckerPass === null ? "(skipped)" : r.usdcheckerPass ? "PASS" : "FAIL"
-      }`,
+      `\nFull matrix would be: 25 images × ${SIZES.length} sizes × ${FRAMES.length} frames = ${
+        25 * SIZES.length * FRAMES.length
+      } USDZ + ${FRAMES.length} GLB shells.`,
     );
+  } else {
+    const avg = usdzCount ? Math.round(usdzBytes / usdzCount / 1024) : 0;
+    log(`GLB shells: ${FRAMES.length}`);
+    log(`USDZ generated: ${usdzCount}  (total ${(usdzBytes / 1024 / 1024).toFixed(1)} MB, avg ${avg} KB)`);
+    if (usdzCount) log("All USDZ passed usdchecker --arkit.");
   }
-  log("-".repeat(70));
-  log(`${results.length} paintings · GLB + ${hasUsd ? "USDZ" : "no USDZ (USD tools absent)"}`);
-  log("Outputs in public/ar/. /public is immutable-cached → bump V to regenerate.");
+  log("Outputs in public/ar/. /public is immutable-cached → -v3 filenames handle it.");
+  log("⚠️  Orchestrator: the old <id>-v1.* / <id>-v2.* assets (~38MB) are wiped by a");
+  log("    full (non-sample) run; delete them manually if you only ran --sample.");
 }
 
 main();

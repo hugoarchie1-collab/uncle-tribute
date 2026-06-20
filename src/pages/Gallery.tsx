@@ -1,14 +1,14 @@
 // =============================================================================
-// /gallery — The Virtual Exhibition.
+// /gallery — The Virtual Exhibition (true-size AR configurator).
 // -----------------------------------------------------------------------------
-// NOT a catalogue (that's /collections). This page is the CAMERA: one clear
-// "Open the camera" moment that launches CameraAR — point your phone at a wall
-// and see any of Stephen's works in your own room, flipping through them all on
-// a strip. No camera (desktop) → CameraAR shows a clean "open it on your phone"
-// page with a QR.
+// NOT a catalogue. Pick a work + colourway + one of the 4 real print sizes + a
+// frame, see it as a realistic framed piece, then "See it on your wall" launches
+// the device's REAL AR (iOS Quick Look / Android Scene Viewer / WebXR) — the
+// framed print placed at its EXACT catalogue size, locked (no zoom). Desktop →
+// a QR to open it on a phone (where the camera AR works).
 // =============================================================================
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -16,10 +16,20 @@ import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { CameraAR, type CameraAROption } from "../components/CameraAR";
-import { PAINTINGS } from "../data/paintings";
+import { ArtworkAR, type ArtworkARHandle } from "../components/ArtworkAR";
+import { PAINTINGS, type Colourway, type Painting } from "../data/paintings";
+import {
+  AR_SIZES,
+  AR_FRAMES,
+  AR_DEFAULT_SIZE,
+  AR_DEFAULT_FRAME,
+  hasAr,
+  type ArSize,
+  type ArFrame,
+} from "../lib/arAssets";
+import { asset, webp } from "../lib/asset";
 import { cn } from "../lib/cn";
-import { EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 
 const CameraGlyph = () => (
   <svg width="17" height="17" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
@@ -33,70 +43,264 @@ const CameraGlyph = () => (
   </svg>
 );
 
-export const Gallery = () => {
-  const [open, setOpen] = useState(false);
+const PILL =
+  "inline-flex min-h-[44px] items-center justify-center rounded-full px-4 font-sans text-[11px] font-bold uppercase tracking-[0.14em] outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-accent";
 
-  // Every work — its original colourway — to flip through inside the camera.
-  const options: CameraAROption[] = useMemo(
-    () =>
-      PAINTINGS.map((painting) => ({
-        painting,
-        colourway: painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0],
-      })),
-    [],
+export const Gallery = () => {
+  // Only paintings with built AR assets (all 10 today).
+  const paintings = useMemo(() => PAINTINGS.filter((p) => hasAr(p.id)), []);
+  const [paintingId, setPaintingId] = useState(paintings[0]?.id ?? "");
+  const painting: Painting = paintings.find((p) => p.id === paintingId) ?? paintings[0];
+
+  const colourways = painting.colourways;
+  const [colourwayName, setColourwayName] = useState(
+    (colourways.find((c) => c.isOriginal) ?? colourways[0])?.name ?? "",
   );
+  const colourway: Colourway =
+    colourways.find((c) => c.name === colourwayName) ??
+    colourways.find((c) => c.isOriginal) ??
+    colourways[0];
+
+  const [sizeId, setSizeId] = useState<ArSize["id"]>(AR_DEFAULT_SIZE);
+  const [frame, setFrame] = useState<ArFrame["id"]>(AR_DEFAULT_FRAME);
+  const [arAvailable, setArAvailable] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
+
+  const arRef = useRef<ArtworkARHandle>(null);
+
+  // When the painting changes, reset to its original colourway.
+  const selectPainting = (p: Painting) => {
+    setPaintingId(p.id);
+    setColourwayName((p.colourways.find((c) => c.isOriginal) ?? p.colourways[0])?.name ?? "");
+  };
+
+  // Desktop QR (open this exact page on a phone, where AR works).
+  useEffect(() => {
+    if (arAvailable || qrUrl) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const href = typeof window !== "undefined" ? window.location.href : "";
+        if (!href) return;
+        const { default: QRCode } = await import("qrcode");
+        const url = await QRCode.toDataURL(href, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 220,
+          color: { dark: "#1a1612", light: "#f5efe3" },
+        });
+        if (!cancelled) setQrUrl(url);
+      } catch {
+        /* QR is a bonus */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [arAvailable, qrUrl]);
+
+  const frameLabel = AR_FRAMES.find((f) => f.id === frame)?.label ?? "";
 
   return (
     <div className="relative flex min-h-[100svh] flex-col overflow-x-clip">
       <Seo
         title="Virtual Exhibition — See it on your wall · The Art of Stephen Meakin"
-        description="Point your phone's camera at your wall and see Stephen Meakin's mandala paintings in your own room — in augmented reality. The Virtual Exhibition."
+        description="See Stephen Meakin's mandala paintings on your own wall at their true size, in augmented reality — choose the colourway, the print size and the frame, then place it in your room."
         url="/gallery"
       />
       <SceneBackdrop src="/img/scenes/born-in-the-sky-blur-v2.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex flex-1 items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 pt-24 pb-16 md:pt-28">
-        <Reveal as="div" className="w-full max-w-[860px] text-center">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1460px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
+        <Reveal as="div" className="text-center">
           <PageMasthead
             eyebrow="The Virtual Exhibition"
-            meta="Augmented reality · on your wall"
+            meta="True size · on your wall"
             titleStyle={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
             title={
               <>
                 See it on <em className="italic font-normal">your wall</em>.
               </>
             }
-          >
-            <p
-              className={cn(SUBTITLE, "mx-auto mt-6 md:mt-7 max-w-[620px] text-center")}
-              style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85)" }}
-            >
-              Point your phone's camera at a wall and place any of Stephen's works in your own
-              room — drag it to where you'd hang it, and flip through them all.
-            </p>
+          />
+        </Reveal>
 
-            <div className="mt-9 md:mt-10 flex flex-col items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="press inline-flex min-h-[52px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[12px] font-bold uppercase tracking-[0.18em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-                data-cursor-label="Open the camera"
+        <Reveal as="div" delay={0.05} className="mt-9 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* PREVIEW — the realistic framed 3D piece */}
+          <div className="lg:col-span-7 lg:sticky lg:top-24">
+            <div className="relative aspect-square w-full overflow-hidden rounded-sm bg-bg/40 ring-1 ring-white/10">
+              <ArtworkAR
+                ref={arRef}
+                painting={painting}
+                colourway={colourway}
+                sizeId={sizeId}
+                frame={frame}
+                onArAvailability={setArAvailable}
+                className="h-full w-full"
+              />
+            </div>
+            <p className={cn(EYEBROW_MUTED, "mt-4 text-center")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+              {painting.title} · {colourway.name} · {frameLabel}
+            </p>
+          </div>
+
+          {/* CONTROLS */}
+          <div className="lg:col-span-5 flex flex-col gap-7">
+            {/* Work */}
+            <section>
+              <p className={cn(EYEBROW, "m-0 mb-3")}>The work</p>
+              <div
+                role="listbox"
+                aria-label="Choose a painting"
+                className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                <CameraGlyph />
-                Open the camera
-              </button>
-              <p className={cn(EYEBROW_MUTED, "m-0 tracking-[0.2em]")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
-                Works best on your phone
+                {paintings.map((p) => {
+                  const cover = p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
+                  const sel = p.id === painting.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      role="option"
+                      aria-selected={sel}
+                      aria-label={p.title}
+                      onClick={() => selectPainting(p)}
+                      className={cn(
+                        "h-16 w-16 shrink-0 overflow-hidden rounded-md outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                        sel ? "ring-2 ring-accent" : "opacity-70 ring-1 ring-white/25 hover:opacity-100",
+                      )}
+                    >
+                      <picture>
+                        <source srcSet={asset(webp(cover.image))} type="image/webp" />
+                        <img src={asset(cover.image)} alt="" className="h-full w-full object-cover" />
+                      </picture>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Colourway */}
+            {colourways.length > 1 && (
+              <section>
+                <p className={cn(EYEBROW, "m-0 mb-3")}>Colourway · {colourway.name}</p>
+                <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
+                  {colourways.map((c) => {
+                    const sel = c.name === colourway.name;
+                    return (
+                      <button
+                        key={c.name}
+                        type="button"
+                        role="radio"
+                        aria-checked={sel}
+                        aria-label={c.name}
+                        onClick={() => setColourwayName(c.name)}
+                        className={cn(
+                          "h-10 w-10 rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          sel ? "ring-2 ring-accent scale-110" : "hover:scale-105",
+                        )}
+                        style={{ backgroundColor: c.hex }}
+                      />
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Size — the 4 fixed true sizes */}
+            <section>
+              <p className={cn(EYEBROW, "m-0 mb-3")}>Size · true to scale</p>
+              <div role="radiogroup" aria-label="Print size" className="grid grid-cols-2 gap-2.5">
+                {AR_SIZES.map((s) => {
+                  const sel = s.id === sizeId;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={sel}
+                      onClick={() => setSizeId(s.id)}
+                      className={cn(
+                        PILL,
+                        "flex-col gap-0.5 py-2 ring-1",
+                        sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
+                      )}
+                    >
+                      <span className="text-[12px] tracking-[0.16em]">{s.label}</span>
+                      <span className={cn("text-[10px] font-semibold tracking-[0.08em]", sel ? "text-bg/70" : "text-ink/45")}>
+                        {s.cm} × {s.cm} cm
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Frame */}
+            <section>
+              <p className={cn(EYEBROW, "m-0 mb-3")}>Frame · {frameLabel}</p>
+              <div role="radiogroup" aria-label="Frame finish" className="flex gap-3">
+                {AR_FRAMES.map((f) => {
+                  const sel = f.id === frame;
+                  return (
+                    <button
+                      key={f.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={sel}
+                      aria-label={f.label}
+                      onClick={() => setFrame(f.id)}
+                      className={cn(
+                        "inline-flex min-h-[44px] items-center gap-2.5 rounded-full px-3.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                        sel ? "ring-accent" : "ring-line hover:ring-ink/40",
+                      )}
+                    >
+                      <span className="h-5 w-5 rounded-full ring-1 ring-black/30" style={{ backgroundColor: f.swatch }} />
+                      <span className={cn("font-sans text-[11px] font-bold uppercase tracking-[0.12em]", sel ? "text-ink" : "text-ink-muted")}>
+                        {f.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* CTA — launch real AR, or the desktop QR */}
+            <div className="mt-1 border-t border-line pt-6">
+              {arAvailable ? (
+                <button
+                  type="button"
+                  onClick={() => arRef.current?.activateAR()}
+                  className="press inline-flex w-full min-h-[54px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[12px] font-bold uppercase tracking-[0.18em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                  data-cursor-label="See it on your wall"
+                >
+                  <CameraGlyph />
+                  See it on your wall
+                </button>
+              ) : (
+                <div className="flex items-center gap-4">
+                  {qrUrl && (
+                    <div className="shrink-0 rounded-2xl bg-cream p-2.5 ring-1 ring-cream-ink/10">
+                      <img src={qrUrl} alt="QR code — open this on your phone" width={104} height={104} className="block" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="m-0 font-display text-ink text-[clamp(18px,1.4vw,22px)] leading-[1.15]">
+                      Open it on your phone
+                    </p>
+                    <p className="mt-1.5 m-0 font-sans text-[13.5px] leading-[1.6] text-ink-muted">
+                      Scan the code to place this framed print on your own wall, at its true size, in AR.
+                    </p>
+                  </div>
+                </div>
+              )}
+              <p className="mt-4 m-0 font-sans text-[12px] leading-[1.6] text-ink/45">
+                Shown at the exact print size — {AR_SIZES.find((s) => s.id === sizeId)?.cm} × {AR_SIZES.find((s) => s.id === sizeId)?.cm} cm. Best on a phone or tablet.
               </p>
             </div>
-          </PageMasthead>
+          </div>
         </Reveal>
       </main>
-
-      {open && (
-        <CameraAR open={open} onClose={() => setOpen(false)} options={options} />
-      )}
 
       <FooterCatalogue />
       <Footer />
