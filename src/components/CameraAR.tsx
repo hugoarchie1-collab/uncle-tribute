@@ -47,10 +47,6 @@ export interface CameraARProps {
   onClose: () => void;
   painting: Painting;
   colourway: Colourway;
-  /** Optional — when provided, the no-camera explainer offers a quiet
-   *  "place it using a photo of your room" button (wired to RoomVisualizer
-   *  upload mode by the caller). Omitted ⇒ the button is not rendered. */
-  onUsePhotoInstead?: () => void;
 }
 
 /** The overlay's lifecycle phase. */
@@ -126,7 +122,6 @@ export const CameraAR = ({
   onClose,
   painting,
   colourway,
-  onUsePhotoInstead,
 }: CameraARProps) => {
   const reduceMotion = useReducedMotion();
   const titleId = useId();
@@ -764,15 +759,6 @@ export const CameraAR = ({
                     {reason === "denied" ? "Try again" : "Enable camera"}
                   </button>
 
-                  {onUsePhotoInstead && (
-                    <button
-                      type="button"
-                      onClick={onUsePhotoInstead}
-                      className="inline-flex min-h-[44px] items-center justify-center rounded-full px-5 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted outline-none transition-colors duration-300 hover:text-ink focus-visible:text-accent"
-                    >
-                      Or place it using a photo of your room →
-                    </button>
-                  )}
                 </div>
 
                 {/* Desktop → phone bridge: scan to open THIS painting on a phone
