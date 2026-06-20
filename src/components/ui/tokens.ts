@@ -25,16 +25,19 @@ import type { CSSProperties } from "react";
 /** The canonical page-masthead (h1) title cut, as an inline style. */
 export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 144, "wght" 560',
-  fontSize: "clamp(42px, 7.6vw, 116px)",
-  lineHeight: 0.96,
-  letterSpacing: "-0.018em",
+  // 2026-06-20: grown so page heads FILL big screens (Hugo: "increase font size
+  // + fill screen, too much spacing on fullscreen"). Faster vw growth + a much
+  // higher ceiling so 1440/1920/2560 reads bold, not stranded in dead space.
+  fontSize: "clamp(44px, 8.6vw, 150px)",
+  lineHeight: 0.95,
+  letterSpacing: "-0.02em",
 };
 
 /** A smaller companion cut for secondary mastheads / large section heads. */
 export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontVariationSettings: '"opsz" 120, "wght" 560',
-  fontSize: "clamp(34px, 5.2vw, 76px)",
-  lineHeight: 1.0,
+  fontSize: "clamp(36px, 5.9vw, 96px)",
+  lineHeight: 0.98,
   letterSpacing: "-0.016em",
 };
 
@@ -52,7 +55,7 @@ export const EYEBROW =
  *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
  *  or leave left-aligned. End the copy with a full stop, sentence-case. */
 export const TITLE =
-  "font-display font-bold tracking-[-0.04em] text-[clamp(38px,5vw,72px)] leading-[1.02] md:leading-[0.98] text-ink text-balance";
+  "font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.7vw,92px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -62,7 +65,7 @@ export const TITLE =
  *  sea of dead space on large screens. Sits a clear, generous step below its
  *  heading — pair with `mt-5 md:mt-6` (the canonical heading→subtitle gap). */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(18.5px,0.62vw_+_14.3px,27px)] leading-[1.65] text-ink-muted max-w-[clamp(680px,58vw,920px)]";
+  "font-sans font-normal text-[clamp(20px,0.72vw_+_15px,31px)] leading-[1.62] text-ink-muted max-w-[clamp(720px,62vw,1080px)]";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
