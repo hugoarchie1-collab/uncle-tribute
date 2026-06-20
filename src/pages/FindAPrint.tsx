@@ -101,9 +101,13 @@ export const FindAPrint = () => {
           <div
             style={{
               backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
+              // Bias toward the rainbow (left of frame) so it survives the
+              // portrait center-crop on mobile — on desktop the bar is wide
+              // enough that this still shows the wave too. Cross-platform parity.
+              backgroundPosition: "28% center",
               willChange: "auto",
             }}
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 bg-cover"
             aria-hidden="true"
           />
         ) : (
@@ -111,12 +115,15 @@ export const FindAPrint = () => {
             style={{
               y: backdropY,
               backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
+              // Bias toward the rainbow (left of frame) so it survives the
+              // portrait center-crop on mobile — cross-platform parity.
+              backgroundPosition: "28% center",
               willChange: "transform",
             }}
             // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can
             // NEVER expose an uncovered strip — the parent is overflow-hidden,
             // so the overscan is clipped (Collections' "black bar" fix).
-            className="absolute inset-[-8%] bg-cover bg-center"
+            className="absolute inset-[-8%] bg-cover"
             aria-hidden="true"
           />
         )}
