@@ -69,7 +69,12 @@ interface MV extends HTMLElement {
   canActivateAR?: boolean;
   scale?: string;
   activateAR?: () => void;
+  cameraOrbit?: string;
+  jumpCameraToGoal?: () => void;
 }
+
+/** The default front-on view the preview always returns to when the piece changes. */
+const DEFAULT_ORBIT = "0deg 80deg 1.4m";
 
 export const ArtworkAR = forwardRef<ArtworkARHandle, ArtworkARProps>(function ArtworkAR(
   { painting, colourway, sizeId, frame, onArAvailability, className },
@@ -135,6 +140,18 @@ export const ArtworkAR = forwardRef<ArtworkARHandle, ArtworkARProps>(function Ar
     };
   }, [moduleReady, apply, onArAvailability]);
 
+  // Reset the spin to the default front-on view whenever the PIECE changes
+  // (new painting / colourway / size / frame). Without this, switching prints
+  // inherits the viewer's previous user rotation. jumpCameraToGoal snaps with
+  // no animation; if the model isn't loaded yet the attribute applies on load.
+  useEffect(() => {
+    if (!moduleReady) return;
+    const mv = viewerRef.current;
+    if (!mv) return;
+    mv.cameraOrbit = DEFAULT_ORBIT;
+    mv.jumpCameraToGoal?.();
+  }, [painting.id, colourway.name, sizeId, frame, moduleReady]);
+
   return (
     <div className={cn("relative", className)}>
       {moduleReady ? (
@@ -149,7 +166,7 @@ export const ArtworkAR = forwardRef<ArtworkARHandle, ArtworkARProps>(function Ar
           ar-placement="wall"
           ar-scale="fixed"
           camera-controls
-          camera-orbit="0deg 80deg 1.4m"
+          camera-orbit={DEFAULT_ORBIT}
           min-camera-orbit="auto 65deg auto"
           max-camera-orbit="auto 95deg auto"
           shadow-intensity="1.4"

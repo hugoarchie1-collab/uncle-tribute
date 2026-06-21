@@ -231,11 +231,16 @@ export const Gallery = () => {
                         onClick={() => setColourwayName(c.name)}
                         onKeyDown={(e) => onRadioKey(e, colourways.length, i, (n) => setColourwayName(colourways[n].name))}
                         className={cn(
-                          "h-11 w-11 rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                          sel ? "ring-2 ring-accent scale-110" : "hover:scale-105",
+                          "h-12 w-12 overflow-hidden rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          sel ? "ring-2 ring-accent scale-110" : "opacity-90 hover:scale-105 hover:opacity-100",
                         )}
                         style={{ backgroundColor: c.hex }}
-                      />
+                      >
+                        <picture>
+                          <source srcSet={asset(webp(c.image))} type="image/webp" />
+                          <img src={asset(c.image)} alt="" className="h-full w-full object-cover" />
+                        </picture>
+                      </button>
                     );
                   })}
                 </div>
