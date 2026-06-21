@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
@@ -74,16 +75,25 @@ export const Welcome = () => {
   const maryPinkVis = useTransform(maryPinkOpacity, toVis);
   const backdropVisibilities = [indigoVis, redVis, purpleVis, maryPinkVis];
 
-  // Six featured paintings shown in a 3×2 grid, mirroring the
-  // Aiya/Marconi Dribbble "Latest creations crafted by hand" layout.
-  const featuredPicks: { id: string; colourway?: string }[] = [
-    { id: "peacock-minerva", colourway: "Blood Moon Red" },
-    { id: "ophiuchus" },
-    { id: "enneagon-swans", colourway: "Glacier Blue" },
-    { id: "tridecagon-moon-star", colourway: "Supernova Violet" },
-    { id: "wild-rose" },
-    { id: "english-bluebells" },
-  ];
+  // Six featured paintings in a 3×2 grid. A FRESH random six — each on a random
+  // colourway — is drawn on EVERY home-page mount (first visit, hard refresh, or
+  // navigating back to "/"), so "Six paintings from a lifetime at the compass" is
+  // never the same twice. Hugo: "give you a random 6 … I want this to last
+  // forever." useMemo([]) keeps the set stable across re-renders within a single
+  // mount (no reshuffle on scroll), and Fisher–Yates runs on a COPY so the shared
+  // PAINTINGS array is never mutated.
+  const featuredPicks = useMemo<{ id: string; colourway?: string }[]>(() => {
+    const pool = [...PAINTINGS];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 6).map((p) => ({
+      id: p.id,
+      colourway:
+        p.colourways[Math.floor(Math.random() * p.colourways.length)]?.name,
+    }));
+  }, []);
   const featured = featuredPicks
     .map((pick) => {
       const painting = PAINTINGS.find((p) => p.id === pick.id);

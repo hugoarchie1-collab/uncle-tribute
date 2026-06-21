@@ -142,7 +142,7 @@ export const Gallery = () => {
         description="See Stephen Meakin's mandala paintings on your own wall at their true size, in augmented reality — choose the colourway, the print size and the frame, then place it in your room."
         url="/gallery"
       />
-      <SceneBackdrop src="/img/scenes/born-in-the-sky-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/gallery-clouds-blur-v1.webp" />
       <Nav overlay />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1460px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
