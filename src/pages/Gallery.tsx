@@ -17,6 +17,7 @@ import { PageMasthead } from "../components/PageMasthead";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { ArtworkAR, type ArtworkARHandle } from "../components/ArtworkAR";
+import { PrintBack } from "../components/gallery/PrintBack";
 import { PAINTINGS, type Colourway, type Painting } from "../data/paintings";
 import {
   AR_SIZES,
@@ -65,6 +66,9 @@ export const Gallery = () => {
   const [frame, setFrame] = useState<ArFrame["id"]>(AR_DEFAULT_FRAME);
   const [arAvailable, setArAvailable] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  // Front (the 3D framed piece) ⇄ Back (the finished print's backing board +
+  // Certificate of Authenticity), so a buyer sees exactly what arrives.
+  const [view, setView] = useState<"front" | "back">("front");
 
   const arRef = useRef<ArtworkARHandle>(null);
 
@@ -72,6 +76,7 @@ export const Gallery = () => {
   const selectPainting = (p: Painting) => {
     setPaintingId(p.id);
     setColourwayName((p.colourways.find((c) => c.isOriginal) ?? p.colourways[0])?.name ?? "");
+    setView("front");
   };
 
   // Roving-tabindex + arrow-key navigation for the radiogroup selectors
@@ -160,7 +165,7 @@ export const Gallery = () => {
         </Reveal>
 
         <Reveal as="div" delay={0.05} className="mt-9 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* PREVIEW — the realistic framed 3D piece */}
+          {/* PREVIEW — the realistic framed piece (front) ⇄ its certified back */}
           <div className="lg:col-span-7 lg:sticky lg:top-24">
             <div className="relative aspect-square w-full overflow-hidden rounded-sm bg-bg/40 ring-1 ring-white/10">
               <ArtworkAR
@@ -172,6 +177,33 @@ export const Gallery = () => {
                 onArAvailability={setArAvailable}
                 className="h-full w-full"
               />
+              {/* The finished print's back + Certificate of Authenticity. Kept
+                  mounted OVER the still-loaded 3D model, so flipping is instant
+                  and AR availability is never reset. */}
+              {view === "back" && (
+                <PrintBack painting={painting} colourway={colourway} sizeId={sizeId} frame={frame} />
+              )}
+              {/* Front ⇄ Back toggle */}
+              <div
+                role="group"
+                aria-label="View front or back of the framed print"
+                className="absolute right-3 top-3 z-20 inline-flex rounded-full bg-bg/85 p-0.5 ring-1 ring-white/15"
+              >
+                {(["front", "back"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    aria-pressed={view === v}
+                    onClick={() => setView(v)}
+                    className={cn(
+                      "rounded-full px-3.5 py-1.5 font-sans text-[10px] font-bold uppercase tracking-[0.14em] outline-none transition-colors duration-300 focus-visible:ring-1 focus-visible:ring-accent",
+                      view === v ? "bg-ink text-bg" : "text-ink-muted hover:text-ink",
+                    )}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
             <p className={cn(EYEBROW_MUTED, "mt-4 text-center")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
               {painting.title} · {colourway.name} · {frameLabel}
