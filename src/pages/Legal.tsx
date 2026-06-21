@@ -163,7 +163,7 @@ const PRIVACY: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Some of our processors (Stripe, Resend, Vercel) operate servers outside the UK. Where personal data leaves the UK, transfers are made under UK-approved mechanisms — Standard Contractual Clauses or the UK International Data Transfer Addendum (IDTA) — so your data continues to receive an equivalent standard of protection.",
+        text: "Some of our processors (Stripe, Resend, Vercel, and — if you allow analytics cookies — Google and Meta) operate servers outside the UK. Where personal data leaves the UK, transfers are made under UK-approved mechanisms — Standard Contractual Clauses or the UK International Data Transfer Addendum (IDTA) — so your data continues to receive an equivalent standard of protection.",
       },
     ],
   },

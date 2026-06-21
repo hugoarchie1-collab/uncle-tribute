@@ -88,7 +88,7 @@ const LinkColumn = ({
   links: { to: string; label: string }[];
 }) => (
   <nav aria-label={heading}>
-    <h3 className={cn(EYEBROW_MUTED, "mb-4")}>{heading}</h3>
+    <h2 className={cn(EYEBROW_MUTED, "mb-4")}>{heading}</h2>
     <ul
       className={cn(
         FOOTER_TEXT,
@@ -144,7 +144,7 @@ export const Footer = () => (
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             40px hit-area (a11y), muted→ink with a soft lift on hover. */}
         <div className="mt-6">
-          <h3 className={cn(EYEBROW_MUTED, "mb-3")}>Follow</h3>
+          <h2 className={cn(EYEBROW_MUTED, "mb-3")}>Follow</h2>
           <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
             {SOCIALS.map((s) => (
               <li key={s.label} className="m-0">

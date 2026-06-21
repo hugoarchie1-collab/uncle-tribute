@@ -50,7 +50,7 @@ const PRODUCT_HIGHLIGHTS = [
   "Estate-stamped by The Mandala Company",
   "Ships with a Certificate of Authenticity",
   "Archival giclée on 350gsm Hahnemühle paper",
-  "Made to order in Lewes — free worldwide delivery",
+  "Made to order in Lewes — free UK delivery",
 ];
 
 /** Escape the five XML entities for element text content. */
