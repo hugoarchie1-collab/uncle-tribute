@@ -314,7 +314,7 @@ export const Library = () => {
     <div className="relative flex min-h-[100svh] flex-col overflow-x-hidden">
       <SceneBackdrop src="/img/scenes/news-indigo-carpet-blur-v2.webp" />
       <Seo
-        title="Library"
+        title="The Reading Room — the books that shaped Stephen Meakin"
         description="The books that shaped Stephen Meakin — a reading room from the estate of the late artist (SEM, 1966–2021)."
         url="/library"
         jsonLd={jsonLd}

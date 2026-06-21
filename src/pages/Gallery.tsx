@@ -8,7 +8,7 @@
 // a QR to open it on a phone (where the camera AR works).
 // =============================================================================
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { type KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -72,6 +72,40 @@ export const Gallery = () => {
   const selectPainting = (p: Painting) => {
     setPaintingId(p.id);
     setColourwayName((p.colourways.find((c) => c.isOriginal) ?? p.colourways[0])?.name ?? "");
+  };
+
+  // Roving-tabindex + arrow-key navigation for the radiogroup selectors
+  // (colourway / size / frame) — the WAI-ARIA radio pattern: one tab stop per
+  // group, arrows move + select, Home/End jump to the ends, focus follows.
+  const onRadioKey = (
+    e: KeyboardEvent<HTMLButtonElement>,
+    count: number,
+    index: number,
+    pick: (i: number) => void,
+  ) => {
+    let next: number;
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        next = (index + 1) % count;
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        next = (index - 1 + count) % count;
+        break;
+      case "Home":
+        next = 0;
+        break;
+      case "End":
+        next = count - 1;
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+    pick(next);
+    const sib = e.currentTarget.parentElement?.children?.[next];
+    if (sib instanceof HTMLElement) sib.focus();
   };
 
   // Desktop QR (open this exact page on a phone, where AR works).
@@ -150,7 +184,7 @@ export const Gallery = () => {
             <section>
               <p className={cn(EYEBROW, "m-0 mb-3")}>The work</p>
               <div
-                role="listbox"
+                role="group"
                 aria-label="Choose a painting"
                 className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
@@ -161,8 +195,7 @@ export const Gallery = () => {
                     <button
                       key={p.id}
                       type="button"
-                      role="option"
-                      aria-selected={sel}
+                      aria-pressed={sel}
                       aria-label={p.title}
                       onClick={() => selectPainting(p)}
                       className={cn(
@@ -185,7 +218,7 @@ export const Gallery = () => {
               <section>
                 <p className={cn(EYEBROW, "m-0 mb-3")}>Colourway · {colourway.name}</p>
                 <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
-                  {colourways.map((c) => {
+                  {colourways.map((c, i) => {
                     const sel = c.name === colourway.name;
                     return (
                       <button
@@ -194,9 +227,11 @@ export const Gallery = () => {
                         role="radio"
                         aria-checked={sel}
                         aria-label={c.name}
+                        tabIndex={sel ? 0 : -1}
                         onClick={() => setColourwayName(c.name)}
+                        onKeyDown={(e) => onRadioKey(e, colourways.length, i, (n) => setColourwayName(colourways[n].name))}
                         className={cn(
-                          "h-10 w-10 rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          "h-11 w-11 rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
                           sel ? "ring-2 ring-accent scale-110" : "hover:scale-105",
                         )}
                         style={{ backgroundColor: c.hex }}
@@ -211,7 +246,7 @@ export const Gallery = () => {
             <section>
               <p className={cn(EYEBROW, "m-0 mb-3")}>Size · true to scale</p>
               <div role="radiogroup" aria-label="Print size" className="grid grid-cols-2 gap-2.5">
-                {AR_SIZES.map((s) => {
+                {AR_SIZES.map((s, i) => {
                   const sel = s.id === sizeId;
                   return (
                     <button
@@ -219,7 +254,9 @@ export const Gallery = () => {
                       type="button"
                       role="radio"
                       aria-checked={sel}
+                      tabIndex={sel ? 0 : -1}
                       onClick={() => setSizeId(s.id)}
+                      onKeyDown={(e) => onRadioKey(e, AR_SIZES.length, i, (n) => setSizeId(AR_SIZES[n].id))}
                       className={cn(
                         PILL,
                         "flex-col gap-0.5 py-2 ring-1",
@@ -239,8 +276,8 @@ export const Gallery = () => {
             {/* Frame */}
             <section>
               <p className={cn(EYEBROW, "m-0 mb-3")}>Frame · {frameLabel}</p>
-              <div role="radiogroup" aria-label="Frame finish" className="flex gap-3">
-                {AR_FRAMES.map((f) => {
+              <div role="radiogroup" aria-label="Frame finish" className="flex flex-wrap gap-3">
+                {AR_FRAMES.map((f, i) => {
                   const sel = f.id === frame;
                   return (
                     <button
@@ -249,7 +286,9 @@ export const Gallery = () => {
                       role="radio"
                       aria-checked={sel}
                       aria-label={f.label}
+                      tabIndex={sel ? 0 : -1}
                       onClick={() => setFrame(f.id)}
+                      onKeyDown={(e) => onRadioKey(e, AR_FRAMES.length, i, (n) => setFrame(AR_FRAMES[n].id))}
                       className={cn(
                         "inline-flex min-h-[44px] items-center gap-2.5 rounded-full px-3.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
                         sel ? "ring-accent" : "ring-line hover:ring-ink/40",
