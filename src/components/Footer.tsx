@@ -4,7 +4,6 @@ import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
 import { clearConsent } from "../lib/consent";
 import { EYEBROW_MUTED } from "./ui/tokens";
-import { ScanToVisit } from "./ScanToVisit";
 
 const YEAR = new Date().getFullYear();
 
@@ -142,11 +141,11 @@ export const Footer = () => (
           213 Elm Drive, Hove, East Sussex, BN3 7JD, UK
         </p>
         {/* Follow the estate — official social profiles (mirrored into the
-            Organization sameAs in index.html). Inline SVG on currentColor so
-            the icons ride the same muted→ink hover as every footer link. */}
+            Organization sameAs in index.html). Inline SVG glyphs, each in a
+            40px hit-area (a11y), muted→ink with a soft lift on hover. */}
         <div className="mt-6">
           <h3 className={cn(EYEBROW_MUTED, "mb-3")}>Follow</h3>
-          <ul className="flex items-center gap-5 m-0 p-0 list-none">
+          <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
             {SOCIALS.map((s) => (
               <li key={s.label} className="m-0">
                 <a
@@ -154,7 +153,7 @@ export const Footer = () => (
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${s.label} — The Mandala Company`}
-                  className={cn(FOOTER_LINK, "inline-flex text-ink-muted")}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-ink hover:-translate-y-0.5 focus-visible:text-ink"
                 >
                   {s.icon}
                 </a>
@@ -162,9 +161,6 @@ export const Footer = () => (
             ))}
           </ul>
         </div>
-        {/* Scan-to-visit QR chip — links the dark site to a scannable cream
-            tile (the QR is always dark-on-cream, never inverted). */}
-        <ScanToVisit variant="footer" className="mt-6" />
       </div>
 
       {/* Explore — the primary pages (canonical nav order, minus Home). */}
