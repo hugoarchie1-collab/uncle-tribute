@@ -828,7 +828,10 @@ export const CloserLook = ({
           </button>
 
           {/* Zoom controls + % indicator — bottom-right, 44px touch targets. */}
-          <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 flex items-center gap-2.5">
+          <div
+            className="absolute right-4 md:right-6 flex items-center gap-2.5"
+            style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+          >
             {/* Live zoom % — sits beside the controls; fades after a beat. */}
             <span
               aria-hidden="true"
