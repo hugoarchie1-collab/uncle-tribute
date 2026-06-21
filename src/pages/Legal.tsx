@@ -347,7 +347,7 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "All prices are shown in pounds sterling (GBP) and are inclusive of UK VAT where applicable. The estate currently trades below the UK VAT threshold and so does not separately itemise VAT on invoices. Payment is taken at checkout by Stripe; we never see or store your card details.",
+        text: "All prices are shown in pounds sterling (GBP) and include any tax due. The estate is not currently VAT-registered (it trades below the UK VAT threshold), so no VAT is charged or itemised. Payment is taken at checkout by Stripe; we never see or store your card details.",
       },
     ],
   },

@@ -44,7 +44,7 @@ import {
   parseSizeCm,
   formatGBP,
 } from "../src/data/paintings";
-import { ABOUT } from "../src/data/content";
+import { ABOUT, WELCOME } from "../src/data/content";
 import { SITE_URL, absoluteUrl, pageTitle, firstSentence } from "../src/lib/seo";
 
 // Mirror of lib/headMeta.ts HEAD_DEFAULTS.description — the site-default meta
@@ -80,6 +80,13 @@ interface RouteHead {
    * see it; it carries the SAME content React renders, so it isn't cloaking.
    */
   bodyHtml?: string;
+  /**
+   * When true, emit <meta name="robots" content="noindex,follow"> into the
+   * prerendered head — for utility routes that should never be indexed (basket,
+   * the auth lookup). Mirrors the runtime useNoindexHead() behaviour so non-JS
+   * crawlers get the same signal the SPA sets after hydration.
+   */
+  noindex?: boolean;
 }
 
 // ---- Static routes (mirror each page's <Seo>/usePageTitle copy) -------------
@@ -161,10 +168,37 @@ const STATIC_ROUTES: RouteHead[] = [
     title: "Authentication",
     description:
       "The Mandala Company Estate Ledger — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record.",
+    // A certificate-lookup utility, not a content page — keep it out of the index.
+    noindex: true,
   },
-  { routePath: "/privacy", title: "Privacy." },
-  { routePath: "/terms", title: "Terms of sale." },
-  { routePath: "/returns", title: "Returns, refunds & damages." },
+  {
+    routePath: "/privacy",
+    title: "Privacy.",
+    // Mirror of Legal.tsx <Privacy> lead — so the prerendered + runtime meta agree.
+    description:
+      "The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR.",
+  },
+  {
+    routePath: "/terms",
+    title: "Terms of sale.",
+    description:
+      "The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights.",
+  },
+  {
+    routePath: "/returns",
+    title: "Returns, refunds & damages.",
+    description:
+      "Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive.",
+  },
+  {
+    // Not in the sitemap; prerendered only to give the SPA-shell route its own
+    // head (a basket-specific title + canonical + noindex) instead of cloning home.
+    routePath: "/basket",
+    title: "Your basket",
+    description:
+      "Your selected Stephen Meakin estate prints, ready for checkout.",
+    noindex: true,
+  },
 ];
 
 // ---- Painting routes (mirror PaintingDetail.tsx head + JSON-LD) -------------
@@ -291,9 +325,11 @@ function buildRoutes(): RouteHead[] {
   // time (not in the STATIC_ROUTES literal — the body builders reference escHtml
   // which is defined later in module load).
   const statics = STATIC_ROUTES.map((r) => {
+    if (r.routePath === "/") return { ...r, bodyHtml: homeBody() };
     if (r.routePath === "/collections") return { ...r, bodyHtml: collectionsBody() };
     if (r.routePath === "/about")
       return { ...r, bodyHtml: aboutBody(), jsonLd: [aboutJsonLd()] };
+    if (r.routePath === "/faq") return { ...r, bodyHtml: faqBody() };
     return r;
   });
   return [...statics, ...PAINTINGS.map(paintingRoute)];
@@ -378,6 +414,44 @@ const aboutBody = (): string =>
     `<p>${escHtml(ABOUT.palestine)}</p>`,
   ].join("");
 
+/** Home body — the brand statement, Stephen's opening words, the reminder lead
+ *  and the artist bio, pulled from content.ts so the words can never drift. The
+ *  home shell previously shipped an empty #root for non-JS crawlers/unfurlers. */
+const homeBody = (): string =>
+  [
+    `<h1>The Art of Stephen Meakin — mandala &amp; sacred-geometry prints</h1>`,
+    `<blockquote>${escHtml(WELCOME.openingQuote)} — ${escHtml(WELCOME.openingAttribution)}</blockquote>`,
+    `<p>${escHtml(WELCOME.reminderLead)}</p>`,
+    pArr(WELCOME.bio),
+    `<p><a href="/collections">Explore the collection</a> · <a href="/about">About Stephen Meakin</a></p>`,
+  ].join("");
+
+/** FAQ questions — a build-time MIRROR of the `question` strings in
+ *  src/pages/FAQ.tsx (FAQS). Kept here rather than imported because FAQ.tsx's
+ *  answers are JSX/ReactNode and pulling the page into the build graph is
+ *  fragile. ⚠️ Keep in sync if the FAQ.tsx questions change. */
+const FAQ_QUESTIONS: string[] = [
+  "Are the prints signed?",
+  "Can I check a certificate is genuine?",
+  "What are the prints made on?",
+  "How long until my print arrives?",
+  "What sizes do you offer?",
+  "Can I have my print framed?",
+  'What is "hand-finished by Polly"?',
+  "Do you ship internationally?",
+  "What if my print arrives damaged or doesn't arrive?",
+];
+
+/** FAQ body — the question set, so non-JS crawlers read the page's real topics
+ *  (the answers are JSX in FAQ.tsx; the head description already summarises them).
+ *  The /faq shell previously shipped an empty #root. */
+const faqBody = (): string =>
+  [
+    `<h1>Frequently asked questions</h1>`,
+    `<p>Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care.</p>`,
+    `<ul>${FAQ_QUESTIONS.map((q) => `<li>${escHtml(q)}</li>`).join("")}</ul>`,
+  ].join("");
+
 /** AboutPage JSON-LD for /about — grounds the bio to the artist Person node. */
 const aboutJsonLd = (): object => ({
   "@context": "https://schema.org",
@@ -436,6 +510,9 @@ function renderRouteHtml(
   // it rather than appending a duplicate). `<` is escaped to < so the JSON
   // can never break out of the <script> element.
   const inject: string[] = [`    <meta property="og:url" content="${escAttr(canonical)}" />`];
+  if (r.noindex) {
+    inject.push(`    <meta name="robots" content="noindex,follow" />`);
+  }
   if (r.jsonLd && r.jsonLd.length > 0) {
     const blocks = r.jsonLd.length === 1 ? r.jsonLd[0] : r.jsonLd;
     const json = JSON.stringify(blocks).replace(/</g, "\\u003c");

@@ -209,7 +209,10 @@ export const Welcome = () => {
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[32svh] sm:mt-[34svh] md:mt-[37svh]">
           <Reveal delay={0}>
-            <h2 className="font-display m-0">
+            {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
+                real <h1> (the hero quote below) is the first heading a screen
+                reader meets (no H1→below-H1 ordering inversion). */}
+            <div className="font-display m-0">
               {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
                   on the open. opsz 48 keeps the strokes clean at this scale. */}
               <span
@@ -262,7 +265,7 @@ export const Welcome = () => {
                   .
                 </span>
               </span>
-            </h2>
+            </div>
           </Reveal>
         </div>
       </section>
@@ -1007,7 +1010,7 @@ export const Welcome = () => {
               <img
                 src={asset("/img/scenes/sun-real-v4.webp")}
                 alt=""
-                loading="lazy"
+                loading="eager"
                 decoding="async"
                 className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
                 style={{
