@@ -501,6 +501,14 @@ function renderRouteHtml(
   if (r.ogImageAlt) {
     html = setTag(html, /<meta\s+property="og:image:alt"[\s\S]*?>/, `<meta property="og:image:alt" content="${escAttr(r.ogImageAlt)}" />`, "og:image:alt", warnings);
   }
+  // When a route overrides the OG image (product pages → a ~square painting),
+  // the static 1200x630 dimension hints in the shell are WRONG and make
+  // unfurlers crop to 1.91:1. Drop them so platforms measure the real image.
+  // Default-image routes keep the correct 1200x630.
+  if (r.ogImage) {
+    html = html.replace(/\s*<meta\s+property="og:image:width"[^>]*>/, "");
+    html = html.replace(/\s*<meta\s+property="og:image:height"[^>]*>/, "");
+  }
   html = setTag(html, /<meta\s+name="twitter:title"[\s\S]*?>/, `<meta name="twitter:title" content="${escAttr(fullTitle)}" />`, "twitter:title", warnings);
   html = setTag(html, /<meta\s+name="twitter:description"[\s\S]*?>/, `<meta name="twitter:description" content="${escAttr(description)}" />`, "twitter:description", warnings);
   html = setTag(html, /<meta\s+name="twitter:image"[\s\S]*?>/, `<meta name="twitter:image" content="${escAttr(ogImage)}" />`, "twitter:image", warnings);
