@@ -76,7 +76,7 @@ export const Account = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <SceneBackdrop src="/img/scenes/account-temple-moon-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/account-temple-moon-blur-v3.webp" />
       <Seo
         title="Your account"
         description="Sign in to The Art of Stephen Meakin to view your orders. Passwordless — we email you a secure one-time link."
