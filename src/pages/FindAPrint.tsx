@@ -23,6 +23,28 @@ import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colo
 // cross-dissolve; collapsed to one image to match the rest of the scene pages.)
 const FORYOU_BACKDROP = "/img/scenes/foryou-rainbow-wave-blur-v2.webp";
 
+// The intention lens — what a piece can cultivate, mapped ONLY to the paintings
+// whose own documented meaning (in paintings.ts descriptions) genuinely carries
+// it. A second, meaning-led way in alongside colour. Never invented: e.g.
+// flower-of-life IS the "Mandala of Transformation"; ophiuchus IS the healer
+// (Asclepius); enneagon-swans is "we are each other"; the Habundia flowers ARE
+// wild abundance; the wild rose keeps its thorns inside the circle (protection).
+type IntentionKey =
+  | "transformation"
+  | "abundance"
+  | "protection"
+  | "healing"
+  | "unity"
+  | "stillness";
+const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = [
+  { key: "transformation", label: "Transformation", paintings: ["flower-of-life", "lulin", "tridecagon-moon-star"] },
+  { key: "abundance", label: "Abundance", paintings: ["wild-rose", "english-bluebells", "slipper-orchids"] },
+  { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva"] },
+  { key: "healing", label: "Healing", paintings: ["ophiuchus"] },
+  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "flower-of-life"] },
+  { key: "stillness", label: "Stillness", paintings: ["enneagon-swans", "english-bluebells"] },
+];
+
 /**
  * /for-you — a calm "find a piece that's right for you, by colour" wayfinder
  * (NOT a quiz, no email gate, no right or wrong answer). The colour lens:
@@ -34,6 +56,7 @@ const FORYOU_BACKDROP = "/img/scenes/foryou-rainbow-wave-blur-v2.webp";
  */
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
+  const [intent, setIntent] = useState<Set<IntentionKey>>(new Set());
   const reduceMotion = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
 
@@ -44,6 +67,14 @@ export const FindAPrint = () => {
 
   const toggle = (k: ColourFamily) =>
     setActive((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+
+  const toggleIntent = (k: IntentionKey) =>
+    setIntent((prev) => {
       const next = new Set(prev);
       if (next.has(k)) next.delete(k);
       else next.add(k);
@@ -65,23 +96,34 @@ export const FindAPrint = () => {
   // Filter + swap each matching tile's cover to the colourway that matched.
   // Hover is zoom-only (Hugo: hover should zoom in a little, never flick to
   // another colourway), so each tile carries just its painting + cover.
+  // The set of painting ids the active intentions allow (null = no intention
+  // lens active → no intention narrowing).
+  const intentPaintings = useMemo(() => {
+    if (intent.size === 0) return null;
+    const ids = new Set<string>();
+    for (const it of INTENTIONS) {
+      if (intent.has(it.key)) it.paintings.forEach((p) => ids.add(p));
+    }
+    return ids;
+  }, [intent]);
+
   const filtered = useMemo(() => {
     const withCover = (e: (typeof entries)[number], cover: typeof e.original) => ({
       painting: e.painting,
       cover,
     });
-    if (active.size === 0) {
-      return entries.map((e) => withCover(e, e.original));
-    }
     return entries
-      .filter((e) => [...active].some((f) => e.families.has(f)))
+      .filter((e) => active.size === 0 || [...active].some((f) => e.families.has(f)))
+      .filter((e) => !intentPaintings || intentPaintings.has(e.painting.id))
       .map((e) =>
         withCover(
           e,
-          e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex))) ?? e.original,
+          active.size > 0
+            ? e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex))) ?? e.original
+            : e.original,
         ),
       );
-  }, [entries, active]);
+  }, [entries, active, intentPaintings]);
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
@@ -162,7 +204,8 @@ export const FindAPrint = () => {
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}
             >
-              Begin with a <em className="italic font-normal">colour</em>.
+              Begin with a <em className="italic font-normal">colour</em>, or an{" "}
+              <em className="italic font-normal">intention</em>.
             </h1>
           </Reveal>
 
@@ -227,23 +270,56 @@ export const FindAPrint = () => {
                 );
               })}
             </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
-              <p
-                className={cn(EYEBROW_TIGHT, "m-0")}
-                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-              >
-                {filtered.length} of {PAINTINGS.length}
-              </p>
-              {active.size > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setActive(new Set())}
-                  className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
-                >
-                  Show all {PAINTINGS.length}
-                </button>
-              )}
+          </Reveal>
+
+          {/* Intention lens — a meaning-led way in, sitting beside the colour
+              lens. Each chip maps to the paintings whose own documented meaning
+              carries that intention (INTENTIONS, above). */}
+          <Reveal as="div" className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
+            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+              The intention lens
+            </p>
+            <div className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+              {INTENTIONS.map((it) => {
+                const on = intent.has(it.key);
+                return (
+                  <button
+                    key={it.key}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => toggleIntent(it.key)}
+                    className={cn(
+                      "inline-flex items-center rounded-full px-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
+                      on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
+                    )}
+                  >
+                    <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>{it.label}</span>
+                  </button>
+                );
+              })}
             </div>
+          </Reveal>
+
+          {/* Live count + reset — reflects BOTH lenses (colour ∩ intention). */}
+          <Reveal as="div" className="mt-5 flex flex-wrap items-center justify-center gap-4">
+            <p
+              className={cn(EYEBROW_TIGHT, "m-0")}
+              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+            >
+              {filtered.length} of {PAINTINGS.length}
+            </p>
+            {(active.size > 0 || intent.size > 0) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setActive(new Set());
+                  setIntent(new Set());
+                }}
+                className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
+              >
+                Show all {PAINTINGS.length}
+              </button>
+            )}
           </Reveal>
         </section>
 
@@ -303,10 +379,13 @@ export const FindAPrint = () => {
 
         {filtered.length === 0 && (
           <p className="font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.7] text-ink-muted mt-6">
-            Nothing holds those tones at once.{" "}
+            Nothing matches all of those at once.{" "}
             <button
               type="button"
-              onClick={() => setActive(new Set())}
+              onClick={() => {
+                setActive(new Set());
+                setIntent(new Set());
+              }}
               className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
             >
               Show all {PAINTINGS.length}
