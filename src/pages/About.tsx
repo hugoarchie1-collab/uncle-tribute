@@ -927,7 +927,7 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="wandering" title="The wandering years." />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[780px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1320px] 4xl:max-w-[1480px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
@@ -958,7 +958,7 @@ export const About = () => {
             <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch mt-6 md:mt-8 max-w-[860px] 3xl:max-w-[1180px] 4xl:max-w-[1340px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch mt-6 md:mt-8 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -1495,7 +1495,7 @@ export const About = () => {
           </Reveal>
 
           {/* THE LETTER — one whole-element Reveal. */}
-          <Reveal as="div" className="max-w-[720px] 3xl:max-w-[840px] 4xl:max-w-[920px] mx-auto mt-6 md:mt-8">
+          <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[920px] mx-auto mt-6 md:mt-8">
             <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14 3xl:p-16">
               <p
                 className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.85] text-ink m-0"
