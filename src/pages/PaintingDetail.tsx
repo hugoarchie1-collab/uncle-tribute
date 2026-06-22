@@ -1263,6 +1263,20 @@ const BuyBox = ({
           <p className="mt-2 font-sans text-[13.5px] font-semibold text-ink m-0">{errorMsg}</p>
         )}
 
+        {/* Made-to-order reassurance — surfaces the REAL 24-hour goodwill
+            cancellation window (Legal.tsx "Your right to cancel") so the
+            no-returns rule on custom sizes doesn't scare a first-time buyer. */}
+        <p className={cn(META, "mt-4 m-0")}>
+          Changed your mind?{" "}
+          <Link
+            to="/returns"
+            className="underline underline-offset-4 decoration-line/60 hover:text-ink transition-colors"
+          >
+            Cancel free within 24 hours
+          </Link>
+          , before your print enters production.
+        </p>
+
         {/* A quiet path to ask before committing to a £245–£1,750 piece —
             opens the existing estate enquiry modal, painting-specific. */}
         <button
