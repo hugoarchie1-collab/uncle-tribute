@@ -191,7 +191,7 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // beneath under a border-t.
 const FaqMasthead = () => (
   <section className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}>
-    <div className="mx-auto w-full max-w-[860px] 3xl:max-w-[1000px] text-center">
+    <div className="mx-auto w-full max-w-[1120px] 3xl:max-w-[1300px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>

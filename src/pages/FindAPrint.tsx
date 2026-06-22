@@ -148,7 +148,7 @@ export const FindAPrint = () => {
             reading measure (mx-auto) so the top of the page reads as one calm
             axis-centred block over the rainbow-wave scene. Verbatim copy unchanged;
             only the framing moves. */}
-        <section className="mx-auto w-full max-w-[860px] 3xl:max-w-[1000px] text-center">
+        <section className="mx-auto w-full max-w-[1120px] 3xl:max-w-[1300px] text-center">
           <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
             <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>

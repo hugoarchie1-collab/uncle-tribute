@@ -260,14 +260,14 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[820px] 3xl:max-w-[980px] 4xl:max-w-[1100px]"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
         <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
           The complete {shortName}
         </h3>
-        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[640px] 3xl:max-w-[760px] mx-auto">
+        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[920px] 3xl:max-w-[1080px] mx-auto">
           All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
           edition ({sizeCode(tier)}) — the collection entire, for one home.
         </p>
@@ -329,10 +329,10 @@ const CatalogueSetCard = ({
     >
       <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 3xl:px-20 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
-        <h2 className={cn(TITLE, "max-w-[640px] 3xl:max-w-[780px] mx-auto my-0")}>
+        <h2 className={cn(TITLE, "max-w-[920px] 3xl:max-w-[1100px] mx-auto my-0")}>
           His life&rsquo;s work, in one collection.
         </h2>
-        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[560px] 3xl:max-w-[700px] mx-auto my-0")}>
+        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[900px] 3xl:max-w-[1080px] mx-auto my-0")}>
           One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
           {catalogue.paintingCount} of Stephen&rsquo;s paintings: the entire,
           finite body of his work, gathered for one home.
@@ -576,7 +576,7 @@ export const Collections = () => {
               className="relative scroll-mt-24"
             >
               <div className="relative mx-auto max-w-[1180px] 2xl:max-w-[1280px] 3xl:max-w-[1380px] 4xl:max-w-[1640px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-9 md:pb-12">
-                <Reveal as="header" className="max-w-[820px] 3xl:max-w-[980px] mx-auto text-center mb-6 md:mb-8">
+                <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-6 md:mb-8">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -586,13 +586,13 @@ export const Collections = () => {
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className={cn(TITLE, "max-w-[820px] 3xl:max-w-[980px] mx-auto my-0")}
+                    className={cn(TITLE, "max-w-[1080px] 3xl:max-w-[1280px] mx-auto my-0")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className={cn(SUBTITLE, "mt-5 md:mt-6 flex flex-col gap-4 max-w-[640px] 3xl:max-w-[760px] mx-auto")}
+                    className={cn(SUBTITLE, "mt-5 md:mt-6 flex flex-col gap-4 max-w-[920px] 3xl:max-w-[1080px] mx-auto")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
