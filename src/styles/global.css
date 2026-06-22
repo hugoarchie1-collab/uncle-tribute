@@ -135,7 +135,11 @@
     }
   }
 
-  ::selection { @apply bg-accent; color: var(--bg); }
+  /* Subtle, dignified text selection — a faint cream wash that keeps the text
+     its own colour. (Was a loud solid-rust highlight, which Hugo disliked
+     sitewide.) */
+  ::selection { background: rgba(237, 230, 214, 0.16); color: inherit; }
+  ::-moz-selection { background: rgba(237, 230, 214, 0.16); color: inherit; }
 
   /* Drop-shadow utility for large display headlines so they lift
      off the blurred peacock backdrop and stay legible regardless

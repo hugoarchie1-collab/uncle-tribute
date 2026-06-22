@@ -172,26 +172,13 @@ const ChapterHead = ({ id, title }: { id: ChapterId; title: string }) => {
         </p>
       </Reveal>
       <Reveal as="div" delay={0.12}>
-        {/* Title centred on the page axis. The ghost watermark year sits
-            BEHIND it as a centred wash (no longer a right-pinned side column
-            that threw the head off-centre and left an empty band). */}
-        <div className="relative flex items-center justify-center">
-          {chapter.watermark ? (
-            <span
-              aria-hidden
-              className="hidden lg:block pointer-events-none absolute inset-0 -z-10 flex items-center justify-center font-display font-semibold leading-none tracking-[-0.04em] text-ink/[0.08] select-none"
-              style={{
-                fontVariationSettings: '"opsz" 48, "wght" 600',
-                fontSize: "clamp(80px,10vw,150px)",
-              }}
-            >
-              {chapter.watermark}
-            </span>
-          ) : null}
-          <h2 className={cn(TITLE, "relative m-0 mx-auto max-w-[18ch] text-balance")}>
-            {title}
-          </h2>
-        </div>
+        {/* Ghost watermark year REMOVED — its `hidden lg:block` overrode the
+            `flex` centring, so on desktop the giant year lost its centre and
+            landed on top of the heading (the overlap Hugo flagged). The chapter
+            sequence is already carried by the numeral + kicker + tag above. */}
+        <h2 className={cn(TITLE, "m-0 mx-auto max-w-[18ch] text-balance")}>
+          {title}
+        </h2>
       </Reveal>
     </header>
   );
@@ -206,12 +193,10 @@ const ChapterHead = ({ id, title }: { id: ChapterId; title: string }) => {
 // hairline, then the sentence-case `.caption` register. Captions stay
 // CLAIM-FREE — only what the photo proves or content.ts states; a real
 // painting title inside a caption sits in <i> (renders display italic).
-const PlateCaption = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <figcaption className={cn("caption mt-3 flex items-baseline gap-3", className)}>
-    <span aria-hidden className="h-px w-6 bg-line self-center shrink-0" />
-    <span>{children}</span>
-  </figcaption>
-);
+// Captions removed at Hugo's request ("the stupid captions underneath pictures
+// on about, so unneeded"). Rendering nothing clears every figure caption on the
+// page in one place; the call sites stay valid (they just produce no caption).
+const PlateCaption = (_props: { children: ReactNode; className?: string }) => null;
 
 // ─── Plate ───────────────────────────────────────────────────────────────────
 // The family-album register: a personal snapshot mounted WHOLE at its native
