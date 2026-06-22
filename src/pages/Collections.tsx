@@ -12,6 +12,8 @@ import {
   getLowestTierPricePence,
   getCollectionBundle,
   getCompleteCatalogueBundle,
+  bundleDiscountPercentForCount,
+  COMPLETE_CATALOGUE_DISCOUNT_PERCENT,
   paintingImageAlt,
   type PrintTier,
 } from "../data/paintings";
@@ -294,6 +296,147 @@ const CollectionSetCard = ({
         <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
           The set saving is applied automatically at checkout.
         </p>
+      </div>
+    </Reveal>
+  );
+};
+
+// "Compose your own set" — the AOV builder. Pick ANY two or more mandalas; the
+// set reprices live at the SAME ladder the basket/checkout applies (2→5%, 3+→10%,
+// all→15%), and adding pushes one anchor-tier line per painting so checkout
+// derives the identical % — advertised == charged by construction (gotcha #9).
+const ComposeSetCard = ({
+  fmt,
+  fmtP,
+}: {
+  fmt: (pence: number) => string;
+  fmtP: (pence: number) => string;
+}) => {
+  const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  const toggle = (id: string) =>
+    setPicked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const count = picked.size;
+  const percent =
+    count >= PAINTINGS.length
+      ? COMPLETE_CATALOGUE_DISCOUNT_PERCENT
+      : count >= 2
+        ? bundleDiscountPercentForCount(count)
+        : 0;
+  const fullPence = count * tier.pricePence;
+  // Per-line rounding mirrors Stripe's coupon distribution across uniform lines.
+  const savePence =
+    percent > 0 ? count * Math.round((tier.pricePence * percent) / 100) : 0;
+  const setPence = fullPence - savePence;
+  const wholePounds =
+    setPence % 100 === 0 && fullPence % 100 === 0 && savePence % 100 === 0;
+  const money = (pence: number) => (wholePounds ? fmtP(pence) : fmt(pence));
+
+  const acquireSet = () => {
+    PAINTINGS.forEach((p) => {
+      if (!picked.has(p.id)) return;
+      const original =
+        p.colourways.find((c) => c.isOriginal && c.available) ??
+        p.colourways.find((c) => c.available) ??
+        p.colourways[0];
+      if (original) addItem(p.id, original.name, tier.id);
+    });
+  };
+
+  return (
+    <Reveal
+      as="div"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+    >
+      <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
+        <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
+        <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
+          Build a wall of your own
+        </h3>
+        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[920px] 3xl:max-w-[1080px] mx-auto">
+          Choose any two or more mandalas to hang together. The set saving builds
+          as you add — 5% for two, 10% for three or more — applied automatically
+          at checkout.
+        </p>
+
+        {/* Pick grid — toggle paintings in/out of the set. */}
+        <div className="mt-7 md:mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3">
+          {PAINTINGS.map((p) => {
+            const cover =
+              p.colourways.find((c) => c.isOriginal && c.available) ??
+              p.colourways.find((c) => c.available) ??
+              p.colourways[0];
+            const on = picked.has(p.id);
+            return (
+              <button
+                key={p.id}
+                type="button"
+                aria-pressed={on}
+                aria-label={`${on ? "Remove" : "Add"} ${p.title} ${on ? "from" : "to"} your set`}
+                onClick={() => toggle(p.id)}
+                title={p.title}
+                className={cn(
+                  "group relative block aspect-square overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  on ? "ring-2 ring-accent" : "ring-line hover:ring-accent/50",
+                )}
+              >
+                <AssetImage
+                  src={cover.image}
+                  alt={p.title}
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 768px) 200px, 30vw"
+                  className={cn(
+                    "absolute inset-0 w-full h-full object-cover transition-all duration-500",
+                    on ? "scale-[1.03]" : "opacity-80 group-hover:opacity-100",
+                  )}
+                />
+                {on && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-bg text-[13px] font-bold"
+                  >
+                    ✓
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <SetSizeSelector value={tier} onChange={setTier} />
+
+        {count >= 2 ? (
+          <>
+            <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
+              <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
+                {money(setPence)}
+              </span>
+              <span className="mx-3 text-ink/35">·</span>
+              {count} prints, {sizeCode(tier)}
+            </p>
+            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
+              Taken individually, {money(fullPence)} — a saving of {money(savePence)} ({percent}%) as a set.
+            </p>
+            <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
+              Add my set to basket
+              <span aria-hidden="true">→</span>
+            </button>
+            <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+              The set saving is applied automatically at checkout.
+            </p>
+          </>
+        ) : (
+          <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted/80 m-0 mt-2">
+            Select at least two prints to begin your set.
+          </p>
+        )}
       </div>
     </Reveal>
   );
@@ -704,6 +847,10 @@ export const Collections = () => {
             </section>
           );
         })}
+
+        {/* COMPOSE YOUR OWN SET — AOV builder: pick any 2+, reprices at the same
+            count ladder checkout applies (advertised == charged). */}
+        <ComposeSetCard fmt={fmt} fmtP={fmtP} />
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across
             selector; getCompleteCatalogueBundle keeps advertised == charged. */}
