@@ -240,7 +240,7 @@ const Plate = ({
             loading="lazy"
             decoding="async"
             sizes={sizes}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-contain"
           />
         </div>
       ) : (
@@ -367,7 +367,7 @@ const ContainImage = ({
     <div
       ref={ref}
       className={cn(
-        "relative w-full overflow-hidden bg-bg-soft ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]",
+        "relative w-full overflow-hidden bg-ink/[0.05] ring-1 ring-ink/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]",
         aspect,
       )}
     >
@@ -1040,7 +1040,7 @@ export const About = () => {
                   contained at 440px. */}
               <div className="lg:sticky lg:top-28">
                 <Reveal as="figure" className="m-0 max-w-[440px] mx-auto lg:mx-0">
-                  <div className="bg-bg-soft p-3 md:p-4 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
+                  <div className="bg-ink/[0.05] p-3 md:p-4 ring-1 ring-ink/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
                     <AssetImage
                       src="/img/about/25-harmonic-frequencies.jpg"
                       alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
