@@ -45,7 +45,7 @@ export const ReassuranceRow = () => (
     <div className="flex flex-col gap-1.5">
       <LockIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Secure checkout</span>
-      <span className={META}>Payments by Stripe</span>
+      <span className={META}>Cards, Apple&nbsp;Pay &amp; Google&nbsp;Pay via Stripe</span>
     </div>
     <div className="flex flex-col gap-1.5">
       <ReturnIcon className="w-[18px] h-[18px] text-ink/55" />
