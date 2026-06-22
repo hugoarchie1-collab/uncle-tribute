@@ -276,7 +276,14 @@ const Shelf = ({ books }: { books: Book[] }) => {
         </p>
       </Reveal>
 
-      <div className="mt-6 md:mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-x-6 gap-y-10">
+      <div
+        className={cn(
+          "mt-6 md:mt-8",
+          lone
+            ? "max-w-[820px]"
+            : "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-x-6 gap-y-10",
+        )}
+      >
         {books.map((book, i) => (
           <Reveal key={book.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
             <ShelfItem book={book} wide={lone} />

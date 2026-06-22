@@ -103,6 +103,7 @@ export const BOOKS: Book[] = [
     year: 1923,
     coverImage: "/img/books/the-prophet-gibran-v1.jpg",
     featured: true,
+    useFallbackCard: true,
     spineColor: "#c97844",
     summary:
       "Gibran's prose-poem, in which the prophet Almustafa speaks on love, work, giving and sorrow in the hour before he leaves the city of Orphalese. A slim, quiet companion that has sat in many homes since 1923 — and one of the books Stephen kept among those that shaped him.",
