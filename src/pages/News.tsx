@@ -164,7 +164,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
       {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
       <div className="md:col-span-9 flex flex-col sm:flex-row gap-5 md:gap-7 items-start">
         {isRelease(entry) && entry.cover ? (
-          <div className="shrink-0 w-[132px] sm:w-[148px] md:w-[168px] 3xl:w-[200px] 4xl:w-[232px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
+          <div className="shrink-0 w-[200px] sm:w-[280px] md:w-[340px] 3xl:w-[400px] 4xl:w-[460px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
             <AssetImage
               src={entry.cover}
               alt={entry.title}

@@ -24,22 +24,20 @@ const NAV_LINKS = [
   // links never crowd/overflow a laptop-width bar (it gets the drawer instead).
   { to: "/gift", label: "Gift cards" },
   { to: "/auth", label: "Authenticate" },
-  // Trade & Interiors promoted onto the primary menu (Hugo's request — "add
-  // Trade & Interiors to the main contents"); removed from SECONDARY_LINKS below.
-  { to: "/trade", label: "Trade & Interiors" },
   { to: "/contact", label: "Contact" },
 ];
 
 /** Estate meta secondary links — the quiet drawer-footer set (real routes
  *  only): account/orders, the Library reading room, FAQ, then legal (Privacy ·
- *  Terms · Returns). Gift cards + Authenticate + Trade & Interiors were promoted
- *  OUT of this set onto the primary NAV_LINKS menu above. Basket is intentionally
- *  NOT here: it already has its own always-visible icon in the top bar, so
- *  listing it again read as a stray highlighted chip. */
+ *  Terms · Returns). Gift cards + Authenticate are on the primary NAV_LINKS menu
+ *  above; Trade & Interiors sits HERE beside Library (Hugo: group it with the
+ *  Library at the bottom, not in the main menu). Basket is intentionally NOT
+ *  here: it already has its own always-visible icon in the top bar. */
 const SECONDARY_LINKS = [
   { to: "/account", label: "Your account" },
   { to: "/orders", label: "Orders & returns" },
   { to: "/library", label: "Library" },
+  { to: "/trade", label: "Trade & Interiors" },
   { to: "/faq", label: "FAQ" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },

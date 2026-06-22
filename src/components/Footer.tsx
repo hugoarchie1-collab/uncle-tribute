@@ -109,9 +109,9 @@ const LinkColumn = ({
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-7 md:pb-9"
+    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-9 pb-6 md:pb-7"
   >
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-9 md:gap-y-0 items-start">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-7 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
           tidy lockup capped to the tribute measure (max-w-[280px]) so it never
           reaches the link columns. A short tagline + the estate email +
@@ -123,9 +123,9 @@ export const Footer = () => (
           wordmark
           wordmarkAlwaysOn
           wordmarkWrap
-          className="max-w-[280px] mb-6 [&>span]:leading-[1.4]"
+          className="max-w-[280px] mb-4 [&>span]:leading-[1.4]"
         />
-        <div aria-hidden="true" className="h-px w-10 bg-line mb-6" />
+        <div aria-hidden="true" className="h-px w-10 bg-line mb-4" />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala
           Artist &amp; Sacred Geometer, 1966&ndash;2021.
@@ -143,8 +143,8 @@ export const Footer = () => (
         {/* Follow the estate — official social profiles (mirrored into the
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             40px hit-area (a11y), muted→ink with a soft lift on hover. */}
-        <div className="mt-6">
-          <h2 className={cn(EYEBROW_MUTED, "mb-3")}>Follow</h2>
+        <div className="mt-5">
+          <h2 className={cn(EYEBROW_MUTED, "mb-2.5")}>Follow</h2>
           <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
             {SOCIALS.map((s) => (
               <li key={s.label} className="m-0">
@@ -182,7 +182,7 @@ export const Footer = () => (
 
     {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·
         Returns appear ONLY here, never also in a column above). */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-8 md:mt-10 pt-5 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-6 md:mt-7 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the
         estate. All rights reserved.
