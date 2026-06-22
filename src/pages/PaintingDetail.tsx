@@ -20,14 +20,18 @@ import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { CloserLook } from "../components/CloserLook";
+import { EnquireModal } from "../components/EnquireModal";
+import { AssetImage } from "../components/AssetImage";
 import {
   COLLECTIONS,
+  PAINTINGS,
   EMBELLISHMENT_NOTE,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
   getLowestTierPricePence,
   getPaintingById,
+  getPaintingsByCollection,
   getPrintTiers,
   paintingImageAlt,
   ORIGINAL_PRINT_SPEC,
@@ -707,6 +711,7 @@ const BuyBox = ({
   const { formatPretty: fmtP, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [enquireOpen, setEnquireOpen] = useState(false);
   // The confirmation pill records *which* selection was last added + when.
   // Switching painting/colourway/tier silently invalidates a stale one.
   const [addedFor, setAddedFor] = useState<{
@@ -1241,6 +1246,17 @@ const BuyBox = ({
           <p className="mt-2 font-sans text-[13.5px] font-semibold text-ink m-0">{errorMsg}</p>
         )}
 
+        {/* A quiet path to ask before committing to a £245–£1,750 piece —
+            opens the existing estate enquiry modal, painting-specific. */}
+        <button
+          type="button"
+          onClick={() => setEnquireOpen(true)}
+          className={cn(META, "mt-4 inline-flex items-center gap-1.5 underline underline-offset-4 decoration-line/60 hover:text-ink transition-colors")}
+        >
+          A question before you order?
+          <span aria-hidden="true">→</span>
+        </button>
+
         {/* 8 · AUTHENTICATION + REASSURANCE — structured trust cluster. All
             copy from single-source ESTATE_AUTHENTICATION (inside the card).
             Full provenance + shipping detail live in the ProvenancePanel
@@ -1250,8 +1266,89 @@ const BuyBox = ({
         <div className="mt-5">
           <ReassuranceRow />
         </div>
+        <EnquireModal
+          open={enquireOpen}
+          onClose={() => setEnquireOpen(false)}
+          eyebrow="Prints"
+          title="A question before you order?"
+          subject={`Enquiry — ${painting.title} (${selected.name}, ${selectedTier.size})`}
+          intro="Ask us anything about this piece — paper, colour, framing, sizing, or timing. We're glad to send a higher-resolution preview or talk it through before you order."
+        />
       </div>
     </div>
+  );
+};
+
+/**
+ * Companions from the estate — a quiet cross-sell rail at the foot of a product
+ * page. The PDP previously had no pre-purchase sideways path except the
+ * desktop-only full FooterCatalogue. Collection-mates first, padded from the
+ * wider catalogue, capped at 3 — a multi-item basket then qualifies for the
+ * 5–15% bundle discount. Monochrome to match the PDP register; tiles mirror the
+ * Basket "Begin with these" pattern.
+ */
+const CompanionWorks = ({
+  painting,
+  collectionTitle,
+}: {
+  painting: Painting;
+  collectionTitle?: string;
+}) => {
+  const { formatPretty: fmtP } = useCurrency();
+  const companions = useMemo(() => {
+    const mates = getPaintingsByCollection(painting.collection).filter(
+      (p) => p.id !== painting.id,
+    );
+    const fill = PAINTINGS.filter(
+      (p) => p.id !== painting.id && p.collection !== painting.collection,
+    );
+    return [...mates, ...fill].slice(0, 3);
+  }, [painting.id, painting.collection]);
+
+  if (companions.length === 0) return null;
+
+  return (
+    <Reveal
+      as="section"
+      className="mx-auto w-full max-w-[1100px] 2xl:max-w-[1240px] 3xl:max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 mt-16 md:mt-20"
+    >
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>
+        More from {collectionTitle ?? "the estate"}
+      </p>
+      <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-5 md:gap-8">
+        {companions.map((p) => {
+          const cover =
+            p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
+          const fromPence = getLowestTierPricePence(p);
+          return (
+            <li key={p.id} className="m-0 min-w-0">
+              <Link
+                to={`/collections/${p.id}`}
+                className="group block"
+                aria-label={`${p.title} — from ${fmtP(fromPence)}`}
+              >
+                <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
+                  <AssetImage
+                    src={cover.image}
+                    alt={`${p.title} — ${cover.name}`}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 768px) 360px, 30vw"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                  />
+                </div>
+                <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                  {p.title}
+                </h3>
+                <p className="font-sans font-normal text-[clamp(12.5px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
+                  From {fmtP(fromPence)}
+                </p>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </Reveal>
   );
 };
 
@@ -1989,6 +2086,7 @@ export const PaintingDetail = () => {
             <ProvenancePanel />
           </div>
         </main>
+        <CompanionWorks painting={painting} collectionTitle={collection?.title} />
         {/* Exhibited & commissioned — Stephen's real, documented provenance
             (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).
             For a cold-start estate with no reviews yet, this is the legitimate
