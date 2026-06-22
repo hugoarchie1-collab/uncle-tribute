@@ -65,6 +65,17 @@ import {
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
 
+// Frame-ready dimensions — append inches to a "… (42 × 42 cm)" size string so
+// international buyers (US/CA/AU) can match a standard off-the-shelf frame
+// without doing the maths. Display-only; derived from parseSizeCm so it can
+// never drift from the canonical cm. "A2 (42 × 42 cm)" → "… cm · 16.5 × 16.5 in)".
+const cmToIn = (cm: number) => Math.round((cm / 2.54) * 10) / 10;
+const sizeWithInches = (size: string): string => {
+  const d = parseSizeCm(size);
+  if (!d) return size;
+  return size.replace(/\)\s*$/, ` · ${cmToIn(d.w)} × ${cmToIn(d.h)} in)`);
+};
+
 // Rolling ~12-month price-validity horizon for the Product Offer JSON-LD
 // (Rich Results recommended field — keeps the cached price from looking stale).
 // Computed ONCE at module load (a date ~1yr out, refreshed each deploy/session)
@@ -204,7 +215,7 @@ const SizePicker = ({
           <span className="min-w-0">
             <span className={cn(EYEBROW_TIGHT, "block mb-1")}>{tier.label}</span>
             <span className="block font-sans text-[15px] font-semibold leading-[1.25] text-ink">
-              {tier.size}
+              {sizeWithInches(tier.size)}
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
@@ -929,6 +940,12 @@ const BuyBox = ({
             <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.location}</dd>
           </>
         )}
+        {painting.pigmentNote && (
+          <>
+            <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Pigment</dt>
+            <dd className="m-0 font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted">{painting.pigmentNote}</dd>
+          </>
+        )}
         <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Original</dt>
         <dd className="m-0 font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
       </dl>
@@ -953,7 +970,7 @@ const BuyBox = ({
             {fmtP(selectedTier.pricePence)}
           </p>
           <p className={cn(META, "m-0")}>
-            {selectedTier.size}
+            {sizeWithInches(selectedTier.size)}
           </p>
         </div>
 

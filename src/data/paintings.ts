@@ -70,6 +70,13 @@ export interface Painting {
   description: string;     // the full story for this painting
   artistQuote?: string;    // Stephen's own words, if a quote exists for this piece
   location?: string;       // e.g. "Ditchling, Sussex"
+  /**
+   * Habundia botanical-pigment line — surfaced as a quiet "Pigment" key-fact on
+   * the product page. Set ONLY where it is literally true (the paint contains
+   * the depicted flower's own oil). Drawn from the painting's own description —
+   * never invented.
+   */
+  pigmentNote?: string;
   colourways: Colourway[];
   /**
    * Optional per-painting overrides. If unset, DEFAULT_PRINT applies.
@@ -520,6 +527,8 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of Wild Rose",
     year: "2018",
     collection: "habundia",
+    pigmentNote:
+      "Painted with real wild-rose oil — the painting contains the flower it depicts.",
     size: "60 × 60 cm (approx. 24 × 24 in)",
     location: "Ditchling, Sussex",
     description:
@@ -541,6 +550,8 @@ export const PAINTINGS: Painting[] = [
     title: "Mandala of English Bluebells",
     year: "2019",
     collection: "habundia",
+    pigmentNote:
+      "Painted with real bluebell oil — the flower pressed into the work itself.",
     size: "60 × 60 cm (approx. 24 × 24 in)",
     description:
       "The second painting from the Habundia collection. As with the Wild Rose, Stephen painted it using actual bluebell oil.\n\nNot a painting of bluebells. A painting about being there.\n\nSix large bells. Twelve small. Forty-eight buds, three white and one pink among them: the exceptions noticed, named, counted. Five open blooms and one pentangle. The pentangle is a five-pointed star, the geometry of Venus, the planet that traces a five-petalled rose across the sky in its eight-year orbit with Earth. The wild rose carries it in its petals. Stephen found it again here.\n\nSix owls sit in six trees whose leaves have not yet opened. The bluebell blooms in a narrow window each spring, before the canopy closes and the light disappears from the forest floor. The owls are in the bare branches above. They see in darkness what others cannot.\n\nThis was the centrepiece of Stephen's final exhibition, at Unique Arts Gallery in Brighton, 2019.",
