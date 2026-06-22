@@ -600,6 +600,18 @@ export const Basket = () => {
                 )}
               </dl>
 
+              {/* Quiet AOV nudge — the count ladder (mirrors bundlePercentOff /
+                  Stripe to the penny). Shown only below the 10% rung; the special
+                  colourway-set (12%) / catalogue (15%) bundles read ≥10 here so
+                  they self-exclude. Informational — never a price claim. */}
+              {lines.length >= 1 && bundleDiscountPercent < 10 && (
+                <p className="m-0 -mt-1 mb-4 font-sans text-[clamp(13px,0.78vw,15.5px)] leading-[1.5] text-ink-muted">
+                  {lines.length === 1
+                    ? "Add one more print and your order saves 5% — and 10% on three or more."
+                    : "One more print lifts your bundle saving to 10%."}
+                </p>
+              )}
+
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
                   Total <span className="text-[clamp(12px,0.7vw,15px)] normal-case tracking-normal">(delivery free)</span>
