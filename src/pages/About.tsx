@@ -1611,7 +1611,7 @@ export const About = () => {
 
           <Reveal as="div" className="max-w-[62ch] mx-auto">
             {TRIBUTE.paragraphs.map((p, i) => (
-              <p key={i} className={cn(BODY, i > 0 && "mt-5")}>
+              <p key={i} className={cn(BODY, i > 0 && "mt-6")}>
                 {p}
               </p>
             ))}

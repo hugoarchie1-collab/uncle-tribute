@@ -255,7 +255,7 @@ const CommentRow = ({
             <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
           ) : (
             paragraphs.map((p, i) => (
-              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-[0.6em]")}>
+              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-3")}>
                 {p}
               </p>
             ))

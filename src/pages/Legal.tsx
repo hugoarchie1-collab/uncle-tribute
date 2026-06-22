@@ -860,7 +860,7 @@ const LegalPage = ({
                   legal reading register. Even, comfortable vertical rhythm
                   between blocks (gap-5) so multi-paragraph clauses read with a
                   deliberate cadence — never cramped, never gappy. */}
-              <div className="lg:col-span-8 flex flex-col gap-5">
+              <div className="lg:col-span-8 flex flex-col gap-6">
                 {section.blocks.map((block, j) => {
                   if (block.kind === "p") {
                     return (
