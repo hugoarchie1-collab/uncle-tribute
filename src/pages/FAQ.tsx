@@ -76,14 +76,27 @@ const FAQS: QA[] = [
   },
   {
     eyebrow: "The print itself",
-    question: "What are the prints made on?",
+    question: "What are the prints made on — and can I have canvas?",
     answer: (
       <>
-        350gsm Hahnemühle archival paper, printed with pigment inks on a
-        12-colour large-format giclée press. Each print is made to order at
-        Point 101, London — one of the UK's leading giclée print ateliers,
-        used by museums and contemporary artists alike. Lifespan under
-        normal display conditions is in excess of 200 years.
+        As standard, every print is made on <strong>350gsm Hahnemühle archival
+        cotton-rag paper</strong>, printed with pigment inks on a 12-colour
+        large-format giclée press. Each is made to order at Point 101, London —
+        a Hahnemühle Certified Studio used by museums and contemporary artists
+        alike. Lifespan under normal display conditions is in excess of 200
+        years.
+        <br />
+        <br />
+        Prefer a different finish? Point 101 also prints across a range of
+        fine-art papers and gallery <strong>canvas</strong>. As a guide: choose{" "}
+        <strong>paper</strong> if you plan to glass-frame the piece in the
+        traditional way; choose <strong>canvas</strong> for a bold, tactile,
+        frameless surface that reads like an original painting. For canvas or an
+        alternative paper, just{" "}
+        <Link to="/contact" className="text-accent hover:underline">
+          tell us
+        </Link>{" "}
+        when you order and we'll arrange it with the atelier.
       </>
     ),
   },
