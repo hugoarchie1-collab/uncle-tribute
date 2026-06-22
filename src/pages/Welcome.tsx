@@ -218,12 +218,11 @@ export const Welcome = () => {
               <span
                 className="block text-balance"
                 style={{
-                  fontVariationSettings: '"opsz" 48, "wght" 700',
-                  fontWeight: 700,
-                  fontSize: "clamp(50px, 12vw, 196px)",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 0.9,
-                  textTransform: "uppercase",
+                  fontVariationSettings: '"opsz" 144, "wght" 560',
+                  fontWeight: 560,
+                  fontSize: "clamp(46px, 11vw, 184px)",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 0.94,
                   color: "#f1ead9",
                   textShadow:
                     "0 1px 2px rgba(8,6,12,0.95), 0 3px 30px rgba(8,6,12,0.9), 0 0 60px rgba(8,6,12,0.7)",
@@ -232,9 +231,9 @@ export const Welcome = () => {
                 The Mandala{" "}
                 <em
                   style={{
-                    fontStyle: "normal",
-                    fontVariationSettings: '"opsz" 48, "wght" 700',
-                    fontWeight: 700,
+                    fontStyle: "italic",
+                    fontVariationSettings: '"opsz" 144, "wght" 560',
+                    fontWeight: 560,
                   }}
                 >
                   Company
