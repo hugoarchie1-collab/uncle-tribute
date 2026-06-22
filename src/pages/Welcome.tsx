@@ -133,7 +133,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[84svh] md:min-h-[88svh] pb-[6svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[56svh] md:min-h-[62svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* The home's own peacock painting shows THROUGH the transparent sun
@@ -152,7 +152,7 @@ export const Welcome = () => {
           className="absolute inset-0 z-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(9,7,13,0.42) 0%, rgba(9,7,13,0.32) 50%, rgba(9,7,13,0.28) 100%)",
+              "linear-gradient(180deg, rgba(9,7,13,0.34) 0%, rgba(9,7,13,0.12) 45%, rgba(9,7,13,0) 100%)",
           }}
         />
         {/* Earth limb pinned to the TOP — the natural Earth SPUN AROUND (scaleY -1)
@@ -207,7 +207,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[32svh] sm:mt-[34svh] md:mt-[37svh]">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[21svh] sm:mt-[23svh] md:mt-[25svh]">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -515,7 +515,7 @@ export const Welcome = () => {
                   "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
               }}
             />
-            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[820px] 3xl:max-w-[960px]">
+            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[1080px] 3xl:max-w-[1320px]">
               <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust drop cap (pure
@@ -541,7 +541,7 @@ export const Welcome = () => {
                 below then renders only the REMAINDER of that paragraph (see the
                 slice in the map), so the full passage appears exactly once across
                 the feature + body — never read twice. opsz 44. */}
-            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[760px] 3xl:max-w-[920px] text-center">
+            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
               <p
                 className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
                 style={{
@@ -592,7 +592,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1}>
               <div aria-hidden="true" className="mt-5 md:mt-6 mb-4 h-px w-12 bg-ink/15" />
-              <p className="m-0 mx-auto max-w-[820px] 3xl:max-w-[960px] hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[1080px] 3xl:max-w-[1320px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
                   style={{
@@ -705,7 +705,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 From the hand
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,4.6vw,80px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance hero-text-shadow">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.4vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -809,7 +809,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[720px] 3xl:max-w-[880px] mx-auto">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1000px] 3xl:max-w-[1200px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -877,7 +877,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(36px,4.6vw,80px)] leading-[0.98] text-ink my-0 max-w-[820px] mx-auto text-balance hero-text-shadow">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.4vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -907,7 +907,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[860px] 3xl:max-w-[1040px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[1140px] 3xl:max-w-[1340px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -923,7 +923,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[760px] 3xl:max-w-[920px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
