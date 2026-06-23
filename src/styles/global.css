@@ -666,7 +666,18 @@
    soft scrim over the hero/intro film that fades to transparent. No
    backdrop-filter (the banned per-frame "2005-lag" on the always-mounted bar). */
 .nav-bg-scrolled {
-  background-color: rgba(10, 9, 8, 0.97);
+  /* Deep blurred-red estate fill (Hugo 2026-06-23: "make top banner also
+     blurred red not black"). The wax-seal blood-red, softened by a vertical
+     gradient so it reads as a "blurred" wash WITHOUT a backdrop-filter — that
+     remains banned on this always-mounted fixed element (the per-frame
+     "2005-lag"). Kept dark enough that the cream logo + links hold full contrast
+     and the bar never out-shouts the type. */
+  background-image: linear-gradient(
+    180deg,
+    rgba(64, 13, 13, 0.97) 0%,
+    rgba(46, 9, 10, 0.97) 58%,
+    rgba(34, 6, 7, 0.98) 100%
+  );
 }
 
 /* ── Sun band fade ──────────────────────────────────────────────────────────

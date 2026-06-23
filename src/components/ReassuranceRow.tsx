@@ -50,14 +50,14 @@ export const ReassuranceRow = () => (
     <div className="flex flex-col gap-1.5">
       <ReturnIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Damaged in transit</span>
-      <Link to="/returns" className={cn(META, "underline-offset-4 hover:text-accent transition-colors")}>
+      <Link to="/returns" className={cn(META, "underline underline-offset-4 hover:text-ink transition-colors")}>
         Replacement guaranteed →
       </Link>
     </div>
     <div className="flex flex-col gap-1.5">
       <ParcelIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Free delivery</span>
-      <Link to="/faq" className={cn(META, "underline-offset-4 hover:text-accent transition-colors")}>
+      <Link to="/faq" className={cn(META, "underline underline-offset-4 hover:text-ink transition-colors")}>
         Worldwide · ships in 7–10 days →
       </Link>
     </div>

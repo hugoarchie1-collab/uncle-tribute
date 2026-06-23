@@ -121,7 +121,6 @@ export const Footer = () => (
         <Logo
           size={28}
           wordmark
-          wordmarkAlwaysOn
           wordmarkWrap
           className="max-w-[280px] mb-4 [&>span]:leading-[1.4]"
         />

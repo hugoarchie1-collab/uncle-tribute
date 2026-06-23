@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 interface LogoProps {
   size?: number;
   wordmark?: boolean;
-  /** Show the wordmark even on the smallest screens (used in the footer, where
-   *  the brand column is full-width — avoids an orphaned emblem on phones). */
-  wordmarkAlwaysOn?: boolean;
   /** Let the wordmark WRAP within its container instead of forcing one line.
    *  Used in the footer 4-col grid, where the column gets narrower than the
    *  one-line wordmark below ~1400px and the nowrap text spilled into the
@@ -15,7 +12,7 @@ interface LogoProps {
   className?: string;
 }
 
-export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wordmarkWrap = false, className }: LogoProps) => {
+export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
   const url = `${import.meta.env.BASE_URL}logo/logo-seal-v2-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
@@ -26,7 +23,9 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wor
         any ground). Shown in its TRUE deep red — no white-forcing filter: the
         dark tone reads on the pale peacock/Mary-Pink scroll backdrops, and the
         soft warm glow below lifts it off the near-black sections. Square mark,
-        so width === height. Never display:none'd; only the wordmark hides small.
+        so width === height. Never display:none'd; the wordmark now shows at
+        EVERY width (it wraps to two lines on the smallest phones — Hugo: "add
+        full logo with text on mobile too so it's not just the symbol").
       */}
       <img
         src={url}
@@ -51,7 +50,7 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkAlwaysOn = false, wor
         // original tidy 16px/normal so it still wraps cleanly to two lines inside
         // the narrow brand column — only the header logo gets the big treatment.
         <span
-          className={`${wordmarkAlwaysOn ? "inline" : "hidden sm:inline"} font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(20px,1.9vw,28px)] font-semibold tracking-[-0.015em] whitespace-nowrap leading-none"}`}
+          className={`inline font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(13px,3.2vw,28px)] font-semibold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.1] sm:leading-none max-w-[44vw] sm:max-w-none"}`}
           style={wordmarkWrap ? undefined : { fontVariationSettings: '"opsz" 28' }}
         >
           The Art of Stephen Meakin

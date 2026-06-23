@@ -35,7 +35,7 @@ const Disclosure = ({ summary, children }: { summary: string; children: ReactNod
 );
 
 export const ProvenancePanel = () => (
-  <div className="max-w-[720px] mx-auto mt-14 md:mt-20">
+  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto mt-12 md:mt-14">
     <Disclosure summary="Authentication & provenance">
       <ul className="list-none m-0 p-0 flex flex-col gap-2">
         <li className={META}>{ESTATE_AUTHENTICATION.stamp}</li>

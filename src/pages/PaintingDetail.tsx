@@ -12,7 +12,6 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
@@ -26,6 +25,7 @@ import {
   COLLECTIONS,
   PAINTINGS,
   EMBELLISHMENT_NOTE,
+  ESTATE_AUTHENTICATION,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
@@ -60,7 +60,6 @@ import {
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
   META,
-  TITLE,
 } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl, firstSentence } from "../lib/seo";
@@ -103,10 +102,20 @@ const TRUESIZE_PAINTING_IDS = new Set<string>([]);
  * shared tokens — same geometry/typography, hover expressed as an ink wash, no
  * colour. (The shared tokens stay accent-toned for the rest of the site.)
  * ========================================================================== */
+// The PDP buy-box title cut — PDP-NATIVE, never the shared centered-section
+// TITLE token (clamp(40px,5.7vw,92px), opsz-144 master), which renders ~75–85px
+// and wraps long titles to 3 lines in this ~450px column, dwarfing the price.
+// This is the museum wall-label idiom: the work's name in TRUE Fraunces italic
+// at a controlled opsz 40 (clean strokes, gotcha #7), one tier above the price.
+const PDP_TITLE =
+  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(28px,3.1vw,46px)] leading-[1.06] text-ink text-balance";
+// One ledger-card geometry for every secondary buy-box card (one-off / custom
+// size / colourway set / finish) so the column reads as one authored system.
+const CARD = "ring-1 ring-line px-5 py-5";
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-ink/85 disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-6 py-4 font-sans text-[12px] font-bold tracking-[0.12em] uppercase rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-all duration-300 hover:ring-ink/60";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-6 py-4 font-sans text-[12px] font-bold tracking-[0.12em] uppercase rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page
@@ -187,7 +196,7 @@ const SizePicker = ({
 }) => {
   const { formatPretty: fmtP } = useCurrency();
   return (
-  <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-2.5 gap-y-4">
+  <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-0 border-b border-line">
     {tiers.map((tier) => {
       const isSelected = tier.id === selectedTier.id;
       return (
@@ -198,28 +207,33 @@ const SizePicker = ({
           aria-checked={isSelected}
           onClick={() => onSelectTier(tier.id)}
           className={cn(
-            "relative grid grid-cols-[1fr_auto] items-center gap-x-4 text-left bg-transparent border-0 px-4 py-3.5 cursor-pointer transition-all duration-300 ring-1",
+            "relative grid grid-cols-[1fr_auto] items-center gap-x-4 text-left bg-transparent border-0 border-t border-line px-1 py-4 cursor-pointer transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
             isSelected
-              ? "ring-ink shadow-[0_4px_18px_rgba(0,0,0,0.35)]"
-              : "ring-line hover:ring-ink/40",
+              ? "border-l-2 border-l-ink pl-3 bg-ink/[0.03]"
+              : "hover:bg-ink/[0.02]",
           )}
         >
-          {tier.isAnchor && (
-            <span
-              aria-hidden="true"
-              className="absolute -top-2 left-4 inline-flex items-center bg-ink text-bg px-2.5 py-0.5 font-sans text-[10px] font-bold tracking-[0.24em] uppercase rounded-full"
-            >
-              Most chosen
-            </span>
-          )}
           <span className="min-w-0">
-            <span className={cn(EYEBROW_TIGHT, "block mb-1")}>{tier.label}</span>
+            <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
+              {tier.label}
+              {tier.isAnchor && (
+                <span className="font-sans text-[9.5px] font-semibold tracking-[0.16em] uppercase text-ink-muted/80">
+                  · most chosen
+                </span>
+              )}
+            </span>
             <span className="block font-sans text-[15px] font-semibold leading-[1.25] text-ink">
               {sizeWithInches(tier.size)}
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
-          <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink justify-self-end">
+          <span
+            className={cn(
+              "font-display font-semibold tracking-[-0.01em] text-ink justify-self-end",
+              isSelected ? "text-[22px]" : "text-[19px]",
+            )}
+            style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+          >
             {fmtP(tier.pricePence)}
           </span>
           {/* Selected summary — the card's own editionLabel line already sits
@@ -364,14 +378,14 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
 
   if (status === "done") {
     return (
-      <p className={cn(META, "m-0 mb-7 -mt-4")} role="status" aria-live="polite">
+      <p className={cn(META, "m-0 mb-8")} role="status" aria-live="polite">
         Noted, with thanks — we&rsquo;ll write to you first.
       </p>
     );
   }
 
   return (
-    <div className="-mt-4 mb-7">
+    <div className="mb-8">
       {!open ? (
         <button
           type="button"
@@ -400,7 +414,7 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink-faint focus:outline-none"
+              className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-faint focus:outline-none"
             />
             <button
               type="submit"
@@ -417,6 +431,228 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
           </p>
         </form>
       )}
+    </div>
+  );
+};
+
+/**
+ * CustomSizeRequest — the BESPOKE option above the standard A3–A0 editions
+ * (Hugo: "add custom size order request as the highest pricing option that auto
+ * pings to my email"). Not a purchasable tier — there is no fixed price — so it
+ * renders as a distinct feature card BELOW the size grid (reading as the option
+ * beyond A0), expanding inline to a short request form. On submit it POSTs to
+ * /api/custom-size-request, which emails the estate inbox so the request pings
+ * Hugo directly and he can reply with a quotation. Friendly-success contract
+ * mirrors RegisterOriginalInterest: only a network failure shows an error.
+ */
+const CustomSizeRequest = ({
+  paintingId,
+  paintingTitle,
+  colourwayName,
+}: {
+  paintingId: string;
+  paintingTitle: string;
+  colourwayName: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [dimensions, setDimensions] = useState("");
+  const [message, setMessage] = useState("");
+  const [company, setCompany] = useState(""); // honeypot — humans leave empty
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
+    "idle",
+  );
+
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedEmail = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setStatus("error");
+      return;
+    }
+    setStatus("sending");
+    try {
+      await fetch("/api/custom-size-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: trimmedEmail,
+          paintingId,
+          paintingTitle,
+          colourwayName,
+          dimensions: dimensions.trim(),
+          message: message.trim(),
+          company,
+        }),
+      });
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const fieldId = (k: string) => `custom-${k}-${paintingId}`;
+  const INPUT =
+    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-faint focus:outline-none transition-shadow";
+
+  return (
+    <div className="mt-3">
+      <div
+        className={cn(
+          "relative w-full ring-1 transition-all duration-300",
+          open
+            ? "ring-ink/40 shadow-[0_4px_22px_rgba(0,0,0,0.4)]"
+            : "ring-line hover:ring-ink/40",
+        )}
+      >
+        {!open ? (
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="block w-full text-left bg-transparent p-5 cursor-pointer"
+          >
+            <span className="flex items-baseline justify-between gap-4 mb-2">
+              <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
+                Bespoke · by request
+              </span>
+              <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink whitespace-nowrap">
+                Price on application
+              </span>
+            </span>
+            <span className="block font-sans text-[15px] font-semibold leading-[1.3] text-ink mb-1">
+              Custom size
+            </span>
+            <span className={cn(META, "block mb-3")}>
+              Larger than A0, or a bespoke format for a particular wall. Tell the
+              estate the size you have in mind and we&rsquo;ll write back with a
+              quotation.
+            </span>
+            <span
+              className={cn(
+                META,
+                "inline-flex items-center underline underline-offset-4 text-ink",
+              )}
+            >
+              Request a custom size →
+            </span>
+          </button>
+        ) : status === "done" ? (
+          <div className="p-5" role="status" aria-live="polite">
+            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0 mb-2">
+              Custom size · by request
+            </p>
+            <p className="font-sans text-[15px] leading-[1.5] text-ink m-0">
+              Request received, with thanks. The estate will write to you with a
+              quotation for a custom{paintingTitle ? ` ${paintingTitle}` : ""}{" "}
+              print.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={submit} noValidate className="p-5">
+            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0 mb-1">
+              Custom size · by request
+            </p>
+            <p className={cn(META, "m-0 mb-4")}>
+              {paintingTitle}
+              {colourwayName ? ` · ${colourwayName}` : ""}
+            </p>
+
+            {/* Honeypot — off-screen; bots fill it, humans don't. */}
+            <input
+              type="text"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              className="absolute left-[-9999px] w-px h-px opacity-0"
+            />
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <label htmlFor={fieldId("size")} className={cn(META, "block mb-1.5")}>
+                  Size you have in mind
+                </label>
+                <input
+                  id={fieldId("size")}
+                  type="text"
+                  placeholder="e.g. 120 × 120 cm, or describe the wall"
+                  value={dimensions}
+                  onChange={(e) => setDimensions(e.target.value)}
+                  className={INPUT}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor={fieldId("name")} className={cn(META, "block mb-1.5")}>
+                    Your name <span className="text-ink-faint">(optional)</span>
+                  </label>
+                  <input
+                    id={fieldId("name")}
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={INPUT}
+                  />
+                </div>
+                <div>
+                  <label htmlFor={fieldId("email")} className={cn(META, "block mb-1.5")}>
+                    Email
+                  </label>
+                  <input
+                    id={fieldId("email")}
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={INPUT}
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor={fieldId("message")} className={cn(META, "block mb-1.5")}>
+                  Anything else <span className="text-ink-faint">(optional)</span>
+                </label>
+                <textarea
+                  id={fieldId("message")}
+                  rows={3}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className={cn(INPUT, "resize-y")}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center gap-4">
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className={BTN_PRIMARY}
+              >
+                {status === "sending" ? "Sending…" : "Send request"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="bg-transparent border-0 cursor-pointer font-sans text-[13px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+            <p className={cn(META, "m-0 mt-3")} aria-live="polite">
+              {status === "error"
+                ? "That didn't send — check the address, or email info@themandalacompany.com."
+                : "Goes straight to the estate. We reply by email with a quotation — no obligation."}
+            </p>
+          </form>
+        )}
+      </div>
     </div>
   );
 };
@@ -907,47 +1143,54 @@ const BuyBox = ({
 
   return (
     <div className="flex flex-col">
-      {/* 1 · COLLECTION BADGE + TITLE (h1) */}
+      {/* 1 · COLLECTION OVERLINE + TITLE (h1) + ARTIST BYLINE. The gallery
+          wall-label idiom: a bare tracked series overline (no pill), the work's
+          name in TRUE Fraunces italic (PDP_TITLE), then the artist + life-dates
+          byline in roman — restoring the title → artist → facts hierarchy. */}
       {collection && (
-        <div className="mb-4">
-          {/* Monochrome (#7): the collection tag is a quiet outlined chip in ink
-              — no accent/orange. Distinguished from the title by size + tracking,
-              not colour. */}
-          <Badge variant="outline">{collection.title.split(" — ")[0]}</Badge>
-        </div>
+        <p className="font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-ink-muted m-0 mb-3">
+          {collection.title.split(" — ")[0]}
+        </p>
       )}
-      <h1 className={cn(TITLE, "m-0 mb-5")}>
+      <h1
+        className={cn(PDP_TITLE, "m-0 mb-2")}
+        style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+      >
         {painting.title}
       </h1>
+      <p className="font-sans text-[15px] tracking-[0.01em] text-ink m-0 mb-7">
+        Stephen Meakin <span className="text-ink-muted">· 1966&ndash;2021</span>
+      </p>
 
-      {/* 2 · KEY FACTS — tight inline dl */}
-      <dl className="grid grid-cols-[max-content_1fr] gap-x-5 gap-y-1.5 m-0 mb-7">
+      {/* 2 · KEY FACTS — a legible wall-label spec table: one value size + tone,
+          11px cap-labels baseline-aligned to the value, generous row rhythm. */}
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 m-0 mb-3">
         {painting.year !== "[ DATE ]" && (
           <>
-            <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Date</dt>
-            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.year}</dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Date</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.year}</dd>
           </>
         )}
         {painting.size && (
           <>
-            <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Size</dt>
-            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.size}</dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Size</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.size}</dd>
           </>
         )}
         {painting.location && (
           <>
-            <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Painted in</dt>
-            <dd className="m-0 font-sans text-[clamp(13.5px,0.75vw,16px)] leading-[1.6] text-ink">{painting.location}</dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Painted in</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.location}</dd>
           </>
         )}
         {painting.pigmentNote && (
           <>
-            <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Pigment</dt>
-            <dd className="m-0 font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted">{painting.pigmentNote}</dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Pigment</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">{painting.pigmentNote}</dd>
           </>
         )}
-        <dt className={cn(EYEBROW_TIGHT, "pt-px")}>Original</dt>
-        <dd className="m-0 font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
+        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Original</dt>
+        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
       </dl>
 
       {/* Hushed register for the privately-held original — sits directly
@@ -961,12 +1204,19 @@ const BuyBox = ({
       <div id="order-print" className="scroll-mt-24">
         <div ref={orderSentinelRef} aria-hidden="true" className="h-px w-full" />
 
-        {/* 3 · PRICE (tracks the selected size tier) + eyebrow. Monochrome (#7):
-            the eyebrow is muted ink, the price is the display-serif figure — the
-            jump in size/weight carries the hierarchy, not colour. */}
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Order a print</p>
+        {/* 3 · PRICE (tracks the selected size tier). The eyebrow EARNS the
+            price by stating the format/edition truth (the CTAs already say
+            "order"); the figure reads as a co-lead with the title — opsz 40 +
+            tabular-lining numerals so stacked prices align. Monochrome (#7):
+            size/weight carries the hierarchy, never colour. */}
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
+          {selectedTier.label} · {selectedTier.size.split(" ")[0]}
+        </p>
         <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-3">
-          <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(30px,3.4vw,52px)] text-ink m-0">
+          <p
+            className="font-display font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
+            style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+          >
             {fmtP(selectedTier.pricePence)}
           </p>
           <p className={cn(META, "m-0")}>
@@ -974,15 +1224,13 @@ const BuyBox = ({
           </p>
         </div>
 
-        {/* Free shipping — advertised upfront beside the price. Mirrors the £0
-            (free) rate api/checkout.ts now charges in every region; framed or
-            unframed, nothing is added at checkout (mirror invariant, gotcha #9). */}
-        <p className={cn(EYEBROW_TIGHT, "m-0 mb-6")}>
-          Free delivery worldwide
-        </p>
+        {/* Free delivery — quiet sentence-case reassurance beside the price (was
+            a third stacked all-caps eyebrow). Mirrors the £0 rate api/checkout.ts
+            charges in every region; framed or unframed (mirror invariant #9). */}
+        <p className={cn(META, "m-0 mb-6")}>Free delivery worldwide.</p>
 
-        {/* Dimension chip — instant size reassurance, updates with the tier */}
-        <div className="mb-6 -mt-2">
+        {/* Dimension chip — instant size reassurance, updates with the tier. */}
+        <div className="mb-6">
           <DimensionChip tier={selectedTier} />
         </div>
 
@@ -1006,6 +1254,16 @@ const BuyBox = ({
           </div>
         )}
 
+        {/* CUSTOM SIZE — the bespoke option ABOVE the standard editions (Hugo's
+            "highest pricing option"). Price on application; submitting pings the
+            estate inbox via /api/custom-size-request. Not a purchasable tier, so
+            it sits as a feature card directly below the size grid. */}
+        <CustomSizeRequest
+          paintingId={painting.id}
+          paintingTitle={painting.title}
+          colourwayName={selected.name}
+        />
+
         {/* 5 · COLOURWAYS — high in the column, easy to reach */}
         <div className="mt-7">
           <Colourways
@@ -1023,7 +1281,7 @@ const BuyBox = ({
             Stripe charge by construction. The complete-set 12% the checkout
             applies to an all-one-painting basket is size-independent. */}
         {colourwaySet && (
-          <div className="mt-7 ring-1 ring-line px-4 py-4">
+          <div className={cn("mt-8", CARD)}>
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5")}>The complete colourway set</p>
             <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink-muted m-0 mb-4">
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
@@ -1101,7 +1359,7 @@ const BuyBox = ({
             flow to addItem / Buy-now unchanged — only the placement +
             presentation moved. */}
         {showAddOns && (
-          <fieldset className="border-0 p-0 m-0 mt-8 ring-1 ring-line px-4 py-4 sm:px-5 sm:py-5">
+          <fieldset className={cn("border-0 m-0 mt-8", CARD)}>
             <legend className="float-none p-0 mb-2.5 w-full">
               <span className={cn(EYEBROW_MUTED, "block")}>
                 Finish your piece
@@ -1219,13 +1477,15 @@ const BuyBox = ({
           </fieldset>
         )}
 
-        {/* 7 · CTAs */}
-        <div className="flex flex-wrap items-center gap-3 mt-7">
+        {/* 7 · CTAs — one dominant action with a quiet ghost beneath (the Aesop
+            "single confident action" pattern), full-width so they never wrap
+            awkwardly in the narrow column. */}
+        <div className="flex flex-col gap-3 mt-8">
           <button
             type="button"
             onClick={onAdd}
             disabled={status === "loading"}
-            className={BTN_PRIMARY}
+            className={cn(BTN_PRIMARY, "w-full")}
           >
             Add to basket
           </button>
@@ -1233,7 +1493,7 @@ const BuyBox = ({
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            className={cn(BTN_SECONDARY, "disabled:opacity-60")}
+            className={cn(BTN_SECONDARY, "w-full disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
             <span aria-hidden="true" className="ml-2">→</span>
@@ -1292,7 +1552,7 @@ const BuyBox = ({
             copy from single-source ESTATE_AUTHENTICATION (inside the card).
             Full provenance + shipping detail live in the ProvenancePanel
             below the Story so the buy box stays tight. */}
-        <Separator className="bg-line mt-7 mb-6" />
+        <Separator className="bg-line mt-8 mb-6" />
         <AuthenticationCard />
         <div className="mt-5">
           <ReassuranceRow />
@@ -1402,7 +1662,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         <p className={cn(EYEBROW_MUTED, "m-0 mt-5 mb-5")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3.3vw,52px)] leading-[1.25] text-ink m-0 mb-4 text-balance"
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(22px,2.8vw,42px)] leading-[1.28] text-ink m-0 mb-4 text-balance"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
           >
             &ldquo;{painting.artistQuote}&rdquo;
@@ -1419,6 +1679,39 @@ const Story = ({ painting }: { painting: Painting }) => (
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
       ))}
+    </Reveal>
+
+    {/* HOW EACH ORDER ARRIVES — the estate's quiet presentation note (Hugo's
+        ask). Made to order, hand-rolled + prepared by Point 101, closed with
+        the deep-red wax-seal logo sticker, and travelling with a printed
+        catalogue/leaflet of Stephen's work. The printer line reuses
+        ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
+    <Reveal as="div" className="mt-7 md:mt-9">
+      <Separator className="bg-line mb-7" />
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>How each order arrives</p>
+      <p className="font-sans font-normal text-[clamp(16px,1vw,20px)] leading-[1.75] text-ink/90 m-0 mb-7 max-w-[62ch]">
+        Every print is made to order &mdash; never warehoused. When your order is
+        placed it is hand-rolled and prepared by Point&nbsp;101 in London, the
+        United Kingdom&rsquo;s leading giclée atelier, the same studio Stephen
+        trusted with his own work. It is packed to be opened slowly.
+      </p>
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 m-0 border-t border-line pt-5">
+        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Prepared by</dt>
+        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
+          {ESTATE_AUTHENTICATION.printer} &mdash; each print checked, interleaved
+          and hand-rolled.
+        </dd>
+        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Sealed with</dt>
+        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
+          The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose, pressed
+          as a sticker over the wrapping.
+        </dd>
+        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Enclosed</dt>
+        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">
+          A printed catalogue of Stephen&rsquo;s paintings, so your piece arrives
+          in the company of the wider body of work.
+        </dd>
+      </dl>
     </Reveal>
 
     <Reveal as="div" className="mt-7 md:mt-9">
@@ -1942,9 +2235,9 @@ export const PaintingDetail = () => {
           <div className="flex items-center justify-between gap-4 mb-5 md:mb-6">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
-              className={cn(EYEBROW_MUTED, "inline-flex items-center gap-2 transition-colors duration-300 hover:text-ink")}
+              className="font-sans text-[12px] md:text-[13px] font-semibold tracking-[0.04em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
             >
-              ← {collection?.title ?? "All collections"}
+              ← {collection ? collection.title.split(" — ")[0] : "All collections"}
             </Link>
             <button
               type="button"
@@ -1965,10 +2258,10 @@ export const PaintingDetail = () => {
               (right) on lg+. On mobile this collapses to a single column:
               image first, then the buy box (so buyers reach the controls
               quickly, before the story). */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.25fr_1fr] gap-6 lg:gap-14 xl:gap-20 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_minmax(380px,1fr)] gap-6 lg:gap-10 xl:gap-14 items-start">
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
-            <div className="lg:sticky lg:top-[88px]">
+            <div className="lg:sticky lg:top-[72px]">
               {/* View toggle — the artwork, or the True Size room view (#11).
                   Shown ONLY when this painting has a real room composite (see
                   TRUESIZE_PAINTING_IDS); otherwise hidden so the buyer never
@@ -2044,23 +2337,31 @@ export const PaintingDetail = () => {
                           alt={paintingImageAlt(painting.title, selected.name)}
                           width={heroDims.w}
                           height={heroDims.h}
-                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[calc(100vh-88px-2rem)] 2xl:max-h-[86vh]"
+                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
                         />
                       </motion.picture>
                     </AnimatePresence>
                   </button>
                 </div>
               </Reveal>
-              {/* Closer-look affordance — the quiet invitation under the
-                  artwork: a hairline-bordered pill in the muted register. Opens
-                  the same viewer the artwork itself opens. */}
-              <div className="mt-4 flex justify-center">
+              {/* Plate caption — the gallery wall-label idiom directly under the
+                  artwork: a hairline rule, the work · year · original size on the
+                  left, and the "closer look" affordance pulled inline-right (it
+                  opens the same deep-zoom viewer the artwork itself opens). */}
+              <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4">
+                <p className="m-0 font-sans text-[12px] md:text-[12.5px] leading-[1.5] text-ink-muted min-w-0">
+                  <span className="text-ink">{painting.title}</span>
+                  {painting.year !== "[ DATE ]" && <>, {painting.year}</>}
+                  {painting.size && (
+                    <span className="hidden sm:inline"> · {painting.size}</span>
+                  )}
+                </p>
                 <button
                   type="button"
                   onClick={() => setViewerOpen(true)}
                   className={cn(
                     EYEBROW_TIGHT,
-                    "inline-flex items-center gap-2.5 bg-transparent cursor-pointer rounded-full ring-1 ring-line px-4 py-2 transition-all duration-300 hover:text-ink hover:ring-ink/40",
+                    "shrink-0 inline-flex items-center gap-2 bg-transparent cursor-pointer rounded-full ring-1 ring-line px-3.5 py-2 transition-all duration-300 hover:text-ink hover:ring-ink/40",
                   )}
                 >
                   <svg
@@ -2078,7 +2379,7 @@ export const PaintingDetail = () => {
                       strokeLinecap="round"
                     />
                   </svg>
-                  Take a closer look
+                  Closer look
                 </button>
               </div>
               </>

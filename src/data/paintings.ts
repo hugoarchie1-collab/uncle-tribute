@@ -594,13 +594,11 @@ export const PAINTINGS: Painting[] = [
         isOriginal: true,
         available: true,
       },
-      {
-        name: "Aquamarine Blue",
-        image: "/img/paintings/orchis7-aquamarine-blue.jpg",
-        hex: "#7fa9a3",
-        isOriginal: true,
-        available: true,
-      },
+      // The "Aquamarine Blue" colourway was REMOVED from the product page
+      // (Hugo, 2026-06-23). Rubedo Red is now the sole (original) colourway for
+      // Orchis 7. The image asset + AR/variant manifests are left on disk for a
+      // possible future return; the /news.ts "Orchis 7 — Aquamarine" entry is an
+      // announcement only and does not depend on this colourway.
     ],
   },
   {

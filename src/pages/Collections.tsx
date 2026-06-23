@@ -131,16 +131,19 @@ const ScrollBackdrop = ({
 // hard-wired to the A2 Collector anchor. They are now offered in EVERY editioned
 // size the catalogue sells, so the advertised £ tracks the size the buyer picks.
 //
-// HARD GUARD (money code, brief rule #3): only the three editioned sizes are
-// selectable — A3 Gallery (atelier) / A2 Collector (collector) / A1 Atelier
-// (atelier-grande). The A0 "heirloom" tier is NEVER a bundle size: it is
-// `available:false`, and getTierById would silently fall back to the A2 anchor,
-// which would advertise an A2 price under an A0 label (advertised != charged).
-// The `studio` one-off is likewise excluded. We derive the list from the
+// HARD GUARD (money code, brief rule #3): only EDITIONED sizes are selectable —
+// A3 Gallery (atelier) / A2 Collector (collector) / A1 Atelier (atelier-grande) /
+// A0 Heirloom (heirloom). A0 is now an offered bundle size (Hugo, 2026-06-23):
+// heirloom is `available:true` AND charged at its real £1,750 in
+// api/checkout.ts TIERS["heirloom"], so getTierById returns the true A0 price
+// (no silent A2 anchor fall-back) and advertised == charged holds for A0 sets
+// too (the 15%/12%/10%/5% bundle coupon is a percent, far above the A0 margin
+// floor, so the checkout's margin-floor clamp is a no-op here). The `studio`
+// one-off stays excluded — it is not an edition. We derive the list from the
 // canonical PRINT_TIERS ladder — honouring each tier's own `available` flag —
-// then explicitly allowlist the three permitted ids so flipping `available:true`
-// on heirloom/studio elsewhere can NEVER leak them into this selector.
-const BUNDLE_TIER_IDS: PrintTier["id"][] = ["atelier", "collector", "atelier-grande"];
+// then explicitly allowlist the permitted ids so an unrelated `available:true`
+// flip (e.g. studio) can NEVER leak a tier into this selector.
+const BUNDLE_TIER_IDS: PrintTier["id"][] = ["atelier", "collector", "atelier-grande", "heirloom"];
 
 // Short, dignified size labels for the toggle (e.g. "Gallery · A3"). Built from
 // the live ladder so the size string + price always come from the same source
@@ -674,7 +677,7 @@ export const Collections = () => {
                   · each with a Certificate of Authenticity
                 </p>
               </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-line">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line">
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
