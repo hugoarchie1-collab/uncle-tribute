@@ -695,19 +695,18 @@
   filter: drop-shadow(0 1px 10px rgba(201, 120, 68, 0.45))
     drop-shadow(0 2px 18px rgba(8, 6, 12, 0.55));
 }
-.nav-bg-top {
-  background-image: linear-gradient(
-    to bottom,
-    rgba(10, 9, 8, 0.72),
-    rgba(10, 9, 8, 0.26) 46%,
-    rgba(10, 9, 8, 0)
-  );
-}
+/* The bar is the SAME deep red at the TOP as when scrolled (Hugo: "I want the
+   red bar consistently at the top — all the time red, not black then red as you
+   scroll"). Both `top` variants now carry the IDENTICAL wax-seal-red fill as
+   `.nav-bg-scrolled` (was a dark scrim fading to transparent), so the bar reads
+   red from pixel 0 on every page — including over the home hero/intro film. No
+   backdrop-filter (banned on the always-mounted fixed bar). */
+.nav-bg-top,
 .nav-bg-top-plain {
   background-image: linear-gradient(
-    to bottom,
-    rgba(10, 9, 8, 0.55),
-    rgba(10, 9, 8, 0.15) 46%,
-    rgba(10, 9, 8, 0)
+    180deg,
+    rgba(64, 13, 13, 0.97) 0%,
+    rgba(46, 9, 10, 0.97) 58%,
+    rgba(34, 6, 7, 0.98) 100%
   );
 }
