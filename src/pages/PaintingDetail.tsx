@@ -441,9 +441,11 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
  * pings to my email"). Not a purchasable tier — there is no fixed price — so it
  * renders as a distinct feature card BELOW the size grid (reading as the option
  * beyond A0), expanding inline to a short request form. On submit it POSTs to
- * /api/custom-size-request, which emails the estate inbox so the request pings
- * Hugo directly and he can reply with a quotation. Friendly-success contract
- * mirrors RegisterOriginalInterest: only a network failure shows an error.
+ * /api/newsletter-subscribe with kind:"custom-size" — the handler is FOLDED INTO
+ * that function (NOT its own file) to stay within Vercel's Hobby 12-Serverless-
+ * Function cap; it emails the estate inbox so the request pings Hugo directly and
+ * he can reply with a quotation. Friendly-success contract mirrors
+ * RegisterOriginalInterest: only a network failure shows an error.
  */
 const CustomSizeRequest = ({
   paintingId,
@@ -1261,8 +1263,10 @@ const BuyBox = ({
 
         {/* CUSTOM SIZE — the bespoke option ABOVE the standard editions (Hugo's
             "highest pricing option"). Price on application; submitting pings the
-            estate inbox via /api/custom-size-request. Not a purchasable tier, so
-            it sits as a feature card directly below the size grid. */}
+            estate inbox via /api/newsletter-subscribe (kind:"custom-size" — the
+            handler is folded into that function to stay under Vercel's 12-function
+            cap). Not a purchasable tier, so it sits as a feature card below the
+            size grid. */}
         <CustomSizeRequest
           paintingId={painting.id}
           paintingTitle={painting.title}

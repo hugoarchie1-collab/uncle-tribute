@@ -184,8 +184,8 @@ const SET_TIERS_ASCENDING: PrintTier[] = [...BUNDLE_TIERS].sort(
 // Hugo: "instead of [a global] take-a-set-in size [toggle], have it so you can
 // SCROLL ACROSS on each bundle for different sizes." So every set card now owns
 // its own size, chosen from a horizontal snap row (swipe on mobile) that re-prices
-// THAT card only. Same hard guard as before: only the three editioned sizes
-// (A3/A2/A1) are selectable, so advertised £ always equals what checkout charges.
+// THAT card only. Same hard guard as before: only the editioned sizes
+// (A3/A2/A1/A0) are selectable, so advertised £ always equals what checkout charges.
 const SetSizeSelector = ({
   value,
   onChange,
