@@ -197,7 +197,7 @@ export const Gift = () => {
             }
             title={
               <>
-                Give a <em className="italic font-normal">piece</em> of
+                Give a <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>piece</em> of
                 Stephen's work.
               </>
             }

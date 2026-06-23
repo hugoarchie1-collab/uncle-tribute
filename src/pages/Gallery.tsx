@@ -183,7 +183,7 @@ export const Gallery = () => {
             titleStyle={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
             title={
               <>
-                See it on <em className="italic font-normal">your wall</em>.
+                See it on <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>your wall</em>.
               </>
             }
           />

@@ -211,7 +211,7 @@ const NewsMasthead = () => (
     meta="The Mandala Company"
     title={
       <>
-        News &amp; <em className="italic font-normal">releases</em>
+        News &amp; <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>releases</em>
       </>
     }
   >

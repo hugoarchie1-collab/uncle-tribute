@@ -214,7 +214,7 @@ export const Contact = () => {
                 textShadow: "0 3px 28px rgba(0,0,0,0.7)",
               }}
             >
-              Write to the <em className="italic font-normal">family</em>
+              Write to the <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>family</em>
             </h1>
           </Reveal>
 

@@ -310,7 +310,7 @@ export const Auth = () => {
           <PageMasthead
             eyebrow="Authentication"
             meta="The estate registry"
-            title={<>Estate <em className="italic font-normal">registry</em></>}
+            title={<>Estate <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>registry</em></>}
           />
         </Reveal>
 

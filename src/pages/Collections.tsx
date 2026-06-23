@@ -611,7 +611,7 @@ export const Collections = () => {
             }}
             title={
               <>
-                The complete <em className="italic font-normal">works</em>
+                The complete <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>works</em>
               </>
             }
           >

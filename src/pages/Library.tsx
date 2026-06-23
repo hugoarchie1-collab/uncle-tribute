@@ -115,7 +115,7 @@ const LibraryMasthead = () => (
     meta="The Mandala Company"
     title={
       <>
-        The books that <em className="italic font-normal">shaped him</em>
+        The books that <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>shaped him</em>
       </>
     }
   >

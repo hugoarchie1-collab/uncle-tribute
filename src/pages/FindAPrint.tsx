@@ -204,8 +204,8 @@ export const FindAPrint = () => {
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}
             >
-              Begin with a <em className="italic font-normal">colour</em>, or an{" "}
-              <em className="italic font-normal">intention</em>.
+              Begin with a <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>colour</em>, or an{" "}
+              <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>intention</em>.
             </h1>
           </Reveal>
 

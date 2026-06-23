@@ -244,7 +244,7 @@ export const Search = () => {
                 <>
                   <span className="text-ink-muted">Results for</span>
                   <br />
-                  <span className="break-words italic font-normal">“{trimmed}”</span>
+                  <span className="break-words italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>“{trimmed}”</span>
                 </>
               ) : (
                 <>Search the estate</>

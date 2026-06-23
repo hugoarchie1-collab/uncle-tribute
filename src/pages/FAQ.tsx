@@ -220,7 +220,7 @@ const FaqMasthead = () => (
           className="font-display text-ink m-0"
           style={{ ...MASTHEAD_TITLE_STYLE, fontSynthesis: "none" }}
         >
-          What people <em className="italic font-normal">ask</em>.
+          What people <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>ask</em>.
         </h1>
       </Reveal>
 

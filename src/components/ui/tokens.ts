@@ -10,35 +10,61 @@
 import type { CSSProperties } from "react";
 
 // =============================================================================
-// PAGE MASTHEAD TYPE — the refined display cut for every page's front-cover h1.
+// PAGE MASTHEAD TYPE — the display cut for every page's front-cover h1.
 // -----------------------------------------------------------------------------
-// Replaces the old "Fraunces 700, opsz 48, clamp(...,11–13vw,168–220px)" recipe
-// that read "way too bold and unprofessional" (2026-06-18). The fix, from a
-// study of blue-chip galleries / auction houses / museums: weight DOWN (560,
-// never ≥700), optical size UP (opsz 144 — the elegant high-contrast display
-// master), scale tighter (~7.6vw capped 116px), sentence case, one italic
-// regular-weight word for emphasis. Consumed by <PageMasthead> and by pages with
-// a bespoke masthead. Lives here (not in PageMasthead.tsx) so the component file
-// only exports a component (React Fast Refresh).
+// 2026-06-23: re-cut to the STURDY, BOLD, even-stroke Fraunces of the home
+// Sacred-Geometry finale (the cut Hugo loves) at a CONTROLLED size. The previous
+// opsz-144 / wght-560 high-optical cut (thin hairlines, swashy italics) was
+// rejected — it "doesn't fit the other fonts" and read as a different typeface
+// from the bold home wordmark. We bring the mastheads onto the finale's
+// fontVariationSettings ('"opsz" 48, "wght" 700') so the strokes are heavy and
+// EVEN, but — unlike the failed 2026-06-18 version — we hold the clamp ceiling
+// at ~150px (NOT the crude 220px that read "way too bold and unprofessional")
+// and KEEP sentence case + the single regular-weight italic emphasis word. So
+// it's the finale's sturdiness at masthead scale, not a giant logo.
+//   • opsz 48 (NOT 144) — the heavy, even, low-contrast display master, the
+//     dial that keeps the bold strokes clean (the lesson from gotcha #7: opsz,
+//     not weight, is what prevents the "scribble"; 700 at opsz 48 is the loved
+//     finale, 560 at opsz 144 was the rejected hairline cut).
+//   • wght 700 + fontWeight 700 — the finale's bold, real-loaded weight
+//     (font-synthesis:none keeps it un-faked; FAQ already passes that through).
+//   • letterSpacing -0.03em / lineHeight 0.92 — the finale's exact tracking +
+//     leading.
+//   • clamp ceiling held at ~150px / ~96px (NOT inflated to 220px) — bold +
+//     confident, but composed, never the crude oversized logo.
+//   • SENTENCE CASE is preserved (this token sets NO textTransform — the home
+//     finale/wordmark are uppercase, but page mastheads stay sentence-case; the
+//     consuming pages own their casing).
+//   • The one ITALIC emphasis word is set in the page JSX as
+//     `<em className="italic font-normal">` — `font-normal` overrides this 700
+//     to regular, so it renders as a true regular-weight italic against the bold
+//     roman (the auction-house "title of a work" signal), NEVER a bold-swashy
+//     italic. Do not remove `font-normal` from those <em>s.
+// Consumed by <PageMasthead> and by pages with a bespoke masthead. Lives here
+// (not in PageMasthead.tsx) so the component file only exports a component
+// (React Fast Refresh).
 // =============================================================================
 
 /** The canonical page-masthead (h1) title cut, as an inline style. */
 export const MASTHEAD_TITLE_STYLE: CSSProperties = {
-  fontVariationSettings: '"opsz" 144, "wght" 560',
-  // 2026-06-20: grown so page heads FILL big screens (Hugo: "increase font size
-  // + fill screen, too much spacing on fullscreen"). Faster vw growth + a much
-  // higher ceiling so 1440/1920/2560 reads bold, not stranded in dead space.
+  // Match the Sacred-Geometry finale: even, heavy, low-contrast Fraunces.
+  fontVariationSettings: '"opsz" 48, "wght" 700',
+  fontWeight: 700,
+  // Clamp ceiling held at 150px (the 2026-06-20 fill-the-screen ceiling) — bold
+  // at large widths but never the crude 220px logo the 700/opsz-48 cut hit in
+  // its first (rejected) form.
   fontSize: "clamp(44px, 8.6vw, 150px)",
-  lineHeight: 0.95,
-  letterSpacing: "-0.02em",
+  lineHeight: 0.92,
+  letterSpacing: "-0.03em",
 };
 
 /** A smaller companion cut for secondary mastheads / large section heads. */
 export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
-  fontVariationSettings: '"opsz" 120, "wght" 560',
+  fontVariationSettings: '"opsz" 48, "wght" 700',
+  fontWeight: 700,
   fontSize: "clamp(36px, 5.9vw, 96px)",
-  lineHeight: 0.98,
-  letterSpacing: "-0.016em",
+  lineHeight: 0.96,
+  letterSpacing: "-0.028em",
 };
 
 /** Section / chapter label — accent tone (Welcome's section eyebrow).

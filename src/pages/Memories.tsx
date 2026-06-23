@@ -709,7 +709,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
           }}
         >
-          Memories of <em className="italic font-normal">Steve</em>
+          Memories of <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>Steve</em>
         </h1>
       </Reveal>
 

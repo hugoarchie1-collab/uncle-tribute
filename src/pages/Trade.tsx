@@ -118,7 +118,7 @@ export const Trade = () => {
             meta="By introduction"
             title={
               <>
-                For designers and <em className="italic font-normal">considered</em> spaces.
+                For designers and <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>considered</em> spaces.
               </>
             }
           >
@@ -246,8 +246,11 @@ export const Trade = () => {
               <h2
                 className="font-display tracking-[-0.018em] text-balance text-ink m-0 leading-[1.0]"
                 style={{
-                  fontVariationSettings: '"opsz" 120, "wght" 560',
+                  fontVariationSettings: '"opsz" 48, "wght" 700',
+                  fontWeight: 700,
                   fontSize: "clamp(34px,5.4vw,92px)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 0.92,
                 }}
               >
                 Make a trade enquiry.

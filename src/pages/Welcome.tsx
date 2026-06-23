@@ -215,29 +215,30 @@ export const Welcome = () => {
             <div className="font-display m-0">
               {/* "THE MANDALA COMPANY" — the DOMINANT statement, the biggest type
                   on the open. opsz 48 keeps the strokes clean at this scale. */}
+              {/* "THE MANDALA COMPANY" — the DOMINANT estate statement, set to
+                  MATCH the Sacred Geometry finale EXACTLY (Hugo: "same boldness +
+                  font as sacred geometry; the earth text must match the sun
+                  font"): true Fraunces 700 at a controlled opsz 48, UPPERCASE,
+                  identical tracking / line-height to the finale title. Replaces
+                  the thin opsz-144 / wght-560 sentence-case + swashy-italic cut
+                  Hugo rejected ("the earth text is soo bad"). A touch stronger
+                  shadow than the finale because this sits on the bright Earth
+                  atmosphere rim. */}
               <span
                 className="block text-balance"
                 style={{
-                  fontVariationSettings: '"opsz" 144, "wght" 560',
-                  fontWeight: 560,
-                  fontSize: "clamp(46px, 11vw, 184px)",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 0.94,
-                  color: "#f1ead9",
+                  fontVariationSettings: '"opsz" 48, "wght" 700',
+                  fontWeight: 700,
+                  fontSize: "clamp(50px, 12vw, 196px)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 0.92,
+                  textTransform: "uppercase",
+                  color: "#ede6d6",
                   textShadow:
-                    "0 1px 2px rgba(8,6,12,0.95), 0 3px 30px rgba(8,6,12,0.9), 0 0 60px rgba(8,6,12,0.7)",
+                    "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
                 }}
               >
-                The Mandala{" "}
-                <em
-                  style={{
-                    fontStyle: "italic",
-                    fontVariationSettings: '"opsz" 144, "wght" 560',
-                    fontWeight: 560,
-                  }}
-                >
-                  Company
-                </em>
+                The Mandala Company
               </span>
               {/* "the art of stephen meakin." — the SUBORDINATE clause. */}
               <span
@@ -979,7 +980,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[54svh] md:min-h-[58svh] w-full items-start overflow-hidden pt-0 pb-8 md:pt-0 md:pb-10 lg:pt-0 lg:pb-12"
+            className="relative isolate flex min-h-[48svh] md:min-h-[52svh] w-full items-center overflow-hidden pt-0 pb-8 md:pt-0 md:pb-10 lg:pt-0 lg:pb-12"
             aria-label="Sacred Geometry"
           >
 
@@ -994,7 +995,7 @@ export const Welcome = () => {
                 the content (z-10). */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[50svh] md:h-[54svh] overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[44svh] md:h-[48svh] overflow-hidden"
             >
               {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
                   the rust period in the finale type stays the one literal accent. */}

@@ -1,22 +1,24 @@
 // =============================================================================
-// PAGE MASTHEAD — the single, refined front-cover heading every content page
-// shares. Replaces the duplicated "AboutMasthead recipe" that rendered each
-// page title at Fraunces 700, opsz 48, clamp(...,11–13vw,168–220px) — which read
-// as a crude logo, not a masthead (the owner: "way too bold and unprofessional").
+// PAGE MASTHEAD — the single front-cover heading every content page shares.
 // -----------------------------------------------------------------------------
-// The refinement, drawn from a study of blue-chip galleries (Zwirner, Gagosian,
-// Hauser & Wirth), auction houses (Sotheby's, Christie's, Phillips) and museum /
-// estate sites (Tate, MoMA): prestige type signals authority through RESTRAINT,
-// never volume. Three changes do the work:
-//   1. Weight DOWN — 560, never ≥700. Large serif display leans lighter, not
-//      heavier; 700 at display size reads as e-commerce / "AI".
-//   2. Optical size UP — opsz 144 (the display master) instead of 48, so
-//      Fraunces renders its elegant high-contrast cut (thin hairlines, refined
-//      serifs) rather than the chunky low-contrast small-text master.
-//   3. Scale tighter — ~7.6vw capped at 116px instead of 13vw/220px: confident
-//      and screen-aware, but composed, not shouty.
-// Sentence/Title case (an italic word can carry emphasis — pass <em>), tight
-// negative tracking, balanced wrap. The eyebrow + meta rule are unchanged.
+// 2026-06-23: the title cut is now the home Sacred-Geometry finale's STURDY,
+// BOLD, even-stroke Fraunces (Fraunces "opsz" 48 / "wght" 700, letterSpacing
+// -0.03em, lineHeight 0.92) at a CONTROLLED clamp ceiling (~150px). It replaces
+// the opsz-144 / wght-560 high-optical cut (thin hairlines + swashy italics)
+// that the owner rejected as not matching the rest of the site's type.
+//   • The 2026-06-18 lesson still holds: the failure that made the OLD bold cut
+//     "way too bold and unprofessional" was its SIZE (clamp up to 220px), not
+//     its weight. We keep the finale's bold weight but cap the size at ~150px,
+//     so it reads bold + confident, never a crude oversized logo.
+//   • opsz 48 (NOT 144) is the heavy even display master — opsz, not weight, is
+//     the dial that keeps the strokes clean at scale (gotcha #7).
+//   • SENTENCE CASE is preserved (the finale/home wordmark are uppercase; page
+//     mastheads stay sentence-case). The ONE emphasis word is a regular-weight
+//     true italic — pass `<em className="italic font-normal">`; `font-normal`
+//     overrides the title's 700 so the italic reads as the auction-house "title
+//     of a work" signal, NEVER a bold-swashy italic.
+// The actual values live in MASTHEAD_TITLE_STYLE / _SM (ui/tokens.ts); the
+// eyebrow + meta rule are unchanged.
 //
 // Welcome.tsx (the loved home page / design source of truth) is deliberately
 // NOT built on this — leave it alone.
