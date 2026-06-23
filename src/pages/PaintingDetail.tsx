@@ -473,10 +473,15 @@ const CustomSizeRequest = ({
     }
     setStatus("sending");
     try {
-      await fetch("/api/custom-size-request", {
+      // POSTs to the shared newsletter endpoint with kind:"custom-size" — the
+      // custom-size handler is folded into that function to stay within Vercel's
+      // Hobby 12-Serverless-Function cap (a standalone 13th /api file fails the
+      // whole deploy). The estate is emailed the request (replyTo the buyer).
+      await fetch("/api/newsletter-subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          kind: "custom-size",
           name: name.trim(),
           email: trimmedEmail,
           paintingId,

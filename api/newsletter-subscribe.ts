@@ -401,6 +401,48 @@ const renderWelcomeHtml = (p: {
     + `</div></body></html>`;
 };
 
+// ---------------------------------------------------------------------------
+// Custom-size enquiry email → HTML string. Folded into THIS function (rather
+// than its own api/custom-size-request.ts) to stay within Vercel's Hobby-plan
+// 12-Serverless-Function-per-deployment cap — a 13th /api file fails the whole
+// deploy at "Deploying outputs". Reuses esc/SANS/DISPLAY above (gotcha #5).
+// ---------------------------------------------------------------------------
+const renderCustomSizeHtml = (p: {
+  name: string;
+  email: string;
+  paintingTitle: string;
+  colourwayName: string;
+  dimensions: string;
+  message: string;
+}): string => {
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
+    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const row = (label: string, value: string) =>
+    `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Custom size request</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · Custom size request</p>`
+    + `<h1 style="${s.heading}">A bespoke print enquiry${p.paintingTitle ? ` for ${esc(p.paintingTitle)}` : ""}.</h1>`
+    + row("From", `${p.name ? `${p.name} · ` : ""}${p.email}`)
+    + (p.paintingTitle ? row("Painting", p.paintingTitle) : "")
+    + (p.colourwayName ? row("Colourway", p.colourwayName) : "")
+    + (p.dimensions ? row("Requested size", p.dimensions) : "")
+    + (p.message ? `<p style="${s.row}"><span style="${s.label}">Message</span></p><div style="${s.quote}">${esc(p.message)}</div>` : "")
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Reply directly to this email to quote the collector — <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a>.<br/>The Art of Stephen Meakin · The Mandala Company</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -423,7 +465,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
 
   // Vercel's Node runtime parses a JSON request body into req.body. Handle
   // both the parsed-object case and a raw-string fallback defensively.
-  let body: { name?: string; email?: string; source?: string };
+  let body: {
+    name?: string;
+    email?: string;
+    source?: string;
+    kind?: string;
+    paintingId?: string;
+    paintingTitle?: string;
+    colourwayName?: string;
+    dimensions?: string;
+    message?: string;
+    company?: string;
+  };
   try {
     body =
       typeof req.body === "string"
@@ -439,6 +492,75 @@ export default async function handler(req: VercelReq, res: VercelRes) {
 
   if (!email || !isValidEmail(email)) {
     return send(400, { error: "Please provide a valid email." });
+  }
+
+  // ── Custom-size bespoke enquiry (folded in to stay within the Hobby
+  //    12-function cap). When the client flags kind:"custom-size" we email the
+  //    ESTATE the request (replyTo the buyer) and return — bypassing the
+  //    newsletter welcome / Klaviyo / audience flow entirely. Always 200 + logs
+  //    even when Resend is unconfigured, so the buyer sees a soft success and
+  //    Hugo can read the request in the Vercel function logs. ──
+  if ((body.kind ?? "").toString() === "custom-size") {
+    // Honeypot — a bot that fills `company` is silently accepted (no email).
+    if ((body.company ?? "").toString().trim() === "") {
+      const paintingTitle = (body.paintingTitle ?? "").toString().trim().slice(0, 200);
+      const colourwayName = (body.colourwayName ?? "").toString().trim().slice(0, 120);
+      const dimensions = (body.dimensions ?? "").toString().trim().slice(0, 200);
+      const csMessage = (body.message ?? "").toString().trim().slice(0, 2000);
+      console.log("[newsletter-subscribe] custom-size enquiry", {
+        email,
+        name,
+        paintingTitle,
+        colourwayName,
+        dimensions,
+      });
+      const resendKeyCs = process.env.RESEND_API_KEY;
+      if (resendKeyCs) {
+        try {
+          const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+          const toEmail =
+            process.env.CUSTOM_SIZE_TO_EMAIL ||
+            process.env.ESTATE_BCC_EMAIL ||
+            DEFAULT_FROM;
+          const resend = new Resend(resendKeyCs);
+          const html = renderCustomSizeHtml({
+            name,
+            email,
+            paintingTitle,
+            colourwayName,
+            dimensions,
+            message: csMessage,
+          });
+          const r = await resend.emails.send({
+            from: `${FROM_NAME} <${fromEmail}>`,
+            to: [toEmail],
+            replyTo: email,
+            subject: paintingTitle
+              ? `Custom size request — ${paintingTitle}`
+              : "Custom size request",
+            html,
+          });
+          if (r.error) {
+            console.error("[newsletter-subscribe] custom-size send error:", r.error);
+          } else {
+            console.log("[newsletter-subscribe] custom-size email sent", {
+              email,
+              resend_id: r.data?.id,
+            });
+          }
+        } catch (err) {
+          console.error(
+            "[newsletter-subscribe] custom-size email failed:",
+            err instanceof Error ? err.message : String(err),
+          );
+        }
+      } else {
+        console.warn(
+          "[newsletter-subscribe] RESEND_API_KEY missing — custom-size logged only.",
+        );
+      }
+    }
+    return send(200, { ok: true });
   }
 
   // Audit trail — always log even if downstream sends are skipped. Hugo can
