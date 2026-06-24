@@ -358,6 +358,11 @@ export const Welcome = () => {
         </div>
       </section>
 
+      {/* COSMIC INTERLUDE — the Veo space-nebula intro film, moved to the TOP
+          opening (Hugo) so it plays right under the wordmark as the website
+          intro. Lazy + reduced-motion safe; see the CosmicInterlude component. */}
+      <CosmicInterlude />
+
       <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
@@ -1045,11 +1050,6 @@ export const Welcome = () => {
               </p>
             </Reveal>
           </section>
-
-          {/* 8.5 · COSMIC INTERLUDE — the Veo space-nebula film fills the space
-              between the commission and the close (Hugo). Lazy + reduced-motion
-              safe; see the CosmicInterlude component above. */}
-          <CosmicInterlude />
 
           {/* 9 · SACRED GEOMETRY — the bold closing statement.
 
