@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { VideoIntro } from "../components/VideoIntro";
@@ -41,6 +41,94 @@ const PEACOCK_BACKDROPS = [
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
   { url: "/img/paintings/peacock-mary-pink-blur-v11-sm.webp", name: "Mary Pink" },
 ];
+
+/**
+ * CosmicInterlude — a Veo-generated space-nebula film, the cinematic breath
+ * between the Arista commission and the Sacred Geometry close (Hugo: "put the
+ * intro video in the space in between"). LAZY: an IntersectionObserver mounts
+ * the <video> only when the band is ~300px from the viewport, so it costs ZERO
+ * bytes (and zero compositing) until scrolled near — protecting the home's
+ * scroll performance. Muted / looping / playsInline so it autoplays everywhere.
+ * Reduced-motion users skip it entirely (the gap is already closed by spacing).
+ * Soft top/bottom edge-dissolve melts it into the peacock wash. Swap the source
+ * filename to drop in a different Veo export.
+ */
+const CosmicInterlude = () => {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (near && v) {
+      v.load();
+      v.play().catch(() => {});
+    }
+  }, [near]);
+
+  if (reduceMotion) return null;
+
+  return (
+    <section
+      aria-label="The cosmos — the order beneath all things"
+      className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 my-10 md:my-14"
+    >
+      <div
+        ref={ref}
+        className="relative mx-auto w-full max-w-[1500px] 3xl:max-w-[1720px] overflow-hidden rounded-[3px] ring-1 ring-line/55 shadow-[0_40px_120px_rgba(0,0,0,0.55)] h-[clamp(300px,52svh,640px)] bg-[#0a0810]"
+      >
+        {near && (
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full object-cover"
+            // Slight zoom anchored toward the top-left so the bottom-right "Veo"
+            // generator watermark is pushed beyond the overflow-hidden band and
+            // clipped away — a clean, un-branded film (Hugo hates anything that
+            // "looks AI"). The 1.22× scale on an atmospheric pan is imperceptible.
+            style={{ transform: "scale(1.22)", transformOrigin: "22% 18%" }}
+            muted
+            loop
+            playsInline
+            preload="none"
+            aria-hidden="true"
+          >
+            <source src={asset("/video/nebula-intro-v1.mp4")} type="video/mp4" />
+          </video>
+        )}
+        {/* Soft top + bottom dissolve so the film melts into the peacock wash. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(9,7,13,0.55) 0%, rgba(9,7,13,0) 20%, rgba(9,7,13,0) 80%, rgba(9,7,13,0.55) 100%)",
+          }}
+        />
+      </div>
+    </section>
+  );
+};
 
 export const Welcome = () => {
   const reduceMotion = useReducedMotion();
@@ -957,6 +1045,11 @@ export const Welcome = () => {
               </p>
             </Reveal>
           </section>
+
+          {/* 8.5 · COSMIC INTERLUDE — the Veo space-nebula film fills the space
+              between the commission and the close (Hugo). Lazy + reduced-motion
+              safe; see the CosmicInterlude component above. */}
+          <CosmicInterlude />
 
           {/* 9 · SACRED GEOMETRY — the bold closing statement.
 
