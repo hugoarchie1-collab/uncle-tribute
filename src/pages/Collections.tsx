@@ -544,19 +544,21 @@ export const Collections = () => {
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* BASE WASH — an always-on dark mandala wash UNDER the cross-fading
+        {/* BASE WASH — an always-on, VISIBLE peacock wash UNDER the cross-fading
             collection scenes. Each ScrollBackdrop's opacity is tied to its
-            section being in view, so once you scroll PAST all three collections
-            (the complete-catalogue panel + footer) every scene has faded to 0 —
-            which used to drop the page to PURE BLACK (Hugo: "fix how the
-            background randomly disappears and goes black"). This constant layer
-            guarantees there is always a soft, on-brand backdrop behind the
-            content; the bright collection scenes simply ride on top of it. */}
+            section being in view, so wherever a scene fades (the bottom of each
+            collection — incl. the complete-set panel — and past all three) the
+            page falls back to THIS layer. It used to be the near-BLACK
+            born-in-the-sky nebula, so those fade zones read as "no background /
+            gone black" (Hugo 2026-06-24). Swapped to the dusky persian-indigo
+            peacock wash — neutral behind every collection, on-brand with the
+            home, and appropriately dark-but-visible under the scrim so the page
+            ALWAYS has a soft estate backdrop, never a black void. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("${asset("/img/scenes/born-in-the-sky-blur-v2.webp")}")`,
+            backgroundImage: `url("${asset("/img/paintings/peacock-persian-indigo-blur-v3-sm.webp")}")`,
           }}
         />
         {COLLECTIONS.map((coll, i) =>

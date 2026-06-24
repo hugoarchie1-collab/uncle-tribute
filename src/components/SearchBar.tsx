@@ -202,7 +202,12 @@ export const SearchBar = ({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-1/2 -translate-y-1/2 text-ink-muted transition-colors duration-200",
+            "pointer-events-none absolute top-1/2 -translate-y-1/2 transition-colors duration-200",
+            // The menu (page variant) sits on a near-black drawer where the
+            // 0.7-muted glass read as nearly invisible (Hugo: "have a search
+            // symbol on the menu") — give it the FULL cream there; the always-on
+            // header pill keeps the quieter muted tone.
+            isPage ? "text-ink" : "text-ink-muted",
             iconBox,
           )}
         >
