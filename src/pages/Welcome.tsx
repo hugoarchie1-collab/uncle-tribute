@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { VideoIntro } from "../components/VideoIntro";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -358,12 +357,11 @@ export const Welcome = () => {
         </div>
       </section>
 
-      {/* COSMIC INTERLUDE — the Veo space-nebula intro film, moved to the TOP
-          opening (Hugo) so it plays right under the wordmark as the website
-          intro. Lazy + reduced-motion safe; see the CosmicInterlude component. */}
+      {/* COSMIC INTERLUDE — the Veo space-nebula film is the SOLE website intro
+          now (Hugo: "just one video at the top underneath Mandala Company"),
+          playing right under the wordmark; the old swirling-mandala boomerang
+          (VideoIntro) was removed from the home. Lazy + reduced-motion safe. */}
       <CosmicInterlude />
-
-      <VideoIntro />
 
       <div id="welcome-anchor" className="relative">
         {/* PEACOCK BACKDROP LAYER — four colourways crossfading on
