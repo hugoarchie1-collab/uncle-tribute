@@ -225,7 +225,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[56svh] md:min-h-[62svh] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[44svh] md:min-h-[62svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* The home's own peacock painting shows THROUGH the transparent sun
@@ -299,7 +299,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[21svh] sm:mt-[23svh] md:mt-[25svh]">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[10svh] sm:mt-[23svh] md:mt-[25svh]">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -321,7 +321,7 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 700',
                   fontWeight: 700,
-                  fontSize: "clamp(50px, 12vw, 196px)",
+                  fontSize: "clamp(60px, 14.5vw, 196px)",
                   letterSpacing: "-0.03em",
                   lineHeight: 0.92,
                   textTransform: "uppercase",
@@ -338,7 +338,7 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 36, "wght" 600',
                   fontWeight: 600,
-                  fontSize: "clamp(20px, 3vw, 46px)",
+                  fontSize: "clamp(24px, 4.5vw, 46px)",
                   letterSpacing: "-0.005em",
                   lineHeight: 1.1,
                   color: "#f1ead9",
@@ -536,10 +536,10 @@ export const Welcome = () => {
             >
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[48%]">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-4 text-balance hero-text-shadow">
-                  <span className="block font-semibold text-[clamp(52px,6.6vw,140px)] leading-[1.0]">
+                  <span className="block font-semibold text-[clamp(60px,11vw,140px)] leading-[1.0]">
                     So here we are on Earth
                   </span>
-                  <span className="block font-normal italic text-[clamp(40px,5.8vw,82px)] leading-[1.15] sm:leading-[1.05] mt-4 sm:mt-3 text-ink/90">
+                  <span className="block font-normal italic text-[clamp(46px,8vw,82px)] leading-[1.15] sm:leading-[1.05] mt-4 sm:mt-3 text-ink/90">
                     — orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
@@ -611,7 +611,7 @@ export const Welcome = () => {
                   "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
               }}
             />
-            <Reveal as="header" className="mb-5 md:mb-6 mx-auto max-w-[1080px] 3xl:max-w-[1320px]">
+            <Reveal as="header" className="mb-4 md:mb-6 mx-auto max-w-[1080px] 3xl:max-w-[1320px]">
               <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust drop cap (pure
@@ -624,7 +624,7 @@ export const Welcome = () => {
                 className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty"
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
-                  fontSize: "clamp(24px, 2.5vw, 40px)",
+                  fontSize: "clamp(30px, 7vw, 40px)",
                   lineHeight: 1.42,
                 }}
               >
@@ -637,12 +637,12 @@ export const Welcome = () => {
                 below then renders only the REMAINDER of that paragraph (see the
                 slice in the map), so the full passage appears exactly once across
                 the feature + body — never read twice. opsz 44. */}
-            <Reveal delay={0.05} className="my-6 md:my-8 mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
+            <Reveal delay={0.05} className="my-5 md:my-8 mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
               <p
                 className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
                 style={{
                   fontVariationSettings: '"opsz" 44, "wght" 400',
-                  fontSize: "clamp(28px, 3.8vw, 60px)",
+                  fontSize: "clamp(36px, 9vw, 60px)",
                   letterSpacing: "-0.02em",
                   lineHeight: 1.14,
                 }}
@@ -673,7 +673,7 @@ export const Welcome = () => {
                   <p
                     key={para.slice(0, 24)}
                     lang="en-GB"
-                    className="font-sans font-normal text-[19px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-5 md:mb-6 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[20px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-4 md:mb-6 last:mb-0 text-pretty hyphens-auto"
                   >
                     {text}
                   </p>
@@ -687,14 +687,14 @@ export const Welcome = () => {
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
             <Reveal delay={0.1}>
-              <div aria-hidden="true" className="mt-5 md:mt-6 mb-4 h-px w-12 bg-ink/15" />
+              <div aria-hidden="true" className="mt-4 md:mt-6 mb-3 h-px w-12 bg-ink/15" />
               <p className="m-0 mx-auto max-w-[1080px] 3xl:max-w-[1320px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
-                    fontSize: "clamp(32px, 4.8vw, 68px)",
+                    fontSize: "clamp(42px, 10.5vw, 68px)",
                     letterSpacing: "-0.03em",
                     lineHeight: 1.02,
                   }}
@@ -707,7 +707,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 36, "wght" 400',
                     fontWeight: 400,
-                    fontSize: "clamp(20px, 2.7vw, 44px)",
+                    fontSize: "clamp(25px, 6.2vw, 44px)",
                     letterSpacing: "-0.015em",
                     lineHeight: 1.2,
                   }}
@@ -750,10 +750,10 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-8 md:min-h-[42svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-6 md:min-h-[42svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
-                <figure className="m-0 mb-8 md:hidden max-w-[460px]">
+                <figure className="m-0 mb-6 md:hidden max-w-[460px]">
                   <ImageReveal
                     src="/img/welcome/02-portrait-denim.jpg"
                     alt="Stephen Meakin"
@@ -767,7 +767,7 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(34px,4.6vw,68px)] leading-[1.02] text-ink m-0 mb-5 md:mb-6 hero-text-shadow">
+                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
@@ -797,11 +797,11 @@ export const Welcome = () => {
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-6 md:mb-7">
+            <Reveal as="div" className="text-center mb-4 md:mb-7">
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 From the hand
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.4vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -812,7 +812,7 @@ export const Welcome = () => {
                 leftover tile(s) centre on the last row at every breakpoint
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
-            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-7 md:mb-9">
+            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-5 md:mb-9">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
@@ -900,9 +900,9 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-8 md:py-10 lg:py-12">
-              <Reveal as="div" className="text-center mb-6 md:mb-8">
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.6vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-6 md:py-10 lg:py-12">
+              <Reveal as="div" className="text-center mb-5 md:mb-8">
+                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1000px] 3xl:max-w-[1200px] mx-auto">
@@ -915,7 +915,7 @@ export const Welcome = () => {
                   the 4:3 documentary source (sm+) trims only a sliver of ceiling
                   and foreground — the subjects + mandala are never touched, and
                   full 4:3 shows on phones. Clean feather, no box-shadow. */}
-              <Reveal as="figure" className="m-0 mb-6 md:mb-8">
+              <Reveal as="figure" className="m-0 mb-5 md:mb-8">
                 <ImageReveal
                   src="/img/about/02-painting-table.jpg"
                   alt="Stephen at his drafting table, drawing the underlying geometry"
@@ -945,7 +945,7 @@ export const Welcome = () => {
                   void to its left where the shorter image ended — Hugo's "gap
                   next to highlighted"). Three columns on md+ so the six facts
                   read as a clean ledger across the whole panel. */}
-              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-6 md:mt-8 items-start">
+              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-5 md:mt-8 items-start">
                     {/* ONE consistent register for all six facts — same eyebrow
                         label + same Hanken value at one size, no mixed serif/
                         italic lines (Hugo: "different sizes, different fonts,
@@ -969,16 +969,16 @@ export const Welcome = () => {
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-6 md:mb-7">
+            <Reveal as="div" className="text-center mb-5 md:mb-7">
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.4vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Four traditions, one language.
               </h2>
             </Reveal>
 
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 list-none p-0 mb-6 md:mb-8">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-5 list-none p-0 mb-5 md:mb-8">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -989,7 +989,7 @@ export const Welcome = () => {
                   key={item.tag}
                   className="bg-bg-soft ring-1 ring-white/8 p-5 md:p-6 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
                 >
-                  <p className="font-display font-bold text-ink/45 text-[clamp(34px,3.6vw,48px)] leading-none m-0 mb-3 tracking-tight">
+                  <p className="font-display font-bold text-ink/45 text-[clamp(40px,4.6vw,48px)] leading-none m-0 mb-3 tracking-tight">
                     {item.tag}
                   </p>
                   <p className="font-sans text-[16px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
@@ -1023,7 +1023,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(34px,4vw,58px)] leading-[1.08] text-ink m-0 mb-5 text-balance">
+              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.2vw,58px)] leading-[1.08] text-ink m-0 mb-5 text-balance">
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
@@ -1190,7 +1190,7 @@ export const Welcome = () => {
               {/* Hairline rule — one breath between the estate's statement
                   and Stephen's own voice. */}
               <Reveal delay={0.16}>
-                <div aria-hidden="true" className="mx-auto my-6 md:my-8 h-px w-12 bg-ink/15" />
+                <div aria-hidden="true" className="mx-auto my-5 md:my-8 h-px w-12 bg-ink/15" />
               </Reveal>
 
               {/* Stephen's voice — VERBATIM register. His documented words are

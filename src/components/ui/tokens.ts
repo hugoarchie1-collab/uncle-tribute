@@ -53,7 +53,7 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   // Clamp ceiling held at 150px (the 2026-06-20 fill-the-screen ceiling) — bold
   // at large widths but never the crude 220px logo the 700/opsz-48 cut hit in
   // its first (rejected) form.
-  fontSize: "clamp(44px, 8.6vw, 150px)",
+  fontSize: "clamp(58px, 10.5vw, 150px)",
   lineHeight: 0.92,
   letterSpacing: "-0.03em",
 };
@@ -62,7 +62,7 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
 export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontVariationSettings: '"opsz" 48, "wght" 700',
   fontWeight: 700,
-  fontSize: "clamp(36px, 5.9vw, 96px)",
+  fontSize: "clamp(48px, 8vw, 96px)",
   lineHeight: 0.96,
   letterSpacing: "-0.028em",
 };
@@ -81,7 +81,7 @@ export const EYEBROW =
  *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
  *  or leave left-aligned. End the copy with a full stop, sentence-case. */
 export const TITLE =
-  "font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.7vw,92px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
+  "font-display font-bold tracking-[-0.04em] text-[clamp(52px,8.2vw,92px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
