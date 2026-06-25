@@ -309,6 +309,26 @@ const TIER_SIZE: Record<string, string> = {
   heirloom: "A0 (84 × 84 cm)",
   studio: "A1 (59.5 × 59.5 cm)",
 };
+// Per-painting LANDSCAPE size overrides (mirror of OPHIUCHUS_TIER_SIZE in
+// src/data/paintings.ts + api/checkout.ts + api/email-basket.ts — gotcha #9).
+// Ophiuchus is the one non-square work, so its prints carry landscape cm on the
+// same A sheet; this makes the confirmation email + Point 101 fulfilment line
+// show the real dimensions rather than a square default. Same ids / prices.
+const PAINTING_TIER_SIZE: Record<string, Record<string, string>> = {
+  ophiuchus: {
+    atelier: "A3 (36.4 × 29.5 cm)",
+    collector: "A2 (51.8 × 42 cm)",
+    "atelier-grande": "A1 (73.4 × 59.5 cm)",
+    heirloom: "A0 (103.6 × 84 cm)",
+    studio: "A1 (73.4 × 59.5 cm)",
+  },
+};
+/** The printed size for a line — a per-painting override (Ophiuchus landscape)
+ *  if known, else the square ladder default, else a safe generic label. */
+const sizeFor = (paintingId: string | undefined, tierId: string): string =>
+  (paintingId ? PAINTING_TIER_SIZE[paintingId]?.[tierId] : undefined) ??
+  TIER_SIZE[tierId] ??
+  "Limited edition giclée print";
 const TIER_EDITION: Record<string, string> = {
   atelier: "Open Edition — unnumbered, issued to order",
   collector: "Collector Edition — edition of 200, hand-numbered",
@@ -348,7 +368,7 @@ const linesFromMetadata = (
         colourway: m.colourway_name || "Original",
         tierLabel: TIER_LABEL[tierId] ?? m.tier_label,
         editionLabel: TIER_EDITION[tierId],
-        size: TIER_SIZE[tierId] ?? m.size ?? "Limited edition giclée print",
+        size: sizeFor(m.painting_id, tierId),
         framing,
         embellished,
         // Itemise the add-on only when it applies on this tier AND was bought
@@ -369,6 +389,7 @@ const linesFromMetadata = (
   // Multi-item shape
   const titles = (m.painting_titles || "").split(",").map((s) => s.trim()).filter(Boolean);
   const colourways = (m.colourway_names || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const paintingIds = (m.painting_ids || "").split(",").map((s) => s.trim());
   const tierIds = (m.tier_ids || "").split(",").map((s) => s.trim()).filter(Boolean);
   const framingFlags = (m.framing_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
   const embellishedFlags = (m.embellished_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -382,7 +403,7 @@ const linesFromMetadata = (
       colourway: colourways[idx] || "Original",
       tierLabel: TIER_LABEL[tierId],
       editionLabel: TIER_EDITION[tierId],
-      size: TIER_SIZE[tierId] ?? "Limited edition giclée print",
+      size: sizeFor(paintingIds[idx], tierId),
       framing,
       embellished,
       // Itemise the add-on only when it applies on this tier AND was bought.

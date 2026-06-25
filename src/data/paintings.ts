@@ -266,6 +266,37 @@ export const PRINT_TIERS: PrintTier[] = [
 ];
 
 /**
+ * OPHIUCHUS — the one LANDSCAPE work in the catalogue. Its source file is
+ * 2000 × 1622 px (≈ 1.233 : 1, wider than tall — the square mandala sits in a
+ * starfield that extends left and right), so its giclée prints reproduce that
+ * landscape proportion rather than the square format the rest of the (square)
+ * catalogue uses. Each tier keeps the SAME Point 101 A-series sheet, ids,
+ * prices, editions and add-ons as PRINT_TIERS — only the printed dimensions
+ * change: height = the square tier's A short side, width = height × (2000/1622).
+ * The landscape print still fits within the same A sheet (1.233 < the √2 ≈
+ * 1.414 paper ratio), so price parity holds and every pricing mirror stays
+ * valid. Built from PRINT_TIERS by overriding `size` only, so the ladder can
+ * never drift from the canonical prices/editions.
+ *
+ * ⚠️ Mirror obligation (gotcha #9): the SAME per-tier landscape sizes are
+ * hand-mirrored in api/checkout.ts, api/stripe-webhook.ts and
+ * api/email-basket.ts (PAINTING_TIER_SIZE.ophiuchus) so the dimensions Point
+ * 101 is asked to print match this product page. Change all four together.
+ */
+const OPHIUCHUS_TIER_SIZE: Record<PrintTier["id"], string> = {
+  atelier: "A3 (36.4 × 29.5 cm)",
+  collector: "A2 (51.8 × 42 cm)",
+  "atelier-grande": "A1 (73.4 × 59.5 cm)",
+  heirloom: "A0 (103.6 × 84 cm)",
+  studio: "A1 (73.4 × 59.5 cm)",
+};
+
+export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
+  ...t,
+  size: OPHIUCHUS_TIER_SIZE[t.id],
+}));
+
+/**
  * Default print spec used when a painting doesn't override. Edit these two
  * values to change every print across the catalogue at once. Add a
  * `printPricePence` / `printSize` override on individual Painting entries
@@ -717,7 +748,14 @@ export const PAINTINGS: Painting[] = [
     title: "Ophiuchus",
     year: "2006",
     collection: "born-in-the-sky",
-    size: "60 × 80 cm (approx. 24 × 32 in)",
+    // Ophiuchus is LANDSCAPE (source image 2000×1622 ≈ 1.233:1) — the lone
+    // non-square work. Original size corrected from a portrait "60 × 80" to
+    // landscape so it matches the artwork as shown.
+    size: "80 × 60 cm (approx. 32 × 24 in)",
+    // Landscape print ladder — same A sheets / ids / prices as PRINT_TIERS,
+    // only the printed dimensions differ, so the prints reproduce the artwork
+    // rather than a square crop. See OPHIUCHUS_PRINT_TIERS above.
+    printTiers: OPHIUCHUS_PRINT_TIERS,
     description:
       "There are thirteen constellations through which the ecliptic passes. The Babylonians used twelve, one for each month. Ophiuchus, through which the sun travels for eighteen days between November and December, was left out. It has been the excluded thirteenth ever since.\n\nOphiuchus is the Serpent Bearer. In Greek mythology, he is Asclepius, son of Apollo, who became so skilled in healing that he could raise the dead. Zeus killed him with a thunderbolt for upsetting the natural order, then placed him in the sky as a constellation, holding a serpent in both hands.\n\nThe Rod of Asclepius, a single serpent coiled around a staff, remains the global symbol of medicine. The serpent was chosen because its venom is simultaneously poison and cure. The same substance kills and heals. Asclepius understood that there is no such thing as a toxin that is only a toxin.\n\nStephen built this painting on a square — the Tibetan mandala palace form, four gates facing four directions, the sacred architecture of the cosmos. Most of his mandalas are circular. This one is not. The excluded constellation demanded a different kind of space.\n\nStephen described it as his homage to Ophiuchus, the constellation of the serpent bearer and toxin protector.",
     colourways: [

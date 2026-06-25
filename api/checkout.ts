@@ -134,6 +134,27 @@ const TIERS: Record<TierId, TierDef> = {
   },
 };
 
+// Per-painting LANDSCAPE size overrides. Ophiuchus is the one non-square work
+// (image 2000×1622 ≈ 1.233:1), so its prints carry landscape dimensions on the
+// SAME A-series sheet — same tier ids / prices / editions, only the printed cm
+// differ. Mirror of OPHIUCHUS_TIER_SIZE in src/data/paintings.ts and the same
+// map in api/stripe-webhook.ts + api/email-basket.ts (gotcha #9) so the size
+// the buyer sees and Point 101 is asked to print match the product page.
+const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
+  ophiuchus: {
+    atelier: "A3 (36.4 × 29.5 cm)",
+    collector: "A2 (51.8 × 42 cm)",
+    "atelier-grande": "A1 (73.4 × 59.5 cm)",
+    heirloom: "A0 (103.6 × 84 cm)",
+    studio: "A1 (73.4 × 59.5 cm)",
+  },
+};
+
+/** The printed size for a painting at a tier — a per-painting override (e.g.
+ *  Ophiuchus landscape) if present, else the square ladder default. */
+const sizeFor = (paintingId: string, tier: TierDef): string =>
+  PAINTING_TIER_SIZE[paintingId]?.[tier.id] ?? tier.size;
+
 const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £450)
 
 // ---- Cost floors (#13) — mirror of src/data/paintings.ts ------------------
@@ -697,7 +718,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         unit_amount: toMinor(item.tier.pricePence),
         product_data: {
           name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
-          description: `${item.tier.size}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`} ${PRINT_SPEC}`,
+          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`} ${PRINT_SPEC}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).
@@ -785,7 +806,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       colourway_name: normalised[0].colourway,
       tier_id: normalised[0].tier.id,
       tier_label: normalised[0].tier.label,
-      size: normalised[0].tier.size,
+      size: sizeFor(normalised[0].paintingId, normalised[0].tier),
       framing: normalised[0].framing ? "yes" : "no",
       embellished: normalised[0].embellished ? "yes" : "no",
       item_count: "1",
@@ -804,7 +825,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       embellished_flags: truncateMetadata(
         normalised.map((i) => (i.embellished ? "y" : "n")),
       ),
-      size: normalised[0].tier.size,
+      size: sizeFor(normalised[0].paintingId, normalised[0].tier),
     };
   }
 

@@ -117,6 +117,21 @@ const TIERS: Record<TierId, EmailTier> = {
     available: true,
   },
 };
+// Per-painting LANDSCAPE size overrides (mirror of OPHIUCHUS_TIER_SIZE in
+// src/data/paintings.ts + api/checkout.ts + api/stripe-webhook.ts — gotcha #9).
+// Ophiuchus is the one non-square work, so the saved-basket email previews its
+// real landscape dimensions, not a square default. Same ids / prices / editions.
+const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
+  ophiuchus: {
+    atelier: "A3 (36.4 × 29.5 cm)",
+    collector: "A2 (51.8 × 42 cm)",
+    "atelier-grande": "A1 (73.4 × 59.5 cm)",
+    heirloom: "A0 (103.6 × 84 cm)",
+    studio: "A1 (73.4 × 59.5 cm)",
+  },
+};
+const sizeFor = (paintingId: string, tierId: TierId): string =>
+  PAINTING_TIER_SIZE[paintingId]?.[tierId] ?? TIERS[tierId].size;
 const ANCHOR_TIER_ID: TierId = "collector";
 
 const MAX_ITEMS = 20;
@@ -416,7 +431,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     lines.push({
       title: PAINTING_TITLES[id] ?? id,
       colourway,
-      size: `${tier.label} · ${tier.size} · ${tail.join(" · ")}`,
+      size: `${tier.label} · ${sizeFor(id, tierId)} · ${tail.join(" · ")}`,
       price: formatGBP(linePence),
     });
     subtotalPence += linePence;
