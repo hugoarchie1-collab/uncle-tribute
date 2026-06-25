@@ -26,6 +26,10 @@ import {
   PAINTINGS,
   EMBELLISHMENT_NOTE,
   ESTATE_AUTHENTICATION,
+  FRAME_STYLES,
+  GLAZING_OPTIONS,
+  DEFAULT_FRAME_STYLE,
+  DEFAULT_GLAZING,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
@@ -943,8 +947,12 @@ const BuyBox = ({
   onSelectTier,
   framing,
   embellished,
+  frameStyle,
+  glazing,
   onFramingChange,
   onEmbellishedChange,
+  onFrameStyleChange,
+  onGlazingChange,
   orderSentinelRef,
 }: {
   painting: Painting;
@@ -958,8 +966,12 @@ const BuyBox = ({
   onSelectTier: (id: PrintTier["id"]) => void;
   framing: boolean;
   embellished: boolean;
+  frameStyle: string;
+  glazing: string;
   onFramingChange: (next: boolean) => void;
   onEmbellishedChange: (next: boolean) => void;
+  onFrameStyleChange: (next: string) => void;
+  onGlazingChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const { formatPretty: fmtP, code: currencyCode } = useCurrency();
@@ -1064,6 +1076,8 @@ const BuyBox = ({
       selectedTier.id,
       framingActive,
       embellishActive,
+      framingActive ? frameStyle : undefined,
+      framingActive ? glazing : undefined,
     );
     // Marketing analytics (consent-gated no-op otherwise) — AddToCart /
     // add_to_cart at the SELECTED tier's print price.
@@ -1124,6 +1138,7 @@ const BuyBox = ({
           tierId: selectedTier.id,
           framing: framingActive,
           embellished: embellishActive,
+          ...(framingActive ? { frameStyle, glazing } : {}),
           currency: currencyCode,
           ...(utm ? { utm } : {}),
         }),
@@ -1415,8 +1430,11 @@ const BuyBox = ({
                       )}
                     </span>
                     <span>
-                      Black-stained oak with cast-acrylic glazing for safe
-                      transit, ready to hang. Allow {FRAME_LEAD_WEEKS} weeks.
+                      Made to order by Point 101 in the finish of your choice —
+                      solid-wood or contemporary tray frame, with optional
+                      anti-reflective museum glass, conservation-mounted and ready
+                      to hang. Every finish is included. Allow {FRAME_LEAD_WEEKS}{" "}
+                      weeks.
                     </span>
                     {/* Free delivery applies to framed prints too — reassurance
                         shown the moment a frame is ticked. There is no framed-
@@ -1430,6 +1448,66 @@ const BuyBox = ({
                     )}
                   </span>
                 </label>
+              )}
+
+              {/* FRAMING FINISH PICKERS — frame style + glazing, shown once
+                  framing is ticked. Included-in-price preferences (NO upcharge):
+                  the choice rides to checkout so the estate orders the right
+                  frame from Point 101. OUTSIDE the checkbox <label> so picking a
+                  finish never toggles the framing checkbox. Monochrome (#7). */}
+              {framingActive && (
+                <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
+                  <p className="font-sans text-[12.5px] leading-[1.5] text-ink/55 m-0">
+                    Choose your finish — every option is included, no extra
+                    charge.
+                  </p>
+                  <div className="flex flex-col gap-1.5">
+                    <span className={cn(EYEBROW_TIGHT, "text-ink/55")}>Frame</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {FRAME_STYLES.map((f) => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => onFrameStyleChange(f.id)}
+                          aria-pressed={frameStyle === f.id}
+                          title={f.note}
+                          className={cn(
+                            "font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            frameStyle === f.id
+                              ? "ring-ink text-ink"
+                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                          )}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className={cn(EYEBROW_TIGHT, "text-ink/55")}>
+                      Glazing
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {GLAZING_OPTIONS.map((g) => (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => onGlazingChange(g.id)}
+                          aria-pressed={glazing === g.id}
+                          title={g.note}
+                          className={cn(
+                            "font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            glazing === g.id
+                              ? "ring-ink text-ink"
+                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                          )}
+                        >
+                          {g.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
 
               {/* HAND-FINISHING by Polly Wedge */}
@@ -1745,6 +1823,8 @@ const StickyAddBar = ({
   selectedTier,
   framing,
   embellished,
+  frameStyle,
+  glazing,
   heroSentinelRef,
   orderSentinelRef,
 }: {
@@ -1753,6 +1833,8 @@ const StickyAddBar = ({
   selectedTier: PrintTier;
   framing: boolean;
   embellished: boolean;
+  frameStyle: string;
+  glazing: string;
   heroSentinelRef: React.RefObject<HTMLDivElement | null>;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
@@ -1801,12 +1883,15 @@ const StickyAddBar = ({
   const embellishOffered =
     !isOneOffSelected && typeof selectedTier.embellishmentPricePence === "number";
   const onAdd = useCallback(() => {
+    const framed = framingOffered && framing;
     addItem(
       painting.id,
       selected.name,
       selectedTier.id,
-      framingOffered && framing,
+      framed,
       embellishOffered && embellished,
+      framed ? frameStyle : undefined,
+      framed ? glazing : undefined,
     );
     // Same consent-gated AddToCart as the buy box — this bar is just the
     // floating twin of that handler.
@@ -1824,6 +1909,8 @@ const StickyAddBar = ({
     selectedTier.pricePence,
     framingOffered,
     framing,
+    frameStyle,
+    glazing,
     embellishOffered,
     embellished,
   ]);
@@ -2002,6 +2089,8 @@ export const PaintingDetail = () => {
   // share one source of truth.
   const [framing, setFraming] = useState(false);
   const [embellished, setEmbellished] = useState(false);
+  const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
+  const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
 
   // Deep-zoom viewer state for the hero image — plus a ref on the on-page
   // artwork <img> so the viewer can FLIP-lift from its measured rect (and read
@@ -2412,8 +2501,12 @@ export const PaintingDetail = () => {
                 onSelectTier={setSelectedTierId}
                 framing={framing}
                 embellished={embellished}
+                frameStyle={frameStyle}
+                glazing={glazing}
                 onFramingChange={setFraming}
                 onEmbellishedChange={setEmbellished}
+                onFrameStyleChange={setFrameStyle}
+                onGlazingChange={setGlazing}
                 orderSentinelRef={orderSentinelRef}
               />
             </Reveal>
@@ -2447,6 +2540,8 @@ export const PaintingDetail = () => {
         selectedTier={selectedTier}
         framing={framing}
         embellished={embellished}
+        frameStyle={frameStyle}
+        glazing={glazing}
         heroSentinelRef={heroSentinelRef}
         orderSentinelRef={orderSentinelRef}
       />

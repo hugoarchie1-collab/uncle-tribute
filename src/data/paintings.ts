@@ -385,6 +385,39 @@ export const getLowestTierPricePence = (painting: Painting): number => {
 export const getFramingPricePence = (tier: PrintTier): number | null =>
   tier.framingPricePence ?? null;
 
+// ── Point 101 framing finishes ───────────────────────────────────────────────
+// The Bespoke framing add-on offers Point 101's full range of museum-grade
+// finishes: a choice of solid-wood / tray mouldings AND a choice of glazing
+// (their best is the Artglass AR70 anti-reflective museum glass). EVERY finish
+// is INCLUDED in the single framing price — there is NO per-style upcharge (the
+// estate absorbs the small cost difference into margin, exactly as it does for
+// delivery), so advertised == charged is completely untouched. The buyer's
+// choice rides to checkout as a Stripe line-item note so the estate orders the
+// right frame from Point 101. Labels are mirrored (without prices) in
+// api/checkout.ts — keep the two in sync (gotcha #9, labels only / no money).
+export const FRAME_STYLES = [
+  { id: "natural-oak", label: "Natural oak", note: "Warm, light solid oak" },
+  { id: "stained-black", label: "Stained black", note: "Deep matt-black solid wood" },
+  { id: "white", label: "White", note: "Clean painted white" },
+  { id: "walnut-tray", label: "Walnut tray", note: "Contemporary float frame in solid walnut" },
+] as const;
+
+export const GLAZING_OPTIONS = [
+  { id: "art-acrylic", label: "Art acrylic", note: "Ultra-clear, 99% UV-filtering, shatter-safe" },
+  { id: "museum-glass", label: "Museum glass", note: "Artglass AR70 — anti-reflective, under 1% reflection" },
+] as const;
+
+export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
+export type GlazingId = (typeof GLAZING_OPTIONS)[number]["id"];
+
+export const DEFAULT_FRAME_STYLE: FrameStyleId = "natural-oak";
+export const DEFAULT_GLAZING: GlazingId = "art-acrylic";
+
+export const frameStyleLabel = (id: string | undefined): string =>
+  FRAME_STYLES.find((f) => f.id === id)?.label ?? FRAME_STYLES[0].label;
+export const glazingLabel = (id: string | undefined): string =>
+  GLAZING_OPTIONS.find((g) => g.id === id)?.label ?? GLAZING_OPTIONS[0].label;
+
 /**
  * Returns the hand-embellishment surcharge for a tier, or null if Polly
  * doesn't hand-finish at that size. Currently A2 + A1 only — A3 is too

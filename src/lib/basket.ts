@@ -47,6 +47,14 @@ export interface BasketItem {
    * without a storage-version bump.
    */
   embellished?: boolean;
+  /**
+   * Optional Point 101 framing finishes (frame-style + glazing ids). Only
+   * meaningful when `framing === true`; absent on bare-print lines. NO price
+   * impact — every finish is included in the framing price, so older entries
+   * without these fields reconcile cleanly with no storage-version bump.
+   */
+  frameStyle?: string;
+  glazing?: string;
   addedAt: number;
 }
 
@@ -159,6 +167,11 @@ const readFromStorage = (): BasketLine[] => {
         const tierId: PrintTier["id"] = isTierId(o.tierId) ? o.tierId : "collector";
         const framing = o.framing === true ? true : undefined;
         const embellished = o.embellished === true ? true : undefined;
+        // Finishes only ride along when the line is framed.
+        const frameStyle =
+          framing && typeof o.frameStyle === "string" ? o.frameStyle : undefined;
+        const glazing =
+          framing && typeof o.glazing === "string" ? o.glazing : undefined;
         return {
           kind: "print",
           paintingId: o.paintingId,
@@ -166,6 +179,8 @@ const readFromStorage = (): BasketLine[] => {
           tierId,
           framing,
           embellished,
+          ...(frameStyle ? { frameStyle } : {}),
+          ...(glazing ? { glazing } : {}),
           addedAt: o.addedAt,
         };
       })
@@ -320,6 +335,8 @@ export const addItem = (
   tierId?: PrintTier["id"],
   framing?: boolean,
   embellished?: boolean,
+  frameStyle?: string,
+  glazing?: string,
 ): void => {
   const current = ensureCache();
   let resolvedTierId: PrintTier["id"] = tierId ?? "collector";
@@ -337,6 +354,8 @@ export const addItem = (
     tierId: resolvedTierId,
     ...(framing ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
+    ...(framing && frameStyle ? { frameStyle } : {}),
+    ...(framing && glazing ? { glazing } : {}),
     addedAt: Date.now(),
   };
   setCache([...current, added]);

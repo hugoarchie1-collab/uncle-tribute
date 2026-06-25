@@ -363,6 +363,21 @@ const isTierId = (v: unknown): v is TierId =>
   v === "heirloom" ||
   v === "studio";
 
+// Point 101 framing-finish labels — a LABELS-ONLY mirror of FRAME_STYLES /
+// GLAZING_OPTIONS in src/data/paintings.ts (gotcha #9, but NO money: there is
+// no per-finish charge, so a label drift is cosmetic, never a pricing bug).
+// An unknown / missing id falls back to the first (default) finish.
+const FRAME_STYLE_LABELS: Record<string, string> = {
+  "natural-oak": "Natural oak",
+  "stained-black": "Stained black",
+  white: "White",
+  "walnut-tray": "Walnut tray",
+};
+const GLAZING_LABELS: Record<string, string> = {
+  "art-acrylic": "Art acrylic",
+  "museum-glass": "Museum glass (anti-reflective)",
+};
+
 interface NormalisedItem {
   paintingId: string;
   colourway: string;
@@ -370,6 +385,11 @@ interface NormalisedItem {
   tier: TierDef;
   framing: boolean;     // true only if framing is offered AND requested
   embellished: boolean; // true only if hand-finishing is offered AND requested
+  // Framing finishes (display labels) — only set when framing === true. These
+  // ride into the Stripe line item so the estate knows which frame to order;
+  // they carry NO price (every finish is included in framingPricePence).
+  frameStyle?: string;
+  glazing?: string;
 }
 
 const normaliseItem = (
@@ -378,6 +398,8 @@ const normaliseItem = (
   tierIdRaw: unknown,
   framingRaw: unknown,
   embellishedRaw: unknown,
+  frameStyleRaw?: unknown,
+  glazingRaw?: unknown,
 ): NormalisedItem | { error: string } => {
   if (!paintingId || !VALID_PAINTING_IDS.has(paintingId)) {
     return { error: `Unknown painting "${paintingId ?? ""}".` };
@@ -395,7 +417,24 @@ const normaliseItem = (
   // Hand-embellishment requested only counts if the tier actually offers it.
   const embellished =
     embellishedRaw === true && typeof tier.embellishmentPricePence === "number";
-  return { paintingId, colourway, title, tier, framing, embellished };
+  // Framing finishes — only when framed; an unknown id falls back to the
+  // default finish so a stale / malformed client can never break the line.
+  const frameStyle = framing
+    ? (FRAME_STYLE_LABELS[String(frameStyleRaw)] ?? FRAME_STYLE_LABELS["natural-oak"])
+    : undefined;
+  const glazing = framing
+    ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["art-acrylic"])
+    : undefined;
+  return {
+    paintingId,
+    colourway,
+    title,
+    tier,
+    framing,
+    embellished,
+    frameStyle,
+    glazing,
+  };
 };
 
 // ---- Gift-card normalisation ----------------------------------------------
@@ -609,6 +648,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     tierId?: unknown;
     framing?: unknown;
     embellished?: unknown;
+    frameStyle?: unknown;
+    glazing?: unknown;
     items?: Array<{
       kind?: unknown;
       paintingId?: string;
@@ -616,6 +657,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tierId?: unknown;
       framing?: unknown;
       embellished?: unknown;
+      frameStyle?: unknown;
+      glazing?: unknown;
       // Gift-card line fields (kind === "gift"):
       amountPence?: unknown;
       label?: unknown;
@@ -650,6 +693,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           tierId: body.tierId,
           framing: body.framing,
           embellished: body.embellished,
+          frameStyle: body.frameStyle,
+          glazing: body.glazing,
         },
       ];
 
@@ -687,6 +732,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       raw?.tierId,
       raw?.framing,
       raw?.embellished,
+      raw?.frameStyle,
+      raw?.glazing,
     );
     if ("error" in result) return send(400, result);
     normalised.push(result);
@@ -726,14 +773,22 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       },
     });
     if (item.framing && typeof item.tier.framingPricePence === "number") {
+      // The buyer's chosen finish (frame style + glazing) is named on the line
+      // so it appears on Stripe checkout, the receipt AND the dashboard order
+      // the estate works from when placing the Point 101 frame order. No price
+      // impact — every finish is included in framingPricePence.
+      const finish =
+        item.frameStyle && item.glazing
+          ? `${item.frameStyle} frame · ${item.glazing}`
+          : "Bespoke frame";
       lineItems.push({
         quantity: 1,
         price_data: {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.framingPricePence),
           product_data: {
-            name: `Framing — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
-            description: `Hand-finished frame for the ${item.tier.label} edition.`,
+            name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            description: `${finish}, conservation-mounted and ready to hang. Hand-finished by Point 101 for the ${item.tier.label} edition.`,
           },
         },
       });

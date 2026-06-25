@@ -279,6 +279,14 @@ export const Basket = () => {
               tierId: l.tier.id,
               framing: l.item.framing === true,
               embellished: l.item.embellished === true,
+              // Framing finishes (no price impact) — forwarded so the Stripe
+              // line item names the frame the estate should order from Point 101.
+              ...(l.item.framing === true && l.item.frameStyle
+                ? { frameStyle: l.item.frameStyle }
+                : {}),
+              ...(l.item.framing === true && l.item.glazing
+                ? { glazing: l.item.glazing }
+                : {}),
             })),
             ...giftCards.map((g) => ({
               kind: "gift" as const,
