@@ -6,6 +6,7 @@ import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
 import { BasketToast } from "./components/BasketToast";
 import { ConsentBanner } from "./components/ConsentBanner";
+import { UpdatePrompt } from "./components/UpdatePrompt";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -193,6 +194,13 @@ export default function App() {
               clears the decision and re-opens it live. z-[110], below the
               toasts (z-[120]) + modals (z-200). */}
           <ConsentBanner />
+          {/* Self-update prompt — when a NEWER build is deployed while this app
+              is open (or stuck in a phone's cache), a quiet, dismissible
+              "newer version ready — Refresh" bar appears on tab-focus. Never
+              force-reloads, so it can't interrupt checkout. Permanent fix for a
+              stale cached build hiding a fresh deploy. z-[115], between the
+              consent bar (z-110) and toasts (z-120). */}
+          <UpdatePrompt />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />
