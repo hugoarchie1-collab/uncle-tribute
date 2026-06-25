@@ -18,5 +18,14 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Honour the codebase's explicit "intentionally unused" convention: an
+      // argument or binding prefixed with `_` (e.g. `_props`, `_e`) is a
+      // deliberate signal, not an oversight — don't flag it.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
   },
 ])

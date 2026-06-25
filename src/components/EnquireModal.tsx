@@ -50,14 +50,25 @@ export const EnquireModal = ({
   // onClose is read via a ref so the effect doesn't re-run (and reset the
   // form mid-submit) when the parent re-creates its arrow function.
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
   useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
+  // Reset to a fresh idle form whenever the dialog CLOSES — done during render
+  // via React's sanctioned "adjust state when a prop changes" pattern (a guarded
+  // previous-value compare) rather than in an effect, so it never schedules a
+  // cascading post-paint render.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (!open) {
-      // Open transitioned to false — reset to idle so the next open is fresh.
       setStatus("idle");
       setErrorMsg("");
-      return;
     }
+  }
+
+  useEffect(() => {
+    if (!open) return;
     // Capture the element focused when the dialog opened, so focus returns to
     // it on close (a11y — the trigger button, never dropped to <body>).
     const opener = document.activeElement as HTMLElement | null;

@@ -63,8 +63,8 @@
   body {
     @apply font-sans text-body text-ink-soft antialiased;
     font-weight: 400;
-    /* Only the loaded weights render (Fraunces 400/600/700, Hanken Grotesk
-       400/600) — forbid the browser from synthesising any unloaded weight/style.
+    /* Only the loaded weights render (Fraunces 400/600/700, Schibsted Grotesk
+       400..700 variable) — forbid the browser from synthesising any unloaded weight/style.
        A stray weight then snaps to a real loaded face instead of faux-rendering
        (which varies per engine and shifts wrap points). */
     font-synthesis: none;

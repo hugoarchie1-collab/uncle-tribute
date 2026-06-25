@@ -33,11 +33,16 @@ export const AmbientBackdrop = ({
   // OVER it (the #6 "lag" class of bug). Under prefers-reduced-motion we
   // release the promotion entirely — no motion means no need for an extra
   // GPU layer, and the static visual is identical.
-  const [reducedMotion, setReducedMotion] = useState(false);
+  // Read the current preference in a LAZY INITIALISER (correct from first paint,
+  // no synchronous setState in the effect → no cascading render); the effect then
+  // only SUBSCRIBES to later changes.
+  const [reducedMotion, setReducedMotion] = useState(
+    () =>
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false,
+  );
   useEffect(() => {
     const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!mq) return;
-    setReducedMotion(mq.matches);
     const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mq.addEventListener?.("change", onChange);
     return () => mq.removeEventListener?.("change", onChange);

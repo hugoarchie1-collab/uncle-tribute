@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -166,10 +166,15 @@ export const Welcome = () => {
   // colourway — is drawn on EVERY home-page mount (first visit, hard refresh, or
   // navigating back to "/"), so "Six paintings from a lifetime at the compass" is
   // never the same twice. Hugo: "give you a random 6 … I want this to last
-  // forever." useMemo([]) keeps the set stable across re-renders within a single
-  // mount (no reshuffle on scroll), and Fisher–Yates runs on a COPY so the shared
+  // forever." The set stays stable across re-renders within a single mount (no
+  // reshuffle on scroll), and Fisher–Yates runs on a COPY so the shared
   // PAINTINGS array is never mutated.
-  const featuredPicks = useMemo<{ id: string; colourway?: string }[]>(() => {
+  // A useState LAZY INITIALISER (not useMemo): the factory runs exactly once per
+  // mount, which is precisely the "fresh random six on every home-page mount"
+  // contract — and, unlike a useMemo factory, a lazy initialiser is the React-
+  // sanctioned place for a one-time impure draw (Math.random), so the purity
+  // lint rule is satisfied without changing behaviour.
+  const [featuredPicks] = useState<{ id: string; colourway?: string }[]>(() => {
     const pool = [...PAINTINGS];
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -180,7 +185,7 @@ export const Welcome = () => {
       colourway:
         p.colourways[Math.floor(Math.random() * p.colourways.length)]?.name,
     }));
-  }, []);
+  });
   const featured = featuredPicks
     .map((pick) => {
       const painting = PAINTINGS.find((p) => p.id === pick.id);

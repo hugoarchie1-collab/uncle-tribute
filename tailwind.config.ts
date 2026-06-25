@@ -29,12 +29,12 @@ const config: Config = {
       },
       fontFamily: {
         // Two families only (#10). Fraunces = editorial display serif with a
-        // true italic reserved for quotes; Hanken Grotesk = quiet body/UI
-        // sans. Two weights each (loaded in index.html). No Newsreader/
-        // Schibsted, no Playfair/Inter.
+        // true italic reserved for quotes; Schibsted Grotesk = distinctive
+        // editorial body/UI sans (replaced Hanken Grotesk 2026-06-25 for a more
+        // "high-fashion" body face). Variable wght, loaded in index.html.
         display: ['"Fraunces"', "Georgia", '"Times New Roman"', "serif"],
         sans: [
-          '"Hanken Grotesk"',
+          '"Schibsted Grotesk"',
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',

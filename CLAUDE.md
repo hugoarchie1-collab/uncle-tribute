@@ -104,7 +104,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 | Routing | React Router 7 (BrowserRouter, SPA) |
 | Styling | Tailwind CSS 3 (custom config in `tailwind.config.ts`) |
 | Display font | Fraunces (variable: `opsz 9..144`, `wght 400/600/700`, true italic at 400/600). **SELF-HOSTED since 2026-06-10** — woff2 files in `/public/fonts` with inline `@font-face` in index.html (latin/latin-ext unicode-range split); the render-blocking Google Fonts CSS + two preconnects are GONE. ⚠️ `/fonts` is cached immutable 1yr (vercel.json) — replacing a font file needs a NEW filename + the index.html `@font-face`/preload urls updated. 700 is the bold, screen-filling FINALE display weight — real, never synthesised (`font-synthesis: none`). NOT Playfair. |
-| Body font | Hanken Grotesk (`400/600`). NOT Inter. |
+| Body font | **Schibsted Grotesk** (variable `wght 400..700`, self-hosted woff2). Replaced **Hanken Grotesk** 2026-06-25 at Hugo's request for a more "distinctive / high-fashion" body face. NOT Inter, NOT Hanken. The family name in `tailwind.config.ts fontFamily.sans` + the `@font-face` in index.html must match. |
 | Animation | Framer Motion 12 |
 | Hosting | Vercel (static SPA + serverless functions in `/api`) |
 | Payments | Stripe Checkout (hosted) + Stripe Webhooks |
@@ -124,7 +124,7 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 
 **Typography** (Fraunces + Hanken Grotesk — two families, two weights each):
 - Display: **Fraunces** (variable serif). The Sacred Geometry finale is a **BOLD, screen-filling, TWO-TIER closing statement** (live 2026-06-03, on top of the cinematic hero). **"Sacred geometry"** is the dominant title — TRUE Fraunces **700** at `font-variation-settings: "opsz" 48, "wght" 700`, `clamp(58px, 15vw, 232px)`, lineHeight 0.86, italic *geometry* — sitting **above** a deliberately ~4× smaller subordinate clause **"— the order beneath all things."** (`opsz 36 / wght 600`, `clamp(22px, 3.6vw, 58px)`) whose closing period is the one rust note (`#c97844`). It fills a `min-h-[100svh]` centered section. Below: a hairline rule, Stephen's verbatim words (italic `opsz 24`), and a quiet "Explore the collection →" text link. The background is ONLY the pink Mary-Pink peacock backdrop + a soft radial scrim for legibility on the rose sky — the Earth limb + rust horizon glow were **REMOVED 2026-06-03 (Hugo: "remove the green part… only the pink")** so the finale matches every other section's plain backdrop; **NO** Earth, **NO** rust glow, **NO** rose emblem, **NO** eyebrow, **NO** mandala-ring SVG. `font-synthesis: none` makes the 700 real, never faux. See gotcha #7 for the full finale invariant list.
-- Body: **Hanken Grotesk**, normal weight, generous line-height (1.7–1.8)
+- Body: **Schibsted Grotesk** (replaced Hanken Grotesk 2026-06-25), normal weight, generous line-height (1.7–1.8)
 - Eyebrows: `font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-accent` (token `EYEBROW`); muted variant `EYEBROW_MUTED` (text-ink-muted) on PaintingDetail and quiet captions
 
 **Imagery treatment**:

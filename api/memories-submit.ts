@@ -21,7 +21,7 @@
  *       Request body (JSON):
  *         { name: string, message: string, relationship?: string,
  *           location?: string, email?: string, botcheck?: string,
- *           image?: string /* data: URL, base64 *​/ }
+ *           image?: string (data: URL, base64) }
  *
  *       Response 200: { ok: true, published: boolean }
  *                400: { error }       — validation failure
