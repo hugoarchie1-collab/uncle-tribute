@@ -206,12 +206,15 @@ export const Gift = () => {
               </>
             }
           >
-            <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
-              <p className={cn(EYEBROW_MUTED, "m-0 lg:col-span-3 leading-[1.8]")}>
-                A digital gift card · redeemed against any edition
-              </p>
+            {/* Lead passage spans the full envelope width on its own line, then
+                a balanced caption rail sits beneath the hairline — the old
+                col-span-3 / col-span-9 split left a near-empty eyebrow rail
+                stranded beside a full block. The statement now fills the page
+                axis edge-to-edge; the caption + reassurance share an even
+                two-up row, neither half-empty. */}
+            <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
               <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 lg:col-span-9"
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch] lg:max-w-[42ch] 2xl:max-w-[46ch]"
                 style={{
                   fontVariationSettings: '"opsz" 32, "wght" 400',
                   fontSize: "clamp(21px, 2.6vw, 40px)",
@@ -223,42 +226,53 @@ export const Gift = () => {
                 set your own — add a few words if you wish, and let the person
                 you're thinking of choose the work that speaks to them.
               </p>
+              <div className="mt-5 md:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-10 2xl:gap-x-16 gap-y-3 border-t border-line pt-4 md:pt-5">
+                <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7]")}>
+                  A digital gift card · redeemed against any edition
+                </p>
+                <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7] sm:text-right")}>
+                  Estate-stamped giclée · free worldwide delivery
+                </p>
+              </div>
             </div>
           </PageMasthead>
         </Reveal>
 
         {added ? (
           // ---- Confirmation ---------------------------------------------
-          <Reveal as="section" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-5 items-start">
-            <p className={cn(EYEBROW, "m-0 lg:col-span-3 lg:pt-3")}>In your basket</p>
-            <div className="lg:col-span-9 max-w-[64ch]">
-              <p
-                className="font-display font-semibold tracking-[-0.025em] text-[clamp(28px,4.2vw,64px)] leading-[1.05] text-ink m-0"
-                style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+          // Centred on the page axis (was a left-biased col-span-3/9 split that
+          // stranded the eyebrow in a near-empty rail and held the message to a
+          // narrow 64ch column with a wide empty right margin). The eyebrow now
+          // sits above the statement on the same centred axis; the headline
+          // fills a confident measure toward the envelope edges.
+          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-6 md:py-10">
+            <p className={cn(EYEBROW, "m-0 mb-5 md:mb-6")}>In your basket</p>
+            <p
+              className="font-display font-semibold tracking-[-0.025em] text-[clamp(32px,5.4vw,84px)] leading-[1.04] text-ink m-0 max-w-[18ch] mx-auto text-balance"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+            >
+              A gift card of{" "}
+              <span className="text-accent">
+                {fmtP(added.amountPence)}
+              </span>{" "}
+              is in your basket.
+            </p>
+            <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.65] text-ink-muted m-0 mt-6 md:mt-7 max-w-[58ch] mx-auto">
+              The amount you see is exactly what you'll pay — nothing is added
+              at checkout. You can add another, or proceed when you're ready.
+            </p>
+            <div className="mt-7 md:mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
+              <Link to="/basket" className={BTN_PRIMARY}>
+                Go to basket
+                <span aria-hidden="true" className="ml-2">→</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setAdded(null)}
+                className={BTN_SECONDARY}
               >
-                A gift card of{" "}
-                <span className="text-accent">
-                  {fmtP(added.amountPence)}
-                </span>{" "}
-                is in your basket.
-              </p>
-              <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.65] text-ink-muted m-0 mt-5 md:mt-6">
-                The amount you see is exactly what you'll pay — nothing is added
-                at checkout. You can add another, or proceed when you're ready.
-              </p>
-              <div className="mt-5 md:mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-                <Link to="/basket" className={BTN_PRIMARY}>
-                  Go to basket
-                  <span aria-hidden="true" className="ml-2">→</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setAdded(null)}
-                  className={BTN_SECONDARY}
-                >
-                  Add another gift card
-                </button>
-              </div>
+                Add another gift card
+              </button>
             </div>
           </Reveal>
         ) : (
@@ -275,7 +289,11 @@ export const Gift = () => {
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 3xl:grid-cols-4 gap-2.5 md:gap-3 3xl:gap-4">
+              {/* 2-up (→4-up on 3xl). NEVER 3-up: there are exactly four
+                  denominations, so a 3-col grid orphaned the fourth into a
+                  lopsided 3+1 last row beside two empty cells (the gap Hugo
+                  flags). 2/4 keeps every row full at every width. */}
+              <div className="grid grid-cols-2 3xl:grid-cols-4 gap-2.5 md:gap-3 3xl:gap-4">
                 {denominations.map((d) => {
                   const isSelected =
                     selection.kind === "tier" && selection.id === d.id;
@@ -316,7 +334,7 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 sm:col-span-3 3xl:col-span-4",
+                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 3xl:col-span-4",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"

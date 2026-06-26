@@ -1,5 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  type ReactNode,
+  type TransitionEvent,
+} from "react";
 import { MotionConfig } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
@@ -14,6 +22,7 @@ import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
 import { CurrencyProvider } from "./components/CurrencyProvider";
+import { useMenuOpen, getDrawerWidthPx } from "./lib/menuStore";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -148,6 +157,94 @@ const AnimatedRoutes = () => {
   );
 };
 
+/**
+ * PUSH-CONTENT SHELL — wraps the routed page so that, when the nav drawer opens
+ * (useMenuOpen, the shared lib/menuStore boolean), the WHOLE page slides LEFT by
+ * the drawer's width to reveal the body-portaled panel sitting at the right edge
+ * (Hugo's ask: "the whole page slides left and readjusts"). On close it slides
+ * back. The slide is a GPU-composited `translateX` on the smooth house curve.
+ *
+ * ⚠️ Deliberate, documented consequence: a `transform` on this shell re-bases
+ * every `position:fixed` / `sticky` descendant to the shell's box, so the fixed
+ * Nav + any sticky add-to-basket bars shift LEFT WITH the page — which IS the
+ * push effect we want (they travel with the page, the menu button stays on
+ * screen + clickable). The drawer, scrim, film-grain, custom cursor, toasts,
+ * consent banner + modals are ALL portaled/mounted to document.body OUTSIDE this
+ * shell, so they stay anchored to the viewport and never get dragged sideways.
+ *
+ * `will-change-transform` keeps it on its own layer; the transform is removed
+ * (translate-x-0) when closed so it never permanently re-bases fixed children.
+ */
+const PageShell = ({ children }: { children: ReactNode }) => {
+  const menuOpen = useMenuOpen();
+
+  // The exact px the page slides left == the drawer's rendered width. We resolve
+  // it in JS (getDrawerWidthPx) and re-resolve on resize, because a CSS
+  // `translateX(calc(-1 * min(420px, 86vw)))` resolves to ZERO in-engine (the
+  // `vw` inside min() inside the calc multiplication computes to 0 translation),
+  // so the page never moved — see menuStore for the full note. A concrete px
+  // value translates reliably and matches the panel width to the pixel.
+  const [drawerPx, setDrawerPx] = useState(() => getDrawerWidthPx());
+  useEffect(() => {
+    const onResize = () => setDrawerPx(getDrawerWidthPx());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // `slid` mirrors `menuOpen` but LAGS it on close so the page can animate back
+  // to translateX(0) BEFORE we drop the transform to `none`.
+  //
+  // ⚠️ Why this dance: ANY transform value — including translateX(0) — AND a
+  // standing `will-change: transform` each establish a containing block for
+  // `position:fixed` descendants, which would permanently re-base every page's
+  // fixed peacock/scene backdrop onto this shell and break it sitewide (the
+  // hard invariant PageTransition documents). So when fully idle we emit
+  // `transform: none` + NO will-change, leaving the closed page byte-identical
+  // to before this drawer existed. The re-basing (and the push effect it
+  // creates for the fixed Nav + sticky bars) is intentional ONLY while open.
+  //
+  // Open  → set transform immediately (re-base + slide in).
+  // Close → keep translateX(0) for the transition, then a transitionend (with a
+  //         belt-and-braces timeout) flips us back to `transform: none`.
+  const [slid, setSlid] = useState(false);
+  useEffect(() => {
+    if (menuOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSlid(true);
+      return;
+    }
+    // Closing: animate to translateX(0) now; the transitionend handler clears
+    // `slid` → `transform: none`. Fallback timeout covers reduced-motion /
+    // interrupted transitions where transitionend may not fire.
+    const t = window.setTimeout(() => setSlid(false), 520);
+    return () => window.clearTimeout(t);
+  }, [menuOpen]);
+
+  const transformed = menuOpen || slid;
+
+  const onTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
+    // Only react to OUR transform transition ending while closed.
+    if (e.propertyName === "transform" && !menuOpen) setSlid(false);
+  };
+
+  return (
+    <div
+      onTransitionEnd={onTransitionEnd}
+      style={{
+        transform: menuOpen
+          ? `translateX(-${drawerPx}px)`
+          : slid
+            ? "translateX(0)"
+            : "none",
+        willChange: transformed ? "transform" : "auto",
+      }}
+      className="min-h-[100dvh] transition-transform duration-[420ms] ease-smooth motion-reduce:transition-none"
+    >
+      {children}
+    </div>
+  );
+};
+
 export default function App() {
   // One-time, render-free side effects:
   //  - captureUtm: persist first-touch campaign attribution (?utm_* / gclid /
@@ -181,7 +278,13 @@ export default function App() {
               root → a blank, frozen page. The boundary converts that into a
               dignified, recoverable fallback so the site can never silently die. */}
           <ErrorBoundary>
-            <AnimatedRoutes />
+            {/* PageShell slides the routed page LEFT when the nav drawer opens
+                (the push-content effect). Everything OUTSIDE it below (grain,
+                cursor, entrance, toasts, consent, update, analytics) stays
+                anchored to the viewport. */}
+            <PageShell>
+              <AnimatedRoutes />
+            </PageShell>
           </ErrorBoundary>
           {/* Global "Added to basket" confirmation toast. Listens to the
               basket store's add side-channel, so every add path triggers it

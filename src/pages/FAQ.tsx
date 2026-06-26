@@ -206,7 +206,7 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // beneath under a border-t.
 const FaqMasthead = () => (
   <section className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}>
-    <div className="mx-auto w-full max-w-[1120px] 3xl:max-w-[1300px] text-center">
+    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>
@@ -234,7 +234,7 @@ const FaqMasthead = () => (
         </Reveal>
         <Reveal as="div" delay={0.06} className="mt-5 md:mt-6">
           <p
-            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[46ch] 3xl:max-w-[52ch]"
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[54ch] 3xl:max-w-[60ch]"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
               fontSize: "clamp(21px, 2.5vw, 38px)",
@@ -324,12 +324,12 @@ export const FAQ = () => {
         <section className={cn(SECTION, "pb-8 md:pb-10")}>
           <Reveal
             as="div"
-            className="mx-auto flex w-full max-w-[1100px] 3xl:max-w-[1500px] 4xl:max-w-[1720px] flex-wrap justify-center gap-x-10 lg:gap-x-16 3xl:gap-x-24 gap-y-7 3xl:gap-y-9 border-t border-line"
+            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20 3xl:gap-x-28 gap-y-7 3xl:gap-y-9 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
-                className="relative flex flex-[0_1_clamp(300px,44%,480px)] 3xl:flex-[0_1_clamp(300px,46%,700px)] 4xl:flex-[0_1_clamp(300px,46%,800px)] flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

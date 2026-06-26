@@ -604,7 +604,7 @@ export const Welcome = () => {
               close, never on body-size glyphs where it fuzzed the edges.
               Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
               only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1340px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="relative isolate mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* NO local reading scrim. Hugo flagged the old radial deepening
                 here as "black boxes behind the text" — at the wide essay measure
                 the soft-edged radial still read as a dark rectangle sitting on
@@ -613,7 +613,7 @@ export const Welcome = () => {
                 `.reminder-shadow` utility below + the display-scale
                 hero-text-shadow already on the pull-quote + close), never a
                 hard dark card. */}
-            <Reveal as="header" className="mb-4 md:mb-6 mx-auto max-w-[1080px] 3xl:max-w-[1320px]">
+            <Reveal as="header" className="mb-4 md:mb-6 mx-auto max-w-[1180px] 2xl:max-w-[1280px] 3xl:max-w-[1440px]">
               <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
                   Fraunces opsz 40, generous leading, a rust drop cap (pure
@@ -623,7 +623,7 @@ export const Welcome = () => {
                   (engine-locked cap sizing/baseline) on Safari/Chrome.
                   text-pretty so the rag flows cleanly around the cap. */}
               <p
-                className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 text-pretty"
+                className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 mx-auto max-w-[34ch] text-pretty"
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
                   fontSize: "clamp(30px, 7vw, 40px)",
@@ -650,7 +650,7 @@ export const Welcome = () => {
                 the slice in the map), so the full passage appears exactly once.
                 Both halves are DERIVED from the same verbatim slice — never
                 re-typed. Generous my-12→my-20 gives it real air on the page. */}
-            <Reveal delay={0.05} className="my-12 md:my-20 mx-auto max-w-[1180px] 3xl:max-w-[1400px] text-center">
+            <Reveal delay={0.05} className="my-12 md:my-20 mx-auto max-w-[1280px] 2xl:max-w-[1400px] 3xl:max-w-[1560px] text-center">
               <blockquote className="m-0 hero-text-shadow">
                 {/* Dominant tier — the first sentence, big roman Fraunces. */}
                 <span
@@ -694,7 +694,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="columns-1 md:columns-2 gap-x-10 lg:gap-x-14 [column-fill:_balance]">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] columns-1 md:columns-2 gap-x-10 lg:gap-x-16 2xl:gap-x-20 [column-fill:_balance]">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -730,7 +730,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1}>
               <div aria-hidden="true" className="mt-4 md:mt-6 mb-3 h-px w-12 bg-ink/15" />
-              <p className="m-0 mx-auto max-w-[1080px] 3xl:max-w-[1320px] hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance"
                   style={{
@@ -947,7 +947,7 @@ export const Welcome = () => {
                 <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1000px] 3xl:max-w-[1200px] mx-auto">
+                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1045,7 +1045,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[1140px] 3xl:max-w-[1340px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1061,7 +1061,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
@@ -1077,7 +1077,7 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[780px]">
+            <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[960px] 2xl:max-w-[1040px] 3xl:max-w-[1120px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-line/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"

@@ -687,7 +687,7 @@ const ShareMemoryModal = ({
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
   <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(2rem,3.5vw,3rem)]">
-    <div className="mx-auto w-full max-w-[920px] 3xl:max-w-[1080px] flex flex-col items-center text-center">
+    <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span
@@ -722,7 +722,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             A wall, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[720px] 3xl:max-w-[860px]">
+        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[820px] 3xl:max-w-[960px]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{

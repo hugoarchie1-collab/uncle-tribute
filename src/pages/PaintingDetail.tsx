@@ -1751,7 +1751,7 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1100px] 2xl:max-w-[1240px] 3xl:max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 mt-16 md:mt-20"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-16 md:mt-20"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>
         More from {collectionTitle ?? "the estate"}
@@ -1796,13 +1796,22 @@ const CompanionWorks = ({
 /**
  * Story — the long-form content read AFTER the buy controls: the artist
  * quote (the one allowed display-italic moment), the full description, and
- * the original-print spec. Centred below the two-column hero region on
- * desktop; flows directly after the buy box on mobile.
+ * the original-print spec.
+ *
+ * LAYOUT (Awwwards fill-the-width pass): on lg+ this is an EDITORIAL TWO-COLUMN
+ * SPREAD on ONE shared axis with the rest of the page — the artist quote runs
+ * full measure as the bold display lead, then the description (primary, wider
+ * reading column) sits LEFT with the estate spec blocks ("How each order
+ * arrives" + "Original print") as a hairline-framed aside RIGHT. This fills the
+ * side-margin voids that the old single centred 720px column left, balances the
+ * two columns (long prose ↔ framed spec) and keeps each text at a readable
+ * measure. Below lg it stacks in reading order. COPY IS VERBATIM from
+ * paintings.ts (artistQuote / description) — never re-typed or reworded.
  */
 const Story = ({ painting }: { painting: Painting }) => (
-  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto">
+  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto">
     {painting.artistQuote && (
-      <Reveal as="div">
+      <Reveal as="div" className="max-w-[940px] 2xl:max-w-[1040px]">
         {/* AboutMasthead grammar adapted to the monochrome PDP: a full-measure
             hairline + muted-ink eyebrow, then the artist quote lifted to a
             confident Fraunces statement (opsz ≤48, real italic 400) — the
@@ -1812,7 +1821,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         <p className={cn(EYEBROW_MUTED, "m-0 mt-5 mb-5")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(22px,2.8vw,42px)] leading-[1.28] text-ink m-0 mb-4 text-balance"
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3vw,48px)] leading-[1.26] text-ink m-0 mb-4 text-balance"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
           >
             &ldquo;{painting.artistQuote}&rdquo;
@@ -1822,55 +1831,72 @@ const Story = ({ painting }: { painting: Painting }) => (
       </Reveal>
     )}
 
-    <Reveal
-      as="div"
-      className="mt-7 md:mt-9 flex flex-col gap-5 md:gap-6 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
-    >
-      {painting.description.split("\n\n").map((para, i) => (
-        <p key={i} className="m-0">{para}</p>
-      ))}
-    </Reveal>
+    {/* TWO-COLUMN EDITORIAL SPREAD — description (primary, left) + estate spec
+        aside (right) share one axis and fill the width on lg+. The aside is
+        sticky so the eye keeps it while the longer prose scrolls; the grid
+        columns are balanced (1.55fr ↔ 1fr) so neither reads half-empty. */}
+    <div className="mt-9 md:mt-12 grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-12 items-start">
+      {/* PRIMARY — the painting's own words (verbatim description). Capped at a
+          comfortable measure so the line length stays readable even as the
+          column widens. */}
+      <Reveal
+        as="div"
+        className="max-w-[68ch] flex flex-col gap-5 md:gap-6 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
+      >
+        {painting.description.split("\n\n").map((para, i) => (
+          <p key={i} className="m-0">{para}</p>
+        ))}
+      </Reveal>
 
-    {/* HOW EACH ORDER ARRIVES — the estate's quiet presentation note (Hugo's
-        ask). Made to order, hand-rolled + prepared by Point 101, closed with
-        the deep-red wax-seal logo sticker, and travelling with a printed
-        catalogue/leaflet of Stephen's work. The printer line reuses
-        ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
-    <Reveal as="div" className="mt-7 md:mt-9">
-      <Separator className="bg-line mb-7" />
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>How each order arrives</p>
-      <p className="font-sans font-normal text-[clamp(16px,1vw,20px)] leading-[1.75] text-ink/90 m-0 mb-7 max-w-[62ch]">
-        Every print is made to order &mdash; never warehoused. When your order is
-        placed it is hand-rolled and prepared by Point&nbsp;101 in London, the
-        United Kingdom&rsquo;s leading giclée atelier, the same studio Stephen
-        trusted with his own work. It is packed to be opened slowly.
-      </p>
-      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 m-0 border-t border-line pt-5">
-        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Prepared by</dt>
-        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
-          {ESTATE_AUTHENTICATION.printer} &mdash; each print checked, interleaved
-          and hand-rolled.
-        </dd>
-        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Sealed with</dt>
-        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
-          The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose, pressed
-          as a sticker over the wrapping.
-        </dd>
-        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Enclosed</dt>
-        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">
-          A printed catalogue of Stephen&rsquo;s paintings, so your piece arrives
-          in the company of the wider body of work.
-        </dd>
-      </dl>
-    </Reveal>
+      {/* ASIDE — the estate's quiet ledger: how each order arrives + the
+          original-print spec, framed as a hairline card so the right column
+          reads as authored, not as leftover empty space. Sticky on lg+. */}
+      <Reveal
+        as="section"
+        className="lg:sticky lg:top-[88px] ring-1 ring-line px-6 py-7 md:px-7 md:py-8"
+      >
+        {/* HOW EACH ORDER ARRIVES — Hugo's presentation note. Made to order,
+            hand-rolled by Point 101, sealed with the wax-seal sticker, posted
+            with a printed catalogue. printer line reuses
+            ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>How each order arrives</p>
+        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.7] text-ink/90 m-0 mb-6">
+          Every print is made to order &mdash; never warehoused. When your order
+          is placed it is hand-rolled and prepared by Point&nbsp;101 in London,
+          the United Kingdom&rsquo;s leading giclée atelier, the same studio
+          Stephen trusted with his own work. It is packed to be opened slowly.
+        </p>
+        <dl className="grid grid-cols-1 gap-y-4 m-0 border-t border-line pt-5">
+          <div>
+            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
+              {ESTATE_AUTHENTICATION.printer} &mdash; each print checked,
+              interleaved and hand-rolled.
+            </dd>
+          </div>
+          <div>
+            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Sealed with</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
+              The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose,
+              pressed as a sticker over the wrapping.
+            </dd>
+          </div>
+          <div>
+            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Enclosed</dt>
+            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">
+              A printed catalogue of Stephen&rsquo;s paintings, so your piece
+              arrives in the company of the wider body of work.
+            </dd>
+          </div>
+        </dl>
 
-    <Reveal as="div" className="mt-7 md:mt-9">
-      <Separator className="bg-line mb-7" />
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Original print</p>
-      <p className="font-sans font-normal text-[clamp(16px,1vw,20px)] leading-[1.75] text-ink/85 m-0">
-        {ORIGINAL_PRINT_SPEC}
-      </p>
-    </Reveal>
+        <Separator className="bg-line my-7" />
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3.5")}>Original print</p>
+        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.7] text-ink/85 m-0">
+          {ORIGINAL_PRINT_SPEC}
+        </p>
+      </Reveal>
+    </div>
   </div>
 );
 
@@ -2636,10 +2662,12 @@ export const PaintingDetail = () => {
             </Reveal>
           </div>
 
-          {/* THE STORY — below the two-column region, centred. Read after the
-              buyer has seen the price + options. */}
+          {/* THE STORY — below the two-column region, on the SAME centred axis
+              as the hero/page so the editorial spread fills the width instead
+              of collapsing to a narrow column. Read after the buyer has seen
+              the price + options. */}
           <div className="mt-12 md:mt-14">
-            <Separator className="bg-line mb-8 max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto" />
+            <Separator className="bg-line mb-8 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

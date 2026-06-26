@@ -471,14 +471,14 @@ const CatalogueSetCard = () => {
   return (
     <Reveal
       as="section"
-      className="relative mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
+      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
     >
-      <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-10 lg:px-14 3xl:px-20 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
+      <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
-        <h2 className={cn(TITLE, "max-w-[920px] 3xl:max-w-[1100px] mx-auto my-0")}>
+        <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>
           His life&rsquo;s work, in one collection.
         </h2>
-        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[900px] 3xl:max-w-[1080px] mx-auto my-0")}>
+        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[62ch] mx-auto my-0")}>
           One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
           {catalogue.paintingCount} of Stephen&rsquo;s paintings: the entire,
           finite body of his work, gathered for one home.
@@ -621,12 +621,15 @@ export const Collections = () => {
             }
           >
             {/* Intro — a short, dignified note (not a pitch). Lead + a quiet
-                aside, in a two-column measure on lg so the first screen reads
-                as considered prose, not a wall of text. AI framing only —
-                Stephen's verbatim collection descriptions are untouched below. */}
-            <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-5 items-start border-t border-line pt-6 md:pt-7">
+                aside, in a BALANCED two-column measure on lg (6/6, not the old
+                lopsided 7/5 where the right rail sat half-empty beside a full
+                lead). Both columns now carry their own weight to the edges of
+                the shared page envelope — no narrow centred column, no empty
+                side margins. AI framing only — Stephen's verbatim collection
+                descriptions are untouched below. */}
+            <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-x-12 2xl:gap-x-16 gap-y-6 items-start border-t border-line pt-6 md:pt-7">
               <p
-                className="lg:col-span-7 font-display font-normal tracking-[-0.012em] text-ink m-0"
+                className="font-display font-normal tracking-[-0.012em] text-ink m-0"
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
                   fontSize: "clamp(20px, 2.3vw, 38px)",
@@ -635,11 +638,12 @@ export const Collections = () => {
                 }}
               >
                 The finite body of Stephen's finished work, held by the estate and
-                issued as editioned giclée prints.
+                issued as editioned giclée prints — every piece he completed,
+                gathered in one place.
               </p>
-              <div className="lg:col-span-5 lg:pt-1.5 flex flex-col gap-4">
+              <div className="lg:pt-1.5 flex flex-col gap-4">
                 <p
-                  className="font-sans font-normal text-[15px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.75] text-ink-muted m-0"
+                  className="font-sans font-normal text-[15px] md:text-[clamp(16px,0.95vw,21px)] leading-[1.75] text-ink-muted m-0"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
                 >
                   Each print is made to order, estate-stamped, and accompanied by a

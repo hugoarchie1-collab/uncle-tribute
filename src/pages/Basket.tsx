@@ -327,7 +327,7 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v2.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
@@ -400,7 +400,13 @@ export const Basket = () => {
             <NewsletterSignup variant="inline" />
           </Reveal>
         ) : (
-          <>
+          // TWO-COLUMN ORDER LAYOUT (Awwwards fill-the-width pass) — line items
+          // + gift cards run LEFT (primary, wider), the order summary sits RIGHT
+          // as a sticky card, both on ONE shared centred axis. This replaces the
+          // old single narrow stacked column that left large empty side margins
+          // on wide screens. Below lg it stacks: items, then summary.
+          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-10 items-start">
+            <div className="min-w-0">
             {lines.length > 0 && (
             <Reveal as="div">
               <Separator className="bg-line mb-6" />
@@ -565,9 +571,15 @@ export const Basket = () => {
                 </ul>
               </Reveal>
             )}
+            </div>
 
-            <Reveal as="div" className="mt-6">
-              <Separator className="bg-line mb-6" />
+            {/* RIGHT — order summary. Sticky on lg+ so it stays beside the line
+                items as they scroll; full-width when the layout stacks below lg.
+                The hairline ring frames it as an authored panel rather than a
+                bare stacked block, and keeps the right column from reading as
+                empty space. */}
+            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-6 md:px-7 md:py-8">
+              <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Order summary</p>
 
               {/* PRICE BREAKDOWN — DMCC #13: the genuine pre-discount subtotal,
                   the bundle discount (the SAME percent Stripe charges), the
@@ -728,7 +740,7 @@ export const Basket = () => {
                   empty (we're inside the non-empty branch anyway). */}
               <EmailMyBasket items={items} />
             </Reveal>
-          </>
+          </div>
         )}
       </main>
       {/* Exit-intent toast — mounts globally on the basket page, fires

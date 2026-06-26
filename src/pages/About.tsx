@@ -102,8 +102,8 @@ const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4x
  *  On large screens the measure opens proportionally (3xl/4xl) so the prose
  *  fills the viewport instead of stranding it in a narrow column — kept
  *  COMFORTABLE (never full-bleed), just one step wider as the type grows. */
-const READING = "mx-auto w-full max-w-[760px] 3xl:max-w-[880px] 4xl:max-w-[960px]";
-const READING_WIDE = "mx-auto w-full max-w-[960px] 3xl:max-w-[1120px] 4xl:max-w-[1240px]";
+const READING = "mx-auto w-full max-w-[820px] 3xl:max-w-[940px] 4xl:max-w-[1020px]";
+const READING_WIDE = "mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px] 4xl:max-w-[1280px]";
 
 // ─── CHAPTERS — the page's editorial signature ("the rule and the year") ─────
 // One config array drives every ChapterHead AND the fixed chapter rail, so the
@@ -753,29 +753,33 @@ export const About = () => {
             lead, so nothing repeats. Caption CLAIM-FREE (PDF shows it
             uncaptioned). */}
         <section className={cn(SECTION, "py-6 md:py-8")}>
-          <div className={cn(READING, "text-center")}>
+          {/* His own words set as a wide display statement (it fills the band
+              instead of sitting as a thin centred quote in a wide void), with
+              the facts rail spread edge-to-edge of the same measure beneath. */}
+          <div className={cn(READING_WIDE, "text-center")}>
             <Reveal as="div">
-              <p className={cn(EYEBROW, "m-0 mb-4")}>As he described himself —</p>
+              <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
               <blockquote className="m-0">
-                <p className="font-display italic tracking-[-0.01em] text-[clamp(20px,2.4vw,40px)] leading-[1.5] text-ink m-0 text-balance">
+                <p className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] leading-[1.4] text-ink m-0 text-balance mx-auto max-w-[26ch]">
                   &ldquo;{ABOUT.opening[1]}&rdquo;
                 </p>
               </blockquote>
             </Reveal>
             {/* Facts rail — dt/dd from content.ts constants; Staffordshire is
-                earlyLife[0]'s word, Phoenix Place legacy[0]'s. A single
-                centred hairline strip beneath the quote. */}
-            <Reveal as="div" delay={0.1} className="mt-6 md:mt-8">
-              <dl className="flex flex-wrap justify-center gap-x-10 gap-y-4 border-y border-line py-5">
+                earlyLife[0]'s word, Phoenix Place legacy[0]'s. Spread the three
+                facts across the full measure so the strip spans the width
+                rather than clustering centrally with empty side margins. */}
+            <Reveal as="div" delay={0.1} className="mt-8 md:mt-10">
+              <dl className="flex flex-wrap justify-center sm:justify-between items-start gap-x-10 gap-y-4 border-y border-line py-5 text-left">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
                   <dd className={cn(META, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
                 </div>
-                <div>
+                <div className="sm:text-center">
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Died</dt>
                   <dd className={cn(META, "m-0")}>{DEATH_DATE}</dd>
                 </div>
-                <div>
+                <div className="sm:text-right">
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Studio</dt>
                   <dd className={cn(META, "m-0")}>Phoenix Place, Lewes</dd>
                 </div>
@@ -939,8 +943,17 @@ export const About = () => {
             </Reveal>
           </div>
 
-          <Reveal as="div" className="max-w-[62ch] mx-auto mt-6 md:mt-8">
-            <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[2]}</p>
+          {/* The wandering passage flows as a BALANCED two-column measure on
+              lg+ (it fills the album row's width instead of stranding a thin
+              centred column), collapsing to one column below lg. The drop-cap
+              opens the first column; column-fill:balance keeps the two columns
+              even-bottomed (no lopsided tail). */}
+          <Reveal as="div" className={cn(READING_WIDE, "mt-7 md:mt-9")}>
+            <p
+              className={cn(LEAD, "drop-cap lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
+            >
+              {ABOUT.earlyLife[2]}
+            </p>
           </Reveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch mt-6 md:mt-8 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto">
@@ -1426,25 +1439,35 @@ export const About = () => {
             mention of Az-Zarqa is the hinge into Chapter IX. */}
         <section id="academy" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="academy" title="The Art of Geometry Academy." />
-          <div className="max-w-[62ch] mx-auto">
+          {/* The lead line rings wide as display type (it fills toward the
+              edges without over-long reading lines); the two body passages then
+              sit as a BALANCED two-column spread beneath a hairline — so the
+              chapter fills the width instead of stranding a thin centred column
+              in a wide side-void. Equal columns, one centred axis. */}
+          <div className="max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p
-                className="font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.6vw,44px)] leading-[1.3] text-ink m-0 text-balance"
-                style={{ fontVariationSettings: '"opsz" 32, "wght" 600' }}
+                className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,52px)] leading-[1.25] text-ink m-0 text-balance mx-auto max-w-[20ch] text-center"
+                style={{ fontVariationSettings: '"opsz" 36, "wght" 600' }}
               >
                 {ABOUT.legacy[2]}
               </p>
             </Reveal>
-            <Reveal as="div" className="mt-6 md:mt-8">
-              <blockquote className="m-0">
-                <p className={BODY}>{ABOUT.academyQuote}</p>
-                <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
-              </blockquote>
-            </Reveal>
-            <Dinkus />
-            <Reveal as="div">
-              <p className={BODY}>{ABOUT.palestine}</p>
-            </Reveal>
+            {/* Asymmetric split (the longer founding quote takes the wider
+                column so it sits SHORTER, the briefer Syria passage the
+                narrower one) — the two columns finish near the same baseline
+                instead of leaving one full and the next half-empty. */}
+            <div className="mt-8 md:mt-10 grid grid-cols-1 md:grid-cols-[1.32fr_1fr] gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-8 items-start border-t border-line pt-8 md:pt-10">
+              <Reveal as="div">
+                <blockquote className="m-0">
+                  <p className={BODY}>{ABOUT.academyQuote}</p>
+                  <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
+                </blockquote>
+              </Reveal>
+              <Reveal as="div" delay={0.08}>
+                <p className={BODY}>{ABOUT.palestine}</p>
+              </Reveal>
+            </div>
           </div>
         </section>
 
@@ -1574,7 +1597,7 @@ export const About = () => {
             tribute, opened by Stephen's own "everything is connected" words.
             UNTOUCHABLE — its border-t now reads as the final chapter hairline,
             the motif closing the system. */}
-        <section className="mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] 4xl:max-w-[1160px] px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-10 border-t border-line">
+        <section className="mx-auto max-w-[900px] 2xl:max-w-[1000px] 3xl:max-w-[1100px] 4xl:max-w-[1220px] px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-10 border-t border-line">
           <Reveal as="div" className="text-center mb-6 md:mb-8">
             <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
             <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
@@ -1583,9 +1606,9 @@ export const About = () => {
             <p className={cn(EYEBROW_MUTED, "mt-5 md:mt-6")}>{LIFE_DATES}</p>
           </Reveal>
 
-          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[680px] 3xl:max-w-[800px] mx-auto border-l border-line pl-6 md:pl-8">
+          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[760px] 3xl:max-w-[880px] mx-auto border-l border-line pl-6 md:pl-8">
             <blockquote className="m-0">
-              <p className="quote-hang font-display italic text-[clamp(20px,2.6vw,38px)] leading-[1.45] text-ink m-0">
+              <p className="quote-hang font-display italic text-[clamp(22px,2.9vw,42px)] leading-[1.4] text-ink m-0">
                 “{MEMORIAL_QUOTE}”
               </p>
             </blockquote>
@@ -1594,7 +1617,7 @@ export const About = () => {
             </figcaption>
           </Reveal>
 
-          <Reveal as="div" className="max-w-[62ch] mx-auto">
+          <Reveal as="div" className="max-w-[66ch] mx-auto">
             {TRIBUTE.paragraphs.map((p, i) => (
               <p key={i} className={cn(BODY, i > 0 && "mt-6")}>
                 {p}

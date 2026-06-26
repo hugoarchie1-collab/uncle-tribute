@@ -37,7 +37,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
-import { PageMasthead } from "../components/PageMasthead";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
@@ -46,7 +45,7 @@ import { Reveal } from "../components/Reveal";
 import { NewsletterSignup } from "../components/NewsletterSignup";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE, META, MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import {
   NEWS,
   NEWS_FILTERS,
@@ -196,51 +195,67 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 };
 
 // ─── NewsMasthead ────────────────────────────────────────────────────────────
-// The front cover — now built on the shared, refined <PageMasthead> (the
-// blue-chip-gallery recipe: Fraunces opsz 144 / wght 560, composed clamp, NOT
-// the old crude 700/opsz-48 logo the owner flagged as "way too bold and
-// unprofessional"). A meta rule (eyebrow · hairline · house tag), then a
-// confident-but-composed title with ONE italic word at regular weight (the
-// auction-house "title of a work" signal), then the programme note packed
-// beneath under a border-t. The verbatim Seo/description copy is unchanged; this
-// is page-framing microcopy only (the page owns its own headings).
+// The front cover — a CENTRED front cover on the same single page axis as the
+// feed below (the FAQ/Memories recipe): a full-width meta rule (hairline ·
+// eyebrow · house tag · count · hairline), the shared MASTHEAD_TITLE_STYLE cut
+// with ONE regular-weight italic word (the auction-house "title of a work"
+// signal), then the programme note packed immediately beneath under a border-t.
+// CENTRED — not the old left-aligned split that stranded a half-empty eyebrow
+// column beside a wide prose block. The verbatim Seo/description copy is
+// unchanged; this is page-framing microcopy only (the page owns its headings).
 const NewsMasthead = () => (
-  <PageMasthead
-    className="relative pt-8 md:pt-10 pb-7 md:pb-9"
-    eyebrow="The estate calendar"
-    meta="The Mandala Company"
-    title={
-      <>
-        News &amp; <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>releases</em>
-      </>
-    }
-  >
-    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
-      <Reveal as="div" className="lg:col-span-3">
-        <p
-          className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
-          style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
-        >
-          Collections &amp; singles · exhibitions · workshops · pop-up events
-        </p>
+  <section className="relative pt-8 md:pt-10 pb-7 md:pb-9">
+    <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
+      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span className={cn(EYEBROW, "shrink-0")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
+          The estate calendar
+        </span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15" />
+        <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>The Mandala Company</span>
+        <span aria-hidden className="h-px flex-1 bg-ink/15 hidden sm:block" />
       </Reveal>
-      <Reveal as="div" delay={0.06} className="lg:col-span-9">
-        <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+
+      <Reveal as="div" className="mt-5 md:mt-7">
+        <h1
+          className="font-display text-ink m-0 text-balance"
           style={{
-            fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(20px, 2.2vw, 38px)",
-            lineHeight: 1.34,
-            textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+            ...MASTHEAD_TITLE_STYLE,
+            fontSynthesis: "none",
+            textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
           }}
         >
-          What is coming from the estate — new prints released like albums and singles,
-          exhibitions, the return of Steve's workshop, and gatherings hosted by The Mandala
-          Company.
-        </p>
+          News &amp; <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>releases</em>
+        </h1>
       </Reveal>
+
+      <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
+        <Reveal as="div">
+          <p
+            className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
+          >
+            Collections &amp; singles · exhibitions · workshops · pop-up events
+          </p>
+        </Reveal>
+        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[56ch] 3xl:max-w-[62ch]">
+          <p
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+            style={{
+              fontVariationSettings: '"opsz" 32, "wght" 400',
+              fontSize: "clamp(20px, 2.2vw, 38px)",
+              lineHeight: 1.34,
+              textShadow: "0 2px 14px rgba(0,0,0,0.7)",
+            }}
+          >
+            What is coming from the estate — new prints released like albums and singles,
+            exhibitions, the return of Steve's workshop, and gatherings hosted by The Mandala
+            Company.
+          </p>
+        </Reveal>
+      </div>
     </div>
-  </PageMasthead>
+  </section>
 );
 
 export const News = () => {
@@ -290,8 +305,9 @@ export const News = () => {
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-12 md:pb-16">
-        {/* MASTHEAD — bold left-aligned front cover (replaces the old timid
-            centred eyebrow + title + subtitle floating in space). */}
+        {/* MASTHEAD — CENTRED front cover on the page's single axis (the
+            FAQ/Memories recipe). Replaces the old left-aligned split that
+            stranded a half-empty eyebrow column beside the prose block. */}
         <NewsMasthead />
 
         {/* EMPTY STATE — no fabricated content. NEWS is empty by design, so the
@@ -301,10 +317,10 @@ export const News = () => {
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
           <section className="border-t border-line pt-6 md:pt-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-              {/* The programme note — estate voice, set as a designed lead, NOT a
-                  thin centred ribbon. */}
-              <Reveal as="div" className="lg:col-span-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-8 items-stretch">
+              {/* The programme note — estate voice, set as a designed lead that
+                  fills its half of the spread (NOT a thin half-empty column). */}
+              <Reveal as="div" className="lg:col-span-6 flex flex-col">
                 <p className={cn(EYEBROW, "m-0 mb-5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
                   Being prepared
                 </p>
@@ -321,16 +337,17 @@ export const News = () => {
                   only once it is confirmed — each release a limited, numbered edition,
                   quiet and small.
                 </p>
-                {/* Programme spine — a quiet ledger so the column reads dense, not
-                    half-empty. Page framing microcopy (no sourced content). */}
-                <ul className="list-none p-0 m-0 mt-6 md:mt-8">
+                {/* Programme spine — a quiet ledger laid out two-up so the column
+                    fills its width and height densely, never a thin stack with a
+                    half-empty void beside the panel. Page framing microcopy. */}
+                <ul className="list-none p-0 m-0 mt-7 md:mt-9 grid grid-cols-1 sm:grid-cols-2 gap-x-10 border-t border-line">
                   {[
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
                     ["Workshops", "The return of Steve's classes"],
                     ["Pop-up events", "Gatherings hosted by the estate"],
                   ].map(([label, note]) => (
-                    <li key={label} className="border-t border-line py-3.5">
+                    <li key={label} className="border-b border-line py-4">
                       <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>{label}</p>
                       <p className={cn(META, "m-0")}>{note}</p>
                     </li>
@@ -342,7 +359,7 @@ export const News = () => {
                   NewsletterSignup panel (POSTs to /api/newsletter-subscribe). The
                   framing is provenance, not hype: early access to each new edition,
                   never countdowns or "SALE". Sits beside the note, not below it. */}
-              <Reveal as="div" delay={0.06} className="lg:col-span-7 lg:sticky lg:top-28">
+              <Reveal as="div" delay={0.06} className="lg:col-span-6 lg:self-start lg:sticky lg:top-28">
                 <NewsletterSignup
                   variant="panel"
                   eyebrow="Join the waitlist"
@@ -384,7 +401,7 @@ export const News = () => {
             {/* BALANCED CARD — cover + text, CENTRED in the measure and aligned to
                 each other's vertical centre. Both halves share one mx-auto frame so
                 the composition sits dead-centre on the page axis. */}
-            <div className="mt-8 md:mt-12 mx-auto w-full max-w-[1080px] grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+            <div className="mt-8 md:mt-12 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-center">
               {/* ROSE-MANDALA COVER — the large square focal point (mandalas read
                   best square), balanced against the text beside it. */}
               <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
@@ -407,7 +424,7 @@ export const News = () => {
                 >
                   {featured.title}
                 </h3>
-                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0 mx-auto md:mx-0 max-w-[52ch]")}>
+                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0 mx-auto md:mx-0 max-w-[56ch] 3xl:max-w-[62ch]")}>
                   {featured.summary}
                 </p>
                 {/* A single quiet CTA to the Friends & Family sign-up at the foot

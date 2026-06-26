@@ -9,6 +9,7 @@ import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
+import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
 
 /**
  * Primary menu GROUPED so a visitor instantly knows where to BUY vs read his
@@ -119,7 +120,12 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const basketCount = basket.length;
   const location = useLocation();
   const reduceMotion = useReducedMotion();
-  const [menuOpen, setMenuOpen] = useState(false);
+  // Menu open/closed lives in a tiny module-level store (lib/menuStore) — NOT a
+  // local useState — so App.tsx can read the SAME boolean and slide the routed
+  // page LEFT to reveal the drawer (the push-content effect). `setMenuOpen` is
+  // the store's imperative writer; it accepts a boolean OR an updater, so every
+  // existing call site (toggle + the effect closes) is a drop-in.
+  const menuOpen = useMenuOpen();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -207,9 +213,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     };
   }, []);
 
-  // Close the mobile menu whenever the route changes.
+  // Close the menu whenever the route changes. (setMenuOpen here is the
+  // module-store writer, not a useState dispatcher, so no set-state-in-effect
+  // disable is needed.)
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [location.pathname]);
 
@@ -520,10 +527,11 @@ const NavMenu = ({
     <AnimatePresence>
       {open && (
         <>
-          {/* SCRIM — translucent, NOT opaque: the site shows through (dimmed),
-              so the menu reads as a layer ON the site, not a separate page.
-              Portalled + z above the film-grain (z-100) so nothing paints over
-              the panel. Clicking it closes. */}
+          {/* BACKDROP — a dim layer OVER the shifted page (the whole site has
+              slid LEFT by the panel width). Portalled to body so it never
+              itself shifts; z above the film-grain (z-100) but BELOW the panel
+              (z-121). Clicking it — i.e. anywhere on the pushed-aside page —
+              closes the menu, which is the conventional drawer affordance. */}
           <motion.div
             aria-hidden="true"
             onClick={onClose}
@@ -531,21 +539,25 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
-            className="fixed inset-0 z-[120] bg-black/60"
+            className="fixed inset-0 z-[120] bg-black/55"
           />
 
-          {/* PANEL — opaque drawer sliding in from the right. */}
+          {/* PANEL — a STATIC right-side drawer (fixed right-0, inset-y-0). It
+              does NOT slide; the routed PAGE slides left (App's shell) to reveal
+              it, so the panel just fades in here. Width is the shared
+              DRAWER_WIDTH so App can slide the page by exactly this much. */}
           <motion.div
             ref={menuRef}
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            initial={reduceMotion ? false : { x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: reduceMotion ? 0 : 0.42, ease: EASE_SMOOTH }}
-            className="fixed top-0 right-0 z-[121] h-[100dvh] w-[min(380px,86vw)] bg-[#0a0908] text-ink border-l border-line flex flex-col"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.32, ease: EASE_SMOOTH }}
+            style={{ width: DRAWER_WIDTH }}
+            className="fixed inset-y-0 right-0 z-[121] h-[100dvh] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
