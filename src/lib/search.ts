@@ -71,8 +71,8 @@ export const SEARCH_TYPE_LABELS: Record<SearchDoc["type"], string> = {
 // INDEX-BUILD HELPERS
 // -----------------------------------------------------------------------------
 
-/** All distinct print-tier labels (e.g. "Open Edition", "Collector Drop") so a
- *  search for "heirloom" or "collector drop" finds the paintings that offer it.
+/** All distinct print-tier labels (e.g. "Open Edition", "Collector Edition") so
+ *  a search for "heirloom" or "collector edition" finds the paintings offering it.
  *  Tier labels are uniform across the catalogue, so this is computed once. */
 const TIER_LABELS = PRINT_TIERS.map((t) => t.label);
 
@@ -107,7 +107,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Provenance",
     question: "Are the prints signed?",
     answer:
-      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company and numbered within its drop. Each ships with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
+      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company and numbered within its edition. Each ships with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
   },
   {
     eyebrow: "Verification",
@@ -128,10 +128,10 @@ const FAQ_SEEDS: FaqSeed[] = [
       "Unframed prints dispatch within 7–10 working days of your order, with free delivery worldwide. Framed orders add roughly two weeks to that. Prints hand-finished by Polly Wedge dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
   },
   {
-    eyebrow: "Sizes & drops",
+    eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's drop cycle. Open Edition A3 at £245 (issued within each drop, no fixed allocation). Collector Drop A2 at £450 (200 allocated per drop). Atelier Drop A1 at £850 (75 per drop). Heirloom Drop A0 at £1,750 (18 per drop).",
+      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £245 (issued within each edition, no fixed allocation). Collector Edition A2 at £450 (200 allocated per edition). Atelier Edition A1 at £850 (75 per edition). Heirloom Edition A0 at £1,750 (18 per edition).",
   },
   {
     eyebrow: "Framing",
@@ -279,6 +279,34 @@ const PAGE_SEEDS: PageSeed[] = [
     subtitle: "Privacy policy",
     url: "/privacy",
     body: "Privacy policy — how your data is handled, cookies and analytics, UK GDPR, data protection, your information.",
+  },
+  {
+    id: "page-gallery",
+    title: "Virtual Exhibition",
+    subtitle: "See it on your wall",
+    url: "/gallery",
+    body: "See it on your wall — augmented reality AR camera preview. Point your phone at the wall and view any print at its real size, in any colourway, size and frame. Virtual exhibition, try before you buy, room view, true to scale.",
+  },
+  {
+    id: "page-library",
+    title: "Library",
+    subtitle: "Stephen's writings & references",
+    url: "/library",
+    body: "Library — Stephen Meakin's writings, notes, references and resources on sacred geometry and the mandala tradition. Reading, archive, documents.",
+  },
+  {
+    id: "page-account",
+    title: "Your account",
+    subtitle: "Sign in",
+    url: "/account",
+    body: "Your account — sign in, log in, manage your details, view your saved information.",
+  },
+  {
+    id: "page-orders",
+    title: "Orders & returns",
+    subtitle: "Track an order",
+    url: "/orders",
+    body: "Orders and returns — track an order, order status, delivery tracking, start a return or refund, after-sale care.",
   },
 ];
 

@@ -101,7 +101,7 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order in Lewes, East Sussex.";
+  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at Point 101, London.";
 
 /**
  * The edition the catalogue is CURRENTLY issuing under. Every artwork is
@@ -305,7 +305,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
  * in integers and there are no rounding bugs at checkout.
  *
- * Points at the ANCHOR tier (A2 Collector, £450, edition of 100) for
+ * Points at the ANCHOR tier (A2 Collector, £450, edition of 200) for
  * backwards compatibility with `getPrintPricePence` / `getPrintSize`
  * (still consumed by PaintingDetail + api/checkout.ts until the size-aware
  * wire-up lands in the synthesis round). Keep the api/checkout.ts

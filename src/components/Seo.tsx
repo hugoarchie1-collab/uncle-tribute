@@ -84,7 +84,7 @@ export const Seo = ({
     setCanonical(canonicalUrl);
     upsertMeta("name", "description", description ?? HEAD_DEFAULTS.description);
     upsertMeta("property", "og:type", type);
-    upsertMeta("property", "og:title", title ?? fullTitle);
+    upsertMeta("property", "og:title", fullTitle);
     upsertMeta(
       "property",
       "og:description",
@@ -92,7 +92,7 @@ export const Seo = ({
     );
     upsertMeta("property", "og:url", ogUrl);
     upsertMeta("property", "og:image", ogImage);
-    upsertMeta("name", "twitter:title", title ?? fullTitle);
+    upsertMeta("name", "twitter:title", fullTitle);
     upsertMeta(
       "name",
       "twitter:description",

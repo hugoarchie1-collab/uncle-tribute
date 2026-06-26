@@ -12,7 +12,8 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
-import { Seo } from "../components/Seo";
+import { useNoindexHead } from "../lib/useNoindexHead";
+import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_TIGHT, META } from "../components/ui/tokens";
@@ -43,6 +44,10 @@ export const Orders = () => {
   const [email, setEmail] = useState("");
   const [result, setResult] = useState<LookupState>({ state: "idle" });
 
+  // Private order-tracking page — keep it out of the index (mirrors Basket).
+  usePageTitle("Orders & returns");
+  useNoindexHead();
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const r = ref.trim();
@@ -66,11 +71,6 @@ export const Orders = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <SceneBackdrop src="/img/scenes/orders-lupine-blur-v2.webp" />
-      <Seo
-        title="Orders & returns"
-        description="Track a Stephen Meakin estate-print order by its reference, and read how returns, damage and after-sale care are handled."
-        url="/orders"
-      />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
         <Reveal>

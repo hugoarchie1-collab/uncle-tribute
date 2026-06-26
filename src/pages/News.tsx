@@ -473,9 +473,9 @@ export const News = () => {
         )}
 
         {/* FOOT — the Friends & Family panel is the #notify target for every CTA.
-            Shown only once NEWS has entries; while the feed is empty the waitlist
-            in the empty-state above is the single, leading capture (no duplicate
-            panel) and there are no entry CTAs pointing at #notify yet. */}
+            Shown only once NEWS has entries; the entry CTAs and the featured hero
+            both scroll here. While the feed is empty the waitlist in the
+            empty-state above is the single, leading capture (no duplicate panel). */}
         {hasNews ? (
           <Reveal as="section" delay={0.05} className="mt-6 md:mt-8 scroll-mt-28 border-t border-line pt-6 md:pt-8">
             <div id="notify">

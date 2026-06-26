@@ -23,7 +23,8 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneBackdrop } from "../components/SceneBackdrop";
-import { Seo } from "../components/Seo";
+import { useNoindexHead } from "../lib/useNoindexHead";
+import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { SearchBar } from "../components/SearchBar";
 import { AssetImage } from "../components/AssetImage";
@@ -208,14 +209,13 @@ export const Search = () => {
   const groups = useMemo(() => groupResults(results), [results]);
   const total = results.length;
 
+  // On-site search results — noindex (avoid thin/duplicate SERP-in-SERP pages).
+  usePageTitle(trimmed ? `Search — ${trimmed}` : "Search");
+  useNoindexHead();
+
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden">
       <SceneBackdrop src="/img/scenes/search-woodland-blur-v3.webp" />
-      <Seo
-        title={trimmed ? `Search — ${trimmed}` : "Search"}
-        description="Search the estate of Stephen Meakin — artworks, collections, the writing, and everything across the site."
-        url="/search"
-      />
       <Nav overlay />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">

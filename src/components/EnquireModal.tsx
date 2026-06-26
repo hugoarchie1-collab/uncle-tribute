@@ -124,6 +124,14 @@ export const EnquireModal = ({
     const email = String(data.get("email") || "").trim();
     const message = String(data.get("message") || "").trim();
 
+    // Spam honeypot — a bot fills the hidden "botcheck" field. Silently
+    // "succeed" (give the bot no signal) and send nothing, on EITHER path.
+    if (String(data.get("botcheck") || "").trim()) {
+      setStatus("success");
+      form.reset();
+      return;
+    }
+
     if (!name || !email || !message) {
       setStatus("error");
       setErrorMsg("Please fill in all fields.");

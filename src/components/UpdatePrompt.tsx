@@ -54,14 +54,16 @@ export const UpdatePrompt = () => {
     const onVisible = () => {
       if (document.visibilityState === "visible") void check();
     };
+    const onFocus = () => void check();
     document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", () => void check());
+    window.addEventListener("focus", onFocus);
     // One check shortly after mount catches a deploy that landed moments ago.
     const t = window.setTimeout(() => void check(), 8_000);
 
     return () => {
       cancelled = true;
       document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onFocus);
       window.clearTimeout(t);
     };
   }, []);

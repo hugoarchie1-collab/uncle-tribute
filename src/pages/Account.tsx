@@ -12,7 +12,8 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneBackdrop } from "../components/SceneBackdrop";
-import { Seo } from "../components/Seo";
+import { useNoindexHead } from "../lib/useNoindexHead";
+import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
@@ -55,6 +56,10 @@ export const Account = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const linkExpired = params.get("error") === "link";
 
+  // Private sign-in page — keep it out of the index (mirrors Basket).
+  usePageTitle("Your account");
+  useNoindexHead();
+
   // Returning via the magic link lands here with a fresh session cookie — make
   // sure the store reflects it (the lazy initial fetch may have run signed-out).
   useEffect(() => {
@@ -77,11 +82,6 @@ export const Account = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <SceneBackdrop src="/img/scenes/account-temple-moon-blur-v3.webp" />
-      <Seo
-        title="Your account"
-        description="Sign in to The Art of Stephen Meakin to view your orders. Passwordless — we email you a secure one-time link."
-        url="/account"
-      />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
         <Reveal as="header">

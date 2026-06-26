@@ -157,7 +157,7 @@ const BUNDLE_TIERS: PrintTier[] = BUNDLE_TIER_IDS
 const DEFAULT_BUNDLE_TIER: PrintTier =
   BUNDLE_TIERS.find((t) => t.id === "collector") ?? BUNDLE_TIERS[0];
 
-// "A2 (42 × 59.4 cm)" → "A2" for the compact toggle chip.
+// "A2 (42 × 42 cm)" → "A2" for the compact toggle chip.
 const sizeCode = (tier: PrintTier): string => tier.size.split(" ")[0];
 // "Collector Edition" → "Collector" for the compact toggle chip.
 const editionWord = (tier: PrintTier): string =>

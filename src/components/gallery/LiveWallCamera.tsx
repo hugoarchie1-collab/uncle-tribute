@@ -477,7 +477,7 @@ export const LiveWallCamera = ({
                       )}
                     >
                       <span className="font-sans text-[12px] font-bold tracking-[0.12em]">{s.label}</span>
-                      <span className={cn("font-sans text-[9px] font-semibold tracking-[0.06em]", sel ? "text-bg/70" : "text-ink/45")}>
+                      <span className={cn("font-sans text-[9px] font-semibold tracking-[0.06em]", sel ? "text-bg/70" : "text-ink/70")}>
                         {s.cm}cm
                       </span>
                     </button>

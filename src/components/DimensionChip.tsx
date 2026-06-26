@@ -36,7 +36,7 @@ export const DimensionChip = ({ tier }: { tier: PrintTier }) => {
       <span className="flex flex-col">
         <span className={cn(META, "text-ink/80")}>
           {dims.w} cm × {dims.h} cm
-          <span className="text-ink/40"> · {inW} × {inH} in</span>
+          <span className="text-ink-muted"> · {inW} × {inH} in</span>
         </span>
         {isAStd && (
           <span className={cn(EYEBROW_TIGHT, "mt-1")}>

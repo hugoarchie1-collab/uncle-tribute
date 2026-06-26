@@ -180,19 +180,25 @@ export const Welcome = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    return pool.slice(0, 6).map((p) => ({
-      id: p.id,
-      colourway:
-        p.colourways[Math.floor(Math.random() * p.colourways.length)]?.name,
-    }));
+    return pool.slice(0, 6).map((p) => {
+      // Only draw from AVAILABLE colourways so a tile never shows a hidden one.
+      const avail = p.colourways.filter((c) => c.available);
+      return {
+        id: p.id,
+        colourway: avail[Math.floor(Math.random() * avail.length)]?.name,
+      };
+    });
   });
   const featured = featuredPicks
     .map((pick) => {
       const painting = PAINTINGS.find((p) => p.id === pick.id);
       if (!painting) return null;
-      const cover = pick.colourway
-        ? painting.colourways.find((c) => c.name === pick.colourway) ?? painting.colourways[0]
-        : painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
+      const avail = painting.colourways.filter((c) => c.available);
+      const cover =
+        (pick.colourway ? avail.find((c) => c.name === pick.colourway) : undefined) ??
+        avail.find((c) => c.isOriginal) ??
+        avail[0] ??
+        painting.colourways[0];
       return { painting, cover };
     })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));

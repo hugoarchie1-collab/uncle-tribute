@@ -303,6 +303,9 @@ export const Auth = () => {
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."
         url="/auth"
+        // Every /auth/:certId deep-link canonicalises to the registry root so
+        // the unbounded certificate URLs don't fragment the index (#12).
+        canonical="/auth"
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
