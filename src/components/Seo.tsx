@@ -4,11 +4,18 @@ import { pageTitle, absoluteUrl } from "../lib/seo";
 import {
   HEAD_DEFAULTS,
   markSeoWrote,
+  removeMeta,
   setCanonical,
   setRobotsNoindex,
   setRouteJsonLd,
   upsertMeta,
 } from "../lib/headMeta";
+
+// Alt for the DEFAULT share card (mirrors the static index.html og:image:alt) —
+// re-asserted on routes without a per-route image so SPA nav never leaves a
+// painting's alt stuck on a default page.
+const DEFAULT_OG_IMAGE_ALT =
+  "The Wild Rose mandala on an easel in Stephen's garden";
 
 /**
  * Per-route SEO head tags. Each route can set a unique <title> +
@@ -92,6 +99,20 @@ export const Seo = ({
     );
     upsertMeta("property", "og:url", ogUrl);
     upsertMeta("property", "og:image", ogImage);
+    // og:image dimensions: the static index.html hints (1200×630) match only the
+    // default share card. A per-route `image` override (a painting's own square /
+    // landscape JPG) is a different shape, so drop the hints — scrapers then
+    // measure the real image — and give it a meaningful alt. Restore the defaults
+    // otherwise, so SPA nav back to a default route re-asserts them. (#16)
+    if (image) {
+      removeMeta("property", "og:image:width");
+      removeMeta("property", "og:image:height");
+      upsertMeta("property", "og:image:alt", title ?? fullTitle);
+    } else {
+      upsertMeta("property", "og:image:width", "1200");
+      upsertMeta("property", "og:image:height", "630");
+      upsertMeta("property", "og:image:alt", DEFAULT_OG_IMAGE_ALT);
+    }
     upsertMeta("name", "twitter:title", fullTitle);
     upsertMeta(
       "name",
@@ -111,6 +132,7 @@ export const Seo = ({
     description,
     type,
     title,
+    image,
     ogUrl,
     ogImage,
     blocksJson,

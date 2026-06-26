@@ -184,6 +184,45 @@ const ambientBackdropUrl = (jpgPath: string): string =>
  * below the grid. In the narrow right column the cards stack one-per-row so
  * label / size / edition / price stay readable without squeezing.
  */
+
+/**
+ * WAI-ARIA radio-group keyboard pattern (#8): one tab stop per group (roving
+ * tabindex), Arrow/Home/End move + select, focus follows. Robust to wrapper
+ * markup — focuses the next [role=radio] within the closest radiogroup by DOM
+ * order. Callers add tabIndex={selected ? 0 : -1} + onKeyDown to each radio.
+ */
+const onRadioKey = (
+  e: React.KeyboardEvent<HTMLElement>,
+  count: number,
+  index: number,
+  pick: (next: number) => void,
+) => {
+  let next: number;
+  switch (e.key) {
+    case "ArrowRight":
+    case "ArrowDown":
+      next = (index + 1) % count;
+      break;
+    case "ArrowLeft":
+    case "ArrowUp":
+      next = (index - 1 + count) % count;
+      break;
+    case "Home":
+      next = 0;
+      break;
+    case "End":
+      next = count - 1;
+      break;
+    default:
+      return;
+  }
+  e.preventDefault();
+  pick(next);
+  const group = e.currentTarget.closest('[role="radiogroup"]');
+  const el = group?.querySelectorAll('[role="radio"]')[next];
+  if (el instanceof HTMLElement) el.focus();
+};
+
 const SizePicker = ({
   tiers,
   selectedTier,
@@ -201,7 +240,7 @@ const SizePicker = ({
   const { formatPretty: fmtP } = useCurrency();
   return (
   <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-0 border-b border-line">
-    {tiers.map((tier) => {
+    {tiers.map((tier, i) => {
       const isSelected = tier.id === selectedTier.id;
       return (
         <button
@@ -209,6 +248,8 @@ const SizePicker = ({
           type="button"
           role="radio"
           aria-checked={isSelected}
+          tabIndex={isSelected ? 0 : -1}
+          onKeyDown={(e) => onRadioKey(e, tiers.length, i, (n) => onSelectTier(tiers[n].id))}
           onClick={() => onSelectTier(tier.id)}
           className={cn(
             "relative grid grid-cols-[1fr_auto] items-center gap-x-4 text-left bg-transparent border-0 border-t border-line px-1 py-4 cursor-pointer transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
@@ -690,7 +731,7 @@ const Colourways = ({
 
       {hasAlternates ? (
         <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-3.5 mb-4">
-          {availableColourways.map((c) => {
+          {availableColourways.map((c, i) => {
             const isSelected = c.name === selected.name;
             return (
               <motion.button
@@ -700,6 +741,8 @@ const Colourways = ({
                 aria-checked={isSelected}
                 aria-label={c.name}
                 title={c.name}
+                tabIndex={isSelected ? 0 : -1}
+                onKeyDown={(e) => onRadioKey(e, availableColourways.length, i, (n) => onSelect(availableColourways[n].name))}
                 onClick={() => onSelect(c.name)}
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.94 }}
@@ -808,7 +851,7 @@ const TrueSizeViewer = ({
         aria-label="Show print to scale at size"
         className="inline-flex items-center gap-0.5 mb-4 p-0.5 ring-1 ring-line rounded-full"
       >
-        {scaleTiers.map((t) => {
+        {scaleTiers.map((t, i) => {
           const isActive = t.id === activeTier.id;
           const token = t.size.split(" ")[0];
           return (
@@ -817,6 +860,8 @@ const TrueSizeViewer = ({
               type="button"
               role="radio"
               aria-checked={isActive}
+              tabIndex={isActive ? 0 : -1}
+              onKeyDown={(e) => onRadioKey(e, scaleTiers.length, i, (n) => onSelectTier(scaleTiers[n].id))}
               onClick={() => onSelectTier(t.id)}
               className={cn(
                 "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",

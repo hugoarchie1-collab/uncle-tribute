@@ -76,6 +76,13 @@ export const upsertMeta = (
   el.setAttribute("content", content);
 };
 
+/** Remove a single <meta> tag if present (used to drop a static dimension hint
+ *  that doesn't apply to a per-route image — scrapers then measure it). */
+export const removeMeta = (kind: "name" | "property", key: string): void => {
+  if (!isBrowser) return;
+  document.head.querySelector(`meta[${kind}="${key}"]`)?.remove();
+};
+
 /** Point the document's single canonical link at `href` (create if missing). */
 export const setCanonical = (href: string): void => {
   if (!isBrowser) return;
