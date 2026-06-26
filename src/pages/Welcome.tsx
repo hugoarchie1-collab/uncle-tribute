@@ -338,29 +338,31 @@ export const Welcome = () => {
               >
                 The Mandala Company
               </span>
-              {/* "the art of stephen meakin." — the SUBORDINATE clause. */}
+              {/* "The Art of Stephen Meakin" lockup — the red wax-seal rose +
+                  the title-case wordmark (matches the nav brand; Hugo). */}
               <span
-                className="block text-balance"
+                className="flex flex-wrap items-center justify-center gap-x-[clamp(8px,1vw,18px)] gap-y-1 text-balance"
                 style={{
                   fontVariationSettings: '"opsz" 36, "wght" 600',
                   fontWeight: 600,
-                  fontSize: "clamp(24px, 4.5vw, 46px)",
+                  fontSize: "clamp(22px, 4vw, 42px)",
                   letterSpacing: "-0.005em",
                   lineHeight: 1.1,
                   color: "#f1ead9",
-                  marginTop: "clamp(6px, 0.9vw, 16px)",
+                  marginTop: "clamp(10px, 1.2vw, 20px)",
                   textShadow:
                     "0 1px 2px rgba(8,6,12,0.95), 0 2px 18px rgba(8,6,12,0.95), 0 0 40px rgba(8,6,12,0.6)",
                 }}
               >
-                the art of stephen meakin
-                <span
-                  style={{
-                    color: "#c97844",
-                    textShadow: "0 0 14px rgba(201,120,68,0.5)",
-                  }}
-                >
-                  .
+                <img
+                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v2-w256.png`}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-[1.4em] w-[1.4em] shrink-0 object-contain"
+                  style={{ filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.65))" }}
+                />
+                <span style={{ fontFamily: '"Fraunces", serif' }}>
+                  The Art of Stephen Meakin
                 </span>
               </span>
             </div>

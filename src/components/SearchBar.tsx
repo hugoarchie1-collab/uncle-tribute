@@ -202,7 +202,10 @@ export const SearchBar = ({
         <span
           aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute top-1/2 -translate-y-1/2 transition-colors duration-200",
+            // z-10: the page-variant input has backdrop-blur (its own stacking
+            // context) and would otherwise paint OVER + blur this icon — Hugo's
+            // "weird blur instead of a search symbol" in the drawer.
+            "pointer-events-none absolute top-1/2 -translate-y-1/2 z-10 transition-colors duration-200",
             // The menu (page variant) sits on a near-black drawer where the
             // 0.7-muted glass read as nearly invisible (Hugo: "have a search
             // symbol on the menu") — give it the FULL cream there; the always-on
