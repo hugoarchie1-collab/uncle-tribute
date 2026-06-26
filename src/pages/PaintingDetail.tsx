@@ -1432,9 +1432,9 @@ const BuyBox = ({
                     <span>
                       Made to order by Point 101 in the finish of your choice —
                       solid-wood or contemporary tray frame, with optional
-                      anti-reflective museum glass, conservation-mounted and ready
-                      to hang. Every finish is included. Allow {FRAME_LEAD_WEEKS}{" "}
-                      weeks.
+                      anti-reflective museum-grade glazing (all shatter-safe for
+                      transit), conservation-mounted and ready to hang. Every
+                      finish is included. Allow {FRAME_LEAD_WEEKS} weeks.
                     </span>
                     {/* Free delivery applies to framed prints too — reassurance
                         shown the moment a frame is ticked. There is no framed-

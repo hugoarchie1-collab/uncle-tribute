@@ -132,9 +132,11 @@ const FAQS: QA[] = [
     question: "Can I have my print framed?",
     answer: (
       <>
-        Yes — framing is offered on the A2 and A1 tiers. The frame is
-        black-stained oak with <strong>cast acrylic glazing</strong> (we
-        don't ship glass — too fragile in transit). Add £295 on A2 and £395
+        Yes — framing is offered on the A2 and A1 tiers. Choose your{" "}
+        <strong>finish</strong> — a solid-wood or contemporary tray frame
+        (natural oak, stained black, white or walnut tray), with shatter-safe
+        acrylic glazing as standard or a museum-grade anti-reflective upgrade,
+        every finish included in the framing price. Add £295 on A2 and £395
         on A1. Delivery is free worldwide, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.

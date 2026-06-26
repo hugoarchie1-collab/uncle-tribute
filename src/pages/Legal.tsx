@@ -362,7 +362,7 @@ const TERMS: Section[] = [
         kind: "ul",
         items: [
           <><strong>Unframed, estate-stamped</strong> — 7 to 10 working days to dispatch.</>,
-          <><strong>Framed</strong> — approximately two weeks to dispatch (black-stained oak with cast acrylic glazing).</>,
+          <><strong>Framed</strong> — approximately two weeks to dispatch (choice of frame finish, with shatter-safe or anti-reflective glazing).</>,
           <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],
       },

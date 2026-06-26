@@ -67,11 +67,12 @@ const OFFERINGS: Offering[] = [
     title: "Framed, glazed and delivery-ready.",
     body: (
       <>
-        Prints can be supplied framed in black-stained oak with cast acrylic
-        glazing — specified for safe transit and ready to hang on install.
-        Sizing, glazing and finish can be tailored to a project's
-        specification; we will quote framing and crated delivery alongside the
-        edition.
+        Prints can be supplied framed in a choice of solid-wood or tray
+        finishes (natural oak, stained black, white or walnut), with
+        shatter-safe acrylic or museum-grade anti-reflective glazing —
+        specified for safe transit and ready to hang on install. Sizing,
+        glazing and finish can be tailored to a project's specification; we
+        will quote framing and crated delivery alongside the edition.
       </>
     ),
   },

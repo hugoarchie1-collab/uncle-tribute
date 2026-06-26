@@ -375,7 +375,7 @@ const FRAME_STYLE_LABELS: Record<string, string> = {
 };
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Art acrylic",
-  "museum-glass": "Museum glass (anti-reflective)",
+  "museum-glass": "Anti-reflective glazing",
 };
 
 interface NormalisedItem {

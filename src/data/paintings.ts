@@ -388,7 +388,7 @@ export const getFramingPricePence = (tier: PrintTier): number | null =>
 // ── Point 101 framing finishes ───────────────────────────────────────────────
 // The Bespoke framing add-on offers Point 101's full range of museum-grade
 // finishes: a choice of solid-wood / tray mouldings AND a choice of glazing
-// (their best is the Artglass AR70 anti-reflective museum glass). EVERY finish
+// (their best is a museum-grade anti-reflective glazing). EVERY finish
 // is INCLUDED in the single framing price — there is NO per-style upcharge (the
 // estate absorbs the small cost difference into margin, exactly as it does for
 // delivery), so advertised == charged is completely untouched. The buyer's
@@ -404,7 +404,7 @@ export const FRAME_STYLES = [
 
 export const GLAZING_OPTIONS = [
   { id: "art-acrylic", label: "Art acrylic", note: "Ultra-clear, 99% UV-filtering, shatter-safe" },
-  { id: "museum-glass", label: "Museum glass", note: "Artglass AR70 — anti-reflective, under 1% reflection" },
+  { id: "museum-glass", label: "Anti-reflective", note: "Museum-grade anti-glare glazing — near-invisible, shatter-safe in transit" },
 ] as const;
 
 export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
