@@ -75,11 +75,12 @@ export const EYEBROW =
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
- *  clamp 32→60px, line-height 1.02 (md+ tightens to 0.98 for the single-line
+ *  clamp 52→92px, line-height 1.02 (md+ tightens to 0.97 for the single-line
  *  large-screen case so wrapped phone titles never touch), tracking -0.04em,
- *  balanced wrapping. Apply
- *  to an <h2>; add `max-w-[820px] mx-auto text-center` for the centered variant
- *  or leave left-aligned. End the copy with a full stop, sentence-case. */
+ *  balanced wrapping. The token sets NO max-width or alignment — pages own the
+ *  measure: add `mx-auto text-center` (+ an explicit `max-w-[…]`) for the
+ *  centered variant, or leave left-aligned. End the copy with a full stop,
+ *  sentence-case. */
 export const TITLE =
   "font-display font-bold tracking-[-0.04em] text-[clamp(52px,8.2vw,92px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
@@ -89,9 +90,15 @@ export const TITLE =
  *  the TITLE above it (~slightly larger than plain body so it reads as a lead,
  *  not a caption), and it grows with the viewport so it never looks tiny in a
  *  sea of dead space on large screens. Sits a clear, generous step below its
- *  heading — pair with `mt-5 md:mt-6` (the canonical heading→subtitle gap). */
+ *  heading — pair with `mt-5 md:mt-6` (the canonical heading→subtitle gap).
+ *  ⚠️ The token carries NO max-width on purpose (removed 2026-06-26): a baked
+ *  `max-w-[clamp(720px,62vw,1080px)]` was SILENTLY overriding the per-page
+ *  centred reading widths (a wider page-local `max-w` after it in the class
+ *  list lost the cascade tie), so centred subtitles drifted off the page axis.
+ *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
+ *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(20px,0.72vw_+_15px,31px)] leading-[1.62] text-ink-muted max-w-[clamp(720px,62vw,1080px)]";
+  "font-sans font-normal text-[clamp(20px,0.72vw_+_15px,31px)] leading-[1.62] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */

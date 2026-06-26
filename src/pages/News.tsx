@@ -221,7 +221,7 @@ const NewsMasthead = () => (
           className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
           style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
         >
-          Collections &amp; singles · exhibitions · workshops · events
+          Collections &amp; singles · exhibitions · workshops · pop-up events
         </p>
       </Reveal>
       <Reveal as="div" delay={0.06} className="lg:col-span-9">
@@ -328,7 +328,7 @@ export const News = () => {
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
                     ["Workshops", "The return of Steve's classes"],
-                    ["Events", "Gatherings hosted by the estate"],
+                    ["Pop-up events", "Gatherings hosted by the estate"],
                   ].map(([label, note]) => (
                     <li key={label} className="border-t border-line py-3.5">
                       <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>{label}</p>
@@ -354,23 +354,39 @@ export const News = () => {
           </section>
         ) : null}
 
-        {/* FEATURED NEXT-EDITION HERO — one item, never a carousel. A BOLD
-            asymmetric spread: the rose-mandala cover is the dominant focal point,
-            filling the LARGER column edge-to-edge (no max-width cap); the ONE rust
-            eyebrow + Fraunces title + summary + inline Friends & Family hook pack
-            the SMALLER column. Reads as a designed feature, not a tall centred
-            stack — the cover leads the page. */}
+        {/* FEATURED NEXT-EDITION HERO — one item, never a carousel. A CENTRED,
+            axis-true feature: the status eyebrow ("Coming soon") sits as a centred
+            header on a shared top axis, the section heading beneath it, and the
+            rose-mandala cover + its text sit in a balanced two-column spread
+            CENTRED in the measure (mx-auto, capped) and vertically centred to each
+            other — so the eyebrow leads cleanly and the card reads as a composed,
+            on-axis feature, never a single card floating off-centre below the
+            label. The previous build buried the eyebrow inside an asymmetric text
+            column, which read as the card drifting below a stray COMING SOON tag. */}
         {hasNews && featured && isRelease(featured) && featured.cover ? (
           <Reveal
             as="section"
             delay={0.05}
             className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-14 items-center">
-              {/* ROSE-MANDALA COVER — the large focal point. col-6 keeps it big
-                  and square (mandalas read best square) while staying balanced
-                  with the text beside it (the col-7 square towered and forced the
-                  text column to stretch). */}
+            {/* CENTRED HEADER — the status eyebrow + section heading on a shared
+                top axis, so the whole feature hangs from one centred spine. */}
+            <div className="text-center">
+              <p className={cn(EYEBROW, "m-0")}>{featured.displayDate}</p>
+              <h2
+                className="mt-3 font-display tracking-[-0.03em] text-[clamp(30px,4.4vw,60px)] leading-[1.0] text-ink m-0"
+                style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
+              >
+                The next release
+              </h2>
+            </div>
+
+            {/* BALANCED CARD — cover + text, CENTRED in the measure and aligned to
+                each other's vertical centre. Both halves share one mx-auto frame so
+                the composition sits dead-centre on the page axis. */}
+            <div className="mt-8 md:mt-12 mx-auto w-full max-w-[1080px] grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+              {/* ROSE-MANDALA COVER — the large square focal point (mandalas read
+                  best square), balanced against the text beside it. */}
               <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
                 <AssetImage
                   src={featured.cover}
@@ -378,17 +394,22 @@ export const News = () => {
                   className="block aspect-square w-full object-cover"
                 />
               </div>
-              <div className="md:col-span-6">
-                <p className={cn(EYEBROW, "m-0 mb-4")}>
-                  {pillLabel(featured)} · {featured.displayDate}
+              {/* TEXT — centred on mobile (matching the header axis), settling to
+                  left-aligned beside the cover on md+ so the long-form summary reads
+                  on a clean measure rather than ragged-centred. */}
+              <div className="md:col-span-6 text-center md:text-left">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-3 tracking-[0.28em]")}>
+                  {pillLabel(featured)}
                 </p>
-                <h2
-                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.8vw,66px)] leading-[1.02] text-ink text-balance m-0 hero-text-shadow"
+                <h3
+                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.6vw,58px)] leading-[1.04] text-ink text-balance m-0 hero-text-shadow"
                   style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
                 >
                   {featured.title}
-                </h2>
-                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0")}>{featured.summary}</p>
+                </h3>
+                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0 mx-auto md:mx-0 max-w-[52ch]")}>
+                  {featured.summary}
+                </p>
                 {/* A single quiet CTA to the Friends & Family sign-up at the foot
                     (#notify) — the full form lives there, so the hero stays clean
                     (no crammed/oversized inline form beside the artwork). */}

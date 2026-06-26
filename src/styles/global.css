@@ -247,6 +247,32 @@
     }
   }
 
+  /* BOTTOM SOFT-EDGE — the canonical reusable "soft bottom-blur" Hugo loves: an
+     image whose LOWER edge dissolves to transparent so it melts into the dark
+     #0a0908 canvas with no hard rectangular cut (top + sides stay crisp). A
+     SINGLE-LAYER mask (no compositing needed → never blanks the image on the
+     older WebKit/Android engines that drop the composite keyword), expressed as
+     a PERCENTAGE fade so the feather scales with the image: solid to 82%, then a
+     gentle two-stop ramp (82→90→100%) to transparent — i.e. the bottom ~18%
+     fades, with the steepest part near the foot so the photo stays readable.
+     Apply to any AssetImage / full-bleed photo sitting on the dark page. */
+  .soft-edge-bottom {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 82%,
+      rgba(0, 0, 0, 0.55) 90%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 82%,
+      rgba(0, 0, 0, 0.55) 90%,
+      transparent 100%
+    );
+  }
+
   :focus-visible {
     outline: 2px solid theme(colors.accent.DEFAULT);
     outline-offset: 3px;
@@ -656,6 +682,32 @@
 }
 .cc-flower.cc--gone {
   opacity: 0 !important;
+}
+
+/* CLICK FLASH — on mousedown the WHITE rose flushes fully RED (the rust accent)
+   for a beat, then reverts on release / after ~250ms (the revert timer lives in
+   CustomCursor.tsx). The mark is a white-on-transparent PNG painted via
+   background-image, so the only way to recolour it is a `filter`. The recipe:
+   sepia() lays a warm brown base over the white glyph, then saturate()+hue-rotate
+   push it to the rust/red accent (#c97844) and brightness() seats the tone — a
+   far cleaner, more saturated red than a flat tint, and it keeps the rose's own
+   line detail. We KEEP a drop-shadow so the red mark still lifts off the pale
+   peacock / Mary-Pink washes. The colour transition eases (180ms) so the flush
+   reads as a deliberate pulse, not a snap; the width/height transition is
+   inherited from .cc-flower. GPU-composited filter change — no layout, no paint
+   of the page beneath. */
+.cc-flower.cc--pressed {
+  filter:
+    drop-shadow(0 1px 2.5px rgba(10, 9, 8, 0.85))
+    brightness(0.5) sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.05);
+  transition:
+    width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.25s ease,
+    filter 0.18s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cc-flower.cc--pressed { transition: filter 0.001ms; }
 }
 
 /* ── Nav backdrops ──────────────────────────────────────────────────────────

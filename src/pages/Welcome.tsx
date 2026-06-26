@@ -566,7 +566,7 @@ export const Welcome = () => {
                     className="inline-flex w-fit items-center justify-center text-ink border border-ink/35 px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
-                    Our story
+                    His story
                   </MagneticLink>
                 </div>
 
@@ -603,20 +603,14 @@ export const Welcome = () => {
               Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
               only (gotcha #2). */}
           <section className="relative isolate mx-auto w-full max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1340px] px-4 sm:px-6 md:px-8 lg:px-12">
-            {/* Local reading scrim — a soft radial deepening behind the essay
-                (the About reading-veil / finale-radial recipe, localised). It
-                replaces the per-glyph text-shadow on the lead + two-column
-                body: print-crisp glyphs, grounded backdrop. Every edge ends at
-                alpha 0 — NEVER a visible rectangle (the removed Craft-card
-                regression). Static paint, reduced-motion safe by nature. */}
-            <div
-              aria-hidden="true"
-              className="absolute -inset-x-10 -inset-y-12 md:-inset-y-16 -z-10 pointer-events-none"
-              style={{
-                background:
-                  "radial-gradient(85% 80% at 50% 45%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.3) 55%, rgba(10,9,8,0) 100%)",
-              }}
-            />
+            {/* NO local reading scrim. Hugo flagged the old radial deepening
+                here as "black boxes behind the text" — at the wide essay measure
+                the soft-edged radial still read as a dark rectangle sitting on
+                the peacock wash. The reminder now sits DIRECTLY on the backdrop;
+                legibility comes ONLY from a subtle per-tier text-shadow (the
+                `.reminder-shadow` utility below + the display-scale
+                hero-text-shadow already on the pull-quote + close), never a
+                hard dark card. */}
             <Reveal as="header" className="mb-4 md:mb-6 mx-auto max-w-[1080px] 3xl:max-w-[1320px]">
               <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
               {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
@@ -631,30 +625,61 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 40, "wght" 400',
                   fontSize: "clamp(30px, 7vw, 40px)",
-                  lineHeight: 1.42,
+                  // More open leading now there's no scrim card — the lead reads
+                  // as an art-book opener with air around each line.
+                  lineHeight: 1.5,
+                  // Subtle soft halo for legibility directly on the peacock wash
+                  // (replaces the removed reading-scrim card — never a box).
+                  textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
                 }}
               >
                 {WELCOME.reminderLong[0]}
               </p>
             </Reveal>
 
-            {/* Pull-quote — reminderLong[3]'s OPENING two sentences lifted to
-                display scale as a centred editorial feature. The two-column body
-                below then renders only the REMAINDER of that paragraph (see the
-                slice in the map), so the full passage appears exactly once across
-                the feature + body — never read twice. opsz 44. */}
-            <Reveal delay={0.05} className="my-5 md:my-8 mx-auto max-w-[1040px] 3xl:max-w-[1260px] text-center">
-              <p
-                className="font-display font-normal italic text-ink text-balance m-0 mx-auto hero-text-shadow"
-                style={{
-                  fontVariationSettings: '"opsz" 44, "wght" 400',
-                  fontSize: "clamp(36px, 9vw, 60px)",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.14,
-                }}
-              >
-                {WELCOME.reminderLong[3].split(". ").slice(0, 2).join(". ") + "."}
-              </p>
+            {/* Pull-quote — THE emotional punch of the section (Hugo: make it
+                "much more significant and standout", real presence, its own
+                breathing room, a confident two-tier treatment). reminderLong[3]'s
+                OPENING two sentences are lifted to a big centred Fraunces feature:
+                the first sentence ("There is a star inside each one of us.") is the
+                dominant tier; the second ("Quite literally.") lands beneath it,
+                smaller + rust-period, as the quiet confirmation. The two-column
+                body below then renders only the REMAINDER of that paragraph (see
+                the slice in the map), so the full passage appears exactly once.
+                Both halves are DERIVED from the same verbatim slice — never
+                re-typed. Generous my-12→my-20 gives it real air on the page. */}
+            <Reveal delay={0.05} className="my-12 md:my-20 mx-auto max-w-[1180px] 3xl:max-w-[1400px] text-center">
+              <blockquote className="m-0 hero-text-shadow">
+                {/* Dominant tier — the first sentence, big roman Fraunces. */}
+                <span
+                  className="block font-display font-semibold text-ink text-balance mx-auto"
+                  style={{
+                    fontVariationSettings: '"opsz" 48, "wght" 600',
+                    fontWeight: 600,
+                    fontSize: "clamp(48px, 11vw, 116px)",
+                    letterSpacing: "-0.035em",
+                    lineHeight: 0.98,
+                  }}
+                >
+                  {WELCOME.reminderLong[3].split(". ")[0] + "."}
+                </span>
+                {/* Subordinate tier — "Quite literally.", a fraction of the
+                    title size, italic, its closing period the one rust note. */}
+                <span
+                  className="block font-display font-normal italic text-ink/90 text-balance mx-auto"
+                  style={{
+                    fontVariationSettings: '"opsz" 40, "wght" 400',
+                    fontWeight: 400,
+                    fontSize: "clamp(26px, 5vw, 52px)",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1.1,
+                    marginTop: "clamp(10px, 1.4vw, 22px)",
+                  }}
+                >
+                  {WELCOME.reminderLong[3].split(". ")[1]}
+                  <span className="text-accent not-italic">.</span>
+                </span>
+              </blockquote>
             </Reveal>
 
             {/* TWO-COLUMN essay body — reminderLong[1..3] VERBATIM, flowed into
@@ -664,8 +689,9 @@ export const Welcome = () => {
                 paragraph whole across the column break; text-pretty +
                 hyphens-auto (with lang="en-GB") treat the rag at the ~46ch
                 column measure. Ink = the 0.85 ink-soft TOKEN (was a bespoke
-                /85 alpha — same value, token discipline). Legibility comes
-                from the section's radial scrim, not a per-glyph shadow. */}
+                /85 alpha — same value, token discipline). Legibility now comes
+                from a subtle per-paragraph text-shadow (the reading-scrim card
+                was removed — Hugo read it as black boxes), never a dark box. */}
             <Reveal as="div" className="columns-1 md:columns-2 gap-x-10 lg:gap-x-14 [column-fill:_balance]">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
@@ -679,7 +705,15 @@ export const Welcome = () => {
                   <p
                     key={para.slice(0, 24)}
                     lang="en-GB"
-                    className="font-sans font-normal text-[20px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.72] text-ink-soft m-0 mb-4 md:mb-6 last:mb-0 text-pretty hyphens-auto"
+                    // Opened leading (1.72→1.85) + more generous paragraph gap
+                    // (mb-6→mb-8 on md) so the passage breathes now that the dark
+                    // scrim card is gone (Hugo: "space the reminder out better").
+                    className="font-sans font-normal text-[20px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.85] text-ink-soft m-0 mb-6 md:mb-8 last:mb-0 text-pretty hyphens-auto"
+                    style={{
+                      // Subtle legibility halo on the peacock backdrop — soft
+                      // enough to never fuzz the body glyphs, no dark box.
+                      textShadow: "0 1px 12px rgba(10,9,8,0.45)",
+                    }}
                   >
                     {text}
                   </p>
@@ -1128,9 +1162,26 @@ export const Welcome = () => {
             </div>
 
             {/* Content column — centered flow. Layer order: pink backdrop
-                (z-0, the shared fixed peacock layer) →
-                content (z-10). No dark scrim. Whole-element Reveals (gotcha #2). */}
+                (z-0, the shared fixed peacock layer) → sun limb (z-[1]) →
+                LOCAL TEXT SCRIM (the soft ellipse below, behind the text only) →
+                content (z-10). Whole-element Reveals (gotcha #2). */}
             <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-1 md:py-2">
+              {/* TIGHT LOCAL TEXT SCRIM — Hugo: "you literally can't read it" on
+                  the bright sun. A soft radial ellipse sits ONLY behind the
+                  centred text block, NOT over the whole sun (the sun stays
+                  bright). Every edge ends at alpha 0, so it never reads as a box
+                  — it just pools enough warm-dark under the cream type for it to
+                  read crisply over the bright limb. Sits inside the z-10 content
+                  column (above the z-[1] sun) but behind the actual glyphs via
+                  -z-10 within the column's own stacking context. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -z-10"
+                style={{
+                  background:
+                    "radial-gradient(70% 62% at 50% 50%, rgba(9,7,11,0.62) 0%, rgba(9,7,11,0.42) 42%, rgba(9,7,11,0.16) 72%, rgba(9,7,11,0) 100%)",
+                }}
+              />
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean
@@ -1154,7 +1205,11 @@ export const Welcome = () => {
                       lineHeight: 0.92,
                       textTransform: "uppercase",
                       color: "#ede6d6",
-                      textShadow: "0 2px 42px rgba(8,6,12,0.85), 0 1px 4px rgba(8,6,12,0.6)",
+                      // Stronger triple halo so the cream caps read crisply over
+                      // the bright sun (Hugo: unreadable) — a tight inner shadow
+                      // for edge definition + two wider glows to ground it.
+                      textShadow:
+                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 18px rgba(8,6,12,0.85), 0 2px 52px rgba(8,6,12,0.7)",
                     }}
                   >
                     Sacred{" "}
@@ -1210,13 +1265,23 @@ export const Welcome = () => {
                     fontVariationSettings: '"opsz" 24, "wght" 400',
                     fontSize: "clamp(20px, 2.4vw, 26px)",
                     lineHeight: 1.5,
-                    textShadow: "0 1px 20px rgba(10,9,8,0.55)",
+                    // Strong halo — this line sits low over the brightest part of
+                    // the sun and was unreadable; tight + wide shadow grounds it.
+                    textShadow:
+                      "0 1px 3px rgba(9,7,11,0.92), 0 2px 16px rgba(9,7,11,0.85), 0 0 34px rgba(9,7,11,0.6)",
                   }}
                 >
                   &ldquo;I realised that everything is connected.&rdquo;
                   <span
-                    style={{ fontStyle: "normal" }}
-                    className="font-sans text-[11px] tracking-[0.04em] text-ink-muted ml-3 align-middle"
+                    style={{
+                      fontStyle: "normal",
+                      // Full cream + a halo so the SEM label reads on the bright
+                      // sun (muted vanished); sentence-case per the type pass.
+                      color: "#ede6d6",
+                      textShadow:
+                        "0 1px 3px rgba(9,7,11,0.92), 0 1px 12px rgba(9,7,11,0.8)",
+                    }}
+                    className="font-sans text-[11px] tracking-[0.04em] ml-3 align-middle"
                   >
                     SEM
                   </span>
@@ -1228,7 +1293,13 @@ export const Welcome = () => {
               <Reveal delay={0.3}>
                 <Link
                   to="/collections"
-                  className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted transition-colors hover:text-accent"
+                  // Full cream + a legibility halo so the exit link reads on the
+                  // bright sun; sentence-case per the type pass.
+                  className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink transition-colors hover:text-accent"
+                  style={{
+                    textShadow:
+                      "0 1px 3px rgba(9,7,11,0.9), 0 1px 14px rgba(9,7,11,0.75)",
+                  }}
                 >
                   Explore the collection{" "}
                   <span aria-hidden="true">&rarr;</span>

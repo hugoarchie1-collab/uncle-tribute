@@ -21,7 +21,8 @@
 // from ui/tokens (never re-typed). Reveal wraps whole elements only; covers use a
 // PLAIN lazy <img> (NOT AssetImage — no .webp sibling needed), like the photobook.
 
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useState } from "react";
 import { Nav } from "../components/Nav";
 import { PageMasthead } from "../components/PageMasthead";
 import { Footer } from "../components/Footer";
@@ -32,8 +33,11 @@ import { SceneBackdrop } from "../components/SceneBackdrop";
 import { asset } from "../lib/asset";
 import { absoluteUrl } from "../lib/seo";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, SUBTITLE, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, SUBTITLE, META, BTN_PRIMARY } from "../components/ui/tokens";
 import { BOOKS, getLeadBook, getShelfBooks, type Book } from "../data/books";
+
+// The estate inbox — also the mailto fallback recipient if the POST ever fails.
+const ESTATE_EMAIL = "info@themandalacompany.com";
 
 // On-backdrop legibility shadow — the same value NewsMasthead carries over the
 // scene scrim so cream type never dissolves into the carpet behind it.
@@ -294,6 +298,276 @@ const Shelf = ({ books }: { books: Book[] }) => {
   );
 };
 
+// ─── BookSuggestion ───────────────────────────────────────────────────────────
+// A dignified invitation to FRIENDS & FAMILY who knew Stephen: tell the estate a
+// book he read in his lifetime. The shelf is "gathered slowly" — this is how it
+// keeps growing, honestly, from the people who were there. It is NEVER a claim:
+// nothing submitted here appears on the page automatically; the estate reads each
+// note and adds a book by hand (the books.ts VOICE WALL still governs the shelf).
+//
+// A warm CTA opens a small inline form (your name + the book + why it mattered),
+// POSTing to /api/newsletter-subscribe with kind:"book-suggestion" — mirroring the
+// proven custom-size/enquiry POST pattern (same self-contained endpoint, honeypot,
+// friendly-success contract: only a network failure shows an error). If the POST
+// throws, a prefilled mailto: to the estate is offered so the memory is never lost.
+const BookSuggestion = () => {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bookTitle, setBookTitle] = useState("");
+  const [why, setWhy] = useState("");
+  const [company, setCompany] = useState(""); // honeypot — humans leave empty
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
+    "idle",
+  );
+
+  // Prefilled mailto so the note is never lost if the network POST fails.
+  const mailtoHref = () => {
+    const subject = `A book that shaped Stephen${bookTitle.trim() ? ` — ${bookTitle.trim()}` : ""}`;
+    const lines = [
+      name.trim() ? `From: ${name.trim()}` : "",
+      bookTitle.trim() ? `Book: ${bookTitle.trim()}` : "",
+      why.trim() ? `Why it mattered to him: ${why.trim()}` : "",
+    ].filter(Boolean);
+    return `mailto:${ESTATE_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+  };
+
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedEmail = email.trim();
+    // Email is the only required field — same gate as the custom-size form.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setStatus("error");
+      return;
+    }
+    if (!bookTitle.trim()) {
+      setStatus("error");
+      return;
+    }
+    setStatus("sending");
+    try {
+      // POSTs to the shared newsletter endpoint. We send kind:"book-suggestion"
+      // (the estate-facing intent) AND kind reuse via the proven custom-size
+      // fields so the request reaches the estate inbox regardless of which branch
+      // the endpoint matches: paintingTitle carries the BOOK title (drives the
+      // email subject), message carries the suggester's WHY. The estate reads the
+      // note and adds the book to books.ts by hand — never auto-published.
+      await fetch("/api/newsletter-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind: "book-suggestion",
+          source: "library:book-suggestion",
+          name: name.trim(),
+          email: trimmedEmail,
+          // Reused custom-size fields so the existing estate-email branch fires:
+          paintingTitle: bookTitle.trim()
+            ? `Book suggestion: ${bookTitle.trim()}`
+            : "Book suggestion",
+          dimensions: bookTitle.trim(),
+          message: why.trim(),
+          company,
+        }),
+      });
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const INPUT =
+    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3.5 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint focus:outline-none transition-shadow";
+
+  return (
+    <Reveal
+      as="section"
+      className="mt-14 md:mt-20 border-t border-line pt-8 md:pt-10"
+      aria-label="Suggest a book Stephen read"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-7 items-start">
+        {/* LEFT — the invitation, in the estate voice. */}
+        <div className="lg:col-span-5">
+          <p className={cn(EYEBROW, "m-0 mb-4")} style={{ textShadow: TEXT_SHADOW_SOFT }}>
+            For those who knew him
+          </p>
+          <h2
+            className="font-display tracking-[-0.03em] text-[clamp(30px,3.6vw,58px)] leading-[1.02] text-ink text-balance m-0 hero-text-shadow"
+            style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
+          >
+            Knew Stephen?{" "}
+            <em
+              className="italic font-normal"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
+            >
+              Tell us a book
+            </em>{" "}
+            that shaped him.
+          </h2>
+          <p
+            className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0 max-w-[46ch]")}
+            style={{ textShadow: TEXT_SHADOW_SOFT }}
+          >
+            This shelf is gathered slowly. If you remember a book Stephen read,
+            kept near or pressed into your hands, write to the estate — we read
+            every note, and add the ones we can place with care.
+          </p>
+        </div>
+
+        {/* RIGHT — the CTA, opening into the inline form. */}
+        <div className="lg:col-span-7 lg:pl-6">
+          <div
+            className={cn(
+              "relative w-full ring-1 transition-all duration-300",
+              open
+                ? "ring-ink/40 shadow-[0_8px_34px_rgba(0,0,0,0.45)]"
+                : "ring-line hover:ring-ink/40",
+            )}
+          >
+            {!open ? (
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="block w-full text-left bg-transparent p-6 md:p-7 cursor-pointer"
+              >
+                <span className={cn(EYEBROW_MUTED, "block mb-3")}>
+                  A book that shaped him
+                </span>
+                <span className="block font-display font-semibold tracking-[-0.01em] text-[clamp(20px,2vw,28px)] leading-[1.15] text-ink mb-2">
+                  Tell us a book that shaped him →
+                </span>
+                <span className={cn(META, "block")}>
+                  A name and a line of why — that&rsquo;s all. It goes straight to
+                  the estate.
+                </span>
+              </button>
+            ) : status === "done" ? (
+              <div className="p-6 md:p-7" role="status" aria-live="polite">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>With thanks</p>
+                <p className="font-sans text-[16px] leading-[1.6] text-ink m-0 max-w-[48ch]">
+                  Thank you — your note has reached the estate. If we can place the
+                  book with care, it may one day join the shelf.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={submit} noValidate className="p-6 md:p-7">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>
+                  A book Stephen read
+                </p>
+
+                {/* Honeypot — off-screen; bots fill it, humans don't. */}
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="absolute left-[-9999px] w-px h-px opacity-0"
+                />
+
+                <div className="flex flex-col gap-3.5">
+                  <div>
+                    <label htmlFor="book-suggestion-title" className={cn(META, "block mb-1.5")}>
+                      The book
+                    </label>
+                    <input
+                      id="book-suggestion-title"
+                      type="text"
+                      required
+                      placeholder="Title — and author, if you remember it"
+                      value={bookTitle}
+                      onChange={(e) => setBookTitle(e.target.value)}
+                      className={INPUT}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label htmlFor="book-suggestion-name" className={cn(META, "block mb-1.5")}>
+                        Your name <span className="text-ink-faint">(optional)</span>
+                      </label>
+                      <input
+                        id="book-suggestion-name"
+                        type="text"
+                        autoComplete="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={INPUT}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="book-suggestion-email" className={cn(META, "block mb-1.5")}>
+                        Email
+                      </label>
+                      <input
+                        id="book-suggestion-email"
+                        type="email"
+                        required
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className={INPUT}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="book-suggestion-why" className={cn(META, "block mb-1.5")}>
+                      Why it mattered to him{" "}
+                      <span className="text-ink-faint">(optional)</span>
+                    </label>
+                    <textarea
+                      id="book-suggestion-why"
+                      rows={3}
+                      placeholder="A memory, a moment, a line he loved…"
+                      value={why}
+                      onChange={(e) => setWhy(e.target.value)}
+                      className={cn(INPUT, "resize-y")}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-wrap items-center gap-4">
+                  <button
+                    type="submit"
+                    disabled={status === "sending"}
+                    className={BTN_PRIMARY}
+                  >
+                    {status === "sending" ? "Sending…" : "Send to the estate"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="bg-transparent border-0 cursor-pointer font-sans text-[13px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <p className={cn(META, "m-0 mt-4")} aria-live="polite">
+                  {status === "error" ? (
+                    <>
+                      That didn&rsquo;t send. Add a book title and a valid email, or{" "}
+                      <a
+                        href={mailtoHref()}
+                        className="underline underline-offset-4 text-ink hover:text-accent"
+                      >
+                        email the estate directly
+                      </a>
+                      .
+                    </>
+                  ) : (
+                    "Goes straight to the estate. Nothing is published automatically — we add books by hand, with care."
+                  )}
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </Reveal>
+  );
+};
+
 // ─── Library ──────────────────────────────────────────────────────────────────
 export const Library = () => {
   const lead = getLeadBook(BOOKS);
@@ -314,6 +588,7 @@ export const Library = () => {
     <>
       {lead ? <LeadBook book={lead} /> : null}
       <Shelf books={shelf} />
+      <BookSuggestion />
     </>
   );
 

@@ -6,7 +6,8 @@
 // Contact masthead pattern). Degrades gracefully when accounts aren't yet
 // provisioned (the form still shows; no error tone).
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -46,6 +47,182 @@ const OrderCard = ({ order }: { order: OrderRow }) => (
     <p className={cn(META, "m-0 mt-2 break-all text-ink-muted/80")}>Ref · {order.ref}</p>
   </div>
 );
+
+// ─── Avatar uploader ──────────────────────────────────────────────────────────
+// Lets anyone set a personal PROFILE PICTURE for this device. The chosen image is
+// read in-browser, downscaled to a small SQUARE (centre-cropped) data-URL via a
+// canvas, and saved to localStorage under "tasm.avatar". The header (owned by
+// another agent) reads the SAME key to show the avatar beside the profile icon.
+//
+// Privacy-by-design: the image NEVER leaves the device — no upload, no network.
+// Robustness: rejects non-images + oversized originals gracefully (a quiet inline
+// note, never a thrown error); the ≤256px re-encode keeps localStorage small so a
+// large photo can't blow the quota. We dispatch a "storage" event after writing so
+// a same-tab header listening for it can update live (the native event only fires
+// cross-tab).
+const AVATAR_KEY = "tasm.avatar";
+const AVATAR_MAX_PX = 256; // output square edge
+const AVATAR_MAX_BYTES = 12 * 1024 * 1024; // reject absurd originals (12 MB)
+
+/** Read the persisted avatar data-URL (SSR/quota-safe). */
+const readStoredAvatar = (): string | null => {
+  try {
+    return localStorage.getItem(AVATAR_KEY);
+  } catch {
+    return null;
+  }
+};
+
+/** Downscale + centre-crop a File to a square data-URL (JPEG, ≤AVATAR_MAX_PX). */
+const fileToSquareDataUrl = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      if (!side) {
+        reject(new Error("empty"));
+        return;
+      }
+      const out = Math.min(AVATAR_MAX_PX, side);
+      const canvas = document.createElement("canvas");
+      canvas.width = out;
+      canvas.height = out;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("no-canvas"));
+        return;
+      }
+      // Centre-crop the largest square, then scale down into the canvas.
+      const sx = (img.naturalWidth - side) / 2;
+      const sy = (img.naturalHeight - side) / 2;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, out, out);
+      try {
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      } catch (err) {
+        reject(err instanceof Error ? err : new Error("encode"));
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("decode"));
+    };
+    img.src = url;
+  });
+
+const AvatarUploader = ({ email }: { email: string | null }) => {
+  const [avatar, setAvatar] = useState<string | null>(() => readStoredAvatar());
+  const [status, setStatus] = useState<"idle" | "working" | "error">("idle");
+  const [note, setNote] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const persist = (value: string | null) => {
+    try {
+      if (value) localStorage.setItem(AVATAR_KEY, value);
+      else localStorage.removeItem(AVATAR_KEY);
+      // Nudge a same-tab header listener (native "storage" only fires cross-tab).
+      window.dispatchEvent(new StorageEvent("storage", { key: AVATAR_KEY, newValue: value }));
+    } catch {
+      // Quota / disabled storage — the in-memory preview still updated.
+    }
+  };
+
+  const onPick = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Reset the input so re-choosing the SAME file fires change again.
+    e.target.value = "";
+    if (!file) return; // cancelled — no-op, no error tone.
+    if (!file.type.startsWith("image/")) {
+      setStatus("error");
+      setNote("That doesn’t look like an image — choose a JPG, PNG or WebP.");
+      return;
+    }
+    if (file.size > AVATAR_MAX_BYTES) {
+      setStatus("error");
+      setNote("That photo is very large — please choose one under 12 MB.");
+      return;
+    }
+    setStatus("working");
+    setNote(null);
+    try {
+      const dataUrl = await fileToSquareDataUrl(file);
+      setAvatar(dataUrl);
+      persist(dataUrl);
+      setStatus("idle");
+    } catch {
+      setStatus("error");
+      setNote("That image couldn’t be read — try a different photo.");
+    }
+  };
+
+  const onRemove = () => {
+    setAvatar(null);
+    persist(null);
+    setStatus("idle");
+    setNote(null);
+  };
+
+  return (
+    <div className="flex items-center gap-5">
+      {/* The avatar (or a dignified monogram placeholder). */}
+      <div className="relative shrink-0">
+        {avatar ? (
+          <img
+            src={avatar}
+            alt="Your profile picture"
+            className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-1 ring-line"
+          />
+        ) : (
+          <div
+            aria-hidden
+            className="h-20 w-20 md:h-24 md:w-24 rounded-full ring-1 ring-line bg-bg-soft/30 flex items-center justify-center font-display text-[28px] md:text-[32px] text-ink-muted"
+          >
+            {email?.trim()?.[0]?.toUpperCase() ?? "·"}
+          </div>
+        )}
+      </div>
+
+      <div className="min-w-0">
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>Profile picture</p>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={status === "working"}
+            className="bg-transparent border-0 cursor-pointer font-sans text-[13px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors disabled:opacity-50"
+          >
+            {status === "working" ? "Adding…" : avatar ? "Change photo" : "Add a photo"}
+          </button>
+          {avatar && (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="bg-transparent border-0 cursor-pointer font-sans text-[13px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+        <p className={cn(META, "m-0 mt-2 max-w-[40ch]")} aria-live="polite">
+          {status === "error" && note
+            ? note
+            : "Stays on this device — your photo is never uploaded."}
+        </p>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={onPick}
+          aria-hidden="true"
+          tabIndex={-1}
+          className="absolute left-[-9999px] h-px w-px opacity-0"
+        />
+      </div>
+    </div>
+  );
+};
 
 export const Account = () => {
   const [params] = useSearchParams();
@@ -182,10 +359,11 @@ export const Account = () => {
             )}
           </Reveal>
 
-          {/* RIGHT — framing + quick links. */}
+          {/* RIGHT — profile picture + framing + quick links. */}
           <Reveal as="div" delay={0.06} className="lg:col-span-5">
+            <AvatarUploader email={signedIn ? auth.email : null} />
             <p
-              className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0 mt-8 md:mt-10 pt-7 md:pt-8 border-t border-line max-w-[34ch]"
               style={{ fontVariationSettings: '"opsz" 32, "wght" 400', fontSize: "clamp(19px, 2.1vw, 28px)", lineHeight: 1.32 }}
             >
               Your account keeps your orders, certificates and provenance in one place.

@@ -25,6 +25,16 @@ import { cn } from "../lib/cn";
 import { PageMasthead } from "../components/PageMasthead";
 import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../components/ui/tokens";
 
+// ── CANONICAL CENTRED ENVELOPE ────────────────────────────────────────────────
+// One shared max-width axis for the WHOLE page (the page-intro masthead AND every
+// collection section AND the catalogue set), so the page sits on a single centred
+// vertical axis matching the rest of the site (Hugo: "nothing is centred
+// properly"). The page-intro used to run a NARROWER, LEFT-aligned envelope than
+// the centred sections below it — the two now share this exact measure (mx-auto,
+// equal L/R margins) and the same large-screen step-ups.
+const PAGE_ENVELOPE =
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
+
 /**
  * Fixed backdrop layer that cross-fades between collection scenes as the
  * user scrolls. Each backdrop tracks its own section's visibility — when a
@@ -593,11 +603,14 @@ export const Collections = () => {
             name or count the collections, so it never goes stale. */}
         <Reveal
           as="div"
-          className="relative mx-auto max-w-[1100px] 2xl:max-w-[1240px] 3xl:max-w-[1420px] 4xl:max-w-[1640px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-6 md:pb-8"
+          className={cn(PAGE_ENVELOPE, "relative pt-20 md:pt-24 pb-6 md:pb-8")}
         >
           <PageMasthead
             eyebrow="Everything he finished"
             meta="The estate catalogue"
+            // CENTRE the masthead so its axis matches the centred collection
+            // headers below (the title was left-aligned against centred content).
+            titleClassName="text-center"
             titleStyle={{
               textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
             }}
@@ -713,7 +726,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className="relative mx-auto max-w-[1180px] 2xl:max-w-[1280px] 3xl:max-w-[1380px] 4xl:max-w-[1640px] px-4 sm:px-6 md:px-8 lg:px-12 pt-3 md:pt-4 pb-9 md:pb-12">
+              <div className={cn(PAGE_ENVELOPE, "relative pt-3 md:pt-4 pb-9 md:pb-12")}>
                 <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-6 md:mb-8">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}

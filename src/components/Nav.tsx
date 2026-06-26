@@ -291,7 +291,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             it drops into the drawer below. */}
         <SearchBar
           variant="header"
-          className="hidden md:block flex-1 mx-3 lg:mx-6 max-w-[440px] lg:max-w-[560px]"
+          className="hidden md:block flex-1 mx-4 lg:mx-8 max-w-[560px] lg:max-w-[720px]"
         />
 
         <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">

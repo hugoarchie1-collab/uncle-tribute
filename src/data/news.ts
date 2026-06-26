@@ -95,7 +95,7 @@ export const TYPE_LABEL: Record<NewsType, string> = {
   announcement: "Announcement",
   exhibition: "Exhibition",
   workshop: "Workshop",
-  event: "Event",
+  event: "Pop-up events",
 };
 
 /** The label shown on a pill: Collection / Single for releases, else the type. */
@@ -113,7 +113,7 @@ export const NEWS_FILTERS: { id: NewsType | "all"; label: string }[] = [
   { id: "release", label: "Releases" },
   { id: "exhibition", label: "Exhibitions" },
   { id: "workshop", label: "Workshops" },
-  { id: "event", label: "Events" },
+  { id: "event", label: "Pop-up events" },
 ];
 
 export const isRelease = (e: NewsEntry): boolean => e.type === "release";

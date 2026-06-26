@@ -54,6 +54,7 @@ import {
 // the estate would allocate for that edition. Read-only here.
 import { nextNumber } from "../data/editions";
 import { useCurrency } from "../lib/currency";
+import { useConsent } from "../lib/consent";
 import { asset, webp, webpSrcSet } from "../lib/asset";
 import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 import { cn } from "../lib/cn";
@@ -756,9 +757,15 @@ const Colourways = ({
                 )}
                 style={{ background: c.hex, backgroundColor: c.hex }}
               >
+                {/* Hover-name tooltip — guarded to wide screens with a FINE
+                    pointer (mouse). On touch / narrow widths it clipped at the
+                    column edge and overlapped the copy, and a hover bubble has
+                    no meaning without a cursor anyway; the selected colourway
+                    already prints in the caption below, so nothing is lost.
+                    `hidden` by default, shown only on sm+ AND (pointer:fine). */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -999,6 +1006,7 @@ const BuyBox = ({
   onFrameStyleChange,
   onGlazingChange,
   orderSentinelRef,
+  orderEndSentinelRef,
 }: {
   painting: Painting;
   collection?: { id: string; title: string };
@@ -1018,6 +1026,10 @@ const BuyBox = ({
   onFrameStyleChange: (next: string) => void;
   onGlazingChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
+  /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
+   * control so the floating bar stays suppressed for the WHOLE time any buy
+   * affordance is on screen, not just at the top of the order block. */
+  orderEndSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const { formatPretty: fmtP, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -1697,6 +1709,12 @@ const BuyBox = ({
           subject={`Enquiry — ${painting.title} (${selected.name}, ${selectedTier.size})`}
           intro="Ask us anything about this piece — paper, colour, framing, sizing, or timing. We're glad to send a higher-resolution preview or talk it through before you order."
         />
+
+        {/* END-of-order sentinel — pairs with the start sentinel at the top of
+            this block (#order-print). StickyAddBar suppresses the floating bar
+            for the WHOLE span between the two, so it can never reappear over the
+            CTA / reassurance / custom-size cluster at the foot of the buy box. */}
+        <div ref={orderEndSentinelRef} aria-hidden="true" className="h-px w-full" />
       </div>
     </div>
   );
@@ -1872,6 +1890,7 @@ const StickyAddBar = ({
   glazing,
   heroSentinelRef,
   orderSentinelRef,
+  orderEndSentinelRef,
 }: {
   painting: Painting;
   selected: Colourway;
@@ -1882,17 +1901,33 @@ const StickyAddBar = ({
   glazing: string;
   heroSentinelRef: React.RefObject<HTMLDivElement | null>;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
+  orderEndSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const { formatPretty: fmtP } = useCurrency();
   const reduceMotion = useReducedMotion();
+  // While consent is undecided the ConsentBanner occupies the foot of the
+  // viewport — lift the mobile bar above it so the two never overlap. null =
+  // undecided (lib/consent.ts), so this is true only on a visitor's first visit.
+  const consentUndecided = useConsent() === null;
   const [pastHero, setPastHero] = useState(false);
-  const [atOrder, setAtOrder] = useState(false);
+  // The buy-box region spans the START sentinel (top of #order-print) to the
+  // END sentinel (after the CTA / reassurance / custom-size cluster). While ANY
+  // buy control is on screen the floating bar must stay hidden, so we track both
+  // edges: the region is "open" once the start has entered the viewport and not
+  // yet fully exited the top, and "closed" once the end sentinel passes the top.
+  const [startPassed, setStartPassed] = useState(false);
+  const [endPassed, setEndPassed] = useState(false);
+  // The top sentinel of the order block — when it is still below the bottom of
+  // the viewport the buy box hasn't been reached at all (atOrderTop), so the bar
+  // shouldn't show yet either.
+  const [atOrderTop, setAtOrderTop] = useState(false);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
     const heroEl = heroSentinelRef.current;
     const orderEl = orderSentinelRef.current;
-    if (!heroEl || !orderEl) return;
+    const orderEndEl = orderEndSentinelRef.current;
+    if (!heroEl || !orderEl || !orderEndEl) return;
 
     const heroObs = new IntersectionObserver(
       ([entry]) => {
@@ -1906,7 +1941,12 @@ const StickyAddBar = ({
 
     const orderObs = new IntersectionObserver(
       ([entry]) => {
-        setAtOrder(entry.isIntersecting);
+        // `atOrderTop` — the start sentinel is within the (slightly inset)
+        // viewport: the buy box is on screen, so don't float the bar.
+        setAtOrderTop(entry.isIntersecting);
+        // `startPassed` — the top of the order block has crossed above the
+        // viewport top, i.e. we are at or below the start of the buy region.
+        setStartPassed(entry.boundingClientRect.top < 0);
       },
       // -10% bottom margin so the bar disappears slightly before the order
       // block reaches the floor of the viewport (looks tidier).
@@ -1914,13 +1954,29 @@ const StickyAddBar = ({
     );
     orderObs.observe(orderEl);
 
+    const orderEndObs = new IntersectionObserver(
+      ([entry]) => {
+        // `endPassed` — the LAST buy control has scrolled above the viewport
+        // top; only then is it safe to float the bar again.
+        setEndPassed(entry.boundingClientRect.top < 0);
+      },
+      { threshold: 0 },
+    );
+    orderEndObs.observe(orderEndEl);
+
     return () => {
       heroObs.disconnect();
       orderObs.disconnect();
+      orderEndObs.disconnect();
     };
-  }, [heroSentinelRef, orderSentinelRef]);
+  }, [heroSentinelRef, orderSentinelRef, orderEndSentinelRef]);
 
-  const visible = pastHero && !atOrder;
+  // The buy box is on screen for the whole span between the start sentinel
+  // entering the viewport and the end sentinel leaving the top — suppress the
+  // floating bar for that entire region so it can never reappear over the
+  // controls at the foot of the box (the overlap Hugo screenshotted).
+  const inOrderRegion = startPassed && !endPassed;
+  const visible = pastHero && !atOrderTop && !inOrderRegion;
 
   const isOneOffSelected = selectedTier.isOneOff === true;
   const framingOffered =
@@ -1976,6 +2032,10 @@ const StickyAddBar = ({
           animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 14 }}
           transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
+          // bottom-0 normally; lifted clear of the (variable-height) ConsentBanner
+          // on a first visit while the cookie choice is undecided, so the bar is
+          // never occluded by the banner. Reverts to bottom-0 once decided.
+          style={consentUndecided ? { bottom: "9.5rem" } : undefined}
           className="fixed bottom-0 inset-x-0 z-40 flex md:hidden items-center gap-3 bg-[#0a0908]/97 border-t border-line shadow-[0_-14px_44px_rgba(0,0,0,0.5)] px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))]"
           role="region"
           aria-label="Quick add to basket"
@@ -2162,9 +2222,12 @@ export const PaintingDetail = () => {
   // the painting shown at its real printed size on a wall in a room.
   const [view, setView] = useState<"art" | "true-size">("art");
 
-  // Sticky bar sentinels — see StickyAddBar.
+  // Sticky bar sentinels — see StickyAddBar. The order block has TWO: a start
+  // sentinel at the top of #order-print and an end sentinel after the last buy
+  // control, so the floating bar is suppressed for the whole buy-box span.
   const heroSentinelRef = useRef<HTMLDivElement>(null);
   const orderSentinelRef = useRef<HTMLDivElement>(null);
+  const orderEndSentinelRef = useRef<HTMLDivElement>(null);
 
   if (!painting) return <Navigate to="/collections" replace />;
   const selected =
@@ -2386,7 +2449,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-14 md:pb-16">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-16">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
@@ -2568,6 +2631,7 @@ export const PaintingDetail = () => {
                 onFrameStyleChange={setFrameStyle}
                 onGlazingChange={setGlazing}
                 orderSentinelRef={orderSentinelRef}
+                orderEndSentinelRef={orderEndSentinelRef}
               />
             </Reveal>
           </div>
@@ -2604,6 +2668,7 @@ export const PaintingDetail = () => {
         glazing={glazing}
         heroSentinelRef={heroSentinelRef}
         orderSentinelRef={orderSentinelRef}
+        orderEndSentinelRef={orderEndSentinelRef}
       />
 
       {/* Closer-look viewer — opens from the artwork (or its caption) and always

@@ -161,12 +161,29 @@ export const CustomCursor = () => {
     // back on release. Pointer capture (CloserLook captures to its overlay)
     // retargets these events to the labelled overlay itself, so the closest()
     // resolution stays correct mid-drag.
+    // CLICK FLASH — on press the white rose flushes RED (the rust accent) for a
+    // beat, then reverts. A timer (NOT a transitionend) drives the revert so a
+    // rapid click-drag-release can't strand the cursor red: every fresh press
+    // clears the pending revert and re-arms it, and the cleanup below cancels it
+    // on unmount. Pure class toggle (.cc--pressed) — the colour swap lives in
+    // global.css, so this stays a cheap GPU-composited filter change.
+    let pressTimer = 0;
     const onDown = (e: PointerEvent) => {
       pointerDown = true;
+      flower.classList.add("cc--pressed");
+      window.clearTimeout(pressTimer);
+      pressTimer = window.setTimeout(() => {
+        flower.classList.remove("cc--pressed");
+      }, 250);
       updateChip((e.target as Element | null) ?? labelHost);
     };
     const onUp = (e: PointerEvent) => {
       pointerDown = false;
+      // Revert the red flush on release (the 250ms timer is only the safety cap
+      // for a press held / dragged longer than that — clearing it here means a
+      // normal quick click reverts crisply on mouseup, never lingering red).
+      window.clearTimeout(pressTimer);
+      flower.classList.remove("cc--pressed");
       updateChip((e.target as Element | null) ?? labelHost);
     };
     const show = () => flower.classList.remove("cc--gone");
@@ -188,6 +205,10 @@ export const CustomCursor = () => {
 
     return () => {
       cancelAnimationFrame(frame);
+      // Cancel any pending click-flash revert so a press during unmount can't
+      // fire its setTimeout after the element is gone (and never strands the
+      // cursor mid-flush on a remount).
+      window.clearTimeout(pressTimer);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);

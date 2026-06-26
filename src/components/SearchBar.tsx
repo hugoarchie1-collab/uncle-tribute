@@ -189,8 +189,8 @@ export const SearchBar = ({
   // we lift the ring to accent when the field is focused (focus-within).
   const pillSize = isPage
     ? "h-[52px] md:h-[56px] pl-12 md:pl-14 pr-4 text-[16px] md:text-[17px]"
-    : "h-10 pl-10 pr-3 text-[14px]";
-  const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-3 h-4 w-4";
+    : "h-[50px] lg:h-[52px] pl-12 pr-4 text-[15px]";
+  const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-4 h-[18px] w-[18px]";
 
   return (
     <div
@@ -207,7 +207,7 @@ export const SearchBar = ({
             // 0.7-muted glass read as nearly invisible (Hugo: "have a search
             // symbol on the menu") — give it the FULL cream there; the always-on
             // header pill keeps the quieter muted tone.
-            isPage ? "text-ink" : "text-ink-muted",
+            isPage ? "text-ink" : "text-ink/80",
             iconBox,
           )}
         >
@@ -247,9 +247,14 @@ export const SearchBar = ({
             // large /search "page" variant (not always-mounted); the always-on
             // header pill takes a near-opaque dark fill instead — the ring + nav
             // scrim already separate it. /90 is darker than the old /60, never brighter.
-            isPage ? "bg-bg-soft/60 backdrop-blur-sm" : "bg-bg-soft/90",
-            "font-sans text-ink placeholder:text-ink-faint",
-            "ring-1 ring-line transition-shadow duration-200",
+            // Header pill needs real edge-separation from the deep-red bar (Hugo:
+            // the search "looked like a blur") — a distinct near-black fill + a
+            // stronger cream ring, vs the page variant's blurred glass.
+            isPage ? "bg-bg-soft/60 backdrop-blur-sm" : "bg-[#0a0908]/80",
+            isPage ? "placeholder:text-ink-faint" : "placeholder:text-ink/45",
+            "font-sans text-ink",
+            isPage ? "ring-1 ring-line" : "ring-1 ring-[rgba(237,230,214,0.32)]",
+            "transition-shadow duration-200",
             "focus:outline-none focus:ring-2 focus:ring-accent",
             // Hide the native clear/cancel UI so the chrome stays house-styled.
             "[&::-webkit-search-cancel-button]:appearance-none",

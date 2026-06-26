@@ -397,7 +397,7 @@ const ContainImage = ({
 // dead space, no centred-over-a-picture treatment. The opening passage lifts
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
-  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-6 md:pb-8">
+  <section className={cn(SECTION, "relative pt-24 md:pt-28 pb-6 md:pb-8")}>
     {/* Meta rule. On mobile the 31-char date can't share a line with the label
         + connecting rule, so they STACK (label, then date on its own line at
         gently reduced tracking — no clip). From sm:+ it's the intended single
@@ -1021,7 +1021,7 @@ export const About = () => {
         <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="ritual" title="The very palette of my being." />
           <Reveal as="div" className="text-center mt-5 md:mt-6 mb-8 md:mb-10">
-            <p className={cn(SUBTITLE, "mx-auto")}>— Stephen, on his practice, in his own words</p>
+            <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
           <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
@@ -1480,7 +1480,7 @@ export const About = () => {
           </Reveal>
 
           {/* THE LETTER — one whole-element Reveal. */}
-          <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[920px] mx-auto mt-6 md:mt-8">
+          <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[1300px] mx-auto mt-6 md:mt-8">
             <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14 3xl:p-16">
               <p
                 className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.85] text-ink m-0"
