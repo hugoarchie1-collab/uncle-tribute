@@ -2092,6 +2092,21 @@ export const PaintingDetail = () => {
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
 
+  // Re-sync the SIZE + add-ons when the painting changes (SPA nav between works
+  // keeps this component mounted). The colourway already re-syncs above; without
+  // this the selected size and add-on ticks silently carried onto the next
+  // painting (#19). Reset to the anchor size with no add-ons — a clean slate.
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setSelectedTierId(anchorTier?.id);
+    setFraming(false);
+    setEmbellished(false);
+    setFrameStyle(DEFAULT_FRAME_STYLE);
+    setGlazing(DEFAULT_GLAZING);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [painting?.id]);
+
   // Deep-zoom viewer state for the hero image — plus a ref on the on-page
   // artwork <img> so the viewer can FLIP-lift from its measured rect (and read
   // the already-decoded source's natural pixel size).
