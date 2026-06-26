@@ -64,7 +64,7 @@ const FallbackCard = ({ book }: { book: Book }) => (
     <div className="flex w-full flex-col items-center gap-3">
       <span aria-hidden="true" className="h-px w-10 bg-line" />
       <span
-        className="font-sans text-[11px] font-bold uppercase tracking-[0.26em]"
+        className="font-sans text-[11px] font-bold tracking-[0.04em]"
         style={{ color: book.spineColor ?? "var(--ink-muted)" }}
       >
         {book.author}

@@ -366,7 +366,7 @@ export const FindAPrint = () => {
                     {painting.title}
                   </h3>
                   <p
-                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.16em] uppercase text-ink/70 m-0"
+                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink/70 m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
                     Estate-stamped giclée · from {fmtP(getLowestTierPricePence(painting))}

@@ -151,7 +151,7 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
           />
         </svg>
       </button>
-      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-accent m-0 mb-2">
+      <p className="font-sans text-[10px] font-bold tracking-[0.04em] text-accent m-0 mb-2">
         Save your basket
       </p>
       {status === "success" ? (
@@ -176,7 +176,7 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="bg-ink text-bg px-4 font-sans text-[10px] font-bold tracking-[0.22em] uppercase hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 border-0 cursor-pointer"
+              className="bg-ink text-bg px-4 font-sans text-[10px] font-bold tracking-[0.04em] hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 border-0 cursor-pointer"
             >
               {status === "sending" ? "…" : "Send"}
             </button>

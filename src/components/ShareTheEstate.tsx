@@ -67,7 +67,7 @@ export const ShareTheEstate = ({
 
   return (
     <div className={`mt-10 ${wrapAlign}`}>
-      <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-3">
+      <p className="font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
         Pass it on
       </p>
       <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/65 my-0 mb-5 max-w-[520px] mx-auto">
@@ -78,13 +78,13 @@ export const ShareTheEstate = ({
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.24em] uppercase text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 bg-transparent border-0 cursor-pointer"
+          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.04em] text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 bg-transparent border-0 cursor-pointer"
         >
           {copied ? "Link copied" : "Copy link"}
         </button>
         <a
           href={emailHref}
-          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.24em] uppercase text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
+          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.04em] text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
         >
           Email
         </a>
@@ -92,7 +92,7 @@ export const ShareTheEstate = ({
           href={twitterHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.24em] uppercase text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
+          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.04em] text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
         >
           Twitter
         </a>
@@ -100,7 +100,7 @@ export const ShareTheEstate = ({
           href={facebookHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.24em] uppercase text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
+          className="inline-flex items-center font-sans text-[10px] font-bold tracking-[0.04em] text-ink/75 hover:text-accent ring-1 ring-white/15 hover:ring-accent transition-all px-4 py-2.5 no-underline"
         >
           Facebook
         </a>

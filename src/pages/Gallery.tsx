@@ -139,7 +139,7 @@ export const Gallery = () => {
               <button
                 type="button"
                 onClick={() => setCameraOpen(true)}
-                className="press mt-8 inline-flex w-full max-w-[420px] min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[13px] font-bold uppercase tracking-[0.18em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                className="press mt-8 inline-flex w-full max-w-[420px] min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[13px] font-bold tracking-[0.04em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
                 data-cursor-label="Open the camera"
               >
                 <CameraGlyph />
@@ -163,7 +163,7 @@ export const Gallery = () => {
               <button
                 type="button"
                 onClick={() => setCameraOpen(true)}
-                className="press mt-7 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 font-sans text-[12px] font-bold uppercase tracking-[0.16em] text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
+                className="press mt-7 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <CameraGlyph />
                 Preview on this screen

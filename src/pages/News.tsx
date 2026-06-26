@@ -394,7 +394,7 @@ export const News = () => {
                     (no crammed/oversized inline form beside the artwork). */}
                 <a
                   href="#notify"
-                  className="mt-7 md:mt-8 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="mt-7 md:mt-8 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
                 >
                   Be the first to know
                   <span aria-hidden="true" className="text-accent">→</span>

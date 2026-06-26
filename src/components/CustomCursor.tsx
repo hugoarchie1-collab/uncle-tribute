@@ -214,7 +214,7 @@ export const CustomCursor = () => {
       >
         <span
           ref={chipTextRef}
-          className="block w-max whitespace-nowrap rounded-full bg-[#0a0908]/90 ring-1 ring-white/10 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.22em] uppercase text-ink"
+          className="block w-max whitespace-nowrap rounded-full bg-[#0a0908]/90 ring-1 ring-white/10 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.04em] text-ink"
           style={{
             opacity: 0,
             transform: `translate(${CHIP_OFFSET_X}px, -50%) scale(0.92)`,

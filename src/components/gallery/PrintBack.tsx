@@ -71,13 +71,13 @@ export function PrintBack({ painting, colourway, sizeId, frame, className }: Pri
               loading="lazy"
               decoding="async"
             />
-            <p className="m-0 font-sans text-[8.5px] md:text-[10px] font-bold uppercase tracking-[0.24em] text-cream-ink-soft">
+            <p className="m-0 font-sans text-[8.5px] md:text-[10px] font-bold tracking-[0.04em] text-cream-ink-soft">
               Certificate of Authenticity
             </p>
             <p className="mx-auto mt-1.5 mb-0 max-w-[24ch] font-display text-cream-ink text-[12px] md:text-[15px] leading-[1.2]">
               {painting.title}
             </p>
-            <p className="m-0 mt-0.5 font-sans text-[8px] md:text-[9.5px] uppercase tracking-[0.18em] text-cream-ink-soft">
+            <p className="m-0 mt-0.5 font-sans text-[8px] md:text-[9.5px] tracking-[0.04em] text-cream-ink-soft">
               {colourway.name} · {size.label} ({size.cm} × {size.cm} cm) · {frameDef.label}
             </p>
 
@@ -92,7 +92,7 @@ export function PrintBack({ painting, colourway, sizeId, frame, className }: Pri
                 decoding="async"
               />
               <div className="text-left">
-                <p className="m-0 font-sans text-[8px] md:text-[9px] uppercase tracking-[0.16em] text-cream-ink-soft">Edition</p>
+                <p className="m-0 font-sans text-[8px] md:text-[9px] tracking-[0.04em] text-cream-ink-soft">Edition</p>
                 <p className="m-0 font-display text-cream-ink text-[12px] md:text-[15px] leading-none">No. 0 / 0</p>
                 <p className="m-0 mt-1 font-sans text-[7.5px] md:text-[8.5px] tracking-[0.1em] text-cream-ink-soft">
                   MANDALA-···-······

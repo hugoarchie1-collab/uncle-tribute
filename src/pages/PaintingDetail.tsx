@@ -117,9 +117,9 @@ const PDP_TITLE =
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-6 py-4 font-sans text-[12px] font-bold tracking-[0.12em] uppercase rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[14px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-6 py-4 font-sans text-[12px] font-bold tracking-[0.12em] uppercase rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[14px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page
@@ -262,7 +262,7 @@ const SizePicker = ({
             <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
               {tier.label}
               {tier.isAnchor && (
-                <span className="font-sans text-[9.5px] font-semibold tracking-[0.16em] uppercase text-ink-muted/80">
+                <span className="font-sans text-[9.5px] font-semibold tracking-[0.04em] text-ink-muted/80">
                   · most chosen
                 </span>
               )}
@@ -352,7 +352,7 @@ const OneOffCard = ({
     )}
   >
     <span className="flex items-baseline justify-between gap-4 mb-2">
-      <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
+      <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
         Unique · one of one
       </span>
       <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
@@ -464,7 +464,7 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="shrink-0 bg-transparent border-0 border-l border-line px-4 font-sans text-[11px] font-bold tracking-[0.24em] uppercase text-ink cursor-pointer hover:bg-ink/5 transition-colors disabled:opacity-50"
+              className="shrink-0 bg-transparent border-0 border-l border-line px-4 font-sans text-[11px] font-bold tracking-[0.04em] text-ink cursor-pointer hover:bg-ink/5 transition-colors disabled:opacity-50"
             >
               {status === "sending" ? "Sending…" : "Send"}
             </button>
@@ -566,7 +566,7 @@ const CustomSizeRequest = ({
             className="block w-full text-left bg-transparent p-5 cursor-pointer"
           >
             <span className="flex items-baseline justify-between gap-4 mb-2">
-              <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
+              <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
                 Bespoke · by request
               </span>
               <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink whitespace-nowrap">
@@ -592,7 +592,7 @@ const CustomSizeRequest = ({
           </button>
         ) : status === "done" ? (
           <div className="p-5" role="status" aria-live="polite">
-            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0 mb-2">
+            <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-2">
               Custom size · by request
             </p>
             <p className="font-sans text-[15px] leading-[1.5] text-ink m-0">
@@ -603,7 +603,7 @@ const CustomSizeRequest = ({
           </div>
         ) : (
           <form onSubmit={submit} noValidate className="p-5">
-            <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted m-0 mb-1">
+            <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-1">
               Custom size · by request
             </p>
             <p className={cn(META, "m-0 mb-4")}>
@@ -758,7 +758,7 @@ const Colourways = ({
               >
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -778,7 +778,7 @@ const Colourways = ({
       <p className="font-sans text-[15px] font-semibold text-ink m-0">
         {selected.name}
         {selected.isOriginal && (
-          <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-ink-muted">
+          <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
             · original
           </span>
         )}
@@ -864,7 +864,7 @@ const TrueSizeViewer = ({
               onKeyDown={(e) => onRadioKey(e, scaleTiers.length, i, (n) => onSelectTier(scaleTiers[n].id))}
               onClick={() => onSelectTier(t.id)}
               className={cn(
-                "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
+                "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.04em] transition-colors",
                 isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
               )}
             >
@@ -1215,7 +1215,7 @@ const BuyBox = ({
           name in TRUE Fraunces italic (PDP_TITLE), then the artist + life-dates
           byline in roman — restoring the title → artist → facts hierarchy. */}
       {collection && (
-        <p className="font-sans text-[11px] font-bold tracking-[0.3em] uppercase text-ink-muted m-0 mb-3">
+        <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-3">
           {collection.title.split(" — ")[0]}
         </p>
       )}
@@ -1986,7 +1986,7 @@ const StickyAddBar = ({
             style={{ background: selected.hex }}
           />
           <span className="flex flex-col leading-tight min-w-0 flex-1">
-            <span className="font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/55 truncate">
+            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
@@ -1996,7 +1996,7 @@ const StickyAddBar = ({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -2019,7 +2019,7 @@ const StickyAddBar = ({
             style={{ background: selected.hex }}
           />
           <span className="flex flex-col leading-tight min-w-0">
-            <span className="font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink/55 truncate">
+            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
@@ -2029,7 +2029,7 @@ const StickyAddBar = ({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center bg-ink text-bg px-5 py-2.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+            className="inline-flex items-center bg-ink text-bg px-5 py-2.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -2400,7 +2400,7 @@ export const PaintingDetail = () => {
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
@@ -2433,7 +2433,7 @@ export const PaintingDetail = () => {
                       onClick={() => setView(v)}
                       aria-pressed={view === v}
                       className={cn(
-                        "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.18em] uppercase transition-colors",
+                        "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.04em] transition-colors",
                         view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
                       )}
                     >

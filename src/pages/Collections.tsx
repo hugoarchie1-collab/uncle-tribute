@@ -635,7 +635,7 @@ export const Collections = () => {
                 </p>
                 <Link
                   to="/for-you"
-                  className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                 >
                   Not sure where to start? Browse by colour <span aria-hidden="true">→</span>

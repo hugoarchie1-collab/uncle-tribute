@@ -556,14 +556,14 @@ export const Welcome = () => {
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
+                    className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
                     See the collection <span aria-hidden="true" className="ml-2">→</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="inline-flex w-fit items-center justify-center text-ink border border-ink/35 px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
+                    className="inline-flex w-fit items-center justify-center text-ink border border-ink/35 px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     Our story
@@ -865,7 +865,7 @@ export const Welcome = () => {
                           delay: 0.15,
                           ease: [0.22, 0.61, 0.36, 1],
                         }}
-                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/90 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.18em] uppercase text-ink rounded-full"
+                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/90 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.04em] text-ink rounded-full"
                       >
                         From {fmtPrice(fromPrice)}
                       </motion.span>
@@ -874,7 +874,7 @@ export const Welcome = () => {
                       <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
                         {painting.title}
                       </h3>
-                      <p className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink/55 mt-2 m-0">
+                      <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 mt-2 m-0">
                         {hasYear ? painting.year : collectionTitle}
                       </p>
                     </div>
@@ -886,7 +886,7 @@ export const Welcome = () => {
             <Reveal as="div" className="text-center">
               <MagneticLink
                 to="/collections"
-                className="inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                className="inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
                 ariaLabel="See every painting"
               >
                 See every painting <span aria-hidden="true" className="ml-1">↗</span>
@@ -965,7 +965,7 @@ export const Welcome = () => {
                       ["Pigment", "Hand-pressed oils + pigment inks"],
                     ].map(([label, value]) => (
                       <li key={label} className="m-0 py-4 border-t border-ink/15">
-                        <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/55 m-0 mb-2">{label}</p>
+                        <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-2">{label}</p>
                         <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.4] text-ink m-0">{value}</p>
                       </li>
                     ))}
@@ -1034,7 +1034,7 @@ export const Welcome = () => {
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
                   front instead of burying it in prose. */}
-              <p className="font-sans text-[11px] font-bold tracking-[0.28em] uppercase text-ink/70 m-0 mb-6">
+              <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-6">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
               <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
@@ -1051,7 +1051,7 @@ export const Welcome = () => {
                   parallax={0.06}
                 />
               </div>
-              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.28em] uppercase text-ink/65 mt-4 text-center">
+              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.04em] text-ink/65 mt-4 text-center">
                 Farmacy · Notting Hill · London
               </figcaption>
               <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">
@@ -1216,7 +1216,7 @@ export const Welcome = () => {
                   &ldquo;I realised that everything is connected.&rdquo;
                   <span
                     style={{ fontStyle: "normal" }}
-                    className="font-sans text-[11px] tracking-[0.32em] uppercase text-ink-muted ml-3 align-middle"
+                    className="font-sans text-[11px] tracking-[0.04em] text-ink-muted ml-3 align-middle"
                   >
                     SEM
                   </span>
@@ -1228,7 +1228,7 @@ export const Welcome = () => {
               <Reveal delay={0.3}>
                 <Link
                   to="/collections"
-                  className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted transition-colors hover:text-accent"
+                  className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted transition-colors hover:text-accent"
                 >
                   Explore the collection{" "}
                   <span aria-hidden="true">&rarr;</span>

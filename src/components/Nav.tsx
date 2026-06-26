@@ -312,7 +312,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "relative py-2 font-sans text-[11px] font-semibold tracking-[0.26em] uppercase transition-colors duration-300",
+                    "relative py-2 font-sans text-[11px] font-semibold tracking-[0.04em] transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
                     // DIRECTIONAL underline — grows in FROM the left (hover sets
                     // origin-left), and on hover-out the origin reverts to the
@@ -515,7 +515,7 @@ const NavMenu = ({
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
-              <span className="font-sans text-[11px] font-bold tracking-[0.32em] uppercase text-ink-muted">
+              <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
                 Menu
               </span>
               <button
@@ -552,7 +552,7 @@ const NavMenu = ({
               <CurrencySelect variant="menu" className="mb-5" />
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-5" : ""}>
-                  <p className="mb-1 font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-ink/45">
+                  <p className="mb-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink/45">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (

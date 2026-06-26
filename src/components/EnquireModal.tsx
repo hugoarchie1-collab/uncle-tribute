@@ -257,7 +257,7 @@ export const EnquireModal = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="mt-7 inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[11px] font-bold tracking-[0.2em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors"
+                    className="mt-7 inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors"
                   >
                     Close
                   </button>
@@ -286,7 +286,7 @@ export const EnquireModal = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <label className="block">
-                      <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                      <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 mb-2">
                         Name
                       </span>
                       <input
@@ -299,7 +299,7 @@ export const EnquireModal = ({
                       />
                     </label>
                     <label className="block">
-                      <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                      <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 mb-2">
                         Email
                       </span>
                       <input
@@ -314,7 +314,7 @@ export const EnquireModal = ({
                   </div>
 
                   <label className="block mb-5">
-                    <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2">
+                    <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 mb-2">
                       Message
                     </span>
                     <textarea
@@ -334,7 +334,7 @@ export const EnquireModal = ({
                     <button
                       type="submit"
                       disabled={status === "submitting"}
-                      className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                      className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
                     >
                       {status === "submitting" ? "Sending…" : "Send your message"}{" "}
                       <span aria-hidden="true" className="ml-2">→</span>

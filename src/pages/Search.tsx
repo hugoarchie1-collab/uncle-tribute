@@ -79,7 +79,7 @@ const ResultRow = ({ doc }: { doc: SearchDoc }) => (
       <span
         className={cn(
           "mt-0.5 inline-flex shrink-0 items-center rounded-full px-2.5 py-1",
-          "font-sans text-[10px] font-bold uppercase tracking-[0.18em]",
+          "font-sans text-[10px] font-bold tracking-[0.04em]",
           "text-ink-muted ring-1 ring-line",
         )}
       >
@@ -181,7 +181,7 @@ const EmptyState = ({ query }: { query: string }) => {
           <Link
             key={link.to}
             to={link.to}
-            className="group inline-flex items-center gap-1.5 font-sans text-[11px] font-bold uppercase tracking-[0.16em] text-ink-muted transition-colors duration-300 hover:text-accent"
+            className="group inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted transition-colors duration-300 hover:text-accent"
           >
             {link.label}
             <span

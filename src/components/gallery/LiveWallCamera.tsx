@@ -556,7 +556,7 @@ export const LiveWallCamera = ({
             )}
           >
             <LockGlyph locked={locked} />
-            <span className="whitespace-nowrap font-sans text-[11px] font-bold uppercase tracking-[0.14em]">
+            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
               {locked ? "Locked" : "Lock"}
             </span>
           </button>
@@ -577,7 +577,7 @@ export const LiveWallCamera = ({
             className="press inline-flex h-11 items-center gap-2 rounded-full bg-ink px-4 text-bg outline-none transition-colors hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
           >
             <ShareGlyph />
-            <span className="whitespace-nowrap font-sans text-[11px] font-bold uppercase tracking-[0.14em]">
+            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
               {captured ? "Saved" : "Save"}
             </span>
           </button>
@@ -619,7 +619,7 @@ export const LiveWallCamera = ({
             <button
               type="button"
               onClick={() => setControlsOpen(true)}
-              className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-5 font-sans text-[11px] font-bold uppercase tracking-[0.14em] text-bg outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-5 font-sans text-[11px] font-bold tracking-[0.04em] text-bg outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               Options
             </button>
@@ -633,7 +633,7 @@ export const LiveWallCamera = ({
                 type="button"
                 onClick={() => setControlsOpen(false)}
                 aria-label="Hide options"
-                className="press absolute right-4 inline-flex h-9 items-center rounded-full px-3 font-sans text-[11px] font-bold uppercase tracking-[0.14em] text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                className="press absolute right-4 inline-flex h-9 items-center rounded-full px-3 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
               >
                 Hide
               </button>
@@ -759,7 +759,7 @@ export const LiveWallCamera = ({
                             : "repeating-linear-gradient(45deg, #f3ede1, #f3ede1 3px, #d9d0bd 3px, #d9d0bd 6px)",
                         }}
                       />
-                      <span className={cn("font-sans text-[11px] font-bold uppercase tracking-[0.12em]", sel ? "text-ink" : "text-ink-muted")}>
+                      <span className={cn("font-sans text-[11px] font-bold tracking-[0.04em]", sel ? "text-ink" : "text-ink-muted")}>
                         {f.label}
                       </span>
                     </button>

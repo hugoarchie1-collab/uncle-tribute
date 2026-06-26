@@ -337,7 +337,7 @@ export const Auth = () => {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   Authenticate
                 </button>

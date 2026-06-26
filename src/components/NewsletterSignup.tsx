@@ -151,7 +151,7 @@ export const NewsletterSignup = ({
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
@@ -179,7 +179,7 @@ export const NewsletterSignup = ({
   if (variant === "inline") {
     return (
       <div className="border-t border-white/10 pt-8 mt-8">
-        <p className="font-sans text-[10px] font-bold tracking-[0.32em] uppercase text-ink/55 m-0 mb-3">
+        <p className="font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
           {eyebrow}
         </p>
         {status === "success" ? (
@@ -234,7 +234,7 @@ export const NewsletterSignup = ({
               <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="inline-flex items-center justify-center bg-ink text-bg px-6 py-3 font-sans text-[10px] font-bold tracking-[0.22em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                className="inline-flex items-center justify-center bg-ink text-bg px-6 py-3 font-sans text-[10px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
               >
                 {status === "submitting" ? "Sending…" : "Subscribe"}
               </button>
@@ -305,7 +305,7 @@ export const NewsletterSignup = ({
             {/* Focus-within `group`: the muted field label warms to full ink
                 while its input is focused (matches Contact's form focus). */}
             <label className="group block">
-              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Name
               </span>
               <input
@@ -317,7 +317,7 @@ export const NewsletterSignup = ({
               />
             </label>
             <label className="group block">
-              <span className="block font-sans text-[10px] font-bold tracking-[0.28em] uppercase text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Email
               </span>
               <input
@@ -339,7 +339,7 @@ export const NewsletterSignup = ({
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.18em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
             >
               {status === "submitting" ? "Subscribing…" : "Subscribe"}
               <span

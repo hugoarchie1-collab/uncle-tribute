@@ -458,7 +458,7 @@ export const Basket = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(line.item.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                           >
                             Remove
                           </button>
@@ -507,7 +507,7 @@ export const Basket = () => {
                             </div>
                           )}
                           <div className="flex items-baseline justify-between gap-4 pt-1.5 mt-0.5 border-t border-line">
-                            <span className="font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink-muted min-w-0">
+                            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted min-w-0">
                               Line total
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] font-semibold text-ink tabular-nums flex-shrink-0">
@@ -551,7 +551,7 @@ export const Basket = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(g.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.22em] uppercase text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                           >
                             Remove
                           </button>

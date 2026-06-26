@@ -231,7 +231,7 @@ const CommentRow = ({
       {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
       <div className="min-w-0 flex-1">
         {pinned ? (
-          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[10.5px] font-bold tracking-[0.18em] uppercase text-accent">
+          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[10.5px] font-bold tracking-[0.04em] text-accent">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
@@ -622,7 +622,7 @@ const ShareMemoryModal = ({
                         <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.16em] uppercase rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose image
                         </span>
                         <input

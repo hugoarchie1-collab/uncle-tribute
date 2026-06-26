@@ -83,7 +83,7 @@ export const UpdatePrompt = () => {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="shrink-0 rounded-full bg-accent px-4 py-1.5 font-sans text-[12px] font-bold uppercase tracking-[0.12em] text-bg transition-opacity duration-300 hover:opacity-90"
+          className="shrink-0 rounded-full bg-accent px-4 py-1.5 font-sans text-[12px] font-bold tracking-[0.04em] text-bg transition-opacity duration-300 hover:opacity-90"
         >
           Refresh
         </button>
