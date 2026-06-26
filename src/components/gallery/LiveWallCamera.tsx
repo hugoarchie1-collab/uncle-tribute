@@ -76,6 +76,19 @@ const ResetGlyph = () => (
   </svg>
 );
 
+const LockGlyph = ({ locked }: { locked: boolean }) => (
+  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <rect x="3.5" y="8" width="11" height="7.5" rx="1.6" stroke="currentColor" strokeWidth="1.4" />
+    {/* shackle: closed (down) when locked, open (lifted) when not */}
+    <path
+      d={locked ? "M6 8V6a3 3 0 0 1 6 0v2" : "M6 8V6a3 3 0 0 1 5.7-1.3"}
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 /**
  * The photoreal flat framed print laid over the camera. Keeps the artwork's
  * native aspect ratio (so the landscape Ophiuchus reads landscape), wraps it in
@@ -101,64 +114,52 @@ const FramedOverlay = ({
         // Grounded, directional contact shadow (lit from above) so the piece
         // reads as hanging ON the wall rather than floating over the feed.
         filter:
-          "drop-shadow(0 24px 34px rgba(0,0,0,0.55)) drop-shadow(0 7px 13px rgba(0,0,0,0.45))",
+          "drop-shadow(0 26px 38px rgba(0,0,0,0.6)) drop-shadow(0 9px 15px rgba(0,0,0,0.48))",
       }}
     >
-      {/* Wood moulding — bevelled (light top-left → dark bottom-right) with a
-          fine inner/outer edge. Unframed = a slim warm paper edge. */}
+      {/* Wood moulding DIRECTLY around the print — NO cream mat / white border
+          (Hugo). Bevelled light→dark; unframed = the bare print, no border. */}
       <div
         style={{
-          padding: framed ? "6.5%" : "1.4%",
-          borderRadius: "3px",
+          padding: framed ? "5%" : 0,
+          borderRadius: framed ? "2px" : 0,
           background: framed
-            ? `linear-gradient(135deg, color-mix(in srgb, ${frameWood}, white 28%) 0%, ${frameWood} 40%, color-mix(in srgb, ${frameWood}, black 36%) 100%)`
-            : "#f4eee2",
+            ? `linear-gradient(135deg, color-mix(in srgb, ${frameWood}, white 30%) 0%, ${frameWood} 42%, color-mix(in srgb, ${frameWood}, black 38%) 100%)`
+            : "transparent",
           boxShadow: framed
-            ? "inset 0 0 0 1px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.20), inset 0 -3px 6px rgba(0,0,0,0.5)"
-            : "inset 0 0 0 1px rgba(0,0,0,0.08)",
+            ? "inset 0 0 0 1px rgba(0,0,0,0.6), inset 0 2px 3px rgba(255,255,255,0.22), inset 0 -3px 7px rgba(0,0,0,0.55)"
+            : "none",
         }}
       >
-        {/* Cream mat (museum mount) with a subtle inset shadow */}
+        {/* The print, with a thin dark rabbet liner where the frame meets it
+            (framed only). No mat — the artwork goes edge-to-edge in the frame. */}
         <div
-          style={{
-            padding: framed ? "5.5%" : 0,
-            background: framed ? "#f1ebdd" : "transparent",
-            boxShadow: framed
-              ? "inset 0 0 0 1px rgba(0,0,0,0.10), inset 0 1px 3px rgba(0,0,0,0.14)"
-              : "none",
-          }}
+          className="relative"
+          style={{ boxShadow: framed ? "0 0 0 1px rgba(0,0,0,0.6)" : "none" }}
         >
-          {/* V-groove bevel ring just outside the artwork window */}
-          <div
-            className="relative"
-            style={{
-              boxShadow: framed
-                ? "0 0 0 1px rgba(0,0,0,0.20), 0 0 0 4px #f7f2e7, 0 0 0 5px rgba(0,0,0,0.12)"
-                : "0 0 0 1px rgba(0,0,0,0.14)",
-            }}
-          >
-            <picture>
-              <source srcSet={asset(webp(colourway.image))} type="image/webp" />
-              <img
-                ref={imgRef}
-                src={asset(colourway.image)}
-                alt={alt}
-                draggable={false}
-                crossOrigin="anonymous"
-                className="block w-full h-auto"
-              />
-            </picture>
-            {/* Glazing sheen — a faint diagonal glass reflection */}
+          <picture>
+            <source srcSet={asset(webp(colourway.image))} type="image/webp" />
+            <img
+              ref={imgRef}
+              src={asset(colourway.image)}
+              alt={alt}
+              draggable={false}
+              crossOrigin="anonymous"
+              className="block w-full h-auto"
+            />
+          </picture>
+          {/* Glass sheen — framed pieces sit behind glazing; bare prints are matte. */}
+          {framed && (
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(118deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 16%, rgba(255,255,255,0) 36%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.06) 100%)",
+                  "linear-gradient(118deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 16%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.05) 100%)",
                 mixBlendMode: "screen",
               }}
             />
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -210,8 +211,10 @@ export const LiveWallCamera = ({
   );
   const [controlsOpen, setControlsOpen] = useState(true);
   const [showHint, setShowHint] = useState(true);
-  const [ready, setReady] = useState(false);
   const [captured, setCaptured] = useState(false);
+  // Lock pins the print in one position on the wall — drag + pinch are disabled
+  // so it can't be nudged while you line up the shot (Hugo's ask).
+  const [locked, setLocked] = useState(false);
   const [viewportW, setViewportW] = useState(
     () => (typeof window !== "undefined" && window.innerWidth) || 390,
   );
@@ -274,14 +277,12 @@ export const LiveWallCamera = ({
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);
     closeRef.current?.focus();
-    const raf = window.requestAnimationFrame(() => setReady(true));
     const hintTimer = window.setTimeout(() => setShowHint(false), 4200);
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", onResize);
-      window.cancelAnimationFrame(raf);
       window.clearTimeout(hintTimer);
     };
   }, [onClose]);
@@ -328,6 +329,7 @@ export const LiveWallCamera = ({
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (locked) return; // pinned in place — ignore drag/pinch
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     const g = gesture.current;
     g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -410,35 +412,37 @@ export const LiveWallCamera = ({
       ctx.fillRect(0, 0, vw, vh);
     }
 
-    // The framed print, drawn at the overlay's on-screen rect (mirrors the CSS
-    // proportions: 6.5% moulding + 5.5% mat when framed).
+    // The framed print, drawn at the overlay's on-screen rect (mirrors the CSS:
+    // 5% wood moulding DIRECTLY around the print, NO mat; unframed = bare print).
     const x = rect.left;
     const y = rect.top;
     const w = rect.width;
     const h = rect.height;
     ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = Math.max(10, w * 0.06);
-    ctx.shadowOffsetY = Math.max(8, w * 0.03);
+    ctx.shadowColor = "rgba(0,0,0,0.55)";
+    ctx.shadowBlur = Math.max(12, w * 0.07);
+    ctx.shadowOffsetY = Math.max(9, w * 0.035);
     if (frame.wood) {
       const grad = ctx.createLinearGradient(x, y, x + w, y + h);
-      grad.addColorStop(0, shade(frame.wood, 0.26));
-      grad.addColorStop(0.4, frame.wood);
-      grad.addColorStop(1, shade(frame.wood, -0.34));
+      grad.addColorStop(0, shade(frame.wood, 0.3));
+      grad.addColorStop(0.42, frame.wood);
+      grad.addColorStop(1, shade(frame.wood, -0.38));
       ctx.fillStyle = grad;
       ctx.fillRect(x, y, w, h);
       ctx.shadowColor = "transparent";
-      const m = w * 0.065; // moulding
-      const mat = (w - 2 * m) * 0.055; // mat
-      ctx.fillStyle = "#f1ebdd";
-      ctx.fillRect(x + m, y + m, w - 2 * m, h - 2 * m);
-      drawArtwork(ctx, img, x + m + mat, y + m + mat, w - 2 * (m + mat), h - 2 * (m + mat));
+      const m = w * 0.05; // moulding — print goes edge-to-edge inside it
+      drawArtwork(ctx, img, x + m, y + m, w - 2 * m, h - 2 * m);
     } else {
-      const pad = w * 0.014;
-      ctx.fillStyle = "#f4eee2";
-      ctx.fillRect(x, y, w, h);
       ctx.shadowColor = "transparent";
-      drawArtwork(ctx, img, x + pad, y + pad, w - 2 * pad, h - 2 * pad);
+      // Re-cast the grounded shadow as a soft dark rect behind the bare print.
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.5)";
+      ctx.shadowBlur = Math.max(12, w * 0.06);
+      ctx.shadowOffsetY = Math.max(8, w * 0.03);
+      ctx.fillStyle = "#000";
+      ctx.fillRect(x, y, w, h);
+      ctx.restore();
+      drawArtwork(ctx, img, x, y, w, h);
     }
     ctx.restore();
 
@@ -518,12 +522,10 @@ export const LiveWallCamera = ({
       >
         <div
           ref={overlayRef}
-          className="transition-opacity duration-500"
           style={{
             width: `${baseWidthPx}px`,
             transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
-            opacity: ready ? 1 : 0,
-            cursor: "grab",
+            cursor: locked ? "default" : "grab",
             willChange: "transform",
           }}
         >
@@ -531,22 +533,34 @@ export const LiveWallCamera = ({
         </div>
       </div>
 
-      {/* First-use hint */}
-      {showHint && (
+      {/* First-use hint (hidden once locked) */}
+      {showHint && !locked && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 mt-[22vh] flex justify-center px-6">
           <p className="m-0 rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] tracking-[0.04em] text-ink/90 backdrop-blur-sm">
-            Drag to move · pinch to resize
+            Drag to move · pinch to resize · lock when it&rsquo;s right
           </p>
         </div>
       )}
 
       {/* ---- Top bar ---- */}
-      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-4">
-        <div className="rounded-full bg-black/55 px-4 py-2 backdrop-blur-sm">
-          <p className={cn(EYEBROW, "m-0 text-ink/85")}>See it on your wall</p>
-        </div>
+      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-end gap-2 p-4">
         <div className="flex items-center gap-2">
-          {moved && (
+          <button
+            type="button"
+            onClick={() => setLocked((v) => !v)}
+            aria-pressed={locked}
+            aria-label={locked ? "Unlock — let the print move again" : "Lock the print in place"}
+            className={cn(
+              "press inline-flex h-11 items-center gap-2 rounded-full px-3.5 outline-none backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+              locked ? "bg-accent text-bg" : "bg-black/55 text-ink hover:bg-black/75",
+            )}
+          >
+            <LockGlyph locked={locked} />
+            <span className="whitespace-nowrap font-sans text-[11px] font-bold uppercase tracking-[0.14em]">
+              {locked ? "Locked" : "Lock"}
+            </span>
+          </button>
+          {moved && !locked && (
             <button
               type="button"
               onClick={resetPlacement}
