@@ -123,6 +123,32 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // User avatar (set on /account → localStorage "tasm.avatar") shown beside the
+  // profile icon. Re-read on navigation (the upload-then-return flow) + on a
+  // cross-tab storage change.
+  const [avatar, setAvatar] = useState<string | null>(() => {
+    try {
+      return typeof localStorage !== "undefined" ? localStorage.getItem("tasm.avatar") : null;
+    } catch {
+      return null;
+    }
+  });
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAvatar(localStorage.getItem("tasm.avatar"));
+    } catch {
+      /* storage unavailable */
+    }
+  }, [location.pathname]);
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "tasm.avatar") setAvatar(e.newValue);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   // Track the prior basket count so we pulse only on increments, exposing a
   // `pulseKey` that bumps every time a pulse should retrigger. Route changes
   // (when the basket is non-empty) also bump the key as a continuity reminder.
@@ -348,19 +374,27 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               )
             }
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]"
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-3.4 3.6-6 8-6s8 2.6 8 6" />
-            </svg>
+            {avatar ? (
+              <img
+                src={avatar}
+                alt=""
+                className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] rounded-full object-cover ring-1 ring-line"
+              />
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-3.4 3.6-6 8-6s8 2.6 8 6" />
+              </svg>
+            )}
           </NavLink>
 
           {/* Basket — icon + count badge (count appears only when ≥ 1). */}
