@@ -2,15 +2,16 @@
 // LiveWallCamera — the live in-browser "see it on your wall" camera.
 // -----------------------------------------------------------------------------
 // A full-screen popup that opens the phone's rear camera (getUserMedia) and lays
-// a FRAMED PRINT over the live view of your wall. Every control — painting,
-// colourway, size, frame — sits on top of the camera, so you flip through the
-// WHOLE catalogue on your wall in one camera session, without ever leaving it.
+// a photoreal FRAMED PRINT over the live view of your wall. Every control —
+// painting, colourway, size, frame — sits on top of the camera, so you browse
+// the WHOLE catalogue on your wall in one camera session, without leaving it.
 //
-// Deliberately a FLAT framed overlay (not true 3D / not depth-locked) — the
+// Deliberately a FLAT framed overlay (not true-3D / not depth-locked) — the
 // trade-off for live, in-camera browsing of everything at once. Drag to move,
-// pinch to resize. Degrades gracefully when no camera is available (desktop /
-// denied permission) by showing the overlay on a calm "gallery wall" ground, so
-// the picker still works and the page is testable without a camera.
+// pinch to resize. "Save photo" composites the camera frame + the framed print
+// to a shareable image (the real wall-mockup tool). Degrades gracefully to a
+// "gallery wall" ground when no camera (desktop / denied), so it always
+// previews and is testable without a camera.
 //
 // HTTPS + a user gesture are required for the camera (production is HTTPS; the
 // button that opens this popup is the gesture). iOS needs <video playsInline>.
@@ -41,6 +42,9 @@ const OVERLAY_FRAMES: { id: OverlayFrameId; label: string; wood: string | null }
 ];
 
 const MAX_CM = Math.max(...AR_SIZES.map((s) => s.cm));
+// A0 (the largest size) fills this fraction of the viewport width by default;
+// smaller sizes scale down proportionally by real cm. Pinch fine-tunes from there.
+const A0_VIEWPORT_FRACTION = 0.72;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -58,46 +62,104 @@ const CloseGlyph = () => (
   </svg>
 );
 
-/** The flat framed print laid over the camera. Keeps the artwork's native
- *  aspect ratio (so the landscape Ophiuchus reads landscape), wraps it in a
- *  wood moulding + cream mat, and floats it on a soft contact shadow. */
+const ShareGlyph = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <path d="M9 2.5v8M9 2.5 6.2 5.3M9 2.5l2.8 2.8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M4 8.5H3.2A1.2 1.2 0 0 0 2 9.7v4.1A1.2 1.2 0 0 0 3.2 15h11.6a1.2 1.2 0 0 0 1.2-1.2V9.7a1.2 1.2 0 0 0-1.2-1.2H14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);
+
+const ResetGlyph = () => (
+  <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <path d="M3.4 9a5.6 5.6 0 1 1 1.5 3.8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    <path d="M3 6.2 3.3 9l2.8-.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/**
+ * The photoreal flat framed print laid over the camera. Keeps the artwork's
+ * native aspect ratio (so the landscape Ophiuchus reads landscape), wraps it in
+ * a beveled wood moulding + a cream mat with a v-groove, adds a glass sheen, and
+ * floats it on a grounded contact shadow so it sits on the wall.
+ */
 const FramedOverlay = ({
   colourway,
   frameWood,
   alt,
+  imgRef,
 }: {
   colourway: Colourway;
   frameWood: string | null;
   alt: string;
+  imgRef: React.RefObject<HTMLImageElement | null>;
 }) => {
   const framed = frameWood !== null;
   return (
     <div
       className="relative select-none"
       style={{
-        // Wood moulding (or a hairline paper edge when unframed).
-        padding: framed ? "7%" : "1.5%",
-        background: framed
-          ? `linear-gradient(135deg, color-mix(in srgb, ${frameWood}, white 24%), ${frameWood} 46%, color-mix(in srgb, ${frameWood}, black 30%))`
-          : "#f3ede1",
-        boxShadow: framed
-          ? "inset 0 0 0 1px rgba(0,0,0,0.45), inset 0 2px 4px rgba(255,255,255,0.14), inset 0 -3px 6px rgba(0,0,0,0.45), 0 14px 34px rgba(0,0,0,0.5), 0 4px 10px rgba(0,0,0,0.4)"
-          : "0 12px 30px rgba(0,0,0,0.45), 0 3px 8px rgba(0,0,0,0.35)",
-        borderRadius: "2px",
+        // Grounded, directional contact shadow (lit from above) so the piece
+        // reads as hanging ON the wall rather than floating over the feed.
+        filter:
+          "drop-shadow(0 24px 34px rgba(0,0,0,0.55)) drop-shadow(0 7px 13px rgba(0,0,0,0.45))",
       }}
     >
-      {/* Cream mat (gallery mount) */}
-      <div style={{ padding: framed ? "5%" : 0, background: framed ? "#f3ede1" : "transparent" }}>
-        <picture>
-          <source srcSet={asset(webp(colourway.image))} type="image/webp" />
-          <img
-            src={asset(colourway.image)}
-            alt={alt}
-            draggable={false}
-            className="block w-full h-auto"
-            style={{ boxShadow: framed ? "0 0 0 1px rgba(0,0,0,0.18)" : "none" }}
-          />
-        </picture>
+      {/* Wood moulding — bevelled (light top-left → dark bottom-right) with a
+          fine inner/outer edge. Unframed = a slim warm paper edge. */}
+      <div
+        style={{
+          padding: framed ? "6.5%" : "1.4%",
+          borderRadius: "3px",
+          background: framed
+            ? `linear-gradient(135deg, color-mix(in srgb, ${frameWood}, white 28%) 0%, ${frameWood} 40%, color-mix(in srgb, ${frameWood}, black 36%) 100%)`
+            : "#f4eee2",
+          boxShadow: framed
+            ? "inset 0 0 0 1px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.20), inset 0 -3px 6px rgba(0,0,0,0.5)"
+            : "inset 0 0 0 1px rgba(0,0,0,0.08)",
+        }}
+      >
+        {/* Cream mat (museum mount) with a subtle inset shadow */}
+        <div
+          style={{
+            padding: framed ? "5.5%" : 0,
+            background: framed ? "#f1ebdd" : "transparent",
+            boxShadow: framed
+              ? "inset 0 0 0 1px rgba(0,0,0,0.10), inset 0 1px 3px rgba(0,0,0,0.14)"
+              : "none",
+          }}
+        >
+          {/* V-groove bevel ring just outside the artwork window */}
+          <div
+            className="relative"
+            style={{
+              boxShadow: framed
+                ? "0 0 0 1px rgba(0,0,0,0.20), 0 0 0 4px #f7f2e7, 0 0 0 5px rgba(0,0,0,0.12)"
+                : "0 0 0 1px rgba(0,0,0,0.14)",
+            }}
+          >
+            <picture>
+              <source srcSet={asset(webp(colourway.image))} type="image/webp" />
+              <img
+                ref={imgRef}
+                src={asset(colourway.image)}
+                alt={alt}
+                draggable={false}
+                crossOrigin="anonymous"
+                className="block w-full h-auto"
+              />
+            </picture>
+            {/* Glazing sheen — a faint diagonal glass reflection */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(118deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 16%, rgba(255,255,255,0) 36%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.06) 100%)",
+                mixBlendMode: "screen",
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -112,6 +174,7 @@ export const LiveWallCamera = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  const artworkImgRef = useRef<HTMLImageElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
   const [paintingId, setPaintingId] = useState(
@@ -146,6 +209,9 @@ export const LiveWallCamera = ({
       : "unavailable",
   );
   const [controlsOpen, setControlsOpen] = useState(true);
+  const [showHint, setShowHint] = useState(true);
+  const [ready, setReady] = useState(false);
+  const [captured, setCaptured] = useState(false);
   const [viewportW, setViewportW] = useState(
     () => (typeof window !== "undefined" && window.innerWidth) || 390,
   );
@@ -196,7 +262,7 @@ export const LiveWallCamera = ({
     };
   }, []);
 
-  // ---- Scroll-lock + Escape + initial focus + viewport tracking -----------
+  // ---- Scroll-lock + Escape + initial focus + viewport tracking + entrance --
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -206,11 +272,17 @@ export const LiveWallCamera = ({
     const onResize = () => setViewportW(window.innerWidth || 390);
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
     closeRef.current?.focus();
+    const raf = window.requestAnimationFrame(() => setReady(true));
+    const hintTimer = window.setTimeout(() => setShowHint(false), 4200);
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(hintTimer);
     };
   }, [onClose]);
 
@@ -222,9 +294,9 @@ export const LiveWallCamera = ({
   };
 
   // Base on-screen width for the selected size (relative, not depth-true). A0
-  // fills ~62% of the viewport; the rest scale proportionally by real cm.
+  // fills ~72% of the viewport; the rest scale proportionally by real cm.
   const baseWidthPx = useMemo(
-    () => (size.cm / MAX_CM) * viewportW * 0.62,
+    () => (size.cm / MAX_CM) * viewportW * A0_VIEWPORT_FRACTION,
     [size.cm, viewportW],
   );
 
@@ -232,6 +304,12 @@ export const LiveWallCamera = ({
     const o = overlayRef.current;
     if (o) o.style.transform = `translate(${live.current.x}px, ${live.current.y}px) scale(${live.current.scale})`;
   }, []);
+
+  const resetPlacement = () => {
+    live.current = { x: 0, y: 0, scale: 1 };
+    setView({ x: 0, y: 0, scale: 1 });
+    applyTransform();
+  };
 
   const centroid = (m: Map<number, { x: number; y: number }>) => {
     let x = 0;
@@ -255,6 +333,7 @@ export const LiveWallCamera = ({
     g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     g.prev = centroid(g.pointers);
     g.prevDist = g.pointers.size >= 2 ? spread(g.pointers) : 0;
+    if (showHint) setShowHint(false);
   };
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     const g = gesture.current;
@@ -280,7 +359,126 @@ export const LiveWallCamera = ({
     setView({ ...live.current }); // commit the gesture into a render
   };
 
+  // ---- Save / share the wall mockup ---------------------------------------
+  // Composites the live camera frame (object-cover) + the framed print at its
+  // current on-screen rect onto a canvas, then shares (Web Share) or downloads.
+  // The real wall-mockup tool — no DOM-screenshot dependency.
+  const captureWall = async () => {
+    const overlay = overlayRef.current;
+    const img = artworkImgRef.current;
+    if (!overlay || !img) return;
+    const rect = overlay.getBoundingClientRect();
+    if (rect.width < 8 || rect.height < 8) return; // not laid out (headless preview)
+    const vw = window.innerWidth || 390;
+    const vh = window.innerHeight || 780;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(vw * dpr);
+    canvas.height = Math.round(vh * dpr);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.scale(dpr, dpr);
+
+    // Background — the camera frame (object-cover) or the gallery-wall ground.
+    const video = videoRef.current;
+    if (camState === "live" && video && video.videoWidth) {
+      const vr = video.videoWidth / video.videoHeight;
+      const cr = vw / vh;
+      let dw: number, dh: number, dx: number, dy: number;
+      if (vr > cr) {
+        dh = vh;
+        dw = vh * vr;
+        dx = (vw - dw) / 2;
+        dy = 0;
+      } else {
+        dw = vw;
+        dh = vw / vr;
+        dx = 0;
+        dy = (vh - dh) / 2;
+      }
+      try {
+        ctx.drawImage(video, dx, dy, dw, dh);
+      } catch {
+        /* tainted / not ready — fall through to ground */
+      }
+    } else {
+      const g = ctx.createRadialGradient(vw * 0.5, vh * 0.3, 0, vw * 0.5, vh * 0.3, Math.max(vw, vh));
+      g.addColorStop(0, "#3a342c");
+      g.addColorStop(0.55, "#211d18");
+      g.addColorStop(1, "#14110d");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, vw, vh);
+    }
+
+    // The framed print, drawn at the overlay's on-screen rect (mirrors the CSS
+    // proportions: 6.5% moulding + 5.5% mat when framed).
+    const x = rect.left;
+    const y = rect.top;
+    const w = rect.width;
+    const h = rect.height;
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = Math.max(10, w * 0.06);
+    ctx.shadowOffsetY = Math.max(8, w * 0.03);
+    if (frame.wood) {
+      const grad = ctx.createLinearGradient(x, y, x + w, y + h);
+      grad.addColorStop(0, shade(frame.wood, 0.26));
+      grad.addColorStop(0.4, frame.wood);
+      grad.addColorStop(1, shade(frame.wood, -0.34));
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, y, w, h);
+      ctx.shadowColor = "transparent";
+      const m = w * 0.065; // moulding
+      const mat = (w - 2 * m) * 0.055; // mat
+      ctx.fillStyle = "#f1ebdd";
+      ctx.fillRect(x + m, y + m, w - 2 * m, h - 2 * m);
+      drawArtwork(ctx, img, x + m + mat, y + m + mat, w - 2 * (m + mat), h - 2 * (m + mat));
+    } else {
+      const pad = w * 0.014;
+      ctx.fillStyle = "#f4eee2";
+      ctx.fillRect(x, y, w, h);
+      ctx.shadowColor = "transparent";
+      drawArtwork(ctx, img, x + pad, y + pad, w - 2 * pad, h - 2 * pad);
+    }
+    ctx.restore();
+
+    const fileName = `${painting.id}-${colourway.name.toLowerCase().replace(/\s+/g, "-")}-on-your-wall.jpg`;
+    await new Promise<void>((resolve) => {
+      canvas.toBlob(
+        async (blob) => {
+          if (!blob) return resolve();
+          const file = new File([blob], fileName, { type: "image/jpeg" });
+          const nav = navigator as Navigator & {
+            canShare?: (d: { files: File[] }) => boolean;
+            share?: (d: { files: File[]; title?: string; text?: string }) => Promise<void>;
+          };
+          if (nav.canShare?.({ files: [file] }) && nav.share) {
+            try {
+              await nav.share({ files: [file], title: "See it on your wall", text: `${painting.title} — ${colourway.name}` });
+              resolve();
+              return;
+            } catch {
+              /* user cancelled / unsupported — fall back to download */
+            }
+          }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          a.click();
+          window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+          resolve();
+        },
+        "image/jpeg",
+        0.92,
+      );
+    });
+    setCaptured(true);
+    window.setTimeout(() => setCaptured(false), 1800);
+  };
+
   const pieceLabel = `${painting.title} · ${colourway.name} · ${frame.label} · ${size.label}`;
+  const moved = view.x !== 0 || view.y !== 0 || view.scale !== 1;
 
   return (
     <div
@@ -295,7 +493,7 @@ export const LiveWallCamera = ({
         playsInline
         muted
         autoPlay
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
         style={{ opacity: camState === "live" ? 1 : 0 }}
       />
       {/* Graceful "gallery wall" ground when no camera (desktop / denied) */}
@@ -320,31 +518,65 @@ export const LiveWallCamera = ({
       >
         <div
           ref={overlayRef}
+          className="transition-opacity duration-500"
           style={{
             width: `${baseWidthPx}px`,
             transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
+            opacity: ready ? 1 : 0,
             cursor: "grab",
             willChange: "transform",
           }}
         >
-          <FramedOverlay colourway={colourway} frameWood={frame.wood} alt={pieceLabel} />
+          <FramedOverlay colourway={colourway} frameWood={frame.wood} alt={pieceLabel} imgRef={artworkImgRef} />
         </div>
       </div>
 
+      {/* First-use hint */}
+      {showHint && (
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 mt-[22vh] flex justify-center px-6">
+          <p className="m-0 rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] tracking-[0.04em] text-ink/90 backdrop-blur-sm">
+            Drag to move · pinch to resize
+          </p>
+        </div>
+      )}
+
       {/* ---- Top bar ---- */}
-      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-4">
+      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-4">
         <div className="rounded-full bg-black/55 px-4 py-2 backdrop-blur-sm">
           <p className={cn(EYEBROW, "m-0 text-ink/85")}>See it on your wall</p>
         </div>
-        <button
-          ref={closeRef}
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <CloseGlyph />
-        </button>
+        <div className="flex items-center gap-2">
+          {moved && (
+            <button
+              type="button"
+              onClick={resetPlacement}
+              aria-label="Reset placement"
+              className="press inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <ResetGlyph />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => void captureWall()}
+            aria-label="Save photo"
+            className="press inline-flex h-11 items-center gap-2 rounded-full bg-ink px-4 text-bg outline-none transition-colors hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <ShareGlyph />
+            <span className="whitespace-nowrap font-sans text-[11px] font-bold uppercase tracking-[0.14em]">
+              {captured ? "Saved" : "Save"}
+            </span>
+          </button>
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <CloseGlyph />
+          </button>
+        </div>
       </div>
 
       {/* ---- Camera permission / hint ---- */}
@@ -527,3 +759,55 @@ export const LiveWallCamera = ({
     </div>
   );
 };
+
+// ---- canvas helpers ---------------------------------------------------------
+
+/** Lighten (amt>0) / darken (amt<0) a hex colour for the canvas wood gradient. */
+function shade(hex: string, amt: number): string {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!m) return hex;
+  const adj = (v: number) =>
+    Math.round(clamp(amt >= 0 ? v + (255 - v) * amt : v * (1 + amt), 0, 255));
+  const r = adj(parseInt(m[1], 16));
+  const g = adj(parseInt(m[2], 16));
+  const b = adj(parseInt(m[3], 16));
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+/** Draw the artwork "object-cover" into a window rect (centre-crop), matching
+ *  the on-screen <img> which fills the mat window at the artwork's own ratio. */
+function drawArtwork(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+) {
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  if (!iw || !ih) {
+    ctx.fillStyle = "#2a2620";
+    ctx.fillRect(x, y, w, h);
+    return;
+  }
+  const ir = iw / ih;
+  const wr = w / h;
+  let sx = 0;
+  let sy = 0;
+  let sw = iw;
+  let sh = ih;
+  if (ir > wr) {
+    sw = ih * wr;
+    sx = (iw - sw) / 2;
+  } else {
+    sh = iw / wr;
+    sy = (ih - sh) / 2;
+  }
+  try {
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+  } catch {
+    ctx.fillStyle = "#2a2620";
+    ctx.fillRect(x, y, w, h);
+  }
+}
