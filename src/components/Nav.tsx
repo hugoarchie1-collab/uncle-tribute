@@ -10,34 +10,54 @@ import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
 
-const NAV_LINKS = [
-  { to: "/", label: "Home", end: true },
-  { to: "/collections", label: "Collections" },
-  { to: "/gallery", label: "Virtual Gallery" },
-  { to: "/for-you", label: "For You" },
-  { to: "/about", label: "About" },
-  { to: "/memories", label: "Memories" },
-  { to: "/news", label: "News" },
-  // Gift cards + Authenticate promoted from the quiet secondary set onto the
-  // primary menu (Hugo). They now show in the mobile drawer's main list AND the
-  // desktop inline bar — the inline bar moves to a 2xl breakpoint below so the
-  // links never crowd/overflow a laptop-width bar (it gets the drawer instead).
-  { to: "/gift", label: "Gift cards" },
-  { to: "/auth", label: "Authenticate" },
-  { to: "/contact", label: "Contact" },
+/**
+ * Primary menu GROUPED so a visitor instantly knows where to BUY vs read his
+ * story vs reach the estate (Hugo: "sub-categories… SHOP wording… so users
+ * understand where to buy"). Library moved UP into "His story"; Gift cards
+ * moved DOWN to the quiet secondary set; Trade sits under "Shop".
+ */
+type NavItem = { to: string; label: string; end?: boolean };
+const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
+  {
+    heading: "Shop",
+    links: [
+      { to: "/collections", label: "Collections" },
+      { to: "/gallery", label: "Virtual Gallery" },
+      { to: "/for-you", label: "Find a print" },
+      { to: "/trade", label: "Trade & Interiors" },
+    ],
+  },
+  {
+    heading: "His story",
+    links: [
+      { to: "/about", label: "About Stephen" },
+      { to: "/news", label: "News" },
+      { to: "/library", label: "The Library" },
+    ],
+  },
+  {
+    heading: "The estate",
+    links: [
+      { to: "/memories", label: "Memories" },
+      { to: "/auth", label: "Authenticate" },
+      { to: "/contact", label: "Contact" },
+    ],
+  },
 ];
 
-/** Estate meta secondary links — the quiet drawer-footer set (real routes
- *  only): account/orders, the Library reading room, FAQ, then legal (Privacy ·
- *  Terms · Returns). Gift cards + Authenticate are on the primary NAV_LINKS menu
- *  above; Trade & Interiors sits HERE beside Library (Hugo: group it with the
- *  Library at the bottom, not in the main menu). Basket is intentionally NOT
- *  here: it already has its own always-visible icon in the top bar. */
+/** Flat list (Home + every grouped link) for the hidden desktop inline nav. */
+const NAV_LINKS: NavItem[] = [
+  { to: "/", label: "Home", end: true },
+  ...NAV_GROUPS.flatMap((g) => g.links),
+];
+
+/** Quiet drawer-footer set — Gift cards now lives HERE (Hugo: down with the
+ *  others), beside account/orders + FAQ + legal. Basket has its own top-bar
+ *  icon so it's intentionally absent. */
 const SECONDARY_LINKS = [
+  { to: "/gift", label: "Gift cards" },
   { to: "/account", label: "Your account" },
   { to: "/orders", label: "Orders & returns" },
-  { to: "/library", label: "Library" },
-  { to: "/trade", label: "Trade & Interiors" },
   { to: "/faq", label: "FAQ" },
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
@@ -530,32 +550,38 @@ const NavMenu = ({
                   small screens. */}
               <DeliverTo variant="menu" className="mb-3" />
               <CurrencySelect variant="menu" className="mb-5" />
-              {NAV_LINKS.map((l, i) => (
-                <motion.div
-                  key={l.to}
-                  initial={reduceMotion ? false : { opacity: 0, x: 18 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{
-                    duration: reduceMotion ? 0 : 0.4,
-                    delay: reduceMotion ? 0 : 0.1 + i * 0.05,
-                    ease: EASE_SMOOTH,
-                  }}
-                >
-                  <NavLink
-                    to={l.to}
-                    end={l.end}
-                    className={({ isActive }) =>
-                      cn(
-                        "block py-2.5 font-display font-semibold tracking-[-0.015em] leading-[1.15] text-[clamp(26px,6.6vw,33px)] outline-none transition-colors duration-200",
-                        isActive ? "text-accent" : "text-ink hover:text-accent",
-                        "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
-                      )
-                    }
-                    style={{ fontVariationSettings: '"opsz" 32' }}
-                  >
-                    {l.label}
-                  </NavLink>
-                </motion.div>
+              {NAV_GROUPS.map((group, gi) => (
+                <div key={group.heading} className={gi > 0 ? "mt-5" : ""}>
+                  <p className="mb-1 font-sans text-[11px] font-bold uppercase tracking-[0.3em] text-ink/45">
+                    {group.heading}
+                  </p>
+                  {group.links.map((l, li) => (
+                    <motion.div
+                      key={l.to}
+                      initial={reduceMotion ? false : { opacity: 0, x: 18 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: reduceMotion ? 0 : 0.4,
+                        delay: reduceMotion ? 0 : 0.08 + gi * 0.1 + li * 0.04,
+                        ease: EASE_SMOOTH,
+                      }}
+                    >
+                      <NavLink
+                        to={l.to}
+                        className={({ isActive }) =>
+                          cn(
+                            "block py-2 font-display font-semibold tracking-[-0.015em] leading-[1.15] text-[clamp(24px,5.8vw,30px)] outline-none transition-colors duration-200",
+                            isActive ? "text-accent" : "text-ink hover:text-accent",
+                            "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
+                          )
+                        }
+                        style={{ fontVariationSettings: '"opsz" 32' }}
+                      >
+                        {l.label}
+                      </NavLink>
+                    </motion.div>
+                  ))}
+                </div>
               ))}
             </nav>
 
