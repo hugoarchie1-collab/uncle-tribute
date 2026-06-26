@@ -15,6 +15,8 @@ import {
   getLowestTierPricePence,
   getPaintingById,
   getPrintTiers,
+  frameStyleLabel,
+  glazingLabel,
   COLLECTIONS,
   PAINTINGS,
   type PrintTier,
@@ -492,7 +494,7 @@ export const Basket = () => {
                           {framingPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Framing (black-stained oak)
+                                Framing ({frameStyleLabel(line.item.frameStyle)} · {glazingLabel(line.item.glazing)})
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {fmt(framingPence)}
