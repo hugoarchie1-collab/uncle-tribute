@@ -21,7 +21,7 @@ import {
   PAINTINGS,
   type PrintTier,
 } from "../data/paintings";
-import { useCurrency } from "../lib/currency";
+import { useCurrency, formatMinorUnits } from "../lib/currency";
 import { useBasket, useGiftCards, removeItem, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
@@ -116,35 +116,6 @@ const stripeLineItemsFor = (line: ResolvedLine): number[] => {
   return items;
 };
 
-/**
- * The bundle discount in pence the way STRIPE actually charges it — to the
- * penny — for ANY basket (bundle, add-ons, mixed). [gotcha #9]
- *
- * api/checkout.ts mints a single coupon with an INTEGER `percent_off` and lets
- * Stripe apply it. Stripe distributes a `percent_off` coupon by discounting
- * EACH line item independently — `round(lineAmount * percent / 100)` per line,
- * rounded to the nearest penny — then sums. The print, framing and
- * embellishment are SEPARATE line items there, so each is rounded on its own.
- *
- * The old preview rounded ONCE over the whole subtotal
- * (`round(subtotal * pct / 100)`), which can differ from the sum of per-line
- * roundings by 1–2p on a mixed basket. We now replicate the per-line-item
- * rounding exactly, so the displayed saving == the Stripe charge to the penny.
- */
-const bundleDiscountPenceFor = (
-  lines: ResolvedLine[],
-  percent: number,
-): number => {
-  if (percent <= 0) return 0;
-  let discount = 0;
-  for (const line of lines) {
-    for (const amount of stripeLineItemsFor(line)) {
-      discount += Math.round((amount * percent) / 100);
-    }
-  }
-  return discount;
-};
-
 // Distinct-painting count for the complete-catalogue trigger. Mirrors
 // api/checkout.ts CATALOGUE_PAINTING_COUNT (= the painting allowlist size).
 const CATALOGUE_PAINTING_COUNT = PAINTINGS.length;
@@ -209,7 +180,7 @@ export const Basket = () => {
   // Presentment currency (header picker). `fmt` charges-parity formatting,
   // `fmtP` the pretty (no .00) variant; `currencyCode` rides along on the
   // checkout POST so Stripe charges in the SAME currency shown here.
-  const { format: fmt, formatPretty: fmtP, code: currencyCode } = useCurrency();
+  const { format: fmt, formatPretty: fmtP, convert, code: currencyCode } = useCurrency();
   const items = useBasket();
   const lines = resolveLines(items);
 
@@ -239,10 +210,34 @@ export const Basket = () => {
   // matches Stripe's coupon distribution to the penny — not a single round over
   // the whole subtotal, which drifted 1–2p on mixed baskets (gotcha #9).
   const bundleDiscountPercent = bundlePercentOff(lines);
-  const bundleDiscountPence = bundleDiscountPenceFor(lines, bundleDiscountPercent);
-  const discountedSubtotalPence = subtotalPence - bundleDiscountPence;
-  // Grand total = discounted prints + gift-card face values (delivery is free).
-  const grandTotalPence = discountedSubtotalPence + giftTotalPence;
+
+  // ── advertised == charged in EVERY currency (gotcha #9) ───────────────────
+  // The server (api/checkout.ts) converts EACH Stripe line item to presentment
+  // minor units FIRST (whole-major-unit rounding per line), THEN applies the
+  // percent_off coupon per line. So the DISPLAYED totals must convert per line
+  // too — converting a summed GBP total once drifts a unit or two per line in
+  // non-GBP. These minor-unit aggregates mirror the server exactly; in GBP they
+  // equal the pence figures (convert is identity-rounding for GBP). The single
+  // per-line sub-amounts already convert once each, so they sum to these totals
+  // to the penny.
+  const lineMinorTotal = (line: ResolvedLine): number =>
+    stripeLineItemsFor(line).reduce((sum, a) => sum + convert(a), 0);
+  const subtotalMinor = lines.reduce((sum, l) => sum + lineMinorTotal(l), 0);
+  const bundleDiscountMinor =
+    bundleDiscountPercent <= 0
+      ? 0
+      : lines.reduce(
+          (sum, l) =>
+            sum +
+            stripeLineItemsFor(l).reduce(
+              (s, a) => s + Math.round((convert(a) * bundleDiscountPercent) / 100),
+              0,
+            ),
+          0,
+        );
+  const giftMinor = giftCards.reduce((sum, g) => sum + convert(g.amountPence), 0);
+  const grandTotalMinor = subtotalMinor - bundleDiscountMinor + giftMinor;
+  const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode);
 
   // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.
   const shipping = shippingPreview();
@@ -516,7 +511,7 @@ export const Basket = () => {
                               Line total
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] font-semibold text-ink tabular-nums flex-shrink-0">
-                              {fmt(lineTotalPence(line))}
+                              {fmtMinor(lineMinorTotal(line))}
                             </span>
                           </div>
                         </div>
@@ -585,7 +580,7 @@ export const Basket = () => {
                     <span className="text-[clamp(12px,0.7vw,15px)]">(prints + selected add-ons)</span>
                   </dt>
                   <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
-                    {fmt(subtotalPence)}
+                    {fmtMinor(subtotalMinor)}
                   </dd>
                 </div>
                 {bundleDiscountPercent > 0 && (
@@ -594,7 +589,7 @@ export const Basket = () => {
                       Estate bundle thank-you ({bundleDiscountPercent}%)
                     </dt>
                     <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-accent m-0 tabular-nums flex-shrink-0">
-                      − {fmt(bundleDiscountPence)}
+                      − {fmtMinor(bundleDiscountMinor)}
                     </dd>
                   </div>
                 )}
@@ -604,7 +599,7 @@ export const Basket = () => {
                       Gift cards
                     </dt>
                     <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
-                      {fmt(giftTotalPence)}
+                      {fmtMinor(giftMinor)}
                     </dd>
                   </div>
                 )}
@@ -627,7 +622,7 @@ export const Basket = () => {
                   Total <span className="text-[clamp(12px,0.7vw,15px)] normal-case tracking-normal">(delivery free)</span>
                 </p>
                 <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] text-ink m-0 tabular-nums flex-shrink-0">
-                  {fmt(grandTotalPence)}
+                  {fmtMinor(grandTotalMinor)}
                 </p>
               </div>
 

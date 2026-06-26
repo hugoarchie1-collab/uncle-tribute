@@ -104,12 +104,18 @@ const MONEY_FORMATTERS = new Map<CurrencyCode, Intl.NumberFormat>();
  * Format a GBP price (pence) in the target currency.
  *  - pretty:true drops a trailing ".00" (so "£450" / "$572", but "£12.50" keeps).
  */
-export const formatMoney = (
-  gbpPence: number,
+/**
+ * Format an ALREADY-CONVERTED amount in the target currency's MINOR units.
+ * Use this for figures summed/discounted PER STRIPE LINE ITEM in presentment
+ * minor units (so the displayed total equals the Stripe charge — the server
+ * converts each line first, then discounts). For a single GBP-pence figure use
+ * formatMoney, which converts then calls this.
+ */
+export const formatMinorUnits = (
+  minor: number,
   code: CurrencyCode,
   opts: { pretty?: boolean } = {},
 ): string => {
-  const minor = convertFromGbpPence(gbpPence, code);
   const major = minor / 100;
   let nf = MONEY_FORMATTERS.get(code);
   if (!nf) {
@@ -123,6 +129,12 @@ export const formatMoney = (
   if (opts.pretty) return formatted.replace(/[.,]00(?=\D*$)/, "");
   return formatted;
 };
+
+export const formatMoney = (
+  gbpPence: number,
+  code: CurrencyCode,
+  opts: { pretty?: boolean } = {},
+): string => formatMinorUnits(convertFromGbpPence(gbpPence, code), code, opts);
 
 export interface CurrencyContextValue {
   code: CurrencyCode;
