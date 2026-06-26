@@ -19,7 +19,7 @@ import {
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
-import { useCurrency } from "../lib/currency";
+import { useCurrency, formatMinorUnits, bundleMinorFigures } from "../lib/currency";
 import { Seo } from "../components/Seo";
 import { cn } from "../lib/cn";
 import { PageMasthead } from "../components/PageMasthead";
@@ -236,14 +236,11 @@ const SetSizeSelector = ({
 const CollectionSetCard = ({
   coll,
   items,
-  fmt,
-  fmtP,
 }: {
   coll: (typeof COLLECTIONS)[number];
   items: (typeof PAINTINGS)[number][];
-  fmt: (pence: number) => string;
-  fmtP: (pence: number) => string;
 }) => {
+  const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const bundle = getCollectionBundle(coll.id, tier.id);
   if (!bundle || items.length <= 1) return null;
@@ -257,11 +254,15 @@ const CollectionSetCard = ({
       if (original) addItem(p.id, original.name, tier.id);
     });
   };
-  const bundleWhole =
-    bundle.bundlePricePence % 100 === 0 &&
-    bundle.fullPricePence % 100 === 0 &&
-    bundle.savePence % 100 === 0;
-  const fmtBundle = (pence: number) => (bundleWhole ? fmtP(pence) : fmt(pence));
+  // Per-line-converted set figures so advertised == charged in every currency (#7).
+  const setFig = bundleMinorFigures(
+    bundle.fullPricePence,
+    bundle.paintingIds.length,
+    bundleDiscountPercentForCount(bundle.paintingIds.length),
+    convert,
+  );
+  const fmtBundle = (minor: number) =>
+    formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
   return (
     <Reveal
       as="div"
@@ -279,14 +280,14 @@ const CollectionSetCard = ({
         <SetSizeSelector value={tier} onChange={setTier} />
         <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-            {fmtBundle(bundle.bundlePricePence)}
+            {fmtBundle(setFig.bundleMinor)}
           </span>
           <span className="mx-3 text-ink/35">·</span>
           the set, offered together
         </p>
         <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
-          Taken individually, {fmtBundle(bundle.fullPricePence)} — a saving of{" "}
-          {fmtBundle(bundle.savePence)} as a set.
+          Taken individually, {fmtBundle(setFig.fullMinor)} — a saving of{" "}
+          {fmtBundle(setFig.saveMinor)} as a set.
         </p>
         <button
           type="button"
@@ -308,13 +309,8 @@ const CollectionSetCard = ({
 // set reprices live at the SAME ladder the basket/checkout applies (2→5%, 3+→10%,
 // all→15%), and adding pushes one anchor-tier line per painting so checkout
 // derives the identical % — advertised == charged by construction (gotcha #9).
-const ComposeSetCard = ({
-  fmt,
-  fmtP,
-}: {
-  fmt: (pence: number) => string;
-  fmtP: (pence: number) => string;
-}) => {
+const ComposeSetCard = () => {
+  const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const toggle = (id: string) =>
@@ -332,14 +328,10 @@ const ComposeSetCard = ({
       : count >= 2
         ? bundleDiscountPercentForCount(count)
         : 0;
-  const fullPence = count * tier.pricePence;
-  // Per-line rounding mirrors Stripe's coupon distribution across uniform lines.
-  const savePence =
-    percent > 0 ? count * Math.round((tier.pricePence * percent) / 100) : 0;
-  const setPence = fullPence - savePence;
-  const wholePounds =
-    setPence % 100 === 0 && fullPence % 100 === 0 && savePence % 100 === 0;
-  const money = (pence: number) => (wholePounds ? fmtP(pence) : fmt(pence));
+  // Per-line-converted set figures so advertised == charged in every currency (#7).
+  const setFig = bundleMinorFigures(count * tier.pricePence, count, percent, convert);
+  const money = (minor: number) =>
+    formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
 
   const acquireSet = () => {
     PAINTINGS.forEach((p) => {
@@ -419,13 +411,13 @@ const ComposeSetCard = ({
           <>
             <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
               <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-                {money(setPence)}
+                {money(setFig.bundleMinor)}
               </span>
               <span className="mx-3 text-ink/35">·</span>
               {count} prints, {sizeCode(tier)}
             </p>
             <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
-              Taken individually, {money(fullPence)} — a saving of {money(savePence)} ({percent}%) as a set.
+              Taken individually, {money(setFig.fullMinor)} — a saving of {money(setFig.saveMinor)} ({percent}%) as a set.
             </p>
             <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
               Add my set to basket
@@ -448,21 +440,19 @@ const ComposeSetCard = ({
 // The flagship "complete catalogue" set — its own size state + scroll-across
 // selector. getCompleteCatalogueBundle is pure; acquireCatalogue adds one of every
 // painting at the SAME tier so checkout's 15% applies — advertised == charged.
-const CatalogueSetCard = ({
-  fmt,
-  fmtP,
-}: {
-  fmt: (pence: number) => string;
-  fmtP: (pence: number) => string;
-}) => {
+const CatalogueSetCard = () => {
+  const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const catalogue = getCompleteCatalogueBundle(tier.id);
-  const catalogueWhole =
-    catalogue.bundlePricePence % 100 === 0 &&
-    catalogue.fullPricePence % 100 === 0 &&
-    catalogue.savePence % 100 === 0;
-  const fmtCatalogue = (pence: number) =>
-    catalogueWhole ? fmtP(pence) : fmt(pence);
+  // Per-line-converted set figures so advertised == charged in every currency (#7).
+  const catFig = bundleMinorFigures(
+    catalogue.fullPricePence,
+    catalogue.paintingCount,
+    catalogue.discountPercent,
+    convert,
+  );
+  const fmtCatalogue = (minor: number) =>
+    formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
   const acquireCatalogue = () => {
     catalogue.items.forEach((it) =>
       addItem(it.paintingId, it.colourwayName, tier.id),
@@ -486,12 +476,12 @@ const CatalogueSetCard = ({
         <SetSizeSelector value={tier} onChange={setTier} />
         <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-7">
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-            {fmtCatalogue(catalogue.bundlePricePence)}
+            {fmtCatalogue(catFig.bundleMinor)}
           </span>
           <span className="mx-3 text-ink/35">·</span>
           <span>
-            individually {fmtCatalogue(catalogue.fullPricePence)}, a saving of{" "}
-            {fmtCatalogue(catalogue.savePence)}
+            individually {fmtCatalogue(catFig.fullMinor)}, a saving of{" "}
+            {fmtCatalogue(catFig.saveMinor)}
           </span>
         </p>
         <button
@@ -515,7 +505,7 @@ export const Collections = () => {
   // the buyer's chosen currency. fmt = full ("£450.00"/"$572.00"), fmtP = pretty
   // (".00" stripped). The GBP pence figures from paintings.ts stay the single
   // source of truth; only the presentation converts — advertised == charged.
-  const { format: fmt, formatPretty: fmtP } = useCurrency();
+  const { formatPretty: fmtP } = useCurrency();
 
   // One ref per collection section so each backdrop can track its own visibility
   const sectionRefs = [
@@ -842,12 +832,7 @@ export const Collections = () => {
 
                 {/* COMPLETE-COLLECTION CARD — its own size + scroll-across
                     selector; getCollectionBundle keeps advertised == charged. */}
-                <CollectionSetCard
-                  coll={coll}
-                  items={items}
-                  fmt={fmt}
-                  fmtP={fmtP}
-                />
+                <CollectionSetCard coll={coll} items={items} />
               </div>
             </section>
           );
@@ -855,11 +840,11 @@ export const Collections = () => {
 
         {/* COMPOSE YOUR OWN SET — AOV builder: pick any 2+, reprices at the same
             count ladder checkout applies (advertised == charged). */}
-        <ComposeSetCard fmt={fmt} fmtP={fmtP} />
+        <ComposeSetCard />
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across
             selector; getCompleteCatalogueBundle keeps advertised == charged. */}
-        <CatalogueSetCard fmt={fmt} fmtP={fmtP} />
+        <CatalogueSetCard />
       </main>
 
       <Footer />

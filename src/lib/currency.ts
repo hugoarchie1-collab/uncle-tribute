@@ -136,6 +136,31 @@ export const formatMoney = (
   opts: { pretty?: boolean } = {},
 ): string => formatMinorUnits(convertFromGbpPence(gbpPence, code), code, opts);
 
+/**
+ * Per-line-converted bundle figures, in presentment MINOR units, so an
+ * advertised SET price equals the Stripe charge in every currency. The server
+ * converts each line first then discounts per line (see Basket); converting a
+ * summed GBP total once drifts by a unit or two in non-GBP. Assumes the
+ * catalogue's UNIFORM tier ladder — every line in a bundle is the same tier
+ * price — so perLine = fullPricePence / count (exact today). Discount rounds
+ * per line, matching Stripe's percent_off distribution.
+ */
+export const bundleMinorFigures = (
+  fullPricePence: number,
+  count: number,
+  discountPercent: number,
+  convert: (gbpPence: number) => number,
+): { fullMinor: number; bundleMinor: number; saveMinor: number } => {
+  if (count <= 0) return { fullMinor: 0, bundleMinor: 0, saveMinor: 0 };
+  const lineMinor = convert(Math.round(fullPricePence / count));
+  const fullMinor = lineMinor * count;
+  const saveMinor =
+    discountPercent > 0
+      ? Math.round((lineMinor * discountPercent) / 100) * count
+      : 0;
+  return { fullMinor, bundleMinor: fullMinor - saveMinor, saveMinor };
+};
+
 export interface CurrencyContextValue {
   code: CurrencyCode;
   meta: CurrencyMeta;
