@@ -61,23 +61,25 @@ const SOCIALS = [
  *  routes aren't orphaned. Legal (Privacy · Terms · Returns) lives ONLY in the
  *  bottom bar below — never duplicated up here. Keep both lists in the same
  *  canonical order the nav uses so the surfaces never drift. */
+// Mirror the grouped site menu (Nav.tsx NAV_GROUPS) so the footer never drifts
+// from the nav — "Shop" = where to buy; the second column gathers His story +
+// Connect + utility.
 const EXPLORE_LINKS = [
-  { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
+  { to: "/for-you", label: "Find a print" },
   { to: "/gallery", label: "Virtual Gallery" },
-  { to: "/for-you", label: "For You" },
-  { to: "/about", label: "About" },
-  { to: "/library", label: "Library" },
-  { to: "/memories", label: "Memories" },
-  { to: "/news", label: "News" },
+  { to: "/trade", label: "Trade & Interiors" },
+  { to: "/gift", label: "Gift cards" },
 ];
 
 const ESTATE_LINKS = [
+  { to: "/about", label: "About Stephen" },
+  { to: "/news", label: "News" },
+  { to: "/library", label: "The Library" },
+  { to: "/memories", label: "Memories" },
+  { to: "/auth", label: "Authenticate" },
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
-  { to: "/auth", label: "Authentication" },
-  { to: "/gift", label: "Gift cards" },
-  { to: "/trade", label: "Trade & Interiors" },
 ];
 
 const LinkColumn = ({
@@ -164,7 +166,7 @@ export const Footer = () => (
 
       {/* Explore — the primary pages (canonical nav order, minus Home). */}
       <div className="md:col-span-1">
-        <LinkColumn heading="Explore" links={EXPLORE_LINKS} />
+        <LinkColumn heading="Shop" links={EXPLORE_LINKS} />
       </div>
 
       {/* Estate — secondary / utility pages; sole home of /gift + /trade. */}
