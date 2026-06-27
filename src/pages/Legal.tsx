@@ -695,8 +695,8 @@ export const Privacy = () => (
     updated={UPDATED}
     // Lava → Teton dusk — both scenes Hugo assigned to privacy, crossfading on scroll.
     backdrop={[
-      "/img/scenes/privacy-lava-blurheavy-v1.webp",
-      "/img/scenes/privacy-teton-blurheavy-v1.webp",
+      "/img/scenes/privacy-lava-blurmod-v1.webp",
+      "/img/scenes/privacy-teton-blurmod-v1.webp",
     ]}
   />
 );
@@ -708,9 +708,9 @@ export const Terms = () => (
     updated={UPDATED}
     // Marble caves → Nile → Himalaya — Hugo's three terms scenes, crossfading on scroll.
     backdrop={[
-      "/img/scenes/terms-marble-cave-blurheavy-v1.webp",
-      "/img/scenes/terms-nile-blurheavy-v1.webp",
-      "/img/scenes/terms-himalaya-blurheavy-v1.webp",
+      "/img/scenes/terms-marble-cave-blurmod-v1.webp",
+      "/img/scenes/terms-nile-blurmod-v1.webp",
+      "/img/scenes/terms-himalaya-blurmod-v1.webp",
     ]}
   />
 );
@@ -722,8 +722,8 @@ export const Returns = () => (
     updated={UPDATED}
     // Azaleas → spider-web/DNA — both scenes Hugo assigned to returns, crossfading on scroll.
     backdrop={[
-      "/img/scenes/returns-azalea-blurheavy-v1.webp",
-      "/img/scenes/returns-spider-blurheavy-v1.webp",
+      "/img/scenes/returns-azalea-blurmod-v1.webp",
+      "/img/scenes/returns-spider-blur-v2.webp",
     ]}
   />
 );

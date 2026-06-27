@@ -100,7 +100,7 @@ export const Trade = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <SceneBackdrop src="/img/scenes/trade-pyramids-blurheavy-v1.webp" />
+      <SceneBackdrop src="/img/scenes/trade-pyramids-blurmod-v1.webp" />
       <Seo
         title="Trade & Interior Design"
         description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
@@ -196,43 +196,6 @@ export const Trade = () => {
               </section>
             ))}
           </Reveal>
-        </section>
-
-        {/* ── FARMACY PRECEDENT ── An asymmetric pull-quote spread: a large
-            Fraunces statement filling the left, the supporting note packed in
-            a second column on the right, under a full-measure rule. Breaks the
-            single-column monotony and fills the horizontal space. */}
-        <section className="py-7 md:py-10">
-          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-8">
-            <p className={cn(EYEBROW_MUTED, "m-0")}>The precedent</p>
-          </Reveal>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-7 items-start">
-            <Reveal as="div" className="lg:col-span-7">
-              <blockquote className="m-0 border-0 p-0">
-                <p
-                  className="font-display font-normal not-italic text-ink m-0 tracking-[-0.02em]"
-                  style={{
-                    fontVariationSettings: '"opsz" 40, "wght" 400',
-                    fontSize: "clamp(28px,4.4vw,68px)",
-                    lineHeight: 1.14,
-                  }}
-                >
-                  A 3.6-metre commission — the{" "}
-                  <span className="italic">Arista SunStar</span> — hangs at
-                  Farmacy, Notting Hill.
-                </p>
-              </blockquote>
-            </Reveal>
-            <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
-              <p className={cn(SUBTITLE, "max-w-none !text-[clamp(18px,0.55vw_+_14.5px,25px)] !leading-[1.75]")}>
-                Stephen's largest realised work was made for a public
-                hospitality space — proof that this geometry holds at
-                architectural scale. Bespoke commissions for projects continue
-                in that tradition, hand-painted by Polly Wedge, sized and
-                coloured for the room they will live in.
-              </p>
-            </Reveal>
-          </div>
         </section>
 
         {/* ── ENQUIRY CLOSE ── A bold left-aligned conversion beat packed under

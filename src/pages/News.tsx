@@ -286,7 +286,7 @@ export const News = () => {
       {/* FIXED BACKDROP LAYER — one blurred indigo Persian-carpet scene drifting
           ±6% with whole-page scroll (Collections' treatment, single image). */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/news-rainbow-mountain-blurheavy-v1.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/news-rainbow-mountain-blur-v2.webp")} />
         {/* Shared scrim — the EXACT gradient Collections uses so the cream copy
             stays legible while the carpet reads as a subdued, moody texture. */}
         <div

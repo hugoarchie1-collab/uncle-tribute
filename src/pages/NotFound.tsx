@@ -36,7 +36,7 @@ export const NotFound = () => {
     painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
   return (
     <div className="relative flex min-h-[100svh] flex-col">
-      <SceneBackdrop src="/img/scenes/notfound-mist-blurheavy-v1.webp" />
+      <SceneBackdrop src="/img/scenes/notfound-mist-blurmod-v1.webp" />
       <Nav />
       {/* BOLD MASTHEAD — the old timid centered EYEBROW + TITLE floating in a
           min-h-screen flex-center VOID is gone. In its place: a meta rule, a

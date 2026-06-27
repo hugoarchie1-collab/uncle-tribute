@@ -100,7 +100,7 @@ export const Gallery = () => {
         description="Point your phone's camera and see any of Stephen Meakin's mandala prints on your own wall — browse every painting, colourway, size and frame, live, in augmented reality."
         url="/gallery"
       />
-      <SceneBackdrop src="/img/scenes/news-indigo-carpet-blurheavy-v1.webp" />
+      <SceneBackdrop src="/img/scenes/news-indigo-carpet-blurmod-v1.webp" />
       <Nav overlay />
 
       <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
