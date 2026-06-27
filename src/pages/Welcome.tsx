@@ -1122,43 +1122,41 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* FULLY-VISIBLE NATURAL Earth limb (Hugo: "i never wanted a rose
-                earth — i need it normal colours"). The real blue Earth limb
-                (earth-natural-v1.webp) is bottom-pinned + full-width and bleeds
-                past both edges (no centred strip-box). Its black SPACE is baked
-                TRANSPARENT (alpha = luminance) and the top + bottom edges fade
-                out, so ONLY the lit, natural-colour Earth composites onto the
-                deep-rose backdrop — a real Earth horizon with NO dark boxes and
-                NO recolouring. High opacity so it shows clearly. z-[1], below
-                the content (z-10). */}
+            {/* THE MOON — closes the page (Hugo: "instead of the sun at the
+                bottom… the highest-definition moon, in the same exact position").
+                A clean full-moon disc rising from the bottom edge, where the sun's
+                glow used to sit. Source: NASA SVS "Dial-a-Moon" render (frame 0570,
+                the full phase) — genuinely PUBLIC DOMAIN, no attribution needed.
+                Its black space is baked TRANSPARENT (alpha = luminance) so ONLY the
+                lit disc + a soft cool halo composite onto the deep-rose backdrop —
+                a luminous circle (a sacred-geometry echo) with NO dark box. z-[1],
+                below the content (z-10). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[44svh] md:h-[48svh] overflow-hidden"
             >
-              {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
-                  the rust period in the finale type stays the one literal accent. */}
+              {/* Faint cool moon-glow behind the disc at the BOTTOM — atmosphere
+                  only; the rust period in the finale type stays the one accent. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-[45%]"
+                className="absolute inset-x-0 bottom-0 h-[55%]"
                 style={{
                   background:
-                    "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.16) 0%, rgba(201,120,68,0) 70%)",
+                    "radial-gradient(120% 85% at 50% 100%, rgba(206,214,236,0.12) 0%, rgba(206,214,236,0) 70%)",
                 }}
               />
               <img
-                src={asset("/img/scenes/sun-real-v4.webp")}
+                src={asset("/img/scenes/moon-finale-v1.webp")}
                 alt=""
                 loading="eager"
                 decoding="async"
-                className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
+                className="absolute inset-0 h-full w-full object-cover object-bottom select-none"
                 style={{
-                  objectPosition: "center 30%",
-                  filter: "brightness(0.88) saturate(0.97)",
-                  // SPIN AROUND — the sun curves UP from the pinned bottom edge,
-                  // the exact mirror of the sun that now OPENS the page at the top.
-                  // scaleY(-1) also flips the sun-band-fade so it is solid at the
-                  // bottom edge and melts up into the peacock backdrop.
-                  transform: "scaleY(-1)",
+                  // No flip — a moon disc reads upright. Bottom-pinned so it rises
+                  // from the lower edge; gently dimmed so it never out-shouts the
+                  // cream type (Hugo's brightness rule — the local text scrim does
+                  // the rest of the legibility work).
+                  filter: "brightness(0.92) saturate(0.98)",
                 }}
               />
             </div>
