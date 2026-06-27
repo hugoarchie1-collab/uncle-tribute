@@ -33,12 +33,12 @@ const PEACOCK_BACKDROPS = [
   // composited layer. The 600px file is the texture the compositor samples on
   // every scroll frame, so a smaller texture is a cheaper, cache-friendlier
   // composite. Full-size originals kept on disk for the immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v3-sm.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v3-sm.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v3-sm.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v3-sm.webp", name: "Mary Pink" },
 ];
 
 /**
@@ -1122,41 +1122,39 @@ export const Welcome = () => {
             aria-label="Sacred Geometry"
           >
 
-            {/* THE MOON — closes the page (Hugo: "instead of the sun at the
-                bottom… the highest-definition moon, in the same exact position").
-                A clean full-moon disc rising from the bottom edge, where the sun's
-                glow used to sit. Source: NASA SVS "Dial-a-Moon" render (frame 0570,
-                the full phase) — genuinely PUBLIC DOMAIN, no attribution needed.
-                Its black space is baked TRANSPARENT (alpha = luminance) so ONLY the
-                lit disc + a soft cool halo composite onto the deep-rose backdrop —
-                a luminous circle (a sacred-geometry echo) with NO dark box. z-[1],
-                below the content (z-10). */}
+            {/* THE SUN — closes the page (Hugo reverted the moon: "the moon looks
+                terrible, go back to the sun"). The real sun photo curves up from the
+                pinned bottom edge, mirroring the sun that opens the page at the top.
+                Dimmed to brightness 0.72 (was 0.88) so the cream finale type reads
+                easily over it (Hugo: "make sure you can easily read text") — the
+                local text scrim below does the rest. z-[1], below the content. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[44svh] md:h-[48svh] overflow-hidden"
             >
-              {/* Faint cool moon-glow behind the disc at the BOTTOM — atmosphere
-                  only; the rust period in the finale type stays the one accent. */}
+              {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
+                  the rust period in the finale type stays the one literal accent. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-[55%]"
+                className="absolute inset-x-0 bottom-0 h-[45%]"
                 style={{
                   background:
-                    "radial-gradient(120% 85% at 50% 100%, rgba(206,214,236,0.12) 0%, rgba(206,214,236,0) 70%)",
+                    "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 70%)",
                 }}
               />
               <img
-                src={asset("/img/scenes/moon-finale-v1.webp")}
+                src={asset("/img/scenes/sun-real-v4.webp")}
                 alt=""
                 loading="eager"
                 decoding="async"
-                className="absolute inset-0 h-full w-full object-cover object-bottom select-none"
+                className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
                 style={{
-                  // No flip — a moon disc reads upright. Bottom-pinned so it rises
-                  // from the lower edge; gently dimmed so it never out-shouts the
-                  // cream type (Hugo's brightness rule — the local text scrim does
-                  // the rest of the legibility work).
-                  filter: "brightness(0.92) saturate(0.98)",
+                  objectPosition: "center 30%",
+                  // Dimmer than before so the centred cream type stays legible.
+                  filter: "brightness(0.72) saturate(0.95)",
+                  // scaleY(-1): the sun curves UP from the pinned bottom edge,
+                  // mirroring the sun that opens the page at the top.
+                  transform: "scaleY(-1)",
                 }}
               />
             </div>
@@ -1179,7 +1177,7 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0 -z-10"
                 style={{
                   background:
-                    "radial-gradient(70% 62% at 50% 50%, rgba(9,7,11,0.62) 0%, rgba(9,7,11,0.42) 42%, rgba(9,7,11,0.16) 72%, rgba(9,7,11,0) 100%)",
+                    "radial-gradient(74% 66% at 50% 50%, rgba(9,7,11,0.74) 0%, rgba(9,7,11,0.54) 42%, rgba(9,7,11,0.22) 72%, rgba(9,7,11,0) 100%)",
                 }}
               />
               {/* The statement is the HERO of the close — the biggest thing on
