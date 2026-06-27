@@ -288,13 +288,6 @@ const PAGE_SEEDS: PageSeed[] = [
     body: "See it on your wall — augmented reality AR camera preview. Point your phone at the wall and view any print at its real size, in any colourway, size and frame. Virtual exhibition, try before you buy, room view, true to scale.",
   },
   {
-    id: "page-library",
-    title: "Library",
-    subtitle: "Stephen's writings & references",
-    url: "/library",
-    body: "Library — Stephen Meakin's writings, notes, references and resources on sacred geometry and the mandala tradition. Reading, archive, documents.",
-  },
-  {
     id: "page-account",
     title: "Your account",
     subtitle: "Sign in",

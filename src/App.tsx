@@ -50,7 +50,6 @@ const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Sea
 const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
 const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
 const Gallery = lazy(() => import("./pages/Gallery").then((m) => ({ default: m.Gallery })));
-const Library = lazy(() => import("./pages/Library").then((m) => ({ default: m.Library })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -130,8 +129,6 @@ const AnimatedRoutes = () => {
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
-          {/* Library — the reading room: the books that shaped Stephen. */}
-          <Route path="/library" element={<Library />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/auth" element={<Auth />} />

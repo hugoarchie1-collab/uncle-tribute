@@ -33,7 +33,6 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
     links: [
       { to: "/about", label: "About Stephen" },
       { to: "/news", label: "News" },
-      { to: "/library", label: "The Library" },
     ],
   },
   {
