@@ -135,7 +135,7 @@ interface Chapter {
 const CHAPTERS: readonly Chapter[] = [
   { id: "beginnings", kicker: "Beginnings", tag: "Staffordshire · 1966", watermark: "1966" },
   { id: "bournemouth", kicker: "Bournemouth", tag: "1990", watermark: "1990" },
-  { id: "wandering", kicker: "The wandering years", tag: "France · Ibiza · Mexico · The Virgin Islands", watermark: "1990s" },
+  { id: "wandering", kicker: "Years abroad", tag: "France · Ibiza · Mexico · The Virgin Islands", watermark: "1990s" },
   { id: "return", kicker: "Return & the first mandala", tag: "Brighton · 1996 – 2002" }, // display moment: the Anegada poster
   { id: "ritual", kicker: "Art as ritual", tag: "In his own words" }, // display moment: the sticky spread
   { id: "lewes", kicker: "Four traditions", tag: "Lewes · Phoenix Place" }, // display moment: the promoted cairn portrait
@@ -154,31 +154,27 @@ const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"] 
 // title row (+ the ghost watermark year where the pacing law allows it).
 // Reveals in fixed order via sibling Reveal delays (the shipped stagger
 // pattern): hairline → kicker → title row.
-const ChapterHead = ({ id, title }: { id: ChapterId; title: string }) => {
+// Chapter heading = ONLY the factual signature (Chapter numeral · place · year).
+// The big invented display titles ("A dusty old hardback", "The wandering
+// years", etc.) were REMOVED — they were editorial inventions layered over
+// Stephen's own words and did not belong here (Hugo). Each chapter now leads
+// with the dignified factual line, then his verbatim prose.
+const ChapterHead = ({ id }: { id: ChapterId }) => {
   const index = CHAPTERS.findIndex((c) => c.id === id);
   const chapter = CHAPTERS[index];
   const numeral = ROMAN_NUMERALS[index];
   return (
-    <header className={cn(READING_WIDE, "text-center mb-6 md:mb-8")}>
+    <header className={cn(READING_WIDE, "text-center mb-5 md:mb-6")}>
       <Reveal as="div">
         <div aria-hidden className="h-px w-full bg-ink/15" />
       </Reveal>
       <Reveal as="div" delay={0.06}>
-        <p className="m-0 mt-4 mb-3">
+        <p className="m-0 mt-4">
           <span className={EYEBROW}>Chapter {numeral}</span>
           <span className={cn(EYEBROW_MUTED, "ml-3")}>
             {chapter.kicker} · {chapter.tag}
           </span>
         </p>
-      </Reveal>
-      <Reveal as="div" delay={0.12}>
-        {/* Ghost watermark year REMOVED — its `hidden lg:block` overrode the
-            `flex` centring, so on desktop the giant year lost its centre and
-            landed on top of the heading (the overlap Hugo flagged). The chapter
-            sequence is already carried by the numeral + kicker + tag above. */}
-        <h2 className={cn(TITLE, "m-0 mx-auto max-w-[18ch] text-balance")}>
-          {title}
-        </h2>
       </Reveal>
     </header>
   );
@@ -840,7 +836,7 @@ export const About = () => {
             beside the two family prints from PDF p3 — the second dropped
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
-          <ChapterHead id="beginnings" title="Bath, Brighton, and a different aesthetic." />
+          <ChapterHead id="beginnings" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[0]}</p>
@@ -876,7 +872,7 @@ export const About = () => {
             café print straddling the baseline below. Document order preserved
             top-to-bottom: photo → text → photo. */}
         <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
-          <ChapterHead id="bournemouth" title="A dusty old hardback." />
+          <ChapterHead id="bournemouth" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <Plate
@@ -914,7 +910,7 @@ export const About = () => {
             people shots → Plate, never cropped. One shared caption under the
             run (its fact verbatim from earlyLife[2]). */}
         <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="wandering" title="The wandering years." />
+          <ChapterHead id="wandering" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1320px] 4xl:max-w-[1480px] mx-auto">
             <Reveal as="div">
@@ -1002,7 +998,7 @@ export const About = () => {
             ("In 1999… He never stopped.") promoted VERBATIM to the off-axis
             pull-line; then the poster. */}
         <section id="return" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="return" title="Architecture, fine art, and the first mandala." />
+          <ChapterHead id="return" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
@@ -1032,7 +1028,7 @@ export const About = () => {
             attribution line presents it as his words. parallax 0 here by law:
             sticky + transform fight. */}
         <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="ritual" title="The very palette of my being." />
+          <ChapterHead id="ritual" />
           <Reveal as="div" className="text-center mt-5 md:mt-6 mb-8 md:mb-10">
             <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
@@ -1081,7 +1077,7 @@ export const About = () => {
             the two tradition reference photographs. Caption on the cairn is
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
-          <ChapterHead id="lewes" title="Four traditions, one language." />
+          <ChapterHead id="lewes" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
@@ -1150,7 +1146,7 @@ export const About = () => {
             Fairmont, presented by the Majlis Gallery. Caption only what the
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="exhibitions" title="From the Majlis in Dubai to a Formula One car." />
+          <ChapterHead id="exhibitions" />
           <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
@@ -1194,9 +1190,6 @@ export const About = () => {
               parallax={0.1}
               sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
             />
-            <figcaption className="caption mt-4 text-center">
-              At work in the studio
-            </figcaption>
           </Reveal>
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
@@ -1285,9 +1278,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 768px) 50vw, 100vw"
               />
-              <figcaption className="caption mt-3 text-center">
-                Finished paintings crowd the studio wall
-              </figcaption>
             </Reveal>
             <Reveal as="figure" className="m-0" delay={0.08}>
               <ImageReveal
@@ -1298,9 +1288,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 768px) 50vw, 100vw"
               />
-              <figcaption className="caption mt-3 text-center">
-                Living with the work
-              </figcaption>
             </Reveal>
           </div>
 
@@ -1325,9 +1312,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 768px) 56vw, 100vw"
               />
-              <figcaption className="caption mt-3 text-center">
-                Blossom by blossom
-              </figcaption>
             </Reveal>
           </div>
 
@@ -1345,9 +1329,6 @@ export const About = () => {
               parallax={0.1}
               sizes="(min-width: 2200px) 1624px, (min-width: 1536px) 1404px, (min-width: 768px) calc(100vw - 64px), calc(100vw - 32px)"
             />
-            <figcaption className="caption mt-4 text-center">
-              Gathered among the paintings
-            </figcaption>
           </Reveal>
 
           {/* Q6 — the tea line, then the exhibition room beside the source
@@ -1438,7 +1419,7 @@ export const About = () => {
             passage — it belongs INSIDE this chapter per the PDF, and its
             mention of Az-Zarqa is the hinge into Chapter IX. */}
         <section id="academy" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="academy" title="The Art of Geometry Academy." />
+          <ChapterHead id="academy" />
           {/* The lead line rings wide as display type (it fills toward the
               edges without over-long reading lines); the two body passages then
               sit as a BALANCED two-column spread beneath a hairline — so the
@@ -1485,7 +1466,7 @@ export const About = () => {
             ⚠️ CAPTION IS CLAIM-FREE — school/Petra/Bedouin facts live in the
             verbatim palestine paragraph above; the caption claims nothing. */}
         <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
-          <ChapterHead id="azzarqa" title="To his students." />
+          <ChapterHead id="azzarqa" />
 
           <Reveal as="figure" className="m-0 max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <ContainImage
