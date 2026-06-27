@@ -859,6 +859,12 @@ export const Collections = () => {
             count ladder checkout applies (advertised == charged). */}
         <ComposeSetCard />
 
+        {/* Hairline divider so the two stacked set-cards read as TWO distinct
+            offers, not one conjoined dark block (Hugo). */}
+        <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <div aria-hidden="true" className="h-px bg-line/50 my-6 md:my-10" />
+        </div>
+
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across
             selector; getCompleteCatalogueBundle keeps advertised == charged. */}
         <CatalogueSetCard />
