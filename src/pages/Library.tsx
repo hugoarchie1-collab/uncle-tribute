@@ -2,24 +2,28 @@
 // artist Stephen Meakin, gathered slowly by the estate. Named export, wired into
 // routing / Nav / Footer / sitemap by the orchestrator (do not touch those here).
 //
-// Built to the established estate idiom, matched to News.tsx beat-for-beat:
-//   - The fixed dark scene backdrop (the already-dark indigo carpet) under the
-//     shared scrim, via the canonical <SceneBackdrop>; <main> rides `relative z-10`.
-//   - The refined <PageMasthead> front cover (Fraunces opsz 144 / wght 560, NEVER
-//     ≥700), a meta rule, one italic-regular emphasised phrase, an intro grid
-//     packed beneath under a border-t with on-backdrop textShadow.
-//   - A BOLD asymmetric LEAD spread for the featured book, then a quiet SHELF
-//     grid of the rest — rich at two books, scaling gracefully to many.
+// LAYOUT (2026-06-26 — Hugo: "I don't want the two books separated wtf"):
+// the page was previously SPLIT — a big asymmetric LEAD spread for the featured
+// book, then a separate "The shelf · N books, growing" grid for the rest, with a
+// divider heading wedged between. That read as two unrelated things. It is now ONE
+// cohesive shelf: a single heading, then a BALANCED TWO-UP grid of equal book
+// panels (cover beside an editorial caption). Two books read as a deliberate pair;
+// more books flow into the same grid. No lead/shelf divide, no lone-book special
+// casing, no dead rectangles.
+//
+// THE COVERS are bespoke ORIGINAL typographic cover cards (<BookCover>) — NOT
+// reproductions of the real, copyrighted jackets (The Road Less Travelled's cover
+// art + Gibran's original illustrations are copyrighted). Publisher-grade editorial
+// typography ONLY: framed edge + a muted spine bar, tracked-uppercase metadata, a
+// large Fraunces title set with care, a hairline rule, an author colophon. Palette
+// is locked to bg/ink/ink-muted/line/accent + each book's one muted `spineColor`.
 //
 // VOICE WALL (load-bearing): every `summary` is the estate reflecting; every
 // `bookQuote` is a famous line FROM the book, attributed to the book/author.
 // Stephen's own words appear NOWHERE on this page (see the books.ts header).
 //
-// Palette is locked to bg/ink/ink-muted/line/accent — the only colours that are
-// NOT from that set are the book COVERS (external depicted objects) and each
-// book's muted `spineColor` tab, both deliberately allowed. Tokens are imported
-// from ui/tokens (never re-typed). Reveal wraps whole elements only; covers use a
-// PLAIN lazy <img> (NOT AssetImage — no .webp sibling needed), like the photobook.
+// Tokens are imported from ui/tokens (never re-typed). Reveal wraps whole elements
+// only. The covers are pure type (no <img>, no fetched artwork) — original work.
 
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
@@ -34,7 +38,9 @@ import { asset } from "../lib/asset";
 import { absoluteUrl } from "../lib/seo";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE, META, BTN_PRIMARY } from "../components/ui/tokens";
-import { BOOKS, getLeadBook, getShelfBooks, type Book } from "../data/books";
+import { BOOKS, type Book } from "../data/books";
+import { Link } from "react-router-dom";
+import { useAuth } from "../lib/auth";
 
 // The estate inbox — also the mailto fallback recipient if the POST ever fails.
 const ESTATE_EMAIL = "info@themandalacompany.com";
@@ -44,66 +50,97 @@ const ESTATE_EMAIL = "info@themandalacompany.com";
 const TEXT_SHADOW_SOFT = "0 1px 10px rgba(0,0,0,0.7)";
 const TEXT_SHADOW_DEEP = "0 2px 14px rgba(0,0,0,0.7)";
 
-// ─── FallbackCard ─────────────────────────────────────────────────────────────
-// A bespoke Standard-Ebooks-style typographic card, used INSTEAD of a loud
-// mass-market jacket (book.useFallbackCard). Palette + the book's own muted
-// spineColor only — no image. Year top → large centred Fraunces title → hairline
-// rule → author at the foot in spineColor. Holds the 2/3 portrait ratio so it
-// sits flush beside photographed jackets in the same grid.
-const FallbackCard = ({ book }: { book: Book }) => (
-  <div
-    className="relative flex aspect-[2/3] w-full flex-col items-center justify-between overflow-hidden rounded-[2px] bg-bg px-5 py-6 text-center ring-1 ring-line"
-    style={{ boxShadow: "0 18px 40px -24px rgba(0,0,0,0.85)" }}
-  >
-    <span className={cn(EYEBROW_MUTED, "tracking-[0.3em]")}>{book.year}</span>
-    <span
-      className="font-display font-normal text-ink text-balance leading-[1.1] tracking-[-0.01em]"
-      style={{
-        fontVariationSettings: '"opsz" 72, "wght" 520',
-        fontSize: "clamp(20px, 2.1vw, 30px)",
-      }}
-    >
-      {book.title}
-    </span>
-    <div className="flex w-full flex-col items-center gap-3">
-      <span aria-hidden="true" className="h-px w-10 bg-line" />
-      <span
-        className="font-sans text-[11px] font-bold tracking-[0.04em]"
-        style={{ color: book.spineColor ?? "var(--ink-muted)" }}
-      >
-        {book.author}
-      </span>
-    </div>
-  </div>
-);
-
 // ─── BookCover ────────────────────────────────────────────────────────────────
-// The photographed jacket (a PLAIN lazy <img> — covers are external objects with
-// no .webp sibling), held in a 2/3 portrait frame with a hairline ring + a soft
-// drop shadow, lifting a touch on the row's group-hover. An optional spineColor
-// tab runs down the left edge for a hint of the physical book. Falls through to
-// the bespoke FallbackCard when the jacket is loud / off-key.
+// A bespoke, ORIGINAL typographic book cover — publisher-grade editorial type,
+// NEVER a reproduction of the real (copyrighted) jacket art. The grammar is the
+// confident editorial book-cover idiom: a deep-cream paper field on the dark
+// register, a muted coloured SPINE bar down the binding edge, a tracked-uppercase
+// metadata line at the head, a large Fraunces title set with real optical care in
+// the optical centre, a hairline rule, and the author + a "first published" year
+// colophon at the foot. One muted accent per book (its `spineColor`). Held in a
+// true 2/3 portrait ratio so the pair sits as a matched set; lifts a touch on the
+// panel's group-hover. Pure type — no <img>, no fetched artwork (original work).
 const BookCover = ({ book }: { book: Book }) => {
-  if (book.useFallbackCard) return <FallbackCard book={book} />;
+  // Each book's one muted warm tone (rust / slate-brown), falling back to accent.
+  const tone = book.spineColor ?? "var(--accent)";
   return (
     <div
-      className="relative overflow-hidden rounded-[2px] ring-1 ring-line transition-transform duration-500 ease-out group-hover:-translate-y-1"
-      style={{ boxShadow: "0 18px 40px -24px rgba(0,0,0,0.85)" }}
+      className="group/cover relative aspect-[2/3] w-full select-none overflow-hidden rounded-[3px] bg-[#ede6d6] text-[#0a0908] ring-1 ring-black/30 transition-transform duration-500 ease-out group-hover:-translate-y-1"
+      style={{
+        boxShadow:
+          "0 24px 50px -26px rgba(0,0,0,0.92), inset 0 0 0 1px rgba(10,9,8,0.06)",
+      }}
     >
-      {book.spineColor ? (
-        <span
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 z-10 w-[3px]"
-          style={{ backgroundColor: book.spineColor }}
-        />
-      ) : null}
-      <img
-        src={asset(book.coverImage)}
-        alt={`${book.title} by ${book.author}`}
-        loading="lazy"
-        decoding="async"
-        className="block aspect-[2/3] h-auto w-full object-cover"
+      {/* SPINE — the binding edge: a muted colour band + a hairline shadow where
+          it meets the board, so the card reads as a physical book, not a poster. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 z-20 w-[clamp(9px,3.5%,14px)]"
+        style={{ backgroundColor: tone }}
       />
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-[clamp(9px,3.5%,14px)] z-20 w-[6px]"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(10,9,8,0.22), rgba(10,9,8,0))",
+        }}
+      />
+
+      {/* A whisper of paper warmth + a subtle vignette toward the fore-edge so the
+          flat cream field has depth, like a printed board under a reading lamp. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 32% 28%, rgba(255,255,255,0.5), rgba(0,0,0,0) 60%), linear-gradient(125deg, rgba(0,0,0,0) 62%, rgba(10,9,8,0.05) 100%)",
+        }}
+      />
+
+      {/* The printed face: a hairline frame inset from the board edge, the type
+          centred within it. The frame + tracked metadata is the editorial signal. */}
+      <div className="absolute inset-0 z-10 flex flex-col px-[10%] py-[9%] pl-[15%] text-center">
+        <div
+          className="flex flex-1 flex-col items-center justify-between"
+          style={{ boxShadow: "inset 0 0 0 1px rgba(10,9,8,0.14)" }}
+        >
+          {/* HEAD — tracked metadata: the imprint, set in the book's tone. */}
+          <span
+            className="mt-[7%] font-sans text-[clamp(8px,1.6vw,11px)] font-bold uppercase leading-none tracking-[0.34em]"
+            style={{ color: tone }}
+          >
+            The Reading Room
+          </span>
+
+          {/* CENTRE — the title, set large with optical care; a hairline rule
+              under it, then the author. The optical heart of the cover. */}
+          <div className="flex w-full flex-col items-center gap-[6%] px-[4%]">
+            <h3
+              className="m-0 font-display font-normal leading-[1.04] tracking-[-0.015em] text-balance"
+              style={{
+                fontVariationSettings: '"opsz" 60, "wght" 540',
+                fontSize: "clamp(22px, 4.2vw, 38px)",
+              }}
+            >
+              {book.title}
+            </h3>
+            <span
+              aria-hidden="true"
+              className="h-px w-[clamp(28px,18%,52px)]"
+              style={{ backgroundColor: tone }}
+            />
+            <span className="font-sans text-[clamp(9px,1.7vw,12px)] font-bold uppercase tracking-[0.18em] text-[#0a0908]/80">
+              {book.author}
+            </span>
+          </div>
+
+          {/* FOOT — the colophon: first-published year, quiet and tracked. */}
+          <span className="mb-[7%] font-sans text-[clamp(8px,1.5vw,11px)] font-bold uppercase tracking-[0.3em] text-[#0a0908]/55">
+            First published {book.year}
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -151,146 +188,89 @@ const LibraryMasthead = () => (
   </PageMasthead>
 );
 
-// ─── LeadBook ─────────────────────────────────────────────────────────────────
-// The featured book as a BOLD asymmetric spread: the PORTRAIT cover sits in the
-// SMALLER column, the editorial column (eyebrow → Fraunces title → summary → an
-// italic pull-quote of the famous line FROM the book) fills the larger one. So
-// the page opens on a designed feature, never a thin centred stack.
-const LeadBook = ({ book }: { book: Book }) => (
-  <Reveal
-    as="section"
-    delay={0.05}
-    className="border-t border-line pt-6 md:pt-8 mb-10 md:mb-14"
-  >
-    <div className="group grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-center">
-      {/* COVER — the smaller column; portrait jacket, capped so it never towers. */}
-      <div className="md:col-span-5 lg:col-span-4">
-        <div className="mx-auto w-full max-w-[300px] md:max-w-none lg:max-w-[360px]">
-          <BookCover book={book} />
-        </div>
-      </div>
-
-      {/* EDITORIAL — the larger column. */}
-      <div className="md:col-span-7 lg:col-span-8">
-        <p className={cn(EYEBROW, "m-0 mb-4")} style={{ textShadow: TEXT_SHADOW_SOFT }}>
-          {book.author} · {book.year}
-        </p>
-        <h2
-          className="font-display tracking-[-0.025em] text-[clamp(30px,3.8vw,66px)] leading-[1.02] text-ink text-balance m-0 hero-text-shadow"
-          style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
-        >
-          {book.title}
-        </h2>
-        <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0")}>{book.summary}</p>
-
-        {book.bookQuote ? (
-          <figure className="mt-7 md:mt-9 m-0 border-l border-line pl-5 md:pl-7">
-            <blockquote
-              className="font-display font-normal italic tracking-[-0.01em] text-ink m-0 text-pretty"
-              style={{
-                fontVariationSettings: '"opsz" 40, "wght" 400',
-                fontSize: "clamp(19px, 1.9vw, 28px)",
-                lineHeight: 1.4,
-                textShadow: TEXT_SHADOW_SOFT,
-              }}
-            >
-              “{book.bookQuote}”
-            </blockquote>
-            {book.bookQuoteWho ? (
-              <figcaption className={cn(EYEBROW_MUTED, "mt-4")}>
-                {book.bookQuoteWho}
-              </figcaption>
-            ) : null}
-          </figure>
-        ) : null}
-      </div>
+// ─── ShelfBook ────────────────────────────────────────────────────────────────
+// ONE book on the shelf as a balanced editorial PANEL: the bespoke typographic
+// cover on one side, the estate caption on the other (author · year metadata →
+// Fraunces title → the estate's reflection → an attributed italic line FROM the
+// book). Every book renders identically — no "featured/lead" book set apart from
+// the rest. So two books read as a matched PAIR, more flow into the same grid.
+const ShelfBook = ({ book }: { book: Book }) => (
+  <article className="group grid grid-cols-[minmax(0,38%)_1fr] items-start gap-5 sm:gap-7 lg:gap-8">
+    {/* COVER — held narrow so the caption beside it carries the weight. */}
+    <div className="w-full max-w-[260px]">
+      <BookCover book={book} />
     </div>
-  </Reveal>
-);
 
-// ─── ShelfItem ────────────────────────────────────────────────────────────────
-// One quiet book on the shelf: the cover above a caption (author · year eyebrow →
-// Fraunces title that warms to accent on hover → estate summary → optional small
-// italic line from the book). `wide` lets a lone shelf book read richer (spanning
-// two columns with the cover beside the caption) so it never floats alone.
-const ShelfItem = ({ book, wide = false }: { book: Book; wide?: boolean }) => {
-  const caption = (
-    <div className="min-w-0">
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>
+    {/* CAPTION — the estate voice, on the dark register beside the cream cover. */}
+    <div className="min-w-0 pt-1">
+      <p className={cn(EYEBROW, "m-0 mb-3")} style={{ textShadow: TEXT_SHADOW_SOFT }}>
         {book.author} · {book.year}
       </p>
-      <h3 className="font-display font-semibold tracking-[-0.02em] text-[clamp(19px,1.6vw,26px)] leading-[1.12] text-ink text-balance m-0 transition-colors duration-300 group-hover:text-accent">
+      <h3
+        className="m-0 font-display tracking-[-0.02em] text-[clamp(24px,2.6vw,42px)] leading-[1.04] text-ink text-balance transition-colors duration-300 group-hover:text-accent hero-text-shadow"
+        style={{ fontVariationSettings: '"opsz" 72, "wght" 540' }}
+      >
         {book.title}
       </h3>
-      <p className={cn(META, "m-0 mt-2.5 max-w-[42ch]")}>{book.summary}</p>
+      <p
+        className={cn(SUBTITLE, "mt-4 md:mt-5 mb-0 max-w-[52ch] text-[clamp(15px,0.5vw_+_13px,20px)] leading-[1.62]")}
+        style={{ textShadow: TEXT_SHADOW_SOFT }}
+      >
+        {book.summary}
+      </p>
+
       {book.bookQuote ? (
-        <p
-          className="font-display font-normal italic text-ink-muted m-0 mt-3 text-pretty"
-          style={{
-            fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(14px, 0.95vw, 17px)",
-            lineHeight: 1.42,
-          }}
-        >
-          “{book.bookQuote}”
-        </p>
+        <figure className="mt-5 md:mt-6 m-0 border-l border-line pl-4 md:pl-5">
+          <blockquote
+            className="m-0 font-display font-normal italic tracking-[-0.01em] text-ink text-pretty"
+            style={{
+              fontVariationSettings: '"opsz" 40, "wght" 400',
+              fontSize: "clamp(17px, 1.5vw, 24px)",
+              lineHeight: 1.42,
+              textShadow: TEXT_SHADOW_SOFT,
+            }}
+          >
+            “{book.bookQuote}”
+          </blockquote>
+          {book.bookQuoteWho ? (
+            <figcaption className={cn(EYEBROW_MUTED, "mt-3")}>
+              {book.bookQuoteWho}
+            </figcaption>
+          ) : null}
+        </figure>
       ) : null}
     </div>
-  );
+  </article>
+);
 
-  // RICH (a lone / spotlighted shelf book): cover and caption sit side by side so
-  // it reads as a designed pair rather than a single small tile in dead space.
-  if (wide) {
-    return (
-      <article className="group sm:col-span-2 grid grid-cols-[minmax(0,9rem)_1fr] sm:grid-cols-[minmax(0,12rem)_1fr] gap-5 sm:gap-7 items-start">
-        <BookCover book={book} />
-        {caption}
-      </article>
-    );
-  }
-
-  // STANDARD: cover above caption, the quiet repeated shelf unit.
-  return (
-    <article className="group flex flex-col">
-      <BookCover book={book} />
-      <div className="mt-4">{caption}</div>
-    </article>
-  );
-};
-
-// ─── Shelf ────────────────────────────────────────────────────────────────────
-// The rest of the books under a Fraunces section head + a growing count, on a
-// responsive grid. With a single shelf book it renders richer (side-by-side) so
-// it never floats alone in a wide empty grid.
-const Shelf = ({ books }: { books: Book[] }) => {
+// ─── Bookshelf ────────────────────────────────────────────────────────────────
+// THE shelf — ONE cohesive section under ONE heading (no lead/shelf split that
+// Hugo rejected). A single Fraunces head + a quiet growing-count, then a BALANCED
+// grid of ShelfBook panels: two-up on lg+ so the pair sits side by side and FILLS
+// the width to the edges; one-up below where a side-by-side pair would crush. The
+// grid auto-flows new books into the same rhythm. No lone-book special case, no
+// dead rectangles.
+const Bookshelf = ({ books }: { books: Book[] }) => {
   if (books.length === 0) return null;
-  const lone = books.length === 1;
 
   return (
-    <section aria-label="The shelf">
-      <Reveal
-        as="div"
-        className="flex items-baseline gap-4 flex-wrap border-t border-line pt-5 md:pt-6"
-      >
-        <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.6vw,60px)] leading-[1.0] text-ink m-0">
-          The shelf
+    <section aria-label="The reading-room shelf" className="border-t border-line pt-6 md:pt-8">
+      <Reveal as="div" className="flex items-baseline gap-x-5 gap-y-1 flex-wrap">
+        <h2
+          className="m-0 font-display tracking-[-0.03em] text-[clamp(34px,5vw,76px)] leading-[0.98] text-ink hero-text-shadow"
+          style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
+        >
+          On the shelf
         </h2>
-        <p className={cn(EYEBROW_MUTED, "m-0")}>
+        <p className={cn(EYEBROW_MUTED, "m-0")} style={{ textShadow: TEXT_SHADOW_SOFT }}>
           {books.length} {books.length === 1 ? "book" : "books"}, growing
         </p>
       </Reveal>
 
-      <div
-        className={cn(
-          "mt-6 md:mt-8",
-          lone
-            ? "max-w-[820px]"
-            : "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-5 gap-x-6 gap-y-10",
-        )}
-      >
+      <div className="mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-x-10 xl:gap-x-16 gap-y-12 md:gap-y-16">
         {books.map((book, i) => (
-          <Reveal key={book.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
-            <ShelfItem book={book} wide={lone} />
+          <Reveal key={book.id} as="div" delay={Math.min(i * 0.06, 0.24)}>
+            <ShelfBook book={book} />
           </Reveal>
         ))}
       </div>
@@ -311,6 +291,7 @@ const Shelf = ({ books }: { books: Book[] }) => {
 // friendly-success contract: only a network failure shows an error). If the POST
 // throws, a prefilled mailto: to the estate is offered so the memory is never lost.
 const BookSuggestion = () => {
+  const signedIn = useAuth().status === "signedIn";
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -334,6 +315,10 @@ const BookSuggestion = () => {
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!signedIn) {
+      setStatus("error");
+      return;
+    }
     const trimmedEmail = email.trim();
     // Email is the only required field — same gate as the custom-size form.
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
@@ -423,7 +408,25 @@ const BookSuggestion = () => {
                 : "ring-line hover:ring-ink/40",
             )}
           >
-            {!open ? (
+            {!signedIn ? (
+              // Sign-in gate — a book can only be suggested by a signed-in
+              // visitor (Hugo: "they have to sign in to contribute").
+              <Link
+                to="/account"
+                className="block w-full text-left bg-transparent p-6 md:p-7 cursor-pointer"
+              >
+                <span className={cn(EYEBROW_MUTED, "block mb-3")}>
+                  A book that shaped him
+                </span>
+                <span className="block font-display font-semibold tracking-[-0.01em] text-[clamp(20px,2vw,28px)] leading-[1.15] text-ink mb-2">
+                  Sign in to suggest a book →
+                </span>
+                <span className={cn(META, "block")}>
+                  Suggestions come from a signed-in account, so the family knows
+                  who remembered the book.
+                </span>
+              </Link>
+            ) : !open ? (
               <button
                 type="button"
                 onClick={() => setOpen(true)}
@@ -570,11 +573,10 @@ const BookSuggestion = () => {
 
 // ─── Library ──────────────────────────────────────────────────────────────────
 export const Library = () => {
-  const lead = getLeadBook(BOOKS);
-  const shelf = getShelfBooks(BOOKS);
-
   // Per-book schema.org Book JSON-LD — a quiet structured-data nicety so each
-  // title is legible to crawlers. Public, factual book facts only.
+  // title is legible to crawlers. Public, factual book facts only. (The cover
+  // jacket file stays on disk as the canonical structured-data image even though
+  // the page now renders bespoke ORIGINAL typographic covers, not the jacket.)
   const jsonLd: object[] = BOOKS.map((book) => ({
     "@context": "https://schema.org",
     "@type": "Book",
@@ -586,15 +588,14 @@ export const Library = () => {
 
   const wired: ReactNode = (
     <>
-      {lead ? <LeadBook book={lead} /> : null}
-      <Shelf books={shelf} />
+      <Bookshelf books={BOOKS} />
       <BookSuggestion />
     </>
   );
 
   return (
     <div className="relative flex min-h-[100svh] flex-col overflow-x-hidden">
-      <SceneBackdrop src="/img/scenes/news-indigo-carpet-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/news-indigo-carpet-blurheavy-v1.webp" />
       <Seo
         title="The Reading Room — the books that shaped Stephen Meakin"
         description="The books that shaped Stephen Meakin — a reading room from the estate of the late artist (SEM, 1966–2021)."

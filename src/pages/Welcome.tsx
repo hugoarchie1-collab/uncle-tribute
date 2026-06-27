@@ -33,12 +33,12 @@ const PEACOCK_BACKDROPS = [
   // composited layer. The 600px file is the texture the compositor samples on
   // every scroll frame, so a smaller texture is a cheaper, cache-friendlier
   // composite. Full-size originals kept on disk for the immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v3-sm.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v3-sm.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v3-sm.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v11-sm.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
 ];
 
 /**

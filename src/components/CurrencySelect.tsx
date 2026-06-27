@@ -174,8 +174,11 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
           aria-activedescendant={`${panelId}-${code}`}
           className={cn(
             "overflow-hidden rounded-xl",
-            "bg-[#0a0908]/98",
-            "ring-1 ring-line",
+            // Fully OPAQUE lifted surface (was bg-[#0a0908]/98 — the 2% bleed
+            // let the heavy-blur page backdrop show through and washed the
+            // options out). Solid so every row reads cleanly.
+            "bg-[#16120f]",
+            "ring-1 ring-line-strong",
             // Menu/drawer variant: render INLINE (in normal flow) so the options
             // push the nav links below down instead of floating over them.
             // Header variant: keep the original floating dropdown unchanged.

@@ -22,7 +22,7 @@ import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
 import { CurrencyProvider } from "./components/CurrencyProvider";
-import { useMenuOpen, getDrawerWidthPx } from "./lib/menuStore";
+import { useMenuOpen } from "./lib/menuStore";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -178,19 +178,6 @@ const AnimatedRoutes = () => {
 const PageShell = ({ children }: { children: ReactNode }) => {
   const menuOpen = useMenuOpen();
 
-  // The exact px the page slides left == the drawer's rendered width. We resolve
-  // it in JS (getDrawerWidthPx) and re-resolve on resize, because a CSS
-  // `translateX(calc(-1 * min(420px, 86vw)))` resolves to ZERO in-engine (the
-  // `vw` inside min() inside the calc multiplication computes to 0 translation),
-  // so the page never moved — see menuStore for the full note. A concrete px
-  // value translates reliably and matches the panel width to the pixel.
-  const [drawerPx, setDrawerPx] = useState(() => getDrawerWidthPx());
-  useEffect(() => {
-    const onResize = () => setDrawerPx(getDrawerWidthPx());
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
   // `slid` mirrors `menuOpen` but LAGS it on close so the page can animate back
   // to translateX(0) BEFORE we drop the transform to `none`.
   //
@@ -231,11 +218,21 @@ const PageShell = ({ children }: { children: ReactNode }) => {
     <div
       onTransitionEnd={onTransitionEnd}
       style={{
+        // When the drawer opens we DON'T translate the page off-screen (that
+        // shoved the left edge — up to 86vw on phones — past the viewport, which
+        // is the "menu cuts half the text off" Hugo reported). Instead the whole
+        // page SHRINKS to 90% and hugs the left, so it visibly "readjusts" to
+        // make room for the right-edge drawer while every pixel stays on-screen.
+        // translateX(-5vw) cancels the centre-origin scale's left margin so the
+        // page's left edge lands exactly at 0 — nothing is ever clipped.
         transform: menuOpen
-          ? `translateX(-${drawerPx}px)`
+          ? "translateX(-5vw) scale(0.9)"
           : slid
-            ? "translateX(0)"
+            ? "translateX(0) scale(1)"
             : "none",
+        transformOrigin: "center center",
+        borderRadius: transformed ? 14 : undefined,
+        overflow: transformed ? "hidden" : undefined,
         willChange: transformed ? "transform" : "auto",
       }}
       className="min-h-[100dvh] transition-transform duration-[420ms] ease-smooth motion-reduce:transition-none"

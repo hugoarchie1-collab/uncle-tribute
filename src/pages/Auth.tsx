@@ -20,7 +20,6 @@ import { useParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
-import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { PageMasthead } from "../components/PageMasthead";
@@ -291,14 +290,8 @@ export const Auth = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      {/* TON 618 black hole (Hugo: "use this image" for the registry) — cosmic
-          permanence / provenance reads for an authentication page. Processed
-          through the canonical scene recipe (blur-scene.sh) + lifted into the
-          shared dark-luma band (composited full≈22, top40≈20) so the accretion
-          disk shows without out-shouting the cream form. NOT the solar image
-          (Hugo: "I never asked for the sun on estate registry"). */}
-      <SceneBackdrop src="/img/scenes/auth-ton618-blur-v1.webp" />
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
+      {/* Plain dark ground — Hugo removed the scene backdrop from the registry. */}
       <Seo
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."

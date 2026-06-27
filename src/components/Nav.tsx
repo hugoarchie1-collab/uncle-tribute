@@ -598,7 +598,7 @@ const NavMenu = ({
               <CurrencySelect variant="menu" className="mb-5" />
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-5" : ""}>
-                  <p className="mb-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink/45">
+                  <p className="mb-1 font-sans text-[11px] font-bold tracking-[0.18em] uppercase text-ink/70">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (

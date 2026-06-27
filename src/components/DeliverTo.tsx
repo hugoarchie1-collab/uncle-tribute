@@ -196,8 +196,10 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
             // support backdrop-filter still pay it even behind the supports-gate).
             // Dropped in favour of a near-opaque fill — the shadow below already
             // gives the panel its visual separation.
-            "bg-[#0a0908]/98",
-            "ring-1 ring-line",
+            // Fully OPAQUE lifted surface (was /98 — the bleed washed options
+            // out over the heavy-blur page backdrop).
+            "bg-[#16120f]",
+            "ring-1 ring-line-strong",
             // Menu/drawer variant: render INLINE (in normal flow) so the options
             // push the nav links below down instead of floating over them.
             // Header variant: keep the original floating dropdown unchanged.

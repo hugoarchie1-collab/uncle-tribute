@@ -19,7 +19,7 @@ import { asset } from "../lib/asset";
  * `relative z-10` on the page's <main> (and drop any opaque `bg-bg` from root).
  */
 export const AmbientBackdrop = ({
-  src = "/img/paintings/peacock-persian-indigo-blur-v3.webp",
+  src = "/img/paintings/peacock-persian-indigo-blur-v12.webp",
   opacity = 0.5,
 }: {
   /** Pre-blurred WebP under /public. Defaults to the calm Persian-indigo peacock. */

@@ -7,8 +7,10 @@ import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
+import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
+import { useAuth } from "../lib/auth";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT, LIFE_DATES } from "../data/content";
 
@@ -297,9 +299,13 @@ const CommentRow = ({
 const ShareMemoryModal = ({
   open,
   onClose,
+  signedIn,
+  accountEmail,
 }: {
   open: boolean;
   onClose: () => void;
+  signedIn: boolean;
+  accountEmail: string | null;
 }) => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -404,6 +410,12 @@ const ShareMemoryModal = ({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Belt to the sign-in gate above: never accept an anonymous submission.
+    if (!signedIn) {
+      setStatus("error");
+      setErrorMsg("Please sign in to share a memory.");
+      return;
+    }
     setStatus("submitting");
     setErrorMsg("");
 
@@ -527,6 +539,26 @@ const ShareMemoryModal = ({
                       Close
                     </button>
                   </div>
+                ) : !signedIn ? (
+                  // SIGN-IN GATE — a memory can only be left by a signed-in
+                  // visitor (Hugo: "they have to sign in to contribute a
+                  // message"). No anonymous wall posts; the account also gives
+                  // the family a real person behind each memory.
+                  <div className="py-2">
+                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
+                      To keep Steve's wall personal and free of spam, memories are
+                      shared from a signed-in account. Sign in with your email — it
+                      takes a moment — and your name will sit beside your words.
+                    </p>
+                    <Link
+                      to="/account"
+                      onClick={onClose}
+                      className={cn(BTN_PRIMARY, "mt-7 inline-flex w-fit")}
+                    >
+                      Sign in to leave a memory
+                      <span aria-hidden="true" className="ml-2">→</span>
+                    </Link>
+                  </div>
                 ) : (
                   <form onSubmit={handleSubmit} noValidate>
                     {/* Honeypot — bots fill the hidden field; we drop them. */}
@@ -596,6 +628,7 @@ const ShareMemoryModal = ({
                           name="email"
                           type="email"
                           autoComplete="email"
+                          defaultValue={accountEmail ?? undefined}
                           className="w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow"
                           placeholder="So the family can thank you"
                         />
@@ -748,6 +781,8 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
 
 export const Memories = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const auth = useAuth();
+  const signedIn = auth.status === "signedIn";
   const [published, setPublished] = useState<WallMemory[]>([]);
 
   // Fetch auto-published memories from KV (via the GET endpoint). Graceful:
@@ -789,7 +824,7 @@ export const Memories = () => {
           relative z-10. The z-[200] share modal sits well above this z-0 layer,
           so its stacking is undisturbed. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-aurora-beach-blur-v2.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-aurora-beach-blurheavy-v1.webp")} />
         {/* Shared scrim — the EXACT site-wide gradient (matches Collections /
             Welcome) so the cream copy stays legible over the photo while the
             backdrop reads as a subdued, moody texture. */}
@@ -917,7 +952,12 @@ export const Memories = () => {
 
       <FooterCatalogue />
       <Footer />
-      <ShareMemoryModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <ShareMemoryModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        signedIn={signedIn}
+        accountEmail={auth.status === "signedIn" ? auth.email : null}
+      />
     </div>
   );
 };

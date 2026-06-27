@@ -545,10 +545,10 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
 // blur/saturation recipe identical to Welcome.tsx: Persian Indigo → Blood Moon
 // Red → Moroccan Purple → Mary Pink.
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-blur-v3.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v3.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v3.webp", name: "Moroccan Purple" },
-  { url: "/img/paintings/peacock-mary-pink-blur-v11.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v12.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v12.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v12.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v12.webp", name: "Mary Pink" },
 ];
 
 // The four traditions Stephen wove together (named exactly as in ABOUT.legacy[0]).

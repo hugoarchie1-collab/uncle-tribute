@@ -289,7 +289,7 @@ export const OrderSuccess = () => {
 
   return (
     <div className="relative min-h-[100svh] flex flex-col">
-      <SceneBackdrop src="/img/scenes/order-seahorizon-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/order-seahorizon-blurheavy-v1.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>
@@ -362,7 +362,7 @@ export const OrderCancel = () => {
   const hasBasket = basketItems.length > 0;
   return (
     <div className="relative min-h-[100svh] flex flex-col">
-      <SceneBackdrop src="/img/scenes/order-seahorizon-blur-v2.webp" />
+      <SceneBackdrop src="/img/scenes/order-seahorizon-blurheavy-v1.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
         <Reveal>
