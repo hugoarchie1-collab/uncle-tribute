@@ -728,11 +728,11 @@ export const Welcome = () => {
                 subordinate clause, the closing rust period the one accent note.
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
-            <Reveal delay={0.1}>
-              <div aria-hidden="true" className="mt-4 md:mt-6 mb-3 h-px w-12 bg-ink/15" />
-              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] hero-text-shadow">
+            <Reveal delay={0.1} className="mt-14 md:mt-24 text-center">
+              <div aria-hidden="true" className="mx-auto mb-7 md:mb-10 h-px w-16 bg-ink/20" />
+              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] text-center hero-text-shadow">
                 <span
-                  className="block font-display text-ink text-balance"
+                  className="block font-display text-ink text-balance mx-auto"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
@@ -745,7 +745,7 @@ export const Welcome = () => {
                   <span className="text-accent">.</span>
                 </span>
                 <span
-                  className="block font-display font-normal italic text-ink-muted text-balance mt-3 md:mt-4"
+                  className="block font-display font-normal italic text-ink-muted text-balance mx-auto mt-4 md:mt-6"
                   style={{
                     fontVariationSettings: '"opsz" 36, "wght" 400',
                     fontWeight: 400,
