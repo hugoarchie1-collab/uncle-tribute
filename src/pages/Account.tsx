@@ -190,7 +190,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={status === "working"}
-            className="bg-transparent border-0 cursor-pointer font-sans text-[13px] font-bold tracking-[0.16em] uppercase text-ink-muted hover:text-accent transition-colors disabled:opacity-50"
+            className="bg-transparent border-0 cursor-pointer font-sans text-[13px] font-semibold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-50"
           >
             {status === "working" ? "Adding…" : avatar ? "Change photo" : "Add a photo"}
           </button>
