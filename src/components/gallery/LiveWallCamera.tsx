@@ -25,20 +25,22 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { type Colourway, type Painting } from "../../data/paintings";
+import { type Colourway, type Painting, FRAME_STYLES } from "../../data/paintings";
 import { AR_SIZES } from "../../lib/arAssets";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
 import { EYEBROW } from "../ui/tokens";
 
-// All framing options for the overlay — "unframed" included, because the print
-// is sold unframed by default (framing is the add-on). Not bound to the GLB
-// frame shells (this is a flat overlay), so we can show the true full range.
-type OverlayFrameId = "unframed" | "black-oak" | "natural-oak";
+// Framing options for the overlay, DERIVED from the canonical FRAME_STYLES
+// (src/data/paintings.ts) so the wall camera always carries the SAME frame
+// range as the product page and the two can never drift (Hugo's coherence rule).
+// "Unframed" is prepended (the print sells unframed by default — framing is the
+// add-on). The flat overlay isn't bound to the GLB shells, so it shows the full
+// range; each FRAME_STYLES swatch hex doubles as the overlay's wood colour.
+type OverlayFrameId = "unframed" | (typeof FRAME_STYLES)[number]["id"];
 const OVERLAY_FRAMES: { id: OverlayFrameId; label: string; wood: string | null }[] = [
   { id: "unframed", label: "Unframed", wood: null },
-  { id: "black-oak", label: "Black oak", wood: "#1c1a17" },
-  { id: "natural-oak", label: "Natural oak", wood: "#b8966a" },
+  ...FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, wood: f.swatch })),
 ];
 
 const MAX_CM = Math.max(...AR_SIZES.map((s) => s.cm));
@@ -198,7 +200,7 @@ export const LiveWallCamera = ({
     (AR_SIZES.find((s) => s.anchor) ?? AR_SIZES[0]).id,
   );
   const size = AR_SIZES.find((s) => s.id === sizeId) ?? AR_SIZES[0];
-  const [frameId, setFrameId] = useState<OverlayFrameId>("black-oak");
+  const [frameId, setFrameId] = useState<OverlayFrameId>("natural-oak");
   const frame = OVERLAY_FRAMES.find((f) => f.id === frameId) ?? OVERLAY_FRAMES[1];
 
   const [camState, setCamState] = useState<
