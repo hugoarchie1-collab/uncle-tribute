@@ -1529,12 +1529,17 @@ const BuyBox = ({
                           aria-pressed={frameStyle === f.id}
                           title={f.note}
                           className={cn(
-                            "font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            "inline-flex items-center gap-2 font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
                             frameStyle === f.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
                           )}
                         >
+                          <span
+                            aria-hidden="true"
+                            className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
+                            style={{ backgroundColor: f.swatch }}
+                          />
                           {f.label}
                         </button>
                       ))}

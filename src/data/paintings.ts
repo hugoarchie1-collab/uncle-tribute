@@ -396,10 +396,10 @@ export const getFramingPricePence = (tier: PrintTier): number | null =>
 // right frame from Point 101. Labels are mirrored (without prices) in
 // api/checkout.ts — keep the two in sync (gotcha #9, labels only / no money).
 export const FRAME_STYLES = [
-  { id: "natural-oak", label: "Natural oak", note: "Warm, light solid oak" },
-  { id: "stained-black", label: "Stained black", note: "Deep matt-black solid wood" },
-  { id: "white", label: "White", note: "Clean painted white" },
-  { id: "walnut-tray", label: "Walnut tray", note: "Contemporary float frame in solid walnut" },
+  { id: "natural-oak", label: "Natural oak", note: "Warm, light solid oak", swatch: "#c9a368" },
+  { id: "stained-black", label: "Stained black", note: "Deep matt-black solid wood", swatch: "#1c1a18" },
+  { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2" },
+  { id: "walnut-tray", label: "Walnut tray", note: "Contemporary float frame in solid walnut", swatch: "#5a4030" },
 ] as const;
 
 export const GLAZING_OPTIONS = [

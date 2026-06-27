@@ -161,7 +161,7 @@ export const NotFound = () => {
                   {painting.title}
                 </span>
                 <span className="mt-4 inline-flex items-baseline gap-2 font-sans text-[13.5px] text-ink-muted transition-colors duration-300 group-hover:text-ink">
-                  {painting.year}
+                  {painting.year !== "[ DATE ]" && painting.year}
                   <span
                     aria-hidden="true"
                     className="inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
