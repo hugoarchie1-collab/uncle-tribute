@@ -71,7 +71,7 @@ import { ABOUT, LIFE_DATES } from "../data/content";
 type Status = "idle" | "submitting" | "success" | "error";
 
 /** A memory plus an optional published image URL (from KV). */
-type WallMemory = Memory & { imageUrl?: string };
+type WallMemory = Memory & { imageUrl?: string; avatar?: string };
 
 // ---------------------------------------------------------------------------
 // ScrollBackdrop — the single full-page atmospheric layer, cloned from the
@@ -228,8 +228,18 @@ const CommentRow = ({
           : "py-[clamp(0.7rem,2vw,0.95rem)]",
       )}
     >
-      {/* AVATAR GUTTER — same monogram + scale for everyone, pinned NOT enlarged */}
-      <Monogram name={memory.name} />
+      {/* AVATAR GUTTER — the contributor's PUBLIC profile picture if they set
+          one (shown to everyone, the point of "public" pics); otherwise the
+          calm monogram. Same circular size for all. */}
+      {memory.avatar ? (
+        <img
+          src={memory.avatar}
+          alt={memory.name}
+          className="shrink-0 rounded-full object-cover ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)]"
+        />
+      ) : (
+        <Monogram name={memory.name} />
+      )}
       {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
       <div className="min-w-0 flex-1">
         {pinned ? (
@@ -434,6 +444,15 @@ const ShareMemoryModal = ({
       return;
     }
 
+    // The signed-in contributor's PUBLIC profile picture (set on /account)
+    // rides along so their face shows beside their words on the wall.
+    let avatar: string | undefined;
+    try {
+      avatar = localStorage.getItem("tasm.avatar") || undefined;
+    } catch {
+      avatar = undefined;
+    }
+
     try {
       const res = await fetch("/api/memories-submit", {
         method: "POST",
@@ -446,6 +465,7 @@ const ShareMemoryModal = ({
           email,
           botcheck,
           image: imageDataRef.current || undefined,
+          avatar,
         }),
       });
       if (res.ok) {

@@ -208,7 +208,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
         <p className={cn(META, "m-0 mt-2 max-w-[40ch]")} aria-live="polite">
           {status === "error" && note
             ? note
-            : "Your profile picture."}
+            : "Your profile picture — it appears beside any memory you share."}
         </p>
         <input
           ref={inputRef}

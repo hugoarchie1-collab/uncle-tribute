@@ -155,6 +155,11 @@ interface StoredMemory {
   relationship?: string;
   location?: string;
   message: string;
+  // Optional PUBLIC profile picture (a small ≤256px JPEG data-URL set on
+  // /account). Stored with the memory so the contributor's photo shows beside
+  // their words on the wall — making the avatar genuinely public (visible to
+  // others), not just on their own device. Capped + image-only on ingest.
+  avatar?: string;
   createdAt: string;
 }
 
@@ -428,6 +433,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           relationship: m.relationship,
           location: m.location,
           message: m.message,
+          avatar: m.avatar,
         }));
       return send(200, { memories });
     } catch (err) {
@@ -449,6 +455,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     email?: string;
     botcheck?: string;
     image?: string;
+    avatar?: string;
   };
   try {
     body =
@@ -472,6 +479,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const email = (body.email ?? "").toString().trim().toLowerCase();
   const imageDataUrl = (body.image ?? "").toString().trim();
   const hasImage = imageDataUrl.startsWith("data:image/");
+  // PUBLIC profile picture: accept ONLY a small image data-URL (the /account
+  // uploader emits a ≤256px JPEG, ~10–30KB). Hard-cap so a memory never bloats
+  // KV or the wall payload; anything else is dropped (graceful → monogram).
+  const avatarRaw = (body.avatar ?? "").toString().trim();
+  const avatar =
+    avatarRaw.startsWith("data:image/") && avatarRaw.length <= 60000 ? avatarRaw : "";
 
   if (!name) return send(400, { error: "Please add your name." });
   if (message.length < 2) return send(400, { error: "Please write a memory to share." });
@@ -543,6 +556,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       relationship: relationship || undefined,
       location: location || undefined,
       message,
+      avatar: avatar || undefined,
       createdAt: new Date().toISOString(),
     };
     published = await publishMemory(stored);
