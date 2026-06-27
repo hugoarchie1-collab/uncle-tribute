@@ -780,14 +780,14 @@ const LegalMasthead = ({
       <Reveal as="div" delay={0.06} className="lg:col-span-4">
         <nav aria-label="On this page">
           <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>On this page</p>
-          <ol className="m-0 p-0 list-none columns-2 lg:columns-1 gap-x-8">
+          <ol className="m-0 p-0 list-none columns-1 sm:columns-2 lg:columns-1 gap-x-8">
             {sections.map((section, i) => (
               <li key={i} className="break-inside-avoid mb-1.5">
                 <a
                   href={`#legal-${i}`}
                   className="group flex items-baseline gap-2 font-sans text-[13.5px] md:text-[14px] 3xl:text-[clamp(14px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
                 >
-                  <span aria-hidden className="font-sans text-[11px] font-bold tracking-[0.18em] tabular-nums text-ink/40 group-hover:text-accent">
+                  <span aria-hidden className="font-sans text-[11px] font-bold tracking-[0.18em] tabular-nums text-ink/55 group-hover:text-accent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>{section.heading}</span>

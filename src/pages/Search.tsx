@@ -228,7 +228,7 @@ export const Search = () => {
           >
             <span className={EYEBROW}>Search</span>
             <span aria-hidden="true" className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0")}>
+            <span aria-live="polite" className={cn(EYEBROW_MUTED, "shrink-0")}>
               {trimmed
                 ? `${total} ${total === 1 ? "result" : "results"}`
                 : "The estate"}

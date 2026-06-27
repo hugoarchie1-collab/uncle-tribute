@@ -209,15 +209,18 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
         type="button"
         onClick={onTake}
         disabled={status === "loading"}
+        aria-label={`Take ${painting.title} in ${colourwayName} too`}
         className={cn(BTN_SECONDARY, "mt-3.5 w-full disabled:opacity-60")}
       >
         {status === "loading" ? "Opening checkout…" : "Take this one too"}
       </button>
-      {status === "error" && (
-        <p className="mt-2 font-sans text-[12.5px] font-semibold text-ink m-0">
-          {errorMsg}
-        </p>
-      )}
+      <p aria-live="polite" className="m-0 empty:hidden">
+        {status === "error" && (
+          <span className="mt-2 block font-sans text-[12.5px] font-semibold text-ink">
+            {errorMsg}
+          </span>
+        )}
+      </p>
     </div>
   );
 };

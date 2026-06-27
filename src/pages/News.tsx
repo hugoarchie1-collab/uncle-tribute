@@ -130,7 +130,7 @@ const TypePill = ({ entry }: { entry: NewsEntry }) => (
 const EntryRow = ({ entry }: { entry: NewsEntry }) => {
   const ctaClass = cn(
     EYEBROW_TIGHT,
-    "mt-4 inline-flex items-center gap-1.5 transition-colors duration-300 hover:text-accent",
+    "mt-4 inline-flex items-center gap-1.5 rounded-sm transition-colors duration-300 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
   );
   // In-page #notify anchors use a native <a> so the browser scrolls to the
   // sign-up on the same route; real routes use the router <Link>.
@@ -321,9 +321,9 @@ export const News = () => {
               {/* The programme note — estate voice, set as a designed lead that
                   fills its half of the spread (NOT a thin half-empty column). */}
               <Reveal as="div" className="lg:col-span-6 flex flex-col">
-                <p className={cn(EYEBROW, "m-0 mb-5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
+                <h2 className={cn(EYEBROW, "m-0 mb-5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
                   Being prepared
-                </p>
+                </h2>
                 <p
                   className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
                   style={{
@@ -432,7 +432,7 @@ export const News = () => {
                     (no crammed/oversized inline form beside the artwork). */}
                 <a
                   href="#notify"
-                  className="mt-7 md:mt-8 inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="mt-7 md:mt-8 inline-flex items-center gap-2 rounded-sm font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Be the first to know
                   <span aria-hidden="true" className="text-accent">→</span>
@@ -462,7 +462,7 @@ export const News = () => {
                       onClick={() => setActive(f.id)}
                       className={cn(
                         EYEBROW_TIGHT,
-                        "rounded-full ring-1 px-4 py-2 transition-colors duration-300",
+                        "rounded-full ring-1 px-4 py-2 min-h-[44px] transition-colors duration-300 outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         on ? "ring-accent text-accent" : "ring-line hover:ring-ink/40 hover:text-ink",
                       )}
                     >
@@ -472,7 +472,10 @@ export const News = () => {
                 })}
               </div>
               <span aria-live="polite" className="sr-only">
-                {groups.reduce((n, g) => n + g.entries.length, 0)} entries shown
+                {(() => {
+                  const n = groups.reduce((sum, g) => sum + g.entries.length, 0);
+                  return n === 1 ? "1 entry shown" : `${n} entries shown`;
+                })()}
               </span>
             </Reveal>
 

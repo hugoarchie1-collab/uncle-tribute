@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -95,8 +95,8 @@ const OFFERINGS: Offering[] = [
 
 export const Trade = () => {
   const [enquireOpen, setEnquireOpen] = useState(false);
-  const openEnquire = useCallback(() => setEnquireOpen(true), []);
-  const closeEnquire = useCallback(() => setEnquireOpen(false), []);
+  const openEnquire = () => setEnquireOpen(true);
+  const closeEnquire = () => setEnquireOpen(false);
 
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -169,7 +169,7 @@ export const Trade = () => {
               >
                 <div className="flex items-baseline gap-4">
                   <span
-                    aria-hidden
+                    aria-hidden="true"
                     className="font-display font-semibold leading-none tracking-[-0.04em] text-ink/[0.18] select-none"
                     style={{
                       fontVariationSettings: '"opsz" 48, "wght" 600',
@@ -265,23 +265,30 @@ export const Trade = () => {
             </div>
             <div className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
               <div className="flex flex-col sm:flex-row lg:flex-col sm:items-start gap-4">
-                <button type="button" onClick={openEnquire} className={BTN_PRIMARY}>
+                <button
+                  type="button"
+                  onClick={openEnquire}
+                  className={cn(
+                    BTN_PRIMARY,
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                  )}
+                >
                   Make a trade enquiry
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center min-h-[44px] font-sans text-[clamp(14px,0.8vw,17px)] text-ink-muted hover:text-accent transition-colors"
+                  className="inline-flex items-center min-h-[44px] font-sans text-[clamp(14px,0.8vw,17px)] text-ink-muted hover:text-accent transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Or use the contact page
                   <span aria-hidden="true" className="ml-1.5">→</span>
                 </Link>
               </div>
-              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-fade mt-6 m-0">
+              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-muted mt-6 m-0 break-words">
                 Or write directly to{" "}
                 <a
                   href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"
-                  className="text-accent hover:underline"
+                  className="text-accent hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   info@themandalacompany.com
                 </a>

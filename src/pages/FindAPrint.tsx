@@ -227,7 +227,7 @@ export const FindAPrint = () => {
                 can also{" "}
                 <Link
                   to="/collections"
-                  className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
+                  className="text-accent underline underline-offset-4 hover:text-ink transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   browse by collection
                 </Link>
@@ -244,7 +244,11 @@ export const FindAPrint = () => {
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The colour lens
             </p>
-            <div className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <div
+              role="group"
+              aria-label="Filter by colour"
+              className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+            >
               {COLOUR_FAMILIES.map((f) => {
                 const on = active.has(f.key);
                 return (
@@ -252,9 +256,11 @@ export const FindAPrint = () => {
                     key={f.key}
                     type="button"
                     aria-pressed={on}
+                    aria-label={`${f.label} tones`}
                     onClick={() => toggle(f.key)}
                     className={cn(
                       "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                       on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
                     )}
                   >
@@ -279,7 +285,11 @@ export const FindAPrint = () => {
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The intention lens
             </p>
-            <div className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            <div
+              role="group"
+              aria-label="Filter by intention"
+              className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+            >
               {INTENTIONS.map((it) => {
                 const on = intent.has(it.key);
                 return (
@@ -290,6 +300,7 @@ export const FindAPrint = () => {
                     onClick={() => toggleIntent(it.key)}
                     className={cn(
                       "inline-flex items-center rounded-full px-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                       on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
                     )}
                   >
@@ -303,10 +314,12 @@ export const FindAPrint = () => {
           {/* Live count + reset — reflects BOTH lenses (colour ∩ intention). */}
           <Reveal as="div" className="mt-5 flex flex-wrap items-center justify-center gap-4">
             <p
+              role="status"
+              aria-live="polite"
               className={cn(EYEBROW_TIGHT, "m-0")}
               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
             >
-              {filtered.length} of {PAINTINGS.length}
+              Showing {filtered.length} of {PAINTINGS.length}
             </p>
             {(active.size > 0 || intent.size > 0) && (
               <button
@@ -315,7 +328,11 @@ export const FindAPrint = () => {
                   setActive(new Set());
                   setIntent(new Set());
                 }}
-                className={cn(BTN_SECONDARY, "min-h-[40px] px-4 py-2 text-[11px]")}
+                className={cn(
+                  BTN_SECONDARY,
+                  "min-h-[44px] px-4 py-2 text-[11px]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                )}
               >
                 Show all {PAINTINGS.length}
               </button>
@@ -334,7 +351,6 @@ export const FindAPrint = () => {
             ≈1/2/3-up cadence; a partial last row left-aligns under the title
             rather than orphaning to the centre. */}
         <div
-          aria-live="polite"
           className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-10"
           style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, clamp(300px, 23vw, 380px)), 1fr))" }}
         >
@@ -359,12 +375,12 @@ export const FindAPrint = () => {
                   </div>
                 </div>
                 <figcaption className="pt-4 md:pt-5">
-                  <h3
+                  <h2
                     className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                   >
                     {painting.title}
-                  </h3>
+                  </h2>
                   <p
                     className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink/70 m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
@@ -386,9 +402,9 @@ export const FindAPrint = () => {
                 setActive(new Set());
                 setIntent(new Set());
               }}
-              className="text-accent underline underline-offset-4 hover:text-ink transition-colors"
+              className="text-accent underline underline-offset-4 hover:text-ink transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
-              Show all {PAINTINGS.length}
+              show all {PAINTINGS.length}
             </button>
             .
           </p>

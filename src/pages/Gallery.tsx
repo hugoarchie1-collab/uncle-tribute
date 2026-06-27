@@ -158,7 +158,7 @@ export const Gallery = () => {
               </p>
               <p className="mt-3 m-0 max-w-[460px] font-sans text-[15px] leading-[1.7] text-ink-muted">
                 The Virtual Exhibition lives in your phone&rsquo;s camera. Scan the code to browse every one of
-                Stephen&rsquo;s prints on your own wall — any colourway, size and frame — live, in augmented reality.
+                Stephen&rsquo;s prints on your own wall — any colourway, size and frame — live, right on the wall.
               </p>
               <button
                 type="button"

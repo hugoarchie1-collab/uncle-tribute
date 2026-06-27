@@ -59,14 +59,14 @@ const FAQS: QA[] = [
       <>
         Yes — every issued print is recorded in the estate ledger, and any
         Certificate ID can be checked against it on our{" "}
-        <Link to="/auth" className="text-accent hover:underline">
+        <Link to="/auth" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           Authentication page
         </Link>
         . The Estate Registry covers prints issued from June 2026
         onward; for an earlier or unlisted certificate, write to{" "}
         <a
           href="mailto:info@themandalacompany.com"
-          className="text-accent hover:underline"
+          className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
         >
           info@themandalacompany.com
         </a>
@@ -93,7 +93,7 @@ const FAQS: QA[] = [
         traditional way; choose <strong>canvas</strong> for a bold, tactile,
         frameless surface that reads like an original painting. For canvas or an
         alternative paper, just{" "}
-        <Link to="/contact" className="text-accent hover:underline">
+        <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           tell us
         </Link>{" "}
         when you order and we'll arrange it with the atelier.
@@ -177,7 +177,7 @@ const FAQS: QA[] = [
         Write to{" "}
         <a
           href="mailto:info@themandalacompany.com"
-          className="text-accent hover:underline"
+          className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
         >
           info@themandalacompany.com
         </a>
@@ -185,10 +185,10 @@ const FAQS: QA[] = [
         damage and we'll replace at no cost or refund — your choice. If it
         didn't arrive, we'll open a claim with the carrier and replace or
         refund within 30 days. The full policy lives on our{" "}
-        <Link to="/returns" className="text-accent hover:underline">
+        <Link to="/returns" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           returns
         </Link>
-        {" "}and <Link to="/terms" className="text-accent hover:underline">terms</Link> pages.
+        {" "}and <Link to="/terms" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">terms</Link> pages.
       </>
     ),
   },
@@ -245,12 +245,12 @@ const FaqMasthead = () => (
             and after-sale care. For anything not covered here, write to{" "}
             <a
               href="mailto:info@themandalacompany.com"
-              className="text-accent hover:underline"
+              className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
             >
               info@themandalacompany.com
             </a>
             {" "}or use the{" "}
-            <Link to="/contact" className="text-accent hover:underline">
+            <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
               contact page
             </Link>
             .
@@ -303,7 +303,7 @@ const FaqBackdrop = () => {
 
 export const FAQ = () => {
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <FaqBackdrop />
       <Seo
         title="Frequently asked"
@@ -329,6 +329,7 @@ export const FAQ = () => {
             {FAQS.map((qa, i) => (
               <section
                 key={i}
+                aria-labelledby={`faq-q-${i}`}
                 className="relative flex flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
@@ -345,6 +346,7 @@ export const FAQ = () => {
                   <p className={cn(EYEBROW, "m-0 self-center")}>{qa.eyebrow}</p>
                 </div>
                 <h2
+                  id={`faq-q-${i}`}
                   className={cn(
                     "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-3",
                     "text-[clamp(23px,2.5vw,42px)] leading-[1.08]",

@@ -359,19 +359,29 @@ export const Contact = () => {
                     required
                     rows={8}
                     className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
-                    placeholder="A few lines about the work or enquiry."
+                    placeholder="A few lines about the work, or your enquiry."
                   />
                 </label>
 
                 {errorMsg && (
-                  <p role="alert" className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                  <p
+                    role="alert"
+                    className="mb-4 font-sans text-[15px] font-medium text-accent m-0"
+                    style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+                  >
+                    {errorMsg}
+                  </p>
                 )}
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
                   <button
                     type="submit"
                     disabled={status === "submitting"}
-                    className={cn(BTN_PRIMARY, "group")}
+                    aria-busy={status === "submitting"}
+                    className={cn(
+                      BTN_PRIMARY,
+                      "group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                    )}
                   >
                     {status === "submitting" ? "Sending…" : "Send your message"}
                     <span
@@ -383,7 +393,8 @@ export const Contact = () => {
                   </button>
                   <a
                     href="mailto:info@themandalacompany.com"
-                    className="group inline-flex items-center min-h-[44px] font-sans text-[14px] md:text-[clamp(14px,0.8vw,18px)] text-ink-muted hover:text-accent transition-colors"
+                    aria-label="Write directly to info@themandalacompany.com"
+                    className="group inline-flex items-center min-h-[44px] rounded-sm font-sans text-[14px] md:text-[clamp(14px,0.8vw,18px)] text-ink-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     Or write directly
@@ -418,7 +429,7 @@ export const Contact = () => {
                 <dd className="m-0">
                   <a
                     href="mailto:info@themandalacompany.com"
-                    className="font-sans text-[15px] md:text-[clamp(15px,0.85vw,19px)] text-ink hover:text-accent transition-colors break-words"
+                    className="inline-block rounded-sm font-sans text-[15px] md:text-[clamp(15px,0.85vw,19px)] text-ink hover:text-accent transition-colors break-words focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     info@themandalacompany.com

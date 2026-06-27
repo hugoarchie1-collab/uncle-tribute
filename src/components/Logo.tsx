@@ -13,7 +13,7 @@ interface LogoProps {
 }
 
 export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v3-w256.png`;
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v4-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*

@@ -355,7 +355,7 @@ export const Welcome = () => {
                 }}
               >
                 <img
-                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v2-w256.png`}
+                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v4-w256.png`}
                   alt=""
                   aria-hidden="true"
                   className="h-[1.4em] w-[1.4em] shrink-0 object-contain"

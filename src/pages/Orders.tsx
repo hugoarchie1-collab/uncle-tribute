@@ -78,7 +78,7 @@ export const Orders = () => {
             eyebrow="Orders & returns"
             meta={
               <Link to="/account" className="hover:text-accent transition-colors">
-                Sign in for full history →
+                Sign in for full history <span aria-hidden="true">→</span>
               </Link>
             }
             title={<>Track an order</>}
@@ -89,27 +89,27 @@ export const Orders = () => {
           {/* TRACK AN ORDER */}
           <Reveal as="div" className="lg:col-span-7">
             <form onSubmit={onSubmit} noValidate>
-              <span className={cn(EYEBROW, "block mb-3")}>Order reference</span>
+              <label htmlFor="orders-ref" className={cn(EYEBROW, "block mb-3")}>Order reference</label>
               <input
+                id="orders-ref"
                 type="text"
                 value={ref}
                 onChange={(e) => setRef(e.target.value)}
                 placeholder="cs_live_… (from your confirmation email)"
-                aria-label="Order reference"
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full bg-transparent px-4 py-3.5 ring-1 ring-line focus:ring-accent focus:outline-none transition-shadow font-sans text-[16px] md:text-[17px] text-ink placeholder:text-ink/30"
+                className="w-full bg-transparent px-4 py-3.5 ring-1 ring-line focus:ring-accent focus:outline-none transition-shadow font-sans text-[16px] md:text-[17px] text-ink placeholder:text-ink/45"
               />
-              <span className={cn(EYEBROW, "block mt-4 mb-3")}>Email on the order (optional)</span>
+              <label htmlFor="orders-email" className={cn(EYEBROW, "block mt-4 mb-3")}>Email on the order (optional)</label>
               <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
                 <input
+                  id="orders-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  aria-label="Email on the order"
                   autoComplete="email"
-                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-sans text-[16px] md:text-[17px] text-ink placeholder:text-ink/30 focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-sans text-[16px] md:text-[17px] text-ink placeholder:text-ink/45 focus:outline-none"
                 />
                 <button
                   type="submit"
