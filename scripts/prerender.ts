@@ -116,12 +116,6 @@ const STATIC_ROUTES: RouteHead[] = [
       "See Stephen Meakin's mandala paintings on your own wall at their true size, in augmented reality — choose the colourway, the print size and the frame, then place it in your room.",
   },
   {
-    routePath: "/library",
-    title: "The Reading Room — the books that shaped Stephen Meakin",
-    description:
-      "The books that shaped Stephen Meakin — a reading room from the estate of the late artist (SEM, 1966–2021).",
-  },
-  {
     routePath: "/for-you",
     title: "Find a piece for you",
     description:
