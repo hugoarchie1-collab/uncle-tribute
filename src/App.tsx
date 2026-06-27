@@ -4,9 +4,7 @@ import {
   Suspense,
   useEffect,
   useLayoutEffect,
-  useState,
   type ReactNode,
-  type TransitionEvent,
 } from "react";
 import { MotionConfig } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
@@ -22,7 +20,6 @@ import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
 import { initTrackingIfConsented } from "./lib/tracking";
 import { CurrencyProvider } from "./components/CurrencyProvider";
-import { useMenuOpen } from "./lib/menuStore";
 import "./styles/global.css";
 
 // Welcome (the landing page) loads eagerly so the cinematic intro paints
@@ -155,88 +152,27 @@ const AnimatedRoutes = () => {
 };
 
 /**
- * PUSH-CONTENT SHELL — wraps the routed page so that, when the nav drawer opens
- * (useMenuOpen, the shared lib/menuStore boolean), the WHOLE page slides LEFT by
- * the drawer's width to reveal the body-portaled panel sitting at the right edge
- * (Hugo's ask: "the whole page slides left and readjusts"). On close it slides
- * back. The slide is a GPU-composited `translateX` on the smooth house curve.
+ * PAGE SHELL — wraps the routed page. The mobile nav drawer is a clean OVERLAY:
+ * Nav renders the panel + a full-page dimming scrim, both portaled to
+ * document.body, so they float over the page. The page itself stays still.
  *
- * ⚠️ Deliberate, documented consequence: a `transform` on this shell re-bases
- * every `position:fixed` / `sticky` descendant to the shell's box, so the fixed
- * Nav + any sticky add-to-basket bars shift LEFT WITH the page — which IS the
- * push effect we want (they travel with the page, the menu button stays on
- * screen + clickable). The drawer, scrim, film-grain, custom cursor, toasts,
- * consent banner + modals are ALL portaled/mounted to document.body OUTSIDE this
- * shell, so they stay anchored to the viewport and never get dragged sideways.
- *
- * `will-change-transform` keeps it on its own layer; the transform is removed
- * (translate-x-0) when closed so it never permanently re-bases fixed children.
+ * History: this used to slide/scale the whole page LEFT when the menu opened
+ * ("the page should readjust"). That was abandoned — a transform on a tall,
+ * SCROLLED page can't be made artefact-free at every scroll position: it left a
+ * black gap above the content or clipped text at the edge. The drawer + scrim
+ * already read as "the page recedes behind the menu", so a passthrough is both
+ * correct and bulletproof. Keep it transform-free.
  */
 const PageShell = ({ children }: { children: ReactNode }) => {
-  const menuOpen = useMenuOpen();
-
-  // `slid` mirrors `menuOpen` but LAGS it on close so the page can animate back
-  // to translateX(0) BEFORE we drop the transform to `none`.
-  //
-  // ⚠️ Why this dance: ANY transform value — including translateX(0) — AND a
-  // standing `will-change: transform` each establish a containing block for
-  // `position:fixed` descendants, which would permanently re-base every page's
-  // fixed peacock/scene backdrop onto this shell and break it sitewide (the
-  // hard invariant PageTransition documents). So when fully idle we emit
-  // `transform: none` + NO will-change, leaving the closed page byte-identical
-  // to before this drawer existed. The re-basing (and the push effect it
-  // creates for the fixed Nav + sticky bars) is intentional ONLY while open.
-  //
-  // Open  → set transform immediately (re-base + slide in).
-  // Close → keep translateX(0) for the transition, then a transitionend (with a
-  //         belt-and-braces timeout) flips us back to `transform: none`.
-  const [slid, setSlid] = useState(false);
-  useEffect(() => {
-    if (menuOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSlid(true);
-      return;
-    }
-    // Closing: animate to translateX(0) now; the transitionend handler clears
-    // `slid` → `transform: none`. Fallback timeout covers reduced-motion /
-    // interrupted transitions where transitionend may not fire.
-    const t = window.setTimeout(() => setSlid(false), 520);
-    return () => window.clearTimeout(t);
-  }, [menuOpen]);
-
-  const transformed = menuOpen || slid;
-
-  const onTransitionEnd = (e: TransitionEvent<HTMLDivElement>) => {
-    // Only react to OUR transform transition ending while closed.
-    if (e.propertyName === "transform" && !menuOpen) setSlid(false);
-  };
-
-  return (
-    <div
-      onTransitionEnd={onTransitionEnd}
-      style={{
-        // When the drawer opens we DON'T translate the page off-screen (that
-        // shoved the left edge — up to 86vw on phones — past the viewport, which
-        // is the "menu cuts half the text off" Hugo reported). Instead the whole
-        // page SHRINKS to 90% and hugs the left, so it visibly "readjusts" to
-        // make room for the right-edge drawer while every pixel stays on-screen.
-        // translateX(-5vw) cancels the centre-origin scale's left margin so the
-        // page's left edge lands exactly at 0 — nothing is ever clipped.
-        transform: menuOpen
-          ? "translateX(-5vw) scale(0.9)"
-          : slid
-            ? "translateX(0) scale(1)"
-            : "none",
-        transformOrigin: "center center",
-        borderRadius: transformed ? 14 : undefined,
-        overflow: transformed ? "hidden" : undefined,
-        willChange: transformed ? "transform" : "auto",
-      }}
-      className="min-h-[100dvh] transition-transform duration-[420ms] ease-smooth motion-reduce:transition-none"
-    >
-      {children}
-    </div>
-  );
+  // The mobile nav is a clean OVERLAY drawer: Nav renders the panel + a full-page
+  // dimming scrim, both portaled to document.body. The routed page itself does NOT
+  // move when the menu opens. We tried sliding / scaling the whole page to "make
+  // room", but a transform on a tall, SCROLLED page can't avoid artefacts at every
+  // scroll position — it either left a black gap above the content ("huge black
+  // space at the top") or clipped text at the edge. The drawer + scrim already
+  // read as "the page recedes behind the menu", so the page now stays perfectly
+  // still: nothing clips, nothing gaps, at any scroll position.
+  return <div className="min-h-[100dvh]">{children}</div>;
 };
 
 export default function App() {
