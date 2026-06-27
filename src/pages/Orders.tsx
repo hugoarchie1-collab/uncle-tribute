@@ -158,8 +158,10 @@ export const Orders = () => {
             </form>
           </Reveal>
 
-          {/* RETURNS & AFTER-SALE */}
-          <Reveal as="div" delay={0.06} className="lg:col-span-5">
+          {/* RETURNS & AFTER-SALE — anchored as a deliberate hairline rail (the
+              Contact / Trade / Auth convention) so the shorter right column reads
+              as an intentional rail beside the form, never a floating void. */}
+          <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
             <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>Returns &amp; after-sale</p>
             <p className="font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-soft m-0 max-w-[40ch]">
               Every print is made to order. The A3 Open Edition carries the full 14-day

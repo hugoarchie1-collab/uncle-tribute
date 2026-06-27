@@ -400,24 +400,37 @@ const AboutMasthead = () => (
       </h1>
     </Reveal>
 
-    <div className="mt-4 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
-      <Reveal as="div" className="lg:col-span-3">
-        <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
-          SEM · Mandala artist &amp; sacred geometer
-        </p>
+    <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-7 items-start border-t border-line pt-5 md:pt-7">
+      {/* His portrait — the first image you see, set beside his name (Hugo:
+          "next to his title… avoid blank space… flawless luxury"). A contained,
+          evenly-feathered plate that fills what was dead space at the cover. */}
+      <Reveal as="figure" className="m-0 max-w-[360px] lg:max-w-none lg:col-span-4">
+        <ImageReveal
+          src="/img/about/12-stephen-portrait.jpg"
+          alt="Stephen Meakin"
+          edges="all"
+          parallax={0.06}
+        />
       </Reveal>
-      <Reveal as="div" delay={0.06} className="lg:col-span-9">
-        <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0"
-          style={{
-            fontVariationSettings: '"opsz" 32, "wght" 400',
-            fontSize: "clamp(23px, 2.7vw, 48px)",
-            lineHeight: 1.3,
-          }}
-        >
-          {ABOUT.opening[0]}
-        </p>
-      </Reveal>
+      <div className="lg:col-span-8">
+        <Reveal as="div">
+          <p className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.8]")}>
+            SEM · Mandala artist &amp; sacred geometer
+          </p>
+        </Reveal>
+        <Reveal as="div" delay={0.06}>
+          <p
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+            style={{
+              fontVariationSettings: '"opsz" 32, "wght" 400',
+              fontSize: "clamp(23px, 2.7vw, 48px)",
+              lineHeight: 1.3,
+            }}
+          >
+            {ABOUT.opening[0]}
+          </p>
+        </Reveal>
+      </div>
     </div>
   </section>
 );
@@ -584,6 +597,81 @@ const signOffAt = ABOUT.studentsLetter.lastIndexOf(LETTER_SIGN_OFF);
 const LETTER_BODY =
   signOffAt > 0 ? ABOUT.studentsLetter.slice(0, signOffAt).trimEnd() : ABOUT.studentsLetter;
 const LETTER_CLOSE = signOffAt > 0 ? ABOUT.studentsLetter.slice(signOffAt) : "";
+
+// ─── Verbatim pull-lines — the chapter "standout moments" ────────────────────
+// EVERY standout sentence on this page is a literal substring of its chapter's
+// own content.ts prose, EXTRACTED by slicing (never re-typed) — the same
+// no-invention discipline as LETTER_BODY/LETTER_CLOSE above and the precedent
+// fields ABOUT.anegadaQuote / ABOUT.earlyLife[4]. `pullSentence` returns the
+// exact span between a start marker and the end of an inclusive end marker, so
+// curly apostrophes / em-dashes / "true" quotes carry through byte-for-byte and
+// no character is ever authored here. If a marker fails to match (content
+// edited), it returns "" and the standout simply doesn't render — it can never
+// surface invented or malformed text.
+const pullSentence = (
+  source: string,
+  startMarker: string,
+  endMarkerInclusive: string,
+): string => {
+  const start = source.indexOf(startMarker);
+  if (start < 0) return "";
+  const endAt = source.indexOf(endMarkerInclusive, start);
+  if (endAt < 0) return "";
+  return source.slice(start, endAt + endMarkerInclusive.length);
+};
+
+// The four chapter standouts, each sliced verbatim from THAT chapter's prose.
+//   I    Beginnings   — the turn toward his own aesthetic (earlyLife[0])
+//   II   Bournemouth  — the birth of the geometry passion (earlyLife[1])
+//   VI   Four traditions — geometry's reach beyond the Islamic world is the
+//        interview's q1 close; but VI's own legacy[0] mission line is its lead,
+//        so VI keeps the TRADITIONS strip as its display and takes no pull.
+//   VII  Exhibitions → interview — "earth measure" (interview q1) as the hinge
+const PULL_BEGINNINGS = pullSentence(
+  ABOUT.earlyLife[0],
+  "Eventually, it was an exhibition",
+  "inspired him most.",
+);
+const PULL_BOURNEMOUTH = pullSentence(
+  ABOUT.earlyLife[1],
+  "On finding something",
+  "his passion for geometry was born.",
+);
+const PULL_EARTH_MEASURE = pullSentence(
+  INTERVIEW.qa[0].a,
+  "the word geometry means",
+  "order in nature.",
+);
+
+// ─── ChapterStandout ─────────────────────────────────────────────────────────
+// The repeated "one powerful verbatim sentence, pulled large under a hairline"
+// beat — the Chapter-IV first-mandala moment generalised so EVERY chapter that
+// lacks a bespoke display (poster / sticky chart / promoted portrait / letter)
+// still gets one deliberate, screen-filling standout. The sentence is passed in
+// already-sliced from content.ts (see pullSentence above) — this component
+// NEVER authors text. Centred on the page axis, filling its own band so a short
+// pull never strands a half-empty column beside it. Renders nothing if the
+// slice came back empty (marker drift safety).
+const ChapterStandout = ({
+  children,
+  className,
+}: {
+  children: string;
+  className?: string;
+}) => {
+  if (!children) return null;
+  return (
+    <Reveal as="div" className={cn(READING_WIDE, "text-center", className)}>
+      <div aria-hidden className="mx-auto mb-7 md:mb-9 h-px w-16 bg-ink/15" />
+      <p
+        className="font-display font-semibold tracking-[-0.02em] text-[clamp(27px,3.7vw,56px)] leading-[1.18] text-ink m-0 text-balance mx-auto max-w-[24ch]"
+        style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+      >
+        {children}
+      </p>
+    </Reveal>
+  );
+};
 
 export const About = () => {
   const reduceMotion = useReducedMotion();
@@ -846,6 +934,11 @@ export const About = () => {
               </Reveal>
             </div>
           </div>
+
+          {/* STANDOUT — the chapter's turning point, pulled VERBATIM from
+              earlyLife[0]: the Aboriginal-art exhibition that set his course.
+              Filled centred band under a hairline (no stranded column). */}
+          <ChapterStandout className="mt-9 md:mt-12">{PULL_BEGINNINGS}</ChapterStandout>
         </section>
 
         {/* 5 · CHAPTER II — BOURNEMOUTH (ghost 1990). Mirror of Chapter I so
@@ -879,6 +972,10 @@ export const About = () => {
               />
             </Reveal>
           </div>
+
+          {/* STANDOUT — the dusty-hardback discovery, pulled VERBATIM from
+              earlyLife[1]: where his passion for geometry was born. */}
+          <ChapterStandout className="mt-9 md:mt-12">{PULL_BOURNEMOUTH}</ChapterStandout>
         </section>
 
         {/* 6 · CHAPTER III — THE WANDERING YEARS (ghost 1990s). The album
@@ -1148,6 +1245,11 @@ export const About = () => {
               </ul>
             </Reveal>
           </div>
+
+          {/* STANDOUT — the hinge into the interview, pulled VERBATIM from his
+              own answer (INTERVIEW q1): what geometry actually means. It carries
+              the turn from the exhibitions ledger into his voice. */}
+          <ChapterStandout className="mt-9 md:mt-12">{PULL_EARTH_MEASURE}</ChapterStandout>
 
           <Dinkus />
 

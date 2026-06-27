@@ -58,8 +58,8 @@ import {
 } from "../data/news";
 
 /**
- * Fixed full-page backdrop — blurred indigo Persian carpets behind the whole
- * estate calendar (echoes the Persian sacred-geometry tradition). The Collections
+ * Fixed full-page backdrop — a blurred rainbow-mountain scene behind the whole
+ * estate calendar. The Collections
  * treatment, simplified for ONE image: a single bg-cover layer at full opacity
  * that drifts ±6% with WHOLE-PAGE scroll (useScroll over the document, no section
  * target), inset-[-8%] overscan so the parallax `y` can never expose an
@@ -283,12 +283,12 @@ export const News = () => {
 
   return (
     <div className="relative flex min-h-[100svh] flex-col overflow-x-hidden">
-      {/* FIXED BACKDROP LAYER — one blurred indigo Persian-carpet scene drifting
+      {/* FIXED BACKDROP LAYER — one blurred rainbow-mountain scene drifting
           ±6% with whole-page scroll (Collections' treatment, single image). */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <ScrollBackdrop photoUrl={asset("/img/scenes/news-rainbow-mountain-blur-v2.webp")} />
         {/* Shared scrim — the EXACT gradient Collections uses so the cream copy
-            stays legible while the carpet reads as a subdued, moody texture. */}
+            stays legible while the scene reads as a subdued, moody texture. */}
         <div
           aria-hidden="true"
           className="absolute inset-0"

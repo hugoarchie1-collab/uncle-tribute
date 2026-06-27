@@ -359,8 +359,11 @@ export const Account = () => {
             )}
           </Reveal>
 
-          {/* RIGHT — profile picture + framing + quick links. */}
-          <Reveal as="div" delay={0.06} className="lg:col-span-5">
+          {/* RIGHT — profile picture + framing + quick links. Anchored as a
+              deliberate hairline rail (the Contact / Trade / Auth convention) so
+              the shorter right column reads as an intentional rail beside the
+              order history / sign-in, never a floating void. */}
+          <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
             <AvatarUploader email={signedIn ? auth.email : null} />
             <p
               className="font-display font-normal tracking-[-0.01em] text-ink m-0 mt-8 md:mt-10 pt-7 md:pt-8 border-t border-line max-w-[34ch]"

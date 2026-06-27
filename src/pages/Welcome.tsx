@@ -790,23 +790,33 @@ export const Welcome = () => {
                 2026-06-03 (Hugo: images too big) to match the trimmed hero —
                 a contained framed portrait, not a full-viewport takeover. */}
             <figure className="m-0 hidden md:block absolute top-0 bottom-0 left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
+              {/* EVEN melt: feather the portrait on ALL FOUR sides (was y-only,
+                  which left a hard rectangular left/right edge against the page
+                  gutter). With edges="all" it dissolves into the page identically
+                  top, bottom, left and right — the mirror of the hero figure's
+                  "melts even" treatment, no single hard seam. */}
               <ImageReveal
                 src="/img/welcome/02-portrait-denim.jpg"
                 alt="Stephen Meakin"
                 fill
-                edges="y"
+                edges="all"
                 parallax={0.1}
                 objectPosition="center 35%"
                 shadow=""
               />
-              {/* Inner-right melt — the portrait dissolves into the page so the
-                  text reads cleanly over its right edge (no hard seam). */}
+              {/* Inner-right calm zone — a SOFT elliptical wash anchored at the
+                  portrait's inner-right (where the copy overlaps), fading to FULLY
+                  TRANSPARENT (alpha 0) at every edge so it can never read as a box
+                  or a one-sided dark strip. Replaces the old one-directional melt
+                  that started at solid #0a0908 and quieted only the right half —
+                  now it quiets the area under the text evenly, the same recipe the
+                  hero figure uses (mirrored to the inner-right). */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 w-1/2"
+                className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to left, #0a0908 0%, rgba(10,9,8,0.82) 26%, rgba(10,9,8,0.30) 64%, rgba(10,9,8,0) 100%)",
+                    "radial-gradient(120% 100% at 110% 50%, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.66) 30%, rgba(10,9,8,0.28) 58%, rgba(10,9,8,0) 82%)",
                 }}
               />
             </figure>
