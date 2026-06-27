@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Seo } from "../components/Seo";
@@ -291,7 +292,7 @@ export const Auth = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
-      {/* Plain dark ground — Hugo removed the scene backdrop from the registry. */}
+      <SceneBackdrop src="/img/scenes/auth-pine-blurmod-v1.webp" />
       <Seo
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."

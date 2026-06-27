@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { useNoindexHead } from "../lib/useNoindexHead";
@@ -257,6 +258,7 @@ export const Account = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
+      <SceneBackdrop src="/img/scenes/account-greatwall-blurmod-v1.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
         <Reveal as="header">
