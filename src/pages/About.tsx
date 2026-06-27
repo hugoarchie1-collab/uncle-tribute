@@ -64,10 +64,12 @@ import {
 //
 // Type canon: every chapter title is the shared TITLE token; eyebrows are
 // EYEBROW / EYEBROW_MUTED / EYEBROW_TIGHT; sustained prose is BODY (below) or
-// the LEAD scale (first paragraph of a chapter); captions are ONE convention
-// (PlateCaption). Fraunces opsz never exceeds 48; only loaded weights
-// (400/600/700) are used. No heading exceeds the TITLE clamp except the hero
-// h1 and the single Anegada poster.
+// the LEAD scale (first paragraph of a chapter). Photo figures carry NO
+// captions — the per-figure caption convention was removed (Hugo: "the stupid
+// captions underneath pictures on about, so unneeded"), and no invented label
+// text is allowed over the family/archive photos. Fraunces opsz never exceeds
+// 48; only loaded weights (400/600/700) are used. No heading exceeds the TITLE
+// clamp except the hero h1 and the single Anegada poster.
 //
 // Palette canon: cream ink over the shared peacock sky, ONE muted-ink token,
 // ONE warm hairline token (ring-line / border-line). Accent appears only on
@@ -184,16 +186,6 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
 // at xl widths and read as clutter; the chapter sequence is carried by the
 // ChapterHead headers themselves.)
 
-// ─── PlateCaption ────────────────────────────────────────────────────────────
-// THE one caption convention for every figure on the page: a short warm
-// hairline, then the sentence-case `.caption` register. Captions stay
-// CLAIM-FREE — only what the photo proves or content.ts states; a real
-// painting title inside a caption sits in <i> (renders display italic).
-// Captions removed at Hugo's request ("the stupid captions underneath pictures
-// on about, so unneeded"). Rendering nothing clears every figure caption on the
-// page in one place; the call sites stay valid (they just produce no caption).
-const PlateCaption = (_props: { children: ReactNode; className?: string }) => null;
-
 // ─── Plate ───────────────────────────────────────────────────────────────────
 // The family-album register: a personal snapshot mounted WHOLE at its native
 // ratio on a warm paper mat over the dark sky — the contained-framed-object
@@ -206,8 +198,6 @@ const Plate = ({
   width,
   height,
   sizes,
-  caption,
-  captionClassName,
   fill = false,
   aspect = "aspect-[4/3]",
 }: {
@@ -216,8 +206,6 @@ const Plate = ({
   width: number;
   height: number;
   sizes?: string;
-  caption?: ReactNode;
-  captionClassName?: string;
   /** FILL mode (Hugo: "fill the images like the home page, no gaps"): the photo
    *  covers a FIXED-aspect slot (object-cover) so a row of plates reads as ONE
    *  aligned grid with equal heights — no jigsaw. Default off = whole native ratio. */
@@ -252,7 +240,6 @@ const Plate = ({
         />
       )}
     </div>
-    {caption ? <PlateCaption className={captionClassName}>{caption}</PlateCaption> : null}
   </figure>
 );
 
@@ -799,7 +786,6 @@ export const About = () => {
                 width={1600}
                 height={1200}
                 sizes="(min-width: 768px) 33vw, 100vw"
-                caption="In the sun"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -811,7 +797,6 @@ export const About = () => {
                 width={800}
                 height={1200}
                 sizes="(min-width: 768px) 33vw, 50vw"
-                caption="Beside the work"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -823,7 +808,6 @@ export const About = () => {
                 width={828}
                 height={852}
                 sizes="(min-width: 768px) 33vw, 50vw"
-                caption="With his family"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -849,7 +833,6 @@ export const About = () => {
                   width={1353}
                   height={814}
                   sizes="(min-width: 768px) 48vw, 100vw"
-                  caption="A family wedding"
                 />
               </Reveal>
               <Reveal as="div" delay={0.09}>
@@ -859,7 +842,6 @@ export const About = () => {
                   width={1600}
                   height={1200}
                   sizes="(min-width: 768px) 48vw, 100vw"
-                  caption="Growing up"
                 />
               </Reveal>
             </div>
@@ -881,7 +863,6 @@ export const About = () => {
                 width={1600}
                 height={900}
                 sizes="(min-width: 768px) 48vw, 100vw"
-                caption="Bournemouth"
               />
             </Reveal>
             <Reveal as="div" delay={0.06}>
@@ -896,7 +877,6 @@ export const About = () => {
                 parallax={0.1}
                 sizes="(min-width: 768px) 600px, 100vw"
               />
-              <PlateCaption>At a café table</PlateCaption>
             </Reveal>
           </div>
         </section>
@@ -920,7 +900,6 @@ export const About = () => {
                 width={1600}
                 height={1200}
                 sizes="(min-width: 768px) 48vw, 100vw"
-                caption="An evening with friends"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -932,7 +911,6 @@ export const About = () => {
                 width={818}
                 height={1134}
                 sizes="(min-width: 768px) 32vw, 50vw"
-                caption="After dark"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -993,25 +971,38 @@ export const About = () => {
         </section>
 
         {/* 7 · CHAPTER IV — RETURN & THE FIRST MANDALA (kicker-only — the
-            Anegada poster below is this chapter's display moment). The study
-            years (ABOUT.earlyLife[3]) at LEAD + drop cap; ABOUT.earlyLife[4]
-            ("In 1999… He never stopped.") promoted VERBATIM to the off-axis
-            pull-line; then the poster. */}
+            Anegada poster below is this chapter's display moment). GAP FIX:
+            the old 2-col grid stranded ABOUT.earlyLife[4] (the 100-char "He
+            never stopped." line) in a half-empty cell beside the 701-char
+            earlyLife[3] prose — a tall void below a short pull. Now the long
+            study-years passage FILLS its measure as a balanced two-column
+            block (drop-cap opens column 1, column-fill:balance keeps both
+            even-bottomed — the proven recipe from Chapter III), and the short
+            verbatim line is promoted to a centred full-width STANDOUT band
+            beneath a hairline, filling its own measure instead of floating in a
+            stranded grid cell. Every word VERBATIM from content.ts. */}
         <section id="return" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
           <ChapterHead id="return" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
-            <Reveal as="div">
-              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
-            </Reveal>
-            <Reveal as="div" delay={0.08}>
-              <p
-                className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,52px)] leading-[1.2] text-ink m-0 text-balance"
-                style={{ fontVariationSettings: '"opsz" 36, "wght" 600' }}
-              >
-                {ABOUT.earlyLife[4]}
-              </p>
-            </Reveal>
-          </div>
+          <Reveal as="div" className={READING_WIDE}>
+            <p
+              className={cn(LEAD, "drop-cap lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
+            >
+              {ABOUT.earlyLife[3]}
+            </p>
+          </Reveal>
+
+          {/* The first-mandala line — a verbatim STANDOUT moment that spans the
+              measure, centred, under a hairline. The "1999 … He never stopped."
+              sentence set large fills its own band (no stranded column). */}
+          <Reveal as="div" className={cn(READING_WIDE, "mt-9 md:mt-12 text-center")}>
+            <div aria-hidden className="mx-auto mb-7 md:mb-9 h-px w-16 bg-ink/15" />
+            <p
+              className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,4vw,62px)] leading-[1.15] text-ink m-0 text-balance mx-auto max-w-[18ch]"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+            >
+              {ABOUT.earlyLife[4]}
+            </p>
+          </Reveal>
 
           {/* THE ANEGADA POSTER — the page's sole giant moment. */}
           <AnegadaPoster />
@@ -1060,10 +1051,6 @@ export const About = () => {
                       className="block w-full h-auto"
                     />
                   </div>
-                  {/* Caption facts are printed on the sheet itself. */}
-                  <PlateCaption>
-                    Harmonic frequencies — twelve cymatic patterns, 345 Hz to 5907 Hz
-                  </PlateCaption>
                 </Reveal>
               </div>
             </div>
@@ -1086,7 +1073,6 @@ export const About = () => {
                 aspect="aspect-[3/4]"
                 sizes="(min-width: 768px) 48vw, 100vw"
               />
-              <PlateCaption>On the cairn</PlateCaption>
             </Reveal>
             <Reveal as="div" delay={0.08}>
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[0]}</p>
@@ -1115,7 +1101,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 768px) 50vw, 100vw"
               />
-              <PlateCaption>The Persian geometric tradition</PlateCaption>
             </Reveal>
             <Reveal as="figure" className="m-0" delay={0.09}>
               <ImageReveal
@@ -1126,7 +1111,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 768px) 50vw, 100vw"
               />
-              <PlateCaption>Sainte-Chapelle, Paris — the rose windows of medieval Europe</PlateCaption>
             </Reveal>
           </div>
         </section>
@@ -1405,9 +1389,6 @@ export const About = () => {
                   />
                 </div>
               </div>
-              <PlateCaption className="justify-center">
-                Design studies for the Sahara Force India Formula One car
-              </PlateCaption>
             </figure>
           </Reveal>
         </section>
@@ -1476,7 +1457,6 @@ export const About = () => {
               parallax={0.06}
               sizes="(min-width: 1120px) 1080px, 100vw"
             />
-            <PlateCaption className="justify-center">With children and their mandalas</PlateCaption>
           </Reveal>
 
           <Reveal as="div" className="mt-6 md:mt-8 text-center">
@@ -1518,9 +1498,6 @@ export const About = () => {
               parallax={0.05}
               sizes="(min-width: 1160px) 1100px, calc(100vw - 32px)"
             />
-            <PlateCaption className="justify-center">
-              A TAGA group with their finished mandalas · Phoenix Place, Lewes
-            </PlateCaption>
           </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto">
             <Reveal as="figure" className="m-0">
@@ -1532,7 +1509,6 @@ export const About = () => {
                 parallax={0.08}
                 sizes="(min-width: 1160px) 540px, (min-width: 768px) 50vw, 100vw"
               />
-              <PlateCaption>The studio</PlateCaption>
             </Reveal>
             <Reveal as="figure" delay={0.09} className="m-0">
               <ContainImage
@@ -1541,7 +1517,6 @@ export const About = () => {
                 aspect="aspect-[4/3]"
                 sizes="(min-width: 1160px) 540px, (min-width: 768px) 50vw, 100vw"
               />
-              <PlateCaption>A class at work</PlateCaption>
             </Reveal>
           </div>
         </section>

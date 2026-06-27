@@ -35,6 +35,18 @@ import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../compone
 const PAGE_ENVELOPE =
   "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
 
+// ── SOFT SET-CARD SCRIM ───────────────────────────────────────────────────────
+// The set cards (complete-collection / compose / catalogue) sit ON the photo
+// backdrop. They used to be a HARD ringed dark panel — bg-[rgba(10,9,8,0.82)]
+// ring-1 ring-line — i.e. an opaque black rectangle with a hard ring, the exact
+// "ringed dark panel" the brief bans. Replaced with a soft scrim that holds dense
+// at the centre (where the heading/price/CTA sit) and fades to FULLY TRANSPARENT
+// (alpha 0) at every edge, so the card melts into the scene instead of cutting a
+// box out of it. No ring, no solid rectangle. The copy keeps its own text-shadow
+// legibility via the page scrim beneath; this is the local lift over the photo.
+const SET_CARD_SCRIM =
+  "radial-gradient(120% 100% at 50% 50%, rgba(9,7,6,0.86) 0%, rgba(9,7,6,0.78) 40%, rgba(9,7,6,0.42) 78%, rgba(9,7,6,0) 100%)";
+
 /**
  * Fixed backdrop layer that cross-fades between collection scenes as the
  * user scrolls. Each backdrop tracks its own section's visibility — when a
@@ -278,7 +290,10 @@ const CollectionSetCard = ({
       as="div"
       className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
-      <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
+      <div
+        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center"
+        style={{ background: SET_CARD_SCRIM }}
+      >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
         <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
           The complete {shortName}
@@ -359,7 +374,10 @@ const ComposeSetCard = () => {
       as="div"
       className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
-      <div className="bg-[rgba(10,9,8,0.82)] ring-1 ring-line px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center">
+      <div
+        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center"
+        style={{ background: SET_CARD_SCRIM }}
+      >
         <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
         <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
           Build a wall of your own
@@ -473,7 +491,10 @@ const CatalogueSetCard = () => {
       as="section"
       className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
     >
-      <div className="bg-[rgba(10,9,8,0.85)] ring-1 ring-line px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-12 lg:py-14 3xl:py-16 text-center">
+      <div
+        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-12 lg:py-14 3xl:py-16 text-center"
+        style={{ background: SET_CARD_SCRIM }}
+      >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
         <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>
           His life&rsquo;s work, in one collection.
@@ -686,11 +707,16 @@ export const Collections = () => {
                   · each with a Certificate of Authenticity
                 </p>
               </div>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line">
+              {/* Editions ledger — a hairline-grouted spec table (hairlines are
+                  the sanctioned grid idiom). The tiles were a hard near-opaque
+                  black box (0.72); softened to a translucent tinted panel so the
+                  photo reads through and the block no longer cuts a hard rectangle
+                  out of the scene. Text keeps its own shadow legibility. */}
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line/60">
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
-                    className="bg-[rgba(10,9,8,0.72)] px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
+                    className="bg-[rgba(9,7,6,0.5)] px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
                   >
                     <p
                       className="font-display font-semibold tracking-[-0.015em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0"

@@ -502,33 +502,36 @@ export const Welcome = () => {
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
             <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
+              {/* EVEN melt: the photo now feathers on ALL FOUR sides (was y-only,
+                  which left a hard rectangular left/right edge). With edges="all"
+                  the image dissolves into the page identically top, bottom, left
+                  and right — no single hard seam, so the photo "melts even". */}
               <ImageReveal
                 src="/img/welcome/01-painting-wild-rose.jpg"
                 alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                 eager
                 fill
-                edges="y"
+                edges="all"
                 parallax={0.1}
                 objectPosition="center"
                 shadow=""
               />
-              {/* Inner-left melt — the photo dissolves into the page so the
-                  headline reads cleanly over its left edge (no hard seam). */}
+              {/* Inner-left calm zone — a SOFT elliptical wash that quiets the
+                  photo's busy left portion (the area the tall headline overlaps),
+                  fading to FULLY TRANSPARENT (alpha 0) at every edge so it can
+                  never read as a box or a one-sided dark strip. Anchored at the
+                  inner-left so the headline's right edge always meets calm tone,
+                  never the busy painting — and it tapers away before the photo's
+                  own visible centre, so the artwork still reads at full strength.
+                  Replaces the old one-directional left-melt + lopsided warm seam
+                  (which softened only the very left edge and ran out before the
+                  headline cleared the busy interior). */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 w-1/2"
+                className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(to right, #0a0908 0%, rgba(10,9,8,0.82) 26%, rgba(10,9,8,0.30) 64%, rgba(10,9,8,0) 100%)",
-                }}
-              />
-              {/* One warm seam where type meets photo. */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 left-0 w-1/3"
-                style={{
-                  background:
-                    "linear-gradient(to right, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 72%)",
+                    "radial-gradient(120% 100% at -10% 50%, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.66) 30%, rgba(10,9,8,0.28) 58%, rgba(10,9,8,0) 82%)",
                 }}
               />
             </figure>
@@ -542,7 +545,24 @@ export const Welcome = () => {
               className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[60svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
-              <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[48%]">
+              <Reveal as="div" className="relative w-full md:max-w-[50%] lg:max-w-[48%]">
+                {/* SOFT TEXT SCRIM — a gentle elliptical wash that pools just
+                    enough warm-dark UNDER the headline so the type always rests
+                    on calm tone where its right edge overlaps the photo, never on
+                    the busy painting. Every edge ends at alpha 0 (radial fading to
+                    transparent), so it can NEVER read as a box or a hard panel —
+                    it simply melts the area under the text. Sits behind the glyphs
+                    (-z-10 within this column's own stacking context, above the
+                    z-[1] photo melt below it). Desktop only — the mobile image is
+                    stacked below the copy, so no overlap to quiet there. */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10 hidden md:block"
+                  style={{
+                    background:
+                      "radial-gradient(80% 75% at 42% 48%, rgba(9,7,8,0.62) 0%, rgba(9,7,8,0.40) 45%, rgba(9,7,8,0.16) 72%, rgba(9,7,8,0) 100%)",
+                  }}
+                />
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-4 text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(60px,11vw,140px)] leading-[1.0]">
                     So here we are on Earth

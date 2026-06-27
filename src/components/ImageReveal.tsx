@@ -16,7 +16,10 @@ interface ImageRevealProps {
   parallax?: number;
   /** Soft-mask edges: "all" fades 4 sides, "y" fades top+bottom, "none" leaves sharp. */
   edges?: "all" | "y" | "none";
-  /** Box shadow override */
+  /** Box shadow override. Default is an EVEN, vertically-balanced lift (a small
+   *  ambient ring + a soft drop) — deliberately NOT a single heavy downward
+   *  offset, which darkens only the bottom edge and reads as "one side melted,
+   *  the rest ignored" (Hugo). Pass a custom value to override. */
   shadow?: string;
   /** CSS object-position for the image. Default "center". Use "center top" for portraits. */
   objectPosition?: string;
@@ -43,7 +46,12 @@ export const ImageReveal = ({
   eager,
   parallax = 0.18,
   edges = "none",
-  shadow = "shadow-[0_24px_60px_rgba(0,0,0,0.55)]",
+  // An EVEN lift, not a bottom-heavy halo: a tight ambient ring fades the same
+  // amount on every side (0 offset) and a gentle, low-offset drop adds depth
+  // without dumping all the darkness on the bottom edge. The old single
+  // 0/24px/60px shadow pooled at the foot (the y-offset points straight down),
+  // which read as "only the bottom is treated, the rest ignored" (Hugo).
+  shadow = "shadow-[0_0_42px_rgba(0,0,0,0.42),0_10px_40px_rgba(0,0,0,0.40)]",
   objectPosition = "center",
   tilt = false,
   sizes = "100vw",

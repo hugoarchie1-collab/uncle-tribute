@@ -14,7 +14,7 @@ import { cn } from "../lib/cn";
 // (Mazar-i-Sharif), pre-blurred + darkened to the dark-family band so the cream
 // copy stays legible. webp referenced directly because it's a CSS background-image
 // (this matches Collections; the <picture> jpg-swap rule applies only to <img>).
-const BACKDROP = asset("/img/scenes/contact-blue-mosque-blurmod-v1.webp");
+const BACKDROP = asset("/img/scenes/contact-sunearth-blurmod-v1.webp");
 
 /**
  * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment
