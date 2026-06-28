@@ -205,7 +205,15 @@ const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 // "title of a work" signal), then the supporting passage packed immediately
 // beneath under a border-t.
 const FaqMasthead = () => (
-  <section className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}>
+  // Legibility shadow inherited by every text node (text-shadow cascades) so the
+  // cream copy stays readable over the faq-palm-sunset photo — matching the
+  // sister Contact page, which shadows all its nodes (the brightness rule: the
+  // backdrop must never out-shout the text). Whole-element, not per-glyph, so
+  // gotcha #2 (no SplitReveal blockiness) is not triggered.
+  <section
+    className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}
+    style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
+  >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -321,7 +329,10 @@ export const FAQ = () => {
             self-densifying — items flow two-up on md+ filling the horizontal
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
-        <section className={cn(SECTION, "pb-8 md:pb-10")}>
+        <section
+          className={cn(SECTION, "pb-8 md:pb-10")}
+          style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+        >
           <Reveal
             as="div"
             className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20 3xl:gap-x-28 gap-y-7 3xl:gap-y-9 border-t border-line"
@@ -335,7 +346,7 @@ export const FAQ = () => {
                 <div className="flex items-baseline gap-4">
                   <span
                     aria-hidden
-                    className="font-display font-semibold leading-none text-accent/55 select-none shrink-0"
+                    className="font-display font-semibold leading-none text-accent/80 select-none shrink-0"
                     style={{
                       fontVariationSettings: '"opsz" 32, "wght" 600',
                       fontSize: "clamp(20px,1.7vw,26px)",

@@ -240,7 +240,7 @@ const SetSizeSelector = ({
           >
             <span className="font-semibold tracking-[0.04em]">{sizeCode(tier)}</span>
             <span
-              className={cn("ml-2", active ? "text-bg/70" : "text-ink-muted/70")}
+              className={cn("ml-2", active ? "text-bg/70" : "text-ink/70")}
             >
               {editionWord(tier)}
             </span>
@@ -310,7 +310,7 @@ const CollectionSetCard = ({
           <span className="mx-3 text-ink/35">·</span>
           the set, offered together
         </p>
-        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
+        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-7">
           Taken individually, {fmtBundle(setFig.fullMinor)} — a saving of{" "}
           {fmtBundle(setFig.saveMinor)} as a set.
         </p>
@@ -388,8 +388,11 @@ const ComposeSetCard = () => {
           at checkout.
         </p>
 
-        {/* Pick grid — toggle paintings in/out of the set. */}
-        <div className="mt-7 md:mt-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 sm:gap-3">
+        {/* Pick grid — toggle paintings in/out of the set. All ten land on ONE
+            commanding row at 3xl (the FooterCatalogue 10-up idiom) so the AOV
+            builder fills its wide card instead of sitting as a half-empty
+            contact-sheet; a clean 5×2 below. */}
+        <div className="mt-7 md:mt-8 grid grid-cols-3 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
             const cover =
               p.colourways.find((c) => c.isOriginal && c.available) ??
@@ -406,7 +409,7 @@ const ComposeSetCard = () => {
                 title={p.title}
                 className={cn(
                   "group relative block aspect-square overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                  on ? "ring-2 ring-accent" : "ring-line hover:ring-accent/50",
+                  on ? "ring-2 ring-accent scale-[1.04] shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10" : "ring-line hover:ring-accent/50",
                 )}
               >
                 <AssetImage
@@ -444,7 +447,7 @@ const ComposeSetCard = () => {
               <span className="mx-3 text-ink/35">·</span>
               {count} prints, {sizeCode(tier)}
             </p>
-            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink-muted/80 m-0 mb-7">
+            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-7">
               Taken individually, {money(setFig.fullMinor)} — a saving of {money(setFig.saveMinor)} ({percent}%) as a set.
             </p>
             <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
@@ -456,7 +459,7 @@ const ComposeSetCard = () => {
             </p>
           </>
         ) : (
-          <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted/80 m-0 mt-2">
+          <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink/80 m-0 mt-2">
             Select at least two prints to begin your set.
           </p>
         )}
@@ -712,7 +715,7 @@ export const Collections = () => {
                   black box (0.72); softened to a translucent tinted panel so the
                   photo reads through and the block no longer cuts a hard rectangle
                   out of the scene. Text keeps its own shadow legibility. */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-line/60">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-ink/60">
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
@@ -798,7 +801,21 @@ export const Collections = () => {
                         // orphan). min-w-0 lets the basis shrink below content on
                         // narrow viewports so a long title can never widen the row
                         // past the viewport.
-                        className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,500px)]"
+                        // COUNT-AWARE basis (Hugo's "goes gappy" fix): a hard
+                        // 500px/30% cap stranded ~800px of black flanking the
+                        // 2-painting Habundia row on wide screens. The basis now
+                        // scales to the collection size so a diptych commands the
+                        // envelope, a triptych fills cleanly, and 4+ keeps the
+                        // dense grid (cap lifted 500→560). Literal class strings
+                        // (one per branch) so Tailwind's JIT generates each.
+                        className={cn(
+                          "m-0 min-w-0",
+                          items.length <= 2
+                            ? "flex-[0_1_clamp(380px,46%,720px)]"
+                            : items.length === 3
+                              ? "flex-[0_1_clamp(300px,31%,560px)]"
+                              : "flex-[0_1_clamp(280px,30%,560px)]",
+                        )}
                         // Each tile drives its OWN whileInView (not the parent
                         // RevealStagger orchestration) with amount:0 so ANY sliver
                         // of visibility commits the reveal. This guarantees tall
@@ -824,7 +841,7 @@ export const Collections = () => {
                           className="group block"
                           aria-label={`View ${painting.title}`}
                         >
-                          <div className="aspect-square overflow-hidden ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                          <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
                             {/* Gentle zoom on hover only — a small scale-up of the
                                 cover. Hugo: hover should zoom in a little, never
                                 flick to another colourway. */}
@@ -834,14 +851,14 @@ export const Collections = () => {
                                 alt={paintingImageAlt(painting.title, cover.name)}
                                 loading="lazy"
                                 decoding="async"
-                                sizes="(min-width: 1400px) 500px, (min-width: 640px) 30vw, 90vw"
+                                sizes="(min-width: 1400px) 640px, (min-width: 640px) 38vw, 90vw"
                                 className="w-full h-full object-cover"
                               />
                             </div>
                           </div>
-                          <figcaption className="pt-4 text-center">
+                          <figcaption className="pt-5 md:pt-6 text-center">
                             <h3
-                              className="font-display font-semibold text-[16px] md:text-[clamp(18px,1.25vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
+                              className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.015em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}
@@ -864,7 +881,10 @@ export const Collections = () => {
                               className="mt-2 font-sans text-[13px] md:text-[clamp(13px,0.8vw,16px)] leading-[1.6] text-ink-muted m-0"
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
-                              Estate-stamped giclée · from {fmtP(getLowestTierPricePence(painting))}
+                              Estate-stamped giclée · from{" "}
+                              <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                                {fmtP(getLowestTierPricePence(painting))}
+                              </span>
                             </p>
                           </figcaption>
                         </Link>
@@ -888,7 +908,7 @@ export const Collections = () => {
         {/* Hairline divider so the two stacked set-cards read as TWO distinct
             offers, not one conjoined dark block (Hugo). */}
         <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
-          <div aria-hidden="true" className="h-px bg-line/50 my-6 md:my-10" />
+          <div aria-hidden="true" className="h-px bg-ink/50 my-6 md:my-10" />
         </div>
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across

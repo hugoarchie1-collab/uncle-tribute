@@ -91,13 +91,14 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
   .toISOString()
   .slice(0, 10);
 
-// True-Size room view needs a composited room photo per painting at
-// /public/img/truesize/<id>-<size>.jpg(+webp). NONE exist yet, so the "True
-// size" toggle is gated to this allowlist — until a painting's asset lands the
-// toggle is hidden, rather than offering a "To scale · coming soon" dead-end on
-// a £245–£1,750 page (audit fix). ⚠️HUGO: add a painting id here the moment its
-// room composite is in /public/img/truesize/, and the toggle self-enables.
-const TRUESIZE_PAINTING_IDS = new Set<string>([]);
+// True-Size room view needs composited room photos in /public/img/truesize/,
+// one per colourway × A-size, keyed by the colourway's image stem
+// (e.g. peacock-persian-indigo-a2.jpg + .webp — see scripts/truesize-compose.mjs).
+// The "True size" toggle is gated to this allowlist so a painting whose assets
+// aren't generated yet stays on the artwork view rather than offering a "To
+// scale · coming soon" dead-end on a £245–£1,750 page (audit fix). ⚠️HUGO: add a
+// painting id here the moment its room composites land, and the toggle self-enables.
+const TRUESIZE_PAINTING_IDS = new Set<string>(["english-bluebells"]);
 
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.
@@ -1693,7 +1694,7 @@ const BuyBox = ({
           Changed your mind?{" "}
           <Link
             to="/returns"
-            className="underline underline-offset-4 decoration-line/60 hover:text-ink transition-colors"
+            className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
           >
             Cancel free within 24 hours
           </Link>
@@ -1705,7 +1706,7 @@ const BuyBox = ({
         <button
           type="button"
           onClick={() => setEnquireOpen(true)}
-          className={cn(META, "mt-4 inline-flex items-center gap-1.5 underline underline-offset-4 decoration-line/60 hover:text-ink transition-colors")}
+          className={cn(META, "mt-4 inline-flex items-center gap-1.5 underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors")}
         >
           A question before you order?
           <span aria-hidden="true">→</span>

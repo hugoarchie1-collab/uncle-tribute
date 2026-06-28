@@ -13,19 +13,24 @@ interface LogoProps {
 }
 
 export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v4-w256.png`;
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v6-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
-        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal,
-        rendered as a transparent PNG (the pure-black source background was
-        keyed out with a feathered alpha so the soft seal edges dissolve onto
-        any ground). Shown in its TRUE deep red — no white-forcing filter: the
-        dark tone reads on the pale peacock/Mary-Pink scroll backdrops, and the
-        soft warm glow below lifts it off the near-black sections. Square mark,
-        so width === height. Never display:none'd; the wordmark now shows at
-        EVERY width (it wraps to two lines on the smallest phones — Hugo: "add
-        full logo with text on mobile too so it's not just the symbol").
+        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal with
+        THIN WHITE LINEWORK tracing the rose's petals + centre (v6, 2026-06-28).
+        Hugo's brief, refined: "I want a white outline around the red rose mandala
+        candle-wax logo but showing details of the rose in thin white so the logo
+        doesn't just look like a red circle from a distance" (the v5 outer-ring-
+        only keyline was rejected for exactly this — from afar it still read as a
+        red disc). The white line-rose is the SAME Tudor-rose art used by the
+        cursor (cursor-rose-v2), its baked square tile-box removed (a circular
+        DstIn mask) and aligned at 0.97 over the seal — so the petal/centre detail
+        reads in thin white at every size and the mark is legible as a ROSE, not a
+        blob, on near-black AND the pale peacock/Mary-Pink scroll backdrops. Square
+        mark, so width === height. Never display:none'd; the wordmark shows at
+        EVERY width (wraps to two lines on the smallest phones — Hugo: "add full
+        logo with text on mobile too so it's not just the symbol").
       */}
       <img
         src={url}
@@ -38,8 +43,10 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, classNa
         style={{
           width: size,
           height: size,
-          filter:
-            "drop-shadow(0 1px 3px rgba(0,0,0,0.5)) drop-shadow(0 0 7px rgba(150,28,28,0.4))",
+          // A single soft depth-shadow lifts the mark; the baked-in white
+          // linework now does the "stand out" + "reads as a rose" work, so the
+          // old red glow (which would muddy the crisp white lines) is dropped.
+          filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.45))",
         }}
       />
       {wordmark && (

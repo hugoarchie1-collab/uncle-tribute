@@ -327,11 +327,11 @@ export const Auth = () => {
                   autoComplete="off"
                   autoCapitalize="characters"
                   spellCheck={false}
-                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-sans text-[16px] md:text-[17px] text-ink placeholder:text-ink/30 focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-mono tracking-[0.04em] text-[16px] md:text-[17px] text-ink placeholder:text-ink/30 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="press shrink-0 whitespace-nowrap px-6 md:px-8 font-sans text-[12px] md:text-[13px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer"
                 >
                   Authenticate
                 </button>

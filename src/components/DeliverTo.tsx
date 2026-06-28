@@ -158,7 +158,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           )}
         />
         <span className="inline-flex flex-col leading-none min-w-0">
-          <span className={cn(EYEBROW_TIGHT, "text-ink-muted/80 mb-0.5")}>
+          <span className={cn(EYEBROW_TIGHT, "text-ink/80 mb-0.5")}>
             Deliver to
           </span>
           <span className="inline-flex items-center gap-1 min-w-0">
@@ -242,7 +242,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
                       >
                         {r.label}
                       </span>
-                      <span className="block font-sans text-[11.5px] leading-tight text-ink-muted/70 mt-0.5">
+                      <span className="block font-sans text-[11.5px] leading-tight text-ink/70 mt-0.5">
                         Free delivery
                       </span>
                     </span>
@@ -253,7 +253,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           </ul>
 
           {/* Quiet reassurance line beneath the list. */}
-          <div className="px-4 py-3 border-t border-line/60">
+          <div className="px-4 py-3 border-t border-ink/60">
             <p className="font-sans text-[12px] leading-snug text-ink-muted">
               Free worldwide delivery on every order.
             </p>

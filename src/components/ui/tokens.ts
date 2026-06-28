@@ -68,10 +68,16 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
 };
 
 /** Section / chapter label — accent tone (Welcome's section eyebrow).
- *  The signature element: 11px bold uppercase, 0.32em tracking, accent-toned.
- *  Sits ABOVE a TITLE (gap mb-4/mb-5). This is the canonical home value. */
+ *  The signature kicker: 12/13px bold, accent-toned, sentence-case, set on a
+ *  generous 0.18em letterspace so it reads as a distinct gallery KICKER (not
+ *  bold body text) above its TITLE. Sits ABOVE a TITLE (gap mb-4/mb-5). The
+ *  tracking was lifted 0.04em→0.18em (2026-06-28) — at 0.04em the eyebrow was
+ *  visually indistinguishable from bold body, collapsing the eyebrow→title→body
+ *  rhythm. NOT uppercased: several call sites carry proper nouns + Stephen's
+ *  verbatim invocation, which uppercasing would mangle. This is the canonical
+ *  home value. */
 export const EYEBROW =
-  "font-sans text-[12px] md:text-[13px] font-bold tracking-[0.04em] text-accent";
+  "font-sans text-[12px] md:text-[13px] font-bold tracking-[0.18em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,

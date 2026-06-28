@@ -283,7 +283,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         // Slide-away on scroll-down / slide-in on scroll-up. Transform + opacity
         // are GPU-composited, so the hide/reveal costs nothing on the main
         // thread. Slightly slower reveal than hide reads as deliberate, premium.
-        "transition-[transform,opacity,padding,background-color] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] will-change-transform",
+        "transition-[transform,opacity,padding] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] will-change-transform",
         // Keep the bar pinned while the mobile menu is open (the drawer needs its
         // toggle reachable) and whenever it's revealed.
         hidden && !menuOpen
@@ -295,7 +295,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         // No backdrop-filter (the banned per-frame "2005-lag"); the fill keeps the
         // cream logo + links legible and the shadow softens the seam.
         scrolled
-          ? "py-3 nav-bg-scrolled border-b border-white/10 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.9)]"
+          ? "py-3 nav-bg-scrolled border-b border-ink/25 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.95)]"
           // At the very top: a soft top-down scrim (real CSS) so the deep-red seal
           // + cream links never get swallowed by the busy peacock/photo backdrops,
           // while the hero/film still reads through. Overlay pages get a touch more.
@@ -555,11 +555,21 @@ const NavMenu = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.32, ease: EASE_SMOOTH }}
-            style={{ width: DRAWER_WIDTH }}
+            style={{
+              width: DRAWER_WIDTH,
+              // Heal the red-bar → drawer seam: the nav is ALWAYS the seal-red
+              // wash, so when the menu opens it sat flush above a near-black
+              // panel = a hard red-to-black cut along the drawer's top edge on
+              // every page. The panel now carries the SAME seal-red at its very
+              // top, fading into the near-black ground by ~300px — one
+              // continuous wash from bar into drawer.
+              backgroundImage:
+                "linear-gradient(180deg, rgba(64,13,13,0.97) 0%, rgba(40,8,9,0.985) 120px, #0a0908 300px)",
+            }}
             className="fixed inset-y-0 right-0 z-[121] h-[100dvh] bg-[#0a0908] text-ink border-l border-line flex flex-col"
           >
             {/* Top row — quiet label + close. */}
-            <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-line/60">
+            <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-ink/60">
               <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
                 Menu
               </span>
@@ -596,8 +606,8 @@ const NavMenu = ({
               <DeliverTo variant="menu" className="mb-3" />
               <CurrencySelect variant="menu" className="mb-5" />
               {NAV_GROUPS.map((group, gi) => (
-                <div key={group.heading} className={gi > 0 ? "mt-5" : ""}>
-                  <p className="mb-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70">
+                <div key={group.heading} className={gi > 0 ? "mt-6" : ""}>
+                  <p className="mb-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (
@@ -615,7 +625,7 @@ const NavMenu = ({
                         to={l.to}
                         className={({ isActive }) =>
                           cn(
-                            "block py-2 font-display font-semibold tracking-[-0.015em] leading-[1.15] text-[clamp(24px,5.8vw,30px)] outline-none transition-colors duration-200",
+                            "block py-2 font-display font-semibold tracking-[-0.015em] leading-[1.08] text-[clamp(28px,7vw,38px)] outline-none transition-colors duration-200",
                             isActive ? "text-accent" : "text-ink hover:text-accent",
                             "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
                           )
@@ -631,12 +641,12 @@ const NavMenu = ({
             </nav>
 
             {/* Footer — quiet secondary links + estate email. */}
-            <div className="px-7 sm:px-8 pt-6 pb-safe-6 border-t border-line/60 flex flex-col gap-3">
+            <div className="px-7 sm:px-8 pt-6 pb-safe-6 border-t border-ink/60 flex flex-col gap-3">
               <div className="flex flex-wrap gap-x-4 gap-y-0.5 font-sans text-[13px] text-ink-muted">
                 {SECONDARY_LINKS.map((l, i) => (
                   <span key={l.to} className="inline-flex items-center gap-x-4">
                     {i > 0 && (
-                      <span aria-hidden="true" className="text-ink-muted/40">
+                      <span aria-hidden="true" className="text-ink/40">
                         ·
                       </span>
                     )}

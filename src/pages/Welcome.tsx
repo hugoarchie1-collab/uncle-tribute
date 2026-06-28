@@ -41,6 +41,19 @@ const PEACOCK_BACKDROPS = [
   { url: "/img/paintings/peacock-mary-pink-blur-v3-sm.webp", name: "Mary Pink" },
 ];
 
+// The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
+// traditions…", + the Meet-Stephen and Arista heads) are pinned to the SAME
+// Fraunces optical cut as the wordmark, pull-quote, reminder close and finale —
+// '"opsz" 48, "wght" 700'. Without this they fell back to the variable font's
+// auto optical-sizing, which at ~80–104px clamps an opsz ≈144 hairline cut, so
+// the page rendered two different serif "voices" at near-identical scale on one
+// scroll (the reads-as-a-different-typeface failure gotcha #7 warns against).
+// opsz stays ≤48 (the finale invariant — never higher, or the strokes "scribble").
+const PEAK_H2_STYLE = {
+  fontVariationSettings: '"opsz" 48, "wght" 700',
+  fontWeight: 700,
+} as const;
+
 /**
  * CosmicInterlude — a Veo-generated space-nebula film, the cinematic breath
  * between the Arista commission and the Sacred Geometry close (Hugo: "put the
@@ -91,11 +104,19 @@ const CosmicInterlude = () => {
   return (
     <section
       aria-label="The cosmos — the order beneath all things"
-      className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 my-10 md:my-14"
+      className="relative w-full my-10 md:my-14"
     >
+      {/* FULL-BLEED cinematic band (2026-06-28): the film was a floating
+          rounded, hairline-ringed, drop-shadowed video CARD sitting in a page
+          margin — a generic "media card" tell. Now it spans edge-to-edge as one
+          atmospheric breath between the commission and the close; the top/bottom
+          mask melts it into the peacock wash and a soft side-vignette feathers
+          the left/right so it dissolves into the page rather than hard-cutting.
+          No radius / ring / shadow / max-width — just the film, the way a hero
+          full-bleeds. */}
       <div
         ref={ref}
-        className="relative mx-auto w-full max-w-[1500px] 3xl:max-w-[1720px] overflow-hidden rounded-[3px] ring-1 ring-line/55 shadow-[0_40px_120px_rgba(0,0,0,0.55)] h-[clamp(300px,52svh,640px)] bg-[#0a0810]"
+        className="relative w-full overflow-hidden h-[clamp(340px,56svh,680px)] bg-[#0a0810]"
       >
         {near && (
           <video
@@ -115,13 +136,16 @@ const CosmicInterlude = () => {
             <source src={asset("/video/nebula-intro-v1.mp4")} type="video/mp4" />
           </video>
         )}
-        {/* Soft top + bottom dissolve so the film melts into the peacock wash. */}
+        {/* Soft dissolve so the full-bleed film melts into the peacock wash on
+            ALL sides — top/bottom (the original) PLUS a gentle left/right
+            vignette now that the band runs edge-to-edge, so the cinematic strip
+            feathers into the page instead of hard-cutting at the viewport edge. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(9,7,13,0.55) 0%, rgba(9,7,13,0) 20%, rgba(9,7,13,0) 80%, rgba(9,7,13,0.55) 100%)",
+              "linear-gradient(180deg, rgba(9,7,13,0.55) 0%, rgba(9,7,13,0) 20%, rgba(9,7,13,0) 80%, rgba(9,7,13,0.55) 100%), linear-gradient(90deg, rgba(9,7,13,0.5) 0%, rgba(9,7,13,0) 9%, rgba(9,7,13,0) 91%, rgba(9,7,13,0.5) 100%)",
           }}
         />
       </div>
@@ -355,7 +379,7 @@ export const Welcome = () => {
                 }}
               >
                 <img
-                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v4-w256.png`}
+                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v6-w256.png`}
                   alt=""
                   aria-hidden="true"
                   className="h-[1.4em] w-[1.4em] shrink-0 object-contain"
@@ -578,14 +602,14 @@ export const Welcome = () => {
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
+                    className="press group inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
-                    See the collection <span aria-hidden="true" className="ml-2">→</span>
+                    See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="inline-flex w-fit items-center justify-center text-ink border border-ink/35 px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
+                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     His story
@@ -839,7 +863,7 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
@@ -873,7 +897,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 From the hand
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -900,13 +924,13 @@ export const Welcome = () => {
                     // price chip below is aria-hidden (it animates in), so without
                     // this a screen-reader user would get no price for any tile.
                     aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
-                    className="group block min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+                    className="group block min-w-0 flex-[0_1_clamp(300px,31%,540px)]"
                   >
-                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-white/8 transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
                       {/* Gentle zoom on hover only — a small scale-up of the
                           cover. Hugo: hover should zoom in a little, never flick
                           to another colourway. */}
-                      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.05]">
+                      <div className="absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-[1.03]">
                         <AssetImage
                           src={cover.image}
                           alt={paintingImageAlt(painting.title, cover.name)}
@@ -931,7 +955,7 @@ export const Welcome = () => {
                           delay: 0.15,
                           ease: [0.22, 0.61, 0.36, 1],
                         }}
-                        className="absolute bottom-3 right-3 inline-flex items-center bg-[#0a0908]/90 px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.04em] text-ink rounded-full"
+                        className="absolute bottom-3 right-3 inline-flex items-center bg-bg/85 ring-1 ring-line shadow-[0_6px_20px_rgba(0,0,0,0.5)] px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.08em] text-ink rounded-full"
                       >
                         From {fmtPrice(fromPrice)}
                       </motion.span>
@@ -952,10 +976,10 @@ export const Welcome = () => {
             <Reveal as="div" className="text-center">
               <MagneticLink
                 to="/collections"
-                className="inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
                 ariaLabel="See every painting"
               >
-                See every painting <span aria-hidden="true" className="ml-1">↗</span>
+                See every painting <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
               </MagneticLink>
             </Reveal>
           </section>
@@ -974,7 +998,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-6 md:py-10 lg:py-12">
               <Reveal as="div" className="text-center mb-5 md:mb-8">
-                <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
@@ -1030,7 +1054,7 @@ export const Welcome = () => {
                       ["Tools", "Compass · rule · brush"],
                       ["Pigment", "Hand-pressed oils + pigment inks"],
                     ].map(([label, value]) => (
-                      <li key={label} className="m-0 py-4 border-t border-ink/15">
+                      <li key={label} className="m-0 py-4 border-t border-[rgba(237,230,214,0.16)]">
                         <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-2">{label}</p>
                         <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.4] text-ink m-0">{value}</p>
                       </li>
@@ -1045,12 +1069,19 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 Sacred Geometry
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Four traditions, one language.
               </h2>
             </Reveal>
 
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-5 list-none p-0 mb-5 md:mb-8">
+            {/* The four traditions read as a CURATED EDITORIAL INDEX, not boxed
+                chips: each is a hairline-ruled column in the page's own ledger
+                language (the materials list below uses the same border-t rule),
+                so the section fills the width as a confident canon rather than
+                four generic grey cards. The Roman numeral is demoted to a small
+                accent index; the name is promoted into the Fraunces display
+                register; both name + rule warm to accent on hover. */}
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-8 md:gap-y-10 list-none p-0 mb-5 md:mb-8">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -1059,12 +1090,15 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="bg-bg-soft ring-1 ring-white/8 p-5 md:p-6 transition-all duration-500 hover:ring-accent/50 hover:-translate-y-1"
+                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-5 md:pt-6 transition-colors duration-500 hover:border-accent"
                 >
-                  <p className="font-display font-bold text-ink/45 text-[clamp(40px,4.6vw,48px)] leading-none m-0 mb-3 tracking-tight">
+                  <p className="font-sans text-[12px] font-bold tracking-[0.18em] text-accent/75 m-0 mb-3">
                     {item.tag}
                   </p>
-                  <p className="font-sans text-[16px] font-bold tracking-tight text-ink m-0 mb-2 leading-[1.25]">
+                  <p
+                    className="font-display text-ink text-[clamp(19px,2.3vw,28px)] tracking-[-0.02em] leading-[1.15] m-0 mb-2 transition-colors duration-300 group-hover:text-accent"
+                    style={{ fontWeight: 600 }}
+                  >
                     {item.name}
                   </p>
                   <p className="font-sans font-normal text-[15px] leading-[1.5] text-ink/65 m-0">
@@ -1095,7 +1129,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
-              <h2 className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.2vw,58px)] leading-[1.08] text-ink m-0 mb-5 text-balance">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.2vw,58px)] leading-[1.08] text-ink m-0 mb-5 text-balance hero-text-shadow">
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
@@ -1108,7 +1142,7 @@ export const Welcome = () => {
               </p>
             </Reveal>
             <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[960px] 2xl:max-w-[1040px] 3xl:max-w-[1120px]">
-              <div className="overflow-hidden rounded-[3px] ring-1 ring-line/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+              <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"

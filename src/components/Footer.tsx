@@ -123,9 +123,8 @@ export const Footer = () => (
           size={28}
           wordmark
           wordmarkWrap
-          className="max-w-[280px] mb-4 [&>span]:leading-[1.4]"
+          className="max-w-[280px] mb-5 [&>span]:leading-[1.4]"
         />
-        <div aria-hidden="true" className="h-px w-10 bg-line mb-4" />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala
           Artist &amp; Sacred Geometer, 1966&ndash;2021.

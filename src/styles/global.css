@@ -32,17 +32,26 @@
   :root {
     color-scheme: dark;
 
-    /* Canvas — deep near-black. */
-    --bg: #0a0908;
-    /* Primary text — warm cream. THE text colour on dark. */
-    --ink: #ede6d6;
+    /* ⚠️ The three canonical role colours are stored as SPACE-SEPARATED RGB
+       CHANNELS (not hex) so Tailwind can apply opacity modifiers to them —
+       `ink: rgb(var(--ink) / <alpha-value>)` in tailwind.config. Without this,
+       `border-ink/20` / `ring-accent/50` / `bg-bg/85` etc. were SILENTLY not
+       generated and fell back to Tailwind's defaults (cool gray-200 borders,
+       BLUE-500 rings) all over the site (fixed 2026-06-28). Any raw consumer
+       must wrap them: `rgb(var(--bg))`, never bare `var(--bg)`. */
+    /* Canvas — deep near-black (#0a0908). */
+    --bg: 10 9 8;
+    /* Primary text — warm cream (#ede6d6). THE text colour on dark. */
+    --ink: 237 230 214;
+    /* Sole chromatic accent — warm terracotta (#c97844). Used sparingly. */
+    --accent: 201 120 68;
     /* The ONE muted/secondary ink (cream at reduced alpha). Use this single
-       token everywhere "quieter text" is wanted instead of inventing greys. */
+       token everywhere "quieter text" is wanted instead of inventing greys.
+       Kept as a full rgba() — consumed as a whole colour, never with a /N. */
     --ink-muted: rgba(237, 230, 214, 0.7);
-    /* Hairline / divider — warm cream-alpha (NOT a cool white/N grey). */
+    /* Hairline / divider — warm cream-alpha (NOT a cool white/N grey). Full
+       rgba() — consumed whole via border-line / ring-line, never with a /N. */
     --line: rgba(237, 230, 214, 0.12);
-    /* Sole chromatic accent — warm terracotta. Used sparingly. */
-    --accent: #c97844;
   }
   html, body, #root { margin: 0; padding: 0; }
   /* `overflow-x: clip` (not `hidden`) is the no-scrollbar, no-scroll-container
@@ -74,8 +83,9 @@
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Canvas — matches --bg / the <meta theme-color>. Was a stray #08070a. */
-    background-color: var(--bg);
+    /* Canvas — matches --bg / the <meta theme-color>. Was a stray #08070a.
+       --bg is now RGB channels, so wrap it in rgb(). */
+    background-color: rgb(var(--bg));
   }
 
   /* Long unbroken tokens (URLs, long words, pasted strings) must wrap instead
@@ -381,7 +391,7 @@
   font-size: clamp(60px, 8vw, 104px);
   line-height: 0.74;
   letter-spacing: -0.02em;
-  color: var(--accent);
+  color: rgb(var(--accent));
 }
 @supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
   .drop-cap::first-letter {

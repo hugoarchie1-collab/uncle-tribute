@@ -69,15 +69,21 @@ export const FooterCatalogue = () => {
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
           variants={variants}
-          className="flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
+          className="group/cat flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
-            <li key={t.id} className="m-0 min-w-0 flex-[0_1_calc(10%-9px)]">
+            <li
+              key={t.id}
+              // Hovering any tile recedes the siblings so the strip reads as a
+              // curated wall, not a flat contact-sheet (the hovered tile resets
+              // to full via hover:!opacity-100).
+              className="m-0 min-w-0 flex-[0_1_calc(10%-9px)] transition-opacity duration-500 group-hover/cat:opacity-55 hover:!opacity-100"
+            >
               <Link
                 to={`/collections/${t.id}`}
                 aria-label={t.title}
                 title={t.title}
-                className="group relative block aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 hover:ring-accent/50"
+                className="group relative block aspect-square overflow-hidden ring-1 ring-ink/70 transition-[transform,box-shadow] duration-500 hover:ring-accent/60 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.9)]"
               >
                 <AssetImage
                   src={t.image}

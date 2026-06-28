@@ -643,7 +643,7 @@ export const Basket = () => {
                   ships free, framed or unframed. These £0 figures mirror the £0
                   (free) rate api/checkout.ts charges at Stripe — advertised ==
                   charged to the penny (mirror invariant, gotcha #9). */}
-              <div className="border border-line/70 rounded-2xl p-4 sm:p-5 mb-3">
+              <div className="border border-ink/70 rounded-2xl p-4 sm:p-5 mb-3">
                 <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>
                   Delivery — free worldwide
                 </p>

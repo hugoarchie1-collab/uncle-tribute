@@ -65,7 +65,7 @@ export function PrintBack({ painting, colourway, sizeId, frame, className }: Pri
             style={{ boxShadow: "0 10px 26px -8px rgba(0,0,0,0.45), 0 0 0 1px rgba(26,22,18,0.08)" }}
           >
             <img
-              src={asset("/logo/logo-seal-v4-w256.png")}
+              src={asset("/logo/logo-seal-v6-w256.png")}
               alt=""
               className="mx-auto mb-2 h-9 w-9 md:h-11 md:w-11"
               loading="lazy"

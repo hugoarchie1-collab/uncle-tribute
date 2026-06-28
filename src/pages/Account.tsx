@@ -44,7 +44,7 @@ const OrderCard = ({ order }: { order: OrderRow }) => (
       </ul>
     )}
     <p className={cn(EYEBROW_TIGHT, "m-0 mt-4 text-accent")}>{order.status}</p>
-    <p className={cn(META, "m-0 mt-2 break-all text-ink-muted/80")}>Ref · {order.ref}</p>
+    <p className={cn(META, "m-0 mt-2 break-all text-ink/80")}>Ref · {order.ref}</p>
   </div>
 );
 

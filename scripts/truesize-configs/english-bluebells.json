@@ -1,0 +1,11 @@
+{
+  "id": "english-bluebells",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/bluebells a3.png",
+  "blankBox": [522, 200, 888, 562],
+  "ppc": 7.619,
+  "center": [900, 360],
+  "frameless": true,
+  "colourways": [
+    { "art": "public/img/paintings/english-bluebells-v3.jpg", "stem": "english-bluebells-v3" }
+  ]
+}

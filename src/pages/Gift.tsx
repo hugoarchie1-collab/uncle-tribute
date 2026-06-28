@@ -307,17 +307,22 @@ export const Gift = () => {
                       }}
                       aria-pressed={isSelected}
                       className={cn(
-                        "group text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft",
+                        "group text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
-                          ? "ring-accent ring-2"
-                          : "ring-line hover:ring-ink/40",
+                          ? "bg-ink/[0.06] ring-accent ring-2"
+                          : "bg-bg-soft ring-line hover:ring-ink/40",
                       )}
                     >
                       <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
                         {d.sizeShort} · {d.label}
                       </span>
-                      <span className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,46px)] text-ink leading-none block">
+                      <span
+                        className={cn(
+                          "font-display font-semibold tracking-[-0.025em] text-[clamp(30px,3.6vw,56px)] leading-none block",
+                          isSelected ? "text-accent" : "text-ink",
+                        )}
+                      >
                         {fmtP(d.amountPence)}
                       </span>
                     </button>
@@ -451,8 +456,16 @@ export const Gift = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
                 <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,116px)] text-ink m-0 leading-[0.85]"
                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}>
-                  {resolved ? fmtP(resolved.amountPence) : "—"}
+                  {resolved ? fmtP(resolved.amountPence) : <span className="text-ink-faint">{fmtP(GIFT_MIN_PENCE)}</span>}
                 </p>
+                {/* Echo the chosen denomination label (existing `resolved.label`
+                    state — no new copy) so the sticky rail carries figure +
+                    label + reassurance + button instead of stranding a void. */}
+                {resolved && (
+                  <p className="font-sans text-[clamp(13px,0.8vw,16px)] text-ink-muted m-0 mt-3 border-t border-line pt-3">
+                    {resolved.label}
+                  </p>
+                )}
                 <p className="font-sans font-normal text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted m-0 mt-5 max-w-[40ch]">
                   The figure you choose is exactly what you pay — nothing is
                   added at checkout, and a gift card carries no delivery cost.

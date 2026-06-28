@@ -1121,7 +1121,7 @@ export const About = () => {
             <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
-          <div className="lg:grid lg:grid-cols-[1fr_440px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
+          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
             <div>
               <Reveal as="div">
                 <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.anegada[1]}</p>
@@ -1136,7 +1136,7 @@ export const About = () => {
                   below lg. The chart is small/low-res, so the mat stays
                   contained at 440px. */}
               <div className="lg:sticky lg:top-28">
-                <Reveal as="figure" className="m-0 max-w-[440px] mx-auto lg:mx-0">
+                <Reveal as="figure" className="m-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
                   <div className="bg-ink/[0.05] p-3 md:p-4 ring-1 ring-ink/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
                     <AssetImage
                       src="/img/about/25-harmonic-frequencies.jpg"
@@ -1258,7 +1258,7 @@ export const About = () => {
               outranks it; no other internal edits). */}
           <Reveal as="div" className="mb-6 md:mb-8">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
-            <h3 className="font-display font-semibold tracking-[-0.04em] text-[clamp(30px,3.7vw,66px)] leading-[1.05] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
+            <h3 className="font-display italic font-normal tracking-[-0.02em] text-[clamp(24px,2.4vw,42px)] leading-[1.1] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
               In conversation.
             </h3>
           </Reveal>
