@@ -1,0 +1,41 @@
+{
+  "id": "enneagon-swans",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/ennagon gold a3.png",
+  "blankBox": [
+    805,
+    92,
+    1155,
+    515
+  ],
+  "ppc": 6.2,
+  "center": [
+    955,
+    298
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/enneagon-cygnus-gold.jpg",
+      "stem": "enneagon-cygnus-gold"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/enneagon-glacier-blue.jpg",
+      "stem": "enneagon-glacier-blue"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/enneagon-solstice-orange.jpg",
+      "stem": "enneagon-solstice-orange"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/enneagon-antique-pink.jpg",
+      "stem": "enneagon-antique-pink"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/enneagon-velvet-purple.jpg",
+      "stem": "enneagon-velvet-purple"
+    }
+  ]
+}

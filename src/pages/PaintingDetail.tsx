@@ -98,7 +98,11 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
 // aren't generated yet stays on the artwork view rather than offering a "To
 // scale · coming soon" dead-end on a £245–£1,750 page (audit fix). ⚠️HUGO: add a
 // painting id here the moment its room composites land, and the toggle self-enables.
-const TRUESIZE_PAINTING_IDS = new Set<string>(["english-bluebells"]);
+const TRUESIZE_PAINTING_IDS = new Set<string>([
+  "english-bluebells", "wild-rose", "orchis-7", "flower-of-life",
+  "slipper-orchids", "peacock-minerva", "ophiuchus", "tridecagon-moon-star",
+  "lulin", "enneagon-swans",
+]);
 
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.

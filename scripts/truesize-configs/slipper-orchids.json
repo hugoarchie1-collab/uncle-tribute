@@ -1,0 +1,37 @@
+{
+  "id": "slipper-orchids",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/30 slipper orchids blue a3.png",
+  "blankBox": [
+    525,
+    140,
+    990,
+    700
+  ],
+  "ppc": 6.2,
+  "center": [
+    755,
+    410
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/orchids30-lightning-blue.jpg",
+      "stem": "orchids30-lightning-blue"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/orchids30-garnet-red.jpg",
+      "stem": "orchids30-garnet-red"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/orchids30-manipura-yellow.jpg",
+      "stem": "orchids30-manipura-yellow"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/orchids30-nebula-purple.jpg",
+      "stem": "orchids30-nebula-purple"
+    }
+  ]
+}

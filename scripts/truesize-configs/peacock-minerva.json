@@ -1,0 +1,41 @@
+{
+  "id": "peacock-minerva",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/pavo indigo a3.png",
+  "blankBox": [
+    430,
+    160,
+    925,
+    645
+  ],
+  "ppc": 6.6,
+  "center": [
+    676,
+    390
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/peacock-persian-indigo.jpg",
+      "stem": "peacock-persian-indigo"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/peacock-blood-moon-red.jpg",
+      "stem": "peacock-blood-moon-red"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/peacock-sahara-sand-yellow.jpg",
+      "stem": "peacock-sahara-sand-yellow"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/peacock-moroccan-purple.jpg",
+      "stem": "peacock-moroccan-purple"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/peacock-mary-pink.jpg",
+      "stem": "peacock-mary-pink"
+    }
+  ]
+}

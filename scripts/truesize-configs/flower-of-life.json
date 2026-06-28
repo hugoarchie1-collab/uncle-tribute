@@ -1,0 +1,25 @@
+{
+  "id": "flower-of-life",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/transformation a3.png",
+  "blankBox": [
+    795,
+    210,
+    1120,
+    595
+  ],
+  "ppc": 6.6,
+  "center": [
+    955,
+    398
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/fol-kaleidoscope.jpg",
+      "stem": "fol-kaleidoscope"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "ophiuchus",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/orphicus a3.png",
+  "blankBox": [
+    430,
+    150,
+    815,
+    505
+  ],
+  "ppc": 6.2,
+  "center": [
+    600,
+    315
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "landscape": true,
+  "artRatio": 0.811,
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/ophiuchus-original.jpg",
+      "stem": "ophiuchus-original"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "wild-rose",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/pink rose a3.png",
+  "blankBox": [
+    410,
+    38,
+    1050,
+    650
+  ],
+  "ppc": 6.6,
+  "center": [
+    730,
+    330
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/wild-rose-sussex-pink.jpg",
+      "stem": "wild-rose-sussex-pink"
+    }
+  ]
+}

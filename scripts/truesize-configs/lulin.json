@@ -1,0 +1,25 @@
+{
+  "id": "lulin",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/lulin a3.png",
+  "blankBox": [
+    598,
+    115,
+    975,
+    570
+  ],
+  "ppc": 5.8,
+  "center": [
+    772,
+    325
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/lulin-original.jpg",
+      "stem": "lulin-original"
+    }
+  ]
+}

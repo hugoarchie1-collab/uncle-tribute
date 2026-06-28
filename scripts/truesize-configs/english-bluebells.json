@@ -5,7 +5,10 @@
   "ppc": 7.619,
   "center": [900, 360],
   "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
   "colourways": [
-    { "art": "public/img/paintings/english-bluebells-v3.jpg", "stem": "english-bluebells-v3" }
+    { "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/english-bluebells-v3.jpg", "stem": "english-bluebells-v3" }
   ]
 }

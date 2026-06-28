@@ -1,0 +1,37 @@
+{
+  "id": "tridecagon-moon-star",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/tricagon blue a3.png",
+  "blankBox": [
+    418,
+    128,
+    865,
+    705
+  ],
+  "ppc": 6.8,
+  "center": [
+    640,
+    400
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/tridecagon-sage-green.jpg",
+      "stem": "tridecagon-sage-green"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/tridecagon-moonstone-blue.jpg",
+      "stem": "tridecagon-moonstone-blue"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/tridecagon-supernova-violet.jpg",
+      "stem": "tridecagon-supernova-violet"
+    },
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/tridecagon-coral-reef.jpg",
+      "stem": "tridecagon-coral-reef"
+    }
+  ]
+}

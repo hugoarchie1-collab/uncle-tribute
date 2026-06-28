@@ -1,0 +1,25 @@
+{
+  "id": "orchis-7",
+  "cleanFrom": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/orchis 7 red a3.png",
+  "blankBox": [
+    455,
+    55,
+    895,
+    545
+  ],
+  "ppc": 6,
+  "center": [
+    670,
+    295
+  ],
+  "frameless": true,
+  "outDir": "/Users/archiehugo/Code/uncle-tribute/public/img/truesize",
+  "qaDir": "/Users/archiehugo/Code/uncle-tribute/scripts/truesize-qa",
+  "folderCopy": "/Users/archiehugo/Desktop/THE MANDALA COMPANY FOLDER/Paintings in room images/Clean true-size frameless",
+  "colourways": [
+    {
+      "art": "/Users/archiehugo/Code/uncle-tribute/public/img/paintings/orchis7-rubedo-red.jpg",
+      "stem": "orchis7-rubedo-red"
+    }
+  ]
+}

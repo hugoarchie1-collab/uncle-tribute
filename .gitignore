@@ -32,3 +32,4 @@ dist-ssr
 
 # Agent worktrees (transient, embedded git repos)
 .claude/worktrees/
+scripts/truesize-qa/

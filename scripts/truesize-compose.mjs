@@ -111,8 +111,28 @@ function buildCleanRoom() {
   const ox1 = fx1 - M, oy1 = fy1 - M, ox2 = fx2 + M, oy2 = fy2 + M;
   const dx = ox1 - B, dy = oy1 - B;
   const W = ox2 - ox1 + 2 * B, H = oy2 - oy1 + 2 * B;
-  // clone source: clean wall, by default shifted right by the region width
-  const [sx, sy] = cfg.cloneSrc || [dx + W, dy];
+  // Clone source: pick the FLATTEST candidate wall region around the blank zone
+  // (lowest std-dev = cleanest wall, automatically avoiding furniture/plants/
+  // shelves). Override with cfg.cloneSrc. This is what makes busy rooms work.
+  const sdAt = (x, y) => {
+    if (x < 0 || y < 0 || x + W > ROOM_W || y + H > ROOM_H) return Infinity;
+    return Number(mg([BASE, "-crop", `${W}x${H}+${x}+${y}`, "+repage",
+      "-format", "%[fx:standard_deviation]", "info:"]));
+  };
+  let sx, sy, bestSd = Infinity;
+  if (cfg.cloneSrc) {
+    [sx, sy] = cfg.cloneSrc; bestSd = 0;
+  } else {
+    const halfH = Math.round(H / 2);
+    const cands = [
+      [dx + W + 8, dy], [dx - W - 8, dy],
+      [dx, dy - H - 8], [dx, dy + H + 8],
+      [dx + W + 8, Math.max(0, dy - halfH)], [dx - W - 8, Math.max(0, dy - halfH)],
+    ];
+    let best = null;
+    for (const [x, y] of cands) { const s = sdAt(x, y); if (s < bestSd) { bestSd = s; best = [x, y]; } }
+    if (best) [sx, sy] = best;
+  }
 
   const patch = join(TMP, "patch.png");
   const patchM = join(TMP, "patchM.png");
@@ -120,13 +140,43 @@ function buildCleanRoom() {
   const patchF = join(TMP, "patchF.png");
   const clean = join(TMP, "cleanroom.png");
 
-  mg([BASE, "-crop", `${W}x${H}+${sx}+${sy}`, "+repage", patch]);
+  if (bestSd === Infinity) {
+    // No full WxH clean region fits in-bounds (huge old frame in a tight room).
+    // Fall back: scan a grid for the flattest SMALL wall tile, stretch it to the
+    // region (smooth wall fill — texture is light here and the print + feather
+    // hide the edges). This is what rescues zoomed-in rooms like wild-rose.
+    const tw = Math.min(W, 340), th = Math.min(H, 340);
+    let bt = [0, 0], btSd = Infinity;
+    for (let y = 0; y + th <= ROOM_H; y += 130) {
+      for (let x = 0; x + tw <= ROOM_W; x += 130) {
+        const s = Number(mg([BASE, "-crop", `${tw}x${th}+${x}+${y}`, "+repage",
+          "-format", "%[fx:standard_deviation]", "info:"]));
+        if (s < btSd) { btSd = s; bt = [x, y]; }
+      }
+    }
+    mg([BASE, "-crop", `${tw}x${th}+${bt[0]}+${bt[1]}`, "+repage",
+      "-resize", `${W}x${H}!`, "-blur", "0x2", patch]);
+  } else {
+    mg([BASE, "-crop", `${W}x${H}+${sx}+${sy}`, "+repage", patch]);
+  }
 
-  // brightness-match the clone to the destination wall (sample clean wall just
-  // above + right of the old frame), so the patch can't read as a faint rect.
-  const above = meanRGB(BASE, `120x120+${Math.round((fx1 + fx2) / 2) - 60}+${Math.max(0, fy1 - 150)}`);
-  const right = meanRGB(BASE, `120x160+${fx2 + 24}+${Math.round((fy1 + fy2) / 2) - 80}`);
-  const wall = [0, 1, 2].map((i) => Math.round((above[i] + right[i]) / 2));
+  // brightness-match the clone to the destination wall. Probe small patches just
+  // outside the blank zone on all four sides, keep the two FLATTEST (so a side
+  // covered by furniture is ignored), average their means.
+  const probe = (x, y) => {
+    const xc = Math.min(Math.max(0, Math.round(x)), ROOM_W - 80);
+    const yc = Math.min(Math.max(0, Math.round(y)), ROOM_H - 80);
+    const o = mg([BASE, "-crop", `80x80+${xc}+${yc}`, "+repage", "-format",
+      "%[fx:mean.r*255],%[fx:mean.g*255],%[fx:mean.b*255],%[fx:standard_deviation]", "info:"])
+      .split(",").map(Number);
+    return { mean: [o[0], o[1], o[2]], sd: o[3] };
+  };
+  const my = (fy1 + fy2) / 2 - 40;
+  const probes = [
+    probe(fx2 + 24, my), probe(fx1 - 104, my),
+    probe((fx1 + fx2) / 2 - 40, fy1 - 110), probe((fx1 + fx2) / 2 - 40, fy2 + 24),
+  ].sort((a, b) => a.sd - b.sd).slice(0, 2);
+  const wall = [0, 1, 2].map((i) => Math.round((probes[0].mean[i] + probes[1].mean[i]) / 2));
   const pm = meanRGB(patch);
   mg([patch,
     "-channel", "R", "-evaluate", "add", String(wall[0] - pm[0]), "+channel",
