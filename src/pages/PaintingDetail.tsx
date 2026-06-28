@@ -20,6 +20,7 @@ import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 import { CloserLook } from "../components/CloserLook";
 import { EnquireModal } from "../components/EnquireModal";
+import { Reviews } from "../components/Reviews";
 import { AssetImage } from "../components/AssetImage";
 import {
   COLLECTIONS,
@@ -263,7 +264,7 @@ const SizePicker = ({
             <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
               {tier.label}
               {tier.isAnchor && (
-                <span className="font-sans text-[9.5px] font-semibold tracking-[0.04em] text-ink-muted/80">
+                <span className="font-sans text-[9.5px] font-semibold tracking-[0.04em] text-ink/80">
                   · most chosen
                 </span>
               )}
@@ -825,11 +826,15 @@ const TrueSizeViewer = ({
   sizeTiers,
   selectedTier,
   onSelectTier,
+  colourwayImage,
 }: {
   painting: Painting;
   sizeTiers: PrintTier[];
   selectedTier: PrintTier;
   onSelectTier: (id: PrintTier["id"]) => void;
+  /** The selected colourway's source image — so the wall view shows the SAME
+   *  colourway the buyer is looking at. Room files are keyed by this stem. */
+  colourwayImage?: string;
 }) => {
   const reduceMotion = useReducedMotion();
   // Only standard A-size tiers can be shown to scale (a one-off / non-A size
@@ -842,10 +847,15 @@ const TrueSizeViewer = ({
 
   const slug = trueSizeSlug(activeTier);
   const dims = parseSizeCm(activeTier.size);
-  // Room photo for this painting at this size. Image-state is tracked per src
-  // so a missing file degrades to the coming-soon placeholder rather than a
-  // broken-image icon.
-  const roomSrc = slug ? `/img/truesize/${painting.id}-${slug}.jpg` : null;
+  // Room photo for this painting at this size, keyed by the SELECTED colourway's
+  // image stem (e.g. "peacock-persian-indigo-a2.jpg") so the size guide shows the
+  // exact colourway on the wall. The generator (scripts/truesize-compose.mjs)
+  // writes one room per colourway × A-size. Image-state is tracked per src so a
+  // missing file degrades to the coming-soon placeholder, never a broken glyph.
+  const colourwayStem = colourwayImage
+    ? colourwayImage.replace(/^.*\//, "").replace(/\.[^.]+$/, "")
+    : painting.id;
+  const roomSrc = slug ? `/img/truesize/${colourwayStem}-${slug}.jpg` : null;
 
   return (
     <figure className="m-0">
@@ -1291,15 +1301,16 @@ const BuyBox = ({
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
           {selectedTier.label} · {selectedTier.size.split(" ")[0]}
         </p>
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 mb-3">
+        {/* The price figure stands ALONE on its baseline — size is already
+            stated by the eyebrow above and the DimensionChip below, so the old
+            sizeWithInches restatement on the price's baseline (which competed
+            with the opsz-40 figure) was removed. */}
+        <div className="mb-3">
           <p
             className="font-display font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
             {fmtP(selectedTier.pricePence)}
-          </p>
-          <p className={cn(META, "m-0")}>
-            {sizeWithInches(selectedTier.size)}
           </p>
         </div>
 
@@ -1498,7 +1509,7 @@ const BuyBox = ({
                         shipping surcharge (the estate absorbs delivery), so this
                         is a positive note, not a DMCC drip-pricing disclosure. */}
                     {framingActive && (
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-line/70 px-2.5 py-1.5">
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
                         Framed and delivered free — UK, Europe and Worldwide.
                         No delivery charge is added at checkout.
                       </span>
@@ -1642,10 +1653,13 @@ const BuyBox = ({
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            className={cn(BTN_SECONDARY, "w-full disabled:opacity-60")}
+            // Quiet alternate, NOT a co-primary: shorter (!py-3) + muted ink so
+            // the filled "Add to basket" clearly leads (the single-confident-
+            // action pattern). The express path is still one tap.
+            className={cn(BTN_SECONDARY, "group w-full !py-3 text-ink-muted hover:text-accent disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
-            <span aria-hidden="true" className="ml-2">→</span>
+            <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
           </button>
         </div>
         {/* Microcopy confirmation — fades after 2.5s. Reserve space + opacity
@@ -2080,14 +2094,14 @@ const StickyAddBar = ({
             <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
+            <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink [font-variant-numeric:tabular-nums]">
               {fmtP(selectedTier.pricePence)}
             </span>
           </span>
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -2542,6 +2556,7 @@ export const PaintingDetail = () => {
                   sizeTiers={sizeTiers}
                   selectedTier={selectedTier}
                   onSelectTier={setSelectedTierId}
+                  colourwayImage={selected.image}
                 />
               ) : (
               <>
@@ -2677,6 +2692,13 @@ export const PaintingDetail = () => {
             <ProvenancePanel />
           </div>
         </main>
+        {/* REVIEWS — genuine, moderated customer reviews of THIS print, keyed by
+            the painting id. Strictly additive: it ships EMPTY (a dignified
+            "be the first to review" state) and fills only from real submissions
+            via the existing /api/memories-submit (kind:"review"). Never seeded —
+            fabricated reviews are illegal (UK ASA / US FTC). Lives below the
+            story so it never disturbs the monochrome buy box or pricing. */}
+        <Reviews paintingId={painting.id} paintingTitle={painting.title} />
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
         {/* Exhibited & commissioned — Stephen's real, documented provenance
             (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).

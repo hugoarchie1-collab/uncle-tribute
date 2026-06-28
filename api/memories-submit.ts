@@ -92,6 +92,13 @@ interface VercelReq {
   method?: string;
   body?: unknown;
   headers: Record<string, string | string[] | undefined>;
+  // Vercel parses the query string for us; we read ?kind=reviews off it to
+  // serve the published REVIEWS wall from the SAME GET (no new function — the
+  // Hobby plan caps a deploy at 12 functions and we are AT 12; gotcha re:
+  // 12-function cap). When absent / not "reviews", GET serves memories exactly
+  // as before (byte-identical).
+  query?: Record<string, string | string[] | undefined>;
+  url?: string;
 }
 interface VercelRes {
   status: (code: number) => VercelRes;
@@ -313,6 +320,120 @@ async function readPublishedMemories(limit = 200): Promise<StoredMemory[]> {
   return out;
 }
 
+// ===========================================================================
+// REVIEWS — a GENUINE customer review system for the prints. Folded into THIS
+// function (no new /api file — the Hobby plan caps a deploy at 12 Serverless
+// Functions and we are AT 12; a 13th fails the whole deploy). Stored under a
+// SEPARATE KV key so the memories path stays byte-identical. Reuses the SAME
+// moderation (moderateMemory) + KV transport (kvCommand) + Resend email + the
+// Blob-or-hold media path below. Ships EMPTY — reviews appear ONLY from real
+// submissions (fabricated/seeded reviews are illegal — UK ASA / US FTC).
+// ===========================================================================
+interface StoredReview {
+  id: string;
+  // Which print this review is for (a painting id from src/data/paintings.ts).
+  paintingId: string;
+  // 1–5 stars.
+  rating: number;
+  name: string;
+  // The written review body.
+  body: string;
+  // Optional small inline image (a capped data-URL, like the memory avatar) —
+  // shown directly on the wall.
+  imageUrl?: string;
+  // Optional video/audio hosted on Vercel Blob (a public https URL). Large
+  // media is NEVER inlined into KV — it goes to Blob, or is held by email when
+  // Blob isn't configured.
+  mediaUrl?: string;
+  mediaType?: "video" | "audio" | "image";
+  createdAt: string;
+}
+
+const REVIEWS_KV_KEY = "reviews:published";
+async function publishReview(review: StoredReview): Promise<boolean> {
+  if (!isKvConfigured()) return false;
+  const result = await kvCommand(["LPUSH", REVIEWS_KV_KEY, JSON.stringify(review)]);
+  return result !== null;
+}
+async function readPublishedReviews(limit = 500): Promise<StoredReview[]> {
+  if (!isKvConfigured()) return [];
+  const result = await kvCommand(["LRANGE", REVIEWS_KV_KEY, 0, limit - 1]);
+  if (!Array.isArray(result)) return [];
+  const out: StoredReview[] = [];
+  for (const raw of result) {
+    if (typeof raw !== "string") continue;
+    try {
+      const parsed = JSON.parse(raw) as StoredReview;
+      if (
+        parsed &&
+        typeof parsed.id === "string" &&
+        typeof parsed.paintingId === "string" &&
+        typeof parsed.rating === "number" &&
+        typeof parsed.body === "string"
+      ) {
+        out.push(parsed);
+      }
+    } catch {
+      // skip a corrupt entry
+    }
+  }
+  return out;
+}
+
+// ---- Vercel Blob upload (raw REST — zero new deps) -------------------------
+// Reuses the SAME media-hold discipline the task asks for: a video/audio file
+// goes to Vercel Blob (gated behind BLOB_READ_WRITE_TOKEN) and we store only
+// its public URL. When the token is absent (or the upload fails) we return
+// null and the caller HOLDS the review for the family by email — large media
+// is NEVER inlined into KV. No @vercel/blob package needed: the Blob PUT API
+// is a plain authenticated fetch.
+interface BlobUpload {
+  url: string;
+  mediaType: "video" | "audio";
+}
+const isBlobConfigured = (): boolean => !!process.env.BLOB_READ_WRITE_TOKEN;
+async function uploadMediaToBlob(
+  pathname: string,
+  bytes: Uint8Array,
+  contentType: string,
+  mediaType: "video" | "audio",
+): Promise<BlobUpload | null> {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) return null;
+  try {
+    const res = await fetch(
+      `https://blob.vercel-storage.com/${encodeURIComponent(pathname)}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-content-type": contentType,
+          // The Blob API versions its REST surface via this header.
+          "x-api-version": "7",
+          "x-add-random-suffix": "1",
+          "Content-Type": contentType,
+        },
+        // Node's fetch accepts a Uint8Array/Buffer as the body.
+        body: bytes,
+        signal: AbortSignal.timeout(20_000),
+      },
+    );
+    if (!res.ok) {
+      console.error(`[memories-submit] Blob upload failed: HTTP ${res.status}`);
+      return null;
+    }
+    const json = (await res.json()) as { url?: string };
+    if (!json.url || typeof json.url !== "string") return null;
+    return { url: json.url, mediaType };
+  } catch (err) {
+    console.error(
+      "[memories-submit] Blob upload threw:",
+      err instanceof Error ? err.message : err,
+    );
+    return null;
+  }
+}
+
 interface EmailAttachment {
   filename: string;
   content: string;
@@ -399,6 +520,356 @@ const renderMemorySubmittedHtml = (p: {
     + `</div></body></html>`;
 };
 
+// ===========================================================================
+// Inlined REVIEW notification email → HTML string. Mirrors the memory email's
+// dark house palette (gotcha #5 — self-contained, no shared module). Tells the
+// family whether the review auto-published or is being held, shows the stars +
+// body + which print, and notes any image/media.
+// ===========================================================================
+const renderReviewSubmittedHtml = (p: {
+  name: string;
+  rating: number;
+  body: string;
+  paintingTitle: string;
+  submittedAt: string;
+  estateEmail: string;
+  published: boolean;
+  holdReason?: string;
+  hasImage?: boolean;
+  imageAttached?: boolean;
+  hasMedia?: boolean;
+  mediaHeld?: boolean;
+  mediaKind?: "video" | "audio";
+}): string => {
+  const paragraphs = p.body.split(/\n{2,}/).map((x) => x.trim()).filter(Boolean);
+  const stars = `${"★".repeat(Math.max(0, Math.min(5, p.rating)))}${"☆".repeat(
+    Math.max(0, 5 - Math.max(0, Math.min(5, p.rating))),
+  )}`;
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.1;color:#ede6d6;margin:0 0 8px 0;`,
+    stars: `font-family:${SANS};font-size:22px;letter-spacing:0.12em;color:#c97844;margin:0 0 22px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const statusCard = p.published
+    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This review is now live</strong> on the print's page — it passed moderation automatically. If you'd ever like to take it down, just let me know.</p></div>`
+    : `<div style="${s.card}border:1px solid rgba(237,230,214,0.18);border-left:3px solid rgba(237,230,214,0.55);margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This review is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} If you're happy with it, you can publish it from your store.</p></div>`;
+  const reviewCard =
+    `<div style="${s.card}border-left:2px solid #c97844;">`
+    + `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">On <strong style="color:#ede6d6;">${esc(p.paintingTitle)}</strong></p>`
+    + paragraphs.map((x) => `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
+    + (p.hasImage
+      ? `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">${p.imageAttached ? "A photo is attached to this email." : "A photo was submitted but couldn't be attached (unsupported format / too large)."}</p>`
+      : "")
+    + (p.hasMedia
+      ? `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">${p.mediaHeld ? `A ${p.mediaKind ?? "media"} file was submitted but storage (Vercel Blob) isn't configured — it is held; reply here and I'll send it.` : `A ${p.mediaKind ?? "media"} file was uploaded with this review.`}</p>`
+      : "")
+    + `<p style="${s.small}margin:0;color:rgba(237,230,214,0.78);">— ${esc(p.name)}</p>`
+    + `</div>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A new review of a print</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">Print review · ${p.published ? "Published" : "Held for review"}</p>`
+    + `<h1 style="${s.heading}">A new review.</h1>`
+    + `<p style="${s.stars}" aria-label="${p.rating} out of 5 stars">${stars}</p>`
+    + statusCard
+    + reviewCard
+    + `<p style="${s.small}">Submitted ${esc(p.submittedAt)}</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Customer reviews · The Art of Stephen Meakin<br/><a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a></p>`
+    + `</div></body></html>`;
+};
+
+// ---- Painting id → human title (mirror of src/data/paintings.ts ids;
+// gotcha #5 forbids importing /src into /api). Used only to make the family
+// email readable + to validate the review targets a real print. Keep ids in
+// sync when paintings are added.
+const PAINTING_TITLES: Record<string, string> = {
+  "wild-rose": "Wild Rose",
+  "english-bluebells": "English Bluebells",
+  "orchis-7": "Orchis 7",
+  "flower-of-life": "Flower of Life",
+  "slipper-orchids": "Slipper Orchids",
+  "peacock-minerva": "Peacock Minerva",
+  ophiuchus: "Ophiuchus",
+  "tridecagon-moon-star": "Tridecagon Moon Star",
+  lulin: "Lulin",
+  "enneagon-swans": "Enneagon Swans",
+};
+
+// Pull a single string value off the Vercel-parsed query (?kind=reviews) with a
+// url fallback, so the reviews GET works whether or not req.query is populated.
+const readQueryKind = (req: VercelReq): string => {
+  const q = req.query?.kind;
+  if (typeof q === "string") return q.toLowerCase();
+  if (Array.isArray(q) && typeof q[0] === "string") return q[0].toLowerCase();
+  if (typeof req.url === "string") {
+    try {
+      const u = new URL(req.url, "http://localhost");
+      return (u.searchParams.get("kind") ?? "").toLowerCase();
+    } catch {
+      return "";
+    }
+  }
+  return "";
+};
+
+// ===========================================================================
+// REVIEW submission handler — invoked from the POST entry when kind:"review".
+// Self-contained within this file; reuses moderateMemory / publishReview /
+// uploadMediaToBlob / Resend, exactly like the memory flow. Never throws at the
+// visitor: every downstream failure degrades to a friendly 200.
+// ===========================================================================
+async function handleReviewSubmission(
+  req: VercelReq,
+  send: (status: number, payload: unknown) => void,
+): Promise<void> {
+  let body: {
+    kind?: string;
+    paintingId?: string;
+    rating?: number | string;
+    name?: string;
+    body?: string;
+    email?: string;
+    botcheck?: string;
+    image?: string;
+    media?: string; // a data: URL for an optional video/audio clip
+    mediaType?: string; // "video" | "audio" hint from the client
+  };
+  try {
+    body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : ((req.body ?? {}) as typeof body);
+  } catch {
+    return send(400, { error: "Invalid JSON body." });
+  }
+
+  // Honeypot — silently accept + drop (no signal to the bot).
+  if ((body.botcheck ?? "").toString().trim() !== "") {
+    return send(200, { ok: true, published: false });
+  }
+
+  const paintingId = (body.paintingId ?? "").toString().trim();
+  const name = (body.name ?? "").toString().trim().slice(0, 120);
+  const reviewBody = (body.body ?? "").toString().trim().slice(0, 4000);
+  const email = (body.email ?? "").toString().trim().toLowerCase();
+  const ratingNum = Math.round(Number(body.rating));
+
+  // ---- Validation --------------------------------------------------------
+  if (!PAINTING_TITLES[paintingId]) {
+    return send(400, { error: "That print could not be found." });
+  }
+  if (!Number.isFinite(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+    return send(400, { error: "Please choose a rating from 1 to 5 stars." });
+  }
+  if (!name) return send(400, { error: "Please add your name." });
+  if (reviewBody.length < 2) {
+    return send(400, { error: "Please write a few words about the print." });
+  }
+  if (email && !isValidEmail(email)) {
+    return send(400, { error: "That email doesn't look right — or leave it blank." });
+  }
+
+  const paintingTitle = PAINTING_TITLES[paintingId];
+
+  // ---- Optional inline image (small data-URL, like the memory avatar) -----
+  const imageDataUrl = (body.image ?? "").toString().trim();
+  const hasImage = imageDataUrl.startsWith("data:image/");
+  if (hasImage && imageDataUrl.length > 5_600_000) {
+    return send(400, { error: "That image is a little large — please attach one under 4MB." });
+  }
+  // Only a SMALL image is stored inline on the published review (capped like
+  // the avatar). A bigger-but-valid image still moderates + emails, but won't
+  // be inlined on the wall — it rides along as the email attachment instead.
+  const inlineImageOk = hasImage && imageDataUrl.length <= 200_000;
+
+  // ---- Optional video/audio (Blob-or-hold) -------------------------------
+  const mediaDataUrl = (body.media ?? "").toString().trim();
+  const mediaMatch = /^data:(video|audio)\/([a-z0-9.+-]+);base64,([A-Za-z0-9+/=]+)$/i.exec(
+    mediaDataUrl,
+  );
+  const hasMedia = !!mediaMatch;
+  // ~4MB serverless body ceiling — base64 inflates ~33%, so ~5.6M chars ≈ 4MB.
+  if (hasMedia && mediaDataUrl.length > 5_600_000) {
+    return send(400, { error: "That clip is a little large — please keep media under 4MB." });
+  }
+
+  const id = `${slugify(name)}-${randomSuffix()}`;
+
+  // ---- Moderation (text + inline image), same engine as memories ---------
+  const moderation = await moderateMemory(reviewBody, hasImage ? imageDataUrl : undefined);
+
+  let holdReason: string | null = null;
+  switch (moderation.status) {
+    case "unconfigured":
+      holdReason = "Moderation not configured (no OPENAI_API_KEY) — held to fail safe.";
+      break;
+    case "error":
+      holdReason = `Moderation unavailable (${moderation.detail}) — held to fail safe.`;
+      break;
+    case "flagged":
+      holdReason = `Flagged by moderation: ${moderation.categories.join(", ") || "unspecified"}.`;
+      break;
+    case "clean":
+      // An attached image always pauses for the family's one-tap OK (image
+      // moderation is imperfect) — same policy as the memory wall.
+      holdReason = hasImage
+        ? "Clean text, but an image is attached — held for your one-tap OK."
+        : null;
+      break;
+  }
+  // Junk/QA guard — never auto-publish test/placeholder text.
+  if (!holdReason && looksLikeTestJunk(reviewBody, name)) {
+    holdReason = "Held for review — reads like a test or placeholder rather than a review.";
+  }
+
+  // ---- Media: upload to Blob (if clean + configured) or HOLD by email ----
+  // A video/audio clip ALWAYS pauses auto-publish (like an image), so the
+  // family sees + approves it. When Blob is configured we upload it now (so the
+  // URL is ready the moment they approve); when it isn't, we HOLD and tell them
+  // in the email — large media is NEVER inlined into KV.
+  let mediaUpload: BlobUpload | null = null;
+  let mediaHeld = false;
+  let mediaKind: "video" | "audio" | undefined;
+  if (hasMedia && mediaMatch) {
+    mediaKind = mediaMatch[1].toLowerCase() as "video" | "audio";
+    if (!holdReason) {
+      holdReason = `Clean text, but a ${mediaKind} clip is attached — held for your one-tap OK.`;
+    }
+    if (isBlobConfigured()) {
+      try {
+        const bytes = Buffer.from(mediaMatch[3], "base64");
+        const ext = mediaMatch[2].split(/[.+]/)[0] || (mediaKind === "video" ? "mp4" : "mp3");
+        mediaUpload = await uploadMediaToBlob(
+          `reviews/${id}.${ext}`,
+          bytes,
+          `${mediaKind}/${mediaMatch[2]}`,
+          mediaKind,
+        );
+        mediaHeld = mediaUpload === null;
+      } catch (err) {
+        console.error(
+          "[memories-submit] review media decode/upload failed:",
+          err instanceof Error ? err.message : err,
+        );
+        mediaHeld = true;
+      }
+    } else {
+      mediaHeld = true;
+    }
+  }
+
+  // ---- Publish clean, image-free, media-free reviews to KV ----------------
+  let published = false;
+  if (!holdReason) {
+    const stored: StoredReview = {
+      id,
+      paintingId,
+      rating: ratingNum,
+      name,
+      body: reviewBody,
+      imageUrl: inlineImageOk ? imageDataUrl : undefined,
+      mediaUrl: mediaUpload?.url,
+      mediaType: mediaUpload?.mediaType ?? (inlineImageOk ? "image" : undefined),
+      createdAt: new Date().toISOString(),
+    };
+    published = await publishReview(stored);
+    if (!published && isKvConfigured()) {
+      holdReason = "Passed moderation, but the auto-publish write failed.";
+    } else if (!published) {
+      holdReason = "Passed moderation, but storage (Vercel KV) isn't configured.";
+    }
+  }
+
+  // Audit trail — grep Vercel logs for "[memories-submit]".
+  console.log("[memories-submit] new review", {
+    id,
+    paintingId,
+    rating: ratingNum,
+    name,
+    hasEmail: !!email,
+    hasImage,
+    hasMedia,
+    mediaUploaded: !!mediaUpload,
+    moderation: moderation.status,
+    published,
+    held: !!holdReason,
+  });
+
+  // ---- Email the family either way (published OR held) -------------------
+  const imageAttachment = hasImage ? prepareImageAttachment(imageDataUrl, id) : null;
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    console.warn("[memories-submit] RESEND_API_KEY missing — review logged only, no email sent.");
+    return send(200, { ok: true, published });
+  }
+  try {
+    const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+    const toEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+    const resend = new Resend(resendKey);
+    const submittedAt = new Date().toLocaleString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/London",
+    });
+    const html = renderReviewSubmittedHtml({
+      name,
+      rating: ratingNum,
+      body: reviewBody,
+      paintingTitle,
+      submittedAt,
+      estateEmail: DEFAULT_FROM,
+      published,
+      holdReason: holdReason || undefined,
+      hasImage,
+      imageAttached: !!imageAttachment,
+      hasMedia,
+      mediaHeld,
+      mediaKind,
+    });
+    const subjectPrefix = published ? "Published" : "Held for review";
+    const sendResult = await resend.emails.send({
+      from: `${FROM_NAME} <${fromEmail}>`,
+      to: [toEmail],
+      replyTo: email || DEFAULT_FROM,
+      subject: `${subjectPrefix}: a ${ratingNum}★ review of ${paintingTitle} — from ${name}`,
+      html,
+      ...(imageAttachment
+        ? {
+            attachments: [
+              { filename: imageAttachment.filename, content: imageAttachment.content },
+            ],
+          }
+        : {}),
+    });
+    if (sendResult.error) {
+      console.error("[memories-submit] review Resend send error:", sendResult.error);
+    } else {
+      console.log("[memories-submit] review notification sent", {
+        id,
+        resend_id: sendResult.data?.id,
+      });
+    }
+  } catch (err) {
+    console.error(
+      "[memories-submit] review notification failed:",
+      err instanceof Error ? err.message : String(err),
+    );
+  }
+
+  return send(200, { ok: true, published });
+}
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -413,6 +884,38 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   if (req.method === "OPTIONS") {
     res.status(204).end();
     return;
+  }
+
+  // ---- GET ?kind=reviews: the public, published REVIEWS wall (newest first).
+  // Separate KV key (REVIEWS_KV_KEY) — never touches the memories list. Public
+  // fields ONLY (no email, no hold reason). Ships EMPTY until real reviews
+  // arrive; an outage / unprovisioned KV returns [] and the UI shows its
+  // dignified empty state. The memory GET below is left BYTE-IDENTICAL.
+  if (req.method === "GET" && readQueryKind(req) === "reviews") {
+    try {
+      const stored = await readPublishedReviews();
+      const reviews = stored
+        // Belt-and-braces: never serve a review that reads like a test/placeholder.
+        .filter((r) => !looksLikeTestJunk(r.body, r.name))
+        .map((r) => ({
+          id: r.id,
+          paintingId: r.paintingId,
+          rating: r.rating,
+          name: r.name,
+          body: r.body,
+          imageUrl: r.imageUrl,
+          mediaUrl: r.mediaUrl,
+          mediaType: r.mediaType,
+          createdAt: r.createdAt,
+        }));
+      return send(200, { reviews });
+    } catch (err) {
+      console.error(
+        "[memories-submit] reviews GET failed:",
+        err instanceof Error ? err.message : err,
+      );
+      return send(200, { reviews: [] });
+    }
   }
 
   // ---- GET: the public, auto-published wall (newest first) ---------------
@@ -446,6 +949,28 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   }
 
   if (req.method !== "POST") return send(405, { error: "Method not allowed" });
+
+  // -------------------------------------------------------------------------
+  // REVIEW POST branch (kind:"review"). Peek at the body's `kind` and, if it's
+  // a review, handle it entirely here and RETURN — the memory POST below stays
+  // byte-identical. Mirrors the memory flow: honeypot → validate → moderate →
+  // (clean → publish to REVIEWS_KV_KEY; image/media/flagged → hold) → email the
+  // family either way → always 200 on a real submission.
+  // -------------------------------------------------------------------------
+  {
+    let peek: { kind?: unknown };
+    try {
+      peek =
+        typeof req.body === "string"
+          ? (JSON.parse(req.body) as { kind?: unknown })
+          : ((req.body ?? {}) as { kind?: unknown });
+    } catch {
+      peek = {};
+    }
+    if (typeof peek.kind === "string" && peek.kind.toLowerCase() === "review") {
+      return handleReviewSubmission(req, send);
+    }
+  }
 
   let body: {
     name?: string;
