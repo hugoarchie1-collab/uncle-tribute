@@ -262,7 +262,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[100svh] justify-center pt-[26svh] pb-[8svh] sm:justify-end sm:pt-0 sm:pb-[6svh] md:pb-[8svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-start md:justify-center min-h-[100svh] md:pt-[6svh] pb-[6svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -290,7 +290,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
+          className="pointer-events-none relative w-full z-[1] overflow-hidden"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
@@ -336,7 +336,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center -mt-[22.4vw] sm:-mt-[14.6vw] md:-mt-[12.1vw]">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
