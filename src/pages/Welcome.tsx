@@ -107,6 +107,17 @@ const CosmicInterlude = () => {
       <div
         ref={ref}
         className="relative w-full overflow-hidden h-[clamp(340px,56svh,680px)] bg-[#0a0810]"
+        // Feather the WHOLE band (dark bg + video) to transparent at top and
+        // bottom so it DISSOLVES into the peacock wash instead of ending on a
+        // hard rectangular edge — the "blocky, doesn't blur into the next page"
+        // transition Hugo flagged. A mask on the container (not just a dark
+        // gradient over the video) is what softens the container's own edge.
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
+        }}
       >
         {near && (
           <video
@@ -251,7 +262,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[44svh] md:min-h-[62svh] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center min-h-[100svh] pt-[34svh] md:pt-[36svh] pb-[6svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -322,7 +333,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[10svh] sm:mt-[23svh] md:mt-[25svh]">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -339,22 +350,60 @@ export const Welcome = () => {
                   Hugo rejected ("the earth text is soo bad"). A touch stronger
                   shadow than the finale because this sits on the bright Earth
                   atmosphere rim. */}
-              <span
-                className="block text-balance"
-                style={{
-                  fontVariationSettings: '"opsz" 48, "wght" 700',
-                  fontWeight: 700,
-                  fontSize: "clamp(60px, 14.5vw, 196px)",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 0.92,
-                  textTransform: "uppercase",
-                  color: "#ede6d6",
-                  textShadow:
-                    "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
-                }}
-              >
-                The Mandala Company
-              </span>
+              {/* The wordmark resolves word-by-word on arrival — a dignified
+                  staggered rise (opacity + a few px lift) that makes the open
+                  feel AUTHORED, like a title card (Cartier/Hermès kinetic-serif
+                  intro). The text, scale, position and FINAL state are
+                  byte-identical to before — only the entrance animates; reduced
+                  motion renders the static wordmark exactly as today. */}
+              {reduceMotion ? (
+                <span
+                  className="block text-balance"
+                  style={{
+                    fontVariationSettings: '"opsz" 48, "wght" 700',
+                    fontWeight: 700,
+                    fontSize: "clamp(60px, 14.5vw, 196px)",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 0.92,
+                    textTransform: "uppercase",
+                    color: "#ede6d6",
+                    textShadow:
+                      "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
+                  }}
+                >
+                  The Mandala Company
+                </span>
+              ) : (
+                <motion.span
+                  className="block text-balance"
+                  style={{
+                    fontVariationSettings: '"opsz" 48, "wght" 700',
+                    fontWeight: 700,
+                    fontSize: "clamp(60px, 14.5vw, 196px)",
+                    letterSpacing: "-0.03em",
+                    lineHeight: 0.92,
+                    textTransform: "uppercase",
+                    color: "#ede6d6",
+                    textShadow:
+                      "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
+                  }}
+                  initial="hidden"
+                  animate="show"
+                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
+                >
+                  {["The", "Mandala", "Company"].map((word, i) => (
+                    <motion.span
+                      key={word}
+                      style={{ display: "inline-block" }}
+                      variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+                      transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                    >
+                      {word}
+                      {i < 2 ? " " : ""}
+                    </motion.span>
+                  ))}
+                </motion.span>
+              )}
               {/* "The Art of Stephen Meakin" lockup — the red wax-seal rose +
                   the title-case wordmark (matches the nav brand; Hugo). */}
               <span
@@ -916,7 +965,7 @@ export const Welcome = () => {
                 instead of left-aligning. min-w-0 on each card stops a long
                 title token from widening the row past the viewport. */}
             <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-5 md:mb-9">
-              {featured.map(({ painting, cover }) => {
+              {featured.map(({ painting, cover }, idx) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
@@ -931,7 +980,19 @@ export const Welcome = () => {
                     // price chip below is aria-hidden (it animates in), so without
                     // this a screen-reader user would get no price for any tile.
                     aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
-                    className="group block min-w-0 flex-[0_1_clamp(300px,31%,540px)]"
+                    // SALON HANG (all-square, no cropping) — the first random
+                    // pick is the LEAD work, shown larger; the rest orbit it as
+                    // smaller satellites, so scale itself signals "this is the
+                    // one to look at" (Hauser & Wirth / Gagosian salon hang).
+                    // Literal class strings per branch (Tailwind JIT). The hero
+                    // stays inside the container — bigger, never full-screen
+                    // (Hugo reins in oversized images).
+                    className={cn(
+                      "group block min-w-0",
+                      idx === 0
+                        ? "flex-[0_1_clamp(380px,44%,640px)]"
+                        : "flex-[0_1_clamp(160px,28%,380px)]",
+                    )}
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
                       {/* Gentle zoom on hover only — a small scale-up of the
