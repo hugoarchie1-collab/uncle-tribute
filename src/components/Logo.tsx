@@ -13,22 +13,33 @@ interface LogoProps {
 }
 
 export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v6-w256.png`;
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
-        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal with
-        THIN WHITE LINEWORK tracing the rose's petals + centre (v6, 2026-06-28).
-        Hugo's brief, refined: "I want a white outline around the red rose mandala
-        candle-wax logo but showing details of the rose in thin white so the logo
-        doesn't just look like a red circle from a distance" (the v5 outer-ring-
-        only keyline was rejected for exactly this — from afar it still read as a
-        red disc). The white line-rose is the SAME Tudor-rose art used by the
-        cursor (cursor-rose-v2), its baked square tile-box removed (a circular
-        DstIn mask) and aligned at 0.97 over the seal — so the petal/centre detail
-        reads in thin white at every size and the mark is legible as a ROSE, not a
-        blob, on near-black AND the pale peacock/Mary-Pink scroll backdrops. Square
-        mark, so width === height. Never display:none'd; the wordmark shows at
+        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal whose
+        OWN engraved relief is brought out in white (v7, 2026-06-28). Hugo
+        rejected v6 (a clean white line-rose composited on top) as "appealing but
+        NOT naturally engraved within the wax symbol — it's awful": the flat lines
+        read as pasted-on, not part of the wax. v7 instead ENHANCES the seal's
+        existing 3D relief — its real raised petal edges catch a white specular
+        highlight (the seal's own high-pass ridges + isolated highlights screened
+        back, deepened recesses via sigmoidal contrast). v8 (2026-06-28) ADDS a
+        clean white RIM-LIGHT around the wax's outer silhouette edge — derived
+        from the seal's OWN alpha edge, so it reads as the wax catching light on
+        its raised rim, NOT a pasted-on ring — giving Hugo BOTH of his asks at
+        once: the "white outline around the rose" that makes it STAND OUT on any
+        ground, AND the rose's details in thin white, naturally engraved. So the
+        worldwide-recognisable Tudor rose reads from a distance as a ROSE, never a
+        flat red disc, while looking like genuine pressed wax. v9 (2026-06-28)
+        FIXES the regression that shipped the v8 PNGs flattened onto an OPAQUE
+        BLACK square (mean-alpha 1.0 — the "random black box behind the logo"
+        Hugo flagged sitewide): a border-bridged corner flood-fill keys that
+        black background back to transparent (fuzz 18%, so the dark inter-petal
+        crevices — not connected to the border — stay intact), leaving the wax
+        rose + its white rim on clean transparency. The seal's feathered alpha is
+        preserved untouched.
+        Square mark, width === height. Never display:none'd; the wordmark shows at
         EVERY width (wraps to two lines on the smallest phones — Hugo: "add full
         logo with text on mobile too so it's not just the symbol").
       */}

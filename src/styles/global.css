@@ -467,11 +467,13 @@
   height: 100dvh;
   overflow: hidden;
   will-change: opacity, transform;
-  /* Just a 5% feather at the bottom — enough to avoid a hard horizontal
-     seam against the Welcome page below, without leaving the giant blank
-     gap the previous 22% fade created. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 95%, transparent 100%);
+  /* Soft 14% feather at the bottom so the (dark) nebula film dissolves into
+     the #0a0908 page below rather than ending on a hard horizontal seam — the
+     "blocky transition" Hugo flagged. The dark starfield blends into the page
+     bg, so this longer fade reads as a gentle blur-out, NOT the giant blank
+     gap the old 22% fade left with the bright rose-easel footage. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 86%, transparent 100%);
 }
 .video-intro__video,
 .video-intro__poster {
@@ -484,6 +486,13 @@
      isn't cropped to dead-centre on non-16:9 viewports. The portrait
      height/aspect-ratio strategy is handled separately. */
   object-position: center 35%;
+  /* nebula-intro-v1 carries a Veo watermark in the bottom-right corner. A
+     1.22× zoom anchored toward the top-left pushes that corner off the
+     overflow-hidden stage (the SAME crop the mid-page CosmosBand uses on the
+     identical file). Applies to the poster too, so the still is watermark-free
+     before the film rolls. The stage's scroll scale composes on top. */
+  transform: scale(1.22);
+  transform-origin: 22% 18%;
   background: #0a0908;
 }
 /* Kill the big centred iOS play-button overlay Safari paints over a muted

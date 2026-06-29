@@ -122,14 +122,15 @@
     <!-- Preload the intro poster (the home LCP) so the landing paints fast.
          ⚠️ Points at the .JPG, not the .webp: the <video poster> attribute (the
          frame actually painted on the common motion-allowed path) takes a single
-         URL and can't negotiate webp via <picture>, so it paints poster-v2.jpg
-         (VideoIntro.tsx). Preloading the .jpg therefore feeds the REAL LCP;
-         fetchpriority=high wins it the request race from byte one. The webp
-         poster is still used by the reduced-motion <picture> fallback (loaded
-         there, just not preloaded — a tiny minority). The welcome hero painting
-         preload was REMOVED 2026-06-11: it taxed every NON-home direct entry
-         (painting pages, /verify…) ~62KB for an image a viewport below the fold. -->
-    <link rel="preload" as="image" href="/video/poster-v2.jpg" type="image/jpeg" fetchpriority="high" />
+         URL and can't negotiate webp via <picture>, so it paints
+         poster-nebula-v1.jpg (VideoIntro.tsx). Preloading the .jpg therefore
+         feeds the REAL LCP; fetchpriority=high wins it the request race from
+         byte one. The webp poster is still used by the reduced-motion <picture>
+         fallback (loaded there, just not preloaded — a tiny minority). The
+         welcome hero painting preload was REMOVED 2026-06-11: it taxed every
+         NON-home direct entry (painting pages, /verify…) ~62KB for an image a
+         viewport below the fold. -->
+    <link rel="preload" as="image" href="/video/poster-nebula-v1.jpg" type="image/jpeg" fetchpriority="high" />
     <!-- Preload the home's top sun-limb banner. It's set via JSX src (discovered
          late by the parser); preloading starts the fetch ~1 round-trip earlier so
          the corona paints with first meaningful paint. -->

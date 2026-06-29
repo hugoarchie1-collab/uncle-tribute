@@ -55,15 +55,13 @@ const PEAK_H2_STYLE = {
 } as const;
 
 /**
- * CosmicInterlude — a Veo-generated space-nebula film, the cinematic breath
- * between the Arista commission and the Sacred Geometry close (Hugo: "put the
- * intro video in the space in between"). LAZY: an IntersectionObserver mounts
- * the <video> only when the band is ~300px from the viewport, so it costs ZERO
- * bytes (and zero compositing) until scrolled near — protecting the home's
- * scroll performance. Muted / looping / playsInline so it autoplays everywhere.
- * Reduced-motion users skip it entirely (the gap is already closed by spacing).
- * Soft top/bottom edge-dissolve melts it into the peacock wash. Swap the source
- * filename to drop in a different Veo export.
+ * CosmicInterlude — a Veo-generated film, the cinematic breath under the
+ * wordmark. LAZY: an IntersectionObserver mounts the <video> only when the band
+ * is ~300px from the viewport. Muted / looping / playsInline so it autoplays
+ * everywhere. Reduced-motion users skip it. Soft edge-dissolve melts it into the
+ * peacock wash. (Stays a CONTAINED band — a 2026-06-28 attempt to make this the
+ * open's full-viewport sky was reverted: the film is a bright daylit garden
+ * scene that out-shouted the cream wordmark + buried the Earth limb there.)
  */
 const CosmicInterlude = () => {
   const reduceMotion = useReducedMotion();
@@ -106,14 +104,6 @@ const CosmicInterlude = () => {
       aria-label="The cosmos — the order beneath all things"
       className="relative w-full my-10 md:my-14"
     >
-      {/* FULL-BLEED cinematic band (2026-06-28): the film was a floating
-          rounded, hairline-ringed, drop-shadowed video CARD sitting in a page
-          margin — a generic "media card" tell. Now it spans edge-to-edge as one
-          atmospheric breath between the commission and the close; the top/bottom
-          mask melts it into the peacock wash and a soft side-vignette feathers
-          the left/right so it dissolves into the page rather than hard-cutting.
-          No radius / ring / shadow / max-width — just the film, the way a hero
-          full-bleeds. */}
       <div
         ref={ref}
         className="relative w-full overflow-hidden h-[clamp(340px,56svh,680px)] bg-[#0a0810]"
@@ -122,10 +112,7 @@ const CosmicInterlude = () => {
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full object-cover"
-            // Slight zoom anchored toward the top-left so the bottom-right "Veo"
-            // generator watermark is pushed beyond the overflow-hidden band and
-            // clipped away — a clean, un-branded film (Hugo hates anything that
-            // "looks AI"). The 1.22× scale on an atmospheric pan is imperceptible.
+            // 1.22× top-left zoom clips the bottom-right Veo watermark.
             style={{ transform: "scale(1.22)", transformOrigin: "22% 18%" }}
             muted
             loop
@@ -136,10 +123,7 @@ const CosmicInterlude = () => {
             <source src={asset("/video/nebula-intro-v1.mp4")} type="video/mp4" />
           </video>
         )}
-        {/* Soft dissolve so the full-bleed film melts into the peacock wash on
-            ALL sides — top/bottom (the original) PLUS a gentle left/right
-            vignette now that the band runs edge-to-edge, so the cinematic strip
-            feathers into the page instead of hard-cutting at the viewport edge. */}
+        {/* Soft dissolve on all sides so the band melts into the peacock wash. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -227,6 +211,18 @@ export const Welcome = () => {
     })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
+  // "A reminder" lead — split reminderLong[0] at its first sentence so the
+  // opening CLAUSE can be set as a large flush-left display lede (illuminated by
+  // the existing rust drop-cap) with the rest of the SAME verbatim paragraph
+  // dropping to reading size beneath. Both halves are Stephen's verbatim words —
+  // never re-typed; the full paragraph still appears once, in order.
+  const reminderLead = WELCOME.reminderLong[0];
+  const reminderLeadSplit = reminderLead.indexOf(". ");
+  const reminderLeadHead =
+    reminderLeadSplit > 0 ? reminderLead.slice(0, reminderLeadSplit + 1) : reminderLead;
+  const reminderLeadBody =
+    reminderLeadSplit > 0 ? reminderLead.slice(reminderLeadSplit + 2) : "";
+
   return (
     <>
       {/* The home page is the strongest URL on the domain — give it a
@@ -258,17 +254,14 @@ export const Welcome = () => {
         className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[44svh] md:min-h-[62svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
-        {/* The home's own peacock painting shows THROUGH the transparent sun
-            (no bg-bg) — the sun composites onto the painting exactly like the
-            Earth limb composites onto it at the close. */}
-        {/* Softening scrim — a GENTLE, mostly-even veil so the indigo peacock
-            backdrop reads continuously right up to the sun (Hugo: "I want the
-            background up to the sun like the Earth finale" — the old scrim ramped
-            to 0.82 at the foot and buried it into a black block below the
-            wordmark). Light enough that the indigo shows like the finale's pink;
-            the wordmark keeps its own heavy text-shadow for legibility. A plain
-            dark gradient, NOT backdrop-blur (banned here for the scroll-lag it
-            causes); z-0, below the sun (z-1) + the text (z-10). */}
+        {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
+            backdrop reads continuously up to the Earth limb; the wordmark keeps
+            its own heavy text-shadow for legibility. z-0, below the limb (z-1)
+            + the text (z-10). (NOTE: a 2026-06-28 cinematic-open attempt that
+            put the Veo film here as a full-viewport sky was reverted — that
+            film is a BRIGHT daylit garden scene, so as the open's sky it
+            out-shouted the cream wordmark and buried the Earth limb, breaking
+            Hugo's brightness rule + his defended open composition.) */}
         <div
           aria-hidden="true"
           className="absolute inset-0 z-0"
@@ -379,7 +372,7 @@ export const Welcome = () => {
                 }}
               >
                 <img
-                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v6-w256.png`}
+                  src={`${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`}
                   alt=""
                   aria-hidden="true"
                   className="h-[1.4em] w-[1.4em] shrink-0 object-contain"
@@ -394,10 +387,9 @@ export const Welcome = () => {
         </div>
       </section>
 
-      {/* COSMIC INTERLUDE — the Veo space-nebula film is the SOLE website intro
-          now (Hugo: "just one video at the top underneath Mandala Company"),
-          playing right under the wordmark; the old swirling-mandala boomerang
-          (VideoIntro) was removed from the home. Lazy + reduced-motion safe. */}
+      {/* COSMIC INTERLUDE — the Veo film plays in a contained full-bleed band
+          right under the wordmark. Lazy + reduced-motion safe. (Kept as a band,
+          NOT the open's full-viewport sky — see the revert note above.) */}
       <CosmicInterlude />
 
       <div id="welcome-anchor" className="relative">
@@ -657,30 +649,35 @@ export const Welcome = () => {
                 `.reminder-shadow` utility below + the display-scale
                 hero-text-shadow already on the pull-quote + close), never a
                 hard dark card. */}
-            <Reveal as="header" className="mb-4 md:mb-6 mx-auto max-w-[1180px] 2xl:max-w-[1280px] 3xl:max-w-[1440px]">
-              <p className={cn(EYEBROW, "m-0 mb-4 text-center")}>A reminder</p>
-              {/* Lead-in — reminderLong[0] VERBATIM, set as an art-book lead:
-                  Fraunces opsz 40, generous leading, a rust drop cap (pure
-                  CSS — the word itself is untouched). The cap recipe lives in
-                  global.css `.drop-cap`: the hand-tuned ::first-letter float
-                  everywhere, upgraded via @supports to `initial-letter: 2`
-                  (engine-locked cap sizing/baseline) on Safari/Chrome.
-                  text-pretty so the rag flows cleanly around the cap. */}
+            {/* Left-aligned to establish the RAIL the pull-quote below breaks
+                against (the section's one off-axis spine). */}
+            <Reveal as="header" className="mb-4 md:mb-6 text-left">
+              <p className={cn(EYEBROW, "m-0 mb-5")}>A reminder</p>
+              {/* Illuminated opening CLAUSE — reminderLong[0]'s first sentence as
+                  a large flush-left display lede (the rust drop-cap now
+                  illuminates a whole clause), then the remainder of that SAME
+                  verbatim paragraph drops to reading size beneath. The .drop-cap
+                  recipe (global.css, @supports initial-letter:2) scales for free.
+                  Words untouched; the full paragraph still appears once, in order. */}
               <p
-                className="drop-cap font-display font-normal tracking-[-0.012em] text-ink m-0 mx-auto max-w-[34ch] text-pretty"
+                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[20ch] text-pretty"
                 style={{
-                  fontVariationSettings: '"opsz" 40, "wght" 400',
-                  fontSize: "clamp(30px, 7vw, 40px)",
-                  // More open leading now there's no scrim card — the lead reads
-                  // as an art-book opener with air around each line.
-                  lineHeight: 1.5,
-                  // Subtle soft halo for legibility directly on the peacock wash
-                  // (replaces the removed reading-scrim card — never a box).
+                  fontVariationSettings: '"opsz" 48, "wght" 600',
+                  fontSize: "clamp(34px, 6vw, 76px)",
+                  lineHeight: 1.06,
                   textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
                 }}
               >
-                {WELCOME.reminderLong[0]}
+                {reminderLeadHead}
               </p>
+              {reminderLeadBody && (
+                <p
+                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.85] text-ink-soft m-0 mt-5 md:mt-6 max-w-[54ch] text-pretty"
+                  style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
+                >
+                  {reminderLeadBody}
+                </p>
+              )}
             </Reveal>
 
             {/* Pull-quote — THE emotional punch of the section (Hugo: make it
@@ -694,32 +691,42 @@ export const Welcome = () => {
                 the slice in the map), so the full passage appears exactly once.
                 Both halves are DERIVED from the same verbatim slice — never
                 re-typed. Generous my-12→my-20 gives it real air on the page. */}
-            <Reveal delay={0.05} className="my-12 md:my-20 mx-auto max-w-[1280px] 2xl:max-w-[1400px] 3xl:max-w-[1560px] text-center">
+            {/* THE asymmetric fulcrum — the ONE off-axis chord on the whole home
+                (every other section stays centred, so this lands like a held
+                note). Stephen's verbatim "There is a star inside each one of us."
+                breaks LEFT and screen-filling against the section's left rail;
+                the confirming "Quite literally." answers on the opposite (right)
+                axis. Both halves are the SAME verbatim reminderLong[3] slice —
+                never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
+                Hermès / Avant Arte asymmetric editorial scale — the missing
+                "wow", and the antidote to the centred-stack monotony.) */}
+            <Reveal delay={0.05} className="my-16 md:my-28 text-left">
               <blockquote className="m-0 hero-text-shadow">
-                {/* Dominant tier — the first sentence, big roman Fraunces. */}
+                {/* Dominant tier — breaks LEFT, oversized, stacks 3-4 commanding
+                    lines against the rail. opsz held at 48 (finale invariant). */}
                 <span
-                  className="block font-display font-semibold text-ink text-balance mx-auto"
+                  className="block font-display font-semibold text-ink max-w-[16ch]"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
-                    fontSize: "clamp(48px, 11vw, 116px)",
-                    letterSpacing: "-0.035em",
-                    lineHeight: 0.98,
+                    fontSize: "clamp(56px, 13vw, 168px)",
+                    letterSpacing: "-0.045em",
+                    lineHeight: 0.92,
                   }}
                 >
                   {WELCOME.reminderLong[3].split(". ")[0] + "."}
                 </span>
-                {/* Subordinate tier — "Quite literally.", a fraction of the
-                    title size, italic, its closing period the one rust note. */}
+                {/* Subordinate — "Quite literally." answers on the RIGHT axis,
+                    its closing period the one rust note. */}
                 <span
-                  className="block font-display font-normal italic text-ink/90 text-balance mx-auto"
+                  className="block w-fit ml-auto text-right font-display font-normal italic text-ink/90"
                   style={{
                     fontVariationSettings: '"opsz" 40, "wght" 400',
                     fontWeight: 400,
-                    fontSize: "clamp(26px, 5vw, 52px)",
+                    fontSize: "clamp(28px, 5.5vw, 60px)",
                     letterSpacing: "-0.02em",
                     lineHeight: 1.1,
-                    marginTop: "clamp(10px, 1.4vw, 22px)",
+                    marginTop: "clamp(12px, 1.8vw, 28px)",
                   }}
                 >
                   {WELCOME.reminderLong[3].split(". ")[1]}
@@ -940,33 +947,26 @@ export const Welcome = () => {
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                       </div>
-                      {/* Price chip — scroll-revealed (visible on mobile,
-                          where there's no hover, and on desktop as soon as
-                          the tile enters view). Advertises the LOWEST visible
-                          tier (A3 Gallery £245) to lower the click barrier —
-                          the £450 anchor still converts on the product page. */}
-                      <motion.span
-                        aria-hidden="true"
-                        initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{
-                          duration: 0.55,
-                          delay: 0.15,
-                          ease: [0.22, 0.61, 0.36, 1],
-                        }}
-                        className="absolute bottom-3 right-3 inline-flex items-center bg-bg/85 ring-1 ring-line shadow-[0_6px_20px_rgba(0,0,0,0.5)] px-3 py-1.5 font-sans text-[10px] font-bold tracking-[0.08em] text-ink rounded-full"
-                      >
-                        From {fmtPrice(fromPrice)}
-                      </motion.span>
                     </div>
-                    <div className="pt-4">
-                      <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.25] group-hover:text-accent transition-colors duration-300">
-                        {painting.title}
-                      </h3>
-                      <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 mt-2 m-0">
-                        {hasYear ? painting.year : collectionTitle}
-                      </p>
+                    {/* Museum WALL-LABEL (2026-06-28 bold redesign) — the price
+                        comes OFF the image (the floating rounded pill was the one
+                        Shopify-template tell on the page) and folds into a quiet
+                        typographic caption: title + year/collection on the left,
+                        the existing "From £…" as a tabular figure on the right,
+                        across a hairline rule. The Link's aria-label still spells
+                        the price, so a11y is unchanged. */}
+                    <div className="flex items-baseline justify-between gap-4 pt-4 border-t border-line">
+                      <div className="min-w-0">
+                        <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300">
+                          {painting.title}
+                        </h3>
+                        <p className="font-sans text-[11px] font-bold tracking-[0.08em] text-ink/55 mt-1.5 m-0">
+                          {hasYear ? painting.year : collectionTitle}
+                        </p>
+                      </div>
+                      <span className="shrink-0 font-sans text-[13px] font-bold [font-variant-numeric:tabular-nums] text-ink/75 whitespace-nowrap group-hover:text-ink transition-colors duration-300">
+                        From {fmtPrice(fromPrice)}
+                      </span>
                     </div>
                   </Link>
                 );
@@ -1025,41 +1025,43 @@ export const Welcome = () => {
                 />
               </Reveal>
 
-              {/* Two paragraphs in a balanced two-column measure below the image —
-                  same body register as the rest of the page. */}
-              <Reveal as="div" className="grid md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-5 md:gap-y-6">
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
-                  Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                </p>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
-                  When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                </p>
+              {/* DOSSIER spread (2026-06-28 bold redesign, agent cherry-pick:
+                  Hermès craftsmanship register) — the process PROSE runs as a
+                  left text well; the six material facts become a RIGHT vertical
+                  SPEC LEDGER (label · value rows on hairlines) instead of a flat
+                  full-width strip. Asymmetric 7/5. Every sentence is verbatim +
+                  intact (nothing deleted); the frosted panel chrome is Hugo's
+                  standing choice, unchanged. */}
+              <Reveal as="div" className="grid lg:grid-cols-12 gap-x-10 xl:gap-x-16 gap-y-8 lg:gap-y-0 items-start">
+                <div className="lg:col-span-7 flex flex-col gap-y-5 md:gap-y-6">
+                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                  </p>
+                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                  </p>
+                </div>
+                {/* Vertical spec ledger — one even register, label left / value
+                    right on a hairline, the gutter the prose well doesn't fill. */}
+                <ul className="lg:col-span-5 list-none p-0 m-0">
+                  {[
+                    ["Time", "Hundreds of hours per canvas"],
+                    ["Edition", "Individually made to order"],
+                    ["Surface", "350gsm archival canvas"],
+                    ["Frame", "Hand-stretched, deep wooden"],
+                    ["Tools", "Compass · rule · brush"],
+                    ["Pigment", "Hand-pressed oils + pigment inks"],
+                  ].map(([label, value]) => (
+                    <li
+                      key={label}
+                      className="m-0 flex items-baseline justify-between gap-6 py-3.5 border-t border-[rgba(237,230,214,0.16)]"
+                    >
+                      <span className="shrink-0 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink/55">{label}</span>
+                      <span className="text-right font-sans font-normal text-[16px] md:text-[17px] leading-[1.4] text-ink">{value}</span>
+                    </li>
+                  ))}
+                </ul>
               </Reveal>
-
-              {/* Materials ledger — FULL-WIDTH spec strip BELOW the image+text
-                  row (it used to be nested in the right column, leaving a dead
-                  void to its left where the shorter image ended — Hugo's "gap
-                  next to highlighted"). Three columns on md+ so the six facts
-                  read as a clean ledger across the whole panel. */}
-              <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-0 list-none p-0 mt-5 md:mt-8 items-start">
-                    {/* ONE consistent register for all six facts — same eyebrow
-                        label + same Hanken value at one size, no mixed serif/
-                        italic lines (Hugo: "different sizes, different fonts,
-                        some italics — messy"). Reads as a clean, even ledger. */}
-                    {[
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                    ].map(([label, value]) => (
-                      <li key={label} className="m-0 py-4 border-t border-[rgba(237,230,214,0.16)]">
-                        <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-2">{label}</p>
-                        <p className="font-sans font-normal text-[17px] md:text-[18px] leading-[1.4] text-ink m-0">{value}</p>
-                      </li>
-                    ))}
-              </ul>
             </div>
           </section>
 
@@ -1081,7 +1083,7 @@ export const Welcome = () => {
                 four generic grey cards. The Roman numeral is demoted to a small
                 accent index; the name is promoted into the Fraunces display
                 register; both name + rule warm to accent on hover. */}
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-8 md:gap-y-10 list-none p-0 mb-5 md:mb-8">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-10 md:gap-y-12 list-none p-0 mb-5 md:mb-8">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -1090,18 +1092,25 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-5 md:pt-6 transition-colors duration-500 hover:border-accent"
+                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-4 md:pt-5 transition-colors duration-500 hover:border-accent"
                 >
-                  <p className="font-sans text-[12px] font-bold tracking-[0.18em] text-accent/75 m-0 mb-3">
+                  {/* Oversized GHOST numeral — the architectural anchor of each
+                      column (Cartier/Pentagram index-numeral system): a whisper at
+                      rest (ink/15), warming to accent on hover. opsz held at 48. */}
+                  <span
+                    aria-hidden="true"
+                    className="block font-display text-[clamp(56px,6.5vw,118px)] leading-[0.85] tracking-[-0.02em] text-ink/15 group-hover:text-accent/40 transition-colors duration-500 select-none"
+                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
+                  >
                     {item.tag}
-                  </p>
+                  </span>
                   <p
-                    className="font-display text-ink text-[clamp(19px,2.3vw,28px)] tracking-[-0.02em] leading-[1.15] m-0 mb-2 transition-colors duration-300 group-hover:text-accent"
-                    style={{ fontWeight: 600 }}
+                    className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 mt-1 mb-2 transition-colors duration-300 group-hover:text-accent"
+                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
                   >
                     {item.name}
                   </p>
-                  <p className="font-sans font-normal text-[15px] leading-[1.5] text-ink/65 m-0">
+                  <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink/55 m-0">
                     {item.note}
                   </p>
                 </li>
@@ -1182,7 +1191,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[48svh] md:min-h-[52svh] w-full items-center overflow-hidden pt-0 pb-8 md:pt-0 md:pb-10 lg:pt-0 lg:pb-12"
+            className="relative isolate flex min-h-[100svh] w-full items-start overflow-hidden pt-[15svh] md:pt-[17svh] pb-0"
             aria-label="Sacred Geometry"
           >
 
@@ -1194,7 +1203,7 @@ export const Welcome = () => {
                 local text scrim below does the rest. z-[1], below the content. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[44svh] md:h-[48svh] overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[66svh] md:h-[74svh] overflow-hidden"
             >
               {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
                   the rust period in the finale type stays the one literal accent. */}
@@ -1257,29 +1266,26 @@ export const Welcome = () => {
                   <span
                     className="block"
                     style={{
-                      fontVariationSettings: '"opsz" 48, "wght" 700',
-                      fontWeight: 700,
-                      // Sized so the longest word (GEOMETRY, 8 caps) fits on ONE
-                      // line at every width — no orphaned "Y". Big + caps + 700
-                      // reads as the screen-filling brand statement.
-                      fontSize: "clamp(58px, 14.5vw, 240px)",
-                      letterSpacing: "-0.03em",
-                      lineHeight: 0.92,
+                      // DEMOTED to the quiet estate KICKER (2026-06-28 bold
+                      // redesign): Stephen's own verbatim line below is now the
+                      // largest, final word — this frames it, not the reverse.
+                      fontVariationSettings: '"opsz" 36, "wght" 600',
+                      fontWeight: 600,
+                      fontSize: "clamp(20px, 2.6vw, 40px)",
+                      letterSpacing: "0.02em",
+                      lineHeight: 1.0,
                       textTransform: "uppercase",
                       color: "#ede6d6",
-                      // Stronger triple halo so the cream caps read crisply over
-                      // the bright sun (Hugo: unreadable) — a tight inner shadow
-                      // for edge definition + two wider glows to ground it.
                       textShadow:
-                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 18px rgba(8,6,12,0.85), 0 2px 52px rgba(8,6,12,0.7)",
+                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 16px rgba(8,6,12,0.8)",
                     }}
                   >
                     Sacred{" "}
                     <em
                       style={{
                         fontStyle: "normal",
-                        fontVariationSettings: '"opsz" 48, "wght" 700',
-                        fontWeight: 700,
+                        fontVariationSettings: '"opsz" 36, "wght" 600',
+                        fontWeight: 600,
                       }}
                     >
                       geometry
@@ -1290,18 +1296,15 @@ export const Welcome = () => {
                   <span
                     className="block text-balance"
                     style={{
-                      fontVariationSettings: '"opsz" 36, "wght" 600',
-                      fontWeight: 600,
-                      fontSize: "clamp(22px, 3.4vw, 54px)",
-                      letterSpacing: "-0.005em",
-                      lineHeight: 1.1,
+                      fontVariationSettings: '"opsz" 24, "wght" 400',
+                      fontWeight: 400,
+                      fontSize: "clamp(15px, 1.9vw, 26px)",
+                      letterSpacing: "0.0em",
+                      lineHeight: 1.2,
                       color: "#ede6d6",
-                      marginTop: "clamp(4px, 0.8vw, 14px)",
-                      // Heavy dark halo so the subordinate line stays crisp even
-                      // when it crosses the Earth's bright atmosphere rim (Hugo:
-                      // "barely read it against the white part of earth").
+                      marginTop: "clamp(6px, 0.8vw, 12px)",
                       textShadow:
-                        "0 2px 16px rgba(8,6,12,0.96), 0 1px 3px rgba(8,6,12,0.9), 0 0 40px rgba(8,6,12,0.55)",
+                        "0 2px 16px rgba(8,6,12,0.92), 0 1px 3px rgba(8,6,12,0.9)",
                     }}
                   >
                     &mdash; the order beneath all things
@@ -1320,51 +1323,59 @@ export const Welcome = () => {
                   "everything is connected" (content.ts MEMORIAL_QUOTE); never
                   an invented near-quote. True Fraunces italic, opsz 24. */}
               <Reveal delay={0.22}>
+                {/* PROMOTED to the largest, FINAL word on the page — Stephen's
+                    own verbatim sentence (MEMORIAL_QUOTE: his life's-mission line
+                    from Anegada). The estate frame above is now the quiet kicker;
+                    he gets the last word. opsz held at 48 (finale invariant). */}
                 <p
-                  className="font-display text-ink text-balance m-0 mb-6"
+                  className="font-display text-ink text-balance m-0 mb-6 mx-auto max-w-[18ch]"
                   style={{
                     fontStyle: "italic",
-                    fontVariationSettings: '"opsz" 24, "wght" 400',
-                    fontSize: "clamp(20px, 2.4vw, 26px)",
-                    lineHeight: 1.5,
-                    // Strong halo — this line sits low over the brightest part of
-                    // the sun and was unreadable; tight + wide shadow grounds it.
+                    fontVariationSettings: '"opsz" 48, "wght" 400',
+                    fontSize: "clamp(40px, 8vw, 132px)",
+                    lineHeight: 1.04,
+                    letterSpacing: "-0.02em",
                     textShadow:
-                      "0 1px 3px rgba(9,7,11,0.92), 0 2px 16px rgba(9,7,11,0.85), 0 0 34px rgba(9,7,11,0.6)",
+                      "0 2px 26px rgba(9,7,11,0.85), 0 1px 4px rgba(9,7,11,0.7)",
                   }}
                 >
                   &ldquo;I realised that everything is connected.&rdquo;
                   <span
                     style={{
                       fontStyle: "normal",
-                      // Full cream + a halo so the SEM label reads on the bright
-                      // sun (muted vanished); sentence-case per the type pass.
                       color: "#ede6d6",
                       textShadow:
                         "0 1px 3px rgba(9,7,11,0.92), 0 1px 12px rgba(9,7,11,0.8)",
                     }}
-                    className="font-sans text-[11px] tracking-[0.04em] ml-3 align-middle"
+                    className="block mt-5 font-sans text-[12px] font-bold tracking-[0.18em]"
                   >
                     SEM
                   </span>
                 </p>
               </Reveal>
 
-              {/* Quiet exit — a text link, never a pill. The colophon ends on a
-                  soft door into the shop. */}
+              {/* THRESHOLD exit (2026-06-28 bold redesign) — the colophon ends
+                  on a wide hairline-ruled door at confident serif scale (not 11px
+                  micro-type under Stephen's huge line), the arrow travelling the
+                  rule on hover. Same verbatim destination words. (Hermès/Aesop
+                  footer-threshold.) */}
               <Reveal delay={0.3}>
                 <Link
                   to="/collections"
-                  // Full cream + a legibility halo so the exit link reads on the
-                  // bright sun; sentence-case per the type pass.
-                  className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink transition-colors hover:text-accent"
+                  className="group relative mx-auto mt-2 flex w-full max-w-[520px] items-center justify-between gap-6 border-t border-ink/20 pt-5 font-display tracking-[-0.01em] text-ink transition-colors hover:text-accent"
                   style={{
-                    textShadow:
-                      "0 1px 3px rgba(9,7,11,0.9), 0 1px 14px rgba(9,7,11,0.75)",
+                    fontVariationSettings: '"opsz" 24, "wght" 500',
+                    fontSize: "clamp(20px, 2.2vw, 30px)",
+                    textShadow: "0 1px 12px rgba(9,7,11,0.7)",
                   }}
                 >
-                  Explore the collection{" "}
-                  <span aria-hidden="true">&rarr;</span>
+                  Explore the collection
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-2"
+                  >
+                    &rarr;
+                  </span>
                 </Link>
               </Reveal>
             </div>

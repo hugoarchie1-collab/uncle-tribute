@@ -275,28 +275,24 @@ export const VideoIntro = () => {
             // Deferred: fetch nothing up front. The sources only mount once the
             // go signal fires (see the defer effect), and load() then pulls them.
             preload="none"
-            poster={`${base}video/poster-v2.jpg`}
+            poster={`${base}video/poster-nebula-v1.jpg`}
             // Gentle crossfade in over the poster on the first painted frame —
             // no pop. The poster attribute keeps the still painted at opacity 0.
             style={{ opacity: playing ? 1 : 0, transition: "opacity 0.5s ease" }}
           >
-            {/* WebM/VP9 first (smaller) for browsers that support it; H.264
-                mp4 fallback. Both 720p, audio stripped (re-encoded 2026-06-10).
+            {/* Nebula intro (nebula-intro-v1.mp4, 960×540, the loop+reverse cut
+                Hugo authored 2026-06-24). A dark starfield, so its bottom edge
+                dissolves naturally into the #0a0908 page below — no hard seam.
                 Withheld until `go` so the browser pulls zero bytes at first
-                paint — the poster carries the frame until then. */}
-            {go && (
-              <>
-                <source src={`${base}video/intro-v2.webm`} type="video/webm" />
-                <source src={`${base}video/intro-v2.mp4`} type="video/mp4" />
-              </>
-            )}
+                paint — the matching nebula poster carries the frame until then. */}
+            {go && <source src={`${base}video/nebula-intro-v1.mp4`} type="video/mp4" />}
           </video>
         ) : (
           <picture style={{ display: "contents" }}>
-            <source srcSet={`${base}video/poster-v2.webp`} type="image/webp" />
+            <source srcSet={`${base}video/poster-nebula-v1.webp`} type="image/webp" />
             <img
-              src={`${base}video/poster-v2.jpg`}
-              alt="The Wild Rose mandala on an easel in Stephen's garden"
+              src={`${base}video/poster-nebula-v1.jpg`}
+              alt="A nebula in deep space — the opening of Stephen's story"
               className="video-intro__poster"
               decoding="async"
               fetchPriority="high"

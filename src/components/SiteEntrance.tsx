@@ -112,7 +112,7 @@ export const SiteEntrance = () => {
       {/* The emblem breathes — a slow, gentle opacity pulse (no spin, no scale
           travel beyond a hair) — while the veil holds. */}
       <motion.img
-        src={asset("/logo/logo-seal-v6-w512.png")}
+        src={asset("/logo/logo-seal-v9-w512.png")}
         alt=""
         width={512}
         height={512}
