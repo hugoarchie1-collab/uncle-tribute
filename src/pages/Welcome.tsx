@@ -922,7 +922,7 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.035em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
@@ -1021,7 +1021,7 @@ export const Welcome = () => {
                         the price, so a11y is unchanged. */}
                     <div className="flex items-baseline justify-between gap-4 pt-4 border-t border-line">
                       <div className="min-w-0">
-                        <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300">
+                        <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                           {painting.title}
                         </h3>
                         <p className="font-sans text-[11px] font-bold tracking-[0.08em] text-ink/55 mt-1.5 m-0">
@@ -1156,7 +1156,7 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-4 md:pt-5 transition-colors duration-500 hover:border-accent"
+                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
                 >
                   {/* Oversized GHOST numeral — the architectural anchor of each
                       column (Cartier/Pentagram index-numeral system): a whisper at
@@ -1174,7 +1174,7 @@ export const Welcome = () => {
                   >
                     {item.name}
                   </p>
-                  <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink/55 m-0">
+                  <p className="font-sans font-normal text-[14px] leading-[1.5] text-ink/70 m-0">
                     {item.note}
                   </p>
                 </li>
@@ -1202,7 +1202,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,5.2vw,58px)] leading-[1.08] text-ink m-0 mb-5 text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,6.4vw,84px)] leading-[1.02] text-ink m-0 mb-5 text-balance hero-text-shadow">
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up

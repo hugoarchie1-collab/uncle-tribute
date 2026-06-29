@@ -12,7 +12,7 @@ import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
 import { useAuth } from "../lib/auth";
 import { MEMORIES, type Memory } from "../data/memories";
-import { ABOUT, LIFE_DATES } from "../data/content";
+import { ABOUT, LIFE_DATES, TRIBUTE } from "../data/content";
 
 /**
  * /memories — the Book of Memories. A refined masthead (a meta rule, then the
@@ -133,6 +133,20 @@ const ARTIST_MEMORY: WallMemory = {
   name: "Stephen Meakin (SEM)",
   relationship: "In his own words, to his students",
   message: ABOUT.studentsLetter,
+};
+
+// The family's farewell — Polly Wedge's funeral tribute, moved here from the
+// About page (Hugo, 2026-06-29: a bio page is the wrong home for it; it belongs
+// on the wall as her posted memory of Steve). Sourced VERBATIM from content.ts
+// TRIBUTE so the words live in exactly ONE place and stay untouched; joined with
+// blank lines so CommentRow's splitParagraphs renders the four paragraphs. It is
+// featured (not tiled) directly under the pinned artist voice — the cornerstone
+// family memory, never folded.
+const FAMILY_TRIBUTE: WallMemory = {
+  id: "family-tribute-polly-wedge",
+  name: "Polly Wedge",
+  relationship: "Written for Stephen's funeral",
+  message: TRIBUTE.paragraphs.join("\n\n"),
 };
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4MB — matches the endpoint's cap
@@ -914,6 +928,16 @@ export const Memories = () => {
               </button>
             </div>
           </div>
+
+          {/* a2 · THE FAMILY'S FAREWELL — Polly Wedge's funeral tribute, the
+              cornerstone family memory. Featured full-width like the pinned
+              voice (a 4-paragraph tribute would never tile cleanly as a masonry
+              card, and it carries too much weight to sit among the visitor
+              tiles). Moved here from the About page at Hugo's direction; reads
+              as her posted memory of Steve. Shown in full — never folded. */}
+          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.5rem)] border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
+            <CommentRow memory={FAMILY_TRIBUTE} />
+          </Reveal>
 
           {/* b · quiet section eyebrow — a thread divider under the pinned band */}
           <Reveal as="div" className="mt-[clamp(1rem,2vw,1.25rem)] mb-[clamp(0.5rem,1.5vw,0.75rem)]">

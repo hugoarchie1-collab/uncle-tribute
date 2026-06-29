@@ -20,8 +20,6 @@ import {
   CREDENTIALS,
   DEATH_DATE,
   INTERVIEW,
-  TRIBUTE,
-  MEMORIAL_QUOTE,
   LIFE_DATES,
 } from "../data/content";
 import { Seo } from "../components/Seo";
@@ -32,7 +30,6 @@ import {
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
   META,
-  TITLE,
   SUBTITLE,
   BTN_PRIMARY,
   BTN_SECONDARY,
@@ -1651,41 +1648,11 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 16 · IN MEMORIAM — the family's farewell. Polly Wedge's funeral
-            tribute, opened by Stephen's own "everything is connected" words.
-            UNTOUCHABLE — its border-t now reads as the final chapter hairline,
-            the motif closing the system. */}
-        <section className="mx-auto max-w-[900px] 2xl:max-w-[1000px] 3xl:max-w-[1100px] 4xl:max-w-[1220px] px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-10 border-t border-line">
-          <Reveal as="div" className="text-center mb-6 md:mb-8">
-            <p className={cn(EYEBROW, "m-0 mb-4")}>{TRIBUTE.eyebrow}</p>
-            <h2 className={cn(TITLE, "max-w-[820px] mx-auto my-0")}>
-              Stephen Meakin
-            </h2>
-            <p className={cn(EYEBROW_MUTED, "mt-5 md:mt-6")}>{LIFE_DATES}</p>
-          </Reveal>
-
-          <Reveal as="figure" className="my-0 mb-6 md:mb-8 max-w-[760px] 3xl:max-w-[880px] mx-auto border-l border-line pl-6 md:pl-8">
-            <blockquote className="m-0">
-              <p className="quote-hang font-display italic text-[clamp(22px,2.9vw,42px)] leading-[1.4] text-ink m-0">
-                “{MEMORIAL_QUOTE}”
-              </p>
-            </blockquote>
-            <figcaption className={cn(EYEBROW_MUTED, "not-italic mt-5")}>
-              — Stephen Meakin
-            </figcaption>
-          </Reveal>
-
-          <Reveal as="div" className="max-w-[66ch] mx-auto">
-            {TRIBUTE.paragraphs.map((p, i) => (
-              <p key={i} className={cn(BODY, i > 0 && "mt-6")}>
-                {p}
-              </p>
-            ))}
-            <p className={cn(EYEBROW_MUTED, "mt-8")}>{TRIBUTE.attribution}</p>
-          </Reveal>
-        </section>
-
-        {/* 17 · CLOSING CTA */}
+        {/* 16 · CLOSING CTA — the family's farewell (Polly Wedge's funeral
+            tribute) moved OUT of About to the Book of Memories, where it now
+            reads as her posted memory of Steve (Hugo, 2026-06-29): a bio page is
+            the wrong home for a funeral tribute. content.ts TRIBUTE / the
+            MEMORIAL_QUOTE are unchanged — the quote still closes the home. */}
         <section className={cn(SECTION, "pb-10 md:pb-14 pt-4")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
