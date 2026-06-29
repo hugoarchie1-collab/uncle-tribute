@@ -193,45 +193,62 @@ function buildCleanRoom() {
 }
 
 // ---- 2+3. FRAME + PLACE one print on the clean room ------------------------
+// SHADOW_SX is the horizontal sign for the contact shadow (set globally once the
+// clean room exists — the shadow falls toward the darker, away-from-light side).
 function placePrint(clean, artFile, widthCm, out) {
   const outerW = Math.round(widthCm * PPC);
   const outerH = LANDSCAPE ? Math.round(outerW * RATIO) : outerW;
   const fw = Math.max(3, Math.round(outerW * FRAME_FRAC));
+  const X = CX - Math.round(outerW / 2), Y = CY - Math.round(outerH / 2);
+
   const ai = join(TMP, "ai.png");
   const aig = join(TMP, "aig.png");
   const oak = join(TMP, "oak.png");
+  const lf = join(TMP, "lf.png");
   const framed = join(TMP, "framed.png");
   const shadow = join(TMP, "shadow.png");
   const t = join(TMP, "t.png");
 
   let totalW, totalH;
   if (FRAMELESS) {
-    // Borderless canvas: the real painting IS the print, edge-to-edge. outerW/H
-    // = the artwork's true printed size. A 1px low-opacity edge defines the
-    // boundary against the wall without reading as a frame.
+    // 1. Real painting at its TRUE printed size, edge-to-edge — no border.
     mg([artFile, "-resize", `${outerW}x${outerH}^`, "-gravity", "center",
       "-extent", `${outerW}x${outerH}`, ai]);
-    mg([ai, "-bordercolor", "rgba(0,0,0,0.18)", "-border", "1", framed]);
-    totalW = outerW + 2; totalH = outerH + 2;
+    // 2. ENVIRONMENT LIGHT — an evenly-lit print on a directionally-lit wall
+    //    reads as "stamped". Multiply a gentle DARKENING gradient toward the
+    //    shadow side (away from the light) so the print sits in the room's light
+    //    falloff. Darkening-only → it can NEVER wash out / shift colour (keeps
+    //    the art faithful); just a subtle 0→~8% shade across the canvas.
+    mg(["-size", `${outerH}x${outerW}`, "gradient:white-gray91",
+      "-rotate", SHADOW_SX > 0 ? "90" : "270",
+      "-resize", `${outerW}x${outerH}!`, lf]);
+    mg([ai, lf, "-compose", "Multiply", "-composite", framed]);
+    // 3. Faint photographic grain so the print surface shares the room's texture
+    //    (a perfectly clean digital surface on a noisy photo also reads pasted).
+    mg([framed, "-attenuate", "0.05", "+noise", "Gaussian", framed]);
+    totalW = outerW; totalH = outerH;
   } else {
     // Thin pale-oak frame: art → inner size, 1px dark gap, oak border, hairline.
     const innerW = outerW - 2 * fw, innerH = outerH - 2 * fw;
     mg([artFile, "-resize", `${innerW}x${innerH}^`, "-gravity", "center",
       "-extent", `${innerW}x${innerH}`, ai]);
-    mg([ai, "-bordercolor", OAK_INNER, "-border", "1", aig]); // 1px dark inner gap
+    mg([ai, "-bordercolor", OAK_INNER, "-border", "1", aig]);
     mg(["-size", `${outerW}x${outerH}`, `gradient:${OAK_TOP}-${OAK_BOT}`, oak]);
     mg([oak, aig, "-gravity", "center", "-compose", "over", "-composite", framed]);
-    mg([framed, "-bordercolor", OAK_EDGE, "-border", "1", framed]); // outer hairline
+    mg([framed, "-bordercolor", OAK_EDGE, "-border", "1", framed]);
     totalW = outerW + 2; totalH = outerH + 2;
   }
 
-  const X = CX - Math.round(totalW / 2), Y = CY - Math.round(totalH / 2);
-  // Frameless canvas sits closer to the wall → a tighter, lighter contact shadow.
-  const sb = Math.max(4, Math.round(outerW * (FRAMELESS ? 0.014 : 0.02)));
-  const sdy = Math.max(2, Math.round(outerW * (FRAMELESS ? 0.009 : 0.015)));
-  const sAlpha = FRAMELESS ? 0.28 : 0.36;
+  // CONTACT SHADOW — a real stretched canvas stands a few cm off the wall and
+  // casts a SOFT shadow offset away from the light (+ slightly down), visible on
+  // two edges only. NOT a full perimeter halo (that was the "weird shadow").
+  const so = Math.max(2, Math.round(outerW * (FRAMELESS ? 0.013 : 0.02)));
+  const sb = Math.max(3, Math.round(outerW * (FRAMELESS ? 0.012 : 0.02)));
+  const offX = SHADOW_SX * so;
+  const offY = Math.max(2, Math.round(so * 0.85));
+  const sAlpha = FRAMELESS ? 0.24 : 0.34;
   mg(["-size", `${totalW}x${totalH}`, `xc:rgba(0,0,0,${sAlpha})`, "-blur", `0x${sb}`, shadow]);
-  mg([clean, shadow, "-geometry", `+${X}+${Y + sdy}`, "-compose", "over", "-composite", t]);
+  mg([clean, shadow, "-geometry", `+${X + offX}+${Y + offY}`, "-compose", "over", "-composite", t]);
   mg([t, framed, "-geometry", `+${X}+${Y}`, "-compose", "over", "-composite", out]);
 }
 
@@ -246,6 +263,20 @@ function gridQA(tiles, out) {
 
 // ---- run --------------------------------------------------------------------
 const clean = buildCleanRoom();
+
+// Light direction: sample clean-wall luminance left vs right of the hanging
+// centre. The brighter side is the light source, so the canvas's contact shadow
+// falls toward the DARKER side. (Allow cfg.shadowSX to override per room.)
+const wallLuma = (x, y, w, h) => {
+  const xc = Math.min(Math.max(0, Math.round(x)), ROOM_W - w);
+  const yc = Math.min(Math.max(0, Math.round(y)), ROOM_H - h);
+  return Number(mg([clean, "-crop", `${w}x${h}+${xc}+${yc}`, "+repage",
+    "-colorspace", "Gray", "-format", "%[fx:mean]", "info:"]));
+};
+const _lumaL = wallLuma(CX - 360, CY - 120, 150, 230);
+const _lumaR = wallLuma(CX + 210, CY - 120, 150, 230);
+const SHADOW_SX = cfg.shadowSX ?? (_lumaL >= _lumaR ? 1 : -1);
+
 const sizeKeys = Object.keys(SIZES);
 const firstCw = cfg.colourways[0];
 
