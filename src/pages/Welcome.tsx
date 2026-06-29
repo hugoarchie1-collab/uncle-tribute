@@ -712,7 +712,7 @@ export const Welcome = () => {
                   recipe (global.css, @supports initial-letter:2) scales for free.
                   Words untouched; the full paragraph still appears once, in order. */}
               <p
-                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[20ch] text-pretty"
+                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[20ch] text-balance"
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 600',
                   fontSize: "clamp(34px, 6vw, 76px)",
@@ -1214,7 +1214,10 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[960px] 2xl:max-w-[1040px] 3xl:max-w-[1120px]">
+            {/* Archive photo is a low-res 641×353 original (no higher-res copy
+                exists) — display it near native width so it stays CRISP rather
+                than upscaled to ~1120px (soft). Smaller + sharper, no added gap. */}
+            <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[520px] 2xl:max-w-[560px] 3xl:max-w-[600px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"
