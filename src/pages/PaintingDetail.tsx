@@ -850,17 +850,7 @@ const TrueSizeViewer = ({
     trueSizeSlug(selectedTier) !== null ? selectedTier : scaleTiers[0];
   if (!activeTier) return null;
 
-  const slug = trueSizeSlug(activeTier);
   const dims = parseSizeCm(activeTier.size);
-  // Room photo for this painting at this size, keyed by the SELECTED colourway's
-  // image stem (e.g. "peacock-persian-indigo-a2.jpg") so the size guide shows the
-  // exact colourway on the wall. The generator (scripts/truesize-compose.mjs)
-  // writes one room per colourway × A-size. Image-state is tracked per src so a
-  // missing file degrades to the coming-soon placeholder, never a broken glyph.
-  const colourwayStem = colourwayImage
-    ? colourwayImage.replace(/^.*\//, "").replace(/\.[^.]+$/, "")
-    : painting.id;
-  const roomSrc = slug ? `/img/truesize/${colourwayStem}-${slug}.jpg` : null;
 
   return (
     <figure className="m-0">
@@ -897,8 +887,8 @@ const TrueSizeViewer = ({
       </div>
 
       <TrueSizeRoom
-        key={roomSrc ?? "no-room"}
-        src={roomSrc}
+        key={`${painting.id}-${activeTier.id}`}
+        colourwayImage={colourwayImage}
         reduceMotion={!!reduceMotion}
         painting={painting}
         tier={activeTier}
@@ -918,76 +908,125 @@ const TrueSizeViewer = ({
 };
 
 /**
- * TrueSizeRoom — one room photograph slot. Attempts to load the dignified room
- * image; if it's absent (not yet shot) it shows a calm coming-soon panel with
- * the print's real dimensions, on-brand, never a broken-image glyph.
+ * TrueSizeRoom — the print shown at EXACT real-world scale on a wall, with a
+ * 3-seater sofa drawn at true scale as a SAME-DEPTH reference, so the size reads
+ * truthfully. (The old deep-perspective room photos compared a far-wall print
+ * against a big foreground candle/table — perspective shrank every print and it
+ * read as stamped-on.) Rendered purely from the real painting image + cm, so it
+ * works for every painting/size/colourway, the proportions are mathematically
+ * exact, there's ONE soft contact shadow, and nothing looks pasted-on.
+ *
+ * The scene is a 280×210cm slice of wall in a 4:3 box (280:210 = 4:3 → uniform
+ * px/cm on both axes, so a square print renders square and the sofa + print
+ * share ONE scale). The print hangs a hand's-width above the sofa back; toggling
+ * A3→A0 grows it live against the fixed sofa, which is the whole point.
  */
 const TrueSizeRoom = ({
-  src,
+  colourwayImage,
   reduceMotion,
   painting,
   tier,
 }: {
-  src: string | null;
+  colourwayImage?: string;
   reduceMotion: boolean;
   painting: Painting;
   tier: PrintTier;
 }) => {
-  // "ok" once the image loads; "missing" if it errors (file not dropped in
-  // yet) or there's no slug. Start "loading" so we don't flash the placeholder.
-  const [state, setState] = useState<"loading" | "ok" | "missing">(
-    src ? "loading" : "missing",
-  );
   const dims = parseSizeCm(tier.size);
-  const inW = dims ? (dims.w / 2.54).toFixed(0) : null;
-  const inH = dims ? (dims.h / 2.54).toFixed(0) : null;
+  const SCENE_W = 280;
+  const SCENE_H = 210;
+  const SOFA_W = 200; // a standard 3-seater — the universally readable reference
+  const SOFA_H = 82;
+  const pctW = (cm: number) => (cm / SCENE_W) * 100;
+  const pctH = (cm: number) => (cm / SCENE_H) * 100;
+  const printBottomCm = SOFA_H + 26; // hang a hand-width above the sofa back
 
-  if (state === "missing" || !src) {
+  if (!dims || !colourwayImage) {
     return (
-      <div className="relative w-full min-h-[clamp(280px,48vw,380px)] py-8 overflow-hidden ring-1 ring-line bg-ink/[0.03] flex flex-col items-center justify-center text-center px-6">
-        {/* Proportional outline of the print, drawn from real cm, centred on a
-            quiet ground — a dignified placeholder until the room photo exists. */}
-        {dims && (
-          <div
-            aria-hidden="true"
-            className="ring-1 ring-ink/25 mb-5"
-            style={{
-              width: `${Math.min(38, (dims.w / dims.h) * 38)}vmin`,
-              height: `${Math.min(38, (dims.h / dims.w) * 38)}vmin`,
-              maxWidth: "180px",
-              maxHeight: "180px",
-            }}
-          />
-        )}
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>To scale · coming soon</p>
-        <p className="font-sans text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink/70 m-0 max-w-[320px] 3xl:max-w-[400px]">
-          We&rsquo;re photographing {painting.title} on the wall at each size.
-          {dims
-            ? ` ${tier.size.split(" ")[0]} measures ${dims.w} × ${dims.h} cm${
-                inW && inH ? ` (about ${inW} × ${inH} in)` : ""
-              }.`
-            : ""}
-        </p>
+      <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line bg-ink/[0.03] flex items-center justify-center text-center px-6">
+        <p className={cn(EYEBROW_MUTED, "m-0")}>{tier.size}</p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line">
-      <picture>
-        <source srcSet={asset(webp(src))} type="image/webp" />
-        <img
-          src={asset(src)}
-          alt={`${painting.title} shown at ${tier.size} on a wall, for true-size scale`}
-          onLoad={() => setState("ok")}
-          onError={() => setState("missing")}
-          className={cn(
-            "absolute inset-0 h-full w-full object-contain",
-            reduceMotion ? "" : "transition-opacity duration-500",
-            state === "ok" ? "opacity-100" : "opacity-0",
-          )}
-        />
-      </picture>
+    <div
+      className="relative w-full aspect-[4/3] overflow-hidden ring-1 ring-line"
+      style={{
+        background:
+          "radial-gradient(90% 70% at 50% 6%, rgba(255,250,240,0.07), rgba(255,250,240,0) 58%), linear-gradient(180deg, #524b41 0%, #463f36 58%, #3a342c 100%)",
+      }}
+      aria-label={`${painting.title} at ${tier.size}, shown to true scale above a 200cm sofa`}
+    >
+      {/* Floor — a quieter warm band the sofa stands on, with a hairline where it
+          meets the wall, so the scene reads as a real corner of a room. */}
+      <div
+        className="absolute inset-x-0 bottom-0"
+        style={{
+          height: `${pctH(26)}%`,
+          background: "linear-gradient(180deg, #322c25, #28231d)",
+          boxShadow: "inset 0 1px 0 rgba(255,250,240,0.06)",
+        }}
+      />
+      {/* Sofa — drawn at TRUE 200cm scale at the SAME depth as the print: the
+          reference the eye measures the print against. Soft filled silhouette. */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 200 82"
+        preserveAspectRatio="xMidYMax meet"
+        className="absolute"
+        style={{
+          width: `${pctW(SOFA_W)}%`,
+          left: "50%",
+          bottom: 0,
+          transform: "translateX(-50%)",
+        }}
+      >
+        <defs>
+          <linearGradient id="ts-sofa" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#2f2922" />
+            <stop offset="1" stopColor="#1d1813" />
+          </linearGradient>
+        </defs>
+        <g fill="url(#ts-sofa)">
+          <rect x="2" y="20" width="30" height="54" rx="13" />
+          <rect x="168" y="20" width="30" height="54" rx="13" />
+          <rect x="12" y="4" width="176" height="44" rx="13" />
+          <rect x="8" y="42" width="184" height="32" rx="11" />
+          <rect x="22" y="72" width="9" height="9" rx="2" />
+          <rect x="169" y="72" width="9" height="9" rx="2" />
+        </g>
+        {/* a whisper of light on the back top edge → form, not a flat blob */}
+        <rect x="14" y="5" width="172" height="3" rx="1.5" fill="rgba(255,250,240,0.07)" />
+      </svg>
+      {/* The print — the REAL painting at its exact printed size, with ONE soft
+          contact shadow (down + a touch right) so it reads as a canvas standing
+          a few cm off the wall, never a sticker. Grows live when the size
+          toggles, against the fixed sofa. */}
+      <div
+        className={cn(
+          "absolute ring-1 ring-black/25",
+          reduceMotion ? "" : "transition-all duration-500 ease-smooth",
+        )}
+        style={{
+          width: `${pctW(dims.w)}%`,
+          aspectRatio: `${dims.w} / ${dims.h}`,
+          left: "50%",
+          bottom: `${pctH(printBottomCm)}%`,
+          transform: "translateX(-50%)",
+          boxShadow:
+            "0 calc(0.5vw + 5px) calc(1.4vw + 13px) -8px rgba(0,0,0,0.6), 0 2px 6px -2px rgba(0,0,0,0.45)",
+        }}
+      >
+        <picture>
+          <source srcSet={asset(webp(colourwayImage))} type="image/webp" />
+          <img
+            src={asset(colourwayImage)}
+            alt={`${painting.title} printed at ${tier.size}, to scale on a wall above a sofa`}
+            className="block h-full w-full object-cover"
+          />
+        </picture>
+      </div>
     </div>
   );
 };
