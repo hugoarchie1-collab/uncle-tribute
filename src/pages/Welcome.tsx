@@ -262,7 +262,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center min-h-[100svh] pt-[34svh] md:pt-[36svh] pb-[6svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[100svh] pb-[5svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -290,7 +290,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
+          className="pointer-events-none relative w-full z-[1] overflow-hidden"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
@@ -311,12 +311,15 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="block h-auto select-none"
+            // The limb is a fixed-ratio wide image — tall on a wide screen but a
+            // thin sliver on a narrow phone, which left a gap above the wordmark.
+            // Scale it UP on smaller widths so it anchors the top and the limb
+            // reads as a real Earth curve, not a hairline (the marginLeft keeps
+            // it centred: ml = -(width-100)/2). Settles to 124% on md+.
+            className="block h-auto select-none w-[230%] ml-[-65%] sm:w-[150%] sm:ml-[-25%] md:w-[124%] md:ml-[-12%]"
             style={{
               display: "block",
-              width: "124%",
               maxWidth: "none",
-              marginLeft: "-12%",
               height: "auto",
               // SPIN AROUND — limb at the top, curving down into the page.
               transform: "scaleY(-1)",
@@ -333,7 +336,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] flex-1 flex-col justify-center px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
