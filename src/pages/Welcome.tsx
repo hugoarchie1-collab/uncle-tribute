@@ -56,12 +56,21 @@ const PEAK_H2_STYLE = {
 
 /**
  * CosmicInterlude — a Veo-generated film, the cinematic breath under the
- * wordmark. LAZY: an IntersectionObserver mounts the <video> only when the band
+ * wordmark. LAZY: an IntersectionObserver mounts the <video> only when the panel
  * is ~300px from the viewport. Muted / looping / playsInline so it autoplays
- * everywhere. Reduced-motion users skip it. Soft edge-dissolve melts it into the
- * peacock wash. (Stays a CONTAINED band — a 2026-06-28 attempt to make this the
- * open's full-viewport sky was reverted: the film is a bright daylit garden
- * scene that out-shouted the cream wordmark + buried the Earth limb there.)
+ * everywhere. Reduced-motion users skip it.
+ *
+ * 2026-06-30 (Hugo): swapped the old feathered full-bleed band for a CONTAINED,
+ * museum-framed "expanded plate" (double cream hairline + soft shadow + warm
+ * glow + inner vignette) sitting in the gap under the wordmark, and swapped the
+ * source to `garden-galaxy-v1.mp4` — a "garden → galaxy" camera move (Stephen's
+ * mandala on an easel rising up through the trees into a spiral galaxy). The
+ * clip is a SEAMLESS BOOMERANG baked offline (forward, then a 1.35×-sped reverse
+ * back to the garden) so it loops endlessly with no cut; the Earth limb was
+ * cropped out of the source entirely (top-720 crop) per Hugo's request. The clip
+ * already excludes the Veo watermark (the crop removed the bottom-right corner),
+ * so no zoom-to-clip transform is needed. (The earlier full-viewport-sky open
+ * stays reverted — that bright daylit scene out-shouted the wordmark.)
  */
 const CosmicInterlude = () => {
   const reduceMotion = useReducedMotion();
@@ -101,48 +110,62 @@ const CosmicInterlude = () => {
 
   return (
     <section
-      aria-label="The cosmos — the order beneath all things"
-      className="relative w-full my-10 md:my-14"
+      aria-label="From the garden to the galaxy — the order beneath all things"
+      // z-30 lifts the framed plate ABOVE the fixed peacock backdrop (z-0) that
+      // covers the whole viewport — without it the panel paints behind the wash
+      // and reads as a blank gap (the very gap this fills). The masthead clears
+      // the same backdrop with its own z-20.
+      className="relative z-30 w-full my-6 md:my-8 lg:my-12"
     >
-      <div
-        ref={ref}
-        className="relative w-full overflow-hidden h-[clamp(340px,56svh,680px)] bg-[#0a0810]"
-        // Feather the WHOLE band (dark bg + video) to transparent at top and
-        // bottom so it DISSOLVES into the peacock wash instead of ending on a
-        // hard rectangular edge — the "blocky, doesn't blur into the next page"
-        // transition Hugo flagged. A mask on the container (not just a dark
-        // gradient over the video) is what softens the container's own edge.
-        style={{
-          WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
-          maskImage:
-            "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
-        }}
-      >
-        {near && (
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover"
-            // 1.22× top-left zoom clips the bottom-right Veo watermark.
-            style={{ transform: "scale(1.22)", transformOrigin: "22% 18%" }}
-            muted
-            loop
-            playsInline
-            preload="none"
+      {/* The film is no longer a full-bleed feathered band but a CONTAINED,
+          museum-framed centrepiece — a large bordered "expanded plate" sitting
+          in the gap under the wordmark (Hugo). A double cream hairline (mat +
+          plate), a soft drop shadow and a warm outer glow give it the gallery
+          frame; an inner vignette grounds the cosmos. The clip is a seamless
+          boomerang (garden → galaxy, then a slightly-sped reverse back) so it
+          loops forever; the Earth limb is cropped out of the source entirely. */}
+      <div className="mx-auto w-full max-w-[1280px] 2xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12">
+        <figure ref={ref} className="relative m-0">
+          {/* Warm outer glow — the same rust note as the finale horizon. */}
+          <div
             aria-hidden="true"
-          >
-            <source src={asset("/video/nebula-intro-v1.mp4")} type="video/mp4" />
-          </video>
-        )}
-        {/* Soft dissolve on all sides so the band melts into the peacock wash. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(9,7,13,0.55) 0%, rgba(9,7,13,0) 20%, rgba(9,7,13,0) 80%, rgba(9,7,13,0.55) 100%), linear-gradient(90deg, rgba(9,7,13,0.5) 0%, rgba(9,7,13,0) 9%, rgba(9,7,13,0) 91%, rgba(9,7,13,0.5) 100%)",
-          }}
-        />
+            className="pointer-events-none absolute -inset-6 md:-inset-12 -z-10"
+            style={{
+              background:
+                "radial-gradient(58% 58% at 50% 50%, rgba(201,120,68,0.12) 0%, rgba(9,7,13,0) 72%)",
+            }}
+          />
+          {/* Gallery mat — the outer frame. */}
+          <div className="relative overflow-hidden bg-[#0a0810] p-[5px] sm:p-[7px] md:p-[10px] ring-1 ring-line shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85),0_0_70px_-18px_rgba(0,0,0,0.65)]">
+            {/* Inner plate — the cosmos itself, a cinematic 8:3 on desktop,
+                taller on phones so it fills the screen instead of letterboxing. */}
+            <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[8/3] overflow-hidden ring-1 ring-white/10 bg-[#06060a]">
+              {near && (
+                <video
+                  ref={videoRef}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  poster={asset("/video/poster-garden-galaxy-v1.jpg")}
+                  muted
+                  loop
+                  playsInline
+                  preload="none"
+                  aria-hidden="true"
+                >
+                  <source src={asset("/video/garden-galaxy-v1.mp4")} type="video/mp4" />
+                </video>
+              )}
+              {/* Inner vignette for depth on the frame edges. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(125% 125% at 50% 50%, rgba(0,0,0,0) 56%, rgba(0,0,0,0.34) 100%)",
+                }}
+              />
+            </div>
+          </div>
+        </figure>
       </div>
     </section>
   );
@@ -266,7 +289,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[100svh] justify-center pt-[20svh] sm:pt-[15svh] pb-[8svh] sm:pb-[6svh] md:pb-[7svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[88svh] md:min-h-[84svh] justify-center pt-[12svh] sm:pt-[10svh] pb-[4svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -443,9 +466,8 @@ export const Welcome = () => {
         </div>
       </section>
 
-      {/* COSMIC INTERLUDE — the Veo film plays in a contained full-bleed band
-          right under the wordmark. Lazy + reduced-motion safe. (Kept as a band,
-          NOT the open's full-viewport sky — see the revert note above.) */}
+      {/* COSMIC INTERLUDE — the garden→galaxy boomerang film in a museum-framed
+          expanded plate right under the wordmark. Lazy + reduced-motion safe. */}
       <CosmicInterlude />
 
       <div id="welcome-anchor" className="relative">
@@ -573,7 +595,7 @@ export const Welcome = () => {
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[62svh] w-[54%] lg:w-[52%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[54svh] w-[54%] lg:w-[52%]">
               {/* EVEN melt: the photo now feathers on ALL FOUR sides (was y-only,
                   which left a hard rectangular left/right edge). With edges="all"
                   the image dissolves into the page identically top, bottom, left
@@ -603,7 +625,7 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "radial-gradient(120% 100% at -10% 50%, rgba(10,9,8,0.66) 0%, rgba(10,9,8,0.44) 30%, rgba(10,9,8,0.16) 58%, rgba(10,9,8,0) 80%)",
+                    "radial-gradient(95% 100% at -10% 50%, rgba(10,9,8,0.46) 0%, rgba(10,9,8,0.24) 22%, rgba(10,9,8,0.08) 46%, rgba(10,9,8,0) 66%)",
                 }}
               />
             </figure>
@@ -614,7 +636,7 @@ export const Welcome = () => {
                 the centring (no more clamp top-pad — that was fighting the old
                 dark band). */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[60svh] md:pb-0"
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[50svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
               <Reveal as="div" className="relative w-full md:max-w-[50%] lg:max-w-[48%]">
@@ -632,7 +654,7 @@ export const Welcome = () => {
                   className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10 hidden md:block"
                   style={{
                     background:
-                      "radial-gradient(80% 75% at 42% 48%, rgba(9,7,8,0.62) 0%, rgba(9,7,8,0.40) 45%, rgba(9,7,8,0.16) 72%, rgba(9,7,8,0) 100%)",
+                      "radial-gradient(75% 70% at 40% 50%, rgba(9,7,8,0.34) 0%, rgba(9,7,8,0.18) 38%, rgba(9,7,8,0.06) 66%, rgba(9,7,8,0) 88%)",
                   }}
                 />
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-4 text-balance hero-text-shadow">
@@ -650,14 +672,14 @@ export const Welcome = () => {
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="press group inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
+                    className="press group inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
                     See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-8 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
+                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-8 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     His story
@@ -756,7 +778,7 @@ export const Welcome = () => {
                 never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
                 Hermès / Avant Arte asymmetric editorial scale — the missing
                 "wow", and the antidote to the centred-stack monotony.) */}
-            <Reveal delay={0.05} className="my-16 md:my-28 text-left">
+            <Reveal delay={0.05} className="my-10 md:my-16 text-left">
               <blockquote className="m-0 hero-text-shadow">
                 {/* Dominant tier — breaks LEFT, oversized, stacks 3-4 commanding
                     lines against the rail. opsz held at 48 (finale invariant). */}
@@ -817,7 +839,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[20px] md:text-[20px] 2xl:text-[21px] 3xl:text-[clamp(21px,1.18vw,26px)] leading-[1.85] text-ink-soft m-0 mb-6 md:mb-8 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.85] text-ink-soft m-0 mb-6 md:mb-8 last:mb-0 text-pretty hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -835,7 +857,7 @@ export const Welcome = () => {
                 subordinate clause, the closing rust period the one accent note.
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
-            <Reveal delay={0.1} className="mt-14 md:mt-24 text-center">
+            <Reveal delay={0.1} className="mt-10 md:mt-16 text-center">
               <div aria-hidden="true" className="mx-auto mb-7 md:mb-10 h-px w-16 bg-ink/20" />
               <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] text-center hero-text-shadow">
                 <span
@@ -903,13 +925,13 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "radial-gradient(120% 100% at 110% 50%, rgba(10,9,8,0.66) 0%, rgba(10,9,8,0.44) 30%, rgba(10,9,8,0.16) 58%, rgba(10,9,8,0) 80%)",
+                    "radial-gradient(95% 100% at 110% 50%, rgba(10,9,8,0.46) 0%, rgba(10,9,8,0.24) 22%, rgba(10,9,8,0.08) 46%, rgba(10,9,8,0) 66%)",
                 }}
               />
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-6 md:min-h-[42svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-6 md:min-h-[36svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-6 md:hidden max-w-[460px]">
@@ -926,10 +948,10 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,8.4vw,68px)] leading-[1.02] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -960,7 +982,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 From the hand
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -1066,10 +1088,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-6 md:py-10 lg:py-12">
               <Reveal as="div" className="text-center mb-5 md:mb-8">
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,100px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
+                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1102,10 +1124,10 @@ export const Welcome = () => {
                   standing choice, unchanged. */}
               <Reveal as="div" className="grid lg:grid-cols-12 gap-x-10 xl:gap-x-16 gap-y-8 lg:gap-y-0 items-start">
                 <div className="lg:col-span-7 flex flex-col gap-y-5 md:gap-y-6">
-                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                 </div>
@@ -1139,7 +1161,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-4")}>
                 Sacred Geometry
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(52px,6.8vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1186,7 +1208,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1206,7 +1228,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-5")}>
                 Arista SunStar · 2016
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,6.4vw,84px)] leading-[1.02] text-ink m-0 mb-5 text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink m-0 mb-5 text-balance hero-text-shadow">
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
@@ -1214,7 +1236,7 @@ export const Welcome = () => {
               <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-6">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
-              <p className="font-sans font-normal text-[21px] md:text-[23px] 2xl:text-[25px] 3xl:text-[clamp(25px,1.42vw,30px)] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
+              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
                 {WELCOME.bio[2]}
               </p>
             </Reveal>

@@ -51,7 +51,7 @@ export const FooterCatalogue = () => {
   return (
     <section
       aria-label="All paintings"
-      className="relative hidden md:block border-t border-line bg-bg px-4 sm:px-6 md:px-8 lg:px-12 py-7 md:py-8"
+      className="relative hidden md:block border-t border-line bg-bg px-4 sm:px-6 md:px-8 lg:px-12 py-5 md:py-6"
     >
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>

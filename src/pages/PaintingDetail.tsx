@@ -124,9 +124,9 @@ const PDP_TITLE =
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[14px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[14px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page
@@ -1697,10 +1697,11 @@ const BuyBox = ({
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            // Quiet alternate, NOT a co-primary: shorter (!py-3) + muted ink so
-            // the filled "Add to basket" clearly leads (the single-confident-
-            // action pattern). The express path is still one tap.
-            className={cn(BTN_SECONDARY, "group w-full !py-3 text-ink-muted hover:text-accent disabled:opacity-60")}
+            // Quiet alternate, NOT a co-primary: shorter (!py-3) so the filled
+            // "Add to basket" clearly leads (the single-confident-action
+            // pattern), but full-ink legible — height carries the hierarchy,
+            // not dimmed text. The express path is still one tap.
+            className={cn(BTN_SECONDARY, "group w-full !py-3 hover:text-accent disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
             <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
@@ -2171,14 +2172,14 @@ const StickyAddBar = ({
             <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[15px] text-ink">
+            <span className="font-display font-semibold tracking-[-0.01em] text-[16px] text-ink">
               {fmtP(selectedTier.pricePence)}
             </span>
           </span>
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center bg-ink text-bg px-5 py-2.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+            className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>

@@ -12,8 +12,8 @@ const YEAR = new Date().getFullYear();
 const FOOTER_LINK = "transition-colors duration-300 hover:text-ink";
 
 /** ONE body/link type recipe for the whole footer — Hanken 14px. Every text
- *  node uses this (or the 11px eyebrow header / 12px fine-print / the serif
- *  wordmark) so the footer reads as ONE consistent system. */
+ *  node uses this (or the 11px eyebrow header / 13px fine-print bottom-bar /
+ *  the serif wordmark) so the footer reads as ONE consistent system. */
 const FOOTER_TEXT = "font-sans text-[14px] leading-[1.6]";
 
 /** Official estate social profiles. The SAME three URLs are wired into the
@@ -110,9 +110,9 @@ const LinkColumn = ({
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-9 pb-6 md:pb-7"
+    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
   >
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-7 md:gap-y-0 items-start">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
           tidy lockup capped to the tribute measure (max-w-[280px]) so it never
           reaches the link columns. A short tagline + the estate email +
@@ -129,7 +129,7 @@ export const Footer = () => (
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala
           Artist &amp; Sacred Geometer, 1966&ndash;2021.
         </p>
-        <p className="font-sans text-[12px] leading-[1.6] text-ink-fade mt-4 max-w-[280px] m-0">
+        <p className={cn(FOOTER_TEXT, "text-ink-muted mt-4 max-w-[280px] m-0")}>
           <a
             href="mailto:info@themandalacompany.com"
             className={cn(FOOTER_LINK, "[overflow-wrap:anywhere]")}
@@ -142,7 +142,7 @@ export const Footer = () => (
         {/* Follow the estate — official social profiles (mirrored into the
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             40px hit-area (a11y), muted→ink with a soft lift on hover. */}
-        <div className="mt-5">
+        <div className="mt-4">
           <h2 className={cn(EYEBROW_MUTED, "mb-2.5")}>Follow</h2>
           <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
             {SOCIALS.map((s) => (
@@ -181,7 +181,7 @@ export const Footer = () => (
 
     {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·
         Returns appear ONLY here, never also in a column above). */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-6 md:mt-7 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[12px] leading-[1.5] text-ink-fade">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] leading-[1.5] text-ink-muted">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the
         estate. All rights reserved.
@@ -206,7 +206,7 @@ export const Footer = () => (
           onClick={clearConsent}
           className={cn(
             FOOTER_LINK,
-            "bg-transparent border-0 p-0 cursor-pointer font-sans text-[12px] leading-[1.5] text-ink-fade",
+            "bg-transparent border-0 p-0 cursor-pointer font-sans text-[13px] leading-[1.5] text-ink-muted",
           )}
         >
           Cookie preferences

@@ -143,7 +143,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
                 No.&nbsp;{record.printNumber}
               </p>
               {record.allocation ? (
-                <p className={cn(EYEBROW_MUTED, "m-0 mt-2 lg:justify-end")}>
+                <p className={cn(EYEBROW_MUTED, "m-0 mt-2")}>
                   of {record.allocation} in the {record.editionLabel}
                 </p>
               ) : null}

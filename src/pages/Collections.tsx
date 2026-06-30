@@ -712,14 +712,16 @@ export const Collections = () => {
               </div>
               {/* Editions ledger — a hairline-grouted spec table (hairlines are
                   the sanctioned grid idiom). The tiles were a hard near-opaque
-                  black box (0.72); softened to a translucent tinted panel so the
-                  photo reads through and the block no longer cuts a hard rectangle
-                  out of the scene. Text keeps its own shadow legibility. */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-ink/60">
+                  black box (0.72), then a translucent tinted fill; both still cut
+                  a rectangle out of the scene. Now there is NO tile fill and NO
+                  cream grout block — only thin border-line hairlines dividing the
+                  rows, sitting on the panel's own scrim. Each <p> keeps its own
+                  text-shadow for legibility now that the fill is gone. */}
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-line">
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
-                    className="bg-[rgba(9,7,6,0.34)] px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
+                    className="border-r border-b border-line px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
                   >
                     <p
                       className="font-display font-semibold tracking-[-0.015em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0"

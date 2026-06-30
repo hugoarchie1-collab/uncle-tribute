@@ -4,9 +4,11 @@ import {
   Suspense,
   useEffect,
   useLayoutEffect,
+  useState,
   type ReactNode,
 } from "react";
 import { MotionConfig } from "framer-motion";
+import { useMenuOpen, getDrawerWidthPx } from "./lib/menuStore";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
@@ -152,27 +154,54 @@ const AnimatedRoutes = () => {
 };
 
 /**
- * PAGE SHELL — wraps the routed page. The mobile nav drawer is a clean OVERLAY:
- * Nav renders the panel + a full-page dimming scrim, both portaled to
- * document.body, so they float over the page. The page itself stays still.
+ * PAGE SHELL — wraps the routed page and SLIDES IT LEFT by the drawer's width
+ * when the nav menu opens (the "push-content" effect Hugo asked for: the page
+ * visibly readjusts to make room for the panel instead of being covered).
  *
- * History: this used to slide/scale the whole page LEFT when the menu opened
- * ("the page should readjust"). That was abandoned — a transform on a tall,
- * SCROLLED page can't be made artefact-free at every scroll position: it left a
- * black gap above the content or clipped text at the edge. The drawer + scrim
- * already read as "the page recedes behind the menu", so a passthrough is both
- * correct and bulletproof. Keep it transform-free.
+ * Why this is now artefact-free (the earlier abandonment was a different impl):
+ *  - The slide is a pure HORIZONTAL `translateX` — it never moves content
+ *    vertically, so it cannot leave a "black gap above the content" at any
+ *    scroll position (that bug came from translateY/scale attempts).
+ *  - The translate is applied to THIS shell, which wraps EVERYTHING the page
+ *    paints — including each page's `position:fixed` scene backdrop. Because a
+ *    non-`none` transform makes this element the containing block for its fixed
+ *    descendants, the backdrops slide WITH the page as one rigid unit, so there
+ *    is no seam between a moved foreground and a stationary background.
+ *  - We translate by a concrete PX value (`getDrawerWidthPx()`), the exact
+ *    pixel width of the body-portaled drawer (both derive from the same
+ *    constants in menuStore), so the page slides EXACTLY as far as the panel is
+ *    wide — flush, no over/under-shoot. (A CSS `min(420px,86vw)` inside a
+ *    `calc()` translate was observed to resolve to 0 — see menuStore.)
+ *  - `body`/`html` are `overflow-x: clip`, so the slice that slides off the
+ *    left is clipped, never a horizontal scrollbar.
+ *
+ * The off-canvas left edge is hidden by clip; the revealed right edge is filled
+ * by the drawer panel. Reduced-motion users get the same end-state with no
+ * transition.
  */
 const PageShell = ({ children }: { children: ReactNode }) => {
-  // The mobile nav is a clean OVERLAY drawer: Nav renders the panel + a full-page
-  // dimming scrim, both portaled to document.body. The routed page itself does NOT
-  // move when the menu opens. We tried sliding / scaling the whole page to "make
-  // room", but a transform on a tall, SCROLLED page can't avoid artefacts at every
-  // scroll position — it either left a black gap above the content ("huge black
-  // space at the top") or clipped text at the edge. The drawer + scrim already
-  // read as "the page recedes behind the menu", so the page now stays perfectly
-  // still: nothing clips, nothing gaps, at any scroll position.
-  return <div className="min-h-[100dvh]">{children}</div>;
+  const menuOpen = useMenuOpen();
+  // The drawer's exact pixel width for the CURRENT viewport — re-measured on
+  // resize so a rotate / window-drag while the menu is open keeps the slide
+  // flush with the panel.
+  const [drawerPx, setDrawerPx] = useState(() => getDrawerWidthPx());
+  useEffect(() => {
+    const onResize = () => setDrawerPx(getDrawerWidthPx());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  return (
+    <div
+      className="min-h-[100dvh] motion-safe:transition-transform motion-safe:duration-[520ms] will-change-transform"
+      style={{
+        transform: menuOpen ? `translateX(-${drawerPx}px)` : "translateX(0)",
+        transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+      }}
+    >
+      {children}
+    </div>
+  );
 };
 
 export default function App() {
@@ -208,10 +237,15 @@ export default function App() {
               root → a blank, frozen page. The boundary converts that into a
               dignified, recoverable fallback so the site can never silently die. */}
           <ErrorBoundary>
-            {/* PageShell slides the routed page LEFT when the nav drawer opens
-                (the push-content effect). Everything OUTSIDE it below (grain,
-                cursor, entrance, toasts, consent, update, analytics) stays
-                anchored to the viewport. */}
+            {/* The mobile nav is a clean OVERLAY drawer — Nav portals the panel
+                and its dimming scrim to document.body, so PageShell does NOT
+                move the routed page. It intentionally stays still and
+                transform-free: a transform on a tall, scrolled page leaves a
+                black gap / clips text and re-bases the pages' position:fixed
+                scene backdrops (the "push-content" effect is a documented TRAP
+                — keep it disabled). Everything OUTSIDE it below (grain, cursor,
+                entrance, toasts, consent, update, analytics) stays anchored to
+                the viewport. */}
             <PageShell>
               <AnimatedRoutes />
             </PageShell>

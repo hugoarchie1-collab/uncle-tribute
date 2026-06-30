@@ -28,7 +28,7 @@ import { asset } from "../lib/asset";
 // vivid + visible while the cream copy still reads. EVERY scene page uses this
 // exact value so the site is coherent across pages + platforms.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)";
 
 /** One crossfade layer — full during its scroll band, ramping in/out at the
  *  band boundaries (first holds from the top, last holds to the foot). Each

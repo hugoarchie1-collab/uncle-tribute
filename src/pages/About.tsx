@@ -377,7 +377,7 @@ const ContainImage = ({
 // dead space, no centred-over-a-picture treatment. The opening passage lifts
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
-  <section className={cn(SECTION, "relative pt-24 md:pt-28 pb-6 md:pb-8")}>
+  <section className={cn(SECTION, "relative pt-20 md:pt-24 pb-6 md:pb-8")}>
     {/* Meta rule. On mobile the 31-char date can't share a line with the label
         + connecting rule, so they STACK (label, then date on its own line at
         gently reduced tracking — no clip). From sm:+ it's the intended single
@@ -391,13 +391,13 @@ const AboutMasthead = () => (
     <Reveal as="div" className="mt-3 md:mt-4">
       <h1
         className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.8]"
-        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(76px, 18.5vw, 360px)" }}
+        style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(64px, 13vw, 200px)" }}
       >
         Stephen<br />Meakin
       </h1>
     </Reveal>
 
-    <div className="mt-5 md:mt-7 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-7 items-start border-t border-line pt-5 md:pt-7">
+    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-7 items-start border-t border-line pt-5 md:pt-7">
       {/* His portrait — the first image you see, set beside his name (Hugo:
           "next to his title… avoid blank space… flawless luxury"). A contained,
           evenly-feathered plate that fills what was dead space at the cover. */}
@@ -444,7 +444,7 @@ const AboutMasthead = () => (
 // owner's PDF; its venue/date are unconfirmed, so the caption must never
 // claim Anegada, 1995, or "the first".
 const AnegadaPoster = () => (
-  <div className="mt-8 md:mt-10">
+  <div className="mt-6 md:mt-8">
     <div className={cn(READING_WIDE, "text-center")}>
       <Reveal as="div">
         <p className={cn(EYEBROW, "m-0 mb-5")}>Anegada · 1995</p>
@@ -820,7 +820,7 @@ export const About = () => {
             constant). No dek here anymore — the opening passage is the masthead
             lead, so nothing repeats. Caption CLAIM-FREE (PDF shows it
             uncaptioned). */}
-        <section className={cn(SECTION, "py-6 md:py-8")}>
+        <section className={cn(SECTION, "py-5 md:py-7")}>
           {/* His own words set as a wide display statement (it fills the band
               instead of sitting as a thin centred quote in a wide void), with
               the facts rail spread edge-to-edge of the same measure beneath. */}
@@ -837,7 +837,7 @@ export const About = () => {
                 earlyLife[0]'s word, Phoenix Place legacy[0]'s. Spread the three
                 facts across the full measure so the strip spans the width
                 rather than clustering centrally with empty side margins. */}
-            <Reveal as="div" delay={0.1} className="mt-8 md:mt-10">
+            <Reveal as="div" delay={0.1} className="mt-6 md:mt-8">
               <dl className="flex flex-wrap justify-center sm:justify-between items-start gap-x-10 gap-y-4 border-y border-line py-5 text-left">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
@@ -862,7 +862,7 @@ export const About = () => {
             precious people shots → Plate (whole frame, native ratio, warm
             mat). The portrait's caption is right-set so the family-group
             print pulled up beside it never covers it. */}
-        <section className={cn(SECTION, "py-6 md:py-8")}>
+        <section className={cn(SECTION, "py-5 md:py-7")}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1400px] mx-auto">
             <Reveal as="div">
               <Plate
@@ -904,7 +904,7 @@ export const About = () => {
             Brighton (ABOUT.earlyLife[0]) at the LEAD scale with the drop cap,
             beside the two family prints from PDF p3 — the second dropped
             off-grid below the first. */}
-        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
+        <section id="beginnings" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="beginnings" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
@@ -935,7 +935,7 @@ export const About = () => {
           {/* STANDOUT — the chapter's turning point, pulled VERBATIM from
               earlyLife[0]: the Aboriginal-art exhibition that set his course.
               Filled centred band under a hairline (no stranded column). */}
-          <ChapterStandout className="mt-9 md:mt-12">{PULL_BEGINNINGS}</ChapterStandout>
+          <ChapterStandout className="mt-6 md:mt-8">{PULL_BEGINNINGS}</ChapterStandout>
         </section>
 
         {/* 5 · CHAPTER II — BOURNEMOUTH (ghost 1990). Mirror of Chapter I so
@@ -943,7 +943,7 @@ export const About = () => {
             passage (ABOUT.earlyLife[1]) pushed down a half-beat right, the
             café print straddling the baseline below. Document order preserved
             top-to-bottom: photo → text → photo. */}
-        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
+        <section id="bournemouth" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="bournemouth" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
@@ -972,7 +972,7 @@ export const About = () => {
 
           {/* STANDOUT — the dusty-hardback discovery, pulled VERBATIM from
               earlyLife[1]: where his passion for geometry was born. */}
-          <ChapterStandout className="mt-9 md:mt-12">{PULL_BOURNEMOUTH}</ChapterStandout>
+          <ChapterStandout className="mt-6 md:mt-8">{PULL_BOURNEMOUTH}</ChapterStandout>
         </section>
 
         {/* 6 · CHAPTER III — THE WANDERING YEARS (ghost 1990s). The album
@@ -983,7 +983,7 @@ export const About = () => {
             overlapped depths read as stacked framed prints). All five are
             people shots → Plate, never cropped. One shared caption under the
             run (its fact verbatim from earlyLife[2]). */}
-        <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="wandering" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="wandering" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1320px] 4xl:max-w-[1480px] mx-auto">
@@ -1075,7 +1075,7 @@ export const About = () => {
             verbatim line is promoted to a centred full-width STANDOUT band
             beneath a hairline, filling its own measure instead of floating in a
             stranded grid cell. Every word VERBATIM from content.ts. */}
-        <section id="return" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="return" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="return" />
           <Reveal as="div" className={READING_WIDE}>
             <p
@@ -1088,7 +1088,7 @@ export const About = () => {
           {/* The first-mandala line — a verbatim STANDOUT moment that spans the
               measure, centred, under a hairline. The "1999 … He never stopped."
               sentence set large fills its own band (no stranded column). */}
-          <Reveal as="div" className={cn(READING_WIDE, "mt-9 md:mt-12 text-center")}>
+          <Reveal as="div" className={cn(READING_WIDE, "mt-6 md:mt-8 text-center")}>
             <div aria-hidden className="mx-auto mb-7 md:mb-9 h-px w-16 bg-ink/15" />
             <p
               className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,4vw,62px)] leading-[1.15] text-ink m-0 text-balance mx-auto max-w-[18ch]"
@@ -1112,7 +1112,7 @@ export const About = () => {
             palette of my being") — never shorten or paraphrase it; the
             attribution line presents it as his words. parallax 0 here by law:
             sticky + transform fight. */}
-        <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="ritual" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="ritual" />
           <Reveal as="div" className="text-center mt-5 md:mt-6 mb-8 md:mb-10">
             <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
@@ -1157,7 +1157,7 @@ export const About = () => {
             ABOUT.legacy[0] at LEAD, the TRADITIONS I–IV hairline strip, and
             the two tradition reference photographs. Caption on the cairn is
             CLAIM-FREE (no place, no date). */}
-        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-6 md:py-8")}>
+        <section id="lewes" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="lewes" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
@@ -1223,7 +1223,7 @@ export const About = () => {
             "CYGNUS - 2012" — it's a LATER Mystic Rose exhibition at the
             Fairmont, presented by the Majlis Gallery. Caption only what the
             flyer itself says; never date it January 2011. */}
-        <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="exhibitions" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="exhibitions" />
           <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
@@ -1246,7 +1246,7 @@ export const About = () => {
           {/* STANDOUT — the hinge into the interview, pulled VERBATIM from his
               own answer (INTERVIEW q1): what geometry actually means. It carries
               the turn from the exhibitions ledger into his voice. */}
-          <ChapterStandout className="mt-9 md:mt-12">{PULL_EARTH_MEASURE}</ChapterStandout>
+          <ChapterStandout className="mt-6 md:mt-8">{PULL_EARTH_MEASURE}</ChapterStandout>
 
           <Dinkus />
 
@@ -1460,7 +1460,7 @@ export const About = () => {
             board), whole sheets at native ratio, one claim-free caption (the
             commission is established verbatim by legacy[1]). The purple→pink
             backdrop crossfade midpoint is tuned to land here. */}
-        <section className={cn(SECTION, "py-7 md:py-10")}>
+        <section className={cn(SECTION, "py-5 md:py-7")}>
           <Reveal as="div" className="max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
@@ -1498,7 +1498,7 @@ export const About = () => {
             the academyQuote at BODY, then over the dinkus the palestine
             passage — it belongs INSIDE this chapter per the PDF, and its
             mention of Az-Zarqa is the hinge into Chapter IX. */}
-        <section id="academy" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="academy" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="academy" />
           {/* The lead line rings wide as display type (it fills toward the
               edges without over-long reading lines); the two body passages then
@@ -1545,7 +1545,7 @@ export const About = () => {
             line.
             ⚠️ CAPTION IS CLAIM-FREE — school/Petra/Bedouin facts live in the
             verbatim palestine paragraph above; the caption claims nothing. */}
-        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-7 md:py-10")}>
+        <section id="azzarqa" className={cn(SECTION, "scroll-mt-28 py-5 md:py-7")}>
           <ChapterHead id="azzarqa" />
 
           <Reveal as="figure" className="m-0 max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
@@ -1588,7 +1588,7 @@ export const About = () => {
             TAGA group promoted with generous clear air, then the studio and
             the classroom at cluster scale. The group photo MUST show in full
             (heads + all the mandalas) → contained, never cropped. */}
-        <section className={cn(SECTION, "py-7 md:py-10")}>
+        <section className={cn(SECTION, "py-5 md:py-7")}>
           <Reveal as="figure" className="m-0 max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto mb-6 md:mb-8">
             <ContainImage
               src="/img/about/08-taga-group.jpg"
@@ -1629,7 +1629,7 @@ export const About = () => {
             wrapper: max-w 1320/1500/1720 minus the horizontal padding at each
             step, so the 800/1400w WebP variants actually get picked instead
             of the full-size file. The backdrop is fully Mary Pink here. */}
-        <section className={cn(SECTION, "py-6 md:py-8")}>
+        <section className={cn(SECTION, "py-5 md:py-7")}>
           <Reveal as="div" className="text-center mb-5 md:mb-7">
             <p className={cn(EYEBROW, "m-0")}>The body of work</p>
           </Reveal>
@@ -1653,7 +1653,7 @@ export const About = () => {
             reads as her posted memory of Steve (Hugo, 2026-06-29): a bio page is
             the wrong home for a funeral tribute. content.ts TRIBUTE / the
             MEMORIAL_QUOTE are unchanged — the quote still closes the home. */}
-        <section className={cn(SECTION, "pb-10 md:pb-14 pt-4")}>
+        <section className={cn(SECTION, "pb-6 md:pb-8 pt-4")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
       </main>

@@ -189,8 +189,8 @@ export const SearchBar = ({
   // we lift the ring to accent when the field is focused (focus-within).
   const pillSize = isPage
     ? "h-[52px] md:h-[56px] pl-12 md:pl-14 pr-4 text-[16px] md:text-[17px]"
-    : "h-[50px] lg:h-[52px] pl-12 pr-4 text-[15px]";
-  const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-4 h-[18px] w-[18px]";
+    : "h-[54px] lg:h-[58px] pl-14 pr-5 text-[16px] lg:text-[17px]";
+  const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-5 h-[20px] w-[20px]";
 
   return (
     <div

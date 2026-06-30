@@ -151,7 +151,7 @@ export const NewsletterSignup = ({
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
@@ -160,7 +160,7 @@ export const NewsletterSignup = ({
             {errorMsg && (
               <p className="mt-2 font-sans text-[12px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[11px] italic text-ink-fade mt-3 m-0">
+            <p className="font-sans text-[12px] italic text-ink-fade mt-3 m-0">
               By subscribing you agree to our{" "}
               <Link to="/privacy" className="underline transition-colors hover:text-ink">
                 Privacy Policy
