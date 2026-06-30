@@ -6,12 +6,19 @@
 // painting, colourway, size, frame — sits on top of the camera, so you browse
 // the WHOLE catalogue on your wall in one camera session, without leaving it.
 //
-// Deliberately a FLAT framed overlay (not true-3D / not depth-locked) — the
-// trade-off for live, in-camera browsing of everything at once. Drag to move,
-// pinch to resize. "Save photo" composites the camera frame + the framed print
-// to a shareable image (the real wall-mockup tool). Degrades gracefully to a
-// "gallery wall" ground when no camera (desktop / denied), so it always
-// previews and is testable without a camera.
+// Three things make this match-and-beat a generic AR placer (ArtPlacer et al.):
+//   1. TRUE-TO-WALL SCALE. Hold a bank card flat on the wall, match a ruler to
+//      it once, and every size renders at REAL centimetres on the wall (not a
+//      relative guess). Calibration persists (localStorage) across sessions.
+//   2. ROOM-PHOTO MODE. No camera (desktop) or want to try a saved room? Drop in
+//      a photo of any wall and place the print into it — same controls.
+//   3. BUY FROM THE WALL. Add the exact painting/colourway/size/frame you're
+//      looking at straight to the basket — no leaving the camera to rebuild it.
+//
+// Deliberately a FLAT framed overlay (not depth-locked 3D) — the trade-off for
+// live, in-camera browsing of everything at once. Drag to move, pinch to resize.
+// "Save photo" composites the background + the framed print to a shareable image.
+// Degrades gracefully to a "gallery wall" ground when no camera / no photo.
 //
 // HTTPS + a user gesture are required for the camera (production is HTTPS; the
 // button that opens this popup is the gesture). iOS needs <video playsInline>.
@@ -25,8 +32,16 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { type Colourway, type Painting, FRAME_STYLES } from "../../data/paintings";
+import {
+  type Colourway,
+  type Painting,
+  FRAME_STYLES,
+  PRINT_TIERS,
+  DEFAULT_GLAZING,
+  formatGBP,
+} from "../../data/paintings";
 import { AR_SIZES } from "../../lib/arAssets";
+import { addItem } from "../../lib/basket";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
 import { EYEBROW } from "../ui/tokens";
@@ -44,9 +59,14 @@ const OVERLAY_FRAMES: { id: OverlayFrameId; label: string; wood: string | null }
 ];
 
 const MAX_CM = Math.max(...AR_SIZES.map((s) => s.cm));
-// A0 (the largest size) fills this fraction of the viewport width by default;
-// smaller sizes scale down proportionally by real cm. Pinch fine-tunes from there.
+// A0 (the largest size) fills this fraction of the viewport width by default
+// WHEN UNCALIBRATED; smaller sizes scale down proportionally by real cm. Once
+// the wall is calibrated, sizes render at their TRUE on-wall centimetres.
 const A0_VIEWPORT_FRACTION = 0.72;
+// A standard ID-1 bank/credit card is 85.6mm wide — the universal calibration
+// reference everyone has in a pocket.
+const BANK_CARD_CM = 8.56;
+const CAL_KEY = "tasm.wallPxPerCm";
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -88,6 +108,28 @@ const LockGlyph = ({ locked }: { locked: boolean }) => (
       strokeWidth="1.4"
       strokeLinecap="round"
     />
+  </svg>
+);
+
+const RulerGlyph = () => (
+  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <rect x="2" y="6" width="14" height="6" rx="1" stroke="currentColor" strokeWidth="1.3" />
+    <path d="M5.5 6v2M9 6v3M12.5 6v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+  </svg>
+);
+
+const PhotoGlyph = () => (
+  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <rect x="2.2" y="3.6" width="13.6" height="10.8" rx="1.6" stroke="currentColor" strokeWidth="1.3" />
+    <circle cx="6.4" cy="7.2" r="1.3" stroke="currentColor" strokeWidth="1.2" />
+    <path d="M3 13l3.8-3.4 2.6 2.2 2.4-2 3 2.6" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+  </svg>
+);
+
+const BasketGlyph = () => (
+  <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
+    <path d="M2.4 5.5h13.2l-1.1 8.1a1.4 1.4 0 0 1-1.4 1.2H4.9a1.4 1.4 0 0 1-1.4-1.2L2.4 5.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    <path d="M6 5.5a3 3 0 0 1 6 0" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
   </svg>
 );
 
@@ -178,7 +220,9 @@ export const LiveWallCamera = ({
   const streamRef = useRef<MediaStream | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const artworkImgRef = useRef<HTMLImageElement | null>(null);
+  const roomImgRef = useRef<HTMLImageElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [paintingId, setPaintingId] = useState(
     initialPaintingId ?? paintings[0]?.id ?? "",
@@ -214,12 +258,29 @@ export const LiveWallCamera = ({
   const [controlsOpen, setControlsOpen] = useState(true);
   const [showHint, setShowHint] = useState(true);
   const [captured, setCaptured] = useState(false);
+  const [added, setAdded] = useState(false);
   // Lock pins the print in one position on the wall — drag + pinch are disabled
   // so it can't be nudged while you line up the shot (Hugo's ask).
   const [locked, setLocked] = useState(false);
   const [viewportW, setViewportW] = useState(
     () => (typeof window !== "undefined" && window.innerWidth) || 390,
   );
+
+  // ---- TRUE-SCALE calibration ----------------------------------------------
+  // pxPerCm = on-screen pixels per real wall-centimetre, derived from a bank
+  // card held flat on the wall. Persisted so a returning visitor keeps it.
+  const [pxPerCm, setPxPerCm] = useState<number | null>(() => {
+    if (typeof localStorage === "undefined") return null;
+    const v = Number(localStorage.getItem(CAL_KEY));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  });
+  const [calibrating, setCalibrating] = useState(false);
+  const [calBarPx, setCalBarPx] = useState(() =>
+    pxPerCm ? Math.round(pxPerCm * BANK_CARD_CM) : 160,
+  );
+
+  // ---- ROOM-PHOTO background -----------------------------------------------
+  const [roomPhotoUrl, setRoomPhotoUrl] = useState<string | null>(null);
 
   // Live transform: `live` is mutated during a gesture (direct DOM writes for
   // smoothness); `view` is the committed value React renders from. On release we
@@ -289,6 +350,12 @@ export const LiveWallCamera = ({
     };
   }, [onClose]);
 
+  // Revoke an uploaded room photo's object URL when it changes / on unmount.
+  useEffect(() => {
+    if (!roomPhotoUrl) return;
+    return () => URL.revokeObjectURL(roomPhotoUrl);
+  }, [roomPhotoUrl]);
+
   // When the painting changes, fall back to its original colourway.
   const selectPainting = (p: Painting) => {
     setPaintingId(p.id);
@@ -296,12 +363,13 @@ export const LiveWallCamera = ({
     setColourwayName((cw.find((c) => c.isOriginal) ?? cw[0])?.name ?? "");
   };
 
-  // Base on-screen width for the selected size (relative, not depth-true). A0
-  // fills ~72% of the viewport; the rest scale proportionally by real cm.
-  const baseWidthPx = useMemo(
-    () => (size.cm / MAX_CM) * viewportW * A0_VIEWPORT_FRACTION,
-    [size.cm, viewportW],
-  );
+  // Base on-screen width for the selected size. Calibrated → TRUE on-wall cm
+  // (clamped so an A0 can't exceed the viewport on a small phone). Uncalibrated
+  // → the relative estimate (A0 ≈ 72% of the viewport, others by real cm ratio).
+  const baseWidthPx = useMemo(() => {
+    if (pxPerCm) return clamp(size.cm * pxPerCm, 48, viewportW * 0.98);
+    return (size.cm / MAX_CM) * viewportW * A0_VIEWPORT_FRACTION;
+  }, [size.cm, viewportW, pxPerCm]);
 
   const applyTransform = useCallback(() => {
     const o = overlayRef.current;
@@ -312,6 +380,48 @@ export const LiveWallCamera = ({
     live.current = { x: 0, y: 0, scale: 1 };
     setView({ x: 0, y: 0, scale: 1 });
     applyTransform();
+  };
+
+  const commitCalibration = () => {
+    const next = calBarPx / BANK_CARD_CM;
+    setPxPerCm(next);
+    try {
+      localStorage.setItem(CAL_KEY, String(next));
+    } catch {
+      /* private mode — calibration is in-memory only this session */
+    }
+    setCalibrating(false);
+    resetPlacement(); // show the freshly-true size cleanly at scale 1
+  };
+
+  const onPickRoomPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file later
+    if (!file) return;
+    setRoomPhotoUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+  };
+  const clearRoomPhoto = () =>
+    setRoomPhotoUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+
+  const addToBasket = () => {
+    const framed = frame.id !== "unframed";
+    addItem(
+      painting.id,
+      colourway.name,
+      size.tierId as Parameters<typeof addItem>[2],
+      framed,
+      false,
+      framed ? frame.id : undefined,
+      framed ? DEFAULT_GLAZING : undefined,
+    );
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1800);
   };
 
   const centroid = (m: Map<number, { x: number; y: number }>) => {
@@ -331,7 +441,7 @@ export const LiveWallCamera = ({
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (locked) return; // pinned in place — ignore drag/pinch
+    if (locked || calibrating) return; // pinned / calibrating — ignore drag/pinch
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     const g = gesture.current;
     g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -364,9 +474,9 @@ export const LiveWallCamera = ({
   };
 
   // ---- Save / share the wall mockup ---------------------------------------
-  // Composites the live camera frame (object-cover) + the framed print at its
-  // current on-screen rect onto a canvas, then shares (Web Share) or downloads.
-  // The real wall-mockup tool — no DOM-screenshot dependency.
+  // Composites the background (room photo > live camera > gallery ground) +
+  // the framed print at its current on-screen rect onto a canvas, then shares
+  // (Web Share) or downloads. The real wall-mockup tool — no DOM screenshot.
   const captureWall = async () => {
     const overlay = overlayRef.current;
     const img = artworkImgRef.current;
@@ -383,29 +493,16 @@ export const LiveWallCamera = ({
     if (!ctx) return;
     ctx.scale(dpr, dpr);
 
-    // Background — the camera frame (object-cover) or the gallery-wall ground.
+    // Background — room photo, the camera frame, or the gallery-wall ground.
     const video = videoRef.current;
-    if (camState === "live" && video && video.videoWidth) {
-      const vr = video.videoWidth / video.videoHeight;
-      const cr = vw / vh;
-      let dw: number, dh: number, dx: number, dy: number;
-      if (vr > cr) {
-        dh = vh;
-        dw = vh * vr;
-        dx = (vw - dw) / 2;
-        dy = 0;
-      } else {
-        dw = vw;
-        dh = vw / vr;
-        dx = 0;
-        dy = (vh - dh) / 2;
-      }
-      try {
-        ctx.drawImage(video, dx, dy, dw, dh);
-      } catch {
-        /* tainted / not ready — fall through to ground */
-      }
-    } else {
+    const room = roomImgRef.current;
+    let drew = false;
+    if (roomPhotoUrl && room && room.naturalWidth) {
+      drew = drawCover(ctx, room, room.naturalWidth, room.naturalHeight, vw, vh);
+    } else if (camState === "live" && video && video.videoWidth) {
+      drew = drawCover(ctx, video, video.videoWidth, video.videoHeight, vw, vh);
+    }
+    if (!drew) {
       const g = ctx.createRadialGradient(vw * 0.5, vh * 0.3, 0, vw * 0.5, vh * 0.3, Math.max(vw, vh));
       g.addColorStop(0, "#3a342c");
       g.addColorStop(0.55, "#211d18");
@@ -483,8 +580,12 @@ export const LiveWallCamera = ({
     window.setTimeout(() => setCaptured(false), 1800);
   };
 
+  const tier = PRINT_TIERS.find((t) => t.id === size.tierId);
+  const priceLabel = tier ? formatGBP(tier.pricePence) : "";
   const pieceLabel = `${painting.title} · ${colourway.name} · ${frame.label} · ${size.label}`;
   const moved = view.x !== 0 || view.y !== 0 || view.scale !== 1;
+  const calCm = (calBarPx / BANK_CARD_CM > 0) ? calBarPx / BANK_CARD_CM : 0; // px per cm preview
+  const calSliderMax = Math.min(viewportW - 48, 560);
 
   return (
     <div
@@ -493,17 +594,27 @@ export const LiveWallCamera = ({
       aria-label="See it on your wall — live camera"
       className="fixed inset-0 z-[120] overflow-hidden bg-black touch-none"
     >
-      {/* ---- Camera feed (the wall) ---- */}
+      {/* ---- Background: room photo > camera feed > gallery ground ---- */}
+      {roomPhotoUrl && (
+        <img
+          ref={roomImgRef}
+          src={roomPhotoUrl}
+          alt=""
+          crossOrigin="anonymous"
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
       <video
         ref={videoRef}
         playsInline
         muted
         autoPlay
         className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
-        style={{ opacity: camState === "live" ? 1 : 0 }}
+        style={{ opacity: !roomPhotoUrl && camState === "live" ? 1 : 0 }}
       />
-      {/* Graceful "gallery wall" ground when no camera (desktop / denied) */}
-      {camState !== "live" && (
+      {/* Graceful "gallery wall" ground when no room photo + no camera */}
+      {!roomPhotoUrl && camState !== "live" && (
         <div
           className="absolute inset-0"
           style={{
@@ -514,13 +625,14 @@ export const LiveWallCamera = ({
         />
       )}
 
-      {/* ---- The draggable framed overlay ---- */}
+      {/* ---- The draggable framed overlay (hidden while calibrating) ---- */}
       <div
         className="absolute inset-0 flex items-center justify-center"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
         onPointerCancel={endPointer}
+        style={{ visibility: calibrating ? "hidden" : "visible" }}
       >
         <div
           ref={overlayRef}
@@ -535,8 +647,8 @@ export const LiveWallCamera = ({
         </div>
       </div>
 
-      {/* First-use hint (hidden once locked) */}
-      {showHint && !locked && (
+      {/* First-use hint (hidden once locked / calibrating) */}
+      {showHint && !locked && !calibrating && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 mt-[22vh] flex justify-center px-6">
           <p className="m-0 rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] tracking-[0.04em] text-ink/90 backdrop-blur-sm">
             Drag to move · pinch to resize · lock when it&rsquo;s right
@@ -544,234 +656,349 @@ export const LiveWallCamera = ({
         </div>
       )}
 
-      {/* ---- Top bar ---- */}
-      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-end gap-2 p-4">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setLocked((v) => !v)}
-            aria-pressed={locked}
-            aria-label={locked ? "Unlock — let the print move again" : "Lock the print in place"}
-            className={cn(
-              "press inline-flex h-11 items-center gap-2 rounded-full px-3.5 outline-none backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-              locked ? "bg-accent text-bg" : "bg-black/55 text-ink hover:bg-black/75",
-            )}
-          >
-            <LockGlyph locked={locked} />
-            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
-              {locked ? "Locked" : "Lock"}
-            </span>
-          </button>
-          {moved && !locked && (
-            <button
-              type="button"
-              onClick={resetPlacement}
-              aria-label="Reset placement"
-              className="press inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <ResetGlyph />
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => void captureWall()}
-            aria-label="Save photo"
-            className="press inline-flex h-11 items-center gap-2 rounded-full bg-ink px-4 text-bg outline-none transition-colors hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <ShareGlyph />
-            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
-              {captured ? "Saved" : "Save"}
-            </span>
-          </button>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <CloseGlyph />
-          </button>
-        </div>
-      </div>
-
-      {/* ---- Camera permission / hint ---- */}
-      {camState === "denied" && (
-        <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
-          <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
-            Camera access is off. Allow camera for this site in your browser settings, then reopen — or just preview the framing on the wall below.
-          </p>
-        </div>
-      )}
-      {camState === "unavailable" && (
-        <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
-          <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
-            Open this page on your phone in Safari (iPhone) or Chrome (Android) to place the print on your real wall. Preview below.
-          </p>
-        </div>
-      )}
-
-      {/* ---- Controls sheet ---- */}
-      <div className="absolute inset-x-0 bottom-0 z-10">
-        {!controlsOpen ? (
-          <div className="flex items-center justify-between gap-3 p-4">
-            <p className="m-0 flex-1 truncate rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] text-ink/85 backdrop-blur-sm">
-              {pieceLabel}
-            </p>
-            <button
-              type="button"
-              onClick={() => setControlsOpen(true)}
-              className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-5 font-sans text-[11px] font-bold tracking-[0.04em] text-bg outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              Options
-            </button>
+      {/* ---- Calibration overlay: a ruler matched to a real bank card ---- */}
+      {calibrating && (
+        <div className="absolute inset-0 z-20 flex flex-col">
+          <div className="flex-1 flex items-center justify-center px-6">
+            <div className="flex flex-col items-center" aria-hidden="true">
+              {/* The ruler the user matches to a card held flat on the wall */}
+              <div className="relative flex h-0 items-center" style={{ width: `${calBarPx}px` }}>
+                <span className="absolute left-0 h-7 w-[2px] bg-accent" />
+                <span className="absolute right-0 h-7 w-[2px] bg-accent" />
+                <span className="block h-[2px] w-full bg-accent" />
+              </div>
+              <span className="mt-5 rounded-full bg-black/60 px-3 py-1 font-sans text-[11px] font-bold tracking-[0.12em] text-ink backdrop-blur-sm">
+                ≈ {Math.round(calCm)} px / cm
+              </span>
+            </div>
           </div>
-        ) : (
-          <div className="max-h-[58svh] overflow-y-auto rounded-t-3xl bg-bg/92 px-4 pb-6 pt-3 ring-1 ring-white/10 backdrop-blur-md [scrollbar-width:thin]">
-            {/* grab handle + collapse */}
-            <div className="mb-3 flex items-center justify-between">
-              <span className="mx-auto block h-1 w-10 rounded-full bg-white/25" aria-hidden="true" />
+          <div className="bg-bg/92 px-5 pb-7 pt-5 ring-1 ring-white/10 backdrop-blur-md">
+            <p className={cn(EYEBROW, "m-0 mb-1.5 text-accent")}>Calibrate true size</p>
+            <p className="m-0 mb-4 font-sans text-[14px] leading-[1.6] text-ink-muted">
+              Hold any <em className="not-italic text-ink">bank or credit card</em> flat against your wall, then drag the
+              slider until the line matches its long edge. Every print will then show at its real size on the wall.
+            </p>
+            <input
+              type="range"
+              min={60}
+              max={calSliderMax}
+              value={Math.min(calBarPx, calSliderMax)}
+              onChange={(e) => setCalBarPx(Number(e.target.value))}
+              aria-label="Match the line to your card's width"
+              className="w-full accent-accent"
+            />
+            <div className="mt-4 flex items-center justify-end gap-2.5">
               <button
                 type="button"
-                onClick={() => setControlsOpen(false)}
-                aria-label="Hide options"
-                className="press absolute right-4 inline-flex h-9 items-center rounded-full px-3 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                onClick={() => setCalibrating(false)}
+                className="press inline-flex min-h-[44px] items-center rounded-full px-4 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
               >
-                Hide
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={commitCalibration}
+                className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-bg outline-none transition-colors hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                Set true scale
               </button>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Work */}
-            <section className="mb-4">
-              <p className={cn(EYEBROW, "m-0 mb-2")}>The work</p>
-              <div
-                role="group"
-                aria-label="Choose a painting"
-                className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      {/* ---- Top bar ---- */}
+      {!calibrating && (
+        <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-4">
+          {/* True-size status (left) */}
+          <button
+            type="button"
+            onClick={() => {
+              setCalBarPx(pxPerCm ? Math.round(pxPerCm * BANK_CARD_CM) : 160);
+              setCalibrating(true);
+            }}
+            className={cn(
+              "press inline-flex h-11 items-center gap-2 rounded-full px-3.5 outline-none backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+              pxPerCm ? "bg-accent/90 text-bg" : "bg-black/55 text-ink hover:bg-black/75",
+            )}
+            aria-label={pxPerCm ? "True size on — recalibrate" : "Calibrate true size"}
+          >
+            <RulerGlyph />
+            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
+              {pxPerCm ? "True size" : "Calibrate"}
+            </span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLocked((v) => !v)}
+              aria-pressed={locked}
+              aria-label={locked ? "Unlock — let the print move again" : "Lock the print in place"}
+              className={cn(
+                "press inline-flex h-11 items-center gap-2 rounded-full px-3.5 outline-none backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                locked ? "bg-accent text-bg" : "bg-black/55 text-ink hover:bg-black/75",
+              )}
+            >
+              <LockGlyph locked={locked} />
+              <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
+                {locked ? "Locked" : "Lock"}
+              </span>
+            </button>
+            {moved && !locked && (
+              <button
+                type="button"
+                onClick={resetPlacement}
+                aria-label="Reset placement"
+                className="press inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
               >
-                {paintings.map((p) => {
-                  const cover = p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
-                  const sel = p.id === painting.id;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      aria-pressed={sel}
-                      aria-label={p.title}
-                      onClick={() => selectPainting(p)}
-                      className={cn(
-                        "h-14 w-14 shrink-0 overflow-hidden rounded-md outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                        sel ? "ring-2 ring-accent" : "opacity-70 ring-1 ring-white/25 hover:opacity-100",
-                      )}
-                    >
-                      <picture>
-                        <source srcSet={asset(webp(cover.image))} type="image/webp" />
-                        <img src={asset(cover.image)} alt="" className="h-full w-full object-cover" />
-                      </picture>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+                <ResetGlyph />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => void captureWall()}
+              aria-label="Save photo"
+              className="press inline-flex h-11 items-center gap-2 rounded-full bg-black/55 px-4 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <ShareGlyph />
+              <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
+                {captured ? "Saved" : "Save"}
+              </span>
+            </button>
+            <button
+              ref={closeRef}
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-ink outline-none backdrop-blur-sm transition-colors hover:bg-black/75 focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <CloseGlyph />
+            </button>
+          </div>
+        </div>
+      )}
 
-            {/* Colourway */}
-            {colourways.length > 1 && (
+      {/* ---- Camera permission / hint ---- */}
+      {!calibrating && !roomPhotoUrl && camState === "denied" && (
+        <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
+          <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
+            Camera access is off. Allow camera for this site in your browser settings, then reopen — or drop in a photo of your room below.
+          </p>
+        </div>
+      )}
+      {!calibrating && !roomPhotoUrl && camState === "unavailable" && (
+        <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
+          <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
+            No camera here — drop in a photo of your room below to place the print, or open this page on your phone to use the live camera.
+          </p>
+        </div>
+      )}
+
+      {/* Hidden file input for room-photo upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={onPickRoomPhoto}
+        className="hidden"
+      />
+
+      {/* ---- Controls sheet ---- */}
+      {!calibrating && (
+        <div className="absolute inset-x-0 bottom-0 z-10">
+          {!controlsOpen ? (
+            <div className="flex items-center justify-between gap-3 p-4">
+              <p className="m-0 flex-1 truncate rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] text-ink/85 backdrop-blur-sm">
+                {pieceLabel}
+              </p>
+              <button
+                type="button"
+                onClick={() => setControlsOpen(true)}
+                className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-5 font-sans text-[11px] font-bold tracking-[0.04em] text-bg outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                Options
+              </button>
+            </div>
+          ) : (
+            <div className="max-h-[62svh] overflow-y-auto rounded-t-3xl bg-bg/92 px-4 pb-6 pt-3 ring-1 ring-white/10 backdrop-blur-md [scrollbar-width:thin]">
+              {/* grab handle + collapse */}
+              <div className="mb-3 flex items-center justify-between">
+                <span className="mx-auto block h-1 w-10 rounded-full bg-white/25" aria-hidden="true" />
+                <button
+                  type="button"
+                  onClick={() => setControlsOpen(false)}
+                  aria-label="Hide options"
+                  className="press absolute right-4 inline-flex h-9 items-center rounded-full px-3 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  Hide
+                </button>
+              </div>
+
+              {/* Buy bar — add THIS exact piece to the basket without leaving the wall */}
+              <section className="mb-4 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={addToBasket}
+                  className="press inline-flex min-h-[52px] flex-1 items-center justify-center gap-2.5 rounded-full bg-ink px-5 font-sans text-[13px] font-bold tracking-[0.04em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <BasketGlyph />
+                  {added ? "Added to basket" : `Add to basket${priceLabel ? ` · ${priceLabel}` : ""}`}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label={roomPhotoUrl ? "Change room photo" : "Use a photo of your room"}
+                  className="press inline-flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <PhotoGlyph />
+                </button>
+              </section>
+
+              {roomPhotoUrl && (
+                <button
+                  type="button"
+                  onClick={clearRoomPhoto}
+                  className="press mb-4 inline-flex min-h-[40px] items-center gap-2 rounded-full px-3.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  Back to live camera
+                </button>
+              )}
+
+              {/* Work */}
               <section className="mb-4">
-                <p className={cn(EYEBROW, "m-0 mb-2")}>Colourway · {colourway.name}</p>
-                <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
-                  {colourways.map((c) => {
-                    const sel = c.name === colourway.name;
+                <p className={cn(EYEBROW, "m-0 mb-2")}>The work</p>
+                <div
+                  role="group"
+                  aria-label="Choose a painting"
+                  className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
+                  {paintings.map((p) => {
+                    const cover = p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
+                    const sel = p.id === painting.id;
                     return (
                       <button
-                        key={c.name}
+                        key={p.id}
                         type="button"
-                        role="radio"
-                        aria-checked={sel}
-                        aria-label={c.name}
-                        onClick={() => setColourwayName(c.name)}
+                        aria-pressed={sel}
+                        aria-label={p.title}
+                        onClick={() => selectPainting(p)}
                         className={cn(
-                          "h-11 w-11 overflow-hidden rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                          sel ? "ring-2 ring-accent scale-110" : "opacity-90 hover:scale-105 hover:opacity-100",
+                          "h-14 w-14 shrink-0 overflow-hidden rounded-md outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          sel ? "ring-2 ring-accent" : "opacity-70 ring-1 ring-white/25 hover:opacity-100",
                         )}
-                        style={{ backgroundColor: c.hex }}
                       >
                         <picture>
-                          <source srcSet={asset(webp(c.image))} type="image/webp" />
-                          <img src={asset(c.image)} alt="" className="h-full w-full object-cover" />
+                          <source srcSet={asset(webp(cover.image))} type="image/webp" />
+                          <img src={asset(cover.image)} alt="" className="h-full w-full object-cover" />
                         </picture>
                       </button>
                     );
                   })}
                 </div>
               </section>
-            )}
 
-            {/* Size */}
-            <section className="mb-4">
-              <p className={cn(EYEBROW, "m-0 mb-2")}>Size · pinch to fine-tune</p>
-              <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
-                {AR_SIZES.map((s) => {
-                  const sel = s.id === sizeId;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={sel}
-                      onClick={() => setSizeId(s.id)}
-                      className={cn(
-                        "flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                        sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
-                      )}
-                    >
-                      <span className="font-sans text-[12px] font-bold tracking-[0.12em]">{s.label}</span>
-                      <span className={cn("font-sans text-[9px] font-semibold tracking-[0.06em]", sel ? "text-bg/70" : "text-ink/70")}>
-                        {s.cm}cm
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+              {/* Colourway */}
+              {colourways.length > 1 && (
+                <section className="mb-4">
+                  <p className={cn(EYEBROW, "m-0 mb-2")}>Colourway · {colourway.name}</p>
+                  <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
+                    {colourways.map((c) => {
+                      const sel = c.name === colourway.name;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          role="radio"
+                          aria-checked={sel}
+                          aria-label={c.name}
+                          onClick={() => setColourwayName(c.name)}
+                          className={cn(
+                            "h-11 w-11 overflow-hidden rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                            sel ? "ring-2 ring-accent scale-110" : "opacity-90 hover:scale-105 hover:opacity-100",
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                        >
+                          <picture>
+                            <source srcSet={asset(webp(c.image))} type="image/webp" />
+                            <img src={asset(c.image)} alt="" className="h-full w-full object-cover" />
+                          </picture>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
 
-            {/* Frame */}
-            <section>
-              <p className={cn(EYEBROW, "m-0 mb-2")}>Frame · {frame.label}</p>
-              <div role="radiogroup" aria-label="Frame finish" className="flex flex-wrap gap-2.5">
-                {OVERLAY_FRAMES.map((f) => {
-                  const sel = f.id === frame.id;
-                  return (
-                    <button
-                      key={f.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={sel}
-                      aria-label={f.label}
-                      onClick={() => setFrameId(f.id)}
-                      className={cn(
-                        "inline-flex min-h-[44px] items-center gap-2.5 rounded-full px-3.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                        sel ? "ring-accent" : "ring-line hover:ring-ink/40",
-                      )}
-                    >
-                      <span
-                        className="h-5 w-5 rounded-full ring-1 ring-black/30"
-                        style={{
-                          background: f.wood
-                            ? `linear-gradient(135deg, color-mix(in srgb, ${f.wood}, white 24%), ${f.wood})`
-                            : "repeating-linear-gradient(45deg, #f3ede1, #f3ede1 3px, #d9d0bd 3px, #d9d0bd 6px)",
-                        }}
-                      />
-                      <span className={cn("font-sans text-[11px] font-bold tracking-[0.04em]", sel ? "text-ink" : "text-ink-muted")}>
-                        {f.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-          </div>
-        )}
-      </div>
+              {/* Size */}
+              <section className="mb-4">
+                <p className={cn(EYEBROW, "m-0 mb-2")}>
+                  Size · {pxPerCm ? "true on your wall" : "pinch to fine-tune"}
+                </p>
+                <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
+                  {AR_SIZES.map((s) => {
+                    const sel = s.id === sizeId;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={sel}
+                        onClick={() => setSizeId(s.id)}
+                        className={cn(
+                          "flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
+                        )}
+                      >
+                        <span className="font-sans text-[12px] font-bold tracking-[0.12em]">{s.label}</span>
+                        <span className={cn("font-sans text-[9px] font-semibold tracking-[0.06em]", sel ? "text-bg/70" : "text-ink/70")}>
+                          {s.cm}cm
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {/* Frame */}
+              <section>
+                <p className={cn(EYEBROW, "m-0 mb-2")}>Frame · {frame.label}</p>
+                <div role="radiogroup" aria-label="Frame finish" className="flex flex-wrap gap-2.5">
+                  {OVERLAY_FRAMES.map((f) => {
+                    const sel = f.id === frame.id;
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={sel}
+                        aria-label={f.label}
+                        onClick={() => setFrameId(f.id)}
+                        className={cn(
+                          "inline-flex min-h-[44px] items-center gap-2.5 rounded-full px-3.5 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent",
+                          sel ? "ring-accent" : "ring-line hover:ring-ink/40",
+                        )}
+                      >
+                        <span
+                          className="h-5 w-5 rounded-full ring-1 ring-black/30"
+                          style={{
+                            background: f.wood
+                              ? `linear-gradient(135deg, color-mix(in srgb, ${f.wood}, white 24%), ${f.wood})`
+                              : "repeating-linear-gradient(45deg, #f3ede1, #f3ede1 3px, #d9d0bd 3px, #d9d0bd 6px)",
+                          }}
+                        />
+                        <span className={cn("font-sans text-[11px] font-bold tracking-[0.04em]", sel ? "text-ink" : "text-ink-muted")}>
+                          {f.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -788,6 +1015,38 @@ function shade(hex: string, amt: number): string {
   const g = adj(parseInt(m[2], 16));
   const b = adj(parseInt(m[3], 16));
   return `rgb(${r}, ${g}, ${b})`;
+}
+
+/** Draw a source (image or video) "object-cover" into the whole canvas viewport,
+ *  centre-cropped. Returns false if the draw threw (tainted / not ready). */
+function drawCover(
+  ctx: CanvasRenderingContext2D,
+  source: CanvasImageSource,
+  srcW: number,
+  srcH: number,
+  vw: number,
+  vh: number,
+): boolean {
+  const vr = srcW / srcH;
+  const cr = vw / vh;
+  let dw: number, dh: number, dx: number, dy: number;
+  if (vr > cr) {
+    dh = vh;
+    dw = vh * vr;
+    dx = (vw - dw) / 2;
+    dy = 0;
+  } else {
+    dw = vw;
+    dh = vw / vr;
+    dx = 0;
+    dy = (vh - dh) / 2;
+  }
+  try {
+    ctx.drawImage(source, dx, dy, dw, dh);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** Draw the artwork "object-cover" into a window rect (centre-crop), matching

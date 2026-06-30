@@ -157,8 +157,9 @@ export const Gallery = () => {
                 Open it on your phone
               </p>
               <p className="mt-3 m-0 max-w-[460px] font-sans text-[15px] leading-[1.7] text-ink-muted">
-                The Virtual Exhibition lives in your phone&rsquo;s camera. Scan the code to browse every one of
-                Stephen&rsquo;s prints on your own wall — any colourway, size and frame — live, right on the wall.
+                Scan the code to open the live camera on your phone and browse every one of Stephen&rsquo;s prints
+                on your own wall — any colourway, size and frame. No phone to hand? Drop in a photo of your room
+                and place the print into it right here.
               </p>
               <button
                 type="button"
@@ -166,13 +167,13 @@ export const Gallery = () => {
                 className="press mt-7 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <CameraGlyph />
-                Preview on this screen
+                Preview with a room photo
               </button>
             </>
           )}
 
           <p className={cn(EYEBROW_MUTED, "mt-8")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
-            A flat preview to judge scale &amp; framing · the print itself is true giclée
+            Calibrate once with a bank card for true on-wall size · the print itself is true giclée
           </p>
         </Reveal>
       </main>
