@@ -115,7 +115,7 @@ const CosmicInterlude = () => {
       // covers the whole viewport — without it the panel paints behind the wash
       // and reads as a blank gap (the very gap this fills). The masthead clears
       // the same backdrop with its own z-20.
-      className="relative z-30 w-full my-6 md:my-8 lg:my-12"
+      className="relative z-30 w-full mt-1 md:mt-2 lg:mt-3 mb-6 md:mb-8 lg:mb-12"
     >
       {/* The film is no longer a full-bleed feathered band but a CONTAINED,
           museum-framed centrepiece — a large bordered "expanded plate" sitting
@@ -289,7 +289,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[88svh] md:min-h-[84svh] justify-center pt-[12svh] sm:pt-[10svh] pb-[4svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[80svh] md:min-h-[76svh] justify-center pt-[11svh] sm:pt-[9svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -520,8 +520,13 @@ export const Welcome = () => {
             aria-hidden="true"
             className="absolute inset-0"
             style={{
+              // Lightened (Hugo: "i wanted the previous where you can see the
+              // pavos seamlessly change colourways behind") — was 0.42/0.26/0.16,
+              // which greyed the peacock out. Now a gentle plum-rose veil so the
+              // colourway crossfade reads through; per-section text scrims (hero,
+              // reminder, etc.) still carry legibility where copy sits.
               background:
-                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.42) 0%, rgba(34,10,22,0.26) 55%, rgba(34,10,22,0.16) 100%)",
+                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.26) 0%, rgba(34,10,22,0.15) 55%, rgba(34,10,22,0.08) 100%)",
             }}
           />
           {/* Bottom + top grounding band — darkens the very top strip (under the
@@ -595,7 +600,7 @@ export const Welcome = () => {
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[54svh] w-[54%] lg:w-[52%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[54svh] w-[48%] lg:w-[46%]">
               {/* EVEN melt: the photo now feathers on ALL FOUR sides (was y-only,
                   which left a hard rectangular left/right edge). With edges="all"
                   the image dissolves into the page identically top, bottom, left
@@ -639,7 +644,7 @@ export const Welcome = () => {
               className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[50svh] md:pb-0"
               style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
             >
-              <Reveal as="div" className="relative w-full md:max-w-[50%] lg:max-w-[48%]">
+              <Reveal as="div" className="relative w-full md:max-w-[46%] lg:max-w-[44%]">
                 {/* SOFT TEXT SCRIM — a gentle elliptical wash that pools just
                     enough warm-dark UNDER the headline so the type always rests
                     on calm tone where its right edge overlaps the photo, never on
@@ -986,15 +991,12 @@ export const Welcome = () => {
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
-            {/* Orphan-centring pattern: flex-wrap + justify-center, each card
-                flex:0 1 clamp(MIN,BASIS,MAX). With 6 picks this matches the old
-                2-up (mobile) / 3-up (desktop) rhythm, but if the featured count
-                ever becomes odd / not a multiple of the column count, the
-                leftover tile(s) centre on the last row at every breakpoint
-                instead of left-aligning. min-w-0 on each card stops a long
-                title token from widening the row past the viewport. */}
-            <Reveal as="div" className="flex flex-wrap justify-center gap-4 md:gap-5 mb-5 md:mb-9">
-              {featured.map(({ painting, cover }, idx) => {
+            {/* UNIFORM GRID (Hugo: "make it in rows like before" — the salon-hang
+                big-lead-plus-satellites read as a glitched, uneven layout). All
+                six tiles are the SAME size in clean rows: 2-up on mobile, 3-up on
+                desktop (3×2). min-w-0 stops a long title token widening a column. */}
+            <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10 mb-5 md:mb-9">
+              {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
@@ -1009,19 +1011,9 @@ export const Welcome = () => {
                     // price chip below is aria-hidden (it animates in), so without
                     // this a screen-reader user would get no price for any tile.
                     aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
-                    // SALON HANG (all-square, no cropping) — the first random
-                    // pick is the LEAD work, shown larger; the rest orbit it as
-                    // smaller satellites, so scale itself signals "this is the
-                    // one to look at" (Hauser & Wirth / Gagosian salon hang).
-                    // Literal class strings per branch (Tailwind JIT). The hero
-                    // stays inside the container — bigger, never full-screen
-                    // (Hugo reins in oversized images).
-                    className={cn(
-                      "group block min-w-0",
-                      idx === 0
-                        ? "flex-[0_1_clamp(380px,44%,640px)]"
-                        : "flex-[0_1_clamp(160px,28%,380px)]",
-                    )}
+                    // Uniform tile — every painting the same size in a clean grid
+                    // (Hugo wants even rows, not a scaled salon hang).
+                    className="group block min-w-0"
                   >
                     <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
                       {/* Gentle zoom on hover only — a small scale-up of the
@@ -1284,7 +1276,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex min-h-[100svh] w-full items-start overflow-hidden pt-[15svh] md:pt-[17svh] pb-0"
+            className="relative isolate flex flex-col min-h-[88svh] md:min-h-[84svh] w-full items-center justify-center overflow-hidden pt-[8svh] pb-[6svh]"
             aria-label="Sacred Geometry"
           >
 
@@ -1339,22 +1331,11 @@ export const Welcome = () => {
                 LOCAL TEXT SCRIM (the soft ellipse below, behind the text only) →
                 content (z-10). Whole-element Reveals (gotcha #2). */}
             <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center py-1 md:py-2">
-              {/* TIGHT LOCAL TEXT SCRIM — Hugo: "you literally can't read it" on
-                  the bright sun. A soft radial ellipse sits ONLY behind the
-                  centred text block, NOT over the whole sun (the sun stays
-                  bright). Every edge ends at alpha 0, so it never reads as a box
-                  — it just pools enough warm-dark under the cream type for it to
-                  read crisply over the bright limb. Sits inside the z-10 content
-                  column (above the z-[1] sun) but behind the actual glyphs via
-                  -z-10 within the column's own stacking context. */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 -z-10"
-                style={{
-                  background:
-                    "radial-gradient(90% 78% at 50% 48%, rgba(9,7,11,0.40) 0%, rgba(9,7,11,0.24) 46%, rgba(9,7,11,0.08) 74%, rgba(9,7,11,0) 100%)",
-                }}
-              />
+              {/* No local scrim box behind the text (Hugo: "i hate that black box
+                  behind it") — the finale now mirrors the masthead exactly, which
+                  rides the bright Earth on text-shadow alone. The title + quote
+                  below carry matching heavy text-shadows for legibility on the
+                  bright sun, so no rectangle is ever painted. */}
               {/* The statement is the HERO of the close — the biggest thing on
                   the page (Hugo's direction). No eyebrow competes above it.
                   True Fraunces 700 at a controlled opsz 48 so strokes stay clean
@@ -1368,19 +1349,19 @@ export const Welcome = () => {
                   <span
                     className="block"
                     style={{
-                      // RESTORED to the DOMINANT title (Hugo, 2026-06-29: "the
-                      // huge sacred geometry with the quote underneath was
-                      // amazing"; the inverted version that blew up the quote and
-                      // shrank this was rejected). Biggest type on the close.
+                      // MIRRORS "THE MANDALA COMPANY" over the Earth EXACTLY
+                      // (Hugo: "same size and format layering over the sun as the
+                      // mandala company over the earth"). Identical opsz/weight/
+                      // size-clamp/tracking/line-height/shadow to the masthead.
                       fontVariationSettings: '"opsz" 48, "wght" 700',
                       fontWeight: 700,
-                      fontSize: "clamp(52px, 12vw, 188px)",
-                      letterSpacing: "-0.015em",
-                      lineHeight: 0.88,
+                      fontSize: "clamp(60px, 14.5vw, 196px)",
+                      letterSpacing: "-0.03em",
+                      lineHeight: 0.92,
                       textTransform: "uppercase",
                       color: "#ede6d6",
                       textShadow:
-                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 24px rgba(8,6,12,0.85)",
+                        "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
                     }}
                   >
                     Sacred{" "}
@@ -1399,15 +1380,17 @@ export const Welcome = () => {
                   <span
                     className="block text-balance"
                     style={{
-                      fontVariationSettings: '"opsz" 36, "wght" 500',
-                      fontWeight: 500,
-                      fontSize: "clamp(18px, 2.5vw, 38px)",
-                      letterSpacing: "0.0em",
-                      lineHeight: 1.18,
-                      color: "#ede6d6",
-                      marginTop: "clamp(8px, 1vw, 16px)",
+                      // Mirrors the masthead "The Art of Stephen Meakin" lockup
+                      // proportion (opsz 36 / wght 600 / same size-clamp + top gap).
+                      fontVariationSettings: '"opsz" 36, "wght" 600',
+                      fontWeight: 600,
+                      fontSize: "clamp(22px, 4vw, 42px)",
+                      letterSpacing: "-0.005em",
+                      lineHeight: 1.1,
+                      color: "#f1ead9",
+                      marginTop: "clamp(10px, 1.2vw, 20px)",
                       textShadow:
-                        "0 2px 16px rgba(8,6,12,0.92), 0 1px 3px rgba(8,6,12,0.9)",
+                        "0 1px 2px rgba(8,6,12,0.95), 0 2px 18px rgba(8,6,12,0.95), 0 0 40px rgba(8,6,12,0.6)",
                     }}
                   >
                     &mdash; the order beneath all things
@@ -1431,51 +1414,45 @@ export const Welcome = () => {
                     medium italic — present and moving, but clearly subordinate to
                     the Sacred Geometry title above. opsz 36 (finale invariant). */}
                 <p
-                  className="font-display text-ink text-balance m-0 mb-6 mx-auto max-w-[22ch]"
+                  className="font-display text-ink text-balance m-0 mb-7 mx-auto max-w-[20ch]"
                   style={{
                     fontStyle: "italic",
-                    fontVariationSettings: '"opsz" 36, "wght" 400',
-                    fontSize: "clamp(24px, 3.6vw, 52px)",
-                    lineHeight: 1.18,
-                    letterSpacing: "-0.01em",
+                    fontVariationSettings: '"opsz" 28, "wght" 400',
+                    fontSize: "clamp(20px, 2.6vw, 34px)",
+                    lineHeight: 1.3,
+                    letterSpacing: "-0.005em",
                     textShadow:
-                      "0 2px 26px rgba(9,7,11,0.85), 0 1px 4px rgba(9,7,11,0.7)",
+                      "0 2px 26px rgba(9,7,11,0.9), 0 1px 4px rgba(9,7,11,0.8)",
                   }}
                 >
                   &ldquo;I realised that everything is connected.&rdquo;
                   <span
                     style={{
                       fontStyle: "normal",
-                      color: "#ede6d6",
+                      color: "rgba(237,230,214,0.7)",
                       textShadow:
                         "0 1px 3px rgba(9,7,11,0.92), 0 1px 12px rgba(9,7,11,0.8)",
                     }}
-                    className="block mt-5 font-sans text-[12px] font-bold tracking-[0.18em]"
+                    className="block mt-4 font-sans text-[11px] font-bold tracking-[0.32em]"
                   >
                     SEM
                   </span>
                 </p>
               </Reveal>
 
-              {/* THRESHOLD exit (2026-06-28 bold redesign) — the colophon ends
-                  on a wide hairline-ruled door at confident serif scale (not 11px
-                  micro-type under Stephen's huge line), the arrow travelling the
-                  rule on hover. Same verbatim destination words. (Hermès/Aesop
-                  footer-threshold.) */}
+              {/* Clean centred pill CTA (Hugo: the full-width hairline-ruled
+                  "threshold" bar read as atrocious) — same shape as the hero +
+                  Featured CTAs so the page closes on a consistent, premium
+                  affordance. Verbatim destination words. */}
               <Reveal delay={0.3}>
                 <Link
                   to="/collections"
-                  className="group relative mx-auto mt-2 flex w-full max-w-[520px] items-center justify-between gap-6 border-t border-ink/20 pt-5 font-display tracking-[-0.01em] text-ink transition-colors hover:text-accent"
-                  style={{
-                    fontVariationSettings: '"opsz" 24, "wght" 500',
-                    fontSize: "clamp(20px, 2.2vw, 30px)",
-                    textShadow: "0 1px 12px rgba(9,7,11,0.7)",
-                  }}
+                  className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-8 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] transition-colors duration-300 hover:bg-accent hover:text-ink"
                 >
                   Explore the collection
                   <span
                     aria-hidden="true"
-                    className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-2"
+                    className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1"
                   >
                     &rarr;
                   </span>
