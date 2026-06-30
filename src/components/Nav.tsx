@@ -534,9 +534,17 @@ const NavMenu = ({
           <motion.div
             aria-hidden="true"
             onClick={onClose}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={reduceMotion ? false : { opacity: 0, pointerEvents: "none" }}
+            animate={{ opacity: 1, pointerEvents: "auto" }}
+            // pointerEvents SNAPS to none the instant the close begins (framer
+            // applies non-tweenable props immediately). CRITICAL: if the exit
+            // fade ever fails to finish + unmount (observed: a route-change via a
+            // menu link, and headless/background tabs where rAF is throttled),
+            // the scrim could linger as an INVISIBLE full-page click-trap that
+            // killed every link on every page. Snapping pointer-events off on
+            // exit makes a lingering scrim harmless. (Hugo: "most links on the
+            // entire site don't work".)
+            exit={{ opacity: 0, pointerEvents: "none" }}
             transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_SMOOTH }}
             className="fixed inset-0 z-[120] bg-black/55"
           />
@@ -551,9 +559,9 @@ const NavMenu = ({
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={reduceMotion ? false : { opacity: 0, pointerEvents: "none" }}
+            animate={{ opacity: 1, pointerEvents: "auto" }}
+            exit={{ opacity: 0, pointerEvents: "none" }}
             transition={{ duration: reduceMotion ? 0 : 0.32, ease: EASE_SMOOTH }}
             style={{
               width: DRAWER_WIDTH,

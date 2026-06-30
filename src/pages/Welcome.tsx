@@ -392,7 +392,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(60px, 14.5vw, 196px)",
+                    fontSize: "clamp(64px, 16.5vw, 252px)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -409,7 +409,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(60px, 14.5vw, 196px)",
+                    fontSize: "clamp(64px, 16.5vw, 252px)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -1276,7 +1276,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex flex-col min-h-[88svh] md:min-h-[84svh] w-full items-center justify-center overflow-hidden pt-[8svh] pb-[6svh]"
+            className="relative isolate flex flex-col min-h-[88svh] md:min-h-[84svh] w-full items-center justify-end overflow-hidden pt-[6svh] pb-[12svh] md:pb-[14svh]"
             aria-label="Sacred Geometry"
           >
 
@@ -1355,7 +1355,7 @@ export const Welcome = () => {
                       // size-clamp/tracking/line-height/shadow to the masthead.
                       fontVariationSettings: '"opsz" 48, "wght" 700',
                       fontWeight: 700,
-                      fontSize: "clamp(60px, 14.5vw, 196px)",
+                      fontSize: "clamp(64px, 16.5vw, 252px)",
                       letterSpacing: "-0.03em",
                       lineHeight: 0.92,
                       textTransform: "uppercase",
@@ -1399,65 +1399,12 @@ export const Welcome = () => {
                 </h2>
               </Reveal>
 
-              {/* Hairline rule — one breath between the estate's statement
-                  and Stephen's own voice. */}
-              <Reveal delay={0.16}>
-                <div aria-hidden="true" className="mx-auto my-5 md:my-8 h-px w-12 bg-ink/15" />
-              </Reveal>
-
-              {/* Stephen's voice — VERBATIM register. His documented words are
-                  "everything is connected" (content.ts MEMORIAL_QUOTE); never
-                  an invented near-quote. True Fraunces italic, opsz 24. */}
-              <Reveal delay={0.22}>
-                {/* Stephen's verbatim line sits UNDERNEATH the huge title (Hugo:
-                    "the huge sacred geometry with the quote underneath"). A
-                    medium italic — present and moving, but clearly subordinate to
-                    the Sacred Geometry title above. opsz 36 (finale invariant). */}
-                <p
-                  className="font-display text-ink text-balance m-0 mb-7 mx-auto max-w-[20ch]"
-                  style={{
-                    fontStyle: "italic",
-                    fontVariationSettings: '"opsz" 28, "wght" 400',
-                    fontSize: "clamp(20px, 2.6vw, 34px)",
-                    lineHeight: 1.3,
-                    letterSpacing: "-0.005em",
-                    textShadow:
-                      "0 2px 26px rgba(9,7,11,0.9), 0 1px 4px rgba(9,7,11,0.8)",
-                  }}
-                >
-                  &ldquo;I realised that everything is connected.&rdquo;
-                  <span
-                    style={{
-                      fontStyle: "normal",
-                      color: "rgba(237,230,214,0.7)",
-                      textShadow:
-                        "0 1px 3px rgba(9,7,11,0.92), 0 1px 12px rgba(9,7,11,0.8)",
-                    }}
-                    className="block mt-4 font-sans text-[11px] font-bold tracking-[0.32em]"
-                  >
-                    SEM
-                  </span>
-                </p>
-              </Reveal>
-
-              {/* Clean centred pill CTA (Hugo: the full-width hairline-ruled
-                  "threshold" bar read as atrocious) — same shape as the hero +
-                  Featured CTAs so the page closes on a consistent, premium
-                  affordance. Verbatim destination words. */}
-              <Reveal delay={0.3}>
-                <Link
-                  to="/collections"
-                  className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-8 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] transition-colors duration-300 hover:bg-accent hover:text-ink"
-                >
-                  Explore the collection
-                  <span
-                    aria-hidden="true"
-                    className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1"
-                  >
-                    &rarr;
-                  </span>
-                </Link>
-              </Reveal>
+              {/* Hugo (2026-06-30): remove EVERYTHING below "— the order beneath
+                  all things." The finale is now ONLY the two-tier title sitting
+                  ON the sun, a clean mirror of "THE MANDALA COMPANY" on the Earth
+                  open — no quote, no SEM, no Explore CTA. (Stephen's "everything
+                  is connected" still lives verbatim in content.ts + closes other
+                  surfaces; it is simply not repeated here.) */}
             </div>
           </section>
         </main>
