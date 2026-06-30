@@ -144,6 +144,15 @@ const CosmicInterlude = () => {
                 <video
                   ref={videoRef}
                   className="absolute inset-0 h-full w-full object-cover"
+                  // CENTRE THE GALAXY (Hugo: "the galaxy is to the right, not
+                  // centred"). The mp4 is 1280x480 = EXACTLY 8/3, identical to the
+                  // desktop frame, so object-cover does NO crop and the baked-in
+                  // rightward bias (bright core at ~53.6% of width, ~3.6% right of
+                  // centre) shows verbatim — object-position can't help with no
+                  // overflow to shift. Fix: scale up 10% (5% bleed each side,
+                  // clipped by the frame's overflow-hidden) then nudge left 3.6%
+                  // so the core lands at 50%. Poster shares the same crop.
+                  style={{ transform: "scale(1.1) translateX(-3.6%)", transformOrigin: "center" }}
                   poster={asset("/video/poster-garden-galaxy-v1.jpg")}
                   muted
                   loop
