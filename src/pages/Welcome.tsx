@@ -266,7 +266,7 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[100svh] justify-center pt-[24svh] pb-[8svh] sm:justify-end sm:pt-0 sm:pb-[6svh] md:pb-[7svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[100svh] justify-center pt-[20svh] sm:pt-[15svh] pb-[8svh] sm:pb-[6svh] md:pb-[7svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
