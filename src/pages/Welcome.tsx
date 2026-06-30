@@ -229,8 +229,12 @@ export const Welcome = () => {
   // never re-typed; the full paragraph still appears once, in order.
   const reminderLead = WELCOME.reminderLong[0];
   const reminderLeadSplit = reminderLead.indexOf(". ");
-  const reminderLeadHead =
-    reminderLeadSplit > 0 ? reminderLead.slice(0, reminderLeadSplit + 1) : reminderLead;
+  const reminderLeadHead = (
+    reminderLeadSplit > 0 ? reminderLead.slice(0, reminderLeadSplit + 1) : reminderLead
+    // Glue the final two words with a non-breaking space so a short last word
+    // (e.g. "us.") can NEVER orphan onto its own line (Hugo). Words unchanged —
+    // only the inter-word space becomes non-breaking.
+  ).replace(/ (\S+)$/, " $1");
   const reminderLeadBody =
     reminderLeadSplit > 0 ? reminderLead.slice(reminderLeadSplit + 2) : "";
 
@@ -599,7 +603,7 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "radial-gradient(120% 100% at -10% 50%, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.66) 30%, rgba(10,9,8,0.28) 58%, rgba(10,9,8,0) 82%)",
+                    "radial-gradient(120% 100% at -10% 50%, rgba(10,9,8,0.66) 0%, rgba(10,9,8,0.44) 30%, rgba(10,9,8,0.16) 58%, rgba(10,9,8,0) 80%)",
                 }}
               />
             </figure>
@@ -899,7 +903,7 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0"
                 style={{
                   background:
-                    "radial-gradient(120% 100% at 110% 50%, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.66) 30%, rgba(10,9,8,0.28) 58%, rgba(10,9,8,0) 82%)",
+                    "radial-gradient(120% 100% at 110% 50%, rgba(10,9,8,0.66) 0%, rgba(10,9,8,0.44) 30%, rgba(10,9,8,0.16) 58%, rgba(10,9,8,0) 80%)",
                 }}
               />
             </figure>
@@ -1270,7 +1274,7 @@ export const Welcome = () => {
                 local text scrim below does the rest. z-[1], below the content. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[66svh] md:h-[74svh] overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[50svh] md:h-[54svh] overflow-hidden"
             >
               {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
                   the rust period in the finale type stays the one literal accent. */}
@@ -1287,14 +1291,23 @@ export const Welcome = () => {
                 alt=""
                 loading="eager"
                 decoding="async"
-                className="sun-band-fade absolute inset-0 h-full w-full object-cover select-none"
+                className="absolute inset-0 h-full w-full object-cover select-none"
                 style={{
                   objectPosition: "center 30%",
                   // Dimmer than before so the centred cream type stays legible.
                   filter: "brightness(0.72) saturate(0.95)",
                   // scaleY(-1): the sun curves UP from the pinned bottom edge,
-                  // mirroring the sun that opens the page at the top.
+                  // mirroring the EARTH that opens the page at the top.
                   transform: "scaleY(-1)",
+                  // The EXACT same radial dissolve as the open Earth limb, just
+                  // anchored to the opposite (top) box edge so that after the
+                  // scaleY(-1) flip it is SOLID at the pinned BOTTOM edge and melts
+                  // upward into the page — a true vertical mirror of the Earth open
+                  // (Hugo: "the two should mirror each other, earth and sun").
+                  WebkitMaskImage:
+                    "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  maskImage:
+                    "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 }}
               />
             </div>
@@ -1317,7 +1330,7 @@ export const Welcome = () => {
                 className="pointer-events-none absolute inset-0 -z-10"
                 style={{
                   background:
-                    "radial-gradient(74% 66% at 50% 50%, rgba(9,7,11,0.74) 0%, rgba(9,7,11,0.54) 42%, rgba(9,7,11,0.22) 72%, rgba(9,7,11,0) 100%)",
+                    "radial-gradient(90% 78% at 50% 48%, rgba(9,7,11,0.40) 0%, rgba(9,7,11,0.24) 46%, rgba(9,7,11,0.08) 74%, rgba(9,7,11,0) 100%)",
                 }}
               />
               {/* The statement is the HERO of the close — the biggest thing on
@@ -1333,26 +1346,27 @@ export const Welcome = () => {
                   <span
                     className="block"
                     style={{
-                      // DEMOTED to the quiet estate KICKER (2026-06-28 bold
-                      // redesign): Stephen's own verbatim line below is now the
-                      // largest, final word — this frames it, not the reverse.
-                      fontVariationSettings: '"opsz" 36, "wght" 600',
-                      fontWeight: 600,
-                      fontSize: "clamp(20px, 2.6vw, 40px)",
-                      letterSpacing: "0.02em",
-                      lineHeight: 1.0,
+                      // RESTORED to the DOMINANT title (Hugo, 2026-06-29: "the
+                      // huge sacred geometry with the quote underneath was
+                      // amazing"; the inverted version that blew up the quote and
+                      // shrank this was rejected). Biggest type on the close.
+                      fontVariationSettings: '"opsz" 48, "wght" 700',
+                      fontWeight: 700,
+                      fontSize: "clamp(52px, 12vw, 188px)",
+                      letterSpacing: "-0.015em",
+                      lineHeight: 0.88,
                       textTransform: "uppercase",
                       color: "#ede6d6",
                       textShadow:
-                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 16px rgba(8,6,12,0.8)",
+                        "0 1px 3px rgba(8,6,12,0.9), 0 2px 24px rgba(8,6,12,0.85)",
                     }}
                   >
                     Sacred{" "}
                     <em
                       style={{
-                        fontStyle: "normal",
-                        fontVariationSettings: '"opsz" 36, "wght" 600',
-                        fontWeight: 600,
+                        fontStyle: "italic",
+                        fontVariationSettings: '"opsz" 48, "wght" 700',
+                        fontWeight: 700,
                       }}
                     >
                       geometry
@@ -1363,13 +1377,13 @@ export const Welcome = () => {
                   <span
                     className="block text-balance"
                     style={{
-                      fontVariationSettings: '"opsz" 24, "wght" 400',
-                      fontWeight: 400,
-                      fontSize: "clamp(15px, 1.9vw, 26px)",
+                      fontVariationSettings: '"opsz" 36, "wght" 500',
+                      fontWeight: 500,
+                      fontSize: "clamp(18px, 2.5vw, 38px)",
                       letterSpacing: "0.0em",
-                      lineHeight: 1.2,
+                      lineHeight: 1.18,
                       color: "#ede6d6",
-                      marginTop: "clamp(6px, 0.8vw, 12px)",
+                      marginTop: "clamp(8px, 1vw, 16px)",
                       textShadow:
                         "0 2px 16px rgba(8,6,12,0.92), 0 1px 3px rgba(8,6,12,0.9)",
                     }}
@@ -1390,18 +1404,18 @@ export const Welcome = () => {
                   "everything is connected" (content.ts MEMORIAL_QUOTE); never
                   an invented near-quote. True Fraunces italic, opsz 24. */}
               <Reveal delay={0.22}>
-                {/* PROMOTED to the largest, FINAL word on the page — Stephen's
-                    own verbatim sentence (MEMORIAL_QUOTE: his life's-mission line
-                    from Anegada). The estate frame above is now the quiet kicker;
-                    he gets the last word. opsz held at 48 (finale invariant). */}
+                {/* Stephen's verbatim line sits UNDERNEATH the huge title (Hugo:
+                    "the huge sacred geometry with the quote underneath"). A
+                    medium italic — present and moving, but clearly subordinate to
+                    the Sacred Geometry title above. opsz 36 (finale invariant). */}
                 <p
-                  className="font-display text-ink text-balance m-0 mb-6 mx-auto max-w-[18ch]"
+                  className="font-display text-ink text-balance m-0 mb-6 mx-auto max-w-[22ch]"
                   style={{
                     fontStyle: "italic",
-                    fontVariationSettings: '"opsz" 48, "wght" 400',
-                    fontSize: "clamp(40px, 8vw, 132px)",
-                    lineHeight: 1.04,
-                    letterSpacing: "-0.02em",
+                    fontVariationSettings: '"opsz" 36, "wght" 400',
+                    fontSize: "clamp(24px, 3.6vw, 52px)",
+                    lineHeight: 1.18,
+                    letterSpacing: "-0.01em",
                     textShadow:
                       "0 2px 26px rgba(9,7,11,0.85), 0 1px 4px rgba(9,7,11,0.7)",
                   }}
