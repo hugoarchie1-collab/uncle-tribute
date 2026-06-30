@@ -753,7 +753,7 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-[clamp(6rem,9vw,7.5rem)] pb-[clamp(2rem,3.5vw,3rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-20 md:pt-24 pb-[clamp(2rem,3.5vw,3rem)]">
     <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -867,7 +867,7 @@ export const Memories = () => {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
           }}
         />
       </div>

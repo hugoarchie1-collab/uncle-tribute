@@ -67,7 +67,7 @@ const ContactBackdrop = () => {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
+            "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
         }}
       />
     </div>
@@ -183,7 +183,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-10 md:pb-14">
         {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
             rule, then "Write to the family" set in the refined shared masthead
             cut (MASTHEAD_TITLE_STYLE — Fraunces opsz 144 / wght 560, one italic

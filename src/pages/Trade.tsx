@@ -108,7 +108,7 @@ export const Trade = () => {
       />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-10 md:pb-14">
         {/* ── MASTHEAD ── The refined shared front cover: meta rule (eyebrow +
             "By introduction") → a composed Fraunces display title (wght 560,
             opsz 144 — never the old bold logo) → the framing passage packed

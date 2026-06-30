@@ -183,7 +183,7 @@ export const Gift = () => {
           measure as Collections + About, so /gift sits on the one centred
           vertical axis the rest of the site shares (Hugo: "nothing is centred
           properly"). */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-8 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-8 md:pb-12">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             The refined shared <PageMasthead>: eyebrow + hairline meta rule →
             a composed Fraunces statement (wght 560, one italic emphasis word,

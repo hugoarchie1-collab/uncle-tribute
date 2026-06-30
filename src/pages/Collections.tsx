@@ -495,7 +495,7 @@ const CatalogueSetCard = () => {
       className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
     >
       <div
-        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-12 lg:py-14 3xl:py-16 text-center"
+        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-10 lg:py-12 3xl:py-12 text-center"
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
@@ -609,7 +609,7 @@ export const Collections = () => {
             // toward the foot for the catalogue/footer seam; the page-intro +
             // tile copy carry their own text-shadow for legibility.
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.50) 0%, rgba(8,7,6,0.66) 45%, rgba(8,7,6,0.82) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
           }}
         />
       </div>

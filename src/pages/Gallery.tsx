@@ -103,7 +103,7 @@ export const Gallery = () => {
       <SceneBackdrop src="/img/scenes/news-indigo-carpet-blurmod-v1.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
+      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-12 md:pb-16">
         <Reveal as="div" className="text-center">
           <PageMasthead
             eyebrow="The Virtual Exhibition"
@@ -117,7 +117,7 @@ export const Gallery = () => {
           />
         </Reveal>
 
-        <Reveal as="div" delay={0.05} className="mt-10 md:mt-14 flex flex-col items-center text-center">
+        <Reveal as="div" delay={0.05} className="mt-6 md:mt-8 flex flex-col items-center text-center">
           {/* The barcode */}
           <div className="rounded-3xl bg-cream p-4 ring-1 ring-cream-ink/10 shadow-[0_24px_70px_rgba(0,0,0,0.5)]">
             {qrUrl ? (

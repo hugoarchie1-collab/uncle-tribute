@@ -26,19 +26,21 @@ import { Seo } from "../components/Seo";
 // the page — it holds through the Sacred Geometry finale (Hugo's direction:
 // revert the brief Mary-Pink close back to the extended purple).
 const PEACOCK_BACKDROPS = [
-  // PERFECTION PASS: these washes are σ8-blurred, so 1200px was massively
-  // oversampled. Served at 600px (`-sm`, the SAME darkened v3/v11 assets just
-  // downscaled — mean luminance verified identical) they upscale to fill the
-  // viewport with ZERO visible difference at ~4× less GPU texture memory per
-  // composited layer. The 600px file is the texture the compositor samples on
-  // every scroll frame, so a smaller texture is a cheaper, cache-friendlier
-  // composite. Full-size originals kept on disk for the immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v3-sm.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v3-sm.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v3-sm.webp", name: "Moroccan Purple" },
+  // CROSSFADE BACKDROPS: the v12-sm family (600×600 webp) is one consistent,
+  // properly-blurred, correctly-centred set — soft gaussian washes (laplacian
+  // std ~0.0013–0.0018) at a matched dark luma (0.239/0.259/0.251/0.373) so the
+  // four colourways blend seamlessly across the scroll. Replaced the prior v3-sm
+  // refs, which read essentially un-blurred (indigo/red/purple) and whose
+  // mary-pink was a wrong off-centre crop at ~2× its siblings' brightness. The
+  // small texture is also the cheaper, cache-friendlier composite the compositor
+  // samples on every scroll frame. Full-res originals kept on disk for the
+  // immutable-cache rule.
+  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v3-sm.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
 ];
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
@@ -1285,7 +1287,7 @@ export const Welcome = () => {
               but no longer leaves a void under it. The Earth limb stays pinned
               to bottom-0 (its own absolute layer), uncropped. */}
           <section
-            className="relative isolate flex flex-col min-h-[88svh] md:min-h-[84svh] w-full items-center justify-end overflow-hidden pt-[6svh] pb-[12svh] md:pb-[14svh]"
+            className="relative isolate flex flex-col min-h-[78svh] md:min-h-[76svh] w-full items-center justify-start overflow-hidden pt-[5svh] md:pt-[6svh] pb-0"
             aria-label="Sacred Geometry"
           >
 
@@ -1297,7 +1299,7 @@ export const Welcome = () => {
                 local text scrim below does the rest. z-[1], below the content. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[50svh] md:h-[54svh] overflow-hidden"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[60svh] md:h-[64svh] overflow-hidden"
             >
               {/* Warm sun halo behind the limb at the BOTTOM — atmosphere only;
                   the rust period in the finale type stays the one literal accent. */}
