@@ -719,7 +719,7 @@ export const Collections = () => {
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
-                    className="bg-[rgba(9,7,6,0.5)] px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
+                    className="bg-[rgba(9,7,6,0.34)] px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
                   >
                     <p
                       className="font-display font-semibold tracking-[-0.015em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0"
