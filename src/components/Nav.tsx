@@ -578,7 +578,7 @@ const NavMenu = ({
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-ink/60">
-              <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
+              <span className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.08em] text-ink-muted">
                 Menu
               </span>
               <button
@@ -615,7 +615,7 @@ const NavMenu = ({
               <CurrencySelect variant="menu" className="mb-5" />
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-6" : ""}>
-                  <p className="mb-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
+                  <p className="mb-2 font-sans text-[13px] md:text-[14px] font-bold tracking-[0.08em] text-ink-muted">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (

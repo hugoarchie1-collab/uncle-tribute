@@ -98,11 +98,10 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
 // aren't generated yet stays on the artwork view rather than offering a "To
 // scale · coming soon" dead-end on a £245–£1,750 page (audit fix). ⚠️HUGO: add a
 // painting id here the moment its room composites land, and the toggle self-enables.
-const TRUESIZE_PAINTING_IDS = new Set<string>([
-  "english-bluebells", "wild-rose", "orchis-7", "flower-of-life",
-  "slipper-orchids", "peacock-minerva", "ophiuchus", "tridecagon-moon-star",
-  "lulin", "enneagon-swans",
-]);
+// True-size tab DISABLED for now (Hugo 2026-06-30): he's remaking the room
+// mockups on canvy.com — until then no painting offers the "True size" view, so
+// the tab is hidden everywhere. Re-add ids here to bring it back.
+const TRUESIZE_PAINTING_IDS = new Set<string>([]);
 
 /* =============================================================================
  * MONOCHROME CTAs (#7) — local, accent-free button recipes.
