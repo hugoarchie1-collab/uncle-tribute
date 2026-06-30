@@ -327,19 +327,19 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v2.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[820px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-10 md:pb-14" data-wide={isEmpty ? undefined : "true"}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-10" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
             clamp ≤116px) instead of the old over-bold 700/opsz-48 logo. */}
-        <Reveal as="div" className="mb-8 md:mb-10">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+        <Reveal as="div" className="mb-6 md:mb-7">
+          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
             <span className={EYEBROW}>Made to order</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
             <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
           </div>
           <h1
-            className="font-display text-ink m-0 mt-5 md:mt-7 text-balance text-pretty"
+            className="font-display text-ink m-0 mt-4 md:mt-5 text-balance text-pretty"
             style={MASTHEAD_TITLE_STYLE}
           >
             Your basket
@@ -347,8 +347,8 @@ export const Basket = () => {
         </Reveal>
 
         {isEmpty ? (
-          <Reveal as="div" className="max-w-[640px] 3xl:max-w-[760px]">
-            <p className={cn(SUBTITLE, "m-0 mb-7 md:mb-8")}>
+          <Reveal as="div" className="max-w-[820px] 3xl:max-w-[920px]">
+            <p className={cn(SUBTITLE, "m-0 mb-5 md:mb-6")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
             </p>
@@ -359,8 +359,8 @@ export const Basket = () => {
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
                 beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
             {BEGIN_WITH_PICKS.length > 0 && (
-              <div className="mt-6 md:mt-8">
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
+              <div className="mt-6">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
                     <li key={painting.id} className="m-0 min-w-0">
@@ -375,12 +375,12 @@ export const Basket = () => {
                             alt={`${painting.title} — ${cover.name}`}
                             loading="lazy"
                             decoding="async"
-                            // The empty-state column is capped at 640px, so each
-                            // of the three tiles renders ≤ ~200px. With this
+                            // The empty-state column is capped at ~820px, so each
+                            // of the three tiles renders ≤ ~270px. With this
                             // `sizes` the browser serves the small -w480 / -w800
                             // webp variants from the manifest (imageVariants.ts),
                             // never the full-size original.
-                            sizes="(min-width: 640px) 200px, 30vw"
+                            sizes="(min-width: 820px) 270px, 30vw"
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                           />
                         </div>
@@ -405,11 +405,11 @@ export const Basket = () => {
           // as a sticky card, both on ONE shared centred axis. This replaces the
           // old single narrow stacked column that left large empty side margins
           // on wide screens. Below lg it stacks: items, then summary.
-          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-6 items-start">
             <div className="min-w-0">
             {lines.length > 0 && (
             <Reveal as="div">
-              <Separator className="bg-line mb-6" />
+              <Separator className="bg-line mb-4" />
               <ul className="list-none p-0 m-0 flex flex-col">
                 {lines.map((line, i) => {
                   const framingPence = lineFramingPence(line);
@@ -420,8 +420,8 @@ export const Basket = () => {
                       key={line.item.addedAt}
                       className={
                         i === 0
-                          ? "py-6 first:pt-0"
-                          : "py-6 border-t border-line"
+                          ? "py-4 first:pt-0"
+                          : "py-4 border-t border-line"
                       }
                     >
                       <div className="flex gap-5 sm:gap-7 items-start">
@@ -483,7 +483,7 @@ export const Basket = () => {
                           only when at least one add-on is selected; the plain
                           print line above is already complete on its own. */}
                       {hasAddOns && (
-                        <div className="mt-4 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
+                        <div className="mt-3 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                               {line.tier.label} print ({line.tier.size.split(" ")[0]})
@@ -531,12 +531,12 @@ export const Basket = () => {
 
             {giftCards.length > 0 && (
               <Reveal as="div" className={lines.length > 0 ? "mt-2" : ""}>
-                {lines.length === 0 && <Separator className="bg-line mb-6" />}
+                {lines.length === 0 && <Separator className="bg-line mb-4" />}
                 <ul className="list-none p-0 m-0 flex flex-col">
                   {giftCards.map((g: GiftBasketItem) => (
                     <li
                       key={g.addedAt}
-                      className="py-6 border-t border-line first:border-t-0"
+                      className="py-4 border-t border-line first:border-t-0"
                     >
                       <div className="flex gap-5 sm:gap-7 items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -578,14 +578,14 @@ export const Basket = () => {
                 The hairline ring frames it as an authored panel rather than a
                 bare stacked block, and keeps the right column from reading as
                 empty space. */}
-            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-6 md:px-7 md:py-8">
-              <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Order summary</p>
+            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-5 md:px-7 md:py-6">
+              <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Order summary</p>
 
               {/* PRICE BREAKDOWN — DMCC #13: the genuine pre-discount subtotal,
                   the bundle discount (the SAME percent Stripe charges), the
                   net, then mandatory delivery — all shown upfront with equal
                   prominence, nothing first revealed at Stripe. */}
-              <dl className="m-0 flex flex-col gap-2.5 mb-5">
+              <dl className="m-0 flex flex-col gap-2 mb-4">
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
                     Subtotal{" "}
@@ -622,7 +622,7 @@ export const Basket = () => {
                   colourway-set (12%) / catalogue (15%) bundles read ≥10 here so
                   they self-exclude. Informational — never a price claim. */}
               {lines.length >= 1 && bundleDiscountPercent < 10 && (
-                <p className="m-0 -mt-1 mb-4 font-sans text-[clamp(13px,0.78vw,15.5px)] leading-[1.5] text-ink-muted">
+                <p className="m-0 -mt-1 mb-3 font-sans text-[clamp(13px,0.78vw,15.5px)] leading-[1.5] text-ink-muted">
                   {lines.length === 1
                     ? "Add one more print and your order saves 5% — and 10% on three or more."
                     : "One more print lifts your bundle saving to 10%."}
@@ -643,11 +643,11 @@ export const Basket = () => {
                   ships free, framed or unframed. These £0 figures mirror the £0
                   (free) rate api/checkout.ts charges at Stripe — advertised ==
                   charged to the penny (mirror invariant, gotcha #9). */}
-              <div className="border border-ink/70 rounded-2xl p-4 sm:p-5 mb-3">
-                <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>
+              <div className="border border-ink/70 rounded-2xl p-4 mb-3">
+                <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
                   Delivery — free worldwide
                 </p>
-                <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
+                <ul className="list-none p-0 m-0 flex flex-col gap-1">
                   {(
                     [
                       ["United Kingdom", shipping.ukPence],
@@ -668,13 +668,13 @@ export const Basket = () => {
                     </li>
                   ))}
                 </ul>
-                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.55] text-ink-muted m-0 mt-3">
+                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
                   Free delivery on every order — framed or unframed — with nothing
                   added at checkout. Each print ships within 7–10 working days.
                 </p>
               </div>
 
-              <p className="font-sans font-normal text-[clamp(12px,0.68vw,14px)] leading-[1.6] text-ink-muted m-0 mb-7">
+              <p className="font-sans font-normal text-[clamp(12px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
                 International buyers may be charged local import duties on delivery.
               </p>
 
@@ -707,7 +707,7 @@ export const Basket = () => {
                   2026-06-06) and the damaged-in-transit replacement
                   (/returns; ReassuranceRow). Deliberately NOT an unconditional
                   refund promise and NO fake SSL seal. */}
-              <div className="mt-5 max-w-[560px]">
+              <div className="mt-4 max-w-[560px]">
                 <p className="m-0 flex items-start gap-2.5">
                   {/* Lock glyph — same hairline lock as ReassuranceRow. */}
                   <svg

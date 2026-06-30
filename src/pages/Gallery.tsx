@@ -94,7 +94,7 @@ export const Gallery = () => {
   }, [qrUrl]);
 
   return (
-    <div className="relative flex min-h-[100svh] flex-col overflow-x-clip">
+    <div className="relative flex flex-col overflow-x-clip">
       <Seo
         title="Virtual Exhibition — See it on your wall · The Art of Stephen Meakin"
         description="Point your phone's camera and see any of Stephen Meakin's mandala prints on your own wall — browse every painting, colourway, size and frame, live, in augmented reality."
@@ -103,7 +103,7 @@ export const Gallery = () => {
       <SceneBackdrop src="/img/scenes/news-indigo-carpet-blurmod-v1.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-12 md:pb-16">
+      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-12">
         <Reveal as="div" className="text-center">
           <PageMasthead
             eyebrow="The Virtual Exhibition"
@@ -117,19 +117,28 @@ export const Gallery = () => {
           />
         </Reveal>
 
-        <Reveal as="div" delay={0.05} className="mt-6 md:mt-8 flex flex-col items-center text-center">
+        <Reveal
+          as="div"
+          delay={0.05}
+          className={cn(
+            "mt-5 md:mt-7",
+            isHandheld
+              ? "flex flex-col items-center text-center"
+              : "flex flex-col items-center gap-8 text-center md:flex-row md:items-center md:justify-center md:gap-12 md:text-left lg:gap-16",
+          )}
+        >
           {/* The barcode */}
-          <div className="rounded-3xl bg-cream p-4 ring-1 ring-cream-ink/10 shadow-[0_24px_70px_rgba(0,0,0,0.5)]">
+          <div className="shrink-0 rounded-3xl bg-cream p-4 ring-1 ring-cream-ink/10 shadow-[0_24px_70px_rgba(0,0,0,0.5)]">
             {qrUrl ? (
               <img
                 src={qrUrl}
                 alt="QR code — open this exhibition on your phone"
                 width={208}
                 height={208}
-                className="block h-[176px] w-[176px] sm:h-[208px] sm:w-[208px]"
+                className="block h-[160px] w-[160px] sm:h-[200px] sm:w-[200px]"
               />
             ) : (
-              <div className="h-[176px] w-[176px] sm:h-[208px] sm:w-[208px]" aria-hidden="true" />
+              <div className="h-[160px] w-[160px] sm:h-[200px] sm:w-[200px]" aria-hidden="true" />
             )}
           </div>
 
@@ -139,24 +148,27 @@ export const Gallery = () => {
               <button
                 type="button"
                 onClick={() => setCameraOpen(true)}
-                className="press mt-8 inline-flex w-full max-w-[420px] min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[13px] font-bold tracking-[0.04em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+                className="press mt-7 inline-flex w-full max-w-[420px] min-h-[58px] items-center justify-center gap-2.5 rounded-full bg-ink px-8 font-sans text-[13px] font-bold tracking-[0.04em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
                 data-cursor-label="Open the camera"
               >
                 <CameraGlyph />
                 Open the camera
               </button>
-              <p className="mt-4 m-0 max-w-[440px] font-sans text-[14px] leading-[1.65] text-ink-muted" style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+              <p className="mt-4 m-0 max-w-[440px] font-sans text-[14px] leading-[1.6] text-ink-muted" style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
                 Point at your wall and browse <em className="not-italic text-ink">every</em> painting, colourway,
                 size and frame — switching them all live, right on the wall.
+              </p>
+              <p className={cn(EYEBROW_MUTED, "mt-6")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+                Calibrate once with a bank card for true on-wall size · the print itself is true giclée
               </p>
             </>
           ) : (
             // ===== DESKTOP — the barcode is the hand-off =======================
-            <>
-              <p className="mt-7 m-0 font-display text-ink text-[clamp(24px,2.4vw,34px)] leading-[1.1]" style={{ textShadow: "0 2px 16px rgba(0,0,0,0.8)" }}>
+            <div className="max-w-[480px]">
+              <p className="m-0 font-display text-ink text-[clamp(26px,2.6vw,38px)] leading-[1.08]" style={{ textShadow: "0 2px 16px rgba(0,0,0,0.8)" }}>
                 Open it on your phone
               </p>
-              <p className="mt-3 m-0 max-w-[460px] font-sans text-[15px] leading-[1.7] text-ink-muted">
+              <p className="mt-3 m-0 font-sans text-[15px] leading-[1.6] text-ink-muted">
                 Scan the code to open the live camera on your phone and browse every one of Stephen&rsquo;s prints
                 on your own wall — any colourway, size and frame. No phone to hand? Drop in a photo of your room
                 and place the print into it right here.
@@ -164,17 +176,16 @@ export const Gallery = () => {
               <button
                 type="button"
                 onClick={() => setCameraOpen(true)}
-                className="press mt-7 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
+                className="press mt-5 inline-flex min-h-[48px] items-center justify-center gap-2.5 rounded-full px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line transition-colors duration-300 hover:text-ink hover:ring-ink/40 focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <CameraGlyph />
                 Preview with a room photo
               </button>
-            </>
+              <p className={cn(EYEBROW_MUTED, "mt-5")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+                Calibrate once with a bank card for true on-wall size · the print itself is true giclée
+              </p>
+            </div>
           )}
-
-          <p className={cn(EYEBROW_MUTED, "mt-8")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
-            Calibrate once with a bank card for true on-wall size · the print itself is true giclée
-          </p>
         </Reveal>
       </main>
 

@@ -115,12 +115,12 @@ const AUTH_FACTS = [
 const FoundCard = ({ record }: { record: RegistryRecord }) => {
   const numbered = record.printNumber !== null;
   return (
-    <div className="border border-accent/30 bg-bg-soft/30 px-6 py-8 sm:px-9 sm:py-9">
+    <div className="border border-accent/30 bg-bg-soft/30 px-6 py-6 sm:px-9 sm:py-7">
       <div className="flex items-center gap-4 border-b border-line pb-4">
         <span className={EYEBROW}>{record.status}</span>
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </div>
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-end">
+      <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-end">
         <div className="lg:col-span-8">
           <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.6vw,46px)] leading-[1.05] text-ink text-pretty m-0">
             {record.artworkName}
@@ -161,7 +161,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
           )}
         </div>
       </div>
-      <dl className="mt-6 pt-5 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 m-0">
+      <dl className="mt-5 pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 m-0">
         <div>
           <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Certificate ID</dt>
           <dd className="m-0 font-mono text-[14px] md:text-[15px] tracking-[0.06em] text-ink break-all">
@@ -179,12 +179,12 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
 
 /** Graceful copy for a Certificate ID in neither ledger — never an error tone. */
 const UnlistedNote = () => (
-  <div className="border border-line bg-bg-soft/20 px-6 py-8 sm:px-9 sm:py-9">
+  <div className="border border-line bg-bg-soft/20 px-6 py-6 sm:px-9 sm:py-7">
     <div className="flex items-center gap-4 border-b border-line pb-4">
       <span className={EYEBROW_MUTED}>Not found in the Estate Registry</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
-    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-soft text-pretty m-0 mt-5 max-w-[58ch]">
+    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.6] text-ink-soft text-pretty m-0 mt-4 max-w-[72ch]">
       The Estate Registry records prints issued from June 2026 onward. For an
       earlier or unlisted Certificate ID, write to{" "}
       <a
@@ -201,12 +201,12 @@ const UnlistedNote = () => (
 /** Transient registry/network failure — kept DISTINCT from a genuine miss so a
  *  real certificate is never reported invalid during a blip. Invites a retry. */
 const UnavailableNote = () => (
-  <div className="border border-line bg-bg-soft/20 px-6 py-8 sm:px-9 sm:py-9">
+  <div className="border border-line bg-bg-soft/20 px-6 py-6 sm:px-9 sm:py-7">
     <div className="flex items-center gap-4 border-b border-line pb-4">
       <span className={EYEBROW_MUTED}>Registry temporarily unavailable</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
-    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.7] text-ink-soft text-pretty m-0 mt-5 max-w-[58ch]">
+    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.6] text-ink-soft text-pretty m-0 mt-4 max-w-[72ch]">
       We couldn&rsquo;t reach the Estate Registry just now. Please try again in a
       moment — your certificate may well be valid. If it persists, write to{" "}
       <a
@@ -302,7 +302,7 @@ export const Auth = () => {
         canonical="/auth"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 pb-10 md:pb-14">
         <Reveal as="div">
           <PageMasthead
             eyebrow="Authentication"
@@ -311,7 +311,7 @@ export const Auth = () => {
           />
         </Reveal>
 
-        <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start border-t border-line pt-6 md:pt-8">
+        <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start border-t border-line pt-5 md:pt-6">
           <Reveal as="div" className="lg:col-span-7 3xl:col-span-8">
             <form onSubmit={handleSubmit} noValidate>
               <span className={cn(EYEBROW, "block mb-3")}>Certificate ID</span>
@@ -337,7 +337,7 @@ export const Auth = () => {
                 </button>
               </div>
 
-              <div aria-live="polite" className="mt-6 md:mt-8 empty:mt-0">
+              <div aria-live="polite" className="mt-5 md:mt-6 empty:mt-0">
                 {result.state === "loading" ? (
                   <p className={cn(META, "m-0")}>Searching the Estate Registry…</p>
                 ) : null}
@@ -350,11 +350,11 @@ export const Auth = () => {
 
           <Reveal as="div" delay={0.06} className="lg:col-span-5 3xl:col-span-4">
             <p
-              className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch]"
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[44ch]"
               style={{
                 fontVariationSettings: '"opsz" 32, "wght" 400',
                 fontSize: "clamp(20px, 2.2vw, 30px)",
-                lineHeight: 1.3,
+                lineHeight: 1.28,
               }}
             >
               The Estate Registry is the estate&rsquo;s record of every print
@@ -364,12 +364,12 @@ export const Auth = () => {
           </Reveal>
         </div>
 
-        <section className="mt-9 md:mt-12">
-          <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
+        <section className="mt-7 md:mt-9">
+          <div className="flex items-center gap-4 md:gap-6 mb-5 md:mb-6">
             <span className={EYEBROW_MUTED}>What every certificate carries</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </div>
-          <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-10 gap-y-8">
+          <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6">
             {AUTH_FACTS.map((fact) => (
               <div key={fact.label} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>{fact.label}</p>

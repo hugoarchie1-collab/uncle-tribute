@@ -108,12 +108,12 @@ export const Trade = () => {
       />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-10">
         {/* ── MASTHEAD ── The refined shared front cover: meta rule (eyebrow +
             "By introduction") → a composed Fraunces display title (wght 560,
             opsz 144 — never the old bold logo) → the framing passage packed
             immediately beneath under a border-t, no floating gap. */}
-        <Reveal as="div" className="pb-6 md:pb-8">
+        <Reveal as="div" className="pb-4 md:pb-5">
           <PageMasthead
             eyebrow="Trade & Interior Design"
             meta="By introduction"
@@ -123,19 +123,19 @@ export const Trade = () => {
               </>
             }
           >
-            <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-5 md:pt-6">
-              <Reveal as="div" className="lg:col-span-4">
+            <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-3 items-start border-t border-line pt-4 md:pt-5">
+              <Reveal as="div" className="lg:col-span-3">
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
                   The estate of Stephen Meakin · SEM
                 </p>
               </Reveal>
-              <Reveal as="div" delay={0.06} className="lg:col-span-8">
+              <Reveal as="div" delay={0.06} className="lg:col-span-9">
                 <p
                   className="font-display font-normal tracking-[-0.01em] text-ink m-0"
                   style={{
                     fontVariationSettings: '"opsz" 32, "wght" 400',
                     fontSize: "clamp(21px, 2.5vw, 34px)",
-                    lineHeight: 1.32,
+                    lineHeight: 1.26,
                   }}
                 >
                   The estate works directly with interior designers, art
@@ -155,8 +155,8 @@ export const Trade = () => {
             each opening with a big ghost numeral + hairline so they read as
             composed plates rather than an endless scroll. Verbatim body copy
             unchanged. */}
-        <section className="py-7 md:py-10">
-          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+        <section className="py-5 md:py-7">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
             <p className={cn(EYEBROW, "m-0")}>How the estate works with projects</p>
             <p className={cn(EYEBROW_MUTED, "m-0")}>Three ways in</p>
           </Reveal>
@@ -182,13 +182,13 @@ export const Trade = () => {
                     {item.eyebrow}
                   </span>
                 </div>
-                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-5 text-[clamp(23px,2.6vw,40px)] leading-[1.12]">
+                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-3.5 text-[clamp(23px,2.6vw,40px)] leading-[1.1]">
                   {item.title}
                 </h2>
                 <div
                   className={cn(
                     SUBTITLE,
-                    "max-w-none mt-5 md:mt-6 !text-[clamp(17px,0.55vw_+_13.5px,23px)] !leading-[1.72]",
+                    "max-w-none mt-3.5 md:mt-4 !text-[clamp(17px,0.55vw_+_13.5px,23px)] !leading-[1.6]",
                   )}
                 >
                   {item.body}
@@ -203,10 +203,10 @@ export const Trade = () => {
             and the direct-email fallback on the right. Commerce-free — opens
             the shared EnquireModal; quiet /contact + mailto paths preserved
             byte-for-byte. */}
-        <section className="py-7 md:py-10">
-          <Reveal as="div" className="border-t border-line pt-5 md:pt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-end">
+        <section className="py-5 md:py-7">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-end">
             <div className="lg:col-span-7">
-              <p className={cn(EYEBROW, "m-0 mb-5")}>Start a project</p>
+              <p className={cn(EYEBROW, "m-0 mb-3.5")}>Start a project</p>
               <h2
                 className="font-display tracking-[-0.018em] text-balance text-ink m-0 leading-[1.0]"
                 style={{
@@ -219,7 +219,7 @@ export const Trade = () => {
               >
                 Make a trade enquiry.
               </h2>
-              <p className={cn(SUBTITLE, "max-w-none mt-5 md:mt-6 !text-[clamp(18px,0.6vw_+_14.4px,25px)] !leading-[1.7]")}>
+              <p className={cn(SUBTITLE, "max-w-none mt-3.5 md:mt-4 !text-[clamp(18px,0.6vw_+_14.4px,25px)] !leading-[1.55]")}>
                 Tell us about the project — the spaces, the scale, and whether
                 you are after editions, framing or a bespoke commission. We
                 will reply personally, usually within a day or two, with
@@ -247,7 +247,7 @@ export const Trade = () => {
                   <span aria-hidden="true" className="ml-1.5">→</span>
                 </Link>
               </div>
-              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-muted mt-6 m-0 break-words">
+              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-muted mt-4 m-0 break-words">
                 Or write directly to{" "}
                 <a
                   href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"

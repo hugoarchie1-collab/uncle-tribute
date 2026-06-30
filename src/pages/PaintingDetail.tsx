@@ -437,7 +437,7 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
   }
 
   return (
-    <div className="mb-8">
+    <div className="mb-5">
       {!open ? (
         <button
           type="button"
@@ -1291,13 +1291,13 @@ const BuyBox = ({
       >
         {painting.title}
       </h1>
-      <p className="font-sans text-[15px] tracking-[0.01em] text-ink m-0 mb-7">
+      <p className="font-sans text-[15px] tracking-[0.01em] text-ink m-0 mb-5">
         Stephen Meakin <span className="text-ink-muted">· 1966&ndash;2021</span>
       </p>
 
       {/* 2 · KEY FACTS — a legible wall-label spec table: one value size + tone,
           11px cap-labels baseline-aligned to the value, generous row rhythm. */}
-      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 m-0 mb-3">
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 m-0 mb-2">
         {painting.year !== "[ DATE ]" && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Date</dt>
@@ -1330,7 +1330,7 @@ const BuyBox = ({
           under the provenance fact it relates to. */}
       <RegisterOriginalInterest paintingId={painting.id} />
 
-      <Separator className="bg-line mb-6" />
+      <Separator className="bg-line mb-5" />
 
       {/* #order-print anchor + sentinel — StickyAddBar's IntersectionObserver
           tracks this element, so it must stay with the buy controls. */}
@@ -1361,10 +1361,10 @@ const BuyBox = ({
         {/* Free delivery — quiet sentence-case reassurance beside the price (was
             a third stacked all-caps eyebrow). Mirrors the £0 rate api/checkout.ts
             charges in every region; framed or unframed (mirror invariant #9). */}
-        <p className={cn(META, "m-0 mb-6")}>Free delivery worldwide.</p>
+        <p className={cn(META, "m-0 mb-4")}>Free delivery worldwide.</p>
 
         {/* Dimension chip — instant size reassurance, updates with the tier. */}
-        <div className="mb-6">
+        <div className="mb-5">
           <DimensionChip tier={selectedTier} />
         </div>
 
@@ -1401,7 +1401,7 @@ const BuyBox = ({
         />
 
         {/* 5 · COLOURWAYS — high in the column, easy to reach */}
-        <div className="mt-7">
+        <div className="mt-6">
           <Colourways
             availableColourways={availableColourways}
             selected={selected}
@@ -1417,7 +1417,7 @@ const BuyBox = ({
             Stripe charge by construction. The complete-set 12% the checkout
             applies to an all-one-painting basket is size-independent. */}
         {colourwaySet && (
-          <div className={cn("mt-8", CARD)}>
+          <div className={cn("mt-6", CARD)}>
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5")}>The complete colourway set</p>
             <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink-muted m-0 mb-4">
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
@@ -1495,13 +1495,13 @@ const BuyBox = ({
             flow to addItem / Buy-now unchanged — only the placement +
             presentation moved. */}
         {showAddOns && (
-          <fieldset className={cn("border-0 m-0 mt-8", CARD)}>
+          <fieldset className={cn("border-0 m-0 mt-6", CARD)}>
             <legend className="float-none p-0 mb-2.5 w-full">
               <span className={cn(EYEBROW_MUTED, "block")}>
                 Finish your piece
               </span>
             </legend>
-            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink/70 m-0 mb-5">
+            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.55] text-ink/70 m-0 mb-4">
               Take it further than the print alone — framed ready to hang, or
               hand-finished by the estate. Both are optional and made to order.
             </p>
@@ -1684,7 +1684,7 @@ const BuyBox = ({
         {/* 7 · CTAs — one dominant action with a quiet ghost beneath (the Aesop
             "single confident action" pattern), full-width so they never wrap
             awkwardly in the narrow column. */}
-        <div className="flex flex-col gap-3 mt-8">
+        <div className="flex flex-col gap-3 mt-6">
           <button
             type="button"
             onClick={onAdd}
@@ -1760,9 +1760,9 @@ const BuyBox = ({
             copy from single-source ESTATE_AUTHENTICATION (inside the card).
             Full provenance + shipping detail live in the ProvenancePanel
             below the Story so the buy box stays tight. */}
-        <Separator className="bg-line mt-8 mb-6" />
+        <Separator className="bg-line mt-6 mb-5" />
         <AuthenticationCard />
-        <div className="mt-5">
+        <div className="mt-4">
           <ReassuranceRow />
         </div>
         <EnquireModal
@@ -1815,9 +1815,9 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-16 md:mt-20"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-10 md:mt-12"
     >
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ?? "the estate"}
       </p>
       <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-5 md:gap-8">
@@ -1882,10 +1882,10 @@ const Story = ({ painting }: { painting: Painting }) => (
             page's bold prose header. COPY IS VERBATIM from paintings.ts
             (painting.artistQuote), never re-typed. */}
         <div aria-hidden className="h-px w-full bg-line" />
-        <p className={cn(EYEBROW_MUTED, "m-0 mt-5 mb-5")}>In Stephen&rsquo;s words</p>
+        <p className={cn(EYEBROW_MUTED, "m-0 mt-4 mb-4")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3vw,48px)] leading-[1.26] text-ink m-0 mb-4 text-balance"
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3vw,48px)] leading-[1.18] text-ink m-0 mb-3 text-balance"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
           >
             &ldquo;{painting.artistQuote}&rdquo;
@@ -1898,14 +1898,15 @@ const Story = ({ painting }: { painting: Painting }) => (
     {/* TWO-COLUMN EDITORIAL SPREAD — description (primary, left) + estate spec
         aside (right) share one axis and fill the width on lg+. The aside is
         sticky so the eye keeps it while the longer prose scrolls; the grid
-        columns are balanced (1.55fr ↔ 1fr) so neither reads half-empty. */}
-    <div className="mt-9 md:mt-12 grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-12 items-start">
-      {/* PRIMARY — the painting's own words (verbatim description). Capped at a
-          comfortable measure so the line length stays readable even as the
-          column widens. */}
+        columns are balanced (1.7fr ↔ 1fr) so the prose fills the width and
+        runs SHORTER vertically. */}
+    <div className="mt-6 md:mt-7 grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-x-10 xl:gap-x-14 gap-y-8 items-start">
+      {/* PRIMARY — the painting's own words (verbatim description). Wider
+          measure (80ch) so the prose fills the column and the block is shorter
+          vertically; tightened paragraph rhythm + leading. */}
       <Reveal
         as="div"
-        className="max-w-[68ch] flex flex-col gap-5 md:gap-6 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.8] text-ink/85"
+        className="max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink/85"
       >
         {painting.description.split("\n\n").map((para, i) => (
           <p key={i} className="m-0">{para}</p>
@@ -1917,20 +1918,20 @@ const Story = ({ painting }: { painting: Painting }) => (
           reads as authored, not as leftover empty space. Sticky on lg+. */}
       <Reveal
         as="section"
-        className="lg:sticky lg:top-[88px] ring-1 ring-line px-6 py-7 md:px-7 md:py-8"
+        className="lg:sticky lg:top-[80px] ring-1 ring-line px-6 py-6 md:px-7 md:py-6"
       >
         {/* HOW EACH ORDER ARRIVES — Hugo's presentation note. Made to order,
             hand-rolled by Point 101, sealed with the wax-seal sticker, posted
             with a printed catalogue. printer line reuses
             ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>How each order arrives</p>
-        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.7] text-ink/90 m-0 mb-6">
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
+        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.6] text-ink/90 m-0 mb-4">
           Every print is made to order &mdash; never warehoused. When your order
           is placed it is hand-rolled and prepared by Point&nbsp;101 in London,
           the United Kingdom&rsquo;s leading giclée atelier, the same studio
           Stephen trusted with his own work. It is packed to be opened slowly.
         </p>
-        <dl className="grid grid-cols-1 gap-y-4 m-0 border-t border-line pt-5">
+        <dl className="grid grid-cols-1 gap-y-3 m-0 border-t border-line pt-4">
           <div>
             <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
             <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
@@ -1954,9 +1955,9 @@ const Story = ({ painting }: { painting: Painting }) => (
           </div>
         </dl>
 
-        <Separator className="bg-line my-7" />
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-3.5")}>Original print</p>
-        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.7] text-ink/85 m-0">
+        <Separator className="bg-line my-5" />
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Original print</p>
+        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.6] text-ink/85 m-0">
           {ORIGINAL_PRINT_SPEC}
         </p>
       </Reveal>
@@ -2543,7 +2544,7 @@ export const PaintingDetail = () => {
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
-          <div className="flex items-center justify-between gap-4 mb-5 md:mb-6">
+          <div className="flex items-center justify-between gap-4 mb-4 md:mb-5">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
               className="font-sans text-[12px] md:text-[13px] font-semibold tracking-[0.04em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
@@ -2569,7 +2570,7 @@ export const PaintingDetail = () => {
               (right) on lg+. On mobile this collapses to a single column:
               image first, then the buy box (so buyers reach the controls
               quickly, before the story). */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_minmax(380px,1fr)] gap-6 lg:gap-10 xl:gap-14 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_minmax(380px,1fr)] gap-5 lg:gap-10 xl:gap-12 items-start">
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[72px]">
@@ -2731,8 +2732,8 @@ export const PaintingDetail = () => {
               as the hero/page so the editorial spread fills the width instead
               of collapsing to a narrow column. Read after the buyer has seen
               the price + options. */}
-          <div className="mt-12 md:mt-14">
-            <Separator className="bg-line mb-8 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
+          <div className="mt-9 md:mt-10">
+            <Separator className="bg-line mb-6 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

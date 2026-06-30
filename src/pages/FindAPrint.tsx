@@ -183,15 +183,15 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-8 md:pb-12">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
             reading measure (mx-auto) so the top of the page reads as one calm
             axis-centred block over the rainbow-wave scene. Verbatim copy unchanged;
             only the framing moves. */}
-        <section className="mx-auto w-full max-w-[1120px] 3xl:max-w-[1300px] text-center">
-          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+        <section className="mx-auto w-full max-w-[1280px] 3xl:max-w-[1460px] text-center">
+          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
             <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               For you · Where to begin
@@ -199,7 +199,7 @@ export const FindAPrint = () => {
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </Reveal>
 
-          <Reveal as="div" className="mt-5 md:mt-7">
+          <Reveal as="div" className="mt-4 md:mt-5">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}
@@ -213,10 +213,10 @@ export const FindAPrint = () => {
               clear, generous step below the headline (canonical heading→subtitle
               gap), under a hairline. Sized in proportion to the masthead as a true
               lead, not a caption. The verbatim copy is unchanged. */}
-          <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
+          <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
             <Reveal as="div">
               <p
-                className="mx-auto max-w-[68ch] font-sans font-normal text-[18px] md:text-[clamp(19px,1.1vw,25px)] leading-[1.7] text-ink/85 text-pretty m-0"
+                className="mx-auto max-w-[88ch] font-sans font-normal text-[17px] md:text-[clamp(18px,1.05vw,23px)] leading-[1.6] text-ink/85 text-pretty m-0"
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
@@ -240,14 +240,14 @@ export const FindAPrint = () => {
               sits above a centred swatch row, with the live count + reset
               centred below (no off-axis justify-between row, no big gap before
               the grid). */}
-          <Reveal as="div" className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
+          <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The colour lens
             </p>
             <div
               role="group"
               aria-label="Filter by colour"
-              className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+              className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
             >
               {COLOUR_FAMILIES.map((f) => {
                 const on = active.has(f.key);
@@ -281,14 +281,14 @@ export const FindAPrint = () => {
           {/* Intention lens — a meaning-led way in, sitting beside the colour
               lens. Each chip maps to the paintings whose own documented meaning
               carries that intention (INTENTIONS, above). */}
-          <Reveal as="div" className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
+          <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The intention lens
             </p>
             <div
               role="group"
               aria-label="Filter by intention"
-              className="mt-4 md:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+              className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
             >
               {INTENTIONS.map((it) => {
                 const on = intent.has(it.key);
@@ -312,7 +312,7 @@ export const FindAPrint = () => {
           </Reveal>
 
           {/* Live count + reset — reflects BOTH lenses (colour ∩ intention). */}
-          <Reveal as="div" className="mt-5 flex flex-wrap items-center justify-center gap-4">
+          <Reveal as="div" className="mt-4 flex flex-wrap items-center justify-center gap-4">
             <p
               role="status"
               aria-live="polite"
@@ -344,15 +344,15 @@ export const FindAPrint = () => {
             scene (it drifts ±6% across the whole page, no per-section fade). The
             grid sits tight under the masthead's hairline — no min-h spacer, no
             big gap — so the page reads as one dense editorial block. */}
-        <section className="mt-8 md:mt-10">
+        <section className="mt-6 md:mt-8">
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of
             floating centred with dead gutters. auto-fill + minmax keeps the old
             ≈1/2/3-up cadence; a partial last row left-aligns under the title
             rather than orphaning to the centre. */}
         <div
-          className="grid gap-x-5 md:gap-x-7 gap-y-8 md:gap-y-10"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, clamp(300px, 23vw, 380px)), 1fr))" }}
+          className="grid gap-x-5 md:gap-x-6 gap-y-6 md:gap-y-8"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, clamp(260px, 20vw, 340px)), 1fr))" }}
         >
           {filtered.map(({ painting, cover }) => (
             <figure
@@ -374,7 +374,7 @@ export const FindAPrint = () => {
                     />
                   </div>
                 </div>
-                <figcaption className="pt-4 md:pt-5">
+                <figcaption className="pt-3 md:pt-4">
                   <h2
                     className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}

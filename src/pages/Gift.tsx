@@ -183,7 +183,7 @@ export const Gift = () => {
           measure as Collections + About, so /gift sits on the one centred
           vertical axis the rest of the site shares (Hugo: "nothing is centred
           properly"). */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-8 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-10">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             The refined shared <PageMasthead>: eyebrow + hairline meta rule →
             a composed Fraunces statement (wght 560, one italic emphasis word,
@@ -191,7 +191,7 @@ export const Gift = () => {
             The denomination range is surfaced in the meta row as a quiet
             commerce fact (figures read LIVE from GIFT_MIN/MAX_PENCE in the
             buyer's currency — never re-typed). */}
-        <Reveal className="mb-6 md:mb-8">
+        <Reveal className="mb-5 md:mb-6">
           <PageMasthead
             eyebrow="Gift an edition"
             meta={
@@ -212,13 +212,13 @@ export const Gift = () => {
                 stranded beside a full block. The statement now fills the page
                 axis edge-to-edge; the caption + reassurance share an even
                 two-up row, neither half-empty. */}
-            <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
+            <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
               <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch] lg:max-w-[42ch] 2xl:max-w-[46ch]"
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[58ch] lg:max-w-[68ch] 2xl:max-w-[76ch]"
                 style={{
                   fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(21px, 2.6vw, 40px)",
-                  lineHeight: 1.3,
+                  fontSize: "clamp(20px, 2.2vw, 34px)",
+                  lineHeight: 1.28,
                 }}
               >
                 A gift towards any estate-stamped print of Stephen Meakin's
@@ -226,7 +226,7 @@ export const Gift = () => {
                 set your own — add a few words if you wish, and let the person
                 you're thinking of choose the work that speaks to them.
               </p>
-              <div className="mt-5 md:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-10 2xl:gap-x-16 gap-y-3 border-t border-line pt-4 md:pt-5">
+              <div className="mt-4 md:mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-10 2xl:gap-x-16 gap-y-3 border-t border-line pt-3 md:pt-4">
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7]")}>
                   A digital gift card · redeemed against any edition
                 </p>
@@ -245,8 +245,8 @@ export const Gift = () => {
           // narrow 64ch column with a wide empty right margin). The eyebrow now
           // sits above the statement on the same centred axis; the headline
           // fills a confident measure toward the envelope edges.
-          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-6 md:py-10">
-            <p className={cn(EYEBROW, "m-0 mb-5 md:mb-6")}>In your basket</p>
+          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-5 md:py-8">
+            <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")}>In your basket</p>
             <p
               className="font-display font-semibold tracking-[-0.025em] text-[clamp(32px,5.4vw,84px)] leading-[1.04] text-ink m-0 max-w-[18ch] mx-auto text-balance"
               style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
@@ -257,11 +257,11 @@ export const Gift = () => {
               </span>{" "}
               is in your basket.
             </p>
-            <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.65] text-ink-muted m-0 mt-6 md:mt-7 max-w-[58ch] mx-auto">
+            <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.6] text-ink-muted m-0 mt-5 md:mt-6 max-w-[64ch] mx-auto">
               The amount you see is exactly what you'll pay — nothing is added
               at checkout. You can add another, or proceed when you're ready.
             </p>
-            <div className="mt-7 md:mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
+            <div className="mt-6 md:mt-7 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4">
               <Link to="/basket" className={BTN_PRIMARY}>
                 Go to basket
                 <span aria-hidden="true" className="ml-2">→</span>
@@ -282,10 +282,10 @@ export const Gift = () => {
           // optional recipient details + a sticky "your gift" summary. Section
           // headings carry a numeral so the two acts read as a deliberate
           // sequence, not a stack of separators floating in air.
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-8 md:gap-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-6 md:gap-y-8">
             {/* ACT 01 — Choose an amount (the denser denomination grid) */}
             <Reveal as="section" className="lg:col-span-7">
-              <div className="flex items-baseline gap-3 border-t border-line pt-4 mb-5 md:mb-6">
+              <div className="flex items-baseline gap-3 border-t border-line pt-3 mb-3 md:mb-4">
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
@@ -307,19 +307,19 @@ export const Gift = () => {
                       }}
                       aria-pressed={isSelected}
                       className={cn(
-                        "group text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300",
+                        "group text-left rounded-2xl px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
                           ? "bg-ink/[0.06] ring-accent ring-2"
                           : "bg-bg-soft ring-line hover:ring-ink/40",
                       )}
                     >
-                      <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
+                      <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
                         {d.sizeShort} · {d.label}
                       </span>
                       <span
                         className={cn(
-                          "font-display font-semibold tracking-[-0.025em] text-[clamp(30px,3.6vw,56px)] leading-none block",
+                          "font-display font-semibold tracking-[-0.025em] text-[clamp(28px,3.2vw,48px)] leading-none block",
                           isSelected ? "text-accent" : "text-ink",
                         )}
                       >
@@ -339,14 +339,14 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 transition-all duration-300 bg-bg-soft col-span-2 3xl:col-span-4",
+                    "text-left rounded-2xl px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft col-span-2 3xl:col-span-4",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"
                       : "ring-line hover:ring-ink/40",
                   )}
                 >
-                  <span className={cn(EYEBROW_MUTED, "block m-0 mb-2")}>
+                  <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
                     Custom amount
                   </span>
                   <span className="font-sans font-normal text-[clamp(14px,0.85vw,18px)] text-ink-muted">
@@ -389,7 +389,7 @@ export const Gift = () => {
 
               {/* Recipient + message (all optional) — packed directly under
                   the ladder so the left rail reads as one continuous act. */}
-              <div className="flex items-baseline gap-3 border-t border-line pt-4 mt-6 md:mt-8 mb-5 md:mb-6">
+              <div className="flex items-baseline gap-3 border-t border-line pt-3 mt-5 md:mt-6 mb-3 md:mb-4">
                 <span className={cn(EYEBROW, "shrink-0")}>02</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>
                   For someone in particular?{" "}
@@ -433,7 +433,7 @@ export const Gift = () => {
                 </span>
                 <textarea
                   name="giftMessage"
-                  rows={4}
+                  rows={3}
                   value={giftMessage}
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={400}
@@ -441,7 +441,7 @@ export const Gift = () => {
                   placeholder="A few words to go with the gift."
                 />
               </label>
-              <p className="font-sans font-normal text-[clamp(12.5px,0.7vw,15px)] leading-[1.55] text-ink-muted m-0 mt-2.5 max-w-[56ch]">
+              <p className="font-sans font-normal text-[clamp(12.5px,0.7vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2 max-w-[72ch]">
                 Leave these blank to gift the card to yourself to pass on by
                 hand. The amount is charged at checkout exactly as shown — there
                 is no delivery cost on a gift card.

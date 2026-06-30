@@ -183,7 +183,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav overlay />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-10">
         {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
             rule, then "Write to the family" set in the refined shared masthead
             cut (MASTHEAD_TITLE_STYLE — Fraunces opsz 144 / wght 560, one italic
@@ -205,7 +205,7 @@ export const Contact = () => {
             </span>
           </Reveal>
 
-          <Reveal as="div" className="mt-5 md:mt-7">
+          <Reveal as="div" className="mt-4 md:mt-5">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty"
               style={{
@@ -218,7 +218,7 @@ export const Contact = () => {
             </h1>
           </Reveal>
 
-          <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-5 md:pt-6">
+          <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-3 items-start border-t border-line pt-4 md:pt-5">
             <Reveal as="div" className="lg:col-span-3">
               <p
                 className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -229,7 +229,7 @@ export const Contact = () => {
             </Reveal>
             <Reveal as="div" delay={0.06} className="lg:col-span-9">
               <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[26ch] 3xl:max-w-[30ch]"
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[40ch] 3xl:max-w-[46ch]"
                 style={{
                   fontVariationSettings: '"opsz" 32, "wght" 400',
                   fontSize: "clamp(22px, 2.6vw, 42px)",
@@ -249,9 +249,9 @@ export const Contact = () => {
             line / our promise) sit packed in a hairline rail on the right, so
             neither flank is a centred void. On success the form is swapped for
             the thank-you region in the same left column. */}
-        <section className="mt-8 md:mt-10 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
+        <section className="mt-6 md:mt-7 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
           <Reveal as="div" className="lg:col-span-7">
-            <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+            <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               {status === "success" ? "Message sent" : "Send a message"}
             </p>
             {status === "success" ? (
@@ -303,7 +303,7 @@ export const Contact = () => {
                 {/* Each label is a focus-within `group`: the muted eyebrow above
                     a field eases to full ink while its input is focused — the
                     label answers the focus, not just the input ring. */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <label className="group block">
                     <span
                       className={cn(
@@ -344,7 +344,7 @@ export const Contact = () => {
                   </label>
                 </div>
 
-                <label className="group block mb-5">
+                <label className="group block mb-4">
                   <span
                     className={cn(
                       EYEBROW_MUTED,
@@ -357,7 +357,7 @@ export const Contact = () => {
                   <textarea
                     name="message"
                     required
-                    rows={8}
+                    rows={5}
                     className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-[rgba(237,230,214,0.16)] focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                     placeholder="A few lines about the work, or your enquiry."
                   />
@@ -373,7 +373,7 @@ export const Contact = () => {
                   </p>
                 )}
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-5">
                   <button
                     type="submit"
                     disabled={status === "submitting"}
@@ -414,12 +414,12 @@ export const Contact = () => {
               floats next to empty space. A hairline ledger of dt/dd facts:
               the direct line, the verbatim postal address, and the response
               promise. Drops below the form on a single column. */}
-          <Reveal as="div" delay={0.08} className="mt-8 lg:mt-0 lg:col-span-4 lg:col-start-9">
-            <p className={cn(EYEBROW, "m-0 mb-6 md:mb-7")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
+          <Reveal as="div" delay={0.08} className="mt-6 lg:mt-0 lg:col-span-4 lg:col-start-9">
+            <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               The estate
             </p>
             <dl className="m-0 lg:border-l lg:border-line lg:pl-7">
-              <div className="border-t border-line pt-4 pb-5">
+              <div className="border-t border-line pt-3 pb-4">
                 <dt
                   className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -436,7 +436,7 @@ export const Contact = () => {
                   </a>
                 </dd>
               </div>
-              <div className="border-t border-line pt-4 pb-5">
+              <div className="border-t border-line pt-3 pb-4">
                 <dt
                   className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -453,7 +453,7 @@ export const Contact = () => {
                   </address>
                 </dd>
               </div>
-              <div className="border-t border-b border-line pt-4 pb-5">
+              <div className="border-t border-b border-line pt-3 pb-4">
                 <dt
                   className={cn(EYEBROW_TIGHT, "m-0 mb-2")}
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}

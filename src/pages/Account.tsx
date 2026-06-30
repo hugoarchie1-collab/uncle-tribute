@@ -29,7 +29,7 @@ const formatDate = (iso: string | null): string => {
 };
 
 const OrderCard = ({ order }: { order: OrderRow }) => (
-  <div className="border border-line bg-bg-soft/20 px-5 py-5 sm:px-6 sm:py-6">
+  <div className="border border-line bg-bg-soft/20 px-5 py-4 sm:px-6 sm:py-5">
     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
       <p className={cn(META, "m-0")}>{formatDate(order.date)}</p>
       <p className="m-0 font-display font-semibold text-[18px] text-ink">{order.total}</p>
@@ -172,12 +172,12 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
           <img
             src={avatar}
             alt="Your profile picture"
-            className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-1 ring-line"
+            className="h-16 w-16 md:h-20 md:w-20 rounded-full object-cover ring-1 ring-line"
           />
         ) : (
           <div
             aria-hidden
-            className="h-20 w-20 md:h-24 md:w-24 rounded-full ring-1 ring-line bg-bg-soft/30 flex items-center justify-center font-display text-[28px] md:text-[32px] text-ink-muted"
+            className="h-16 w-16 md:h-20 md:w-20 rounded-full ring-1 ring-line bg-bg-soft/30 flex items-center justify-center font-display text-[28px] md:text-[32px] text-ink-muted"
           >
             {email?.trim()?.[0]?.toUpperCase() ?? "·"}
           </div>
@@ -260,9 +260,9 @@ export const Account = () => {
     <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
       <SceneBackdrop src="/img/scenes/account-greatwall-blurmod-v1.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
         <Reveal as="header">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
             <span className={EYEBROW}>Account</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
             {signedIn && (
@@ -276,31 +276,31 @@ export const Account = () => {
             )}
           </div>
           <h1
-            className="font-display text-ink m-0 mt-5 md:mt-7 text-balance text-pretty"
+            className="font-display text-ink m-0 mt-4 md:mt-5 text-balance text-pretty"
             style={MASTHEAD_TITLE_STYLE}
           >
             {signedIn ? "Your orders." : "Your account."}
           </h1>
         </Reveal>
 
-        <div className="mt-7 md:mt-9 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start border-t border-line pt-6 md:pt-8">
+        <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-start border-t border-line pt-5 md:pt-6">
           {/* LEFT — the action (sign-in form OR order history). */}
           <Reveal as="div" className="lg:col-span-7">
             {auth.status === "loading" ? (
               <p className={cn(META, "m-0")}>Checking your session…</p>
             ) : signedIn ? (
               <>
-                <p className="font-display font-normal italic text-[clamp(20px,2.4vw,30px)] leading-[1.3] text-ink m-0 mb-6">
+                <p className="font-display font-normal italic text-[clamp(20px,2.4vw,30px)] leading-[1.3] text-ink m-0 mb-4">
                   Welcome back — <span className="not-italic text-ink-soft">{auth.email}</span>
                 </p>
                 {auth.orders.length > 0 ? (
-                  <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {auth.orders.map((o) => (
                       <OrderCard key={o.ref} order={o} />
                     ))}
                   </div>
                 ) : (
-                  <p className="font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-soft m-0 max-w-[56ch]">
+                  <p className="font-sans text-[16px] md:text-[17px] leading-[1.6] text-ink-soft m-0 max-w-[64ch]">
                     No orders are linked to this email yet. When you order a print, it will appear
                     here. You can also{" "}
                     <Link to="/orders" className="underline underline-offset-4 hover:text-accent">
@@ -313,9 +313,9 @@ export const Account = () => {
             ) : (
               <>
                 {sent ? (
-                  <div className="border border-accent/30 bg-bg-soft/30 px-6 py-8 sm:px-8">
+                  <div className="border border-accent/30 bg-bg-soft/30 px-6 py-6 sm:px-8">
                     <span className={EYEBROW}>Check your inbox</span>
-                    <p className="font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-soft m-0 mt-4 max-w-[52ch]">
+                    <p className="font-sans text-[16px] md:text-[17px] leading-[1.6] text-ink-soft m-0 mt-3 max-w-[60ch]">
                       If an account exists for <span className="text-ink">{email}</span>, a secure
                       one-time sign-in link is on its way. It's valid for 15 minutes.
                     </p>
@@ -349,7 +349,7 @@ export const Account = () => {
                       </button>
                     </div>
                     {formError && <p className={cn(META, "m-0 mt-3 text-accent")}>{formError}</p>}
-                    <p className={cn(META, "m-0 mt-4 text-ink-muted max-w-[52ch]")}>
+                    <p className={cn(META, "m-0 mt-3 text-ink-muted max-w-[64ch]")}>
                       No password needed — we email you a secure one-time link. If you've ordered
                       before, your order history appears once you sign in.
                     </p>
@@ -366,12 +366,12 @@ export const Account = () => {
           <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
             <AvatarUploader email={signedIn ? auth.email : null} />
             <p
-              className="font-display font-normal tracking-[-0.01em] text-ink m-0 mt-8 md:mt-10 pt-7 md:pt-8 border-t border-line max-w-[34ch]"
-              style={{ fontVariationSettings: '"opsz" 32, "wght" 400', fontSize: "clamp(19px, 2.1vw, 28px)", lineHeight: 1.32 }}
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0 mt-6 md:mt-7 pt-5 md:pt-6 border-t border-line max-w-[40ch]"
+              style={{ fontVariationSettings: '"opsz" 32, "wght" 400', fontSize: "clamp(19px, 2.1vw, 28px)", lineHeight: 1.3 }}
             >
               Your account keeps your orders, certificates and provenance in one place.
             </p>
-            <ul className="list-none p-0 m-0 mt-6 flex flex-col gap-2.5">
+            <ul className="list-none p-0 m-0 mt-4 flex flex-col gap-2">
               <li>
                 <Link to="/orders" className={cn(META, "hover:text-accent transition-colors")}>
                   Orders &amp; returns →

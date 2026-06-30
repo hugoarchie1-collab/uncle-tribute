@@ -215,7 +215,7 @@ const SetSizeSelector = ({
   value: PrintTier;
   onChange: (tier: PrintTier) => void;
 }) => (
-  <div className="my-6 md:my-7 flex justify-center">
+  <div className="my-4 md:my-5 flex justify-center">
     <div
       role="radiogroup"
       aria-label="Choose the print size for this set — scroll across the sizes"
@@ -288,17 +288,17 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-4 md:mt-5 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
-        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center"
+        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
         <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
           The complete {shortName}
         </h3>
-        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[920px] 3xl:max-w-[1080px] mx-auto">
+        <p className="mt-3 md:mt-4 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.55] text-ink-muted my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto">
           All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
           edition ({sizeCode(tier)}) — the collection entire, for one home.
         </p>
@@ -310,7 +310,7 @@ const CollectionSetCard = ({
           <span className="mx-3 text-ink/35">·</span>
           the set, offered together
         </p>
-        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-7">
+        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-5">
           Taken individually, {fmtBundle(setFig.fullMinor)} — a saving of{" "}
           {fmtBundle(setFig.saveMinor)} as a set.
         </p>
@@ -372,17 +372,17 @@ const ComposeSetCard = () => {
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-4 md:mt-5 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
-        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-8 md:py-10 3xl:py-12 text-center"
+        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
         <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
           Build a wall of your own
         </h3>
-        <p className="mt-5 md:mt-6 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted my-0 max-w-[920px] 3xl:max-w-[1080px] mx-auto">
+        <p className="mt-3 md:mt-4 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.55] text-ink-muted my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto">
           Choose any two or more mandalas to hang together. The set saving builds
           as you add — 5% for two, 10% for three or more — applied automatically
           at checkout.
@@ -392,7 +392,7 @@ const ComposeSetCard = () => {
             commanding row at 3xl (the FooterCatalogue 10-up idiom) so the AOV
             builder fills its wide card instead of sitting as a half-empty
             contact-sheet; a clean 5×2 below. */}
-        <div className="mt-7 md:mt-8 grid grid-cols-3 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
+        <div className="mt-5 md:mt-6 grid grid-cols-3 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
             const cover =
               p.colourways.find((c) => c.isOriginal && c.available) ??
@@ -447,7 +447,7 @@ const ComposeSetCard = () => {
               <span className="mx-3 text-ink/35">·</span>
               {count} prints, {sizeCode(tier)}
             </p>
-            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-7">
+            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-5">
               Taken individually, {money(setFig.fullMinor)} — a saving of {money(setFig.saveMinor)} ({percent}%) as a set.
             </p>
             <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
@@ -492,23 +492,23 @@ const CatalogueSetCard = () => {
   return (
     <Reveal
       as="section"
-      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:pb-14"
+      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-6 md:pb-9"
     >
       <div
-        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-10 lg:py-12 3xl:py-12 text-center"
+        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
         <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>
           His life&rsquo;s work, in one collection.
         </h2>
-        <p className={cn(SUBTITLE, "mt-5 md:mt-6 max-w-[62ch] mx-auto my-0")}>
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 max-w-[74ch] mx-auto my-0")}>
           One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
           {catalogue.paintingCount} of Stephen&rsquo;s paintings: the entire,
           finite body of his work, gathered for one home.
         </p>
         <SetSizeSelector value={tier} onChange={setTier} />
-        <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-7">
+        <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-5">
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
             {fmtCatalogue(catFig.bundleMinor)}
           </span>
@@ -627,7 +627,7 @@ export const Collections = () => {
             name or count the collections, so it never goes stale. */}
         <Reveal
           as="div"
-          className={cn(PAGE_ENVELOPE, "relative pt-20 md:pt-24 pb-6 md:pb-8")}
+          className={cn(PAGE_ENVELOPE, "relative pt-16 md:pt-20 pb-4 md:pb-5")}
         >
           <PageMasthead
             eyebrow="Everything he finished"
@@ -651,7 +651,7 @@ export const Collections = () => {
                 the shared page envelope — no narrow centred column, no empty
                 side margins. AI framing only — Stephen's verbatim collection
                 descriptions are untouched below. */}
-            <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-2 gap-x-12 2xl:gap-x-16 gap-y-6 items-start border-t border-line pt-6 md:pt-7">
+            <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-2 gap-x-12 2xl:gap-x-16 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
               <p
                 className="font-display font-normal tracking-[-0.012em] text-ink m-0"
                 style={{
@@ -691,8 +691,8 @@ export const Collections = () => {
                 tiers above without a loud list. Every painting is offered across
                 these editions; the catalogue + collection sets below take the
                 size chosen in the calm control beneath. */}
-            <div className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-7">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-5 md:mb-6">
+            <div className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-4 md:mb-5">
                 <p
                   className={cn(EYEBROW, "m-0")}
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -721,7 +721,7 @@ export const Collections = () => {
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}
-                    className="border-r border-b border-line px-5 py-5 md:px-6 md:py-6 3xl:px-8 3xl:py-8"
+                    className="border-r border-b border-line px-5 py-4 md:px-6 md:py-5 3xl:px-8 3xl:py-6"
                   >
                     <p
                       className="font-display font-semibold tracking-[-0.015em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0"
@@ -761,8 +761,8 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className={cn(PAGE_ENVELOPE, "relative pt-3 md:pt-4 pb-9 md:pb-12")}>
-                <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-6 md:mb-8">
+              <div className={cn(PAGE_ENVELOPE, "relative pt-2 md:pt-3 pb-6 md:pb-8")}>
+                <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-4 md:mb-6">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -778,7 +778,7 @@ export const Collections = () => {
                     {coll.title}
                   </h2>
                   <div
-                    className={cn(SUBTITLE, "mt-5 md:mt-6 flex flex-col gap-4 max-w-[920px] 3xl:max-w-[1080px] mx-auto")}
+                    className={cn(SUBTITLE, "mt-3 md:mt-4 flex flex-col gap-3 max-w-[1040px] 3xl:max-w-[1200px] mx-auto")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -789,7 +789,7 @@ export const Collections = () => {
 
                 <RevealStagger
                   delay={0.05}
-                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-7 md:gap-y-8"
+                  className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6"
                 >
                   {items.map((painting) => {
                     const cover =
@@ -858,7 +858,7 @@ export const Collections = () => {
                               />
                             </div>
                           </div>
-                          <figcaption className="pt-5 md:pt-6 text-center">
+                          <figcaption className="pt-3 md:pt-4 text-center">
                             <h3
                               className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.015em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
@@ -910,7 +910,7 @@ export const Collections = () => {
         {/* Hairline divider so the two stacked set-cards read as TWO distinct
             offers, not one conjoined dark block (Hugo). */}
         <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
-          <div aria-hidden="true" className="h-px bg-ink/50 my-6 md:my-10" />
+          <div aria-hidden="true" className="h-px bg-ink/50 my-4 md:my-6" />
         </div>
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across

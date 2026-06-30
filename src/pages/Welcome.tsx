@@ -137,11 +137,24 @@ const CosmicInterlude = () => {
                 "radial-gradient(58% 58% at 50% 50%, rgba(201,120,68,0.12) 0%, rgba(9,7,13,0) 72%)",
             }}
           />
-          {/* Gallery mat — the outer frame. */}
-          <div className="relative overflow-hidden bg-[#0a0810] p-[5px] sm:p-[7px] md:p-[10px] ring-1 ring-line shadow-[0_40px_120px_-30px_rgba(0,0,0,0.85),0_0_70px_-18px_rgba(0,0,0,0.65)]">
+          {/* SOFT-EDGE plate (Hugo: the hard museum frame "looks out of place" —
+              soften it like the other images). The cream mat / hairline rings /
+              drop-shadow box are GONE; the cosmos plate now dissolves into the
+              page via a feathered edge-mask (the same melt the ImageReveal photos
+              use), so it sits IN the page rather than floating in a frame. The
+              warm outer glow + inner vignette stay. */}
+          <div className="relative overflow-hidden">
             {/* Inner plate — the cosmos itself, a cinematic 8:3 on desktop,
                 taller on phones so it fills the screen instead of letterboxing. */}
-            <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[8/3] overflow-hidden ring-1 ring-white/10 bg-[#06060a]">
+            <div
+              className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[8/3] overflow-hidden bg-[#06060a]"
+              style={{
+                WebkitMaskImage:
+                  "radial-gradient(118% 132% at 50% 50%, #000 58%, rgba(0,0,0,0.4) 82%, transparent 100%)",
+                maskImage:
+                  "radial-gradient(118% 132% at 50% 50%, #000 58%, rgba(0,0,0,0.4) 82%, transparent 100%)",
+              }}
+            >
               {near && (
                 <video
                   ref={videoRef}
@@ -582,7 +595,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-6 md:space-y-8">
+        <main className="relative isolate z-10 space-y-3 md:space-y-5">
           {/* 1 · HERO — Kaya-inspired composition:
               text LEFT (two-style headline, body, CTAs),
               image RIGHT, well-framed and uncropped. */}
@@ -605,13 +618,13 @@ export const Welcome = () => {
               pt-[12svh] md:pt-[15svh] opened a dark dead band between the film
               and the headline). A small uniform pad just keeps the type off the
               film edge. */}
-          <section className="relative isolate w-full overflow-hidden pt-6 md:pt-0">
+          <section className="relative isolate w-full overflow-hidden pt-4 md:pt-0">
             {/* DESKTOP/TABLET — image bleeding to the right edge. Reined in
                 2026-06-03 (Hugo: "images way too big, take up the entire
                 screen") — the parallel session's full-viewport bleed was the
                 screen-filling culprit; width + section height trimmed so it's
                 a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[54svh] w-[48%] lg:w-[46%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[46svh] w-[48%] lg:w-[46%]">
               {/* EVEN melt: the photo now feathers on ALL FOUR sides (was y-only,
                   which left a hard rectangular left/right edge). With edges="all"
                   the image dissolves into the page identically top, bottom, left
@@ -652,8 +665,8 @@ export const Welcome = () => {
                 the centring (no more clamp top-pad — that was fighting the old
                 dark band). */}
             <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-8 md:min-h-[50svh] md:pb-0"
-              style={{ paddingTop: "clamp(1.125rem, 4vw, 2.5rem)" }}
+              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-5 md:min-h-[44svh] md:pb-0"
+              style={{ paddingTop: "clamp(0.75rem, 3vw, 1.75rem)" }}
             >
               <Reveal as="div" className="relative w-full md:max-w-[46%] lg:max-w-[44%]">
                 {/* SOFT TEXT SCRIM — a gentle elliptical wash that pools just
@@ -745,8 +758,8 @@ export const Welcome = () => {
                 hard dark card. */}
             {/* Left-aligned to establish the RAIL the pull-quote below breaks
                 against (the section's one off-axis spine). */}
-            <Reveal as="header" className="mb-4 md:mb-6 text-left">
-              <p className={cn(EYEBROW, "m-0 mb-5")}>A reminder</p>
+            <Reveal as="header" className="mb-3 md:mb-4 text-left">
+              <p className={cn(EYEBROW, "m-0 mb-3")}>A reminder</p>
               {/* Illuminated opening CLAUSE — reminderLong[0]'s first sentence as
                   a large flush-left display lede (the rust drop-cap now
                   illuminates a whole clause), then the remainder of that SAME
@@ -754,11 +767,11 @@ export const Welcome = () => {
                   recipe (global.css, @supports initial-letter:2) scales for free.
                   Words untouched; the full paragraph still appears once, in order. */}
               <p
-                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[20ch] text-balance"
+                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[26ch] text-balance"
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 600',
-                  fontSize: "clamp(34px, 6vw, 76px)",
-                  lineHeight: 1.06,
+                  fontSize: "clamp(32px, 5.2vw, 64px)",
+                  lineHeight: 1.04,
                   textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
                 }}
               >
@@ -766,7 +779,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.85] text-ink-soft m-0 mt-5 md:mt-6 max-w-[54ch] text-pretty"
+                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.7] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -794,16 +807,16 @@ export const Welcome = () => {
                 never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
                 Hermès / Avant Arte asymmetric editorial scale — the missing
                 "wow", and the antidote to the centred-stack monotony.) */}
-            <Reveal delay={0.05} className="my-10 md:my-16 text-left">
+            <Reveal delay={0.05} className="my-6 md:my-9 text-left">
               <blockquote className="m-0 hero-text-shadow">
                 {/* Dominant tier — breaks LEFT, oversized, stacks 3-4 commanding
                     lines against the rail. opsz held at 48 (finale invariant). */}
                 <span
-                  className="block font-display font-semibold text-ink max-w-[16ch]"
+                  className="block font-display font-semibold text-ink max-w-[18ch]"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
-                    fontSize: "clamp(56px, 13vw, 168px)",
+                    fontSize: "clamp(50px, 10.5vw, 132px)",
                     letterSpacing: "-0.045em",
                     lineHeight: 0.92,
                   }}
@@ -855,7 +868,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.85] text-ink-soft m-0 mb-6 md:mb-8 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.6] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -873,8 +886,8 @@ export const Welcome = () => {
                 subordinate clause, the closing rust period the one accent note.
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
-            <Reveal delay={0.1} className="mt-10 md:mt-16 text-center">
-              <div aria-hidden="true" className="mx-auto mb-7 md:mb-10 h-px w-16 bg-ink/20" />
+            <Reveal delay={0.1} className="mt-6 md:mt-9 text-center">
+              <div aria-hidden="true" className="mx-auto mb-4 md:mb-6 h-px w-16 bg-ink/20" />
               <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
@@ -947,8 +960,8 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-6 md:min-h-[36svh] md:py-0">
-              <Reveal as="div" className="w-full md:max-w-[50%] lg:max-w-[46%]">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[30svh] md:py-0">
+              <Reveal as="div" className="w-full md:max-w-[52%] lg:max-w-[50%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-6 md:hidden max-w-[460px]">
                   <ImageReveal
@@ -964,10 +977,10 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink m-0 mb-4 md:mb-6 hero-text-shadow">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink m-0 mb-3 md:mb-4 hero-text-shadow">
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0">
+                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 m-0">
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -981,7 +994,7 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2] md:aspect-[2/1] 2xl:aspect-[21/9]"
+              aspect="aspect-[16/9] md:aspect-[5/2] 2xl:aspect-[3/1]"
               edges="y"
               parallax={0.06}
               objectPosition="center 62%"
@@ -994,11 +1007,11 @@ export const Welcome = () => {
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-4 md:mb-7">
-              <p className={cn(EYEBROW, "m-0 mb-4")}>
+            <Reveal as="div" className="text-center mb-4 md:mb-5">
+              <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -1006,7 +1019,7 @@ export const Welcome = () => {
                 big-lead-plus-satellites read as a glitched, uneven layout). All
                 six tiles are the SAME size in clean rows: 2-up on mobile, 3-up on
                 desktop (3×2). min-w-0 stops a long title token widening a column. */}
-            <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-8 md:gap-x-6 md:gap-y-10 mb-5 md:mb-9">
+            <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
@@ -1089,12 +1102,12 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-6 md:py-10 lg:py-12">
-              <Reveal as="div" className="text-center mb-5 md:mb-8">
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-7 lg:py-9">
+              <Reveal as="div" className="text-center mb-4 md:mb-6">
+                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 my-0 mt-5 md:mt-6 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
+                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1104,11 +1117,11 @@ export const Welcome = () => {
                   the 4:3 documentary source (sm+) trims only a sliver of ceiling
                   and foreground — the subjects + mandala are never touched, and
                   full 4:3 shows on phones. Clean feather, no box-shadow. */}
-              <Reveal as="figure" className="m-0 mb-5 md:mb-8">
+              <Reveal as="figure" className="m-0 mb-4 md:mb-6">
                 <ImageReveal
                   src="/img/about/02-painting-table.jpg"
                   alt="Stephen at his drafting table, drawing the underlying geometry"
-                  aspect="aspect-[4/3] sm:aspect-[3/2]"
+                  aspect="aspect-[3/2] sm:aspect-[2/1]"
                   edges="all"
                   parallax={0.08}
                   // Inside the max-w-[1320px]→[1720px] Craft panel, full panel
@@ -1126,11 +1139,11 @@ export const Welcome = () => {
                   intact (nothing deleted); the frosted panel chrome is Hugo's
                   standing choice, unchanged. */}
               <Reveal as="div" className="grid lg:grid-cols-12 gap-x-10 xl:gap-x-16 gap-y-8 lg:gap-y-0 items-start">
-                <div className="lg:col-span-7 flex flex-col gap-y-5 md:gap-y-6">
-                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                <div className="lg:col-span-7 flex flex-col gap-y-4 md:gap-y-5">
+                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.5] text-ink/85 m-0 max-w-[68ch]">
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 max-w-[62ch]">
+                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.5] text-ink/85 m-0 max-w-[68ch]">
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                 </div>
@@ -1160,11 +1173,11 @@ export const Welcome = () => {
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="text-center mb-5 md:mb-7">
-              <p className={cn(EYEBROW, "m-0 mb-4")}>
+            <Reveal as="div" className="text-center mb-4 md:mb-5">
+              <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1176,7 +1189,7 @@ export const Welcome = () => {
                 four generic grey cards. The Roman numeral is demoted to a small
                 accent index; the name is promoted into the Fraunces display
                 register; both name + rule warm to accent on hover. */}
-            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-10 md:gap-y-12 list-none p-0 mb-5 md:mb-8">
+            <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 mb-4 md:mb-6">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
                 { tag: "II", name: "Rose Windows", note: "The great cathedrals of medieval Europe" },
@@ -1192,7 +1205,7 @@ export const Welcome = () => {
                       rest (ink/15), warming to accent on hover. opsz held at 48. */}
                   <span
                     aria-hidden="true"
-                    className="block font-display text-[clamp(56px,6.5vw,118px)] leading-[0.85] tracking-[-0.02em] text-ink/15 group-hover:text-accent/40 transition-colors duration-500 select-none"
+                    className="block font-display text-[clamp(44px,5vw,88px)] leading-[0.85] tracking-[-0.02em] text-ink/15 group-hover:text-accent/40 transition-colors duration-500 select-none"
                     style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
                   >
                     {item.tag}
@@ -1211,7 +1224,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
+              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1228,25 +1241,25 @@ export const Welcome = () => {
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center">
-              <p className={cn(EYEBROW, "m-0 mb-5")}>
+              <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(44px,7vw,104px)] leading-[0.98] text-ink m-0 mb-5 text-balance hero-text-shadow">
+              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink m-0 mb-3 text-balance hero-text-shadow">
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
                   front instead of burying it in prose. */}
-              <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-6">
+              <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-4">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
-              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.65] text-ink/85 m-0 mx-auto max-w-[68ch]">
+              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 m-0 mx-auto max-w-[72ch]">
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
             {/* Archive photo is a low-res 641×353 original (no higher-res copy
                 exists) — display it near native width so it stays CRISP rather
                 than upscaled to ~1120px (soft). Smaller + sharper, no added gap. */}
-            <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto max-w-[520px] 2xl:max-w-[560px] 3xl:max-w-[600px]">
+            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto max-w-[520px] 2xl:max-w-[560px] 3xl:max-w-[600px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"

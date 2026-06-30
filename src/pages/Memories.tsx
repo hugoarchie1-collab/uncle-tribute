@@ -238,8 +238,8 @@ const CommentRow = ({
       className={cn(
         "group flex gap-[clamp(0.625rem,2vw,0.8rem)]",
         tile
-          ? "rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.3rem)] transition-colors duration-300 hover:ring-line-strong"
-          : "py-[clamp(0.7rem,2vw,0.95rem)]",
+          ? "rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(0.85rem,2vw,1.1rem)] transition-colors duration-300 hover:ring-line-strong"
+          : "py-[clamp(0.4rem,1.2vw,0.6rem)]",
       )}
     >
       {/* AVATAR GUTTER — the contributor's PUBLIC profile picture if they set
@@ -281,7 +281,7 @@ const CommentRow = ({
             <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
           ) : (
             paragraphs.map((p, i) => (
-              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-3")}>
+              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-2")}>
                 {p}
               </p>
             ))
@@ -753,9 +753,9 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-20 md:pt-24 pb-[clamp(2rem,3.5vw,3rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-16 md:pt-20 pb-[clamp(1.25rem,2.5vw,2rem)]">
     <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
-      <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
+      <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-2.5 md:pb-3">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span
           className={cn(EYEBROW, "shrink-0")}
@@ -768,7 +768,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </Reveal>
 
-      <Reveal as="div" className="mt-4 md:mt-6 w-full">
+      <Reveal as="div" className="mt-3 md:mt-4 w-full">
         <h1
           className="font-display text-ink m-0 text-balance"
           style={{
@@ -780,16 +780,16 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
         </h1>
       </Reveal>
 
-      <div className="mt-5 md:mt-6 w-full flex flex-col items-center border-t border-line pt-5 md:pt-6">
+      <div className="mt-3 md:mt-4 w-full flex flex-col items-center border-t border-line pt-3 md:pt-4">
         <Reveal as="div">
           <p
-            className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
+            className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.6]")}
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
             A wall, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[820px] 3xl:max-w-[960px]">
+        <Reveal as="div" delay={0.1} className="mx-auto max-w-[920px] 3xl:max-w-[1040px]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
@@ -803,7 +803,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             touched your life, add a memory below — the family reads every one.
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.12} className="mt-7 md:mt-8">
+        <Reveal as="div" delay={0.06} className="mt-4 md:mt-5">
           <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
             Share a memory <span aria-hidden="true" className="ml-2">→</span>
           </button>
@@ -893,14 +893,14 @@ export const Memories = () => {
             lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,2.75rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(1.5rem,3vw,2rem)]"
         >
           {/* a · PINNED artist comment — Stephen's own words lead the wall as a
               single wide feature row (its long letter folds; it would never
               tile cleanly in a column). Composer sits inline to its right on
               lg+ so the share affordance + the founding voice share one band —
               no separate full-width composer strip eating vertical air. */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-4 items-start border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-3 items-start border-b border-line pb-[clamp(0.75rem,1.5vw,1.1rem)]">
             <Reveal as="div" delay={0} className="lg:col-span-8">
               <CommentRow memory={ARTIST_MEMORY} pinned />
             </Reveal>
@@ -911,7 +911,7 @@ export const Memories = () => {
               <button
                 type="button"
                 onClick={() => setModalOpen(true)}
-                className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.25rem)] transition-colors hover:ring-line-strong"
+                className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(0.85rem,2vw,1.05rem)] transition-colors hover:ring-line-strong"
               >
                 <span
                   aria-hidden="true"
@@ -935,12 +935,12 @@ export const Memories = () => {
               card, and it carries too much weight to sit among the visitor
               tiles). Moved here from the About page at Hugo's direction; reads
               as her posted memory of Steve. Shown in full — never folded. */}
-          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.5rem)] border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
+          <Reveal as="div" className="mt-[clamp(0.75rem,1.5vw,1.1rem)] border-b border-line pb-[clamp(0.75rem,1.5vw,1.1rem)]">
             <CommentRow memory={FAMILY_TRIBUTE} />
           </Reveal>
 
           {/* b · quiet section eyebrow — a thread divider under the pinned band */}
-          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.25rem)] mb-[clamp(0.5rem,1.5vw,0.75rem)]">
+          <Reveal as="div" className="mt-[clamp(0.75rem,1.5vw,1rem)] mb-[clamp(0.375rem,1vw,0.6rem)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>
@@ -955,13 +955,13 @@ export const Memories = () => {
               is unchanged — only the row's surface (the `tile` variant) frames
               it inside the column. */}
           {hasVisitorMemories ? (
-            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 4xl:columns-5 gap-[clamp(0.75rem,2vw,1.25rem)] [column-fill:_balance]">
+            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 4xl:columns-5 gap-[clamp(0.625rem,1.4vw,0.9rem)] [column-fill:_balance]">
               {visitorMemories.map((memory, i) => (
                 <Reveal
                   key={memory.id}
                   as="div"
                   delay={Math.min(i * 0.04, 0.2)}
-                  className="mb-[clamp(0.75rem,2vw,1.25rem)] break-inside-avoid"
+                  className="mb-[clamp(0.625rem,1.4vw,0.9rem)] break-inside-avoid"
                 >
                   <CommentRow memory={memory} tile />
                 </Reveal>

@@ -211,11 +211,11 @@ const FaqMasthead = () => (
   // backdrop must never out-shout the text). Whole-element, not per-glyph, so
   // gotcha #2 (no SplitReveal blockiness) is not triggered.
   <section
-    className={cn(SECTION, "pt-14 md:pt-16 pb-5 md:pb-6")}
+    className={cn(SECTION, "pt-10 md:pt-12 pb-4 md:pb-4")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
-      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-3.5">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -225,7 +225,7 @@ const FaqMasthead = () => (
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
       </Reveal>
 
-      <Reveal as="div" className="mt-3 md:mt-4">
+      <Reveal as="div" className="mt-2.5 md:mt-3">
         <h1
           className="font-display text-ink m-0"
           style={{ ...MASTHEAD_TITLE_STYLE, fontSynthesis: "none" }}
@@ -234,15 +234,15 @@ const FaqMasthead = () => (
         </h1>
       </Reveal>
 
-      <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+      <div className="mt-3 md:mt-4 border-t border-line pt-3 md:pt-4">
         <Reveal as="div">
           <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
             Provenance · paper · editions · care
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6">
+        <Reveal as="div" delay={0.06} className="mt-3 md:mt-4">
           <p
-            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[54ch] 3xl:max-w-[60ch]"
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[72ch] 3xl:max-w-[80ch]"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
               fontSize: "clamp(21px, 2.5vw, 38px)",
@@ -330,18 +330,18 @@ export const FAQ = () => {
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
         <section
-          className={cn(SECTION, "pb-8 md:pb-10")}
+          className={cn(SECTION, "pb-6 md:pb-8")}
           style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
         >
           <Reveal
             as="div"
-            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-20 3xl:gap-x-28 gap-y-7 3xl:gap-y-9 border-t border-line"
+            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-16 3xl:gap-x-24 gap-y-0 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
                 aria-labelledby={`faq-q-${i}`}
-                className="relative flex flex-col pt-6 md:pt-7 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col pt-5 md:pt-6 pb-5 md:pb-6 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span
@@ -359,13 +359,13 @@ export const FAQ = () => {
                 <h2
                   id={`faq-q-${i}`}
                   className={cn(
-                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-3",
-                    "text-[clamp(23px,2.5vw,42px)] leading-[1.08]",
+                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-2",
+                    "text-[clamp(22px,2.2vw,36px)] leading-[1.06]",
                   )}
                 >
                   {qa.question}
                 </h2>
-                <div className={cn(SUBTITLE, "max-w-none mt-5 md:mt-6 !text-[clamp(18px,1.1vw,25px)] !leading-[1.7]")}>
+                <div className={cn(SUBTITLE, "max-w-none mt-3 md:mt-3.5 !text-[clamp(17px,1vw,22px)] !leading-[1.6]")}>
                   {qa.answer}
                 </div>
               </section>

@@ -130,7 +130,7 @@ const TypePill = ({ entry }: { entry: NewsEntry }) => (
 const EntryRow = ({ entry }: { entry: NewsEntry }) => {
   const ctaClass = cn(
     EYEBROW_TIGHT,
-    "mt-4 inline-flex items-center gap-1.5 rounded-sm transition-colors duration-300 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+    "mt-2.5 inline-flex items-center gap-1.5 rounded-sm transition-colors duration-300 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
   );
   // In-page #notify anchors use a native <a> so the browser scrolls to the
   // sign-up on the same route; real routes use the router <Link>.
@@ -150,7 +150,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
     ) : null;
 
   return (
-    <article className="group grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start py-5 md:py-6">
+    <article className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-8 items-start py-3.5 md:py-4">
       {/* DATE — human state line as a quiet left rail (top line on mobile). */}
       <p className={cn(EYEBROW_TIGHT, "m-0 md:col-span-3 md:pt-1")}>
         {entry.isoDate ? (
@@ -161,9 +161,9 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
       </p>
 
       {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
-      <div className="md:col-span-9 flex flex-col sm:flex-row gap-5 md:gap-7 items-start">
+      <div className="md:col-span-9 flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
         {isRelease(entry) && entry.cover ? (
-          <div className="shrink-0 w-[200px] sm:w-[280px] md:w-[340px] 3xl:w-[400px] 4xl:w-[460px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
+          <div className="shrink-0 w-[160px] sm:w-[220px] md:w-[260px] 3xl:w-[300px] 4xl:w-[340px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
             <AssetImage
               src={entry.cover}
               alt={entry.title}
@@ -177,15 +177,15 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
         <div className="min-w-0">
           <TypePill entry={entry} />
 
-          <h3 className="mt-3 mb-2 font-display font-semibold tracking-[-0.02em] text-[clamp(22px,2.8vw,40px)] leading-[1.1] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
+          <h3 className="mt-2 mb-1.5 font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,34px)] leading-[1.08] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
             {entry.title}
           </h3>
 
           {entry.location ? (
-            <p className={cn(EYEBROW_MUTED, "m-0 mb-2 tracking-[0.22em]")}>{entry.location}</p>
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5 tracking-[0.22em]")}>{entry.location}</p>
           ) : null}
 
-          <p className={cn(META, "m-0 max-w-[58ch] 3xl:max-w-[68ch] text-[clamp(14.5px,0.9vw,18px)]")}>{entry.summary}</p>
+          <p className={cn(META, "m-0 max-w-[72ch] 3xl:max-w-[84ch] text-[clamp(14.5px,0.9vw,18px)]")}>{entry.summary}</p>
 
           {cta}
         </div>
@@ -204,9 +204,9 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 // column beside a wide prose block. The verbatim Seo/description copy is
 // unchanged; this is page-framing microcopy only (the page owns its headings).
 const NewsMasthead = () => (
-  <section className="relative pt-8 md:pt-10 pb-7 md:pb-9">
+  <section className="relative pt-6 md:pt-7 pb-4 md:pb-5">
     <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
-      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
+      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW, "shrink-0")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
           The estate calendar
@@ -216,7 +216,7 @@ const NewsMasthead = () => (
         <span aria-hidden className="h-px flex-1 bg-ink/15 hidden sm:block" />
       </Reveal>
 
-      <Reveal as="div" className="mt-5 md:mt-7">
+      <Reveal as="div" className="mt-4 md:mt-5">
         <h1
           className="font-display text-ink m-0 text-balance"
           style={{
@@ -229,7 +229,7 @@ const NewsMasthead = () => (
         </h1>
       </Reveal>
 
-      <div className="mt-5 md:mt-6 border-t border-line pt-5 md:pt-6">
+      <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
         <Reveal as="div">
           <p
             className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -238,13 +238,13 @@ const NewsMasthead = () => (
             Collections &amp; singles · exhibitions · workshops · pop-up events
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-5 md:mt-6 mx-auto max-w-[56ch] 3xl:max-w-[62ch]">
+        <Reveal as="div" delay={0.06} className="mt-4 md:mt-5 mx-auto max-w-[68ch] 3xl:max-w-[76ch]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(20px, 2.2vw, 38px)",
-              lineHeight: 1.34,
+              fontSize: "clamp(19px, 1.9vw, 30px)",
+              lineHeight: 1.3,
               textShadow: "0 2px 14px rgba(0,0,0,0.7)",
             }}
           >
@@ -304,7 +304,7 @@ export const News = () => {
         url="/news"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-8 md:pb-10">
         {/* MASTHEAD — CENTRED front cover on the page's single axis (the
             FAQ/Memories recipe). Replaces the old left-aligned split that
             stranded a half-empty eyebrow column beside the prose block. */}
@@ -316,20 +316,20 @@ export const News = () => {
             paragraph stacked above a lonely panel. Everything here is announced
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <section className="border-t border-line pt-6 md:pt-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-8 items-stretch">
+          <section className="border-t border-line pt-5 md:pt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-6 items-stretch">
               {/* The programme note — estate voice, set as a designed lead that
                   fills its half of the spread (NOT a thin half-empty column). */}
               <Reveal as="div" className="lg:col-span-6 flex flex-col">
-                <h2 className={cn(EYEBROW, "m-0 mb-5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
+                <h2 className={cn(EYEBROW, "m-0 mb-3.5")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
                   Being prepared
                 </h2>
                 <p
                   className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
                   style={{
                     fontVariationSettings: '"opsz" 36, "wght" 400',
-                    fontSize: "clamp(24px, 2.6vw, 48px)",
-                    lineHeight: 1.28,
+                    fontSize: "clamp(22px, 2.2vw, 38px)",
+                    lineHeight: 1.24,
                     textShadow: "0 2px 14px rgba(0,0,0,0.7)",
                   }}
                 >
@@ -340,14 +340,14 @@ export const News = () => {
                 {/* Programme spine — a quiet ledger laid out two-up so the column
                     fills its width and height densely, never a thin stack with a
                     half-empty void beside the panel. Page framing microcopy. */}
-                <ul className="list-none p-0 m-0 mt-7 md:mt-9 grid grid-cols-1 sm:grid-cols-2 gap-x-10 border-t border-line">
+                <ul className="list-none p-0 m-0 mt-5 md:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-10 border-t border-line">
                   {[
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
                     ["Workshops", "The return of Steve's classes"],
                     ["Pop-up events", "Gatherings hosted by the estate"],
                   ].map(([label, note]) => (
-                    <li key={label} className="border-b border-line py-4">
+                    <li key={label} className="border-b border-line py-2.5">
                       <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>{label}</p>
                       <p className={cn(META, "m-0")}>{note}</p>
                     </li>
@@ -384,14 +384,14 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
+            className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-7"
           >
             {/* CENTRED HEADER — the status eyebrow + section heading on a shared
                 top axis, so the whole feature hangs from one centred spine. */}
             <div className="text-center">
               <p className={cn(EYEBROW, "m-0")}>{featured.displayDate}</p>
               <h2
-                className="mt-3 font-display tracking-[-0.03em] text-[clamp(30px,4.4vw,60px)] leading-[1.0] text-ink m-0"
+                className="mt-2 font-display tracking-[-0.03em] text-[clamp(28px,3.8vw,52px)] leading-[1.0] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
               >
                 The next release
@@ -401,7 +401,7 @@ export const News = () => {
             {/* BALANCED CARD — cover + text, CENTRED in the measure and aligned to
                 each other's vertical centre. Both halves share one mx-auto frame so
                 the composition sits dead-centre on the page axis. */}
-            <div className="mt-8 md:mt-12 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-center">
+            <div className="mt-6 md:mt-8 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
               {/* ROSE-MANDALA COVER — the large square focal point (mandalas read
                   best square), balanced against the text beside it. */}
               <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
@@ -424,7 +424,7 @@ export const News = () => {
                 >
                   {featured.title}
                 </h3>
-                <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-0 mx-auto md:mx-0 max-w-[56ch] 3xl:max-w-[62ch]")}>
+                <p className={cn(SUBTITLE, "mt-4 md:mt-5 mb-0 mx-auto md:mx-0 max-w-[60ch] 3xl:max-w-[68ch]")}>
                   {featured.summary}
                 </p>
                 {/* A single quiet CTA to the Friends & Family sign-up at the foot
@@ -432,7 +432,7 @@ export const News = () => {
                     (no crammed/oversized inline form beside the artwork). */}
                 <a
                   href="#notify"
-                  className="mt-7 md:mt-8 inline-flex items-center gap-2 rounded-sm font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="mt-5 md:mt-6 inline-flex items-center gap-2 rounded-sm font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Be the first to know
                   <span aria-hidden="true" className="text-accent">→</span>
@@ -449,7 +449,7 @@ export const News = () => {
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-6 md:mb-8 flex flex-wrap items-center gap-2.5 border-b border-line pb-6"
+              className="mb-4 md:mb-5 flex flex-wrap items-center gap-2.5 border-b border-line pb-4"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
@@ -488,19 +488,19 @@ export const News = () => {
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-6 md:mt-8")}
+                  className={cn(gi > 0 && "mt-5 md:mt-6")}
                 >
                   <Reveal
                     as="div"
                     delay={Math.min(gi * 0.05, 0.2)}
-                    className="flex items-baseline gap-4 flex-wrap border-t border-line pt-5 md:pt-6"
+                    className="flex items-baseline gap-4 flex-wrap border-t border-line pt-4 md:pt-5"
                   >
-                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.6vw,60px)] leading-[1.0] text-ink m-0">
+                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(26px,3.2vw,52px)] leading-[1.0] text-ink m-0">
                       {group.heading}
                     </h2>
                     <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>{group.note}</p>
                   </Reveal>
-                  <div className="mt-5 md:mt-6 divide-y divide-line">
+                  <div className="mt-3.5 md:mt-4 divide-y divide-line">
                     {group.entries.map((entry, i) => (
                       <Reveal key={entry.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
                         <EntryRow entry={entry} />
@@ -518,7 +518,7 @@ export const News = () => {
             both scroll here. While the feed is empty the waitlist in the
             empty-state above is the single, leading capture (no duplicate panel). */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-6 md:mt-8 scroll-mt-28 border-t border-line pt-6 md:pt-8">
+          <Reveal as="section" delay={0.05} className="mt-5 md:mt-6 scroll-mt-28 border-t border-line pt-5 md:pt-6">
             <div id="notify">
               <NewsletterSignup
                 variant="panel"
