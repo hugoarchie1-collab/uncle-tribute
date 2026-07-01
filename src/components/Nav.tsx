@@ -317,13 +317,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
         <DeliverTo variant="header" className="hidden lg:flex shrink-0" />
 
-        {/* Site search — Amazon-pattern (search anything on the site), skinned
-            to the estate. Grows to fill the middle of the bar on md+; on mobile
-            it drops into the drawer below. */}
-        <SearchBar
-          variant="header"
-          className="hidden md:block flex-1 mx-4 lg:mx-8 max-w-[560px] lg:max-w-[720px]"
-        />
+        {/* Search removed from the top bar (Hugo: a lone dot looks trash) — the
+            full search field lives in the menu drawer instead. A flex-1 spacer
+            keeps the logo left + the icon cluster hard right. */}
+        <div className="flex-1" aria-hidden="true" />
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
           {/* Primary links live in the always-on MENU drawer now (Hugo: the

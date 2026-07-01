@@ -35,12 +35,12 @@ const PEACOCK_BACKDROPS = [
   // small texture is also the cheaper, cache-friendlier composite the compositor
   // samples on every scroll frame. Full-res originals kept on disk for the
   // immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-scene-v1.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-scene-v1.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-scene-v1.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-scene-v1.webp", name: "Mary Pink" },
 ];
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
@@ -335,7 +335,7 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[70svh] landscape:md:min-h-[66svh] justify-center pt-[9svh] sm:pt-[7svh] pb-[1svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[58svh] landscape:md:min-h-[56svh] justify-center pt-[6svh] sm:pt-[5svh] pb-0"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
