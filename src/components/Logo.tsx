@@ -15,7 +15,7 @@ interface LogoProps {
 export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
   const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
   return (
-    <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex"} items-center gap-3 leading-none ${className ?? ""}`}>
+    <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
         The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal whose
         OWN engraved relief is brought out in white (v7, 2026-06-28). Hugo
@@ -68,7 +68,7 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, classNa
         // original tidy 16px/normal so it still wraps cleanly to two lines inside
         // the narrow brand column — only the header logo gets the big treatment.
         <span
-          className={`inline font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(22px,6.2vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.08] sm:leading-none max-w-[70vw] sm:max-w-none"}`}
+          className={`inline font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(15px,3.4vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.1] sm:leading-none min-w-0 max-w-full sm:max-w-none"}`}
           style={wordmarkWrap ? undefined : { fontVariationSettings: '"opsz" 28' }}
         >
           The Art of Stephen Meakin

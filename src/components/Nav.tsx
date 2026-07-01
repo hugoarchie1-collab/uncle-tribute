@@ -308,7 +308,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"
-          className="press inline-flex items-center shrink-0"
+          className="press inline-flex items-center min-w-0"
         >
           <Logo size={50} wordmark />
         </Link>
@@ -326,7 +326,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           className="hidden md:block flex-1 mx-4 lg:mx-8 max-w-[560px] lg:max-w-[720px]"
         />
 
-        <div className="flex items-center gap-5 sm:gap-7 lg:gap-9">
+        <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
           {/* Primary links live in the always-on MENU drawer now (Hugo: the
               inline bar "all overlaps" — 11 links never fit a single row, so they
               crammed/overlapped at wide widths). The hamburger below is shown at
