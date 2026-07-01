@@ -159,23 +159,23 @@ const CosmicInterlude = () => {
                 <video
                   ref={videoRef}
                   className="absolute inset-0 h-full w-full object-cover"
-                  // CENTRE THE GALAXY (Hugo: "the galaxy is to the right, not
-                  // centred"). The mp4 is 1280x480 = EXACTLY 8/3, identical to the
-                  // desktop frame, so object-cover does NO crop and the baked-in
-                  // rightward bias (bright core at ~53.6% of width, ~3.6% right of
-                  // centre) shows verbatim — object-position can't help with no
-                  // overflow to shift. Fix: scale up 10% (5% bleed each side,
-                  // clipped by the frame's overflow-hidden) then nudge left 3.6%
-                  // so the core lands at 50%. Poster shares the same crop.
+                  // AUTOPLAY, loop forever, NO play button, on mobile + desktop
+                  // (Hugo). autoPlay + muted + playsInline is the iOS-safe combo;
+                  // preload="auto" (it's IntersectionObserver-gated so it only
+                  // fetches when scrolled near). Upscaled v2 asset (2560x960),
+                  // webm first then mp4 fallback. The scale/translate keeps the
+                  // baked-right galaxy core centred (object-cover doesn't crop 8/3).
                   style={{ transform: "scale(1.1) translateX(-3.6%)", transformOrigin: "center" }}
-                  poster={asset("/video/poster-garden-galaxy-v1.jpg")}
+                  poster={asset("/video/poster-garden-galaxy-v2.jpg")}
+                  autoPlay
                   muted
                   loop
                   playsInline
-                  preload="none"
+                  preload="auto"
                   aria-hidden="true"
                 >
-                  <source src={asset("/video/garden-galaxy-v1.mp4")} type="video/mp4" />
+                  <source src={asset("/video/garden-galaxy-v2.webm")} type="video/webm" />
+                  <source src={asset("/video/garden-galaxy-v2.mp4")} type="video/mp4" />
                 </video>
               )}
               {/* Inner vignette for depth on the frame edges. */}
@@ -596,115 +596,29 @@ export const Welcome = () => {
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
         <main className="relative isolate z-10 space-y-3 md:space-y-5">
-          {/* 1 · HERO — Kaya-inspired composition:
-              text LEFT (two-style headline, body, CTAs),
-              image RIGHT, well-framed and uncropped. */}
-          {/* Tight seam between the intro film and the hero. On PORTRAIT phones
-              the film is a short 16:9 card (not full-height), so a large top
-              pad here reads as a dead black band directly under the video (the
-              reported gap). The clamp now starts SMALL (~18px on a phone) and
-              only opens up via the vw term on wider screens where the film is
-              full-height and the hero sits a full scroll below. The fixed Nav
-              always floats over the film at the very top, never over the hero,
-              so the hero needs no nav-clearance padding of its own. */}
-          {/* 1 · HERO — cinematic right-bleed. The studio photo fills the
-              right ~55% of the viewport at full height, bleeding to the screen
-              edge for real scale; the headline floats out of its dark-melted
-              inner edge on the left. Landscape composition preserved
-              (object-cover center on a wide box — only the sacrificial outer
-              margins trim). Stacks to text-then-image below md. */}
-          {/* The intro film flows straight into the hero — the video's own 5%
-              bottom mask-feather IS the seam, so no extra top padding (the old
-              pt-[12svh] md:pt-[15svh] opened a dark dead band between the film
-              and the headline). A small uniform pad just keeps the type off the
-              film edge. */}
-          <section className="relative isolate w-full overflow-hidden pt-4 md:pt-0">
-            {/* DESKTOP/TABLET — image bleeding to the right edge. Reined in
-                2026-06-03 (Hugo: "images way too big, take up the entire
-                screen") — the parallel session's full-viewport bleed was the
-                screen-filling culprit; width + section height trimmed so it's
-                a strong framed photo, not an edge-to-edge wall. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 right-4 sm:right-6 md:right-8 lg:right-12 -translate-y-1/2 h-[46svh] w-[48%] lg:w-[46%]">
-              {/* EVEN melt: the photo now feathers on ALL FOUR sides (was y-only,
-                  which left a hard rectangular left/right edge). With edges="all"
-                  the image dissolves into the page identically top, bottom, left
-                  and right — no single hard seam, so the photo "melts even". */}
-              <ImageReveal
-                src="/img/welcome/01-painting-wild-rose.jpg"
-                alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
-                eager
-                fill
-                edges="all"
-                parallax={0.1}
-                objectPosition="center"
-                shadow=""
-              />
-              {/* Inner-left calm zone — a SOFT elliptical wash that quiets the
-                  photo's busy left portion (the area the tall headline overlaps),
-                  fading to FULLY TRANSPARENT (alpha 0) at every edge so it can
-                  never read as a box or a one-sided dark strip. Anchored at the
-                  inner-left so the headline's right edge always meets calm tone,
-                  never the busy painting — and it tapers away before the photo's
-                  own visible centre, so the artwork still reads at full strength.
-                  Replaces the old one-directional left-melt + lopsided warm seam
-                  (which softened only the very left edge and ran out before the
-                  headline cleared the busy interior). */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(95% 100% at -10% 50%, rgba(10,9,8,0.46) 0%, rgba(10,9,8,0.24) 22%, rgba(10,9,8,0.08) 46%, rgba(10,9,8,0) 66%)",
-                }}
-              />
-            </figure>
-
-            {/* Text column — vertically centred against the photo so the
-                headline sits opposite the easel, not crammed into a short top
-                strip. min-h matches the photo's 68svh frame; items-center does
-                the centring (no more clamp top-pad — that was fighting the old
-                dark band). */}
-            <div
-              className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center px-4 sm:px-6 md:px-8 lg:px-12 pb-5 md:min-h-[44svh] md:pb-0"
-              style={{ paddingTop: "clamp(0.75rem, 3vw, 1.75rem)" }}
-            >
-              <Reveal as="div" className="relative w-full md:max-w-[46%] lg:max-w-[44%]">
-                {/* SOFT TEXT SCRIM — a gentle elliptical wash that pools just
-                    enough warm-dark UNDER the headline so the type always rests
-                    on calm tone where its right edge overlaps the photo, never on
-                    the busy painting. Every edge ends at alpha 0 (radial fading to
-                    transparent), so it can NEVER read as a box or a hard panel —
-                    it simply melts the area under the text. Sits behind the glyphs
-                    (-z-10 within this column's own stacking context, above the
-                    z-[1] photo melt below it). Desktop only — the mobile image is
-                    stacked below the copy, so no overlap to quiet there. */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -inset-x-6 -inset-y-8 -z-10 hidden md:block"
-                  style={{
-                    background:
-                      "radial-gradient(75% 70% at 40% 50%, rgba(9,7,8,0.34) 0%, rgba(9,7,8,0.18) 38%, rgba(9,7,8,0.06) 66%, rgba(9,7,8,0) 88%)",
-                  }}
-                />
-                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mb-4 text-balance hero-text-shadow">
-                  <span className="block font-semibold text-[clamp(60px,11vw,140px)] leading-[1.0]">
+          {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
+              studio photo MAXIMISED full content-width beneath it (Hugo: "make
+              it horizontal so the full image can be maximised below — I hate the
+              blank space around it"). No side column, no text-over-image overlap:
+              the headline sits ABOVE the photo; the photo owns the full width. */}
+          <section className="relative isolate w-full overflow-hidden pt-4 md:pt-6">
+            <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+              <Reveal as="div" className="text-center">
+                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mx-auto text-balance hero-text-shadow">
+                  <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[0.98]">
                     So here we are on Earth
                   </span>
-                  <span className="block font-normal italic text-[clamp(46px,8vw,82px)] leading-[1.15] sm:leading-[1.05] mt-4 sm:mt-3 text-ink/90">
-                    — orbiting a Sun Star at about 67,062 miles an hour.
+                  <span className="block font-normal italic text-[clamp(26px,4.4vw,56px)] leading-[1.12] mt-3 md:mt-4 text-ink/90">
+                    &mdash; orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
-
-                {/* Hero is headline + CTAs only (Hugo: delete the top reminder
-                    line — the reminder lives once, in the "A reminder" section
-                    below). */}
-                <div className="mt-6 flex flex-wrap items-center gap-3">
+                <div className="mt-6 md:mt-7 flex flex-wrap items-center justify-center gap-3">
                   <MagneticLink
                     to="/collections"
                     className="press group inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
-                    See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
+                    See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">&rarr;</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
@@ -714,20 +628,22 @@ export const Welcome = () => {
                     His story
                   </MagneticLink>
                 </div>
+              </Reveal>
 
-                {/* MOBILE image — below the copy, full landscape, soft-edged. */}
-                <Reveal as="figure" className="m-0 mt-6 md:hidden max-w-[560px]">
-                  <ImageReveal
-                    src="/img/welcome/01-painting-wild-rose.jpg"
-                    alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
-                    eager
-                    aspect="aspect-[4/3]"
-                    edges="all"
-                    parallax={0.12}
-                    objectPosition="center"
-                    shadow="shadow-[0_32px_80px_rgba(0,0,0,0.6)]"
-                  />
-                </Reveal>
+              {/* The studio photo — MAXIMISED full content width beneath the
+                  headline, large + crisp, soft-edged (no frame box, no side voids). */}
+              <Reveal as="figure" className="m-0 mt-8 md:mt-10">
+                <ImageReveal
+                  src="/img/welcome/01-painting-wild-rose.jpg"
+                  alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
+                  eager
+                  aspect="aspect-[4/3] sm:aspect-[16/9]"
+                  edges="all"
+                  parallax={0.08}
+                  objectPosition="center"
+                  shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
+                  sizes="(min-width: 1400px) 1320px, 92vw"
+                />
               </Reveal>
             </div>
           </section>
