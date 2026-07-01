@@ -140,7 +140,7 @@ const CosmicInterlude = () => {
       // with only a hairline gap — no negative pull needed (a fixed pull would
       // overlap the wordmark on the screens where content fills the masthead).
       // The soft top feather melts the seam either way.
-      className="relative z-30 w-full mt-0 md:mt-1 mb-4 md:mb-8 lg:mb-10"
+      className="relative z-30 w-full mt-0 md:mt-1 mb-3 md:mb-5 lg:mb-7"
     >
       {/* FULL-BLEED BANNER (Hugo: "fill the entire edges of screen so it's like
           a banner", edges softened like the photos below). Edge-to-edge width,
@@ -329,7 +329,7 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[66svh] landscape:md:min-h-[64svh] justify-center pt-[16svh] sm:pt-[14svh] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[54svh] landscape:md:min-h-[52svh] justify-center pt-[16svh] sm:pt-[14svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -611,7 +611,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-10 md:space-y-14 lg:space-y-16 pb-14 md:pb-20">
+        <main className="relative isolate z-10 space-y-8 md:space-y-10 lg:space-y-12 pb-12 md:pb-16">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the
