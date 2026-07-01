@@ -281,7 +281,13 @@ export const LiveWallCamera = ({
     void (async () => {
       try {
         const stream = await md.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
+          // Request a full-resolution rear feed so the view is a normal, wide
+          // camera — not an upscaled, cropped one.
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
           audio: false,
         });
         if (cancelled) {
@@ -289,6 +295,21 @@ export const LiveWallCamera = ({
           return;
         }
         streamRef.current = stream;
+        // Reset any digital zoom to the widest setting (1×) so the feed opens
+        // like the normal camera app, not zoomed in. Best-effort: `zoom` is a
+        // non-standard track capability, absent on many browsers → ignored.
+        try {
+          const track = stream.getVideoTracks()[0];
+          const caps = track?.getCapabilities?.() as { zoom?: { min?: number } } | undefined;
+          const minZoom = caps?.zoom?.min;
+          if (typeof minZoom === "number") {
+            await track.applyConstraints({
+              advanced: [{ zoom: minZoom }],
+            } as unknown as MediaTrackConstraints);
+          }
+        } catch {
+          /* camera zoom control unsupported — ignore */
+        }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch(() => {});
