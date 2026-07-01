@@ -110,7 +110,7 @@ export const Trade = () => {
       />
       <Nav />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
         {/* ── MASTHEAD ── The refined shared front cover: meta rule (eyebrow +
             "By introduction") → a composed Fraunces display title (wght 560,
             opsz 144 — never the old bold logo) → the framing passage packed
@@ -157,7 +157,7 @@ export const Trade = () => {
             each opening with a big ghost numeral + hairline so they read as
             composed plates rather than an endless scroll. Verbatim body copy
             unchanged. */}
-        <section className="py-10 md:py-14">
+        <section className="py-6 md:py-8">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
             <p className={cn(EYEBROW, "m-0")}>How the estate works with projects</p>
             <p className={cn(EYEBROW_MUTED, "m-0")}>Three ways in</p>
@@ -200,7 +200,7 @@ export const Trade = () => {
             and the direct-email fallback on the right. Commerce-free — opens
             the shared EnquireModal; quiet /contact + mailto paths preserved
             byte-for-byte. */}
-        <section className="py-10 md:py-14">
+        <section className="py-6 md:py-8">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-end">
             <div className="lg:col-span-7">
               <p className={cn(EYEBROW, "m-0 mb-3.5")}>Start a project</p>

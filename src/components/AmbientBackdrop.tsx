@@ -20,7 +20,7 @@ import { asset } from "../lib/asset";
  */
 export const AmbientBackdrop = ({
   src = "/img/paintings/peacock-persian-indigo-blur-v3.webp",
-  opacity = 0.5,
+  opacity = 0.68,
 }: {
   /** Pre-blurred WebP under /public. Defaults to the calm Persian-indigo peacock. */
   src?: string;
@@ -66,6 +66,9 @@ export const AmbientBackdrop = ({
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `url("${asset(src)}")`,
+          // Lift the baked-dark peacock wash so it's actually visible; reversible
+          // CSS only, no asset re-bake. The radial scrim below still grounds copy.
+          filter: "brightness(1.34) saturate(1.05)",
           opacity,
         }}
       />
@@ -74,7 +77,7 @@ export const AmbientBackdrop = ({
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.5) 0%, rgba(10,9,8,0.2) 100%)",
+            "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.34) 0%, rgba(10,9,8,0.1) 100%)",
         }}
       />
     </div>

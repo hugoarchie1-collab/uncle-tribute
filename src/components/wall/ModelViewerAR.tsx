@@ -20,7 +20,7 @@ import type { Colourway, Painting } from "../../data/paintings";
 import { paintingImageAlt } from "../../data/paintings";
 import type { ArtworkSize } from "../../lib/artworkSizes";
 import { shellScaleFor } from "../../lib/artworkSizes";
-import { WALL_SHELL_GLB, wallUsdz } from "../../lib/wallModels";
+import { WALL_SHELL_GLB, wallFramedUsdz } from "../../lib/wallModels";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
 import { trackWall } from "../../lib/wallAnalytics";
@@ -51,6 +51,10 @@ interface ModelViewerARProps {
   painting: Painting;
   colourway: Colourway;
   size: ArtworkSize;
+  /** Selected frame id ("none" or a FRAME_STYLES id) — drives the AR model + preview. */
+  frameId?: string;
+  /** The frame's wood colour hex (null = no frame). Draws the preview border. */
+  frameSwatch?: string | null;
   /** Bubbles up whether the device can launch AR (false → parent shows fallback). */
   onArAvailability?: (available: boolean) => void;
   className?: string;
@@ -60,6 +64,8 @@ export const ModelViewerAR = ({
   painting,
   colourway,
   size,
+  frameId = "none",
+  frameSwatch = null,
   onArAvailability,
   className,
 }: ModelViewerARProps) => {
@@ -71,7 +77,7 @@ export const ModelViewerAR = ({
   // Guards texture-swap against stale async loads when the selection changes.
   const applyToken = useRef(0);
 
-  const usdz = wallUsdz(painting.id, colourway.image, size.id);
+  const usdz = wallFramedUsdz(painting.id, colourway.image, size.id, frameId);
   const iosSrc = usdz ? `${asset(usdz)}#allowsContentScaling=0` : undefined;
   const poster = asset(webp(colourway.image));
   const scale = shellScaleFor(size);
@@ -221,13 +227,41 @@ export const ModelViewerAR = ({
         />
       )}
 
-      {/* THE FULL PRINT — the complete square image, never a cropped centre. */}
-      <img
-        src={poster}
-        alt={alt}
-        className="pointer-events-none absolute inset-0 h-full w-full object-contain p-4"
-        style={{ filter: "drop-shadow(0 16px 30px rgba(0,0,0,0.5))" }}
-      />
+      {/* THE FULL PRINT — the complete square image, with the SELECTED frame
+          drawn directly around it (no white mat), or bare when unframed. */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-[7%]">
+        <div
+          className="relative aspect-square w-full max-w-full"
+          style={
+            frameSwatch
+              ? {
+                  padding: "4.5%",
+                  background: `linear-gradient(135deg, color-mix(in srgb, ${frameSwatch}, white 26%) 0%, ${frameSwatch} 45%, color-mix(in srgb, ${frameSwatch}, black 34%) 100%)`,
+                  boxShadow:
+                    "inset 0 0 0 1px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.22), inset 0 -3px 7px rgba(0,0,0,0.5), 0 18px 34px rgba(0,0,0,0.55)",
+                }
+              : { filter: "drop-shadow(0 16px 30px rgba(0,0,0,0.5))" }
+          }
+        >
+          <img
+            src={poster}
+            alt={alt}
+            className="block h-full w-full object-cover"
+            style={{ boxShadow: frameSwatch ? "0 0 0 1px rgba(0,0,0,0.55)" : "none" }}
+          />
+          {frameSwatch && (
+            <div
+              aria-hidden="true"
+              className="absolute inset-[4.5%]"
+              style={{
+                background:
+                  "linear-gradient(118deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 16%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.05) 100%)",
+                mixBlendMode: "screen",
+              }}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Soft gradient so the button/label reads over any artwork */}
       <div

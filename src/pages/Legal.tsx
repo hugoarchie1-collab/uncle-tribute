@@ -746,7 +746,7 @@ const LegalMasthead = ({
   updated: string;
   sections: Section[];
 }) => (
-  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-7 md:pb-10">
+  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
     <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
       <span className={EYEBROW}>The Mandala Company</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -843,7 +843,7 @@ const LegalPage = ({
               as="section"
               key={i}
               id={`legal-${i}`}
-              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 border-t border-line py-8 md:py-10"
+              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 border-t border-line py-5 md:py-6"
             >
               {/* Left rail — the section number + heading, sticky on lg so the
                   reader always knows which clause they're in. */}

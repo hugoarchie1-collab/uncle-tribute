@@ -35,12 +35,12 @@ const PEACOCK_BACKDROPS = [
   // small texture is also the cheaper, cache-friendlier composite the compositor
   // samples on every scroll frame. Full-res originals kept on disk for the
   // immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-scene-v1.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-scene-v1.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-scene-v1.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-scene-v1.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
 ];
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
@@ -166,7 +166,7 @@ const CosmicInterlude = () => {
             seam on engines which silently drop the composite keyword. Same soft
             dissolve as the .soft-edge-y photos elsewhere on the page. */}
         <div
-          className="relative w-full overflow-hidden bg-[#06060a] h-[min(clamp(300px,38vw,940px),62svh)]"
+          className="relative w-full overflow-hidden bg-transparent h-[min(clamp(260px,32vw,820px),52svh)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -648,7 +648,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="m-0 mt-8 md:mt-10">
+              <Reveal as="figure" className="m-0 mt-6 md:mt-7">
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
@@ -739,7 +739,7 @@ export const Welcome = () => {
                 never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
                 Hermès / Avant Arte asymmetric editorial scale — the missing
                 "wow", and the antidote to the centred-stack monotony.) */}
-            <Reveal delay={0.05} className="my-6 md:my-9 text-left">
+            <Reveal delay={0.05} className="my-5 md:my-7 text-left">
               <blockquote className="m-0 hero-text-shadow">
                 {/* Dominant tier — breaks LEFT, oversized, stacks 3-4 commanding
                     lines against the rail. opsz held at 48 (finale invariant). */}
@@ -818,8 +818,8 @@ export const Welcome = () => {
                 subordinate clause, the closing rust period the one accent note.
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
-            <Reveal delay={0.1} className="mt-6 md:mt-9 text-center">
-              <div aria-hidden="true" className="mx-auto mb-4 md:mb-6 h-px w-16 bg-ink/20" />
+            <Reveal delay={0.1} className="mt-5 md:mt-7 text-center">
+              <div aria-hidden="true" className="mx-auto mb-3 md:mb-4 h-px w-16 bg-ink/20" />
               <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
@@ -892,7 +892,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[30svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[22svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[52%] lg:max-w-[50%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-6 md:hidden max-w-[460px]">
@@ -1034,7 +1034,7 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-7 lg:py-9">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.

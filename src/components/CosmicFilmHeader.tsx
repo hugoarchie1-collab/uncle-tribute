@@ -72,7 +72,7 @@ export const CosmicFilmHeader = () => {
             animate={
               reduceMotion
                 ? { height: "auto", opacity: 1 }
-                : { height: "clamp(300px, 52svh, 620px)", opacity: 1 }
+                : { height: "clamp(260px, 44svh, 540px)", opacity: 1 }
             }
             exit={
               reduceMotion
@@ -86,7 +86,7 @@ export const CosmicFilmHeader = () => {
             {/* The film — full-bleed, feathered on all four sides so it melts
                 into the page like the home banner. */}
             <div
-              className="relative h-full w-full overflow-hidden bg-[#06060a]"
+              className="relative h-full w-full overflow-hidden bg-transparent"
               style={{
                 WebkitMaskImage:
                   "linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%)",

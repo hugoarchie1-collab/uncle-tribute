@@ -587,14 +587,14 @@
   /* Rasterised once into the promoted layer (translateZ(0)); re-runs only on a
      colourway crossfade, never on scroll — so the larger radius costs a slightly
      heavier one-time raster, not per-frame. */
-  filter: blur(34px) saturate(1.12) brightness(0.9);
+  filter: blur(34px) saturate(1.14) brightness(1.18);
   transform: translateZ(0);
 }
 .painting-detail__ambient-veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.55) 0%, rgba(10,9,8,0.78) 100%);
+    radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.38) 0%, rgba(10,9,8,0.62) 100%);
 }
 
 /* =============================================================================

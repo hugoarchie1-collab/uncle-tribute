@@ -193,7 +193,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-12 md:pb-16">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
@@ -209,7 +209,7 @@ export const FindAPrint = () => {
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </Reveal>
 
-          <Reveal as="div" className="mt-6 md:mt-8">
+          <Reveal as="div" className="mt-5 md:mt-6">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}
@@ -223,7 +223,7 @@ export const FindAPrint = () => {
               clear, generous step below the headline (canonical heading→subtitle
               gap), under a hairline. Sized in proportion to the masthead as a true
               lead, not a caption. The verbatim copy is unchanged. */}
-          <div className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
+          <div className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
             <Reveal as="div">
               <p
                 className={cn(SUBTITLE, "mx-auto max-w-[88ch] text-pretty m-0")}
@@ -250,7 +250,7 @@ export const FindAPrint = () => {
               sits above a centred swatch row, with the live count + reset
               centred below (no off-axis justify-between row, no big gap before
               the grid). */}
-          <Reveal as="div" className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
+          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The colour lens
             </p>
@@ -291,7 +291,7 @@ export const FindAPrint = () => {
           {/* Intention lens — a meaning-led way in, sitting beside the colour
               lens. Each chip maps to the paintings whose own documented meaning
               carries that intention (INTENTIONS, above). */}
-          <Reveal as="div" className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
+          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The intention lens
             </p>
@@ -322,7 +322,7 @@ export const FindAPrint = () => {
           </Reveal>
 
           {/* Live count + reset — reflects BOTH lenses (colour ∩ intention). */}
-          <Reveal as="div" className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Reveal as="div" className="mt-5 md:mt-6 flex flex-wrap items-center justify-center gap-4">
             <p
               role="status"
               aria-live="polite"
@@ -354,7 +354,7 @@ export const FindAPrint = () => {
             scene (it drifts ±6% across the whole page, no per-section fade). The
             grid sits tight under the masthead's hairline — no min-h spacer, no
             big gap — so the page reads as one dense editorial block. */}
-        <section className="mt-12 md:mt-20">
+        <section className="mt-8 md:mt-10">
         {/* Size / edition selector — the price on every tile follows the size
             you pick (A3 → A0), instead of a flat "from £…". Mirrors the size
             selector on Collections. */}

@@ -753,7 +753,7 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-20 md:pt-28 pb-[clamp(2rem,4vw,3.5rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-14 md:pt-20 pb-[clamp(1.25rem,3vw,2.25rem)]">
     <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-2.5 md:pb-3">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -893,14 +893,14 @@ export const Memories = () => {
             lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(4rem,7vw,6rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2.5rem,5vw,4rem)]"
         >
           {/* a · PINNED artist comment — Stephen's own words lead the wall as a
               single wide feature row (its long letter folds; it would never
               tile cleanly in a column). Composer sits inline to its right on
               lg+ so the share affordance + the founding voice share one band —
               no separate full-width composer strip eating vertical air. */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-4 items-start border-b border-line pb-[clamp(1.5rem,3vw,2.25rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-4 items-start border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
             <Reveal as="div" delay={0} className="lg:col-span-8">
               <CommentRow memory={ARTIST_MEMORY} pinned />
             </Reveal>
@@ -935,12 +935,12 @@ export const Memories = () => {
               card, and it carries too much weight to sit among the visitor
               tiles). Moved here from the About page at Hugo's direction; reads
               as her posted memory of Steve. Shown in full — never folded. */}
-          <Reveal as="div" className="mt-[clamp(1.5rem,3vw,2.25rem)] border-b border-line pb-[clamp(1.5rem,3vw,2.25rem)]">
+          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.5rem)] border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
             <CommentRow memory={FAMILY_TRIBUTE} />
           </Reveal>
 
           {/* b · quiet section eyebrow — a thread divider under the pinned band */}
-          <Reveal as="div" className="mt-[clamp(1.75rem,3.5vw,2.75rem)] mb-[clamp(0.75rem,1.5vw,1.1rem)]">
+          <Reveal as="div" className="mt-[clamp(1.1rem,2.5vw,1.9rem)] mb-[clamp(0.75rem,1.5vw,1.1rem)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>
               {hasVisitorMemories ? "From those who knew him" : "The wall"}
             </p>

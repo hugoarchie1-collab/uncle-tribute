@@ -65,6 +65,7 @@ const SOCIALS = [
 // from the nav — "Shop" = where to buy; the second column gathers His story +
 // Connect + utility.
 const EXPLORE_LINKS = [
+  { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
   { to: "/trade", label: "Trade & Interiors" },

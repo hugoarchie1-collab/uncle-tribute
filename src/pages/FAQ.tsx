@@ -211,7 +211,7 @@ const FaqMasthead = () => (
   // backdrop must never out-shout the text). Whole-element, not per-glyph, so
   // gotcha #2 (no SplitReveal blockiness) is not triggered.
   <section
-    className={cn(SECTION, "pt-12 md:pt-16 pb-8 md:pb-12")}
+    className={cn(SECTION, "pt-8 md:pt-11 pb-5 md:pb-7")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
@@ -330,7 +330,7 @@ export const FAQ = () => {
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
         <section
-          className={cn(SECTION, "pb-16 md:pb-24")}
+          className={cn(SECTION, "pb-10 md:pb-14")}
           style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
         >
           <Reveal
@@ -341,7 +341,7 @@ export const FAQ = () => {
               <section
                 key={i}
                 aria-labelledby={`faq-q-${i}`}
-                className="relative flex flex-col pt-7 md:pt-8 pb-7 md:pb-8 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col pt-4 md:pt-5 pb-4 md:pb-5 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

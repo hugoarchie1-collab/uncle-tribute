@@ -221,7 +221,7 @@ const SetSizeSelector = ({
   value: PrintTier;
   onChange: (tier: PrintTier) => void;
 }) => (
-  <div className="my-4 md:my-5 flex justify-center">
+  <div className="my-3 md:my-4 flex justify-center">
     <div
       role="radiogroup"
       aria-label="Choose the print size for this set — scroll across the sizes"
@@ -294,7 +294,7 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-8 md:mt-12 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -378,7 +378,7 @@ const ComposeSetCard = () => {
   return (
     <Reveal
       as="div"
-      className="mt-8 md:mt-12 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -498,7 +498,7 @@ const CatalogueSetCard = () => {
   return (
     <Reveal
       as="section"
-      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
+      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-14"
     >
       <div
         className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
@@ -633,7 +633,7 @@ export const Collections = () => {
             name or count the collections, so it never goes stale. */}
         <Reveal
           as="div"
-          className={cn(PAGE_ENVELOPE, "relative pt-16 md:pt-20 pb-10 md:pb-16")}
+          className={cn(PAGE_ENVELOPE, "relative pt-10 md:pt-12 pb-6 md:pb-8")}
         >
           <PageMasthead
             eyebrow="Everything he finished"
@@ -697,8 +697,8 @@ export const Collections = () => {
                 tiers above without a loud list. Every painting is offered across
                 these editions; the catalogue + collection sets below take the
                 size chosen in the calm control beneath. */}
-            <div className="mt-5 md:mt-6 border-t border-line pt-4 md:pt-5">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-4 md:mb-5">
+            <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 mb-3 md:mb-4">
                 <p
                   className={cn(EYEBROW, "m-0")}
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -767,7 +767,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className={cn(PAGE_ENVELOPE, "relative pt-10 md:pt-16 pb-10 md:pb-16")}>
+              <div className={cn(PAGE_ENVELOPE, "relative pt-8 md:pt-10 pb-8 md:pb-10")}>
                 <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-4 md:mb-6">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
@@ -916,7 +916,7 @@ export const Collections = () => {
         {/* Hairline divider so the two stacked set-cards read as TWO distinct
             offers, not one conjoined dark block (Hugo). */}
         <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
-          <div aria-hidden="true" className="h-px bg-ink/50 my-8 md:my-12" />
+          <div aria-hidden="true" className="h-px bg-ink/50 my-6 md:my-8" />
         </div>
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across

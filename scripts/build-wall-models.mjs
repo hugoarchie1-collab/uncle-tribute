@@ -42,12 +42,25 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { deflateSync } from "node:zlib";
 
-import { PAINTINGS } from "../src/data/paintings.ts";
+import { PAINTINGS, FRAME_STYLES } from "../src/data/paintings.ts";
 import {
   ARTWORK_SIZES,
   WALL_SHELL_BASE_METRES,
   CANVAS_DEPTH_M,
 } from "../src/lib/artworkSizes.ts";
+
+// Frame options for the AR model: a thin flat moulding directly around the print
+// (NO white mat). Colour baked into each USDZ (iOS can't recolour at runtime).
+// Real-world frame width; scales with the size since each USDZ is authored true.
+const FRAME_WIDTH_M = 0.03; // 3cm moulding
+const srgbToLinear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const hexToLinear = (hex) => {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!m) return [0.5, 0.5, 0.5];
+  return [1, 2, 3].map((i) => +srgbToLinear(parseInt(m[i], 16) / 255).toFixed(4));
+};
+// id → { linear rgb }, from the canonical website frame styles.
+const FRAMES = FRAME_STYLES.map((f) => ({ id: f.id, linear: hexToLinear(f.swatch) }));
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -59,7 +72,7 @@ const IMG_DIR = join(ROOT, "public", "img", "paintings");
 const VERSION = "v1";
 const SHELL_GLB = `canvas-frameless-${VERSION}.glb`;
 const SQUARE_TOLERANCE = 0.015; // ≤1.5% edge difference counts as square (export rounding)
-const USDZ_TEXTURE_MAX_PX = 1600; // mobile-delivery downscale for iOS (aspect/colour preserved)
+const USDZ_TEXTURE_MAX_PX = 1024; // mobile-delivery downscale for iOS (keeps 460-file matrix small)
 const GLB_WARN_BYTES = 3 * 1024 * 1024;
 const USDZ_WARN_BYTES = 6 * 1024 * 1024;
 
@@ -76,6 +89,7 @@ const flagVal = (name) => {
 const SAMPLE = hasFlag("--sample");
 const ALL_COLOURWAYS = hasFlag("--all-colourways");
 const NO_USDZ = hasFlag("--no-usdz");
+const FRAMED = hasFlag("--frames"); // also bake framed USDZ (colour × size × frame)
 const SIZE_FILTER = (flagVal("sizes") || "").split(",").map((s) => s.trim()).filter(Boolean);
 const SIZES = (SIZE_FILTER.length ? ARTWORK_SIZES.filter((s) => SIZE_FILTER.includes(s.id)) : ARTWORK_SIZES).slice(
   0,
@@ -519,8 +533,111 @@ def Xform "Canvas" (kind = "component")
 }
 
 /** sips-downscale the original JPG to a mobile-delivery texture (aspect kept). */
+/** Author a FRAMED textured box: the print + a flat wood border (no mat) at
+ *  TRUE metres. doubleSided so face winding can never blank a face. Frame colour
+ *  is baked (iOS can't recolour at runtime). Validated geometry (usdchecker --arkit). */
+function buildFramedUsda(printMetres, frameWidthM, frameLinear, textureFile) {
+  const hi = (printMetres / 2).toFixed(5);
+  const ho = (printMetres / 2 + frameWidthM).toFixed(5);
+  const zf = (CANVAS_DEPTH_M / 2).toFixed(5);
+  const zb = (-CANVAS_DEPTH_M / 2).toFixed(5);
+  const P = [
+    [`-${ho}`, `-${ho}`, zf], [ho, `-${ho}`, zf], [ho, ho, zf], [`-${ho}`, ho, zf], // 0-3 front outer
+    [`-${hi}`, `-${hi}`, zf], [hi, `-${hi}`, zf], [hi, hi, zf], [`-${hi}`, hi, zf], // 4-7 front inner (print)
+    [`-${ho}`, `-${ho}`, zb], [ho, `-${ho}`, zb], [ho, ho, zb], [`-${ho}`, ho, zb], // 8-11 back outer
+  ];
+  const pts = P.map((p) => `(${p[0]}, ${p[1]}, ${p[2]})`).join(", ");
+  // print, 4 border bars, 4 sides, back
+  const fvi = [4, 5, 6, 7, 0, 1, 5, 4, 1, 2, 6, 5, 2, 3, 7, 6, 3, 0, 4, 7, 0, 8, 9, 1, 1, 9, 10, 2, 2, 10, 11, 3, 3, 11, 8, 0, 8, 11, 10, 9].join(", ");
+  const stArr = ["(0, 1), (1, 1), (1, 0), (0, 0)"]; // print full
+  for (let i = 0; i < 9; i++) stArr.push("(0, 0), (0, 0), (0, 0), (0, 0)"); // solid frame faces
+  const fl = frameLinear.map((n) => n.toFixed(4)).join(", ");
+  return `#usda 1.0
+(
+    defaultPrim = "Canvas"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Canvas" (kind = "component")
+{
+    def Mesh "Framed"
+    {
+        uniform bool doubleSided = 1
+        int[] faceVertexCounts = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+        int[] faceVertexIndices = [${fvi}]
+        point3f[] points = [${pts}]
+        texCoord2f[] primvars:st = [${stArr.join(", ")}] (
+            interpolation = "faceVarying"
+        )
+        uniform token subsetFamily:materialBind:familyType = "partition"
+
+        def GeomSubset "print" (prepend apiSchemas = ["MaterialBindingAPI"])
+        {
+            uniform token elementType = "face"
+            uniform token familyName = "materialBind"
+            int[] indices = [0]
+            rel material:binding = </Canvas/Materials/Artwork>
+        }
+
+        def GeomSubset "frame" (prepend apiSchemas = ["MaterialBindingAPI"])
+        {
+            uniform token elementType = "face"
+            uniform token familyName = "materialBind"
+            int[] indices = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            rel material:binding = </Canvas/Materials/Frame>
+        }
+    }
+
+    def Scope "Materials"
+    {
+        def Material "Artwork"
+        {
+            token outputs:surface.connect = </Canvas/Materials/Artwork/Surface.outputs:surface>
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor.connect = </Canvas/Materials/Artwork/Tex.outputs:rgb>
+                float inputs:metallic = 0
+                float inputs:roughness = 0.85
+                token outputs:surface
+            }
+            def Shader "Tex"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @${textureFile}@
+                float2 inputs:st.connect = </Canvas/Materials/Artwork/St.outputs:result>
+                token inputs:wrapS = "clamp"
+                token inputs:wrapT = "clamp"
+                float3 outputs:rgb
+            }
+            def Shader "St"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                token inputs:varname = "st"
+                float2 outputs:result
+            }
+        }
+
+        def Material "Frame"
+        {
+            token outputs:surface.connect = </Canvas/Materials/Frame/Surface.outputs:surface>
+            def Shader "Surface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (${fl})
+                float inputs:metallic = 0
+                float inputs:roughness = 0.55
+                token outputs:surface
+            }
+        }
+    }
+}
+`;
+}
+
 function makeUsdzTexture(srcJpg, destJpg) {
-  execFileSync("/usr/bin/sips", ["-Z", String(USDZ_TEXTURE_MAX_PX), "-s", "format", "jpeg", "-s", "formatOptions", "78", srcJpg, "--out", destJpg], { stdio: "ignore" });
+  execFileSync("/usr/bin/sips", ["-Z", String(USDZ_TEXTURE_MAX_PX), "-s", "format", "jpeg", "-s", "formatOptions", "58", srcJpg, "--out", destJpg], { stdio: "ignore" });
 }
 
 // ---- main -------------------------------------------------------------------
@@ -549,6 +666,9 @@ function main() {
   const missing = [];
   let usdzOk = 0;
   let usdzFail = 0;
+  const framedKeys = [];
+  let framedOk = 0;
+  let framedFail = 0;
 
   for (const p of paintings) {
     const colourways = p.colourways.filter((c) => c.available && (ALL_COLOURWAYS || c.isOriginal));
@@ -599,6 +719,29 @@ function main() {
             usdzFail++;
             if (existsSync(usdzPath)) rmSync(usdzPath);
             if (usdzFail <= 3) console.warn(`  ⚠ usdz failed ${p.id}-${s}-${size.id}: ${String(e.message || e).split("\n")[0]}`);
+          }
+        }
+
+        // FRAMED USDZ — one per website frame style (colour baked), for the
+        // ORIGINAL colourway of each painting (keeps the matrix tractable; other
+        // colourways fall back to frameless via wallFramedUsdz). Geometry is
+        // pre-validated, so skip the per-file usdchecker here for speed.
+        if (FRAMED && c.isOriginal && !NO_USDZ && usdToolsPresent && usdzTex) {
+          const texName = `${p.id}-${s}.jpg`;
+          for (const fr of FRAMES) {
+            const fName = `${p.id}-${s}-${size.id}-${fr.id}-${VERSION}.usdz`;
+            const fPath = join(OUT_DIR, fName);
+            try {
+              const usda = buildFramedUsda(size.metres, FRAME_WIDTH_M, fr.linear, texName);
+              const usdaPath = join(tmp, `${p.id}-${s}-${size.id}-${fr.id}.usda`);
+              writeFileSync(usdaPath, usda);
+              execFileSync(USDZIP, ["--arkitAsset", usdaPath, fPath], { cwd: tmp, stdio: "ignore" });
+              framedKeys.push(`${p.id}__${s}__${size.id}__${fr.id}`);
+              framedOk++;
+            } catch {
+              framedFail++;
+              if (existsSync(fPath)) rmSync(fPath);
+            }
           }
         }
 
@@ -666,6 +809,25 @@ export const wallUsdz = (
 
 /** Whether a painting has wall-model coverage (the GLB shell always applies). */
 export const hasWallModel = (paintingId: string): boolean => WALL_PAINTINGS.has(paintingId);
+
+/** Generated FRAMED USDZ keys: \`<paintingId>__<imageSlug>__<sizeId>__<frameId>\`. */
+const WALL_FRAMED_KEYS: ReadonlySet<string> = new Set(${JSON.stringify(framedKeys.sort(), null, 0)});
+
+/** iOS Quick Look USDZ path for a (painting, colourway, size, FRAME), or null.
+ *  Falls back to the frameless USDZ via wallUsdz when a frame isn't baked. */
+export const wallFramedUsdz = (
+  paintingId: string,
+  image: string,
+  sizeId: ArtworkSizeId,
+  frameId: string,
+): string | null => {
+  if (frameId === "none") return wallUsdz(paintingId, image, sizeId);
+  const slug = wallSlug(image);
+  const key = \`\${paintingId}__\${slug}__\${sizeId}__\${frameId}\`;
+  return WALL_FRAMED_KEYS.has(key)
+    ? \`/models/wall/\${paintingId}-\${slug}-\${sizeId}-\${frameId}-${VERSION}.usdz\`
+    : wallUsdz(paintingId, image, sizeId);
+};
 `;
   writeFileSync(MANIFEST_TS, ts);
   writeFileSync(

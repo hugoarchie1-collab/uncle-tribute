@@ -21,6 +21,7 @@ export type WallEvent =
   | "ar_model_loaded"
   | "ar_model_failed"
   | "visualiser_size_changed"
+  | "wall_camera_opened"
   | "room_photo_mode_opened"
   | "room_photo_uploaded"
   | "room_photo_calibrated"

@@ -183,7 +183,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-28 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-20 pb-10 md:pb-14">
         {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
             rule, then "Write to the family" set in the refined shared masthead
             cut (MASTHEAD_TITLE_STYLE — Fraunces opsz 144 / wght 560, one italic
@@ -218,7 +218,7 @@ export const Contact = () => {
             </h1>
           </Reveal>
 
-          <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-6 md:pt-8">
+          <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
             <Reveal as="div" className="lg:col-span-3">
               <p
                 className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
@@ -249,7 +249,7 @@ export const Contact = () => {
             line / our promise) sit packed in a hairline rail on the right, so
             neither flank is a centred void. On success the form is swapped for
             the thank-you region in the same left column. */}
-        <section className="mt-12 md:mt-16 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
+        <section className="mt-7 md:mt-9 lg:grid lg:grid-cols-12 lg:gap-x-12 xl:gap-x-16 items-start">
           <Reveal as="div" className="lg:col-span-7">
             <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
               {status === "success" ? "Message sent" : "Send a message"}

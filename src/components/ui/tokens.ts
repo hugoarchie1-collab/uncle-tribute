@@ -77,7 +77,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
  *  verbatim invocation, which uppercasing would mangle. This is the canonical
  *  home value. */
 export const EYEBROW =
-  "font-sans text-[13px] md:text-[15px] font-bold tracking-[0.14em] text-accent";
+  "font-sans text-[14px] md:text-[15px] font-bold tracking-[0.14em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -109,14 +109,14 @@ export const SUBTITLE =
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[13px] md:text-[15px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[14px] md:text-[15px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[13.5px] leading-[1.6] text-ink-muted";
+export const META = "font-sans text-[14px] leading-[1.6] text-ink-muted";
 
 /** Primary CTA pill — filled ink → accent on hover. */
 export const BTN_PRIMARY =

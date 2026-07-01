@@ -28,7 +28,13 @@ import { asset } from "../lib/asset";
 // vivid + visible while the cream copy still reads. EVERY scene page uses this
 // exact value so the site is coherent across pages + platforms.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.22) 0%, rgba(8,7,6,0.38) 45%, rgba(8,7,6,0.56) 100%)";
+
+/** Brightness/saturation lift applied to the scene image layer so the (baked-
+ *  dark) photos are actually VISIBLE under the softened scrim — reversible CSS,
+ *  no asset re-bake. Cream copy stays legible because SCENE_SCRIM still carries
+ *  a floor of shading, heaviest at the foot where most body copy sits. */
+const SCENE_IMAGE_FILTER = "brightness(1.38) saturate(1.06)";
 
 /** One crossfade layer — full during its scroll band, ramping in/out at the
  *  band boundaries (first holds from the top, last holds to the foot). Each
@@ -67,6 +73,7 @@ const CrossfadeLayer = ({
         opacity,
         y,
         backgroundImage: `url("${url}")`,
+        filter: SCENE_IMAGE_FILTER,
         willChange: "transform, opacity",
       }}
       className="absolute inset-[-8%] bg-cover bg-center"
@@ -88,13 +95,22 @@ export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
         // Reduced-motion: drop the parallax + crossfade, hold the FIRST scene
         // static, and release the GPU promotion (will-change:auto).
         <div
-          style={{ backgroundImage: `url("${urls[0]}")`, willChange: "auto" }}
+          style={{
+            backgroundImage: `url("${urls[0]}")`,
+            filter: SCENE_IMAGE_FILTER,
+            willChange: "auto",
+          }}
           className="absolute inset-0 bg-cover bg-center"
           aria-hidden="true"
         />
       ) : urls.length === 1 ? (
         <motion.div
-          style={{ y, backgroundImage: `url("${urls[0]}")`, willChange: "transform" }}
+          style={{
+            y,
+            backgroundImage: `url("${urls[0]}")`,
+            filter: SCENE_IMAGE_FILTER,
+            willChange: "transform",
+          }}
           // OVERSCAN 8% so the ±6% parallax `y` can never expose an uncovered
           // strip — the parent is overflow-hidden, so it clips.
           className="absolute inset-[-8%] bg-cover bg-center"

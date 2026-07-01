@@ -186,7 +186,7 @@ export const Gift = () => {
           measure as Collections + About, so /gift sits on the one centred
           vertical axis the rest of the site shares (Hugo: "nothing is centred
           properly"). */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             The refined shared <PageMasthead>: eyebrow + hairline meta rule →
             a composed Fraunces statement (wght 560, one italic emphasis word,
@@ -194,7 +194,7 @@ export const Gift = () => {
             The denomination range is surfaced in the meta row as a quiet
             commerce fact (figures read LIVE from GIFT_MIN/MAX_PENCE in the
             buyer's currency — never re-typed). */}
-        <Reveal className="mb-10 md:mb-16">
+        <Reveal className="mb-7 md:mb-10">
           <PageMasthead
             eyebrow="Gift an edition"
             meta={
@@ -248,7 +248,7 @@ export const Gift = () => {
           // narrow 64ch column with a wide empty right margin). The eyebrow now
           // sits above the statement on the same centred axis; the headline
           // fills a confident measure toward the envelope edges.
-          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-8 md:py-12">
+          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-6 md:py-8">
             <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")}>In your basket</p>
             <p className={cn(TITLE, "m-0 max-w-[18ch] mx-auto")}>
               A gift card of{" "}
