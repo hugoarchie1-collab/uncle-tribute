@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:ar": "node scripts/build-ar-assets.mjs",
-    "build:qr": "node scripts/build-qr.mjs"
+    "build:qr": "node scripts/build-qr.mjs",
+    "build:wall": "node scripts/build-wall-models.mjs",
+    "validate:wall": "node scripts/validate-wall-models.mjs --deep",
+    "test:wall": "node scripts/test-wall.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

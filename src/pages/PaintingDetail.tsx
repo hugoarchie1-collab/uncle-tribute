@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -59,7 +61,18 @@ import { useConsent } from "../lib/consent";
 import { asset, webp, webpSrcSet } from "../lib/asset";
 import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 import { cn } from "../lib/cn";
-import { addItem } from "../lib/basket";
+import { addItem, subscribeToAdds } from "../lib/basket";
+import {
+  ARTWORK_SIZES,
+  ANCHOR_ARTWORK_SIZE,
+  artworkSizeForTierId,
+  type ArtworkSizeId,
+} from "../lib/artworkSizes";
+import { trackWall } from "../lib/wallAnalytics";
+
+// The "See on Your Wall" modal is code-split — its model-viewer + canvas code
+// only loads when the customer opens it, never on ordinary product-page load.
+const SeeOnYourWall = lazy(() => import("../components/wall/SeeOnYourWall"));
 import { getStoredUtm } from "../lib/utm";
 import { trackAddToCart, trackViewContent } from "../lib/tracking";
 import {
@@ -2312,6 +2325,22 @@ export const PaintingDetail = () => {
   // the painting shown at its real printed size on a wall in a room.
   const [view, setView] = useState<"art" | "true-size">("art");
 
+  // "See on Your Wall" modal — lazy, opened only on deliberate interaction.
+  const [wallOpen, setWallOpen] = useState(false);
+  const wallTriggerRef = useRef<HTMLButtonElement>(null);
+  const wallUsedRef = useRef(false);
+
+  // Fire add_to_cart_after_visualiser once, if a basket add follows the customer
+  // having opened the wall visualiser (attribution only — no PII).
+  useEffect(() => {
+    const unsub = subscribeToAdds(() => {
+      if (!wallUsedRef.current) return;
+      wallUsedRef.current = false;
+      trackWall("add_to_cart_after_visualiser", { artwork: painting?.id });
+    });
+    return unsub;
+  }, [painting?.id]);
+
   // Sticky bar sentinels — see StickyAddBar. The order block has TWO: a start
   // sentinel at the top of #order-print and an end sentinel after the last buy
   // control, so the floating bar is suppressed for the whole buy-box span.
@@ -2328,6 +2357,24 @@ export const PaintingDetail = () => {
 
   const selectedTier =
     visibleTiers.find((t) => t.id === selectedTierId) ?? anchorTier;
+
+  // "See on Your Wall": map the selected tier → its physical size (a one-off /
+  // unsized tier falls back to the A2 anchor size). Changing size inside the
+  // modal routes back through the SAME selectedTierId state, so the buy box and
+  // the visualiser never disagree.
+  const wallSize = artworkSizeForTierId(selectedTier.id) ?? ANCHOR_ARTWORK_SIZE;
+  const onWallSelectSize = (sizeId: ArtworkSizeId) => {
+    const s = ARTWORK_SIZES.find((x) => x.id === sizeId);
+    if (s) setSelectedTierId(s.tierId as PrintTier["id"]);
+  };
+  const openWall = () => {
+    wallUsedRef.current = true;
+    setWallOpen(true);
+  };
+  const closeWall = () => {
+    setWallOpen(false);
+    wallTriggerRef.current?.focus();
+  };
 
   // Price strip always reflects the anchor — size picker drives the buttons.
   const pricePence = anchorTier.pricePence;
@@ -2696,6 +2743,21 @@ export const PaintingDetail = () => {
               </div>
               </>
               )}
+
+              {/* See on Your Wall — the true-size AR / room-photo visualiser. */}
+              <button
+                ref={wallTriggerRef}
+                type="button"
+                onClick={openWall}
+                className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[12px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
+                  <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                  <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                </svg>
+                See on your wall
+              </button>
+
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
               <div ref={heroSentinelRef} aria-hidden="true" className="h-px w-full" />
@@ -2784,6 +2846,18 @@ export const PaintingDetail = () => {
         colourwayName={selected.name}
         sourceImgRef={heroImgRef}
       />
+
+      {wallOpen && (
+        <Suspense fallback={null}>
+          <SeeOnYourWall
+            painting={painting}
+            colourway={selected}
+            size={wallSize}
+            onSelectSize={onWallSelectSize}
+            onClose={closeWall}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };
