@@ -576,17 +576,18 @@
    over it — only when the colourway crossfades (user-triggered). */
 .painting-detail__ambient-bg {
   position: absolute;
-  inset: -8% 0;
-  background-size: cover;
-  background-position: center 38%;
+  inset: -6% 0;
+  /* Hugo: the wash behind the product must be a blurred, ZOOMED-OUT version of
+     the painting itself — you should recognise the whole piece, not a cropped
+     zoomed-in slice. `contain` shows the entire painting (zoomed out); the
+     heavier blur + veil keep it atmospheric and text-legible. */
+  background-size: contain;
+  background-position: center 30%;
   background-repeat: no-repeat;
-  /* PERF (#6): blur radius trimmed 20px → 14px. A large-area Gaussian blur is
-     O(radius) per pixel to rasterise; 14px keeps the same atmospheric halo at
-     a meaningfully lower one-time raster cost. It's rasterised once into the
-     parent's promoted layer (translateZ(0) above) and only re-runs on a
-     user-triggered colourway crossfade — never on scroll — so this is purely a
-     cheaper first paint / crossfade, not a per-frame saving. */
-  filter: blur(14px) saturate(1.15) brightness(0.92);
+  /* Rasterised once into the promoted layer (translateZ(0)); re-runs only on a
+     colourway crossfade, never on scroll — so the larger radius costs a slightly
+     heavier one-time raster, not per-frame. */
+  filter: blur(34px) saturate(1.12) brightness(0.9);
   transform: translateZ(0);
 }
 .painting-detail__ambient-veil {

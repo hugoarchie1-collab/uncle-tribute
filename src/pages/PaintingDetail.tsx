@@ -2371,10 +2371,6 @@ export const PaintingDetail = () => {
     const s = ARTWORK_SIZES.find((x) => x.id === sizeId);
     if (s) setSelectedTierId(s.tierId as PrintTier["id"]);
   };
-  const openWall = () => {
-    wallUsedRef.current = true;
-    setWallOpen(true);
-  };
   const closeWall = () => {
     setWallOpen(false);
     wallTriggerRef.current?.focus();
@@ -2748,21 +2744,19 @@ export const PaintingDetail = () => {
               </>
               )}
 
-              {/* See on Your Wall — the true-size AR / room-photo visualiser. */}
-              <button
-                ref={wallTriggerRef}
-                type="button"
-                onClick={openWall}
-                onPointerDown={() => void importSeeOnYourWall()}
-                onMouseEnter={() => void importSeeOnYourWall()}
+              {/* See it on your wall — routes to the real Virtual Gallery (Hugo:
+                  retire the hidden AR/room-photo visualiser; send people to the
+                  actual gallery page instead). */}
+              <Link
+                to="/gallery"
                 className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[12px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
                   <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
                   <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
                 </svg>
-                See on your wall
-              </button>
+                See it on your wall
+              </Link>
 
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
