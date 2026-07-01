@@ -69,10 +69,14 @@ import {
   type ArtworkSizeId,
 } from "../lib/artworkSizes";
 import { trackWall } from "../lib/wallAnalytics";
+import { WallLoading } from "../components/wall/WallLoading";
 
 // The "See on Your Wall" modal is code-split — its model-viewer + canvas code
 // only loads when the customer opens it, never on ordinary product-page load.
-const SeeOnYourWall = lazy(() => import("../components/wall/SeeOnYourWall"));
+// `importSeeOnYourWall` is shared so the chunk can be PRELOADED on tap-intent
+// (pointerdown) → the modal opens instantly instead of waiting on the network.
+const importSeeOnYourWall = () => import("../components/wall/SeeOnYourWall");
+const SeeOnYourWall = lazy(importSeeOnYourWall);
 import { getStoredUtm } from "../lib/utm";
 import { trackAddToCart, trackViewContent } from "../lib/tracking";
 import {
@@ -2749,6 +2753,8 @@ export const PaintingDetail = () => {
                 ref={wallTriggerRef}
                 type="button"
                 onClick={openWall}
+                onPointerDown={() => void importSeeOnYourWall()}
+                onMouseEnter={() => void importSeeOnYourWall()}
                 className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[12px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
@@ -2848,7 +2854,7 @@ export const PaintingDetail = () => {
       />
 
       {wallOpen && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<WallLoading />}>
           <SeeOnYourWall
             painting={painting}
             colourway={selected}
