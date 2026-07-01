@@ -258,9 +258,9 @@ export const Account = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
-      <SceneBackdrop src="/img/scenes/account-greatwall-blurmod-v1.webp" />
+      <SceneBackdrop src="/img/scenes/account-mountain-scene-v1.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         <Reveal as="header">
           <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
             <span className={EYEBROW}>Account</span>
@@ -276,14 +276,14 @@ export const Account = () => {
             )}
           </div>
           <h1
-            className="font-display text-ink m-0 mt-4 md:mt-5 text-balance text-pretty"
+            className="font-display text-ink m-0 mt-5 md:mt-6 text-balance text-pretty"
             style={MASTHEAD_TITLE_STYLE}
           >
             {signedIn ? "Your orders." : "Your account."}
           </h1>
         </Reveal>
 
-        <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-start border-t border-line pt-5 md:pt-6">
+        <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-10 items-start border-t border-line pt-8 md:pt-10">
           {/* LEFT — the action (sign-in form OR order history). */}
           <Reveal as="div" className="lg:col-span-7">
             {auth.status === "loading" ? (
@@ -294,7 +294,7 @@ export const Account = () => {
                   Welcome back — <span className="not-italic text-ink-soft">{auth.email}</span>
                 </p>
                 {auth.orders.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {auth.orders.map((o) => (
                       <OrderCard key={o.ref} order={o} />
                     ))}
@@ -371,7 +371,7 @@ export const Account = () => {
             >
               Your account keeps your orders, certificates and provenance in one place.
             </p>
-            <ul className="list-none p-0 m-0 mt-4 flex flex-col gap-2">
+            <ul className="list-none p-0 m-0 mt-5 flex flex-col gap-2.5">
               <li>
                 <Link to="/orders" className={cn(META, "hover:text-accent transition-colors")}>
                   Orders &amp; returns →

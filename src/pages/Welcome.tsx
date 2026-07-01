@@ -165,15 +165,19 @@ const CosmicInterlude = () => {
               "radial-gradient(70% 75% at 50% 50%, rgba(201,120,68,0.10) 0%, rgba(9,7,13,0) 72%)",
           }}
         />
+        {/* Feather the top + bottom with a SINGLE-LAYER mask (no mask-composite):
+            a full-bleed banner already touches the screen edges horizontally, so
+            it only needs a vertical fade — and a single gradient can NEVER hit
+            the two-gradient "union instead of intersect" bug that left a HARD top
+            seam on engines which silently drop the composite keyword. Same soft
+            dissolve as the .soft-edge-y photos elsewhere on the page. */}
         <div
           className="relative w-full overflow-hidden bg-[#06060a] h-[clamp(220px,38svh,540px)] sm:h-[clamp(260px,40svh,560px)]"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%)",
-            WebkitMaskComposite: "source-in",
+              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
             maskImage:
-              "linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%)",
-            maskComposite: "intersect",
+              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
           }}
         >
           {near && (
@@ -331,7 +335,7 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[80svh] landscape:md:min-h-[76svh] justify-center pt-[11svh] sm:pt-[9svh] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[70svh] landscape:md:min-h-[66svh] justify-center pt-[9svh] sm:pt-[7svh] pb-[1svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -613,7 +617,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-3 md:space-y-5">
+        <main className="relative isolate z-10 space-y-12 md:space-y-20 lg:space-y-24 pb-16 md:pb-24">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the

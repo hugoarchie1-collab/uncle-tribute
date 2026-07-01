@@ -292,7 +292,7 @@ export const Auth = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden bg-bg">
-      <SceneBackdrop src="/img/scenes/auth-pine-blurmod-v1.webp" />
+      <SceneBackdrop src="/img/scenes/auth-forest-scene-v1.webp" />
       <Seo
         title="Authentication"
         description="The Mandala Company Estate Registry — confirm the provenance of a Stephen Meakin estate print. Enter the Certificate ID from your Certificate of Authenticity to return its verified record: artwork, edition, tier, print number and issuance date."
@@ -302,7 +302,7 @@ export const Auth = () => {
         canonical="/auth"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         <Reveal as="div">
           <PageMasthead
             eyebrow="Authentication"
@@ -311,7 +311,7 @@ export const Auth = () => {
           />
         </Reveal>
 
-        <div className="mt-5 md:mt-6 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start border-t border-line pt-5 md:pt-6">
+        <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start border-t border-line pt-8 md:pt-10">
           <Reveal as="div" className="lg:col-span-7 3xl:col-span-8">
             <form onSubmit={handleSubmit} noValidate>
               <span className={cn(EYEBROW, "block mb-3")}>Certificate ID</span>
@@ -364,8 +364,8 @@ export const Auth = () => {
           </Reveal>
         </div>
 
-        <section className="mt-7 md:mt-9">
-          <div className="flex items-center gap-4 md:gap-6 mb-5 md:mb-6">
+        <section className="mt-12 md:mt-16">
+          <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
             <span className={EYEBROW_MUTED}>What every certificate carries</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </div>
