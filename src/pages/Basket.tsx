@@ -384,10 +384,10 @@ export const Basket = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                           />
                         </div>
-                        <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,0.9vw,20px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                        <h3 className="font-display font-bold tracking-[-0.015em] text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
                           {painting.title}
                         </h3>
-                        <p className="font-sans font-normal text-[clamp(12.5px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
+                        <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
                           From {fmtP(fromPence)}
                         </p>
                       </Link>
@@ -450,7 +450,7 @@ export const Basket = () => {
                           )}
                           <Link
                             to={`/collections/${line.paintingId}`}
-                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2.2vw,30px)] text-ink leading-tight hover:text-accent transition-colors"
+                            className="font-display font-semibold tracking-[-0.025em] text-[clamp(20px,2.2vw,32px)] text-ink leading-tight hover:text-accent transition-colors"
                           >
                             {line.title}
                           </Link>
@@ -542,7 +542,7 @@ export const Basket = () => {
                     >
                       <div className="flex gap-5 sm:gap-7 items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(18px,2.2vw,30px)] text-ink leading-tight m-0">
+                          <p className="font-display font-semibold tracking-[-0.025em] text-[clamp(20px,2.2vw,32px)] text-ink leading-tight m-0">
                             Gift card
                           </p>
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>{g.label}</p>
@@ -552,7 +552,7 @@ export const Basket = () => {
                             </p>
                           )}
                           {g.giftMessage && (
-                            <p className="font-display italic text-[clamp(13px,0.78vw,16px)] leading-[1.55] text-ink/55 m-0 mt-1.5">
+                            <p className="font-display italic text-[clamp(13px,0.78vw,16px)] leading-[1.55] text-ink-muted m-0 mt-1.5">
                               “{g.giftMessage}”
                             </p>
                           )}
@@ -661,10 +661,10 @@ export const Basket = () => {
                       key={region}
                       className="flex items-baseline justify-between gap-4"
                     >
-                      <span className="font-sans text-[clamp(13.5px,0.8vw,16px)] leading-[1.5] text-ink-muted min-w-0">
+                      <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                         {region}
                       </span>
-                      <span className="font-sans text-[clamp(13.5px,0.8vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
+                      <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
                         {pence === 0 ? "Free" : fmt(pence)}
                       </span>
                     </li>

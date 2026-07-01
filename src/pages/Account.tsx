@@ -17,7 +17,7 @@ import { useNoindexHead } from "../lib/useNoindexHead";
 import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
 
@@ -32,12 +32,12 @@ const OrderCard = ({ order }: { order: OrderRow }) => (
   <div className="border border-line bg-bg-soft/20 px-5 py-4 sm:px-6 sm:py-5">
     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
       <p className={cn(META, "m-0")}>{formatDate(order.date)}</p>
-      <p className="m-0 font-display font-semibold text-[18px] text-ink">{order.total}</p>
+      <p className="m-0 font-display font-semibold text-[clamp(16px,1.7vw,27px)] text-ink">{order.total}</p>
     </div>
     {order.items.length > 0 && (
       <ul className="mt-3 list-none p-0 m-0 flex flex-col gap-1">
         {order.items.map((it, i) => (
-          <li key={i} className="font-sans text-[15px] leading-[1.5] text-ink-soft">
+          <li key={i} className={cn(META, "m-0")}>
             {it}
           </li>
         ))}
@@ -191,7 +191,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={status === "working"}
-            className="bg-transparent border-0 cursor-pointer font-sans text-[13px] font-semibold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-50"
+            className={cn(EYEBROW_MUTED, "bg-transparent border-0 cursor-pointer hover:text-accent transition-colors disabled:opacity-50")}
           >
             {status === "working" ? "Adding…" : avatar ? "Change photo" : "Add a photo"}
           </button>
@@ -199,7 +199,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
             <button
               type="button"
               onClick={onRemove}
-              className="bg-transparent border-0 cursor-pointer font-sans text-[13px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+              className={cn(EYEBROW_MUTED, "bg-transparent border-0 cursor-pointer underline underline-offset-4 hover:text-accent transition-colors")}
             >
               Remove
             </button>
@@ -290,8 +290,8 @@ export const Account = () => {
               <p className={cn(META, "m-0")}>Checking your session…</p>
             ) : signedIn ? (
               <>
-                <p className="font-display font-normal italic text-[clamp(20px,2.4vw,30px)] leading-[1.3] text-ink m-0 mb-4">
-                  Welcome back — <span className="not-italic text-ink-soft">{auth.email}</span>
+                <p className="font-display font-normal italic text-[clamp(20px,0.72vw_+_15px,31px)] leading-[1.3] text-ink m-0 mb-4">
+                  Welcome back — <span className="not-italic text-ink-muted">{auth.email}</span>
                 </p>
                 {auth.orders.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -300,7 +300,7 @@ export const Account = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="font-sans text-[16px] md:text-[17px] leading-[1.6] text-ink-soft m-0 max-w-[64ch]">
+                  <p className={cn(SUBTITLE, "m-0 max-w-[64ch]")}>
                     No orders are linked to this email yet. When you order a print, it will appear
                     here. You can also{" "}
                     <Link to="/orders" className="underline underline-offset-4 hover:text-accent">
@@ -315,7 +315,7 @@ export const Account = () => {
                 {sent ? (
                   <div className="border border-accent/30 bg-bg-soft/30 px-6 py-6 sm:px-8">
                     <span className={EYEBROW}>Check your inbox</span>
-                    <p className="font-sans text-[16px] md:text-[17px] leading-[1.6] text-ink-soft m-0 mt-3 max-w-[60ch]">
+                    <p className={cn(SUBTITLE, "m-0 mt-3 max-w-[60ch]")}>
                       If an account exists for <span className="text-ink">{email}</span>, a secure
                       one-time sign-in link is on its way. It's valid for 15 minutes.
                     </p>
@@ -343,7 +343,7 @@ export const Account = () => {
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer disabled:opacity-50"
+                        className="press shrink-0 whitespace-nowrap px-6 md:px-8 font-sans text-[12px] md:text-[13px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer disabled:opacity-50"
                       >
                         {submitting ? "Sending…" : "Email me a link"}
                       </button>

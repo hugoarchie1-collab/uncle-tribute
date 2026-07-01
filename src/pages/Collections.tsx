@@ -886,7 +886,7 @@ export const Collections = () => {
                                 lower the click barrier — the £450 anchor still
                                 does its conversion work on the product page. */}
                             <p
-                              className="mt-2 font-sans text-[13px] md:text-[clamp(13px,0.8vw,16px)] leading-[1.6] text-ink-muted m-0"
+                              className={cn(META, "mt-2 m-0")}
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
                               Estate-stamped giclée · from{" "}

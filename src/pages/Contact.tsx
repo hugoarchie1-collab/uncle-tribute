@@ -6,7 +6,7 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 
@@ -269,7 +269,7 @@ export const Contact = () => {
                   Thank you.
                 </p>
                 <p
-                  className="font-sans font-normal text-[18px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.65] text-ink-muted m-0 max-w-[56ch] 3xl:max-w-[64ch]"
+                  className={cn(SUBTITLE, "m-0 max-w-[56ch] 3xl:max-w-[64ch]")}
                   style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Your message is on its way to{" "}
@@ -366,7 +366,7 @@ export const Contact = () => {
                 {errorMsg && (
                   <p
                     role="alert"
-                    className="mb-4 font-sans text-[15px] font-medium text-accent m-0"
+                    className={cn(META, "mb-4 font-medium text-accent m-0")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                   >
                     {errorMsg}
@@ -394,7 +394,7 @@ export const Contact = () => {
                   <a
                     href="mailto:info@themandalacompany.com"
                     aria-label="Write directly to info@themandalacompany.com"
-                    className="group inline-flex items-center min-h-[44px] rounded-sm font-sans text-[14px] md:text-[clamp(14px,0.8vw,18px)] text-ink-muted hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    className={cn(META, "group inline-flex items-center min-h-[44px] rounded-sm hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     Or write directly
@@ -429,7 +429,7 @@ export const Contact = () => {
                 <dd className="m-0">
                   <a
                     href="mailto:info@themandalacompany.com"
-                    className="inline-block rounded-sm font-sans text-[15px] md:text-[clamp(15px,0.85vw,19px)] text-ink hover:text-accent transition-colors break-words focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    className={cn(META, "inline-block rounded-sm text-ink hover:text-accent transition-colors break-words focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     info@themandalacompany.com

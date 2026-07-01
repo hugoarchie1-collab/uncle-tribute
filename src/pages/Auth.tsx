@@ -25,7 +25,7 @@ import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { PageMasthead } from "../components/PageMasthead";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../components/ui/tokens";
 import {
   ESTATE_AUTHENTICATION,
   CURRENT_EDITION,
@@ -122,7 +122,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
       </div>
       <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-end">
         <div className="lg:col-span-8">
-          <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.6vw,46px)] leading-[1.05] text-ink text-pretty m-0">
+          <h2 className="font-display font-semibold tracking-[-0.035em] text-[clamp(23px,2.6vw,40px)] leading-[1.1] text-ink text-pretty m-0">
             {record.artworkName}
           </h2>
           <p className={cn(META, "m-0 mt-3")}>
@@ -184,7 +184,7 @@ const UnlistedNote = () => (
       <span className={EYEBROW_MUTED}>Not found in the Estate Registry</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
-    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.6] text-ink-soft text-pretty m-0 mt-4 max-w-[72ch]">
+    <p className={cn(SUBTITLE, "text-pretty m-0 mt-4 max-w-[72ch]")}>
       The Estate Registry records prints issued from June 2026 onward. For an
       earlier or unlisted Certificate ID, write to{" "}
       <a
@@ -206,7 +206,7 @@ const UnavailableNote = () => (
       <span className={EYEBROW_MUTED}>Registry temporarily unavailable</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />
     </div>
-    <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.6] text-ink-soft text-pretty m-0 mt-4 max-w-[72ch]">
+    <p className={cn(SUBTITLE, "text-pretty m-0 mt-4 max-w-[72ch]")}>
       We couldn&rsquo;t reach the Estate Registry just now. Please try again in a
       moment — your certificate may well be valid. If it persists, write to{" "}
       <a
@@ -353,7 +353,7 @@ export const Auth = () => {
               className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[44ch]"
               style={{
                 fontVariationSettings: '"opsz" 32, "wght" 400',
-                fontSize: "clamp(20px, 2.2vw, 30px)",
+                fontSize: "clamp(20px, 2.2vw, 34px)",
                 lineHeight: 1.28,
               }}
             >
@@ -373,7 +373,7 @@ export const Auth = () => {
             {AUTH_FACTS.map((fact) => (
               <div key={fact.label} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>{fact.label}</p>
-                <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.6] text-ink-soft text-pretty m-0">
+                <p className={cn(META, "text-pretty m-0")}>
                   {fact.body}
                 </p>
               </div>

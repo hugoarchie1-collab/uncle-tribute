@@ -708,12 +708,12 @@ const ShareMemoryModal = ({
                         they appear.
                       </p>
                       {imageError && (
-                        <p className="mt-2 m-0 font-sans text-[13.5px] leading-[1.6] text-accent">{imageError}</p>
+                        <p className={cn(META, "mt-2 m-0 text-accent")}>{imageError}</p>
                       )}
                     </div>
 
                     {errorMsg && (
-                      <p className="mb-4 m-0 font-sans text-[13.5px] leading-[1.6] text-accent">{errorMsg}</p>
+                      <p className={cn(META, "mb-4 m-0 text-accent")}>{errorMsg}</p>
                     )}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">

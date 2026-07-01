@@ -12,7 +12,9 @@ import {
   EYEBROW,
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
+  TITLE,
   SUBTITLE,
+  META,
   BTN_PRIMARY,
 } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
@@ -185,12 +187,7 @@ export const Trade = () => {
                 <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-3.5 text-[clamp(23px,2.6vw,40px)] leading-[1.1]">
                   {item.title}
                 </h2>
-                <div
-                  className={cn(
-                    SUBTITLE,
-                    "max-w-none mt-3.5 md:mt-4 !text-[clamp(17px,0.55vw_+_13.5px,23px)] !leading-[1.6]",
-                  )}
-                >
+                <div className={cn(SUBTITLE, "max-w-none mt-3.5 md:mt-4")}>
                   {item.body}
                 </div>
               </section>
@@ -207,19 +204,10 @@ export const Trade = () => {
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-end">
             <div className="lg:col-span-7">
               <p className={cn(EYEBROW, "m-0 mb-3.5")}>Start a project</p>
-              <h2
-                className="font-display tracking-[-0.018em] text-balance text-ink m-0 leading-[1.0]"
-                style={{
-                  fontVariationSettings: '"opsz" 48, "wght" 700',
-                  fontWeight: 700,
-                  fontSize: "clamp(34px,5.4vw,92px)",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 0.92,
-                }}
-              >
+              <h2 className={cn(TITLE, "max-w-none m-0")}>
                 Make a trade enquiry.
               </h2>
-              <p className={cn(SUBTITLE, "max-w-none mt-3.5 md:mt-4 !text-[clamp(18px,0.6vw_+_14.4px,25px)] !leading-[1.55]")}>
+              <p className={cn(SUBTITLE, "max-w-none mt-3.5 md:mt-4")}>
                 Tell us about the project — the spaces, the scale, and whether
                 you are after editions, framing or a bespoke commission. We
                 will reply personally, usually within a day or two, with
@@ -241,13 +229,16 @@ export const Trade = () => {
                 </button>
                 <Link
                   to="/contact"
-                  className="inline-flex items-center min-h-[44px] font-sans text-[clamp(14px,0.8vw,17px)] text-ink-muted hover:text-accent transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className={cn(
+                    META,
+                    "inline-flex items-center min-h-[44px] hover:text-accent transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                  )}
                 >
                   Or use the contact page
                   <span aria-hidden="true" className="ml-1.5">→</span>
                 </Link>
               </div>
-              <p className="font-sans font-normal text-[clamp(13px,0.75vw,16px)] leading-[1.6] text-ink-muted mt-4 m-0 break-words">
+              <p className={cn(META, "mt-4 m-0 break-words")}>
                 Or write directly to{" "}
                 <a
                   href="mailto:info@themandalacompany.com?subject=Trade%20%26%20Interior%20Design%20enquiry"

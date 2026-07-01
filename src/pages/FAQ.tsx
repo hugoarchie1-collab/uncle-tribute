@@ -245,8 +245,8 @@ const FaqMasthead = () => (
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[72ch] 3xl:max-w-[80ch]"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(21px, 2.5vw, 38px)",
-              lineHeight: 1.32,
+              fontSize: "clamp(20px, 2vw, 34px)",
+              lineHeight: 1.3,
             }}
           >
             On provenance, paper, editions, framing, hand-finishing, shipping
@@ -346,7 +346,7 @@ export const FAQ = () => {
                 <div className="flex items-baseline gap-4">
                   <span
                     aria-hidden
-                    className="font-display font-semibold leading-none text-accent/80 select-none shrink-0"
+                    className="font-display font-semibold leading-none text-accent select-none shrink-0"
                     style={{
                       fontVariationSettings: '"opsz" 32, "wght" 600',
                       fontSize: "clamp(20px,1.7vw,26px)",
@@ -359,13 +359,13 @@ export const FAQ = () => {
                 <h2
                   id={`faq-q-${i}`}
                   className={cn(
-                    "font-display font-semibold tracking-[-0.035em] text-balance text-ink m-0 mt-2",
+                    "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-balance text-ink m-0 mt-2",
                     "text-[clamp(22px,2.2vw,36px)] leading-[1.06]",
                   )}
                 >
                   {qa.question}
                 </h2>
-                <div className={cn(SUBTITLE, "max-w-none mt-3 md:mt-3.5 !text-[clamp(17px,1vw,22px)] !leading-[1.6]")}>
+                <div className={cn(SUBTITLE, "max-w-none mt-3 md:mt-3.5")}>
                   {qa.answer}
                 </div>
               </section>

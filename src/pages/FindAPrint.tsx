@@ -7,7 +7,7 @@ import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
-import { EYEBROW, EYEBROW_TIGHT, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, SUBTITLE, META, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import {
@@ -216,7 +216,7 @@ export const FindAPrint = () => {
           <div className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
             <Reveal as="div">
               <p
-                className="mx-auto max-w-[88ch] font-sans font-normal text-[17px] md:text-[clamp(18px,1.05vw,23px)] leading-[1.6] text-ink/85 text-pretty m-0"
+                className={cn(SUBTITLE, "mx-auto max-w-[88ch] text-pretty m-0")}
                 style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
@@ -382,7 +382,7 @@ export const FindAPrint = () => {
                     {painting.title}
                   </h2>
                   <p
-                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink/70 m-0"
+                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink-muted m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
                     Estate-stamped giclée · from {fmtP(getLowestTierPricePence(painting))}
@@ -394,7 +394,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className="font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.7] text-ink-muted mt-6">
+          <p className={cn(META, "leading-[1.7] mt-6")}>
             Nothing matches all of those at once.{" "}
             <button
               type="button"

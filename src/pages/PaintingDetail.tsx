@@ -145,6 +145,7 @@ const SPEC_VALUE = "font-sans text-[15px] leading-[1.55] text-ink";
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
 // of running prose is exactly one size. Colour is applied per-block on the two
 // sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
+const BODY = "font-sans font-normal text-[clamp(15px,0.9vw,18px)] leading-[1.6]";
 const BTN_PRIMARY =
   "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
@@ -1303,7 +1304,7 @@ const BuyBox = ({
           name in TRUE Fraunces italic (PDP_TITLE), then the artist + life-dates
           byline in roman — restoring the title → artist → facts hierarchy. */}
       {collection && (
-        <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-3">
+        <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>
           {collection.title.split(" — ")[0]}
         </p>
       )}
@@ -1441,13 +1442,13 @@ const BuyBox = ({
         {colourwaySet && (
           <div className={cn("mt-6", CARD)}>
             <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5")}>The complete colourway set</p>
-            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.65] text-ink-muted m-0 mb-4">
+            <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
               for this work — {colourwaySetNames} — each an estate-stamped{" "}
               {selectedTier.label} {selectedTier.size.split(" ")[0]} print, the
               colours exactly as he left them.
             </p>
-            <p className="font-sans text-[14px] text-ink m-0 mb-1.5">
+            <p className={cn(META, "text-ink m-0 mb-1.5")}>
               <span className="font-display font-semibold tracking-[-0.02em] text-[22px] mr-2.5">
                 {fmtP(colourwaySet.bundlePricePence)}
               </span>
@@ -1523,7 +1524,7 @@ const BuyBox = ({
                 Finish your piece
               </span>
             </legend>
-            <p className="font-sans text-[clamp(14.5px,0.6vw,18px)] leading-[1.55] text-ink/70 m-0 mb-4">
+            <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
               Take it further than the print alone — framed ready to hang, or
               hand-finished by the estate. Both are optional and made to order.
             </p>
@@ -1554,7 +1555,7 @@ const BuyBox = ({
                     onChange={(e) => onFramingChange(e.target.checked)}
                     className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
                   />
-                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
                     <span className="flex items-baseline justify-between gap-3">
                       <strong className="text-ink">Bespoke framing</strong>
                       {framingPriceLabel && (
@@ -1575,7 +1576,7 @@ const BuyBox = ({
                         shipping surcharge (the estate absorbs delivery), so this
                         is a positive note, not a DMCC drip-pricing disclosure. */}
                     {framingActive && (
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink/70 mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
                         Framed and delivered free — UK, Europe and Worldwide.
                         No delivery charge is added at checkout.
                       </span>
@@ -1591,12 +1592,12 @@ const BuyBox = ({
                   finish never toggles the framing checkbox. Monochrome (#7). */}
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
-                  <p className="font-sans text-[12.5px] leading-[1.5] text-ink/55 m-0">
+                  <p className="font-sans text-[12.5px] leading-[1.5] text-ink-muted m-0">
                     Choose your finish — every option is included, no extra
                     charge.
                   </p>
                   <div className="flex flex-col gap-1.5">
-                    <span className={cn(EYEBROW_TIGHT, "text-ink/55")}>Frame</span>
+                    <span className={EYEBROW_TIGHT}>Frame</span>
                     <div className="flex flex-wrap gap-1.5">
                       {FRAME_STYLES.map((f) => (
                         <button
@@ -1623,7 +1624,7 @@ const BuyBox = ({
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <span className={cn(EYEBROW_TIGHT, "text-ink/55")}>
+                    <span className={EYEBROW_TIGHT}>
                       Glazing
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -1663,7 +1664,7 @@ const BuyBox = ({
                     onChange={(e) => onEmbellishedChange(e.target.checked)}
                     className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
                   />
-                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink/85 min-w-0">
+                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
                     <span className="flex items-baseline justify-between gap-3">
                       <strong className="text-ink">
                         Hand-finished by Polly Wedge
@@ -1674,7 +1675,7 @@ const BuyBox = ({
                         </span>
                       )}
                     </span>
-                    <span className="text-ink/55">{EMBELLISHMENT_NOTE}</span>
+                    <span className="text-ink-muted">{EMBELLISHMENT_NOTE}</span>
                     <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
                   </span>
                 </label>
@@ -1907,7 +1908,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         <p className={cn(EYEBROW_MUTED, "m-0 mt-4 mb-4")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(24px,3vw,48px)] leading-[1.18] text-ink m-0 mb-3 text-balance"
+            className="font-display italic font-normal tracking-[-0.015em] text-[clamp(22px,2.6vw,40px)] leading-[1.18] text-ink m-0 mb-3 text-balance"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
           >
             &ldquo;{painting.artistQuote}&rdquo;
@@ -1928,7 +1929,7 @@ const Story = ({ painting }: { painting: Painting }) => (
           vertically; tightened paragraph rhythm + leading. */}
       <Reveal
         as="div"
-        className="max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink/85"
+        className="max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink-muted"
       >
         {painting.description.split("\n\n").map((para, i) => (
           <p key={i} className="m-0">{para}</p>
@@ -1947,7 +1948,7 @@ const Story = ({ painting }: { painting: Painting }) => (
             with a printed catalogue. printer line reuses
             ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
-        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.6] text-ink/90 m-0 mb-4">
+        <p className={cn(BODY, "text-ink m-0 mb-4")}>
           Every print is made to order &mdash; never warehoused. When your order
           is placed it is hand-rolled and prepared by Point&nbsp;101 in London,
           the United Kingdom&rsquo;s leading giclée atelier, the same studio
@@ -1979,7 +1980,7 @@ const Story = ({ painting }: { painting: Painting }) => (
 
         <Separator className="bg-line my-5" />
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Original print</p>
-        <p className="font-sans font-normal text-[clamp(15px,0.95vw,18px)] leading-[1.6] text-ink/85 m-0">
+        <p className={cn(BODY, "text-ink-muted m-0")}>
           {ORIGINAL_PRINT_SPEC}
         </p>
       </Reveal>
@@ -2159,7 +2160,7 @@ const StickyAddBar = ({
             style={{ background: selected.hex }}
           />
           <span className="flex flex-col leading-tight min-w-0 flex-1">
-            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
+            <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink [font-variant-numeric:tabular-nums]">
@@ -2192,7 +2193,7 @@ const StickyAddBar = ({
             style={{ background: selected.hex }}
           />
           <span className="flex flex-col leading-tight min-w-0">
-            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 truncate">
+            <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[16px] text-ink">

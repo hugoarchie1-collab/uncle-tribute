@@ -20,6 +20,9 @@ import {
 import {
   EYEBROW,
   EYEBROW_MUTED,
+  TITLE,
+  SUBTITLE,
+  META,
   BTN_PRIMARY,
   BTN_SECONDARY,
 } from "../components/ui/tokens";
@@ -247,17 +250,14 @@ export const Gift = () => {
           // fills a confident measure toward the envelope edges.
           <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-8 md:py-12">
             <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")}>In your basket</p>
-            <p
-              className="font-display font-semibold tracking-[-0.025em] text-[clamp(32px,5.4vw,84px)] leading-[1.04] text-ink m-0 max-w-[18ch] mx-auto text-balance"
-              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
-            >
+            <p className={cn(TITLE, "m-0 max-w-[18ch] mx-auto")}>
               A gift card of{" "}
               <span className="text-accent">
                 {fmtP(added.amountPence)}
               </span>{" "}
               is in your basket.
             </p>
-            <p className="font-sans font-normal text-[clamp(16px,1vw,21px)] leading-[1.6] text-ink-muted m-0 mt-5 md:mt-6 max-w-[64ch] mx-auto">
+            <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6 max-w-[64ch] mx-auto")}>
               The amount you see is exactly what you'll pay — nothing is added
               at checkout. You can add another, or proceed when you're ready.
             </p>
@@ -319,7 +319,7 @@ export const Gift = () => {
                       </span>
                       <span
                         className={cn(
-                          "font-display font-semibold tracking-[-0.025em] text-[clamp(28px,3.2vw,48px)] leading-none block",
+                          "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.025em] text-[clamp(28px,3.2vw,48px)] leading-none block",
                           isSelected ? "text-accent" : "text-ink",
                         )}
                       >
@@ -349,7 +349,7 @@ export const Gift = () => {
                   <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
                     Custom amount
                   </span>
-                  <span className="font-sans font-normal text-[clamp(14px,0.85vw,18px)] text-ink-muted">
+                  <span className={cn(META, "block")}>
                     Any whole-pound value from {fmtP(GIFT_MIN_PENCE)} to{" "}
                     {fmtP(GIFT_MAX_PENCE)}.
                   </span>
@@ -364,7 +364,7 @@ export const Gift = () => {
                   <div className="relative">
                     <span
                       aria-hidden="true"
-                      className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-[clamp(15px,0.85vw,18px)] text-ink-muted"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-[16px] text-ink-muted"
                     >
                       £
                     </span>
@@ -380,7 +380,7 @@ export const Gift = () => {
                         setCustomAmount(e.target.value);
                         setError("");
                       }}
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={String(minPounds)}
                     />
                   </div>
@@ -408,7 +408,7 @@ export const Gift = () => {
                     autoComplete="name"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="Their name"
                   />
                 </label>
@@ -422,7 +422,7 @@ export const Gift = () => {
                     autoComplete="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="them@example.com"
                   />
                 </label>
@@ -437,11 +437,11 @@ export const Gift = () => {
                   value={giftMessage}
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={400}
-                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[clamp(15px,0.85vw,18px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                   placeholder="A few words to go with the gift."
                 />
               </label>
-              <p className="font-sans font-normal text-[clamp(12.5px,0.7vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2 max-w-[72ch]">
+              <p className={cn(META, "m-0 mt-2 max-w-[72ch]")}>
                 Leave these blank to gift the card to yourself to pass on by
                 hand. The amount is charged at checkout exactly as shown — there
                 is no delivery cost on a gift card.
@@ -462,11 +462,11 @@ export const Gift = () => {
                     state — no new copy) so the sticky rail carries figure +
                     label + reassurance + button instead of stranding a void. */}
                 {resolved && (
-                  <p className="font-sans text-[clamp(13px,0.8vw,16px)] text-ink-muted m-0 mt-3 border-t border-line pt-3">
+                  <p className={cn(META, "m-0 mt-3 border-t border-line pt-3")}>
                     {resolved.label}
                   </p>
                 )}
-                <p className="font-sans font-normal text-[clamp(13.5px,0.8vw,17px)] leading-[1.6] text-ink-muted m-0 mt-5 max-w-[40ch]">
+                <p className={cn(META, "m-0 mt-5 max-w-[40ch]")}>
                   The figure you choose is exactly what you pay — nothing is
                   added at checkout, and a gift card carries no delivery cost.
                 </p>
@@ -479,7 +479,7 @@ export const Gift = () => {
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
                 {error && (
-                  <p role="alert" className="mt-4 font-sans text-[clamp(13px,0.75vw,16px)] text-accent m-0">
+                  <p role="alert" className={cn(META, "mt-4 m-0 text-accent")}>
                     {error}
                   </p>
                 )}
