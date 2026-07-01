@@ -327,12 +327,12 @@ export const Basket = () => {
     <div className="relative min-h-screen flex flex-col">
       <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v2.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-10" data-wide={isEmpty ? undefined : "true"}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
             clamp ≤116px) instead of the old over-bold 700/opsz-48 logo. */}
-        <Reveal as="div" className="mb-6 md:mb-7">
+        <Reveal as="div" className="mb-9 md:mb-12">
           <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
             <span className={EYEBROW}>Made to order</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -348,7 +348,7 @@ export const Basket = () => {
 
         {isEmpty ? (
           <Reveal as="div" className="max-w-[820px] 3xl:max-w-[920px]">
-            <p className={cn(SUBTITLE, "m-0 mb-5 md:mb-6")}>
+            <p className={cn(SUBTITLE, "m-0 mb-7 md:mb-8")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.
             </p>
@@ -359,8 +359,8 @@ export const Basket = () => {
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
                 beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
             {BEGIN_WITH_PICKS.length > 0 && (
-              <div className="mt-6">
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Begin with these</p>
+              <div className="mt-12 md:mt-14">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
                     <li key={painting.id} className="m-0 min-w-0">
@@ -397,7 +397,9 @@ export const Basket = () => {
               </div>
             )}
 
-            <NewsletterSignup variant="inline" />
+            <div className="mt-12 md:mt-14">
+              <NewsletterSignup variant="inline" />
+            </div>
           </Reveal>
         ) : (
           // TWO-COLUMN ORDER LAYOUT (Awwwards fill-the-width pass) — line items
@@ -405,7 +407,7 @@ export const Basket = () => {
           // as a sticky card, both on ONE shared centred axis. This replaces the
           // old single narrow stacked column that left large empty side margins
           // on wide screens. Below lg it stacks: items, then summary.
-          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-x-12 xl:gap-x-16 gap-y-10 md:gap-y-12 items-start">
             <div className="min-w-0">
             {lines.length > 0 && (
             <Reveal as="div">
@@ -530,7 +532,7 @@ export const Basket = () => {
             )}
 
             {giftCards.length > 0 && (
-              <Reveal as="div" className={lines.length > 0 ? "mt-2" : ""}>
+              <Reveal as="div" className={lines.length > 0 ? "mt-6" : ""}>
                 {lines.length === 0 && <Separator className="bg-line mb-4" />}
                 <ul className="list-none p-0 m-0 flex flex-col">
                   {giftCards.map((g: GiftBasketItem) => (
@@ -578,7 +580,7 @@ export const Basket = () => {
                 The hairline ring frames it as an authored panel rather than a
                 bare stacked block, and keeps the right column from reading as
                 empty space. */}
-            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-5 md:px-7 md:py-6">
+            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-6 md:px-7 md:py-8">
               <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Order summary</p>
 
               {/* PRICE BREAKDOWN — DMCC #13: the genuine pre-discount subtotal,

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
@@ -288,7 +288,7 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-4 md:mt-5 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-8 md:mt-12 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -372,7 +372,7 @@ const ComposeSetCard = () => {
   return (
     <Reveal
       as="div"
-      className="mt-4 md:mt-5 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-8 md:mt-12 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -492,7 +492,7 @@ const CatalogueSetCard = () => {
   return (
     <Reveal
       as="section"
-      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-6 md:pb-9"
+      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-16 md:pb-24"
     >
       <div
         className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
@@ -564,7 +564,7 @@ export const Collections = () => {
         description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery."
         url="/collections"
       />
-      <Nav overlay />
+      <CosmicFilmHeader />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -627,7 +627,7 @@ export const Collections = () => {
             name or count the collections, so it never goes stale. */}
         <Reveal
           as="div"
-          className={cn(PAGE_ENVELOPE, "relative pt-16 md:pt-20 pb-4 md:pb-5")}
+          className={cn(PAGE_ENVELOPE, "relative pt-16 md:pt-20 pb-10 md:pb-16")}
         >
           <PageMasthead
             eyebrow="Everything he finished"
@@ -761,7 +761,7 @@ export const Collections = () => {
               ref={sectionRefs[collIndex]}
               className="relative scroll-mt-24"
             >
-              <div className={cn(PAGE_ENVELOPE, "relative pt-2 md:pt-3 pb-6 md:pb-8")}>
+              <div className={cn(PAGE_ENVELOPE, "relative pt-10 md:pt-16 pb-10 md:pb-16")}>
                 <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-4 md:mb-6">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
@@ -910,7 +910,7 @@ export const Collections = () => {
         {/* Hairline divider so the two stacked set-cards read as TWO distinct
             offers, not one conjoined dark block (Hugo). */}
         <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
-          <div aria-hidden="true" className="h-px bg-ink/50 my-4 md:my-6" />
+          <div aria-hidden="true" className="h-px bg-ink/50 my-8 md:my-12" />
         </div>
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across

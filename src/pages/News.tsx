@@ -36,7 +36,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
@@ -204,7 +204,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 // column beside a wide prose block. The verbatim Seo/description copy is
 // unchanged; this is page-framing microcopy only (the page owns its headings).
 const NewsMasthead = () => (
-  <section className="relative pt-6 md:pt-7 pb-4 md:pb-5">
+  <section className="relative pt-10 md:pt-14 pb-8 md:pb-10">
     <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -303,8 +303,8 @@ export const News = () => {
         description="Up-and-coming releases, exhibitions, workshops and events from the estate of Stephen Meakin — The Mandala Company."
         url="/news"
       />
-      <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-8 md:pb-10">
+      <CosmicFilmHeader />
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-16 md:pb-24">
         {/* MASTHEAD — CENTRED front cover on the page's single axis (the
             FAQ/Memories recipe). Replaces the old left-aligned split that
             stranded a half-empty eyebrow column beside the prose block. */}
@@ -316,8 +316,8 @@ export const News = () => {
             paragraph stacked above a lonely panel. Everything here is announced
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <section className="border-t border-line pt-5 md:pt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-6 items-stretch">
+          <section className="border-t border-line pt-8 md:pt-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-10 items-stretch">
               {/* The programme note — estate voice, set as a designed lead that
                   fills its half of the spread (NOT a thin half-empty column). */}
               <Reveal as="div" className="lg:col-span-6 flex flex-col">
@@ -384,7 +384,7 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="border-t border-line pt-5 md:pt-6 mb-6 md:mb-7"
+            className="border-t border-line pt-8 md:pt-12 mb-10 md:mb-14"
           >
             {/* CENTRED HEADER — the status eyebrow + section heading on a shared
                 top axis, so the whole feature hangs from one centred spine. */}
@@ -449,7 +449,7 @@ export const News = () => {
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-4 md:mb-5 flex flex-wrap items-center gap-2.5 border-b border-line pb-4"
+              className="mb-8 md:mb-10 flex flex-wrap items-center gap-2.5 border-b border-line pb-4"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
@@ -488,7 +488,7 @@ export const News = () => {
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-5 md:mt-6")}
+                  className={cn(gi > 0 && "mt-10 md:mt-14")}
                 >
                   <Reveal
                     as="div"
@@ -518,7 +518,7 @@ export const News = () => {
             both scroll here. While the feed is empty the waitlist in the
             empty-state above is the single, leading capture (no duplicate panel). */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-5 md:mt-6 scroll-mt-28 border-t border-line pt-5 md:pt-6">
+          <Reveal as="section" delay={0.05} className="mt-10 md:mt-14 scroll-mt-28 border-t border-line pt-8 md:pt-12">
             <div id="notify">
               <NewsletterSignup
                 variant="panel"

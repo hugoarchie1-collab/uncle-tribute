@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
@@ -182,8 +182,8 @@ export const FindAPrint = () => {
         />
       </div>
 
-      <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-8 md:pb-12">
+      <CosmicFilmHeader />
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
@@ -199,7 +199,7 @@ export const FindAPrint = () => {
             <span aria-hidden className="h-px flex-1 bg-ink/15" />
           </Reveal>
 
-          <Reveal as="div" className="mt-4 md:mt-5">
+          <Reveal as="div" className="mt-6 md:mt-8">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}
@@ -213,7 +213,7 @@ export const FindAPrint = () => {
               clear, generous step below the headline (canonical heading→subtitle
               gap), under a hairline. Sized in proportion to the masthead as a true
               lead, not a caption. The verbatim copy is unchanged. */}
-          <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+          <div className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
             <Reveal as="div">
               <p
                 className="mx-auto max-w-[88ch] font-sans font-normal text-[17px] md:text-[clamp(18px,1.05vw,23px)] leading-[1.6] text-ink/85 text-pretty m-0"
@@ -240,7 +240,7 @@ export const FindAPrint = () => {
               sits above a centred swatch row, with the live count + reset
               centred below (no off-axis justify-between row, no big gap before
               the grid). */}
-          <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+          <Reveal as="div" className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The colour lens
             </p>
@@ -281,7 +281,7 @@ export const FindAPrint = () => {
           {/* Intention lens — a meaning-led way in, sitting beside the colour
               lens. Each chip maps to the paintings whose own documented meaning
               carries that intention (INTENTIONS, above). */}
-          <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+          <Reveal as="div" className="mt-8 md:mt-10 border-t border-line pt-6 md:pt-8">
             <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
               The intention lens
             </p>
@@ -312,7 +312,7 @@ export const FindAPrint = () => {
           </Reveal>
 
           {/* Live count + reset — reflects BOTH lenses (colour ∩ intention). */}
-          <Reveal as="div" className="mt-4 flex flex-wrap items-center justify-center gap-4">
+          <Reveal as="div" className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-4">
             <p
               role="status"
               aria-live="polite"
@@ -344,7 +344,7 @@ export const FindAPrint = () => {
             scene (it drifts ±6% across the whole page, no per-section fade). The
             grid sits tight under the masthead's hairline — no min-h spacer, no
             big gap — so the page reads as one dense editorial block. */}
-        <section className="mt-6 md:mt-8">
+        <section className="mt-12 md:mt-20">
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of
             floating centred with dead gutters. auto-fill + minmax keeps the old

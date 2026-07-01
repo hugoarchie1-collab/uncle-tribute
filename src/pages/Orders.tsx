@@ -72,7 +72,7 @@ export const Orders = () => {
     <div className="relative min-h-screen flex flex-col overflow-x-hidden">
       <SceneBackdrop src="/img/scenes/orders-lupine-blur-v2.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-20 md:pb-28">
         <Reveal>
           <PageMasthead
             eyebrow="Orders & returns"
@@ -85,7 +85,7 @@ export const Orders = () => {
           />
         </Reveal>
 
-        <div className="mt-7 md:mt-9 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start border-t border-line pt-6 md:pt-8">
+        <div className="mt-10 md:mt-14 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-14 items-start border-t border-line pt-10 md:pt-12">
           {/* TRACK AN ORDER */}
           <Reveal as="div" className="lg:col-span-7">
             <form onSubmit={onSubmit} noValidate>

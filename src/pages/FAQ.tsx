@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -211,7 +211,7 @@ const FaqMasthead = () => (
   // backdrop must never out-shout the text). Whole-element, not per-glyph, so
   // gotcha #2 (no SplitReveal blockiness) is not triggered.
   <section
-    className={cn(SECTION, "pt-10 md:pt-12 pb-4 md:pb-4")}
+    className={cn(SECTION, "pt-12 md:pt-16 pb-8 md:pb-12")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
@@ -318,7 +318,7 @@ export const FAQ = () => {
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
         url="/faq"
       />
-      <Nav overlay />
+      <CosmicFilmHeader />
       <main className="relative z-10 flex-1">
         {/* 1 · MASTHEAD — bold left-aligned front cover. */}
         <FaqMasthead />
@@ -330,7 +330,7 @@ export const FAQ = () => {
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
         <section
-          className={cn(SECTION, "pb-6 md:pb-8")}
+          className={cn(SECTION, "pb-16 md:pb-24")}
           style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
         >
           <Reveal
@@ -341,7 +341,7 @@ export const FAQ = () => {
               <section
                 key={i}
                 aria-labelledby={`faq-q-${i}`}
-                className="relative flex flex-col pt-5 md:pt-6 pb-5 md:pb-6 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col pt-7 md:pt-8 pb-7 md:pb-8 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span

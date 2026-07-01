@@ -218,7 +218,7 @@ export const Search = () => {
       <SceneBackdrop src="/img/scenes/search-woodland-blurmod-v1.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-20 md:pb-28">
         {/* MASTHEAD — the refined estate front cover carrying the query (eyebrow
             + hairline meta rule → a composed Fraunces display title, never shouty). */}
         <header>
@@ -286,7 +286,7 @@ export const Search = () => {
                       ))}
                     </div>
                   ) : (
-                    <ul className="m-0 mt-2 list-none p-0">
+                    <ul className="m-0 mt-4 md:mt-5 list-none p-0">
                       {bucket.map(({ doc }) => (
                         <ResultRow key={doc.id} doc={doc} />
                       ))}

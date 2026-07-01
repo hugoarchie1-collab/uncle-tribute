@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -106,9 +106,9 @@ export const Trade = () => {
         description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
         url="/trade"
       />
-      <Nav overlay />
+      <CosmicFilmHeader />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-10">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-16 md:pb-24">
         {/* ── MASTHEAD ── The refined shared front cover: meta rule (eyebrow +
             "By introduction") → a composed Fraunces display title (wght 560,
             opsz 144 — never the old bold logo) → the framing passage packed
@@ -155,7 +155,7 @@ export const Trade = () => {
             each opening with a big ghost numeral + hairline so they read as
             composed plates rather than an endless scroll. Verbatim body copy
             unchanged. */}
-        <section className="py-5 md:py-7">
+        <section className="py-10 md:py-14">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
             <p className={cn(EYEBROW, "m-0")}>How the estate works with projects</p>
             <p className={cn(EYEBROW_MUTED, "m-0")}>Three ways in</p>
@@ -203,7 +203,7 @@ export const Trade = () => {
             and the direct-email fallback on the right. Commerce-free — opens
             the shared EnquireModal; quiet /contact + mailto paths preserved
             byte-for-byte. */}
-        <section className="py-5 md:py-7">
+        <section className="py-10 md:py-14">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-end">
             <div className="lg:col-span-7">
               <p className={cn(EYEBROW, "m-0 mb-3.5")}>Start a project</p>

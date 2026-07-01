@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -1826,7 +1826,7 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-10 md:mt-12"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-14 md:mt-20"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ?? "the estate"}
@@ -1911,7 +1911,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         sticky so the eye keeps it while the longer prose scrolls; the grid
         columns are balanced (1.7fr ↔ 1fr) so the prose fills the width and
         runs SHORTER vertically. */}
-    <div className="mt-6 md:mt-7 grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-x-10 xl:gap-x-14 gap-y-8 items-start">
+    <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-x-10 xl:gap-x-14 gap-y-8 items-start">
       {/* PRIMARY — the painting's own words (verbatim description). Wider
           measure (80ch) so the prose fills the column and the block is shorter
           vertically; tightened paragraph rhythm + leading. */}
@@ -2574,9 +2574,9 @@ export const PaintingDetail = () => {
       </div>
 
       <div className="relative z-[1] isolate">
-        <Nav />
+        <CosmicFilmHeader />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-6 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-16">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-24">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
@@ -2787,8 +2787,8 @@ export const PaintingDetail = () => {
               as the hero/page so the editorial spread fills the width instead
               of collapsing to a narrow column. Read after the buyer has seen
               the price + options. */}
-          <div className="mt-9 md:mt-10">
-            <Separator className="bg-line mb-6 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
+          <div className="mt-12 md:mt-16">
+            <Separator className="bg-line mb-8 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
             <Story painting={painting} />
             <ProvenancePanel />
           </div>

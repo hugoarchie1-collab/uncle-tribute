@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Nav } from "../components/Nav";
+import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -178,12 +178,12 @@ export const Gift = () => {
         description="Give a piece of Stephen Meakin's work. A digital gift card towards any estate-stamped print — choose a size-pegged amount or a custom value, add a personal message, and let the recipient choose the print that speaks to them."
         url="/gift"
       />
-      <Nav overlay />
+      <CosmicFilmHeader />
       {/* Canonical centred envelope (1320/1500/1720/1880) — the SAME axis +
           measure as Collections + About, so /gift sits on the one centred
           vertical axis the rest of the site shares (Hugo: "nothing is centred
           properly"). */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-8 md:pb-10">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20 pb-20 md:pb-28">
         {/* ── MASTHEAD ─────────────────────────────────────────────────────
             The refined shared <PageMasthead>: eyebrow + hairline meta rule →
             a composed Fraunces statement (wght 560, one italic emphasis word,
@@ -191,7 +191,7 @@ export const Gift = () => {
             The denomination range is surfaced in the meta row as a quiet
             commerce fact (figures read LIVE from GIFT_MIN/MAX_PENCE in the
             buyer's currency — never re-typed). */}
-        <Reveal className="mb-5 md:mb-6">
+        <Reveal className="mb-10 md:mb-16">
           <PageMasthead
             eyebrow="Gift an edition"
             meta={
@@ -245,7 +245,7 @@ export const Gift = () => {
           // narrow 64ch column with a wide empty right margin). The eyebrow now
           // sits above the statement on the same centred axis; the headline
           // fills a confident measure toward the envelope edges.
-          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-5 md:py-8">
+          <Reveal as="section" className="mx-auto max-w-[1040px] 3xl:max-w-[1240px] text-center py-8 md:py-12">
             <p className={cn(EYEBROW, "m-0 mb-4 md:mb-5")}>In your basket</p>
             <p
               className="font-display font-semibold tracking-[-0.025em] text-[clamp(32px,5.4vw,84px)] leading-[1.04] text-ink m-0 max-w-[18ch] mx-auto text-balance"
@@ -282,7 +282,7 @@ export const Gift = () => {
           // optional recipient details + a sticky "your gift" summary. Section
           // headings carry a numeral so the two acts read as a deliberate
           // sequence, not a stack of separators floating in air.
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-6 md:gap-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 2xl:gap-x-16 gap-y-10 md:gap-y-12">
             {/* ACT 01 — Choose an amount (the denser denomination grid) */}
             <Reveal as="section" className="lg:col-span-7">
               <div className="flex items-baseline gap-3 border-t border-line pt-3 mb-3 md:mb-4">
