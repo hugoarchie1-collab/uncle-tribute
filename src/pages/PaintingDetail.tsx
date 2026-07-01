@@ -2696,7 +2696,7 @@ export const PaintingDetail = () => {
                           alt={paintingImageAlt(painting.title, selected.name)}
                           width={heroDims.w}
                           height={heroDims.h}
-                          className="block mx-auto h-auto w-auto max-w-full max-h-[64vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
+                          className="block mx-auto h-auto w-auto max-w-full max-h-[80vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
                         />
                       </motion.picture>
                     </AnimatePresence>

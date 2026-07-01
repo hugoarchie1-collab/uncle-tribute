@@ -401,7 +401,7 @@ const AboutMasthead = () => (
       {/* His portrait — the first image you see, set beside his name (Hugo:
           "next to his title… avoid blank space… flawless luxury"). A contained,
           evenly-feathered plate that fills what was dead space at the cover. */}
-      <Reveal as="figure" className="m-0 max-w-[360px] lg:max-w-none lg:col-span-4">
+      <Reveal as="figure" className="m-0 mx-auto max-w-[440px] md:max-w-[600px] lg:max-w-none lg:col-span-4">
         <ImageReveal
           src="/img/about/12-stephen-portrait.jpg"
           alt="Stephen Meakin"
