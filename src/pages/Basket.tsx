@@ -325,7 +325,7 @@ export const Basket = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blurmod-v1.webp" />
+      <SceneBackdrop src="/img/scenes/basket-palm-galaxy-blur-v2.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-8 md:pb-10" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
