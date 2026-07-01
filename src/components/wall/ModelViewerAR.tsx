@@ -203,32 +203,31 @@ export const ModelViewerAR = ({
   };
 
   return (
-    <div className={cn("relative", className)}>
-      {moduleReady && !moduleError ? (
+    <div className={cn("relative overflow-hidden", className)}>
+      {/* model-viewer sits BEHIND, with NO camera-controls — so there is no
+          spinnable floating 3D "object", it's purely the device-AR launcher.
+          The artwork image below covers it and always shows the WHOLE print. */}
+      {moduleReady && !moduleError && (
         <model-viewer
           ref={viewerRef as React.RefObject<HTMLElement>}
           ios-src={iosSrc}
           ar-modes="webxr scene-viewer quick-look"
           ar-placement="wall"
           ar-scale="fixed"
-          camera-controls
-          disable-pan
-          camera-orbit={DEFAULT_ORBIT}
-          min-camera-orbit="auto 55deg 0.6m"
-          max-camera-orbit="auto 110deg 2.4m"
           interaction-prompt="none"
           shadow-intensity="0.4"
-          shadow-softness="1"
           environment-image="neutral"
-          style={{ width: "100%", height: "100%", backgroundColor: "transparent" }}
-        />
-      ) : (
-        <img
-          src={poster}
-          alt={alt}
-          className="absolute inset-0 h-full w-full object-contain"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", backgroundColor: "transparent" }}
         />
       )}
+
+      {/* THE FULL PRINT — the complete square image, never a cropped centre. */}
+      <img
+        src={poster}
+        alt={alt}
+        className="pointer-events-none absolute inset-0 h-full w-full object-contain p-4"
+        style={{ filter: "drop-shadow(0 16px 30px rgba(0,0,0,0.5))" }}
+      />
 
       {/* Soft gradient so the button/label reads over any artwork */}
       <div

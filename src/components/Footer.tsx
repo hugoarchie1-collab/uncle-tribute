@@ -74,7 +74,7 @@ const EXPLORE_LINKS = [
 const ESTATE_LINKS = [
   { to: "/about", label: "About Stephen" },
   { to: "/news", label: "News" },
-  { to: "/memories", label: "Memories" },
+  { to: "/memories", label: "The Pin Board" },
   { to: "/auth", label: "Authenticate" },
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },

@@ -37,7 +37,7 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
   {
     heading: "Connect",
     links: [
-      { to: "/memories", label: "Memories" },
+      { to: "/memories", label: "The Pin Board" },
       { to: "/auth", label: "Authenticate" },
       { to: "/contact", label: "Contact" },
     ],

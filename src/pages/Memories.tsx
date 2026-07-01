@@ -761,7 +761,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
           className={cn(EYEBROW, "shrink-0")}
           style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
         >
-          Book of Memories
+          The Pin Board
         </span>
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
         <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
@@ -786,7 +786,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.6]")}
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
           >
-            A wall, in his own words &amp; yours
+            A pin board, in his own words &amp; yours
           </p>
         </Reveal>
         <Reveal as="div" delay={0.1} className="mx-auto max-w-[920px] 3xl:max-w-[1040px]">
@@ -872,7 +872,7 @@ export const Memories = () => {
         />
       </div>
       <Seo
-        title="Book of Memories"
+        title="The Pin Board"
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
         url="/memories"
       />

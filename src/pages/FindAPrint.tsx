@@ -12,8 +12,14 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
-  getLowestTierPricePence,
+  PRINT_TIERS,
+  type PrintTier,
 } from "../data/paintings";
+
+// The editioned print sizes (A3–A0), newest→largest — the same ladder the
+// Collections size selector uses. Drives the browse-price "show me this size".
+const BROWSE_TIERS: PrintTier[] = PRINT_TIERS.filter((t) => t.available && !t.isOneOff);
+const sizeCode = (t: PrintTier): string => t.size.split(" ")[0]; // "A2 (42 × 42 cm)" → "A2"
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
@@ -57,6 +63,10 @@ const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = 
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
   const [intent, setIntent] = useState<Set<IntentionKey>>(new Set());
+  // Which size's price the browse grid shows — defaults to the A2 anchor.
+  const [browseTier, setBrowseTier] = useState<PrintTier>(
+    BROWSE_TIERS.find((t) => t.isAnchor) ?? BROWSE_TIERS[0],
+  );
   const reduceMotion = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
 
@@ -345,6 +355,33 @@ export const FindAPrint = () => {
             grid sits tight under the masthead's hairline — no min-h spacer, no
             big gap — so the page reads as one dense editorial block. */}
         <section className="mt-12 md:mt-20">
+        {/* Size / edition selector — the price on every tile follows the size
+            you pick (A3 → A0), instead of a flat "from £…". Mirrors the size
+            selector on Collections. */}
+        <div className="mb-7 md:mb-9 flex flex-wrap items-center gap-3">
+          <span className={cn(EYEBROW, "m-0")}>Prices for</span>
+          <div role="radiogroup" aria-label="Show prices for print size" className="flex flex-wrap gap-2">
+            {BROWSE_TIERS.map((t) => {
+              const sel = t.id === browseTier.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={sel}
+                  onClick={() => setBrowseTier(t)}
+                  className={cn(
+                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-sans text-[12px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                    sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
+                  )}
+                >
+                  {sizeCode(t)}
+                  <span className={cn("font-semibold", sel ? "text-bg/70" : "text-ink/55")}>{fmtP(t.pricePence)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
             masthead) so the tiles fill the full width edge-to-edge instead of
             floating centred with dead gutters. auto-fill + minmax keeps the old
@@ -385,7 +422,7 @@ export const FindAPrint = () => {
                     className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink-muted m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
-                    Estate-stamped giclée · from {fmtP(getLowestTierPricePence(painting))}
+                    Estate-stamped giclée · {sizeCode(browseTier)} {fmtP(browseTier.pricePence)}
                   </p>
                 </figcaption>
               </Link>
