@@ -6,7 +6,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -103,6 +103,17 @@ const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4x
  *  COMFORTABLE (never full-bleed), just one step wider as the type grows. */
 const READING = "mx-auto w-full max-w-[940px] 3xl:max-w-[1060px] 4xl:max-w-[1160px]";
 const READING_WIDE = "mx-auto w-full max-w-[1180px] 3xl:max-w-[1320px] 4xl:max-w-[1440px]";
+
+// ─── STANDOUT — the one interior "pull-line" display register ────────────────
+// The mid-tier standouts (ChapterStandout, the first-mandala line, the TAGA
+// legacy line) are a legitimately distinct register from the shared TITLE
+// (they're verbatim pull-lines spanning the measure, not chapter titles), but
+// they had drifted into three different bespoke clamps (25→48 / 28→62 / 24→52)
+// on two opsz values (36 vs 40). Locked here to ONE step so the register reads
+// as a single voice: Fraunces opsz-40 / wght-600, one clamp, one leading.
+const STANDOUT_CLASS =
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3.3vw,54px)] leading-[1.18] text-ink";
+const STANDOUT_STYLE = { fontVariationSettings: '"opsz" 40, "wght" 600' } as const;
 
 // ─── CHAPTERS — the page's editorial signature ("the rule and the year") ─────
 // One config array drives every ChapterHead AND the fixed chapter rail, so the
@@ -577,7 +588,7 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
           &ldquo;{item.a}&rdquo;
         </p>
       ) : (
-        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.9vw,26px)] leading-[1.6] text-ink m-0">
+        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] leading-[1.6] text-ink m-0">
           {item.a}
         </p>
       )}
@@ -661,8 +672,8 @@ const ChapterStandout = ({
     <Reveal as="div" className={cn(READING_WIDE, "text-center", className)}>
       <div aria-hidden className="mx-auto mb-4 md:mb-5 h-px w-16 bg-ink/15" />
       <p
-        className="font-display font-semibold tracking-[-0.02em] text-[clamp(25px,3.2vw,48px)] leading-[1.18] text-ink m-0 text-balance mx-auto max-w-[34ch]"
-        style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+        className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[34ch]")}
+        style={STANDOUT_STYLE}
       >
         {children}
       </p>
@@ -807,7 +818,7 @@ export const About = () => {
         url="/about"
       />
       {/* Intro film header — owned by another task; left exactly as-is. */}
-      <CosmicFilmHeader />
+      <Nav />
 
       <main className="relative isolate z-10">
         {/* 1 · MASTHEAD — image-free bold front cover (the opening passage
@@ -1091,8 +1102,8 @@ export const About = () => {
           <Reveal as="div" className={cn(READING_WIDE, "mt-4 md:mt-5 text-center")}>
             <div aria-hidden className="mx-auto mb-4 md:mb-5 h-px w-16 bg-ink/15" />
             <p
-              className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,4vw,62px)] leading-[1.15] text-ink m-0 text-balance mx-auto max-w-[18ch]"
-              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+              className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[18ch]")}
+              style={STANDOUT_STYLE}
             >
               {ABOUT.earlyLife[4]}
             </p>
@@ -1178,7 +1189,7 @@ export const About = () => {
             {TRADITIONS.map((t) => (
               <div key={t.numeral} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
-                <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.7vw,28px)] leading-[1.3] text-ink m-0 text-balance">
+                <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] leading-[1.3] text-ink m-0 text-balance">
                   {t.name}
                 </p>
               </div>
@@ -1255,7 +1266,7 @@ export const About = () => {
               outranks it; no other internal edits). */}
           <Reveal as="div" className="mb-6 md:mb-8">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
-            <h3 className="font-display italic font-normal tracking-[-0.02em] text-[clamp(24px,2.4vw,42px)] leading-[1.1] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
+            <h3 className="font-display italic font-normal tracking-[-0.02em] text-[clamp(24px,3vw,52px)] leading-[1.1] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
               In conversation.
             </h3>
           </Reveal>
@@ -1508,8 +1519,8 @@ export const About = () => {
           <div className="max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p
-                className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,52px)] leading-[1.25] text-ink m-0 text-balance mx-auto max-w-[20ch] text-center"
-                style={{ fontVariationSettings: '"opsz" 36, "wght" 600' }}
+                className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[20ch] text-center")}
+                style={STANDOUT_STYLE}
               >
                 {ABOUT.legacy[2]}
               </p>

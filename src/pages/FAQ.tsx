@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -318,7 +318,7 @@ export const FAQ = () => {
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
         url="/faq"
       />
-      <CosmicFilmHeader />
+      <Nav />
       <main className="relative z-10 flex-1">
         {/* 1 · MASTHEAD — bold left-aligned front cover. */}
         <FaqMasthead />

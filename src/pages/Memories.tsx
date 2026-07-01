@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, META } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
@@ -537,7 +537,7 @@ const ShareMemoryModal = ({
                   <p className={cn(EYEBROW, "m-0 mb-3")}>Leave a memory</p>
                   <h2
                     id="share-memory-title"
-                    className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,3vw,32px)] leading-[1.15] text-ink m-0"
+                    className="font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(24px,3vw,32px)] leading-[1.1] text-ink m-0"
                   >
                     Share something of Steve.
                   </h2>
@@ -557,10 +557,10 @@ const ShareMemoryModal = ({
               <div aria-live="polite">
                 {status === "success" ? (
                   <div className="py-4">
-                    <p className="font-display font-semibold text-[24px] text-ink m-0 mb-3">
+                    <p className="font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(24px,3vw,32px)] leading-[1.1] text-ink m-0 mb-3">
                       Thank you.
                     </p>
-                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
+                    <p className={cn(META, "m-0 max-w-[480px]")}>
                       {autoPublished
                         ? "Your memory is now on Steve's wall, and the family has been told. Thank you for taking the time."
                         : "Your memory has reached the family. We read each one with care before it joins the wall — so yours may not appear straight away. Thank you for sharing it."}
@@ -579,7 +579,7 @@ const ShareMemoryModal = ({
                   // message"). No anonymous wall posts; the account also gives
                   // the family a real person behind each memory.
                   <div className="py-2">
-                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
+                    <p className={cn(META, "m-0 max-w-[480px]")}>
                       To keep Steve's wall personal and free of spam, memories are
                       shared from a signed-in account. Sign in with your email — it
                       takes a moment — and your name will sit beside your words.
@@ -699,21 +699,21 @@ const ShareMemoryModal = ({
                           onChange={handleImageChange}
                           className="sr-only"
                         />
-                        <span className="font-sans text-[13px] text-ink-muted truncate max-w-[200px]">
+                        <span className={cn(META, "truncate max-w-[200px]")}>
                           {imageName || "No file chosen"}
                         </span>
                       </label>
-                      <p className="mt-2 font-sans text-[12px] leading-[1.55] text-ink-muted m-0">
+                      <p className={cn(META, "mt-2 m-0")}>
                         Memories with a photo are held for the family to approve before
                         they appear.
                       </p>
                       {imageError && (
-                        <p className="mt-2 font-sans text-[13px] text-accent m-0">{imageError}</p>
+                        <p className="mt-2 m-0 font-sans text-[13.5px] leading-[1.6] text-accent">{imageError}</p>
                       )}
                     </div>
 
                     {errorMsg && (
-                      <p className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                      <p className="mb-4 m-0 font-sans text-[13.5px] leading-[1.6] text-accent">{errorMsg}</p>
                     )}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
@@ -725,7 +725,7 @@ const ShareMemoryModal = ({
                         {status === "submitting" ? "Sending…" : "Share this memory"}
                         <span aria-hidden="true" className="ml-2">→</span>
                       </button>
-                      <p className="font-sans text-[12px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
+                      <p className={cn(META, "m-0 max-w-[240px]")}>
                         Your email stays private — it's only so the family can thank you.
                       </p>
                     </div>
@@ -794,8 +794,8 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(20px, 2.4vw, 36px)",
-              lineHeight: 1.32,
+              fontSize: "clamp(20px, 2vw, 34px)",
+              lineHeight: 1.3,
               textShadow: "0 2px 14px rgba(0,0,0,0.7)",
             }}
           >
@@ -876,7 +876,7 @@ export const Memories = () => {
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
         url="/memories"
       />
-      <CosmicFilmHeader />
+      <Nav />
 
       <main className="relative z-10 flex-1">
         {/* 1 · MASTHEAD — bold left-aligned front cover (the AboutMasthead

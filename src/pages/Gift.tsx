@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -178,7 +178,7 @@ export const Gift = () => {
         description="Give a piece of Stephen Meakin's work. A digital gift card towards any estate-stamped print — choose a size-pegged amount or a custom value, add a personal message, and let the recipient choose the print that speaks to them."
         url="/gift"
       />
-      <CosmicFilmHeader />
+      <Nav />
       {/* Canonical centred envelope (1320/1500/1720/1880) — the SAME axis +
           measure as Collections + About, so /gift sits on the one centred
           vertical axis the rest of the site shares (Hugo: "nothing is centred

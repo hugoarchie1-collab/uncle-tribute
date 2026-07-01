@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -182,7 +182,7 @@ export const Contact = () => {
         description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
         url="/contact"
       />
-      <CosmicFilmHeader />
+      <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-28 pb-16 md:pb-24">
         {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
             rule, then "Write to the family" set in the refined shared masthead
@@ -232,7 +232,7 @@ export const Contact = () => {
                 className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[40ch] 3xl:max-w-[46ch]"
                 style={{
                   fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(22px, 2.6vw, 42px)",
+                  fontSize: "clamp(20px, 2vw, 34px)",
                   lineHeight: 1.3,
                   textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
                 }}
@@ -263,7 +263,7 @@ export const Contact = () => {
                 className="outline-none"
               >
                 <p
-                  className="font-display font-semibold tracking-[-0.025em] text-[clamp(30px,4.2vw,64px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
+                  className="font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(30px,4.2vw,64px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
                   style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                 >
                   Thank you.

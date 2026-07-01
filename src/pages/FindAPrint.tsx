@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
@@ -182,7 +182,7 @@ export const FindAPrint = () => {
         />
       </div>
 
-      <CosmicFilmHeader />
+      <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow

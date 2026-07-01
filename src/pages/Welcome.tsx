@@ -13,7 +13,7 @@ import { PAINTINGS, COLLECTIONS, getLowestTierPricePence, paintingImageAlt } fro
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
-import { EYEBROW } from "../components/ui/tokens";
+import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 
 // Four Peacock colourways used as the home page's seamlessly-blending
@@ -44,17 +44,11 @@ const PEACOCK_BACKDROPS = [
 ];
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
-// traditions…", + the Meet-Stephen and Arista heads) are pinned to the SAME
-// Fraunces optical cut as the wordmark, pull-quote, reminder close and finale —
-// '"opsz" 48, "wght" 700'. Without this they fell back to the variable font's
-// auto optical-sizing, which at ~80–104px clamps an opsz ≈144 hairline cut, so
-// the page rendered two different serif "voices" at near-identical scale on one
-// scroll (the reads-as-a-different-typeface failure gotcha #7 warns against).
-// opsz stays ≤48 (the finale invariant — never higher, or the strokes "scribble").
-const PEAK_H2_STYLE = {
-  fontVariationSettings: '"opsz" 48, "wght" 700',
-  fontWeight: 700,
-} as const;
+// traditions…", + the Meet-Stephen and Arista heads) all use the shared TITLE
+// token from ui/tokens (Fraunces, opsz 48 / wght 700, clamp(52px,8.2vw,92px)),
+// so every section heading on the home is ONE canonical voice — never a bespoke
+// per-section clamp. TITLE already pins the '"opsz" 48, "wght" 700' cut, so no
+// local style override is needed (the old PEAK_H2_STYLE constant is retired).
 
 /**
  * CosmicInterlude — a Veo-generated film, the cinematic breath under the
@@ -335,7 +329,7 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[58svh] landscape:md:min-h-[56svh] justify-center pt-[6svh] sm:pt-[5svh] pb-0"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[66svh] landscape:md:min-h-[64svh] justify-center pt-[16svh] sm:pt-[14svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -915,10 +909,10 @@ export const Welcome = () => {
                 <p className={cn(EYEBROW, "m-0 mb-4")}>
                   {WELCOME.invocation}
                 </p>
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink m-0 mb-3 md:mb-4 hero-text-shadow">
+                <h2 className={cn(TITLE, "m-0 mb-3 md:mb-4 hero-text-shadow")}>
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 m-0">
+                <p className={cn(SUBTITLE, "m-0")}>
                   {WELCOME.bio[0]}
                 </p>
               </Reveal>
@@ -949,7 +943,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] mx-auto hero-text-shadow")}>
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -1004,11 +998,11 @@ export const Welcome = () => {
                         <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                           {painting.title}
                         </h3>
-                        <p className="font-sans text-[11px] font-bold tracking-[0.08em] text-ink/55 mt-1.5 m-0">
+                        <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] mt-1.5 m-0")}>
                           {hasYear ? painting.year : collectionTitle}
                         </p>
                       </div>
-                      <span className="shrink-0 font-sans text-[13px] font-bold [font-variant-numeric:tabular-nums] text-ink/75 whitespace-nowrap group-hover:text-ink transition-colors duration-300">
+                      <span className="shrink-0 font-sans text-[13px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
                         From {fmtPrice(fromPrice)}
                       </span>
                     </div>
@@ -1042,10 +1036,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.9)] ring-1 ring-white/10 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-7 lg:py-9">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
-                <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[860px] mx-auto text-balance hero-text-shadow">
+                <h2 className={cn(TITLE, "my-0 max-w-[860px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto">
+                <p className={cn(SUBTITLE, "my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto")}>
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1078,10 +1072,10 @@ export const Welcome = () => {
                   standing choice, unchanged. */}
               <Reveal as="div" className="grid lg:grid-cols-12 gap-x-10 xl:gap-x-16 gap-y-8 lg:gap-y-0 items-start">
                 <div className="lg:col-span-7 flex flex-col gap-y-4 md:gap-y-5">
-                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.5] text-ink/85 m-0 max-w-[68ch]">
+                  <p className={cn(SUBTITLE, "m-0 max-w-[68ch]")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.5] text-ink/85 m-0 max-w-[68ch]">
+                  <p className={cn(SUBTITLE, "m-0 max-w-[68ch]")}>
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                 </div>
@@ -1100,7 +1094,7 @@ export const Welcome = () => {
                       key={label}
                       className="m-0 flex items-baseline justify-between gap-6 py-3.5 border-t border-[rgba(237,230,214,0.16)]"
                     >
-                      <span className="shrink-0 font-sans text-[11px] font-bold tracking-[0.16em] uppercase text-ink/55">{label}</span>
+                      <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
                       <span className="text-right font-sans font-normal text-[16px] md:text-[17px] leading-[1.4] text-ink">{value}</span>
                     </li>
                   ))}
@@ -1115,7 +1109,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink my-0 max-w-[1180px] mx-auto text-balance hero-text-shadow">
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] mx-auto hero-text-shadow")}>
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1162,7 +1156,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center">
+              <p className={cn(SUBTITLE, "max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center")}>
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1182,7 +1176,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
               </p>
-              <h2 style={PEAK_H2_STYLE} className="font-display font-bold tracking-[-0.04em] text-[clamp(40px,6vw,88px)] leading-[0.98] text-ink m-0 mb-3 text-balance hero-text-shadow">
+              <h2 className={cn(TITLE, "m-0 mb-3 hero-text-shadow")}>
                 A 3.6&#8209;metre commission for Notting Hill.
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
@@ -1190,7 +1184,7 @@ export const Welcome = () => {
               <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-4">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
-              <p className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.55] text-ink/85 m-0 mx-auto max-w-[72ch]">
+              <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>
                 {WELCOME.bio[2]}
               </p>
             </Reveal>

@@ -36,7 +36,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
@@ -177,15 +177,15 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
         <div className="min-w-0">
           <TypePill entry={entry} />
 
-          <h3 className="mt-2 mb-1.5 font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,34px)] leading-[1.08] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
+          <h3 className="mt-2 mb-1.5 font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(22px,2.4vw,34px)] leading-[1.08] text-ink text-balance transition-colors duration-300 group-hover:text-accent">
             {entry.title}
           </h3>
 
           {entry.location ? (
-            <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5 tracking-[0.22em]")}>{entry.location}</p>
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>{entry.location}</p>
           ) : null}
 
-          <p className={cn(META, "m-0 max-w-[72ch] 3xl:max-w-[84ch] text-[clamp(14.5px,0.9vw,18px)]")}>{entry.summary}</p>
+          <p className={cn(META, "m-0 max-w-[72ch] 3xl:max-w-[84ch]")}>{entry.summary}</p>
 
           {cta}
         </div>
@@ -243,7 +243,7 @@ const NewsMasthead = () => (
             className="font-display font-normal tracking-[-0.01em] text-ink m-0"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(19px, 1.9vw, 30px)",
+              fontSize: "clamp(20px, 2vw, 34px)",
               lineHeight: 1.3,
               textShadow: "0 2px 14px rgba(0,0,0,0.7)",
             }}
@@ -303,7 +303,7 @@ export const News = () => {
         description="Up-and-coming releases, exhibitions, workshops and events from the estate of Stephen Meakin — The Mandala Company."
         url="/news"
       />
-      <CosmicFilmHeader />
+      <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-16 md:pb-24">
         {/* MASTHEAD — CENTRED front cover on the page's single axis (the
             FAQ/Memories recipe). Replaces the old left-aligned split that
@@ -327,9 +327,9 @@ export const News = () => {
                 <p
                   className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
                   style={{
-                    fontVariationSettings: '"opsz" 36, "wght" 400',
-                    fontSize: "clamp(22px, 2.2vw, 38px)",
-                    lineHeight: 1.24,
+                    fontVariationSettings: '"opsz" 32, "wght" 400',
+                    fontSize: "clamp(20px, 2vw, 34px)",
+                    lineHeight: 1.3,
                     textShadow: "0 2px 14px rgba(0,0,0,0.7)",
                   }}
                 >
@@ -391,7 +391,7 @@ export const News = () => {
             <div className="text-center">
               <p className={cn(EYEBROW, "m-0")}>{featured.displayDate}</p>
               <h2
-                className="mt-2 font-display tracking-[-0.03em] text-[clamp(28px,3.8vw,52px)] leading-[1.0] text-ink m-0"
+                className="mt-2 font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.8vw,52px)] leading-[1.0] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
               >
                 The next release
@@ -415,12 +415,12 @@ export const News = () => {
                   left-aligned beside the cover on md+ so the long-form summary reads
                   on a clean measure rather than ragged-centred. */}
               <div className="md:col-span-6 text-center md:text-left">
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-3 tracking-[0.28em]")}>
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
                   {pillLabel(featured)}
                 </p>
                 <h3
-                  className="font-display tracking-[-0.025em] text-[clamp(30px,3.6vw,58px)] leading-[1.04] text-ink text-balance m-0 hero-text-shadow"
-                  style={{ fontVariationSettings: '"opsz" 96, "wght" 560' }}
+                  className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.6vw,58px)] leading-[1.04] text-ink text-balance m-0 hero-text-shadow"
+                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
                 >
                   {featured.title}
                 </h3>
@@ -495,7 +495,7 @@ export const News = () => {
                     delay={Math.min(gi * 0.05, 0.2)}
                     className="flex items-baseline gap-4 flex-wrap border-t border-line pt-4 md:pt-5"
                   >
-                    <h2 className="font-display font-semibold tracking-[-0.03em] text-[clamp(26px,3.2vw,52px)] leading-[1.0] text-ink m-0">
+                    <h2 className="font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(26px,3.2vw,52px)] leading-[1.0] text-ink m-0">
                       {group.heading}
                     </h2>
                     <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>{group.note}</p>

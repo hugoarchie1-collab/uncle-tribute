@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal, RevealStagger } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
@@ -23,7 +23,7 @@ import { useCurrency, formatMinorUnits, bundleMinorFigures } from "../lib/curren
 import { Seo } from "../components/Seo";
 import { cn } from "../lib/cn";
 import { PageMasthead } from "../components/PageMasthead";
-import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE } from "../components/ui/tokens";
+import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, META } from "../components/ui/tokens";
 
 // ── CANONICAL CENTRED ENVELOPE ────────────────────────────────────────────────
 // One shared max-width axis for the WHOLE page (the page-intro masthead AND every
@@ -202,6 +202,12 @@ const SET_TIERS_ASCENDING: PrintTier[] = [...BUNDLE_TIERS].sort(
   (a, b) => a.pricePence - b.pricePence,
 );
 
+// ONE small display-heading step for the editions-ledger tier names — factored to
+// a single const (not retyped per tile) and brought onto the page's -0.025em
+// tracking family so the ledger sub-heads read as the same system as the set cards.
+const LEDGER_TIER_HEAD =
+  "font-display font-semibold tracking-[-0.025em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0";
+
 // ── PER-BUNDLE SIZE SELECTOR ──────────────────────────────────────────────────
 // Hugo: "instead of [a global] take-a-set-in size [toggle], have it so you can
 // SCROLL ACROSS on each bundle for different sizes." So every set card now owns
@@ -295,22 +301,22 @@ const CollectionSetCard = ({
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
-        <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
+        <h3 className={cn(TITLE, "my-0")}>
           The complete {shortName}
         </h3>
-        <p className="mt-3 md:mt-4 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.55] text-ink-muted my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto">
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto")}>
           All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
           edition ({sizeCode(tier)}) — the collection entire, for one home.
         </p>
         <SetSizeSelector value={tier} onChange={setTier} />
-        <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
+        <p className={cn(META, "m-0 mb-1.5")}>
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
             {fmtBundle(setFig.bundleMinor)}
           </span>
           <span className="mx-3 text-ink/35">·</span>
           the set, offered together
         </p>
-        <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-5">
+        <p className={cn(META, "m-0 mb-5")}>
           Taken individually, {fmtBundle(setFig.fullMinor)} — a saving of{" "}
           {fmtBundle(setFig.saveMinor)} as a set.
         </p>
@@ -322,7 +328,7 @@ const CollectionSetCard = ({
           Add the complete collection to basket
           <span aria-hidden="true">→</span>
         </button>
-        <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+        <p className={cn(META, "m-0 mt-4")}>
           The set saving is applied automatically at checkout.
         </p>
       </div>
@@ -379,10 +385,10 @@ const ComposeSetCard = () => {
         style={{ background: SET_CARD_SCRIM }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
-        <h3 className="font-display font-semibold tracking-[-0.025em] text-[clamp(24px,2.6vw,46px)] leading-[1.2] text-ink m-0">
+        <h3 className={cn(TITLE, "my-0")}>
           Build a wall of your own
         </h3>
-        <p className="mt-3 md:mt-4 font-sans font-normal text-[16px] md:text-[clamp(18px,1.1vw,25px)] leading-[1.55] text-ink-muted my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto">
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto")}>
           Choose any two or more mandalas to hang together. The set saving builds
           as you add — 5% for two, 10% for three or more — applied automatically
           at checkout.
@@ -440,26 +446,26 @@ const ComposeSetCard = () => {
 
         {count >= 2 ? (
           <>
-            <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-1.5">
+            <p className={cn(META, "m-0 mb-1.5")}>
               <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
                 {money(setFig.bundleMinor)}
               </span>
               <span className="mx-3 text-ink/35">·</span>
               {count} prints, {sizeCode(tier)}
             </p>
-            <p className="font-sans text-[12.5px] md:text-[clamp(12.5px,0.8vw,16px)] leading-[1.6] text-ink/80 m-0 mb-5">
+            <p className={cn(META, "m-0 mb-5")}>
               Taken individually, {money(setFig.fullMinor)} — a saving of {money(setFig.saveMinor)} ({percent}%) as a set.
             </p>
             <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
               Add my set to basket
               <span aria-hidden="true">→</span>
             </button>
-            <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+            <p className={cn(META, "m-0 mt-4")}>
               The set saving is applied automatically at checkout.
             </p>
           </>
         ) : (
-          <p className="font-sans text-[13.5px] md:text-[clamp(13.5px,0.85vw,18px)] leading-[1.6] text-ink/80 m-0 mt-2">
+          <p className={cn(META, "m-0 mt-2")}>
             Select at least two prints to begin your set.
           </p>
         )}
@@ -508,7 +514,7 @@ const CatalogueSetCard = () => {
           finite body of his work, gathered for one home.
         </p>
         <SetSizeSelector value={tier} onChange={setTier} />
-        <p className="font-sans text-[14px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0 mb-5">
+        <p className={cn(META, "m-0 mb-5")}>
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
             {fmtCatalogue(catFig.bundleMinor)}
           </span>
@@ -526,7 +532,7 @@ const CatalogueSetCard = () => {
           Add the complete catalogue to basket
           <span aria-hidden="true">→</span>
         </button>
-        <p className="font-sans text-[11px] md:text-[clamp(11px,0.7vw,14px)] tracking-[0.03em] text-ink-muted m-0 mt-4">
+        <p className={cn(META, "m-0 mt-4")}>
           The set saving is applied automatically at checkout.
         </p>
       </div>
@@ -564,7 +570,7 @@ export const Collections = () => {
         description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery."
         url="/collections"
       />
-      <CosmicFilmHeader />
+      <Nav />
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -700,7 +706,7 @@ export const Collections = () => {
                   The editions
                 </p>
                 <p
-                  className="font-sans text-[13px] md:text-[clamp(14px,0.85vw,18px)] leading-[1.6] text-ink-muted m-0"
+                  className={cn(META, "m-0")}
                   style={{ textShadow: "0 1px 10px rgba(0,0,0,0.8)" }}
                 >
                   Every painting, from{" "}
@@ -724,19 +730,19 @@ export const Collections = () => {
                     className="border-r border-b border-line px-5 py-4 md:px-6 md:py-5 3xl:px-8 3xl:py-6"
                   >
                     <p
-                      className="font-display font-semibold tracking-[-0.015em] text-[18px] md:text-[clamp(20px,1.5vw,28px)] leading-[1.2] text-ink m-0"
+                      className={LEDGER_TIER_HEAD}
                       style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}
                     >
                       {editionWord(tier)}
                     </p>
                     <p
-                      className="mt-1.5 font-sans text-[13px] md:text-[clamp(13px,0.8vw,17px)] leading-[1.6] text-ink-muted m-0"
+                      className={cn(META, "mt-1.5 m-0")}
                       style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                     >
                       {editionInclusions(tier)}
                     </p>
                     <p
-                      className="mt-3 font-sans text-[13.5px] md:text-[clamp(13.5px,0.8vw,17px)] leading-[1.5] text-ink m-0"
+                      className={cn(META, "mt-3 m-0")}
                       style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                     >
                       <span className="text-ink-muted">from </span>
@@ -860,7 +866,7 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-3 md:pt-4 text-center">
                             <h3
-                              className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.015em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
+                              className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.025em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}

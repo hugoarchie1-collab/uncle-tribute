@@ -10,7 +10,7 @@ import {
 } from "react";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { CosmicFilmHeader } from "../components/CosmicFilmHeader";
+import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
@@ -134,6 +134,17 @@ const PDP_TITLE =
 // One ledger-card geometry for every secondary buy-box card (one-off / custom
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
+// ONE spec-value recipe for every dl/value in the page (key-facts table, "how
+// each order arrives", the colourway/size selected-name line). 15px on the same
+// 1.55 leading, primary ink tone. A deliberately secondary value (provenance,
+// pigment) composes cn(SPEC_VALUE, "text-ink-muted") — a rule-based two-tone,
+// not the old ad-hoc spray of text-ink vs text-ink-muted at the same size.
+const SPEC_VALUE = "font-sans text-[15px] leading-[1.55] text-ink";
+// ONE lead/running-body clamp for the story + card prose (order-arrives lead,
+// original-print spec, colourway-set desc, finish intro). Collapses the former
+// near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
+// of running prose is exactly one size. Colour is applied per-block on the two
+// sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
 const BTN_PRIMARY =
   "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
@@ -280,12 +291,12 @@ const SizePicker = ({
             <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
               {tier.label}
               {tier.isAnchor && (
-                <span className="font-sans text-[9.5px] font-semibold tracking-[0.04em] text-ink/80">
+                <span className={cn(EYEBROW_TIGHT, "text-[9.5px]")}>
                   · most chosen
                 </span>
               )}
             </span>
-            <span className="block font-sans text-[15px] font-semibold leading-[1.25] text-ink">
+            <span className={cn(SPEC_VALUE, "block font-semibold leading-[1.25]")}>
               {sizeWithInches(tier.size)}
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
@@ -370,14 +381,14 @@ const OneOffCard = ({
     )}
   >
     <span className="flex items-baseline justify-between gap-4 mb-2">
-      <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
+      <span className={EYEBROW_TIGHT}>
         Unique · one of one
       </span>
       <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
         {fmtP(tier.pricePence)}
       </span>
     </span>
-    <span className="block font-sans text-[15px] font-semibold leading-[1.3] text-ink mb-1">
+    <span className={cn(SPEC_VALUE, "block font-semibold leading-[1.3] mb-1")}>
       {tier.label}
     </span>
     <span className={cn(META, "block mb-1.5")}>{tier.size}</span>
@@ -584,14 +595,14 @@ const CustomSizeRequest = ({
             className="block w-full text-left bg-transparent p-5 cursor-pointer"
           >
             <span className="flex items-baseline justify-between gap-4 mb-2">
-              <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
+              <span className={EYEBROW_TIGHT}>
                 Bespoke · by request
               </span>
               <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink whitespace-nowrap">
                 Price on application
               </span>
             </span>
-            <span className="block font-sans text-[15px] font-semibold leading-[1.3] text-ink mb-1">
+            <span className={cn(SPEC_VALUE, "block font-semibold leading-[1.3] mb-1")}>
               Custom size
             </span>
             <span className={cn(META, "block mb-3")}>
@@ -610,10 +621,10 @@ const CustomSizeRequest = ({
           </button>
         ) : status === "done" ? (
           <div className="p-5" role="status" aria-live="polite">
-            <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-2">
+            <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
               Custom size · by request
             </p>
-            <p className="font-sans text-[15px] leading-[1.5] text-ink m-0">
+            <p className={cn(SPEC_VALUE, "m-0")}>
               Request received, with thanks. The estate will write to you with a
               quotation for a custom{paintingTitle ? ` ${paintingTitle}` : ""}{" "}
               print.
@@ -621,7 +632,7 @@ const CustomSizeRequest = ({
           </div>
         ) : (
           <form onSubmit={submit} noValidate className="p-5">
-            <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted m-0 mb-1">
+            <p className={cn(EYEBROW_TIGHT, "m-0 mb-1")}>
               Custom size · by request
             </p>
             <p className={cn(META, "m-0 mb-4")}>
@@ -799,10 +810,10 @@ const Colourways = ({
         </div>
       )}
 
-      <p className="font-sans text-[15px] font-semibold text-ink m-0">
+      <p className={cn(SPEC_VALUE, "font-semibold m-0")}>
         {selected.name}
         {selected.isOriginal && (
-          <span className="ml-3 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted">
+          <span className={cn(EYEBROW_TIGHT, "ml-3")}>
             · original
           </span>
         )}
@@ -2574,7 +2585,7 @@ export const PaintingDetail = () => {
       </div>
 
       <div className="relative z-[1] isolate">
-        <CosmicFilmHeader />
+        <Nav />
 
         <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-24">
           {/* Back link + jump-to-order strip — price floor stays visible from
