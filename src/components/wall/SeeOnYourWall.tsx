@@ -26,7 +26,6 @@ import { cn } from "../../lib/cn";
 import { EYEBROW } from "../ui/tokens";
 import { trackWall } from "../../lib/wallAnalytics";
 import { ModelViewerAR } from "./ModelViewerAR";
-import { WallCamera } from "./WallCamera";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
@@ -73,7 +72,6 @@ export const SeeOnYourWall = ({
   const frame = FRAME_OPTIONS.find((f) => f.id === frameId) ?? FRAME_OPTIONS[0];
 
   const [inApp, setInApp] = useState(false);
-  const [cameraOpen, setCameraOpen] = useState(false);
 
   // Analytics + environment probe on open. Never opens the camera.
   useEffect(() => {
@@ -194,24 +192,6 @@ export const SeeOnYourWall = ({
               className="h-full w-full"
             />
           </div>
-          {/* Live camera placement — the whole print (never a cropped centre)
-              floats over your real wall; drag / pinch to position, then LOCK it
-              in place (it turns fully opaque once locked). Frame renders as a
-              real moulding hugging the print, no white mount. */}
-          <button
-            type="button"
-            onClick={() => {
-              trackWall("wall_camera_opened", { artwork: painting.id, size: sizeId });
-              setCameraOpen(true);
-            }}
-            className="press mt-3 inline-flex min-h-[54px] w-full items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[14px] font-bold tracking-[0.03em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h1L6.7 3.6A1 1 0 0 1 7.5 3h5a1 1 0 0 1 .8.6L14.5 5h1A1.5 1.5 0 0 1 17 6.5v8A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5v-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              <circle cx="10" cy="10" r="2.6" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-            See it on your wall
-          </button>
           <p className="mt-2 mb-5 text-center font-sans text-[12px] leading-[1.6] text-ink-muted">
             Your camera opens right here — drag &amp; pinch the whole print to place it, then <span className="text-ink">lock it on your wall</span>. Your camera stays on your device.
           </p>
@@ -338,16 +318,6 @@ export const SeeOnYourWall = ({
         </div>
       </div>
 
-      {cameraOpen && (
-        <WallCamera
-          imageSrc={colourway.image}
-          alt={`${painting.title} — ${colourway.name} on your wall`}
-          frameSwatch={frame.swatch}
-          frameLabel={frame.label}
-          caption={`${size.label} · ${cmLabel(size)} · ${frame.label}`}
-          onClose={() => setCameraOpen(false)}
-        />
-      )}
     </div>,
     document.body,
   );
