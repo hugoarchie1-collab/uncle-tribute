@@ -48,7 +48,6 @@ const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
 const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
 const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
-const Gallery = lazy(() => import("./pages/Gallery").then((m) => ({ default: m.Gallery })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -118,8 +117,9 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
-          {/* Virtual Gallery / Exhibition — cinematic online viewing room + AR. */}
-          <Route path="/gallery" element={<Gallery />} />
+          {/* Old /gallery (Virtual Exhibition) retired — AR now lives in the
+              "See on your wall" modal on each painting. Redirect legacy links. */}
+          <Route path="/gallery" element={<Navigate to="/collections" replace />} />
           <Route path="/for-you" element={<FindAPrint />} />
           {/* Site-wide search — header SearchBar + this results page. */}
           <Route path="/search" element={<Search />} />

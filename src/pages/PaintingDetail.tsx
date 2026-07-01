@@ -62,12 +62,7 @@ import { asset, webp, webpSrcSet } from "../lib/asset";
 import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
 import { cn } from "../lib/cn";
 import { addItem, subscribeToAdds } from "../lib/basket";
-import {
-  ARTWORK_SIZES,
-  ANCHOR_ARTWORK_SIZE,
-  artworkSizeForTierId,
-  type ArtworkSizeId,
-} from "../lib/artworkSizes";
+import { ANCHOR_ARTWORK_SIZE, artworkSizeForTierId } from "../lib/artworkSizes";
 import { trackWall } from "../lib/wallAnalytics";
 import { WallLoading } from "../components/wall/WallLoading";
 
@@ -2362,15 +2357,10 @@ export const PaintingDetail = () => {
   const selectedTier =
     visibleTiers.find((t) => t.id === selectedTierId) ?? anchorTier;
 
-  // "See on Your Wall": map the selected tier → its physical size (a one-off /
-  // unsized tier falls back to the A2 anchor size). Changing size inside the
-  // modal routes back through the SAME selectedTierId state, so the buy box and
-  // the visualiser never disagree.
+  // "See on Your Wall": the modal opens on the tier's physical size (a one-off /
+  // unsized tier falls back to the A2 anchor). The panel manages its own
+  // colourway / size / frame from there — the buy box is separate.
   const wallSize = artworkSizeForTierId(selectedTier.id) ?? ANCHOR_ARTWORK_SIZE;
-  const onWallSelectSize = (sizeId: ArtworkSizeId) => {
-    const s = ARTWORK_SIZES.find((x) => x.id === sizeId);
-    if (s) setSelectedTierId(s.tierId as PrintTier["id"]);
-  };
   const closeWall = () => {
     setWallOpen(false);
     wallTriggerRef.current?.focus();
@@ -2744,11 +2734,15 @@ export const PaintingDetail = () => {
               </>
               )}
 
-              {/* See it on your wall — routes to the real Virtual Gallery (Hugo:
-                  retire the hidden AR/room-photo visualiser; send people to the
-                  actual gallery page instead). */}
-              <Link
-                to="/gallery"
+              {/* See it on your wall — opens the AR "See on your wall" modal
+                  (the standalone /gallery Virtual Exhibition was retired; the
+                  visualiser now lives here as a per-painting modal). */}
+              <button
+                ref={wallTriggerRef}
+                type="button"
+                onClick={() => setWallOpen(true)}
+                onPointerEnter={() => void importSeeOnYourWall()}
+                onFocus={() => void importSeeOnYourWall()}
                 className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[12px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
@@ -2756,7 +2750,7 @@ export const PaintingDetail = () => {
                   <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
                 </svg>
                 See it on your wall
-              </Link>
+              </button>
 
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
@@ -2851,9 +2845,8 @@ export const PaintingDetail = () => {
         <Suspense fallback={<WallLoading />}>
           <SeeOnYourWall
             painting={painting}
-            colourway={selected}
-            size={wallSize}
-            onSelectSize={onWallSelectSize}
+            initialColourwayName={selected.name}
+            initialSizeId={wallSize.id}
             onClose={closeWall}
           />
         </Suspense>

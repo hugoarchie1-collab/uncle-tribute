@@ -20,6 +20,11 @@
       "permanent": true
     },
     {
+      "source": "/gallery",
+      "destination": "/collections",
+      "permanent": true
+    },
+    {
       "source": "/stephen-meakin-biography/:path*",
       "destination": "/about",
       "permanent": true

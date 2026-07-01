@@ -67,7 +67,6 @@ const SOCIALS = [
 const EXPLORE_LINKS = [
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
-  { to: "/gallery", label: "Virtual Gallery" },
   { to: "/trade", label: "Trade & Interiors" },
   { to: "/gift", label: "Gift cards" },
 ];

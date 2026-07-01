@@ -182,7 +182,10 @@ export const ModelViewerAR = ({
     mv.setAttribute("poster", poster);
     mv.setAttribute("exposure", "1");
     mv.setAttribute("loading", "eager");
-    mv.setAttribute("reveal", "auto");
+    // reveal="manual" keeps the POSTER (the artwork image) on screen instead of
+    // the flat 3D canvas — so the panel shows the painting, never a blank white
+    // square. The model still loads eagerly in the background, ready for AR.
+    mv.setAttribute("reveal", "manual");
   }, [moduleReady, alt, poster]);
 
   const launchAR = () => {
@@ -227,38 +230,35 @@ export const ModelViewerAR = ({
         />
       )}
 
-      {/* Loading state */}
-      {modelState === "loading" && !moduleError && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-live="polite">
-          <span className="rounded-full bg-black/45 px-4 py-2 font-sans text-[12px] tracking-[0.04em] text-ink/90 backdrop-blur-sm">
-            Preparing the 3D preview…
-          </span>
-        </div>
-      )}
+      {/* Soft gradient so the button/label reads over any artwork */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0))" }}
+      />
 
-      {/* Error state */}
-      {modelState === "error" && (
-        <div className="absolute inset-x-0 bottom-0 flex justify-center p-3" role="alert">
-          <span className="rounded-full bg-black/55 px-4 py-2 text-center font-sans text-[12px] leading-[1.5] text-ink/90 backdrop-blur-sm">
-            The 3D preview couldn&rsquo;t load — you can still preview with a room photo below.
-          </span>
-        </div>
-      )}
-
-      {/* Branded AR launch — only when the device can actually place it */}
-      {arAvailable && modelState === "ready" && (
+      {/* Primary action: launch full-screen AR on a real device */}
+      {arAvailable ? (
         <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
           <button
             type="button"
             onClick={launchAR}
-            className="press inline-flex min-h-[52px] items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[13px] font-bold tracking-[0.04em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+            className="press inline-flex min-h-[54px] w-full max-w-[420px] items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[14px] font-bold tracking-[0.03em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
           >
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
               <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
             </svg>
-            See it on your wall
+            View on your wall — true size
           </button>
+        </div>
+      ) : (
+        <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
+          <span className="rounded-full bg-black/55 px-5 py-2.5 text-center font-sans text-[12px] leading-[1.5] text-ink/90 backdrop-blur-sm">
+            {modelState === "error"
+              ? "AR couldn't load here — open this page on your phone."
+              : "Open on your phone (Safari / Chrome) to place it on your wall in AR."}
+          </span>
         </div>
       )}
     </div>

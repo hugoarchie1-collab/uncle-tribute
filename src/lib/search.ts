@@ -281,13 +281,6 @@ const PAGE_SEEDS: PageSeed[] = [
     body: "Privacy policy — how your data is handled, cookies and analytics, UK GDPR, data protection, your information.",
   },
   {
-    id: "page-gallery",
-    title: "Virtual Exhibition",
-    subtitle: "See it on your wall",
-    url: "/gallery",
-    body: "See it on your wall — augmented reality AR camera preview. Point your phone at the wall and view any print at its real size, in any colourway, size and frame. Virtual exhibition, try before you buy, room view, true to scale.",
-  },
-  {
     id: "page-account",
     title: "Your account",
     subtitle: "Sign in",

@@ -24,7 +24,6 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
     links: [
       { to: "/collections", label: "Collections" },
       { to: "/for-you", label: "Find a print" },
-      { to: "/gallery", label: "Virtual Gallery" },
       { to: "/trade", label: "Trade & Interiors" },
     ],
   },
