@@ -166,7 +166,7 @@ const CosmicInterlude = () => {
             seam on engines which silently drop the composite keyword. Same soft
             dissolve as the .soft-edge-y photos elsewhere on the page. */}
         <div
-          className="relative w-full overflow-hidden bg-[#06060a] h-[clamp(220px,38svh,540px)] sm:h-[clamp(260px,40svh,560px)]"
+          className="relative w-full overflow-hidden bg-[#06060a] h-[min(clamp(300px,38vw,940px),62svh)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -432,7 +432,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(64px, 16.5vw, 252px)",
+                    fontSize: "clamp(60px, 14vw, 200px)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -449,7 +449,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(64px, 16.5vw, 252px)",
+                    fontSize: "clamp(60px, 14vw, 200px)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -611,7 +611,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-12 md:space-y-20 lg:space-y-24 pb-16 md:pb-24">
+        <main className="relative isolate z-10 space-y-10 md:space-y-14 lg:space-y-16 pb-14 md:pb-20">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the
