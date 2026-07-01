@@ -59,14 +59,10 @@ const OVERLAY_FRAMES: { id: OverlayFrameId; label: string; wood: string | null }
 ];
 
 const MAX_CM = Math.max(...AR_SIZES.map((s) => s.cm));
-// A0 (the largest size) fills this fraction of the viewport width by default
-// WHEN UNCALIBRATED; smaller sizes scale down proportionally by real cm. Once
-// the wall is calibrated, sizes render at their TRUE on-wall centimetres.
-const A0_VIEWPORT_FRACTION = 0.72;
-// A standard ID-1 bank/credit card is 85.6mm wide — the universal calibration
-// reference everyone has in a pocket.
-const BANK_CARD_CM = 8.56;
-const CAL_KEY = "tasm.wallPxPerCm";
+// A0 (the largest size) fills this fraction of the viewport width by default;
+// smaller sizes scale down proportionally by real cm. Kept modest so the piece
+// isn't "zoomed in" — you frame the wall first, then pinch to fine-tune.
+const A0_VIEWPORT_FRACTION = 0.5;
 
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -111,12 +107,6 @@ const LockGlyph = ({ locked }: { locked: boolean }) => (
   </svg>
 );
 
-const RulerGlyph = () => (
-  <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
-    <rect x="2" y="6" width="14" height="6" rx="1" stroke="currentColor" strokeWidth="1.3" />
-    <path d="M5.5 6v2M9 6v3M12.5 6v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-  </svg>
-);
 
 const PhotoGlyph = () => (
   <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="shrink-0">
@@ -244,7 +234,9 @@ export const LiveWallCamera = ({
     (AR_SIZES.find((s) => s.anchor) ?? AR_SIZES[0]).id,
   );
   const size = AR_SIZES.find((s) => s.id === sizeId) ?? AR_SIZES[0];
-  const [frameId, setFrameId] = useState<OverlayFrameId>("natural-oak");
+  // Default to the clean, unframed canvas (no border) — Hugo's preference; the
+  // frame picker still offers every website frame style.
+  const [frameId, setFrameId] = useState<OverlayFrameId>("unframed");
   const frame = OVERLAY_FRAMES.find((f) => f.id === frameId) ?? OVERLAY_FRAMES[1];
 
   const [camState, setCamState] = useState<
@@ -264,19 +256,6 @@ export const LiveWallCamera = ({
   const [locked, setLocked] = useState(false);
   const [viewportW, setViewportW] = useState(
     () => (typeof window !== "undefined" && window.innerWidth) || 390,
-  );
-
-  // ---- TRUE-SCALE calibration ----------------------------------------------
-  // pxPerCm = on-screen pixels per real wall-centimetre, derived from a bank
-  // card held flat on the wall. Persisted so a returning visitor keeps it.
-  const [pxPerCm, setPxPerCm] = useState<number | null>(() => {
-    if (typeof localStorage === "undefined") return null;
-    const v = Number(localStorage.getItem(CAL_KEY));
-    return Number.isFinite(v) && v > 0 ? v : null;
-  });
-  const [calibrating, setCalibrating] = useState(false);
-  const [calBarPx, setCalBarPx] = useState(() =>
-    pxPerCm ? Math.round(pxPerCm * BANK_CARD_CM) : 160,
   );
 
   // ---- ROOM-PHOTO background -----------------------------------------------
@@ -363,13 +342,12 @@ export const LiveWallCamera = ({
     setColourwayName((cw.find((c) => c.isOriginal) ?? cw[0])?.name ?? "");
   };
 
-  // Base on-screen width for the selected size. Calibrated → TRUE on-wall cm
-  // (clamped so an A0 can't exceed the viewport on a small phone). Uncalibrated
-  // → the relative estimate (A0 ≈ 72% of the viewport, others by real cm ratio).
-  const baseWidthPx = useMemo(() => {
-    if (pxPerCm) return clamp(size.cm * pxPerCm, 48, viewportW * 0.98);
-    return (size.cm / MAX_CM) * viewportW * A0_VIEWPORT_FRACTION;
-  }, [size.cm, viewportW, pxPerCm]);
+  // Base on-screen width for the selected size — a relative estimate (A0 fills
+  // ~half the viewport, others scale by real cm ratio). Pinch to fine-tune.
+  const baseWidthPx = useMemo(
+    () => (size.cm / MAX_CM) * viewportW * A0_VIEWPORT_FRACTION,
+    [size.cm, viewportW],
+  );
 
   const applyTransform = useCallback(() => {
     const o = overlayRef.current;
@@ -380,18 +358,6 @@ export const LiveWallCamera = ({
     live.current = { x: 0, y: 0, scale: 1 };
     setView({ x: 0, y: 0, scale: 1 });
     applyTransform();
-  };
-
-  const commitCalibration = () => {
-    const next = calBarPx / BANK_CARD_CM;
-    setPxPerCm(next);
-    try {
-      localStorage.setItem(CAL_KEY, String(next));
-    } catch {
-      /* private mode — calibration is in-memory only this session */
-    }
-    setCalibrating(false);
-    resetPlacement(); // show the freshly-true size cleanly at scale 1
   };
 
   const onPickRoomPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -441,7 +407,7 @@ export const LiveWallCamera = ({
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (locked || calibrating) return; // pinned / calibrating — ignore drag/pinch
+    if (locked) return; // pinned in place — ignore drag/pinch
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     const g = gesture.current;
     g.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -584,8 +550,6 @@ export const LiveWallCamera = ({
   const priceLabel = tier ? formatGBP(tier.pricePence) : "";
   const pieceLabel = `${painting.title} · ${colourway.name} · ${frame.label} · ${size.label}`;
   const moved = view.x !== 0 || view.y !== 0 || view.scale !== 1;
-  const calCm = (calBarPx / BANK_CARD_CM > 0) ? calBarPx / BANK_CARD_CM : 0; // px per cm preview
-  const calSliderMax = Math.min(viewportW - 48, 560);
 
   return (
     <div
@@ -625,14 +589,13 @@ export const LiveWallCamera = ({
         />
       )}
 
-      {/* ---- The draggable framed overlay (hidden while calibrating) ---- */}
+      {/* ---- The draggable framed overlay ---- */}
       <div
         className="absolute inset-0 flex items-center justify-center"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endPointer}
         onPointerCancel={endPointer}
-        style={{ visibility: calibrating ? "hidden" : "visible" }}
       >
         <div
           ref={overlayRef}
@@ -647,8 +610,8 @@ export const LiveWallCamera = ({
         </div>
       </div>
 
-      {/* First-use hint (hidden once locked / calibrating) */}
-      {showHint && !locked && !calibrating && (
+      {/* First-use hint (hidden once locked) */}
+      {showHint && !locked && (
         <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 mt-[22vh] flex justify-center px-6">
           <p className="m-0 rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] tracking-[0.04em] text-ink/90 backdrop-blur-sm">
             Drag to move · pinch to resize · lock when it&rsquo;s right
@@ -656,79 +619,8 @@ export const LiveWallCamera = ({
         </div>
       )}
 
-      {/* ---- Calibration overlay: a ruler matched to a real bank card ---- */}
-      {calibrating && (
-        <div className="absolute inset-0 z-20 flex flex-col">
-          <div className="flex-1 flex items-center justify-center px-6">
-            <div className="flex flex-col items-center" aria-hidden="true">
-              {/* The ruler the user matches to a card held flat on the wall */}
-              <div className="relative flex h-0 items-center" style={{ width: `${calBarPx}px` }}>
-                <span className="absolute left-0 h-7 w-[2px] bg-accent" />
-                <span className="absolute right-0 h-7 w-[2px] bg-accent" />
-                <span className="block h-[2px] w-full bg-accent" />
-              </div>
-              <span className="mt-5 rounded-full bg-black/60 px-3 py-1 font-sans text-[11px] font-bold tracking-[0.12em] text-ink backdrop-blur-sm">
-                ≈ {Math.round(calCm)} px / cm
-              </span>
-            </div>
-          </div>
-          <div className="bg-bg/92 px-5 pb-7 pt-5 ring-1 ring-white/10 backdrop-blur-md">
-            <p className={cn(EYEBROW, "m-0 mb-1.5 text-accent")}>Calibrate true size</p>
-            <p className="m-0 mb-4 font-sans text-[14px] leading-[1.6] text-ink-muted">
-              Hold any <em className="not-italic text-ink">bank or credit card</em> flat against your wall, then drag the
-              slider until the line matches its long edge. Every print will then show at its real size on the wall.
-            </p>
-            <input
-              type="range"
-              min={60}
-              max={calSliderMax}
-              value={Math.min(calBarPx, calSliderMax)}
-              onChange={(e) => setCalBarPx(Number(e.target.value))}
-              aria-label="Match the line to your card's width"
-              className="w-full accent-accent"
-            />
-            <div className="mt-4 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={() => setCalibrating(false)}
-                className="press inline-flex min-h-[44px] items-center rounded-full px-4 font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted outline-none ring-1 ring-line hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={commitCalibration}
-                className="press inline-flex min-h-[44px] items-center rounded-full bg-ink px-6 font-sans text-[12px] font-bold tracking-[0.04em] text-bg outline-none transition-colors hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                Set true scale
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ---- Top bar ---- */}
-      {!calibrating && (
-        <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-4">
-          {/* True-size status (left) */}
-          <button
-            type="button"
-            onClick={() => {
-              setCalBarPx(pxPerCm ? Math.round(pxPerCm * BANK_CARD_CM) : 160);
-              setCalibrating(true);
-            }}
-            className={cn(
-              "press inline-flex h-11 items-center gap-2 rounded-full px-3.5 outline-none backdrop-blur-sm transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-              pxPerCm ? "bg-accent/90 text-bg" : "bg-black/55 text-ink hover:bg-black/75",
-            )}
-            aria-label={pxPerCm ? "True size on — recalibrate" : "Calibrate true size"}
-          >
-            <RulerGlyph />
-            <span className="whitespace-nowrap font-sans text-[11px] font-bold tracking-[0.04em]">
-              {pxPerCm ? "True size" : "Calibrate"}
-            </span>
-          </button>
-
+      <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-end gap-2 p-4">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -776,18 +668,17 @@ export const LiveWallCamera = ({
               <CloseGlyph />
             </button>
           </div>
-        </div>
-      )}
+      </div>
 
       {/* ---- Camera permission / hint ---- */}
-      {!calibrating && !roomPhotoUrl && camState === "denied" && (
+      {!roomPhotoUrl && camState === "denied" && (
         <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
           <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
             Camera access is off. Allow camera for this site in your browser settings, then reopen — or drop in a photo of your room below.
           </p>
         </div>
       )}
-      {!calibrating && !roomPhotoUrl && camState === "unavailable" && (
+      {!roomPhotoUrl && camState === "unavailable" && (
         <div className="pointer-events-none absolute inset-x-0 top-20 z-10 flex justify-center px-6">
           <p className="m-0 max-w-[420px] rounded-2xl bg-black/65 px-5 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink/90 backdrop-blur-sm">
             No camera here — drop in a photo of your room below to place the print, or open this page on your phone to use the live camera.
@@ -805,8 +696,7 @@ export const LiveWallCamera = ({
       />
 
       {/* ---- Controls sheet ---- */}
-      {!calibrating && (
-        <div className="absolute inset-x-0 bottom-0 z-10">
+      <div className="absolute inset-x-0 bottom-0 z-10">
           {!controlsOpen ? (
             <div className="flex items-center justify-between gap-3 p-4">
               <p className="m-0 flex-1 truncate rounded-full bg-black/55 px-4 py-2 font-sans text-[12px] text-ink/85 backdrop-blur-sm">
@@ -933,7 +823,7 @@ export const LiveWallCamera = ({
               {/* Size */}
               <section className="mb-4">
                 <p className={cn(EYEBROW, "m-0 mb-2")}>
-                  Size · {pxPerCm ? "true on your wall" : "pinch to fine-tune"}
+                  Size · pinch to fine-tune
                 </p>
                 <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
                   {AR_SIZES.map((s) => {
@@ -998,7 +888,6 @@ export const LiveWallCamera = ({
             </div>
           )}
         </div>
-      )}
     </div>
   );
 };
