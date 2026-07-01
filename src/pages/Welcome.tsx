@@ -62,17 +62,18 @@ const PEAK_H2_STYLE = {
  * is ~300px from the viewport. Muted / looping / playsInline so it autoplays
  * everywhere. Reduced-motion users skip it.
  *
- * 2026-06-30 (Hugo): swapped the old feathered full-bleed band for a CONTAINED,
- * museum-framed "expanded plate" (double cream hairline + soft shadow + warm
- * glow + inner vignette) sitting in the gap under the wordmark, and swapped the
- * source to `garden-galaxy-v1.mp4` — a "garden → galaxy" camera move (Stephen's
- * mandala on an easel rising up through the trees into a spiral galaxy). The
- * clip is a SEAMLESS BOOMERANG baked offline (forward, then a 1.35×-sped reverse
- * back to the garden) so it loops endlessly with no cut; the Earth limb was
- * cropped out of the source entirely (top-720 crop) per Hugo's request. The clip
- * already excludes the Veo watermark (the crop removed the bottom-right corner),
- * so no zoom-to-clip transform is needed. (The earlier full-viewport-sky open
- * stays reverted — that bright daylit scene out-shouted the wordmark.)
+ * 2026-07-01 (Hugo): now a FULL-BLEED BANNER — edge-to-edge width, a fixed
+ * banner height with object-cover, feathered on all four sides (two intersected
+ * linear-gradient masks) so it melts into the peacock wash like the photos
+ * below. A negative top margin pulls it UP under the "…Stephen Meakin" lockup to
+ * kill the gap under the wordmark. Source `garden-galaxy-v1.mp4` — a "garden →
+ * galaxy" camera move (Stephen's mandala on an easel rising up through the trees
+ * into a spiral galaxy), a SEAMLESS BOOMERANG baked offline (forward, then a
+ * 1.35×-sped reverse back) that loops endlessly; the Earth limb + Veo watermark
+ * are cropped out of the source entirely. Kept the LIGHT 4.9 MB v1 mp4 (not the
+ * 13 MB v2) so it buffers fast enough to autoplay on mobile data. Autoplay is
+ * forced robustly (imperative muted + play() on canplay + first-interaction
+ * fallback) so it loops with NO play button on iOS too — see the play effect.
  */
 const CosmicInterlude = () => {
   const reduceMotion = useReducedMotion();
@@ -100,12 +101,36 @@ const CosmicInterlude = () => {
     return () => io.disconnect();
   }, [reduceMotion]);
 
+  // Robust autoplay — endless, no play button, on mobile AND desktop (Hugo).
+  // The bare autoPlay attribute is unreliable on iOS Safari: it only honours
+  // muted-autoplay when the element is GENUINELY muted (the React `muted` prop
+  // isn't always reflected onto the DOM property), and a freshly-mounted video
+  // usually still needs an explicit play() call. So force muted imperatively,
+  // load(), and kick play() on mount + loadedmetadata + canplay; a one-time
+  // first-interaction fallback (touch/scroll/tap) starts the loop even when iOS
+  // blocks programmatic autoplay outright (e.g. Low Power Mode). Same recipe as
+  // the VideoIntro film, which autoplays reliably everywhere.
   useEffect(() => {
-    const v = videoRef.current;
-    if (near && v) {
-      v.load();
-      v.play().catch(() => {});
-    }
+    if (!near) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.load();
+    const tryPlay = () => {
+      void video.play?.().catch(() => {});
+    };
+    tryPlay();
+    video.addEventListener("loadedmetadata", tryPlay);
+    video.addEventListener("canplay", tryPlay);
+    const goEvents = ["touchstart", "pointerdown", "click", "scroll", "keydown"] as const;
+    for (const ev of goEvents) window.addEventListener(ev, tryPlay, { passive: true });
+    return () => {
+      video.removeEventListener("loadedmetadata", tryPlay);
+      video.removeEventListener("canplay", tryPlay);
+      for (const ev of goEvents) window.removeEventListener(ev, tryPlay);
+    };
   }, [near]);
 
   if (reduceMotion) return null;
@@ -113,84 +138,70 @@ const CosmicInterlude = () => {
   return (
     <section
       aria-label="From the garden to the galaxy — the order beneath all things"
-      // z-30 lifts the framed plate ABOVE the fixed peacock backdrop (z-0) that
-      // covers the whole viewport — without it the panel paints behind the wash
-      // and reads as a blank gap (the very gap this fills). The masthead clears
-      // the same backdrop with its own z-20.
-      className="relative z-30 w-full mt-1 md:mt-2 lg:mt-3 mb-6 md:mb-8 lg:mb-12"
+      // z-30 lifts the banner ABOVE the fixed peacock backdrop (z-0) that covers
+      // the whole viewport — without it the film paints behind the wash and reads
+      // as a blank gap. The masthead clears the same backdrop with its own z-20.
+      // The masthead now hugs its content in portrait (see its min-h note), so
+      // the lockup always sits at the masthead's bottom and the banner follows
+      // with only a hairline gap — no negative pull needed (a fixed pull would
+      // overlap the wordmark on the screens where content fills the masthead).
+      // The soft top feather melts the seam either way.
+      className="relative z-30 w-full mt-0 md:mt-1 mb-4 md:mb-8 lg:mb-10"
     >
-      {/* The film is no longer a full-bleed feathered band but a CONTAINED,
-          museum-framed centrepiece — a large bordered "expanded plate" sitting
-          in the gap under the wordmark (Hugo). A double cream hairline (mat +
-          plate), a soft drop shadow and a warm outer glow give it the gallery
-          frame; an inner vignette grounds the cosmos. The clip is a seamless
-          boomerang (garden → galaxy, then a slightly-sped reverse back) so it
-          loops forever; the Earth limb is cropped out of the source entirely. */}
-      <div className="mx-auto w-full max-w-[1280px] 2xl:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12">
-        <figure ref={ref} className="relative m-0">
-          {/* Warm outer glow — the same rust note as the finale horizon. */}
+      {/* FULL-BLEED BANNER (Hugo: "fill the entire edges of screen so it's like
+          a banner", edges softened like the photos below). Edge-to-edge width,
+          a fixed banner height with object-cover, and a feathered mask on ALL
+          four sides (the two linear gradients are intersected) so the film melts
+          into the peacock wash with no hard rectangle. The clip is a seamless
+          boomerang (garden → galaxy, then a sped reverse back) that loops
+          forever; the Earth limb is cropped out of the source entirely. */}
+      <figure ref={ref} className="relative m-0 w-full">
+        {/* Warm outer glow — the same rust note as the finale horizon. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 -inset-y-8 -z-10"
+          style={{
+            background:
+              "radial-gradient(70% 75% at 50% 50%, rgba(201,120,68,0.10) 0%, rgba(9,7,13,0) 72%)",
+          }}
+        />
+        <div
+          className="relative w-full overflow-hidden bg-[#06060a] h-[clamp(220px,38svh,540px)] sm:h-[clamp(260px,40svh,560px)]"
+          style={{
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%)",
+            WebkitMaskComposite: "source-in",
+            maskImage:
+              "linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 15%, #000 85%, transparent 100%)",
+            maskComposite: "intersect",
+          }}
+        >
+          {near && (
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full object-cover"
+              poster={asset("/video/poster-garden-galaxy-v1.jpg")}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+            >
+              <source src={asset("/video/garden-galaxy-v1.mp4")} type="video/mp4" />
+            </video>
+          )}
+          {/* Gentle inner vignette for depth. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-6 md:-inset-12 -z-10"
+            className="pointer-events-none absolute inset-0"
             style={{
               background:
-                "radial-gradient(58% 58% at 50% 50%, rgba(201,120,68,0.12) 0%, rgba(9,7,13,0) 72%)",
+                "radial-gradient(135% 135% at 50% 50%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.28) 100%)",
             }}
           />
-          {/* SOFT-EDGE plate (Hugo: the hard museum frame "looks out of place" —
-              soften it like the other images). The cream mat / hairline rings /
-              drop-shadow box are GONE; the cosmos plate now dissolves into the
-              page via a feathered edge-mask (the same melt the ImageReveal photos
-              use), so it sits IN the page rather than floating in a frame. The
-              warm outer glow + inner vignette stay. */}
-          <div className="relative overflow-hidden">
-            {/* Inner plate — the cosmos itself, a cinematic 8:3 on desktop,
-                taller on phones so it fills the screen instead of letterboxing. */}
-            <div
-              className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[8/3] overflow-hidden bg-[#06060a]"
-              style={{
-                WebkitMaskImage:
-                  "radial-gradient(118% 132% at 50% 50%, #000 58%, rgba(0,0,0,0.4) 82%, transparent 100%)",
-                maskImage:
-                  "radial-gradient(118% 132% at 50% 50%, #000 58%, rgba(0,0,0,0.4) 82%, transparent 100%)",
-              }}
-            >
-              {near && (
-                <video
-                  ref={videoRef}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  // AUTOPLAY, loop forever, NO play button, on mobile + desktop
-                  // (Hugo). autoPlay + muted + playsInline is the iOS-safe combo;
-                  // preload="auto" (it's IntersectionObserver-gated so it only
-                  // fetches when scrolled near). Upscaled v2 asset (2560x960),
-                  // webm first then mp4 fallback. The scale/translate keeps the
-                  // baked-right galaxy core centred (object-cover doesn't crop 8/3).
-                  style={{ transform: "scale(1.1) translateX(-3.6%)", transformOrigin: "center" }}
-                  poster={asset("/video/poster-garden-galaxy-v2.jpg")}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  aria-hidden="true"
-                >
-                  <source src={asset("/video/garden-galaxy-v2.webm")} type="video/webm" />
-                  <source src={asset("/video/garden-galaxy-v2.mp4")} type="video/mp4" />
-                </video>
-              )}
-              {/* Inner vignette for depth on the frame edges. */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(125% 125% at 50% 50%, rgba(0,0,0,0) 56%, rgba(0,0,0,0.34) 100%)",
-                }}
-              />
-            </div>
-          </div>
-        </figure>
-      </div>
+        </div>
+      </figure>
     </section>
   );
 };
@@ -313,7 +324,14 @@ export const Welcome = () => {
           two-tier "THE MANDALA COMPANY" wordmark reading clearly BELOW it on the
           dark painting — the estate statement that opens the page. */}
       <section
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-[80svh] md:min-h-[76svh] justify-center pt-[11svh] sm:pt-[9svh] pb-[2svh]"
+        // PORTRAIT (phones + tablets) hugs its content — min-h-0 — so the
+        // "…Stephen Meakin" lockup always sits at the section's bottom and the
+        // film below tucks right under it (kills the "huge gap": on tall portrait
+        // screens the old min-h-80svh left 100–400px of dead space below the
+        // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
+        // full-viewport open (content there is taller than the viewport anyway,
+        // so this only removes the portrait void). — Hugo, 2026-07-01.
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[80svh] landscape:md:min-h-[76svh] justify-center pt-[11svh] sm:pt-[9svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
