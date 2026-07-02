@@ -35,12 +35,12 @@ const PEACOCK_BACKDROPS = [
   // small texture is also the cheaper, cache-friendlier composite the compositor
   // samples on every scroll frame. Full-res originals kept on disk for the
   // immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v12-sm.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v12-sm.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v12-sm.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v2.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v2.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v2.webp", name: "Moroccan Purple" },
   // Mary Pink closes the page — the newest colourway, carried into the Sacred
   // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v12-sm.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
 ];
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
@@ -166,7 +166,7 @@ const CosmicInterlude = () => {
             seam on engines which silently drop the composite keyword. Same soft
             dissolve as the .soft-edge-y photos elsewhere on the page. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[min(clamp(260px,32vw,820px),52svh)]"
+          className="relative w-full overflow-hidden bg-transparent h-[min(clamp(200px,24vw,560px),38svh)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -255,7 +255,7 @@ export const Welcome = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    return pool.slice(0, 6).map((p) => {
+    return pool.slice(0, 3).map((p) => {
       // Only draw from AVAILABLE colourways so a tile never shows a hidden one.
       const avail = p.colourways.filter((c) => c.available);
       return {
@@ -329,7 +329,7 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[54svh] landscape:md:min-h-[52svh] justify-center pt-[16svh] sm:pt-[14svh] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[42svh] landscape:md:min-h-[40svh] justify-center pt-[8svh] sm:pt-[7svh] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -546,7 +546,7 @@ export const Welcome = () => {
                 // near-WHITE blotches in the blurred peacock images can never
                 // wash out the cream text (Hugo: "too much white, can't read
                 // the text"), while keeping each colourway's warm character.
-                filter: "brightness(0.74) saturate(1.06)",
+                filter: "brightness(1.2) saturate(1.1)",
               }}
             />
           ))}
@@ -566,7 +566,7 @@ export const Welcome = () => {
               // colourway crossfade reads through; per-section text scrims (hero,
               // reminder, etc.) still carry legibility where copy sits.
               background:
-                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.26) 0%, rgba(34,10,22,0.15) 55%, rgba(34,10,22,0.08) 100%)",
+                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.14) 0%, rgba(34,10,22,0.08) 55%, rgba(34,10,22,0.04) 100%)",
             }}
           />
           {/* Bottom + top grounding band — darkens the very top strip (under the
@@ -577,7 +577,7 @@ export const Welcome = () => {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(10,9,8,0.36) 0%, rgba(10,9,8,0.05) 24%, rgba(10,9,8,0.05) 66%, rgba(10,9,8,0.46) 100%)",
+                "linear-gradient(to bottom, rgba(10,9,8,0.26) 0%, rgba(10,9,8,0.03) 24%, rgba(10,9,8,0.03) 66%, rgba(10,9,8,0.34) 100%)",
             }}
           />
           {/* Mary-Pink darken — fades in ONLY over the final ~25% of scroll
@@ -611,7 +611,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-8 md:space-y-10 lg:space-y-12 pb-12 md:pb-16">
+        <main className="relative isolate z-10 space-y-5 md:space-y-6 lg:space-y-7 pb-8 md:pb-10">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the
@@ -653,7 +653,7 @@ export const Welcome = () => {
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
-                  aspect="aspect-[4/3] sm:aspect-[16/9]"
+                  aspect="aspect-[2/1] sm:aspect-[3/1]"
                   edges="all"
                   parallax={0.08}
                   objectPosition="center"
@@ -711,7 +711,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.7] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
+                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -800,7 +800,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.6] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.45] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 text-pretty hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -926,7 +926,7 @@ export const Welcome = () => {
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[16/9] md:aspect-[5/2] 2xl:aspect-[3/1]"
+              aspect="aspect-[5/2] md:aspect-[4/1] 2xl:aspect-[5/1]"
               edges="y"
               parallax={0.06}
               objectPosition="center 62%"
@@ -951,7 +951,7 @@ export const Welcome = () => {
                 big-lead-plus-satellites read as a glitched, uneven layout). All
                 six tiles are the SAME size in clean rows: 2-up on mobile, 3-up on
                 desktop (3×2). min-w-0 stops a long title token widening a column. */}
-            <Reveal as="div" className="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
+            <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
@@ -1053,7 +1053,7 @@ export const Welcome = () => {
                 <ImageReveal
                   src="/img/about/02-painting-table.jpg"
                   alt="Stephen at his drafting table, drawing the underlying geometry"
-                  aspect="aspect-[3/2] sm:aspect-[2/1]"
+                  aspect="aspect-[5/2] sm:aspect-[3/1]"
                   edges="all"
                   parallax={0.08}
                   // Inside the max-w-[1320px]→[1720px] Craft panel, full panel
@@ -1196,7 +1196,7 @@ export const Welcome = () => {
                 <ImageReveal
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-                  aspect="aspect-[16/9]"
+                  aspect="aspect-[3/1]"
                   edges="none"
                   parallax={0.06}
                 />

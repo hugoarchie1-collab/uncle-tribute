@@ -88,7 +88,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(44px,6.8vw,78px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(40px,6vw,68px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.

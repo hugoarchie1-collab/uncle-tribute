@@ -549,10 +549,10 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
 // blur/saturation recipe identical to Welcome.tsx: Persian Indigo → Blood Moon
 // Red → Moroccan Purple → Mary Pink.
 const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-scene-v1.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-scene-v1.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-scene-v1.webp", name: "Moroccan Purple" },
-  { url: "/img/paintings/peacock-mary-pink-scene-v1.webp", name: "Mary Pink" },
+  { url: "/img/paintings/peacock-persian-indigo-blur-v2.webp", name: "Persian Indigo" },
+  { url: "/img/paintings/peacock-blood-moon-red-blur-v2.webp", name: "Blood Moon Red" },
+  { url: "/img/paintings/peacock-moroccan-purple-blur-v2.webp", name: "Moroccan Purple" },
+  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
 ];
 
 // The four traditions Stephen wove together (named exactly as in ABOUT.legacy[0]).
@@ -759,7 +759,7 @@ export const About = () => {
               // near-WHITE blotches in the blurred peacock images can never
               // wash out the cream text (Hugo: "too much white, can't read
               // the text"), while keeping each colourway's warm character.
-              filter: "brightness(0.74) saturate(1.06)",
+              filter: "brightness(1.2) saturate(1.1)",
             }}
           />
         ))}
@@ -774,7 +774,7 @@ export const About = () => {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.48) 0%, rgba(34,10,22,0.32) 55%, rgba(34,10,22,0.22) 100%)",
+              "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.18) 0%, rgba(34,10,22,0.11) 55%, rgba(34,10,22,0.06) 100%)",
           }}
         />
         {/* Bottom + top grounding band — identical to home: darkens the very
@@ -786,7 +786,7 @@ export const About = () => {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(10,9,8,0.36) 0%, rgba(10,9,8,0.05) 24%, rgba(10,9,8,0.05) 66%, rgba(10,9,8,0.46) 100%)",
+              "linear-gradient(to bottom, rgba(10,9,8,0.26) 0%, rgba(10,9,8,0.03) 24%, rgba(10,9,8,0.03) 66%, rgba(10,9,8,0.34) 100%)",
           }}
         />
         {/* Mary-Pink darken — fades in ONLY over the final ~25% of scroll
