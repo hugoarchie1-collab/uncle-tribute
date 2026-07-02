@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -15,33 +15,14 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
+import { PavoBackdrop } from "../components/PavoBackdrop";
 
-// Four Peacock colourways used as the home page's seamlessly-blending
-// backdrop layer (yellow removed — text was unreadable against it).
-// Pre-blurred 800px JPGs (~17KB each) — blur / saturate / brightness
-// baked into the file offline, zero runtime filter cost.
-// Pre-blurred WebP backdrops (~7-12KB each) — even smaller than the JPG
-// originals while keeping identical visual softness baked into the file.
-// Four Peacock colourways crossfade on page-scroll. Moroccan Purple closes
-// the page — it holds through the Sacred Geometry finale (Hugo's direction:
-// revert the brief Mary-Pink close back to the extended purple).
-const PEACOCK_BACKDROPS = [
-  // CROSSFADE BACKDROPS: the v12-sm family (600×600 webp) is one consistent,
-  // properly-blurred, correctly-centred set — soft gaussian washes (laplacian
-  // std ~0.0013–0.0018) at a matched dark luma (0.239/0.259/0.251/0.373) so the
-  // four colourways blend seamlessly across the scroll. Replaced the prior v3-sm
-  // refs, which read essentially un-blurred (indigo/red/purple) and whose
-  // mary-pink was a wrong off-centre crop at ~2× its siblings' brightness. The
-  // small texture is also the cheaper, cache-friendlier composite the compositor
-  // samples on every scroll frame. Full-res originals kept on disk for the
-  // immutable-cache rule.
-  { url: "/img/paintings/peacock-persian-indigo-blur-v2.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v2.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v2.webp", name: "Moroccan Purple" },
-  // Mary Pink closes the page — the newest colourway, carried into the Sacred
-  // Geometry finale so its backdrop blends seamlessly with the rest of the home.
-  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
-];
+// The home backdrop is the shared PavoBackdrop tapestry (see
+// components/PavoBackdrop.tsx): ALL FIVE Pavo colourways, each shown WHOLE
+// and zoomed out on its own ambient fill, crossfading on page scroll — Hugo
+// 2026-07-02, replacing the zoomed-in blurred washes ("multi coloured blurry
+// mess"). About renders the exact same component, so home + About share one
+// sky by construction.
 
 // The peak section H2s ("Six paintings…", "Each painting is a ritual.", "Four
 // traditions…", + the Meet-Stephen and Arista heads) all use the shared TITLE
@@ -165,8 +146,14 @@ const CosmicInterlude = () => {
             the two-gradient "union instead of intersect" bug that left a HARD top
             seam on engines which silently drop the composite keyword. Same soft
             dissolve as the .soft-edge-y photos elsewhere on the page. */}
+        {/* CINEMATIC HEIGHT (Hugo 2026-07-02: the 24vw/38svh strip read as "a
+            tiny bar, which is ridiculous"): ~62% of the viewport height on every
+            device — a genuinely large full-bleed band. The 340px floor keeps it
+            substantial on short landscape phones; the 1200px ceiling stops a 4K
+            wall becoming taller than the film can resolve while still ~55svh
+            there. object-cover + the vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[min(clamp(200px,24vw,560px),38svh)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(340px,62svh,1200px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -209,33 +196,11 @@ export const Welcome = () => {
   // Presentment currency — the "from £…" chips convert with the header picker.
   const { formatPretty: fmtPrice } = useCurrency();
 
-  // Whole-page scroll drives three peacock backdrops crossfading in turn:
-  // Indigo → Blood-Moon Red → Moroccan Purple, the purple holding through the
-  // Sacred Geometry finale so its sky matches the rest of the home.
-  const { scrollYProgress } = useScroll();
-  // Persian Indigo opens at FULL opacity from the very top (scroll progress 0) —
-  // NOT fading up from 0 — so the page is never bare black before the first
-  // scroll (Hugo: "before scrolling the blue background isn't there, it's
-  // black"). It only starts crossfading to Blood-Moon Red at 0.22.
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.22, 0.30], [1, 1, 0]);
-  const redOpacity = useTransform(scrollYProgress, [0.22, 0.30, 0.46, 0.54], [0, 1, 1, 0]);
-  const purpleOpacity = useTransform(scrollYProgress, [0.46, 0.54, 0.72, 0.80], [0, 1, 1, 0]);
-  const maryPinkOpacity = useTransform(scrollYProgress, [0.72, 0.80, 0.97, 1], [0, 1, 1, 1]);
-  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
-  // SCROLL-JANK FIX (Hugo: "heavy/stuttery scroll, esp. home"): the four
-  // full-viewport peacock layers are sequenced so AT MOST TWO ever overlap during
-  // a crossfade — but the other two sit at opacity 0 and were still being
-  // composited (each is a filtered, full-screen GPU layer) on every scroll frame.
-  // Flip a layer to `visibility: hidden` the instant it's fully transparent so the
-  // compositor drops it entirely, ~halving the worst-case per-frame full-screen
-  // compositing on the home page. Look is identical — a layer only hides once it
-  // is already invisible, and re-shows before it ramps back up.
-  const toVis = (v: number): "visible" | "hidden" => (v < 0.004 ? "hidden" : "visible");
-  const indigoVis = useTransform(indigoOpacity, toVis);
-  const redVis = useTransform(redOpacity, toVis);
-  const purpleVis = useTransform(purpleOpacity, toVis);
-  const maryPinkVis = useTransform(maryPinkOpacity, toVis);
-  const backdropVisibilities = [indigoVis, redVis, purpleVis, maryPinkVis];
+  // The five-colourway Pavo tapestry crossfade (incl. scroll-jank layer
+  // culling) lives in PavoBackdrop; the fade windows below are tuned so
+  // Persian Indigo opens at FULL opacity from the very top (never bare black
+  // before the first scroll) and Mary Pink holds through the Sacred Geometry
+  // finale (the finale invariant).
 
   // Six featured paintings in a 3×2 grid. A FRESH random six — each on a random
   // colourway — is drawn on EVERY home-page mount (first visit, hard refresh, or
@@ -255,7 +220,10 @@ export const Welcome = () => {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    return pool.slice(0, 3).map((p) => {
+    // 6, NOT 3: the section's verbatim H2 is "Six paintings from a lifetime at
+    // the compass." — a 3-tile grid under it is a visible contradiction (the
+    // 07-01 6→3 scroll-length cut broke this; restored 2026-07-02).
+    return pool.slice(0, 6).map((p) => {
       // Only draw from AVAILABLE colourways so a tile never shows a hidden one.
       const avail = p.colourways.filter((c) => c.available);
       return {
@@ -329,7 +297,12 @@ export const Welcome = () => {
         // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
         // full-viewport open (content there is taller than the viewport anyway,
         // so this only removes the portrait void). — Hugo, 2026-07-01.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[42svh] landscape:md:min-h-[40svh] justify-center pt-[8svh] sm:pt-[7svh] pb-[2svh]"
+        // ⚠️ DURABLE (2026-07-02, Hugo's clipped-"THE" screenshot): the wordmark
+        // must clear the FIXED overlay nav — the pt floor is 6rem because 8svh
+        // alone puts the first line UNDER the red bar on short windows — and its
+        // font-size is capped by HEIGHT (16svh, below) as well as width; a
+        // 14vw-only size overflows every wide-short window (the 06-29 failure).
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[42svh] landscape:md:min-h-[40svh] justify-center pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -432,7 +405,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(60px, 14vw, 200px)",
+                    fontSize: "min(clamp(60px, 14vw, 200px), 16svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -449,7 +422,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "clamp(60px, 14vw, 200px)",
+                    fontSize: "min(clamp(60px, 14vw, 200px), 16svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -511,100 +484,17 @@ export const Welcome = () => {
       <CosmicInterlude />
 
       <div id="welcome-anchor" className="relative">
-        {/* PEACOCK BACKDROP LAYER — four colourways crossfading on
-            page-scroll, identical blur/saturation/brightness recipe to
-            the Collections ScrollBackdrop. Sits behind all content. */}
-        <div
-          aria-hidden="true"
-          className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
-        >
-          {PEACOCK_BACKDROPS.map((bd, i) => (
-            <motion.div
-              key={bd.url}
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                // prefers-reduced-motion: short-circuit the scroll-driven
-                // crossfade (CLAUDE.md convention) — hold a single static
-                // backdrop (the opening indigo) instead of colour-shifting the
-                // whole viewport on every scroll frame.
-                opacity: reduceMotion ? (i === 0 ? 1 : 0) : backdropOpacities[i],
-                // Cull this layer from compositing while it's fully transparent
-                // (see the toVis note above) — the per-frame scroll-jank fix.
-                visibility: reduceMotion
-                  ? i === 0
-                    ? "visible"
-                    : "hidden"
-                  : backdropVisibilities[i],
-                backgroundImage: `url("${asset(bd.url)}")`,
-                // Promote to its own GPU layer so the scroll-driven crossfade
-                // composites the (pre-blurred) image instead of repainting it.
-                // translateZ(0) forces a composited layer so iOS doesn't
-                // re-rasterise the fixed cover bitmap every scroll frame.
-                willChange: "opacity",
-                transform: "translateZ(0)",
-                // Darken + gently desaturate every backdrop so the bright,
-                // near-WHITE blotches in the blurred peacock images can never
-                // wash out the cream text (Hugo: "too much white, can't read
-                // the text"), while keeping each colourway's warm character.
-                filter: "brightness(1.2) saturate(1.1)",
-              }}
-            />
-          ))}
-          {/* Backdrop legibility veil — a warm PLUM-ROSE radial (NOT neutral
-              black), so the centre "darkening" that grounds the cream type reads
-              as a RICHER pink rather than a grey/dark wash (Hugo: deepen the
-              veil only where cream sits, never grey the pink). Deepest at the
-              centre where running copy lives, dissolving to clear at the edges
-              so the bright rose petal pattern still shows through. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              // Lightened (Hugo: "i wanted the previous where you can see the
-              // pavos seamlessly change colourways behind") — was 0.42/0.26/0.16,
-              // which greyed the peacock out. Now a gentle plum-rose veil so the
-              // colourway crossfade reads through; per-section text scrims (hero,
-              // reminder, etc.) still carry legibility where copy sits.
-              background:
-                "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.14) 0%, rgba(34,10,22,0.08) 55%, rgba(34,10,22,0.04) 100%)",
-            }}
-          />
-          {/* Bottom + top grounding band — darkens the very top strip (under the
-              fixed white nav wordmark) and the very bottom (finale + footer
-              seam) so cream never washes out on the brightest colourway zones. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to bottom, rgba(10,9,8,0.26) 0%, rgba(10,9,8,0.03) 24%, rgba(10,9,8,0.03) 66%, rgba(10,9,8,0.34) 100%)",
-            }}
-          />
-          {/* Mary-Pink darken — fades in ONLY over the final ~25% of scroll
-              (tied to the existing maryPinkOpacity, not mutating the crossfade),
-              pulling the pale dusty rose down to a deep dusk so the finale's
-              cream type never sits on near-white. Above the backdrop images +
-              veil, below the z-10 content. */}
-          <motion.div
-            aria-hidden="true"
-            className="absolute inset-0"
-            style={{
-              opacity: reduceMotion ? 0 : maryPinkOpacity,
-              // PERFECTION PASS: bring this finale darken layer to parity with the
-              // backdrop layers. (1) `visibility: hidden` while its opacity is 0
-              // (the first ~72% of scroll) so it is NOT composited at all until the
-              // finale; (2) translateZ(0) + will-change:opacity so when it fades in
-              // over the last 25% its opacity animates on the compositor rather than
-              // repainting this full-screen gradient every scroll frame. Was the
-              // only scroll-animated full-screen layer still painting per frame.
-              visibility: reduceMotion ? "hidden" : maryPinkVis,
-              willChange: "opacity",
-              transform: "translateZ(0)",
-              background:
-                "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
-            }}
-          />
-        </div>
+        {/* PAVO TAPESTRY BACKDROP — all five colourways, each shown WHOLE and
+            zoomed out, crossfading on page-scroll. Shared with About. Fade
+            windows: indigo holds the hero, Mary Pink holds the finale. */}
+        <PavoBackdrop
+          fades={[
+            [0.16, 0.24],
+            [0.36, 0.44],
+            [0.56, 0.64],
+            [0.76, 0.84],
+          ]}
+        />
 
         {/* ONE vertical rhythm for the whole page. Each section's gap is the
             SAME at every breakpoint (space-y), instead of being the sum of two
@@ -1043,19 +933,24 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              {/* FEATURE IMAGE — full width of the panel so it reads large and
-                  leaves NO dead blank space beside a short side-by-side frame
-                  (Hugo: "too small, lots of blank space"). A gentle 16:10 crop of
-                  the 4:3 documentary source (sm+) trims only a sliver of ceiling
-                  and foreground — the subjects + mandala are never touched, and
-                  full 4:3 shows on phones. Clean feather, no box-shadow. */}
+              {/* FEATURE IMAGE — full width of the panel so it reads large with
+                  no dead space beside it. ⚠️ CROP (Hugo 2026-07-02: "you cut his
+                  whole head off"): the source is 4:3 (2048×1536) with Stephen's
+                  + his companion's heads in the TOP ~8–35% of the frame — the
+                  old aspect-[5/2]/[3/1] centre crop kept only the middle 44%,
+                  beheading both. Phones now show the (near-)full 4:3 frame;
+                  md+ uses a gentler 16:9 anchored toward the top
+                  (objectPosition "center 18%") so the heads AND the mandala on
+                  the table stay in frame at every breakpoint — only ceiling
+                  shelf + foreground floor are trimmed. */}
               <Reveal as="figure" className="m-0 mb-4 md:mb-6">
                 <ImageReveal
                   src="/img/about/02-painting-table.jpg"
-                  alt="Stephen at his drafting table, drawing the underlying geometry"
-                  aspect="aspect-[5/2] sm:aspect-[3/1]"
+                  alt="Stephen and a companion working over a large mandala print at his drafting table"
+                  aspect="aspect-[4/3] md:aspect-[16/9]"
                   edges="all"
                   parallax={0.08}
+                  objectPosition="center 18%"
                   // Inside the max-w-[1320px]→[1720px] Craft panel, full panel
                   // width minus section + panel padding: ~the container at wide
                   // widths, near-full viewport on phones.
@@ -1188,17 +1083,24 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            {/* Archive photo is a low-res 641×353 original (no higher-res copy
-                exists) — display it near native width so it stays CRISP rather
-                than upscaled to ~1120px (soft). Smaller + sharper, no added gap. */}
-            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto max-w-[520px] 2xl:max-w-[560px] 3xl:max-w-[600px]">
+            {/* Archive photo — BIG and UNCROPPED (Hugo 2026-07-02: it was
+                "cropped in, you can't even see it… not even big enough"). The
+                old aspect-[3/1] object-cover frame chopped ~40% of the 641×353
+                original's height (Stephen stands at the left edge — his head
+                went with it) and the 520px cap made it a thumbnail. Now: a
+                plain natural-aspect <AssetImage> (intrinsic 641:353 — nothing
+                object-cover can chop) at the section's full content width, the
+                dominant object of its section. The source is low-res, so the
+                upscale trades some crispness for presence — Hugo's explicit
+                call. Clean ring frame kept (lifts it off the busy backdrop). */}
+            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
-                <ImageReveal
+                <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"
-                  alt="Stephen beside the 3.6-metre Arista SunStar at the Farmacy restaurant, Notting Hill"
-                  aspect="aspect-[3/1]"
-                  edges="none"
-                  parallax={0.06}
+                  alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"
+                  loading="lazy"
+                  decoding="async"
+                  className="block w-full h-auto"
                 />
               </div>
               <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.04em] text-ink/65 mt-4 text-center">

@@ -32,6 +32,7 @@ const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
 
 // Frame options for the panel: "No frame" + the canonical website frame styles.
+// (WallCamera derives the identical list from FRAME_STYLES — same ids/labels.)
 const FRAME_OPTIONS: { id: string; label: string; swatch: string | null }[] = [
   { id: "none", label: "No frame", swatch: null },
   ...FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, swatch: f.swatch })),
@@ -336,11 +337,13 @@ export const SeeOnYourWall = ({
 
       {cameraOpen && (
         <WallCamera
-          imageSrc={colourway.image}
-          alt={`${painting.title} — ${colourway.name} on your wall`}
-          frameSwatch={frame.swatch}
-          frameLabel={frame.label}
-          caption={`${size.label} · ${cmLabel(size)} · ${frame.label}`}
+          painting={painting}
+          colourway={colourway}
+          onColourwayChange={setColourwayName}
+          sizeId={sizeId}
+          onSizeChange={pickSize}
+          frameId={frame.id}
+          onFrameChange={setFrameId}
           onClose={() => setCameraOpen(false)}
         />
       )}

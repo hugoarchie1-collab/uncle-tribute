@@ -5,42 +5,89 @@
 // runs live; the WHOLE selected print (never a cropped centre) floats over it as
 // a positionable, resizable, semi-transparent overlay. Drag to move, pinch (or
 // the +/− handles) to resize. "Lock on wall" freezes it in place AND turns it
-// fully opaque, so you can hold your phone up and see the piece hung. Frame
-// options render as a real moulding that HUGS the print — no huge white mount.
+// fully opaque — and, where the device grants motion access, it TRACKS the
+// phone's rotation (deviceorientation) so the print appears to STAY PUT on the
+// wall as the phone pans (yaw → horizontal px, pitch → vertical px, scaled by
+// an approximate camera FOV, smoothed with a small lerp). If orientation
+// permission is denied or events never fire, the lock degrades gracefully to
+// the plain screen-frozen behaviour — no broken toggle.
+//
+// The top-left chip is the OPTIONS button: it opens a panel with the same
+// three pickers the Virtual Gallery panel has — Colourway, Size and Frame —
+// so everything can be switched live on the wall. Option state lives in the
+// parent (SeeOnYourWall) so the two UIs stay in sync.
 //
 // This is a flat overlay (not native Quick Look / model-viewer), so we fully
 // control transparency + lock + the exact framed artwork the site sells.
 // =============================================================================
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import type { Colourway, Painting } from "../../data/paintings";
+import { FRAME_STYLES } from "../../data/paintings";
+import {
+  ARTWORK_SIZES,
+  cmLabel,
+  getArtworkSize,
+  type ArtworkSizeId,
+} from "../../lib/artworkSizes";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
 
+// Frame options: "No frame" + the canonical website frame styles. Derived from
+// FRAME_STYLES (the single source) — SeeOnYourWall derives the identical list.
+// (Kept file-local: the react-refresh lint rule forbids exporting constants
+// from component files.)
+const FRAME_OPTIONS: { id: string; label: string; swatch: string | null }[] = [
+  { id: "none", label: "No frame", swatch: null },
+  ...FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, swatch: f.swatch })),
+];
+
 interface WallCameraProps {
-  imageSrc: string; // path under /public (jpg); webp swapped automatically
-  alt: string;
-  /** Frame moulding colour, or null for "No frame". */
-  frameSwatch: string | null;
-  frameLabel: string;
-  /** e.g. "A2 · 42 × 42 cm · Natural oak" */
-  caption: string;
+  painting: Painting;
+  /** The currently selected (available) colourway. */
+  colourway: Colourway;
+  onColourwayChange: (name: string) => void;
+  sizeId: ArtworkSizeId;
+  onSizeChange: (id: ArtworkSizeId) => void;
+  /** One of FRAME_OPTIONS ids ("none" = unframed). */
+  frameId: string;
+  onFrameChange: (id: string) => void;
   onClose: () => void;
 }
 
 type CamState = "starting" | "live" | "denied" | "unsupported";
 
+/** Approximate horizontal field of view of a phone camera preview (degrees). */
+const H_FOV_DEG = 62;
+/** Lerp factor per frame for the wall-lock smoothing (0..1). */
+const LOCK_LERP = 0.18;
+
+/** Wrap a degree delta into [-180, 180] (compass alpha wraps at 0/360). */
+const wrapDeg = (d: number): number => {
+  let v = d % 360;
+  if (v > 180) v -= 360;
+  if (v < -180) v += 360;
+  return v;
+};
+
+const clampNum = (v: number, min: number, max: number) =>
+  Math.max(min, Math.min(v, max));
+
 export const WallCamera = ({
-  imageSrc,
-  alt,
-  frameSwatch,
-  frameLabel,
-  caption,
+  painting,
+  colourway,
+  onColourwayChange,
+  sizeId,
+  onSizeChange,
+  frameId,
+  onFrameChange,
   onClose,
 }: WallCameraProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
   const [cam, setCam] = useState<CamState>(() =>
     typeof navigator !== "undefined" &&
     typeof navigator.mediaDevices?.getUserMedia === "function"
@@ -48,10 +95,35 @@ export const WallCamera = ({
       : "unsupported",
   );
   const [locked, setLocked] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  // Guards for the async iOS permission flow: the promise may resolve AFTER
+  // the user unlocked or the overlay unmounted — never start tracking then.
+  const lockedRef = useRef(false);
+  const disposedRef = useRef(false);
+
+  const colourways = useMemo(
+    () => painting.colourways.filter((c) => c.available),
+    [painting],
+  );
+  const size = getArtworkSize(sizeId);
+  const frame = FRAME_OPTIONS.find((f) => f.id === frameId) ?? FRAME_OPTIONS[0];
+  const framed = frame.swatch !== null;
+  const imageSrc = colourway.image;
+  const caption = `${size.label} · ${cmLabel(size)} · ${frame.label}`;
 
   // Overlay geometry (in px, relative to the stage). Center-anchored.
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const [width, setWidth] = useState(0);
+
+  // Refs mirroring pos/width for the wall-lock rAF loop (no re-render churn).
+  const posRef = useRef(pos);
+  const widthRef = useRef(width);
+  useEffect(() => {
+    posRef.current = pos;
+  }, [pos]);
+  useEffect(() => {
+    widthRef.current = width;
+  }, [width]);
 
   // ---- Start / stop the camera ------------------------------------------------
   useEffect(() => {
@@ -107,6 +179,149 @@ export const WallCamera = ({
       document.body.style.overflow = prev;
     };
   }, [onClose]);
+
+  // ---- Wall lock: deviceorientation tracking ----------------------------------
+  // While locked, the print is translated OPPOSITE to the phone's rotation
+  // delta so it appears fixed on the wall. All per-frame work happens on refs +
+  // direct style writes; React state is untouched until unlock.
+  const orient = useRef<{
+    base: { alpha: number; beta: number } | null;
+    target: { x: number; y: number };
+    rendered: { x: number; y: number };
+    raf: number | null;
+    handler: ((e: DeviceOrientationEvent) => void) | null;
+  }>({ base: null, target: { x: 0, y: 0 }, rendered: { x: 0, y: 0 }, raf: null, handler: null });
+
+  const stopOrientation = useCallback((bakeOffset: boolean) => {
+    const o = orient.current;
+    if (o.handler) {
+      window.removeEventListener("deviceorientation", o.handler, true);
+      o.handler = null;
+    }
+    if (o.raf != null) {
+      cancelAnimationFrame(o.raf);
+      o.raf = null;
+    }
+    if (bakeOffset && (o.rendered.x !== 0 || o.rendered.y !== 0)) {
+      // Fold the tracked offset into the base position so the print doesn't
+      // jump when unlocking — clamped back on-stage so it stays grabbable.
+      const r = stageRef.current?.getBoundingClientRect();
+      const dx = o.rendered.x;
+      const dy = o.rendered.y;
+      setPos((p) =>
+        p
+          ? {
+              x: clampNum(p.x + dx, 0, r?.width ?? p.x + dx),
+              y: clampNum(p.y + dy, 0, r?.height ?? p.y + dy),
+            }
+          : p,
+      );
+    }
+    o.base = null;
+    o.target = { x: 0, y: 0 };
+    o.rendered = { x: 0, y: 0 };
+    const el = overlayRef.current;
+    if (el) {
+      el.style.transform = "translate(-50%, -50%)";
+      el.style.opacity = "";
+    }
+  }, []);
+
+  const startOrientation = useCallback(() => {
+    const o = orient.current;
+    if (o.handler) return; // already tracking
+    if (disposedRef.current || !lockedRef.current) return; // stale async grant
+    const handler = (e: DeviceOrientationEvent) => {
+      if (e.alpha == null || e.beta == null) return;
+      if (!o.base) {
+        o.base = { alpha: e.alpha, beta: e.beta };
+        return;
+      }
+      const dYaw = wrapDeg(e.alpha - o.base.alpha); // + = phone turned left
+      const dPitch = e.beta - o.base.beta; // + = camera tilted up
+      const r = stageRef.current?.getBoundingClientRect();
+      const w = r?.width ?? 390;
+      const h = r?.height ?? 700;
+      // px per degree is (approximately) equal on both axes for a real camera.
+      const pxPerDeg = w / H_FOV_DEG;
+      // Turn left → world content shifts right in frame → print moves right.
+      // Tilt camera up → world content shifts down in frame → print moves down.
+      o.target = {
+        x: clampNum(dYaw * pxPerDeg, -1.5 * w, 1.5 * w),
+        y: clampNum(dPitch * pxPerDeg, -1.5 * h, 1.5 * h),
+      };
+    };
+    o.handler = handler;
+    window.addEventListener("deviceorientation", handler, true);
+
+    const tick = () => {
+      o.rendered.x += (o.target.x - o.rendered.x) * LOCK_LERP;
+      o.rendered.y += (o.target.y - o.rendered.y) * LOCK_LERP;
+      const el = overlayRef.current;
+      const r = stageRef.current?.getBoundingClientRect();
+      const p = posRef.current;
+      if (el) {
+        el.style.transform = `translate(-50%, -50%) translate(${o.rendered.x.toFixed(1)}px, ${o.rendered.y.toFixed(1)}px)`;
+        if (r && p) {
+          // Fade as the print's centre pans past the stage edge (the stage's
+          // overflow-hidden clips it anyway — the fade just softens the exit).
+          const cx = p.x + o.rendered.x;
+          const cy = p.y + o.rendered.y;
+          const overshoot = Math.max(0, -cx, cx - r.width, -cy, cy - r.height);
+          const half = Math.max(1, widthRef.current * 0.5);
+          el.style.opacity = String(clampNum(1 - overshoot / half, 0, 1));
+        }
+      }
+      o.raf = requestAnimationFrame(tick);
+    };
+    o.raf = requestAnimationFrame(tick);
+  }, []);
+
+  // Full teardown on unmount (listener + rAF).
+  useEffect(
+    () => () => {
+      disposedRef.current = true;
+      stopOrientation(false);
+    },
+    [stopOrientation],
+  );
+
+  const toggleLock = () => {
+    if (locked) {
+      lockedRef.current = false;
+      stopOrientation(true);
+      setLocked(false);
+      return;
+    }
+    lockedRef.current = true;
+    setLocked(true);
+    // Enable orientation tracking. On iOS 13+, requestPermission() MUST be
+    // called from this user gesture. Any failure → plain screen-frozen lock.
+    try {
+      const DOE =
+        typeof window !== "undefined"
+          ? (window.DeviceOrientationEvent as
+              | (typeof DeviceOrientationEvent & {
+                  requestPermission?: () => Promise<string>;
+                })
+              | undefined)
+          : undefined;
+      if (!DOE) return;
+      if (typeof DOE.requestPermission === "function") {
+        void DOE.requestPermission()
+          .then((res) => {
+            if (res === "granted") startOrientation();
+          })
+          .catch(() => {
+            /* denied / unavailable → static lock, no broken toggle */
+          });
+      } else {
+        startOrientation();
+      }
+    } catch {
+      /* static lock fallback */
+    }
+  };
 
   // ---- Pointer gestures: drag (1 finger) + pinch-resize (2 fingers) -----------
   const gesture = useRef<{
@@ -180,7 +395,16 @@ export const WallCamera = ({
 
   const nudgeScale = (factor: number) => setWidth((w) => clampWidth(w * factor));
 
-  const framed = frameSwatch !== null;
+  // Changing size rescales the on-wall print proportionally (A2 → A1 grows it
+  // by the real cm ratio), so the picker means something visually.
+  const pickSize = (id: ArtworkSizeId) => {
+    if (id === sizeId) return;
+    const prev = getArtworkSize(sizeId);
+    const next = getArtworkSize(id);
+    setWidth((w) => clampWidth(w * (next.cm / prev.cm)));
+    onSizeChange(id);
+  };
+
   // Moulding hugs the print — a thin moulding, no white mount (Hugo).
   const moulding = Math.max(6, Math.round(width * 0.045));
 
@@ -204,8 +428,9 @@ export const WallCamera = ({
       <div ref={stageRef} className="absolute inset-0 overflow-hidden touch-none">
         {pos && width > 0 && (
           <div
+            ref={overlayRef}
             role="img"
-            aria-label={alt}
+            aria-label={`${painting.title} — ${colourway.name} on your wall`}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endPointer}
@@ -217,10 +442,12 @@ export const WallCamera = ({
               width,
               transform: "translate(-50%, -50%)",
               opacity: locked ? 1 : 0.62,
-              transition: "opacity 200ms ease",
+              // While locked, the rAF loop writes opacity per-frame — a CSS
+              // transition would fight it and lag the tracking.
+              transition: locked ? "none" : "opacity 200ms ease",
               padding: framed ? moulding : 0,
               background: framed
-                ? `linear-gradient(135deg, color-mix(in srgb, ${frameSwatch}, white 22%), ${frameSwatch} 55%, color-mix(in srgb, ${frameSwatch}, black 30%))`
+                ? `linear-gradient(135deg, color-mix(in srgb, ${frame.swatch}, white 22%), ${frame.swatch} 55%, color-mix(in srgb, ${frame.swatch}, black 30%))`
                 : "transparent",
               borderRadius: 2,
               boxShadow: locked
@@ -261,22 +488,153 @@ export const WallCamera = ({
         )}
       </div>
 
+      {/* Tap-outside layer that closes the options panel (above the stage,
+          below the bars/panel by DOM order — a tap here never drags the print) */}
+      {optionsOpen && (
+        <button
+          type="button"
+          aria-label="Close options"
+          onClick={() => setOptionsOpen(false)}
+          className="absolute inset-0 cursor-default"
+        />
+      )}
+
       {/* Top bar */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4">
-        <span className="rounded-full bg-black/55 px-3.5 py-2 font-sans text-[12px] text-white/90 backdrop-blur-sm">
-          {caption}
-        </span>
+        <button
+          type="button"
+          onClick={() => setOptionsOpen((v) => !v)}
+          aria-expanded={optionsOpen}
+          aria-label={optionsOpen ? "Close options" : "Open options — colourway, size and frame"}
+          className="press inline-flex min-h-[44px] max-w-[75%] items-center gap-2 rounded-full bg-black/55 px-3.5 py-2 text-left font-sans text-[12px] text-white/90 ring-1 ring-white/25 backdrop-blur-sm"
+        >
+          <span className="truncate">{caption}</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            aria-hidden="true"
+            className={cn("shrink-0 transition-transform duration-200", optionsOpen && "rotate-180")}
+          >
+            <path d="M3 5.5 7 9.5l4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close camera"
-          className="press inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-sm"
+          className="press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-white/25 backdrop-blur-sm"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           </svg>
         </button>
       </div>
+
+      {/* Options panel — Colourway · Size · Frame, switched live on the wall */}
+      {optionsOpen && (
+        <div className="absolute left-4 right-4 top-[76px] max-h-[62vh] max-w-[440px] overflow-y-auto rounded-2xl bg-black/75 p-4 ring-1 ring-white/20 backdrop-blur-md">
+          {colourways.length > 1 && (
+            <section className="mb-4">
+              <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+                Colourway · {colourway.name}
+              </p>
+              <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
+                {colourways.map((c) => {
+                  const sel = c.name === colourway.name;
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      role="radio"
+                      aria-checked={sel}
+                      aria-label={c.name}
+                      onClick={() => onColourwayChange(c.name)}
+                      className={cn(
+                        "h-11 w-11 overflow-hidden rounded-full outline-none ring-1 ring-white/30 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-white",
+                        sel ? "ring-2 ring-white scale-110" : "opacity-90 hover:scale-105 hover:opacity-100",
+                      )}
+                      style={{ backgroundColor: c.hex }}
+                    >
+                      <picture>
+                        <source srcSet={asset(webp(c.image))} type="image/webp" />
+                        <img src={asset(c.image)} alt="" className="h-full w-full object-cover" />
+                      </picture>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          <section className="mb-4">
+            <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+              Size
+            </p>
+            <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
+              {ARTWORK_SIZES.map((s) => {
+                const sel = s.id === sizeId;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={sel}
+                    onClick={() => pickSize(s.id)}
+                    className={cn(
+                      "flex min-h-[48px] flex-col items-center justify-center rounded-xl px-1 outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-white",
+                      sel ? "bg-white text-black ring-white" : "text-white/80 ring-white/25 hover:text-white",
+                    )}
+                  >
+                    <span className="font-sans text-[13px] font-bold tracking-[0.08em]">{s.label}</span>
+                    <span className={cn("font-sans text-[10px] font-semibold", sel ? "text-black/60" : "text-white/55")}>
+                      {s.cm}cm
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section>
+            <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+              Frame · {frame.label}
+            </p>
+            <div role="radiogroup" aria-label="Frame" className="flex flex-wrap gap-2">
+              {FRAME_OPTIONS.map((f) => {
+                const sel = f.id === frame.id;
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={sel}
+                    aria-label={f.label}
+                    onClick={() => onFrameChange(f.id)}
+                    className={cn(
+                      "inline-flex min-h-[44px] items-center gap-2 rounded-full px-3 outline-none ring-1 transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-white",
+                      sel ? "ring-white" : "ring-white/25 hover:ring-white/60",
+                    )}
+                  >
+                    <span
+                      className="h-5 w-5 rounded-full ring-1 ring-black/30"
+                      style={{
+                        background: f.swatch
+                          ? `linear-gradient(135deg, color-mix(in srgb, ${f.swatch}, white 24%), ${f.swatch})`
+                          : "repeating-linear-gradient(45deg, #2a2620, #2a2620 3px, #14110d 3px, #14110d 6px)",
+                      }}
+                    />
+                    <span className={cn("font-sans text-[12px] font-bold tracking-[0.03em]", sel ? "text-white" : "text-white/70")}>
+                      {f.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      )}
 
       {/* Bottom controls */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
@@ -320,7 +678,7 @@ export const WallCamera = ({
           )}
           <button
             type="button"
-            onClick={() => setLocked((l) => !l)}
+            onClick={toggleLock}
             className={cn(
               "press inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full px-7 font-sans text-[14px] font-bold tracking-[0.03em] transition-colors",
               locked
@@ -347,7 +705,7 @@ export const WallCamera = ({
             )}
           </button>
         </div>
-        <p className="font-sans text-[11px] text-white/55">{frameLabel} · your camera stays on your device</p>
+        <p className="font-sans text-[11px] text-white/55">{frame.label} · your camera stays on your device</p>
       </div>
     </div>,
     document.body,

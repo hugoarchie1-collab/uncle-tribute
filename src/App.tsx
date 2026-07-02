@@ -4,6 +4,7 @@ import {
   Suspense,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -191,12 +192,47 @@ const PageShell = ({ children }: { children: ReactNode }) => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // ⚠️ The shell must carry a transform ONLY while the drawer is open or the
+  // close slide is still animating. A permanent `translateX(0)` (+ will-change)
+  // makes this element the containing block for EVERY `position:fixed`
+  // descendant — each page's fixed scene backdrop re-bases to the document top
+  // and scrolls away (backdrop-goes-black), and the fixed overlay nav stops
+  // being viewport-pinned. With `transform: none` at rest, fixed children work
+  // normally 100% of browsing; during the slide they ride with the shell (the
+  // drawer's dim scrim covers the brief re-base on scrolled pages).
+  const [closing, setClosing] = useState(false);
+  const prevOpenRef = useRef(menuOpen);
+  useEffect(() => {
+    const wasOpen = prevOpenRef.current;
+    prevOpenRef.current = menuOpen;
+    if (wasOpen && !menuOpen) {
+      setClosing(true);
+      // Fallback for interrupted transitions + reduced-motion (no transitionend
+      // fires when motion-safe strips the transition): never stay transformed.
+      const t = window.setTimeout(() => setClosing(false), 640);
+      return () => window.clearTimeout(t);
+    }
+  }, [menuOpen]);
+  const slides = menuOpen || closing;
+
   return (
     <div
-      className="min-h-[100dvh] motion-safe:transition-transform motion-safe:duration-[520ms] will-change-transform"
+      className={
+        "min-h-[100dvh] motion-safe:transition-transform motion-safe:duration-[520ms]" +
+        (slides ? " will-change-transform" : "")
+      }
       style={{
-        transform: menuOpen ? `translateX(-${drawerPx}px)` : "translateX(0)",
+        transform: slides
+          ? menuOpen
+            ? `translateX(-${drawerPx}px)`
+            : "translateX(0)"
+          : undefined,
         transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+      }}
+      onTransitionEnd={(e) => {
+        if (e.target === e.currentTarget && e.propertyName === "transform" && !menuOpen) {
+          setClosing(false);
+        }
       }}
     >
       {children}
@@ -237,15 +273,14 @@ export default function App() {
               root → a blank, frozen page. The boundary converts that into a
               dignified, recoverable fallback so the site can never silently die. */}
           <ErrorBoundary>
-            {/* The mobile nav is a clean OVERLAY drawer — Nav portals the panel
-                and its dimming scrim to document.body, so PageShell does NOT
-                move the routed page. It intentionally stays still and
-                transform-free: a transform on a tall, scrolled page leaves a
-                black gap / clips text and re-bases the pages' position:fixed
-                scene backdrops (the "push-content" effect is a documented TRAP
-                — keep it disabled). Everything OUTSIDE it below (grain, cursor,
-                entrance, toasts, consent, update, analytics) stays anchored to
-                the viewport. */}
+            {/* PageShell implements the PUSH drawer Hugo asked for: it slides
+                the routed page left while the body-portaled drawer opens. At
+                REST it is transform-free (see the PageShell comment) so the
+                pages' position:fixed scene backdrops + the fixed overlay nav
+                stay genuinely viewport-pinned; the transform exists only for
+                the duration of the slide. Everything OUTSIDE it below (grain,
+                cursor, entrance, toasts, consent, update, analytics) stays
+                anchored to the viewport. */}
             <PageShell>
               <AnimatedRoutes />
             </PageShell>

@@ -37,7 +37,7 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
   {
     heading: "Connect",
     links: [
-      { to: "/memories", label: "The Pin Board" },
+      { to: "/memories", label: "Memories" },
       { to: "/auth", label: "Authenticate" },
       { to: "/contact", label: "Contact" },
     ],
@@ -176,9 +176,13 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     // Direction deadband so micro-jitter / trackpad inertia never flickers it.
     const DELTA = 6;
     let raf = 0;
-    lastYRef.current = window.scrollY;
+    lastYRef.current = Math.max(0, window.scrollY);
     const evaluate = () => {
-      const y = window.scrollY;
+      // Clamp: iOS rubber-band overscroll can report NEGATIVE scrollY at the
+      // top (and jitter around 0). A negative base would need a large fake
+      // "scroll down" before the deadband maths behaved again — clamp so the
+      // top zone + deltas are always computed from real document positions.
+      const y = Math.max(0, window.scrollY);
       setScrolled(y > 40);
       if (y < SHOW_ABOVE) {
         // Top zone — always show.
@@ -274,7 +278,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     };
   }, [menuOpen]);
 
-  return (
+  const header = (
     <header
       className={cn(
         overlay ? "fixed inset-x-0 top-0" : "sticky top-0",
@@ -496,6 +500,22 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       />
     </header>
   );
+
+  // OVERLAY mode (`fixed` bar — Welcome / Search) is PORTALLED to document.body.
+  // WHY (the mobile "bar never comes back down" bug): App's PageShell carries a
+  // permanent `transform: translateX(0)` + `will-change-transform` for the
+  // push-drawer, and ANY non-none transform/will-change makes that shell the
+  // CONTAINING BLOCK for `position: fixed` descendants — so this "fixed" bar
+  // was really positioned like `absolute` at the top of the document: it
+  // scrolled away with the page and the slide-in-on-scroll-up transform toggled
+  // invisibly off-screen (and the hamburger became unreachable mid-page).
+  // Portalling to body restores true viewport-fixed behaviour. The drawer +
+  // its scrim already portal to body and layer above (z-120/121 vs z-50), and
+  // overlay mode never reserved layout space, so nothing else shifts. STICKY
+  // mode stays in-flow (it reserves layout space on every content page, and
+  // `sticky` is NOT affected by transformed ancestors — only by
+  // overflow-hidden ancestors, fixed at the page-root level).
+  return overlay ? createPortal(header, document.body) : header;
 };
 
 /**
