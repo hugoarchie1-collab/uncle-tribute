@@ -693,10 +693,11 @@ export const Privacy = () => (
     lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
     sections={PRIVACY}
     updated={UPDATED}
-    // Lava → Teton dusk — both scenes Hugo assigned to privacy, crossfading on scroll.
+    // Hugo's two certified privacy scenes (sunset silhouette → pine headland),
+    // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/privacy-lava-blurmod-v1.webp",
-      "/img/scenes/privacy-teton-blurmod-v1.webp",
+      "/img/scenes/privacy-scene-a-v2.webp",
+      "/img/scenes/privacy-scene-b-v2.webp",
     ]}
   />
 );
@@ -706,11 +707,11 @@ export const Terms = () => (
     lead="The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights."
     sections={TERMS}
     updated={UPDATED}
-    // Marble caves → Nile → Himalaya — Hugo's three terms scenes, crossfading on scroll.
+    // Hugo's two certified terms scenes (mirror lake → ember forest),
+    // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/terms-marble-cave-blurmod-v1.webp",
-      "/img/scenes/terms-nile-blurmod-v1.webp",
-      "/img/scenes/terms-himalaya-blurmod-v1.webp",
+      "/img/scenes/terms-scene-a-v2.webp",
+      "/img/scenes/terms-scene-b-v2.webp",
     ]}
   />
 );
@@ -720,10 +721,11 @@ export const Returns = () => (
     lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
     sections={RETURNS}
     updated={UPDATED}
-    // Azaleas → spider-web/DNA — both scenes Hugo assigned to returns, crossfading on scroll.
+    // Hugo's two certified returns scenes (rainbow wave → ice cave),
+    // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/returns-azalea-blurmod-v1.webp",
-      "/img/scenes/returns-spider-blur-v2.webp",
+      "/img/scenes/returns-scene-a-v2.webp",
+      "/img/scenes/returns-scene-b-v2.webp",
     ]}
   />
 );

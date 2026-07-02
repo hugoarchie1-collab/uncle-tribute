@@ -850,15 +850,21 @@ export const Memories = () => {
   }
   const hasVisitorMemories = visitorMemories.length > 0;
 
+  // Root is overflow-x-CLIP, never -hidden: `hidden` makes this div a scroll
+  // container, which becomes the sticky Nav's scroll ancestor — and since this
+  // div never scrolls itself (the window does), the bar silently stopped
+  // sticking and could never slide back in on scroll-up. `clip` gives the same
+  // no-horizontal-overflow guarantee with NO scroll container (the html/body
+  // convention in global.css).
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       {/* FIXED BACKDROP LAYER — a single full-page blurred aurora-beach scene
           drifting with the document scroll, cloned from the Collections
           treatment (one image, no cross-fade). The whole feed reads over it at
           relative z-10. The z-[200] share modal sits well above this z-0 layer,
           so its stacking is undisturbed. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-earth-scene-v1.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-scene-v2.webp")} />
         {/* Shared scrim — the EXACT site-wide gradient (matches Collections /
             Welcome) so the cream copy stays legible over the photo while the
             backdrop reads as a subdued, moody texture. */}
@@ -872,7 +878,7 @@ export const Memories = () => {
         />
       </div>
       <Seo
-        title="The Pin Board"
+        title="Memories"
         description="A wall of memories of Stephen Meakin (SEM, 1966–2021) — mandala artist and sacred geometer. Share a memory of Steve with the family and his students."
         url="/memories"
       />

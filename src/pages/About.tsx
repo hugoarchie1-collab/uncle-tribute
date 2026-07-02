@@ -23,8 +23,8 @@ import {
   LIFE_DATES,
 } from "../data/content";
 import { Seo } from "../components/Seo";
+import { PavoBackdrop } from "../components/PavoBackdrop";
 import { cn } from "../lib/cn";
-import { asset } from "../lib/asset";
 import {
   EYEBROW,
   EYEBROW_MUTED,
@@ -101,7 +101,9 @@ const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4x
  *  On large screens the measure opens proportionally (3xl/4xl) so the prose
  *  fills the viewport instead of stranding it in a narrow column — kept
  *  COMFORTABLE (never full-bleed), just one step wider as the type grows. */
-const READING = "mx-auto w-full max-w-[940px] 3xl:max-w-[1060px] 4xl:max-w-[1160px]";
+// (READING — the old ~940px centred prose measure — was retired 2026-07-02:
+// its last user, the Anegada story, now sits BESIDE its photograph in a
+// two-column grid inside READING_WIDE.)
 const READING_WIDE = "mx-auto w-full max-w-[1180px] 3xl:max-w-[1320px] 4xl:max-w-[1440px]";
 
 // ─── STANDOUT — the one interior "pull-line" display register ────────────────
@@ -195,11 +197,14 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
 // ChapterHead headers themselves.)
 
 // ─── Plate ───────────────────────────────────────────────────────────────────
-// The family-album register: a personal snapshot mounted WHOLE at its native
-// ratio on a warm paper mat over the dark sky — the contained-framed-object
-// register approved on home; the opposite of both hard black boxes and
-// edge-to-edge image walls. No aspect class, no object-cover, ever. Parent
-// grids use items-start so differing print heights read as composed.
+// The family-album register: a personal snapshot shown WHOLE at its native
+// ratio, sitting DIRECTLY on the peacock backdrop with only a soft
+// drop-shadow for depth. The old warm "paper mount" (bg-ink/[0.04] + ring +
+// padding) was REMOVED 2026-07-02 — Hugo: it read as "a weird gray background
+// behind each image". No object-cover, ever: these are family photographs and
+// nobody may be cropped out. In fixed-aspect (fill) slots the photo is
+// contained and any letterbox is TRANSPARENT, so the colourful backdrop —
+// never a grey box — shows through.
 const Plate = ({
   src,
   alt,
@@ -221,21 +226,8 @@ const Plate = ({
   aspect?: string;
 }) => (
   <figure className="m-0 flex h-full flex-col">
-    <div className="bg-ink/[0.04] ring-1 ring-ink/10 p-3 md:p-4 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-      {fill ? (
-        <div className={cn("relative w-full overflow-hidden", aspect)}>
-          <AssetImage
-            src={src}
-            alt={alt}
-            width={width}
-            height={height}
-            loading="lazy"
-            decoding="async"
-            sizes={sizes}
-            className="absolute inset-0 h-full w-full object-contain"
-          />
-        </div>
-      ) : (
+    {fill ? (
+      <div className={cn("relative w-full", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -244,10 +236,21 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="block w-full h-auto"
+          className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
         />
-      )}
-    </div>
+      </div>
+    ) : (
+      <AssetImage
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading="lazy"
+        decoding="async"
+        sizes={sizes}
+        className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+      />
+    )}
   </figure>
 );
 
@@ -324,11 +327,13 @@ const SectionLabel = ({ children }: { children: ReactNode }) => (
 );
 
 // ─── ContainImage ────────────────────────────────────────────────────────────
-// No-crop figure: the photo sits inside a fixed-aspect dark mat and is shown in
-// full with object-contain — so heads, feet and edges are never cut off. A
-// gentle scroll-tied parallax on the image only (transform/opacity), short-
-// circuited under reduced motion. Use for portraits, group shots and the old
-// family photographs that need a FIXED slot (free-height album shots → Plate).
+// No-crop figure: the photo sits inside a fixed-aspect slot and is shown in
+// full with object-contain — so heads, feet and edges are never cut off. The
+// old dark mat (bg-ink/[0.05] + ring + box-shadow) was REMOVED 2026-07-02
+// (Hugo: grey boxes behind images) — the photo now floats directly on the
+// peacock backdrop with a drop-shadow that hugs the image itself, and any
+// letterbox area is transparent. A gentle scroll-tied parallax on the image
+// only (transform/opacity), short-circuited under reduced motion.
 const ContainImage = ({
   src,
   alt,
@@ -355,13 +360,7 @@ const ContainImage = ({
   const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "relative w-full overflow-hidden bg-ink/[0.05] ring-1 ring-ink/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]",
-        aspect,
-      )}
-    >
+    <div ref={ref} className={cn("relative w-full", aspect)}>
       <motion.div
         className={cn("absolute inset-0", !reduceMotion && "will-change-transform")}
         style={reduceMotion ? undefined : { y }}
@@ -372,7 +371,7 @@ const ContainImage = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="absolute inset-0 w-full h-full object-contain"
+          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
         />
       </motion.div>
     </div>
@@ -411,11 +410,21 @@ const AboutMasthead = () => (
     <div className="mt-3 md:mt-4 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-4 md:pt-5">
       {/* His portrait — the first image you see, set beside his name (Hugo:
           "next to his title… avoid blank space… flawless luxury"). A contained,
-          evenly-feathered plate that fills what was dead space at the cover. */}
-      <Reveal as="figure" className="m-0 mx-auto max-w-[440px] md:max-w-[600px] lg:max-w-none lg:col-span-4">
+          evenly-feathered plate that fills what was dead space at the cover.
+          ⚠️ The aspect prop is LOAD-BEARING (fixed 2026-07-02): without it the
+          ImageReveal wrapper had no height, the lazy <img> measured 0×0, and
+          Chrome never lazy-loads a zero-area image — a deadlock that left the
+          portrait PERMANENTLY invisible ("you haven't added that photo").
+          aspect-[1337/1600] is the JPG's exact native ratio, so object-cover
+          crops nothing. w-full is EQUALLY load-bearing: mx-auto on a grid item
+          means shrink-to-fit, and with only an aspect-ratio wrapper inside
+          there is no intrinsic width — the whole figure resolved to 0×0 and
+          the image stayed invisible even after the aspect fix. */}
+      <Reveal as="figure" className="m-0 mx-auto w-full max-w-[440px] md:max-w-[600px] lg:max-w-none lg:col-span-4">
         <ImageReveal
           src="/img/about/12-stephen-portrait.jpg"
           alt="Stephen Meakin"
+          aspect="aspect-[1337/1600]"
           edges="all"
           parallax={0.06}
         />
@@ -472,9 +481,26 @@ const AnegadaPoster = () => (
         </h3>
       </Reveal>
 
-      <Reveal as="div" className="mt-4 md:mt-5">
-        <p className={cn(BODY, READING)}>{ABOUT.anegada[0]}</p>
-      </Reveal>
+      {/* The first-person Anegada story BESIDE the sand-circle photograph
+          (Hugo: the photo next to the text — not long bits of text alone).
+          The photograph is UNCAPTIONED and its alt is purely descriptive —
+          it must never claim Anegada, 1995 or "the first" (see the caption
+          law above). Stacks below md. */}
+      <div className="mt-4 md:mt-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center text-left">
+        <Reveal as="div">
+          <p className={BODY}>{ABOUT.anegada[0]}</p>
+        </Reveal>
+        <Reveal as="figure" delay={0.08} className="m-0">
+          <ImageReveal
+            src="/img/about/24-circle-in-the-sand.jpg"
+            alt="A large circular pattern of radiating petal-like forms drawn into the sand of a beach, the shoreline and sea beyond."
+            aspect="aspect-[4/5]"
+            edges="all"
+            parallax={0.08}
+            sizes="(min-width: 768px) 48vw, 100vw"
+          />
+        </Reveal>
+      </div>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
           content.ts (ABOUT.anegadaQuote), never truncated or re-typed.
@@ -544,16 +570,10 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
 };
 
 // ─── About ─────────────────────────────────────────────────────────────────────
-// The home page's four-colourway Peacock backdrop, mirrored here so the About
-// page shares the EXACT same sky. Pre-blurred WebP (~7–12KB each); order +
-// blur/saturation recipe identical to Welcome.tsx: Persian Indigo → Blood Moon
-// Red → Moroccan Purple → Mary Pink.
-const PEACOCK_BACKDROPS = [
-  { url: "/img/paintings/peacock-persian-indigo-blur-v2.webp", name: "Persian Indigo" },
-  { url: "/img/paintings/peacock-blood-moon-red-blur-v2.webp", name: "Blood Moon Red" },
-  { url: "/img/paintings/peacock-moroccan-purple-blur-v2.webp", name: "Moroccan Purple" },
-  { url: "/img/paintings/peacock-mary-pink-blur-v2.webp", name: "Mary Pink" },
-];
+// The backdrop is the shared PavoBackdrop tapestry (components/PavoBackdrop.tsx):
+// ALL FIVE Pavo colourways shown WHOLE + zoomed out, crossfading on page scroll
+// — the EXACT same component + assets as the home page (Hugo 2026-07-02: "the
+// home and about page backgrounds are exact same of all pavo paintings").
 
 // The four traditions Stephen wove together (named exactly as in ABOUT.legacy[0]).
 // The two reference photographs below the strip illustrate the Persian and
@@ -682,136 +702,30 @@ const ChapterStandout = ({
 };
 
 export const About = () => {
-  const reduceMotion = useReducedMotion();
-
   // Friends & Family enquiry modal — opened from the closing CTA so a reader
   // moved by the biography can subscribe without leaving the page.
   const [friendsOpen, setFriendsOpen] = useState(false);
   const closeFriends = useCallback(() => setFriendsOpen(false), []);
   const openFriends = useCallback(() => setFriendsOpen(true), []);
 
-  // Whole-page scroll drives the same four peacock backdrops as the home page,
-  // crossfading in turn: Persian Indigo → Blood Moon Red → Moroccan Purple →
-  // Mary Pink — identical recipe to Welcome.tsx so About shares the home's sky.
-  const { scrollYProgress } = useScroll();
-  // Persian Indigo opens at FULL opacity from the very top (scroll progress 0) —
-  // NOT fading up from 0 — so the page is never bare black before the first
-  // scroll (Hugo: "before scrolling the blue background isn't there, it's
-  // black"). The breakpoints are tuned so each crossfade MIDPOINT lands on an
-  // ACT SEAM (seam offsetTop ÷ scrollable height, measured in dev and
-  // hardcoded — the Welcome convention):
-  //   · Indigo  — hero → end of Chapter II (childhood / beginnings)
-  //   · Red     — Chapter III → the Anegada poster (wandering, turning point)
-  //   · Purple  — Chapter V → the Force India plate (practice, public work)
-  //   · Pink    — Chapter VIII → footer (the Academy, the letter, farewell)
-  const indigoOpacity = useTransform(scrollYProgress, [0, 0.15, 0.23], [1, 1, 0]);
-  const redOpacity = useTransform(scrollYProgress, [0.15, 0.23, 0.31, 0.39], [0, 1, 1, 0]);
-  const purpleOpacity = useTransform(scrollYProgress, [0.31, 0.39, 0.65, 0.73], [0, 1, 1, 0]);
-  const maryPinkOpacity = useTransform(scrollYProgress, [0.65, 0.73, 0.97, 1], [0, 1, 1, 1]);
-  const backdropOpacities = [indigoOpacity, redOpacity, purpleOpacity, maryPinkOpacity];
-  // Cull each backdrop layer from compositing the instant it's fully transparent
-  // (visibility:hidden) — the per-frame scroll-jank fix ported verbatim from
-  // Welcome.tsx so About (the site's LONGEST page) scrolls as smoothly as home.
-  // A layer left at opacity 0 otherwise stays a composited full-screen bitmap the
-  // GPU re-blends every scroll frame for nothing; hiding it drops it from the
-  // layer tree until it's needed again.
-  const toVis = (v: number): "visible" | "hidden" => (v < 0.004 ? "hidden" : "visible");
-  const indigoVis = useTransform(indigoOpacity, toVis);
-  const redVis = useTransform(redOpacity, toVis);
-  const purpleVis = useTransform(purpleOpacity, toVis);
-  const maryPinkVis = useTransform(maryPinkOpacity, toVis);
-  const backdropVisibilities = [indigoVis, redVis, purpleVis, maryPinkVis];
-
   return (
     <div className="relative">
-      {/* PEACOCK BACKDROP LAYER — four colourways crossfading on page-scroll,
-          mirrored EXACTLY from the home page (Welcome.tsx): Persian Indigo →
-          Blood Moon Red → Moroccan Purple → Mary Pink. Fixed behind all content. */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
-      >
-        {PEACOCK_BACKDROPS.map((bd, i) => (
-          <motion.div
-            key={bd.url}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              // prefers-reduced-motion: short-circuit the scroll-driven
-              // crossfade (CLAUDE.md convention) — hold a single static
-              // backdrop (the opening indigo) instead of colour-shifting the
-              // whole viewport on every scroll frame.
-              opacity: reduceMotion ? (i === 0 ? 1 : 0) : backdropOpacities[i],
-              // Cull from compositing while fully transparent (see toVis note) —
-              // the per-frame scroll-jank fix that brings About to home parity.
-              visibility: reduceMotion
-                ? i === 0
-                  ? "visible"
-                  : "hidden"
-                : backdropVisibilities[i],
-              backgroundImage: `url("${asset(bd.url)}")`,
-              // Promote to its own GPU layer so the scroll-driven crossfade
-              // composites the (pre-blurred) image instead of repainting it.
-              // translateZ(0) forces a composited layer so iOS doesn't
-              // re-rasterise the fixed cover bitmap every scroll frame.
-              willChange: "opacity",
-              transform: "translateZ(0)",
-              // Darken + gently desaturate every backdrop so the bright,
-              // near-WHITE blotches in the blurred peacock images can never
-              // wash out the cream text (Hugo: "too much white, can't read
-              // the text"), while keeping each colourway's warm character.
-              filter: "brightness(1.2) saturate(1.1)",
-            }}
-          />
-        ))}
-        {/* Backdrop legibility veil — the HOME page's warm plum-rose radial
-            recipe (Welcome.tsx), nudged ONE step heavier (+0.06 on each stop —
-            0.42/0.26/0.16 → 0.48/0.32/0.22) because About is text-led with long
-            reading passages. The colours still visibly glow and crossfade
-            between chapters exactly like home; any heavier and the page reads
-            as a black panel again, which is the regression this replaces. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 105% at 50% 40%, rgba(34,10,22,0.18) 0%, rgba(34,10,22,0.11) 55%, rgba(34,10,22,0.06) 100%)",
-          }}
-        />
-        {/* Bottom + top grounding band — identical to home: darkens the very
-            top strip (under the fixed white nav wordmark) and the very bottom
-            (memorial + footer seam) so cream never washes out on the brightest
-            colourway zones. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(10,9,8,0.26) 0%, rgba(10,9,8,0.03) 24%, rgba(10,9,8,0.03) 66%, rgba(10,9,8,0.34) 100%)",
-          }}
-        />
-        {/* Mary-Pink darken — fades in ONLY over the final ~25% of scroll
-            (tied to the existing maryPinkOpacity, not mutating the crossfade),
-            pulling the pale dusty rose down to a deep dusk so the memorial's
-            cream type never sits on near-white. Above the backdrop images +
-            veil, below the z-10 content. Identical to home. */}
-        <motion.div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            opacity: reduceMotion ? 0 : maryPinkOpacity,
-            // Parity with Welcome's finale darken: hide it from compositing for
-            // the first ~72% of scroll (opacity 0) and animate its fade-in on the
-            // compositor (translateZ) instead of repainting this full-screen
-            // gradient every frame — it was the only scroll-animated full-screen
-            // layer on About still painting per frame.
-            visibility: reduceMotion ? "hidden" : maryPinkVis,
-            willChange: "opacity",
-            transform: "translateZ(0)",
-            background:
-              "linear-gradient(to bottom, rgba(40,12,28,0.14) 0%, rgba(34,11,24,0.26) 100%)",
-          }}
-        />
-      </div>
+      {/* PAVO TAPESTRY BACKDROP — the exact same five-colourway component as
+          the home page. Fade windows tuned so each colour turn lands on an ACT
+          SEAM (seam offsetTop ÷ scrollable height — the Welcome convention):
+            · Indigo — hero → end of Chapter II (childhood / beginnings)
+            · Red    — Chapter III → the Anegada poster (wandering)
+            · Yellow — the practice / public-work middle acts
+            · Purple — Chapter VIII (TAGA)
+            · Pink   — the Academy, the letter, farewell → footer */}
+      <PavoBackdrop
+        fades={[
+          [0.15, 0.23],
+          [0.33, 0.41],
+          [0.51, 0.59],
+          [0.68, 0.76],
+        ]}
+      />
       <Seo
         title="About Stephen Meakin — the life and work"
         description="The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected."
@@ -1080,21 +994,33 @@ export const About = () => {
             the old 2-col grid stranded ABOUT.earlyLife[4] (the 100-char "He
             never stopped." line) in a half-empty cell beside the 701-char
             earlyLife[3] prose — a tall void below a short pull. Now the long
-            study-years passage FILLS its measure as a balanced two-column
-            block (drop-cap opens column 1, column-fill:balance keeps both
-            even-bottomed — the proven recipe from Chapter III), and the short
-            verbatim line is promoted to a centred full-width STANDOUT band
-            beneath a hairline, filling its own measure instead of floating in a
-            stranded grid cell. Every word VERBATIM from content.ts. */}
+            study-years passage sits BESIDE the painting-table photograph
+            (Hugo 2026-07-02: photos next to the text, never bare text
+            columns), and the short verbatim line is promoted to a centred
+            full-width STANDOUT band beneath a hairline, filling its own
+            measure instead of floating in a stranded grid cell. Every word
+            VERBATIM from content.ts. */}
         <section id="return" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="return" />
-          <Reveal as="div" className={READING_WIDE}>
-            <p
-              className={cn(LEAD, "drop-cap lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
-            >
-              {ABOUT.earlyLife[3]}
-            </p>
-          </Reveal>
+          {/* The study-years passage BESIDE the painting-table photograph
+              (was a photo-less two-column text block — Hugo: "you haven't
+              added that photo next to the text"). Photo alt is descriptive
+              only; no caption (the caption convention was removed). */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+            <Reveal as="div">
+              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
+            </Reveal>
+            <Reveal as="figure" delay={0.08} className="m-0">
+              <ImageReveal
+                src="/img/about/02-painting-table.jpg"
+                alt="Stephen Meakin and a companion leaning over a large blue mandala print laid flat on the studio worktable."
+                aspect="aspect-[4/3]"
+                edges="all"
+                parallax={0.08}
+                sizes="(min-width: 768px) 48vw, 100vw"
+              />
+            </Reveal>
+          </div>
 
           {/* The first-mandala line — a verbatim STANDOUT moment that spans the
               measure, centred, under a hairline. The "1999 … He never stopped."
@@ -1145,17 +1071,15 @@ export const About = () => {
                   contained at 440px. */}
               <div className="lg:sticky lg:top-28">
                 <Reveal as="figure" className="m-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
-                  <div className="bg-ink/[0.05] p-3 md:p-4 ring-1 ring-ink/10 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-                    <AssetImage
-                      src="/img/about/25-harmonic-frequencies.jpg"
-                      alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
-                      width={612}
-                      height={502}
-                      loading="lazy"
-                      decoding="async"
-                      className="block w-full h-auto"
-                    />
-                  </div>
+                  <AssetImage
+                    src="/img/about/25-harmonic-frequencies.jpg"
+                    alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
+                    width={612}
+                    height={502}
+                    loading="lazy"
+                    decoding="async"
+                    className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+                  />
                 </Reveal>
               </div>
             </div>
@@ -1296,18 +1220,16 @@ export const About = () => {
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className="m-0 lg:col-span-5 max-w-[480px]" delay={0.08}>
-              <div className="bg-cream p-3 md:p-4 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-                <AssetImage
-                  src="/img/about/04-mystic-rose-flyer.jpg"
-                  alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
-                  width={900}
-                  height={604}
-                  loading="lazy"
-                  decoding="async"
-                  className="block w-full h-auto"
-                />
-              </div>
+            <Reveal as="figure" className="m-0 lg:col-span-5" delay={0.08}>
+              <AssetImage
+                src="/img/about/04-mystic-rose-flyer.jpg"
+                alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
+                width={900}
+                height={604}
+                loading="lazy"
+                decoding="async"
+                className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+              />
               <figcaption className="caption mt-4">
                 <i>‘The Mystic Rose’</i> · Fairmont Dubai · presented by the Majlis Gallery
               </figcaption>
@@ -1322,7 +1244,7 @@ export const About = () => {
           {/* Q2 beside the portrait easel shot (PDF p12 top) — Stephen seated
               at the tilted circular canvas. Portrait + people → contained. */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-3 md:mt-4">
-            <Reveal as="figure" className="m-0 md:col-span-5 max-w-[440px] mx-auto md:mx-0 w-full">
+            <Reveal as="figure" className="m-0 md:col-span-5 max-w-[520px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
@@ -1467,47 +1389,45 @@ export const About = () => {
 
         {/* 11 · FORCE INDIA — the design plate (the PDF's post-interview
             beat). A wordless interlude between chapters, no chapter head: the
-            two design sheets share ONE cream presentation mat (the designer's
-            board), whole sheets at native ratio, one claim-free caption (the
-            commission is established verbatim by legacy[1]). The purple→pink
-            backdrop crossfade midpoint is tuned to land here. */}
+            two design sheets side by side, whole sheets at native ratio,
+            sitting directly on the backdrop (the cream presentation mat was
+            removed 2026-07-02 — grey/light boxes behind images). The
+            purple→pink backdrop crossfade midpoint is tuned to land here. */}
         <section className={cn(SECTION, "py-4 md:py-6")}>
           <Reveal as="div" className="max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
-              <div className="bg-cream p-3 md:p-5 ring-1 ring-line shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
-                <div className="grid md:grid-cols-2 gap-3 md:gap-4 items-start">
-                  <AssetImage
-                    src="/img/about/05-force-india-layout.jpg"
-                    alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
-                    width={960}
-                    height={640}
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
-                    className="block w-full h-auto"
-                  />
-                  <AssetImage
-                    src="/img/about/06-force-india-final.jpg"
-                    alt="Stephen's mandala design for the Sahara Force India Formula One car"
-                    width={904}
-                    height={639}
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
-                    className="block w-full h-auto"
-                  />
-                </div>
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6 items-start">
+                <AssetImage
+                  src="/img/about/05-force-india-layout.jpg"
+                  alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
+                  width={960}
+                  height={640}
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
+                  className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+                />
+                <AssetImage
+                  src="/img/about/06-force-india-final.jpg"
+                  alt="Stephen's mandala design for the Sahara Force India Formula One car"
+                  width={904}
+                  height={639}
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
+                  className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+                />
               </div>
             </figure>
           </Reveal>
         </section>
 
-        {/* 12 · CHAPTER VIII — TAGA (ghost 2010). A compact text movement —
-            the document holds its photographs for the closing beats. legacy[2]
-            (one sentence — let it ring) promoted to the chapter's lead line,
-            the academyQuote at BODY, then over the dinkus the palestine
-            passage — it belongs INSIDE this chapter per the PDF, and its
+        {/* 12 · CHAPTER VIII — TAGA (ghost 2010). legacy[2] (one sentence —
+            let it ring) promoted to the chapter's lead line, then the studio
+            easel photograph beside the academyQuote + palestine passages
+            (Hugo 2026-07-02: no more photo-less long-text spreads). The
+            palestine passage belongs INSIDE this chapter per the PDF, and its
             mention of Az-Zarqa is the hinge into Chapter IX. */}
         <section id="academy" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="academy" />
@@ -1525,20 +1445,33 @@ export const About = () => {
                 {ABOUT.legacy[2]}
               </p>
             </Reveal>
-            {/* Asymmetric split (the longer founding quote takes the wider
-                column so it sits SHORTER, the briefer Syria passage the
-                narrower one) — the two columns finish near the same baseline
-                instead of leaving one full and the next half-empty. */}
-            <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-[1.32fr_1fr] gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-8 items-start border-t border-line pt-5 md:pt-6">
-              <Reveal as="div">
-                <blockquote className="m-0">
-                  <p className={BODY}>{ABOUT.academyQuote}</p>
-                  <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
-                </blockquote>
+            {/* The chapter's photograph BESIDE its two passages (was a
+                photo-less two-column text spread — Hugo: photos next to the
+                long text). The studio easel shot sits in the narrower column;
+                the founding quote + the Az-Zarqa passage stack in the wider
+                reading column beside it. Alt descriptive only, no caption. */}
+            <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-12 gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-8 items-center border-t border-line pt-5 md:pt-6">
+              <Reveal as="figure" className="m-0 md:col-span-5">
+                <ImageReveal
+                  src="/img/about/11-ophiuchus-painting.jpg"
+                  alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
+                  aspect="aspect-square"
+                  edges="all"
+                  parallax={0.06}
+                  sizes="(min-width: 768px) 42vw, 100vw"
+                />
               </Reveal>
-              <Reveal as="div" delay={0.08}>
-                <p className={BODY}>{ABOUT.palestine}</p>
-              </Reveal>
+              <div className="md:col-span-7 flex flex-col gap-8">
+                <Reveal as="div">
+                  <blockquote className="m-0">
+                    <p className={BODY}>{ABOUT.academyQuote}</p>
+                    <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
+                  </blockquote>
+                </Reveal>
+                <Reveal as="div" delay={0.08}>
+                  <p className={BODY}>{ABOUT.palestine}</p>
+                </Reveal>
+              </div>
             </div>
           </div>
         </section>

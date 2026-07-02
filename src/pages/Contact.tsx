@@ -10,11 +10,11 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY } fr
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 
-// Single backdrop scene for /contact — the blue-hour Hazrat Ali mosque
-// (Mazar-i-Sharif), pre-blurred + darkened to the dark-family band so the cream
+// Single backdrop scene for /contact — Hugo's certified contact-page image
+// (pink azaleas), pre-blurred + normalised to the dark-family band so the cream
 // copy stays legible. webp referenced directly because it's a CSS background-image
 // (this matches Collections; the <picture> jpg-swap rule applies only to <img>).
-const BACKDROP = asset("/img/scenes/contact-aurora-scene-v1.webp");
+const BACKDROP = asset("/img/scenes/contact-scene-v2.webp");
 
 /**
  * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment
@@ -175,7 +175,7 @@ export const Contact = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <ContactBackdrop />
       <Seo
         title="Contact the estate"

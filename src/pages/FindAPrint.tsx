@@ -23,11 +23,10 @@ const sizeCode = (t: PrintTier): string => t.size.split(" ")[0]; // "A2 (42 × 4
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
-// Single backdrop scene for /for-you — a rainbow over a cresting ocean wave,
-// pre-blurred + darkened to the dark-family band so the cream copy stays legible.
-// Treatment (blur/scrim) is baked into the file. (Was a woodland→garden
-// cross-dissolve; collapsed to one image to match the rest of the scene pages.)
-const FORYOU_BACKDROP = "/img/scenes/foryou-lake-scene-v1.webp";
+// Single backdrop scene for /for-you — Hugo's certified "find a print for you"
+// image (aurora over the shore), pre-blurred + normalised to the dark-family
+// band so the cream copy stays legible. Treatment is baked into the file.
+const FORYOU_BACKDROP = "/img/scenes/foryou-scene-v2.webp";
 
 // The intention lens — what a piece can cultivate, mapped ONLY to the paintings
 // whose own documented meaning (in paintings.ts descriptions) genuinely carries
@@ -136,7 +135,7 @@ export const FindAPrint = () => {
   }, [entries, active, intentPaintings]);
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <Seo
         title="Find a piece for you"
         description="Find a Stephen Meakin print by the colours you're drawn to. Each mandala was made in several of his own colourways, estate-stamped and made to order."

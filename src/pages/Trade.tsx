@@ -102,7 +102,7 @@ export const Trade = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <SceneBackdrop src="/img/scenes/trade-greatwall-scene-v1.webp" />
+      <SceneBackdrop src="/img/scenes/trade-scene-v2.webp" />
       <Seo
         title="Trade & Interior Design"
         description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."

@@ -282,11 +282,11 @@ export const News = () => {
   const hasNews = NEWS.length > 0;
 
   return (
-    <div className="relative flex min-h-[100svh] flex-col overflow-x-hidden">
+    <div className="relative flex min-h-[100svh] flex-col overflow-x-clip">
       {/* FIXED BACKDROP LAYER — one blurred rainbow-mountain scene drifting
           ±6% with whole-page scroll (Collections' treatment, single image). */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/news-rainbow-wave-scene-v1.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/news-scene-v2.webp")} />
         {/* Shared scrim — the EXACT gradient Collections uses so the cream copy
             stays legible while the scene reads as a subdued, moody texture. */}
         <div

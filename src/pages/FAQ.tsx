@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
+import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { asset } from "../lib/asset";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
@@ -269,50 +268,18 @@ const FaqMasthead = () => (
   </section>
 );
 
-// Single backdrop scene for /faq — palm silhouettes against a sunset sky,
-// pre-blurred + darkened to the dark-family band. The Collections ScrollBackdrop
-// treatment: one bg-cover layer drifting ±6% over the WHOLE-PAGE scroll (no
-// section target), inset-[-8%] overscan so the parallax can never expose an
-// uncovered strip, clipped by the overflow-hidden parent + the EXACT shared
-// scrim. Reduced-motion drops the parallax and holds it static.
-const FaqBackdrop = () => {
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  const url = asset("/img/scenes/faq-tibet-scene-v1.webp");
-
-  return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      {reduceMotion ? (
-        <div
-          style={{ backgroundImage: `url("${url}")`, willChange: "auto" }}
-          className="absolute inset-0 bg-cover bg-center"
-          aria-hidden="true"
-        />
-      ) : (
-        <motion.div
-          style={{ y, backgroundImage: `url("${url}")`, willChange: "transform" }}
-          className="absolute inset-[-8%] bg-cover bg-center"
-          aria-hidden="true"
-        />
-      )}
-      {/* Shared scrim — the EXACT gradient the other scene pages use. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
-        }}
-      />
-    </div>
-  );
-};
-
 export const FAQ = () => {
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-hidden">
-      <FaqBackdrop />
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
+      {/* Hugo's two certified FAQ scenes (lupin lakeshore → alpine night),
+          crossfading seamlessly over the page scroll — the canonical
+          SceneBackdrop treatment so /faq matches every other scene page. */}
+      <SceneBackdrop
+        src={[
+          "/img/scenes/faq-scene-a-v2.webp",
+          "/img/scenes/faq-scene-b-v2.webp",
+        ]}
+      />
       <Seo
         title="Frequently asked"
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
