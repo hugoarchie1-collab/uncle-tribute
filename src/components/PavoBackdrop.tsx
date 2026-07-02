@@ -10,9 +10,9 @@ import { asset } from "../lib/asset";
  * mode this replaces). Each colourway is TWO pre-baked layers (no runtime CSS
  * blur — the scroll-perf rule):
  *
- *   pavo-<c>-fill-v1.webp   heavy-blur ambient wash of the same painting,
+ *   pavo-<c>-fill-v2.webp   heavy-blur ambient wash of the same painting,
  *                           rendered bg-cover as the surround;
- *   pavo-<c>-whole-v1.webp  the ENTIRE painting, light sigma-3.5 blur
+ *   pavo-<c>-whole-v2.webp  the ENTIRE painting, sigma-9 blur (text-safe, 2026-07-02)
  *                           (clearly reads as the painting; text stays legible
  *                           over the veils), feathered alpha edge so it melts
  *                           seamlessly into the fill — object-contain sized
@@ -113,14 +113,14 @@ const PavoLayer = ({
       {/* Ambient fill — the same painting, heavy-blurred, covers the surround. */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v1.webp`)}")` }}
+        style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v2.webp`)}")` }}
       />
       {/* The WHOLE painting, zoomed out — full canvas visible at every
           viewport. Feathered alpha edge is baked into the asset, so it melts
           into the fill with no visible rectangle. */}
       <div className="absolute inset-0 flex items-center justify-center">
         <img
-          src={asset(`/img/paintings/pavo-${slug}-whole-v1.webp`)}
+          src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
           alt=""
           aria-hidden="true"
           draggable={false}

@@ -14,7 +14,7 @@ import { cn } from "../lib/cn";
 // (pink azaleas), pre-blurred + normalised to the dark-family band so the cream
 // copy stays legible. webp referenced directly because it's a CSS background-image
 // (this matches Collections; the <picture> jpg-swap rule applies only to <img>).
-const BACKDROP = asset("/img/scenes/contact-scene-v2.webp");
+const BACKDROP = asset("/img/scenes/contact-scene-v3.webp");
 
 /**
  * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment

@@ -696,8 +696,8 @@ export const Privacy = () => (
     // Hugo's two certified privacy scenes (sunset silhouette → pine headland),
     // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/privacy-scene-a-v2.webp",
-      "/img/scenes/privacy-scene-b-v2.webp",
+      "/img/scenes/privacy-scene-a-v3.webp",
+      "/img/scenes/privacy-scene-b-v3.webp",
     ]}
   />
 );
@@ -710,8 +710,8 @@ export const Terms = () => (
     // Hugo's two certified terms scenes (mirror lake → ember forest),
     // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/terms-scene-a-v2.webp",
-      "/img/scenes/terms-scene-b-v2.webp",
+      "/img/scenes/terms-scene-a-v3.webp",
+      "/img/scenes/terms-scene-b-v3.webp",
     ]}
   />
 );
@@ -724,8 +724,8 @@ export const Returns = () => (
     // Hugo's two certified returns scenes (rainbow wave → ice cave),
     // crossfading seamlessly on scroll.
     backdrop={[
-      "/img/scenes/returns-scene-a-v2.webp",
-      "/img/scenes/returns-scene-b-v2.webp",
+      "/img/scenes/returns-scene-a-v3.webp",
+      "/img/scenes/returns-scene-b-v3.webp",
     ]}
   />
 );

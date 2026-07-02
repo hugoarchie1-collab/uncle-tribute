@@ -214,8 +214,8 @@ export const Search = () => {
   useNoindexHead();
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-hidden">
-      <SceneBackdrop src="/img/scenes/search-path-scene-v1.webp" />
+    <div className="relative flex min-h-screen flex-col overflow-x-clip">
+      <SceneBackdrop src="/img/scenes/search-path-scene-v3.webp" />
       <Nav overlay />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-20 md:pb-28">

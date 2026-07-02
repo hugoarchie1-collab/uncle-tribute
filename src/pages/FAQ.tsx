@@ -276,8 +276,8 @@ export const FAQ = () => {
           SceneBackdrop treatment so /faq matches every other scene page. */}
       <SceneBackdrop
         src={[
-          "/img/scenes/faq-scene-a-v2.webp",
-          "/img/scenes/faq-scene-b-v2.webp",
+          "/img/scenes/faq-scene-a-v3.webp",
+          "/img/scenes/faq-scene-b-v3.webp",
         ]}
       />
       <Seo

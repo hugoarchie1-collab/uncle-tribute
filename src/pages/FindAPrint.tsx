@@ -26,7 +26,7 @@ import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colo
 // Single backdrop scene for /for-you — Hugo's certified "find a print for you"
 // image (aurora over the shore), pre-blurred + normalised to the dark-family
 // band so the cream copy stays legible. Treatment is baked into the file.
-const FORYOU_BACKDROP = "/img/scenes/foryou-scene-v2.webp";
+const FORYOU_BACKDROP = "/img/scenes/foryou-scene-v3.webp";
 
 // The intention lens — what a piece can cultivate, mapped ONLY to the paintings
 // whose own documented meaning (in paintings.ts descriptions) genuinely carries

@@ -286,7 +286,7 @@ export const News = () => {
       {/* FIXED BACKDROP LAYER — one blurred rainbow-mountain scene drifting
           ±6% with whole-page scroll (Collections' treatment, single image). */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/news-scene-v2.webp")} />
+        <ScrollBackdrop photoUrl={asset("/img/scenes/news-scene-v3.webp")} />
         {/* Shared scrim — the EXACT gradient Collections uses so the cream copy
             stays legible while the scene reads as a subdued, moody texture. */}
         <div
