@@ -112,6 +112,14 @@ export const Footer = () => (
     role="contentinfo"
     className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
   >
+    {/* FEATHERED SEAM — same dissolve as FooterCatalogue's, for the pages
+        (and the <md widths) where the footer itself is the first opaque band
+        the fixed scene backdrop meets. Overlays the already-opaque catalogue
+        band harmlessly when both render. */}
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-bg via-bg/55 to-transparent"
+    />
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
           tidy lockup capped to the tribute measure (max-w-[280px]) so it never

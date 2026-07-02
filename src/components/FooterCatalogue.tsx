@@ -53,6 +53,16 @@ export const FooterCatalogue = () => {
       aria-label="All paintings"
       className="relative hidden md:block border-t border-line bg-bg px-4 sm:px-6 md:px-8 lg:px-12 py-5 md:py-6"
     >
+      {/* FEATHERED SEAM — dissolves the page's fixed scene backdrop into this
+          opaque band instead of a razor-hard colour cut (worst on bright-
+          bottomed scenes like the privacy sunset; caught by the 2026-07-02
+          judge sweep). Sits ABOVE the band (-translate-y-full), fading from
+          the band's own bg at the seam to clear ~7rem higher. Invisible when
+          the content above is already opaque. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-bg via-bg/55 to-transparent"
+      />
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
           The Catalogue · {tiles.length}

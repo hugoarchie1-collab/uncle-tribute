@@ -59,7 +59,9 @@ export const CustomCursor = () => {
     const chipText = chipTextRef.current;
     if (!flower || !chip || !chipText) return;
 
-    document.body.classList.add("has-custom-cursor");
+    // NOTE: `has-custom-cursor` (which hides the NATIVE cursor) is added on
+    // the first reveal in onMove — not here — so a stationary mouse keeps its
+    // native cursor while the rose is still hidden. Never both hidden.
 
     const INTERACTIVE =
       "a, button, [role='button'], label, summary, [data-cursor='ring'], .group";
@@ -148,6 +150,23 @@ export const CustomCursor = () => {
     };
 
     const onMove = (e: PointerEvent) => {
+      // FIRST MOVE — the rose was mounted hidden (cc--gone) because until a
+      // real pointer position arrives it can only sit at the viewport-centre
+      // placeholder, i.e. floating over whatever text happens to be mid-screen
+      // (caught by a 17-judge screenshot sweep, 2026-07-02: a visitor who
+      // loads and scroll-wheels without moving the mouse saw the rose stamped
+      // on body copy). Snap to the true position BEFORE revealing so it never
+      // lerps across the screen from the stale centre point.
+      if (flower.classList.contains("cc--gone")) {
+        pos.x = e.clientX;
+        pos.y = e.clientY;
+        flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
+        chip.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+        flower.classList.remove("cc--gone");
+        // Swap cursors atomically: hide the native one only once the rose is
+        // actually visible at the true pointer position.
+        document.body.classList.add("has-custom-cursor");
+      }
       target.x = e.clientX;
       target.y = e.clientY;
       const el = e.target as Element | null;
@@ -186,7 +205,20 @@ export const CustomCursor = () => {
       flower.classList.remove("cc--pressed");
       updateChip((e.target as Element | null) ?? labelHost);
     };
-    const show = () => flower.classList.remove("cc--gone");
+    // Re-entry reveal — pointerenter carries real coordinates, so snap there
+    // before un-hiding (never reveal at a stale point mid-screen).
+    const show = (e: Event) => {
+      const pe = e as PointerEvent;
+      if (typeof pe.clientX === "number") {
+        pos.x = target.x = pe.clientX;
+        pos.y = target.y = pe.clientY;
+        flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
+        chip.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+        flower.classList.remove("cc--gone");
+        document.body.classList.add("has-custom-cursor");
+      }
+      // No coordinates (synthetic enter) → stay hidden until a real pointermove.
+    };
     const hide = () => {
       flower.classList.add("cc--gone");
       applyChip(null);
@@ -199,7 +231,10 @@ export const CustomCursor = () => {
     document.addEventListener("pointerenter", show);
     document.addEventListener("pointerleave", hide);
 
-    // Paint the initial (centered) position once — no perpetual loop on mount.
+    // Mount HIDDEN — the placeholder centre position is a lie until the first
+    // real pointermove (see onMove's first-move reveal). pointerenter's show()
+    // is safe: entering the document always delivers a pointermove first.
+    flower.classList.add("cc--gone");
     flower.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%, -50%)`;
     chip.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
 
