@@ -58,10 +58,12 @@ const ScrollBackdrop = ({
   photoUrl,
   sectionRef,
   isFirst = false,
+  isLast = false,
 }: {
   photoUrl: string;
   sectionRef: RefObject<HTMLElement | null>;
   isFirst?: boolean;
+  isLast?: boolean;
 }) => {
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -75,10 +77,15 @@ const ScrollBackdrop = ({
   // 0) so the page is never bare black before the first scroll — the intro
   // sits on its backdrop immediately (Hugo: "before scrolling the background
   // is black"). It still fades out normally as the second collection arrives.
+  // The LAST collection (Born in the Sky — the nebula) NEVER fades out: it
+  // EXTENDS through the complete-catalogue panel + footer to the very end of
+  // the page (Hugo 2026-07-03: "the nebula as last image, extended — don't
+  // add the first one again"): without the hold, the foot fell back to the
+  // indigo base wash, which read as the opening image returning.
   const opacity = useTransform(
     scrollYProgress,
-    isFirst ? [0, 0.88, 1] : [0, 0.12, 0.88, 1],
-    isFirst ? [1, 1, 0] : [0, 1, 1, 0],
+    isFirst ? [0, 0.88, 1] : isLast ? [0, 0.12, 1] : [0, 0.12, 0.88, 1],
+    isFirst ? [1, 1, 0] : isLast ? [0, 1, 1] : [0, 1, 1, 0],
   );
   const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
   // Scroll-tied scale REMOVED (perf): re-sampling a full-viewport bg-cover
@@ -575,13 +582,16 @@ export const Collections = () => {
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* BASE WASH — an always-on, VISIBLE layer UNDER the cross-fading
-            collection scenes, covering the fade zones (the bottom of each
-            collection, the complete-set panel, past all three) so the page
-            never reads as "no background / gone black" (Hugo 2026-06-24).
-            ⚠️ NOT a peacock/Pavo wash: the Pavo painting is reserved for home
-            + About ONLY (Hugo 2026-07-03) — this base is the page's own first
-            collection scene (Habundia), so fallback zones stay in the same
-            family as the crossfade above. */}
+            collection scenes, covering the fade dips BETWEEN collections so
+            the page never reads as "no background / gone black" (Hugo
+            2026-06-24). ⚠️ NOT a peacock/Pavo wash: the Pavo painting is
+            reserved for home + About ONLY (Hugo 2026-07-03) — this base is the
+            page's own first collection scene (Habundia).
+            ⚠️ PAST THE LAST COLLECTION this base must never show (Hugo
+            2026-07-03: it read as "the first image returning" at the foot) —
+            the LAST ScrollBackdrop (Born in the Sky, the nebula) now holds at
+            full opacity through the complete-catalogue panel + footer via
+            isLast, so the nebula EXTENDS to the very end of the page. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center"
@@ -596,6 +606,7 @@ export const Collections = () => {
               photoUrl={asset(coll.backdropImage)}
               sectionRef={sectionRefs[i]}
               isFirst={i === 0}
+              isLast={i === COLLECTIONS.length - 1}
             />
           ) : null,
         )}
