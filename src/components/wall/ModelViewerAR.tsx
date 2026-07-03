@@ -185,14 +185,15 @@ export const ModelViewerAR = ({
     mv.setAttribute("src", asset(WALL_SHELL_GLB));
     mv.setAttribute("ar", "");
     mv.setAttribute("alt", alt);
-    mv.setAttribute("poster", poster);
     mv.setAttribute("exposure", "1");
     mv.setAttribute("loading", "eager");
-    // reveal="manual" keeps the POSTER (the artwork image) on screen instead of
-    // the flat 3D canvas — so the panel shows the painting, never a blank white
-    // square. The model still loads eagerly in the background, ready for AR.
+    // reveal="manual" keeps the flat 3D canvas off screen — model-viewer is
+    // purely the device-AR launcher here. NO poster attribute: the poster paints
+    // the artwork FULL-BLEED behind the inset print overlay below, so the same
+    // image showed twice at two scales (the "glitched double image" on every
+    // painting). The overlay print IS the visual; this element stays invisible.
     mv.setAttribute("reveal", "manual");
-  }, [moduleReady, alt, poster]);
+  }, [moduleReady, alt]);
 
   const launchAR = () => {
     const mv = viewerRef.current;

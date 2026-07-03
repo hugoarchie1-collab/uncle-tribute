@@ -167,7 +167,7 @@ export const NEWS: NewsEntry[] = [
     id: "orchis-7-aquamarine",
     type: "release",
     kind: "single",
-    status: "next",
+    status: "soon",
     title: "Orchis 7 — Aquamarine",
     displayDate: "Coming soon",
     summary:
@@ -182,7 +182,7 @@ export const NEWS: NewsEntry[] = [
     id: "wild-rose-black-rose",
     type: "release",
     kind: "single",
-    status: "soon",
+    status: "next",
     title: "Wild Rose — Black Rose",
     displayDate: "Coming soon",
     summary:

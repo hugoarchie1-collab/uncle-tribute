@@ -121,7 +121,12 @@ const CosmicInterlude = () => {
       // with only a hairline gap — no negative pull needed (a fixed pull would
       // overlap the wordmark on the screens where content fills the masthead).
       // The soft top feather melts the seam either way.
-      className="relative z-30 w-full mt-0 md:mt-1 mb-3 md:mb-5 lg:mb-7"
+      // SYMMETRIC breathing room (Hugo: "right up to the text… not too close…
+      // make symmetrical"): equal mt/mb so the film sits just under the lockup
+      // with matched space above and below — no longer a tiny gap above + a big
+      // one below. The masthead's justify-end places the lockup at the viewport
+      // foot, so mt is the whole visible gap up to the wordmark.
+      className="relative z-30 w-full mt-[clamp(22px,4svh,52px)] mb-[clamp(22px,4svh,52px)]"
     >
       {/* FULL-BLEED BANNER (Hugo: "fill the entire edges of screen so it's like
           a banner", edges softened like the photos below). Edge-to-edge width,
@@ -153,7 +158,7 @@ const CosmicInterlude = () => {
             wall becoming taller than the film can resolve while still ~55svh
             there. object-cover + the vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(340px,62svh,1200px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(380px,70svh,1360px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -308,7 +313,18 @@ export const Welcome = () => {
         // alone puts the first line UNDER the red bar on short windows — and its
         // font-size is capped by HEIGHT (16svh, below) as well as width; a
         // 14vw-only size overflows every wide-short window (the 06-29 failure).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-center pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[2svh]"
+        // ⚠️ DURABLE (2026-07-03, Hugo: "video right up to the Art of Stephen
+        // Meakin text"): landscape is BOTTOM-ANCHORED (justify-end), NOT
+        // justify-center. The section stays a full 100svh (the Earth limb's
+        // dissolve needs it — see below), but centring the block left a dead
+        // void UNDER the lockup that GREW with viewport height (240px@900 →
+        // 446px@1440) and shoved the film half a screen down. justify-end sits
+        // the wordmark/lockup at the viewport foot so the film tucks right
+        // beneath it with a constant, symmetric gap (the masthead pb + the
+        // film's own mt), and the tall wordmark rises to brush the Earth limb —
+        // the intended open composition. Portrait keeps min-h-0 (hugs content),
+        // so justify-end is a no-op there and the film already tucks under.
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(16px,3svh,38px)]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -545,11 +561,17 @@ export const Welcome = () => {
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
               <Reveal as="figure" className="m-0 mt-6 md:mt-7">
+                {/* The studio photo shows WHOLE — its box matches the source's
+                    native 3:2 ratio (1200×800), so object-cover fits it edge-to-
+                    edge with no crop (the earlier aspect-[3/1] sliced away the
+                    top + bottom third — Hugo: "stop cropping my main image").
+                    The soft-edge feather hides the tiny scale-[1.04] parallax
+                    bleed, so the full frame reads. */}
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
-                  aspect="aspect-[2/1] sm:aspect-[3/1]"
+                  aspect="aspect-[3/2]"
                   edges="all"
                   parallax={0.08}
                   objectPosition="center"
