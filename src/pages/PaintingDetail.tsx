@@ -1944,13 +1944,15 @@ const Story = ({ painting }: { painting: Painting }) => (
         className="lg:sticky lg:top-[80px] ring-1 ring-line px-6 py-6 md:px-7 md:py-6"
       >
         {/* HOW EACH ORDER ARRIVES — Hugo's presentation note. Made to order,
-            hand-rolled by Point 101, sealed with the wax-seal sticker, posted
-            with a printed catalogue. printer line reuses
-            ESTATE_AUTHENTICATION.printer verbatim; monochrome ledger idiom. */}
+            printed by Point 101, sealed with the wax-seal sticker, posted with
+            a printed catalogue. ⚠️ PACKAGING FACTS (Gary at Point 101,
+            2026-07-03): prints up to A3 are dispatched FLAT; sizes above A3
+            arrive boxed. NEVER say "hand-rolled" — that was wrong. printer
+            line reuses ESTATE_AUTHENTICATION.printer verbatim. */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
         <p className={cn(BODY, "text-ink m-0 mb-4")}>
           Every print is made to order &mdash; never warehoused. When your order
-          is placed it is hand-rolled and prepared by Point&nbsp;101 in London,
+          is placed it is printed and prepared by Point&nbsp;101 in London,
           the United Kingdom&rsquo;s leading giclée atelier, the same studio
           Stephen trusted with his own work. It is packed to be opened slowly.
         </p>
@@ -1958,8 +1960,8 @@ const Story = ({ painting }: { painting: Painting }) => (
           <div>
             <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
             <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
-              {ESTATE_AUTHENTICATION.printer} &mdash; each print checked,
-              interleaved and hand-rolled.
+              {ESTATE_AUTHENTICATION.printer} &mdash; each print checked and
+              interleaved; dispatched flat up to A3, boxed for larger sizes.
             </dd>
           </div>
           <div>

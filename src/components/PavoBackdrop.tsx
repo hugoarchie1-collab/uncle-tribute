@@ -10,17 +10,19 @@ import { asset } from "../lib/asset";
  * mode this replaces). Each colourway is TWO pre-baked layers (no runtime CSS
  * blur — the scroll-perf rule):
  *
- *   pavo-<c>-fill-v2.webp   heavy-blur ambient wash of the same painting,
+ *   pavo-<c>-fill-v3.webp   heavy-blur ambient wash of the same painting,
  *                           rendered bg-cover as the surround;
- *   pavo-<c>-whole-v2.webp  the ENTIRE painting, sigma-9 blur (text-safe, 2026-07-02)
+ *   pavo-<c>-whole-v3.webp  the ENTIRE painting, sigma-14 blur (2026-07-03: "more blurry… barely read text")
  *                           (clearly reads as the painting; text stays legible
  *                           over the veils), feathered alpha edge so it melts
  *                           seamlessly into the fill — object-contain sized
- *                           min(92svh, 94vw) so the FULL canvas shows at every
+ *                           min(100svh, 100vw) so the canvas SPANS the viewport at every
  *                           viewport, portrait or landscape.
  *
  * All ten assets are brightness-NORMALISED to one family target (whole ≈ luma
- * 62, fill ≈ 44) so the crossfade never jumps bright→dark — that normalisation
+ * 56, fill ≈ 56 — matched EXACTLY in v3 so the surround reads as the
+ * painting's own background extended to the viewport edges, one continuous
+ * image) so the crossfade never jumps bright→dark — that normalisation
  * is what lets Sahara Sand Yellow + Mary Pink (source luma ~170) sit in the
  * same seamless sequence as Persian Indigo (~71) without a per-colourway
  * darken layer.
@@ -113,21 +115,29 @@ const PavoLayer = ({
       {/* Ambient fill — the same painting, heavy-blurred, covers the surround. */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v2.webp`)}")` }}
+        style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v3.webp`)}")` }}
       />
       {/* The WHOLE painting, zoomed out — full canvas visible at every
-          viewport. Feathered alpha edge is baked into the asset, so it melts
-          into the fill with no visible rectangle. */}
+          viewport, spanning the FULL viewport in its limiting axis (Hugo
+          2026-07-03: "the painting has to fill the entire screen… whole
+          screen filled 100%"). The -v3 fill is normalised to the SAME luma
+          as the plate, so the surround reads as the painting's own
+          background extended to the edges — one continuous image. */}
       <div className="absolute inset-0 flex items-center justify-center">
         <img
-          src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
+          src={asset(`/img/paintings/pavo-${slug}-whole-v3.webp`)}
           alt=""
           aria-hidden="true"
           draggable={false}
           className="object-contain"
           style={{
-            width: "min(92svh, 94vw)",
-            height: "min(92svh, 94vw)",
+            // 116svh (not 100): on wide screens the canvas overshoots the
+            // viewport height so the painting DOMINATES — only its blurred
+            // border rows crop off-screen (the mandala stays whole); portrait
+            // phones stay width-bound at 100vw. Hugo 2026-07-03: "it's tiny…
+            // whole screen filled 100%".
+            width: "min(116svh, 100vw)",
+            height: "min(116svh, 100vw)",
             maxWidth: "none",
           }}
           loading={index === 0 ? "eager" : "lazy"}

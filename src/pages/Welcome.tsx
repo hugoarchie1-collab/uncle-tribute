@@ -294,15 +294,21 @@ export const Welcome = () => {
         // "…Stephen Meakin" lockup always sits at the section's bottom and the
         // film below tucks right under it (kills the "huge gap": on tall portrait
         // screens the old min-h-80svh left 100–400px of dead space below the
-        // lockup that no fixed margin could track). LANDSCAPE / desktop keeps the
-        // full-viewport open (content there is taller than the viewport anyway,
-        // so this only removes the portrait void). — Hugo, 2026-07-01.
+        // lockup that no fixed margin could track). — Hugo, 2026-07-01.
+        // ⚠️ DURABLE (2026-07-03, Hugo: "why did you cut off the earth — it was
+        // so good before"): LANDSCAPE/desktop is the FULL-VIEWPORT Earth open —
+        // min-h-[100svh], NEVER a 40-ish svh band. A shorter section clips the
+        // absolute limb image mid-atmosphere at the overflow-hidden edge (a
+        // razor-hard horizontal cut through the Earth's glow on any tall
+        // desktop window) because the limb's radial dissolve only completes at
+        // ~96% of the IMAGE height. Full-viewport gives the arc + its dissolve
+        // room to finish, exactly like the finale's Sun mirror.
         // ⚠️ DURABLE (2026-07-02, Hugo's clipped-"THE" screenshot): the wordmark
         // must clear the FIXED overlay nav — the pt floor is 6rem because 8svh
         // alone puts the first line UNDER the red bar on short windows — and its
         // font-size is capped by HEIGHT (16svh, below) as well as width; a
         // 14vw-only size overflows every wide-short window (the 06-29 failure).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[42svh] landscape:md:min-h-[40svh] justify-center pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[2svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-center pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[2svh]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -809,14 +815,16 @@ export const Welcome = () => {
             </div>
           </section>
 
-          {/* 4 · STUDIO — full-bleed cinematic break. Letterboxed shorter on
-              wide screens (lg+) so a 3:2 frame doesn't fill an entire 4K
-              viewport top-to-bottom (Hugo: "some images are way too big"). */}
+          {/* 4 · STUDIO — full-bleed cinematic break. ⚠️ Keep this a REAL band:
+              the 07-02 4/1–5/1 letterbox squashed it to a sliver on wide
+              screens and Hugo rejected it hard ("ruined the sizing… it's
+              tiny"). These are the June-03 proportions he approved — shorter
+              than a raw 3:2 on 4K, but still a substantial cinematic moment. */}
           <Reveal as="figure" className="m-0 w-full px-4 sm:px-6 md:px-8 lg:px-12">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[5/2] md:aspect-[4/1] 2xl:aspect-[5/1]"
+              aspect="aspect-[5/3] md:aspect-[12/5] 2xl:aspect-[5/2]"
               edges="y"
               parallax={0.06}
               objectPosition="center 62%"
@@ -1083,17 +1091,13 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
-            {/* Archive photo — BIG and UNCROPPED (Hugo 2026-07-02: it was
-                "cropped in, you can't even see it… not even big enough"). The
-                old aspect-[3/1] object-cover frame chopped ~40% of the 641×353
-                original's height (Stephen stands at the left edge — his head
-                went with it) and the 520px cap made it a thumbnail. Now: a
-                plain natural-aspect <AssetImage> (intrinsic 641:353 — nothing
-                object-cover can chop) at the section's full content width, the
-                dominant object of its section. The source is low-res, so the
-                upscale trades some crispness for presence — Hugo's explicit
-                call. Clean ring frame kept (lifts it off the busy backdrop). */}
-            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px]">
+            {/* Archive photo — UNCROPPED at natural aspect (Hugo 2026-07-02:
+                the old 3/1 object-cover chopped Stephen's head; never re-crop)
+                but CAPPED near the source's real resolution (641×353): the
+                07-02 full-content-width version upscaled it ~2× and Hugo
+                rejected it ("way too huge, the quality is terrible"). 820px
+                ≈ 1.28× — prominent without visible softness. Ring frame kept. */}
+            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[720px] md:max-w-[820px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"

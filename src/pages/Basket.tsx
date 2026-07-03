@@ -325,9 +325,9 @@ export const Basket = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <SceneBackdrop src="/img/scenes/basket-scene-v3.webp" />
+      <SceneBackdrop src="/img/scenes/basket-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24" data-wide={isEmpty ? undefined : "true"}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
@@ -359,7 +359,7 @@ export const Basket = () => {
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
                 beneath the empty-state copy (see BEGIN_WITH_PICKS above). */}
             {BEGIN_WITH_PICKS.length > 0 && (
-              <div className="mt-12 md:mt-14">
+              <div className="mt-8 md:mt-10">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
@@ -397,7 +397,7 @@ export const Basket = () => {
               </div>
             )}
 
-            <div className="mt-12 md:mt-14">
+            <div className="mt-8 md:mt-10">
               <NewsletterSignup variant="inline" />
             </div>
           </Reveal>
@@ -466,7 +466,7 @@ export const Basket = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(line.item.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                           >
                             Remove
                           </button>
@@ -515,7 +515,7 @@ export const Basket = () => {
                             </div>
                           )}
                           <div className="flex items-baseline justify-between gap-4 pt-1.5 mt-0.5 border-t border-line">
-                            <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted min-w-0">
+                            <span className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted min-w-0">
                               Line total
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] font-semibold text-ink tabular-nums flex-shrink-0">
@@ -559,7 +559,7 @@ export const Basket = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(g.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                           >
                             Remove
                           </button>

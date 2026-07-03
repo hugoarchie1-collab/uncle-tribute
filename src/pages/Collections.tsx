@@ -574,21 +574,19 @@ export const Collections = () => {
 
       {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* BASE WASH — an always-on, VISIBLE peacock wash UNDER the cross-fading
-            collection scenes. Each ScrollBackdrop's opacity is tied to its
-            section being in view, so wherever a scene fades (the bottom of each
-            collection — incl. the complete-set panel — and past all three) the
-            page falls back to THIS layer. It used to be the near-BLACK
-            born-in-the-sky nebula, so those fade zones read as "no background /
-            gone black" (Hugo 2026-06-24). Swapped to the dusky persian-indigo
-            peacock wash — neutral behind every collection, on-brand with the
-            home, and appropriately dark-but-visible under the scrim so the page
-            ALWAYS has a soft estate backdrop, never a black void. */}
+        {/* BASE WASH — an always-on, VISIBLE layer UNDER the cross-fading
+            collection scenes, covering the fade zones (the bottom of each
+            collection, the complete-set panel, past all three) so the page
+            never reads as "no background / gone black" (Hugo 2026-06-24).
+            ⚠️ NOT a peacock/Pavo wash: the Pavo painting is reserved for home
+            + About ONLY (Hugo 2026-07-03) — this base is the page's own first
+            collection scene (Habundia), so fallback zones stay in the same
+            family as the crossfade above. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("${asset("/img/paintings/peacock-persian-indigo-blur-v3-sm.webp")}")`,
+            backgroundImage: `url("${asset("/img/scenes/habundia-blur-v4.webp")}")`,
           }}
         />
         {COLLECTIONS.map((coll, i) =>

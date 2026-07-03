@@ -36,7 +36,7 @@ export const NotFound = () => {
     painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
   return (
     <div className="relative flex min-h-[100svh] flex-col">
-      <SceneBackdrop src="/img/scenes/notfound-scene-v3.webp" />
+      <SceneBackdrop src="/img/scenes/notfound-scene-v4.webp" />
       <Nav />
       {/* BOLD MASTHEAD — the old timid centered EYEBROW + TITLE floating in a
           min-h-screen flex-center VOID is gone. In its place: a meta rule, a
@@ -44,7 +44,7 @@ export const NotFound = () => {
           the column, the message packed immediately beneath under a border-t,
           and the day's painting interleaved as an asymmetric editorial plate —
           no centered afterthought, no dead vertical air. */}
-      <main className="relative z-10 flex-1 px-4 pt-10 pb-12 sm:px-6 md:px-8 md:pt-12 md:pb-16 lg:px-12">
+      <main className="relative z-10 flex-1 px-4 pt-10 pb-10 sm:px-6 md:px-8 md:pt-12 md:pb-12 lg:px-12">
         <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px]">
           {/* Meta rule — the AboutMasthead recipe: eyebrow · hairline · tag. */}
           <Reveal
@@ -122,7 +122,7 @@ export const NotFound = () => {
               holds the left column; a quiet wayfinding line + the title sit on
               the right, vertically centred against it. Factual line only
               (estate voice, not Stephen's words). */}
-          <div className="mt-12 grid grid-cols-1 items-center gap-8 border-t border-line pt-10 md:mt-16 md:grid-cols-12 md:gap-12 md:pt-12">
+          <div className="mt-8 grid grid-cols-1 items-center gap-8 border-t border-line pt-8 md:mt-10 md:grid-cols-12 md:gap-12 md:pt-10">
             <Reveal as="div" className="md:col-span-7 lg:col-span-6">
               <Link
                 to={`/collections/${painting.id}`}
@@ -160,7 +160,7 @@ export const NotFound = () => {
                 >
                   {painting.title}
                 </span>
-                <span className="mt-4 inline-flex items-baseline gap-2 font-sans text-[13.5px] text-ink-muted transition-colors duration-300 group-hover:text-ink">
+                <span className="mt-4 inline-flex items-baseline gap-2 font-sans text-[14.5px] text-ink-muted transition-colors duration-300 group-hover:text-ink">
                   {painting.year !== "[ DATE ]" && painting.year}
                   <span
                     aria-hidden="true"
