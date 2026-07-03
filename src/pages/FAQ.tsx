@@ -210,7 +210,7 @@ const FaqMasthead = () => (
   // backdrop must never out-shout the text). Whole-element, not per-glyph, so
   // gotcha #2 (no SplitReveal blockiness) is not triggered.
   <section
-    className={cn(SECTION, "pt-8 md:pt-11 pb-5 md:pb-7")}
+    className={cn(SECTION, "pt-5 md:pt-7 pb-3 md:pb-4")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] text-center">
@@ -233,19 +233,19 @@ const FaqMasthead = () => (
         </h1>
       </Reveal>
 
-      <div className="mt-3 md:mt-4 border-t border-line pt-3 md:pt-4">
+      <div className="mt-2.5 md:mt-3 border-t border-line pt-2.5 md:pt-3">
         <Reveal as="div">
-          <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
+          <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.6]")}>
             Provenance · paper · editions · care
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-3 md:mt-4">
+        <Reveal as="div" delay={0.06} className="mt-2 md:mt-2.5">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[72ch] 3xl:max-w-[80ch]"
             style={{
-              fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(20px, 2vw, 34px)",
-              lineHeight: 1.3,
+              fontVariationSettings: '"opsz" 32, "wght" 430',
+              fontSize: "clamp(22px, 2.2vw, 38px)",
+              lineHeight: 1.28,
             }}
           >
             On provenance, paper, editions, framing, hand-finishing, shipping
@@ -297,18 +297,18 @@ export const FAQ = () => {
             space, divided by hairlines so they read as dense blocks, not an
             endless scroll. */}
         <section
-          className={cn(SECTION, "pb-10 md:pb-14")}
+          className={cn(SECTION, "pb-6 md:pb-9")}
           style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
         >
           <Reveal
             as="div"
-            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-16 3xl:gap-x-24 gap-y-0 border-t border-line"
+            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 gap-y-0 border-t border-line"
           >
             {FAQS.map((qa, i) => (
               <section
                 key={i}
                 aria-labelledby={`faq-q-${i}`}
-                className="relative flex flex-col pt-4 md:pt-5 pb-4 md:pb-5 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
+                className="relative flex flex-col pt-3.5 md:pt-4 pb-3.5 md:pb-4 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
               >
                 <div className="flex items-baseline gap-4">
                   <span
@@ -316,7 +316,7 @@ export const FAQ = () => {
                     className="font-display font-semibold leading-none text-accent select-none shrink-0"
                     style={{
                       fontVariationSettings: '"opsz" 32, "wght" 600',
-                      fontSize: "clamp(20px,1.7vw,26px)",
+                      fontSize: "clamp(22px,1.9vw,30px)",
                     }}
                   >
                     {ordinal(i)}
@@ -327,12 +327,12 @@ export const FAQ = () => {
                   id={`faq-q-${i}`}
                   className={cn(
                     "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-balance text-ink m-0 mt-2",
-                    "text-[clamp(22px,2.2vw,36px)] leading-[1.06]",
+                    "text-[clamp(24px,2.4vw,38px)] leading-[1.05]",
                   )}
                 >
                   {qa.question}
                 </h2>
-                <div className={cn(SUBTITLE, "max-w-none mt-3 md:mt-3.5")}>
+                <div className={cn(SUBTITLE, "max-w-none mt-2.5 md:mt-3")}>
                   {qa.answer}
                 </div>
               </section>

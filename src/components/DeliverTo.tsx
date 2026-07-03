@@ -242,7 +242,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
                       >
                         {r.label}
                       </span>
-                      <span className="block font-sans text-[11.5px] leading-tight text-ink/70 mt-0.5">
+                      <span className="block font-sans text-[13px] leading-tight text-ink/70 mt-0.5">
                         Free delivery
                       </span>
                     </span>
@@ -254,7 +254,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
 
           {/* Quiet reassurance line beneath the list. */}
           <div className="px-4 py-3 border-t border-ink/60">
-            <p className="font-sans text-[12px] leading-snug text-ink-muted">
+            <p className="font-sans text-[13.5px] leading-snug text-ink-muted">
               Free worldwide delivery on every order.
             </p>
           </div>

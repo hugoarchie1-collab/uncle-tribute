@@ -90,7 +90,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+          className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
         >
           Save your basket — email it to me
           <span aria-hidden="true" className="ml-2">→</span>
@@ -99,7 +99,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
 
       {open && status !== "success" && (
         <div className="max-w-[560px]">
-          <p className="font-sans text-[10px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
+          <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
             Save your basket
           </p>
           <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/70 m-0 mb-4">
@@ -129,7 +129,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[10px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
               >
                 {status === "sending" ? "Sending…" : "Email me my basket"}
               </button>
@@ -140,7 +140,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                   setErrorMsg("");
                   setStatus("idle");
                 }}
-                className="font-sans text-[11px] tracking-[0.04em] text-ink/50 hover:text-ink transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                className="font-sans text-[13px] tracking-[0.04em] text-ink/50 hover:text-ink transition-colors bg-transparent border-0 p-0 cursor-pointer"
               >
                 Cancel
               </button>

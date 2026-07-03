@@ -326,7 +326,7 @@ export const SearchBar = ({
                         <span
                           className={cn(
                             "inline-flex shrink-0 items-center rounded-full px-2 py-1",
-                            "font-sans text-[10px] font-bold tracking-[0.04em]",
+                            "font-sans text-[13px] font-bold tracking-[0.04em]",
                             "text-ink-muted ring-1 ring-line",
                           )}
                         >
@@ -344,7 +344,7 @@ export const SearchBar = ({
                           {doc.title}
                         </span>
                         {doc.subtitle && (
-                          <span className="block truncate font-sans text-[12px] leading-[1.4] text-ink-muted">
+                          <span className="block truncate font-sans text-[14px] leading-[1.4] text-ink-muted">
                             {doc.subtitle}
                           </span>
                         )}

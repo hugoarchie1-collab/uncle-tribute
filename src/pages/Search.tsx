@@ -79,7 +79,7 @@ const ResultRow = ({ doc }: { doc: SearchDoc }) => (
       <span
         className={cn(
           "mt-0.5 inline-flex shrink-0 items-center rounded-full px-2.5 py-1",
-          "font-sans text-[10px] font-bold tracking-[0.04em]",
+          "font-sans text-[13px] font-bold tracking-[0.04em]",
           "text-ink-muted ring-1 ring-line",
         )}
       >
@@ -98,7 +98,7 @@ const ResultRow = ({ doc }: { doc: SearchDoc }) => (
           </span>
         </span>
         {doc.subtitle && (
-          <span className="mt-1 block font-sans text-[14px] md:text-[15px] leading-[1.6] text-ink-muted">
+          <span className="mt-1 block font-sans text-[15px] md:text-[16px] leading-[1.6] text-ink-muted">
             {doc.subtitle}
           </span>
         )}
@@ -132,11 +132,11 @@ const ArtworkTile = ({ doc }: { doc: SearchDoc }) => (
         </div>
       </div>
       <figcaption className="pt-3">
-        <h3 className="m-0 font-display font-semibold text-[15px] md:text-[17px] leading-[1.25] tracking-[-0.015em] text-ink transition-colors duration-300 group-hover:text-accent">
+        <h3 className="m-0 font-display font-semibold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink transition-colors duration-300 group-hover:text-accent">
           {doc.title}
         </h3>
         {doc.subtitle && (
-          <p className="mt-1 m-0 font-sans text-[12.5px] leading-[1.5] text-ink-muted">
+          <p className="mt-1 m-0 font-sans text-[14px] leading-[1.5] text-ink-muted">
             {doc.subtitle}
           </p>
         )}
@@ -150,7 +150,7 @@ const ArtworkTile = ({ doc }: { doc: SearchDoc }) => (
 const EmptyState = ({ query }: { query: string }) => {
   const hasQuery = query.trim().length > 0;
   return (
-    <Reveal as="div" className="mt-10 md:mt-14 border-t border-line pt-10 md:pt-14">
+    <Reveal as="div" className="mt-8 md:mt-10 border-t border-line pt-8 md:pt-10">
       <p
         className="m-0 max-w-[42ch] font-display font-normal tracking-[-0.01em] text-ink"
         style={{
@@ -181,7 +181,7 @@ const EmptyState = ({ query }: { query: string }) => {
           <Link
             key={link.to}
             to={link.to}
-            className="group inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted transition-colors duration-300 hover:text-accent"
+            className="group inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted transition-colors duration-300 hover:text-accent"
           >
             {link.label}
             <span
@@ -218,7 +218,7 @@ export const Search = () => {
       <SceneBackdrop src="/img/scenes/search-path-scene-v3.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-14 md:pb-20">
         {/* MASTHEAD — the refined estate front cover carrying the query (eyebrow
             + hairline meta rule → a composed Fraunces display title, never shouty). */}
         <header>
@@ -264,7 +264,7 @@ export const Search = () => {
         {total === 0 ? (
           <EmptyState query={query} />
         ) : (
-          <div className="mt-10 md:mt-14 flex flex-col gap-12 md:gap-16">
+          <div className="mt-8 md:mt-10 flex flex-col gap-10 md:gap-12">
             {GROUP_ORDER.map((type) => {
               const bucket = groups[type];
               if (bucket.length === 0) return null;

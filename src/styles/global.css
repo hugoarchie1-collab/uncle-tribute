@@ -342,7 +342,7 @@
    a caption may sit in <i>/<em>, which renders in the display serif italic. */
 .caption {
   font-family: theme(fontFamily.sans);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.55;
   letter-spacing: 0.01em;
   font-weight: 400;
@@ -350,7 +350,7 @@
   color: var(--ink-muted);
 }
 @media (min-width: 768px) {
-  .caption { font-size: 14px; }
+  .caption { font-size: 15px; }
 }
 .caption i,
 .caption em {
@@ -556,45 +556,91 @@
    Painting detail ambient — fixed colour halo behind page
    ============================================================================= */
 
-.painting-detail__ambient {
+/* =============================================================================
+   PDP "Painted Wall, Lit" atmosphere (2026-07-03, from a 3-designer cherry-pick
+   panel — REPLACES the runtime-blurred image echo Hugo rejected as "a blurry
+   mess"). The page colour still follows the SELECTED colourway — but as an
+   authored gallery wall, not a smear: build-time tints (src/lib/colourwayTints,
+   hue from the artwork, house lightness/chroma) drive four flat layers:
+     .pd-wall    the painted wall — a linear colour-block with a horizon,
+                 boldest at the top of the page (composited luma ≈30);
+     .pd-halo    a picture-light glow over the hero zone, receding on scroll
+                 (framer opacity 1→0.55 over the first 35%);
+     .pd-reprise the wall returns quietly at the page foot;
+     .pd-wash    a fixed whisper tint so deep-page still belongs to the
+                 colourway without ever registering as a shape.
+   Registered-@property REAL <color> vars re-tint everything in one 0.9s ease
+   on colourway switch (no AnimatePresence, no image fetch, no blur raster).
+   NOTE: real <color> vars + color-mix — NOT the repo's RGB channel-triple
+   convention: a triple is not a <color>, so it can never @property-animate. */
+@property --pd-wall {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2a241c;
+}
+@property --pd-halo {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8a7a63;
+}
+.pd-atmosphere {
+  transition:
+    --pd-wall 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+    --pd-halo 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.pd-wash {
   position: fixed;
-  inset: -10%;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden;
-  /* Promote the whole ambient stack to its own GPU layer so the blurred
-     image below is rasterised ONCE and the page (incl. the sticky painting)
-     composites over it without re-running the blur every scroll frame. */
   transform: translateZ(0);
-  will-change: transform;
+  background: radial-gradient(
+    120% 100% at 50% -10%,
+    color-mix(in srgb, var(--pd-wall) 8%, transparent),
+    transparent 70%
+  );
 }
-/* Selected colourway painting blurred behind the whole page. We keep
-   the CSS filter here (only one image at a time, no scroll-tied
-   transform) so the visual still matches Collections without needing
-   per-colourway pre-blurred files. The blur is rasterised into the
-   parent's promoted layer, so it does NOT recompute as content scrolls
-   over it — only when the colourway crossfades (user-triggered). */
-.painting-detail__ambient-bg {
+.pd-wall {
   position: absolute;
-  inset: -6% 0;
-  /* Hugo: the wash behind the product must be a blurred, ZOOMED-OUT version of
-     the painting itself — you should recognise the whole piece, not a cropped
-     zoomed-in slice. `contain` shows the entire painting (zoomed out); the
-     heavier blur + veil keep it atmospheric and text-legible. */
-  background-size: contain;
-  background-position: center 30%;
-  background-repeat: no-repeat;
-  /* Rasterised once into the promoted layer (translateZ(0)); re-runs only on a
-     colourway crossfade, never on scroll — so the larger radius costs a slightly
-     heavier one-time raster, not per-frame. */
-  filter: blur(34px) saturate(1.14) brightness(1.18);
-  transform: translateZ(0);
+  inset: 0 0 auto;
+  height: min(175vh, 100%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--pd-wall) 52%, transparent),
+    color-mix(in srgb, var(--pd-wall) 26%, transparent) 44%,
+    transparent
+  );
 }
-.painting-detail__ambient-veil {
+.pd-reprise {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.38) 0%, rgba(10,9,8,0.62) 100%);
+  inset: auto 0 0;
+  height: 70vh;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--pd-wall) 34%, transparent),
+    transparent
+  );
+}
+.pd-halo {
+  position: absolute;
+  top: -6%;
+  left: -18%;
+  width: 92%;
+  height: 120vh;
+  background: radial-gradient(
+    60% 46% at 50% 40%,
+    color-mix(in srgb, var(--pd-halo) 28%, transparent),
+    color-mix(in srgb, var(--pd-halo) 8%, transparent) 55%,
+    transparent 76%
+  );
+}
+@media (max-width: 1023px) {
+  /* Single-column pages: the picture light sits over the full-width hero. */
+  .pd-halo {
+    left: -10%;
+    width: 120%;
+    height: 90vh;
+  }
 }
 
 /* =============================================================================
@@ -632,13 +678,13 @@
      layers alive). The static visuals remain. */
   .film-grain { display: none !important; }
   .video-intro__stage,
-  .painting-detail__ambient,
-  .painting-detail__ambient-bg,
   .collection-backdrop { will-change: auto !important; }
+  /* Reduced motion: the wall re-tint snaps instead of easing. */
+  .pd-atmosphere { transition: none !important; }
 }
 
 @media print {
-  .video-intro, .painting-detail__ambient { display: none !important; }
+  .video-intro, .pd-wash, .pd-wall, .pd-reprise, .pd-halo { display: none !important; }
   body { background: white; color: black; }
   a { color: inherit; text-decoration: underline; }
 }

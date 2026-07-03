@@ -163,7 +163,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
       {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
       <div className="md:col-span-9 flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
         {isRelease(entry) && entry.cover ? (
-          <div className="shrink-0 w-[160px] sm:w-[220px] md:w-[260px] 3xl:w-[300px] 4xl:w-[340px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
+          <div className="shrink-0 w-full sm:w-[220px] md:w-[260px] 3xl:w-[300px] 4xl:w-[340px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
             <AssetImage
               src={entry.cover}
               alt={entry.title}
@@ -204,7 +204,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 // column beside a wide prose block. The verbatim Seo/description copy is
 // unchanged; this is page-framing microcopy only (the page owns its headings).
 const NewsMasthead = () => (
-  <section className="relative pt-10 md:pt-14 pb-8 md:pb-10">
+  <section className="relative pt-8 md:pt-10 pb-6 md:pb-8">
     <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
       <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -304,7 +304,7 @@ export const News = () => {
         url="/news"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-10 md:pb-14">
         {/* MASTHEAD — CENTRED front cover on the page's single axis (the
             FAQ/Memories recipe). Replaces the old left-aligned split that
             stranded a half-empty eyebrow column beside the prose block. */}
@@ -316,8 +316,8 @@ export const News = () => {
             paragraph stacked above a lonely panel. Everything here is announced
             only once it is confirmed; never an invented release/date/venue. */}
         {!hasNews ? (
-          <section className="border-t border-line pt-8 md:pt-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-10 items-stretch">
+          <section className="border-t border-line pt-6 md:pt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 xl:gap-x-16 gap-y-8 items-stretch">
               {/* The programme note — estate voice, set as a designed lead that
                   fills its half of the spread (NOT a thin half-empty column). */}
               <Reveal as="div" className="lg:col-span-6 flex flex-col">
@@ -384,7 +384,7 @@ export const News = () => {
           <Reveal
             as="section"
             delay={0.05}
-            className="border-t border-line pt-8 md:pt-12 mb-10 md:mb-14"
+            className="border-t border-line pt-6 md:pt-8 mb-8 md:mb-10"
           >
             {/* CENTRED HEADER — the status eyebrow + section heading on a shared
                 top axis, so the whole feature hangs from one centred spine. */}
@@ -401,7 +401,7 @@ export const News = () => {
             {/* BALANCED CARD — cover + text, CENTRED in the measure and aligned to
                 each other's vertical centre. Both halves share one mx-auto frame so
                 the composition sits dead-centre on the page axis. */}
-            <div className="mt-6 md:mt-8 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
+            <div className="mt-5 md:mt-6 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
               {/* ROSE-MANDALA COVER — the large square focal point (mandalas read
                   best square), balanced against the text beside it. */}
               <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
@@ -432,7 +432,7 @@ export const News = () => {
                     (no crammed/oversized inline form beside the artwork). */}
                 <a
                   href="#notify"
-                  className="mt-5 md:mt-6 inline-flex items-center gap-2 rounded-sm font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-sm font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Be the first to know
                   <span aria-hidden="true" className="text-accent">→</span>
@@ -449,7 +449,7 @@ export const News = () => {
             <Reveal
               as="div"
               delay={0.08}
-              className="mb-8 md:mb-10 flex flex-wrap items-center gap-2.5 border-b border-line pb-4"
+              className="mb-6 md:mb-8 flex flex-wrap items-center gap-2.5 border-b border-line pb-3.5"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
                 {NEWS_FILTERS.map((f) => {
@@ -488,7 +488,7 @@ export const News = () => {
                 <section
                   key={group.status}
                   aria-label={group.heading}
-                  className={cn(gi > 0 && "mt-10 md:mt-14")}
+                  className={cn(gi > 0 && "mt-8 md:mt-10")}
                 >
                   <Reveal
                     as="div"
@@ -518,7 +518,7 @@ export const News = () => {
             both scroll here. While the feed is empty the waitlist in the
             empty-state above is the single, leading capture (no duplicate panel). */}
         {hasNews ? (
-          <Reveal as="section" delay={0.05} className="mt-10 md:mt-14 scroll-mt-28 border-t border-line pt-8 md:pt-12">
+          <Reveal as="section" delay={0.05} className="mt-8 md:mt-10 scroll-mt-28 border-t border-line pt-6 md:pt-8">
             <div id="notify">
               <NewsletterSignup
                 variant="panel"

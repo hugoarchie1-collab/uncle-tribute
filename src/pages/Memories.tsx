@@ -184,7 +184,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
     aria-hidden="true"
     className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)]"
   >
-    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(12.5px,3vw,14px)]">
+    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(14px,3vw,15px)]">
       {initialsOf(name)}
     </span>
   </span>
@@ -211,7 +211,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(14px,1.6vw,19px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(15px,1.6vw,19px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 const CommentRow = ({
   memory,
@@ -257,8 +257,8 @@ const CommentRow = ({
       {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
       <div className="min-w-0 flex-1">
         {pinned ? (
-          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[10.5px] font-bold tracking-[0.04em] text-accent">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-accent">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
             Pinned
@@ -266,11 +266,11 @@ const CommentRow = ({
         ) : null}
         {/* HEADER LINE — bold name + quiet inline meta on one wrapping baseline */}
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="font-sans font-semibold text-[clamp(14.5px,1.7vw,19px)] leading-[1.3] text-ink break-words">
+          <span className="font-sans font-semibold text-[clamp(15.5px,1.7vw,19px)] leading-[1.3] text-ink break-words">
             {memory.name}
           </span>
           {meta ? (
-            <span className="font-sans font-normal text-[clamp(12.5px,1.5vw,15px)] leading-[1.3] text-ink-muted break-words">
+            <span className="font-sans font-normal text-[clamp(14px,1.5vw,16px)] leading-[1.3] text-ink-muted break-words">
               {meta}
             </span>
           ) : null}
@@ -292,7 +292,7 @@ const CommentRow = ({
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(13px,1.5vw,15.5px)] font-semibold text-ink-muted hover:text-accent transition-colors"
+            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(14.5px,1.5vw,16px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
             {expanded ? "Show less" : "Read more"}
           </button>
@@ -689,7 +689,7 @@ const ShareMemoryModal = ({
                         <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose image
                         </span>
                         <input
@@ -753,7 +753,7 @@ const ShareMemoryModal = ({
 // in the masthead so the share affordance reads from the very first screen.
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
-  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-14 md:pt-20 pb-[clamp(1.25rem,3vw,2.25rem)]">
+  <section className="relative px-[clamp(1rem,5vw,3rem)] pt-9 md:pt-12 pb-[clamp(1rem,2.5vw,1.75rem)]">
     <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full flex items-center gap-4 md:gap-6 border-b border-line pb-2.5 md:pb-3">
         <span aria-hidden className="h-px flex-1 bg-ink/15" />
@@ -899,7 +899,7 @@ export const Memories = () => {
             lonely ribbon on a 4K screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2.5rem,5vw,4rem)]"
+          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(1.5rem,3vw,2.5rem)]"
         >
           {/* a · PINNED artist comment — Stephen's own words lead the wall as a
               single wide feature row (its long letter folds; it would never
@@ -928,7 +928,7 @@ export const Memories = () => {
                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                   </svg>
                 </span>
-                <span className="min-w-0 flex-1 font-sans text-[clamp(13.5px,1.6vw,17px)] text-ink-muted transition-colors group-hover:text-ink">
+                <span className="min-w-0 flex-1 font-sans text-[clamp(14.5px,1.6vw,17px)] text-ink-muted transition-colors group-hover:text-ink">
                   Share a memory of Steve…
                 </span>
               </button>
@@ -976,19 +976,21 @@ export const Memories = () => {
           ) : (
             // Empty state recast in the tile idiom — one card in the same
             // grammar, a dashed-ring "+" avatar + a SANS invitation (no italic).
-            // Composed, not broken; sits left so it never floats centred.
+            // Composed, not broken; spans the FULL wall width (the old
+            // max-w-[480px] hugged the left and stranded two-thirds of the
+            // band as dead space on desktop).
             <Reveal as="div" delay={0.08}>
-              <article className="flex gap-[clamp(0.625rem,2vw,0.8rem)] rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1rem,2.4vw,1.3rem)] max-w-[480px]">
+              <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.8rem)]">
                 <span
                   aria-hidden="true"
                   className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] border border-dashed border-line bg-bg-elevated"
                 >
-                  <span className="font-display not-italic text-ink-faint text-[clamp(12.5px,3vw,14px)] leading-none">
+                  <span className="font-display not-italic text-ink-faint text-[clamp(14px,3vw,15px)] leading-none">
                     +
                   </span>
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-sans font-normal text-[clamp(14px,1.6vw,18px)] leading-[1.55] text-ink-muted m-0">
+                  <p className="font-sans font-normal text-[clamp(15px,1.6vw,20px)] leading-[1.55] text-ink-muted m-0">
                     No memories have been shared yet — be the first to leave one
                     for Steve, using the box above.
                   </p>

@@ -69,7 +69,7 @@ export const ConsentBanner = () => {
             type="button"
             onClick={() => decide(false)}
             className={cn(
-              "font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted",
+              "font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted",
               "hover:text-ink transition-colors duration-300 bg-transparent border-0 p-0 cursor-pointer min-h-[44px]",
             )}
           >

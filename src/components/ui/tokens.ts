@@ -113,18 +113,18 @@ export const EYEBROW_MUTED =
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[12px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[14px] leading-[1.6] text-ink-muted";
+export const META = "font-sans text-[15px] leading-[1.6] text-ink-muted";
 
 /** Primary CTA pill — filled ink → accent on hover. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[13px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink disabled:opacity-60";
 
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 px-7 py-4 font-sans text-[13px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent";
 
 // =============================================================================
 // MOTION CANON — single source of truth for the site's signature easing +

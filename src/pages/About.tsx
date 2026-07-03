@@ -258,7 +258,7 @@ const Plate = ({
 // The quiet section-break mark — used exactly THREE times on the page
 // (Art as ritual, the exhibitions→interview turn, TAGA→palestine). Static.
 const Dinkus = () => (
-  <div role="separator" aria-hidden className="mx-auto my-5 md:my-6 flex w-fit items-center gap-4">
+  <div role="separator" aria-hidden className="mx-auto my-4 flex w-fit items-center gap-4">
     <span className="h-px w-12 bg-ink/15" />
     <span className="block h-1.5 w-1.5 rotate-45 bg-accent/50" />
     <span className="h-px w-12 bg-ink/15" />
@@ -387,7 +387,7 @@ const ContainImage = ({
 // dead space, no centred-over-a-picture treatment. The opening passage lifts
 // out of Chapter-0's old "dek" slot (rendered ONCE, here) so nothing repeats.
 const AboutMasthead = () => (
-  <section className={cn(SECTION, "relative pt-10 md:pt-12 pb-5 md:pb-6")}>
+  <section className={cn(SECTION, "relative pt-6 md:pt-8 pb-5 md:pb-6")}>
     {/* Meta rule. On mobile the 31-char date can't share a line with the label
         + connecting rule, so they STACK (label, then date on its own line at
         gently reduced tracking — no clip). From sm:+ it's the intended single
@@ -494,7 +494,7 @@ const AnegadaPoster = () => (
           <ImageReveal
             src="/img/about/24-circle-in-the-sand.jpg"
             alt="A large circular pattern of radiating petal-like forms drawn into the sand of a beach, the shoreline and sea beyond."
-            aspect="aspect-[4/5]"
+            aspect="aspect-square"
             edges="all"
             parallax={0.08}
             sizes="(min-width: 768px) 48vw, 100vw"
@@ -601,8 +601,8 @@ const BEAT_ANSWER_MAX_CHARS = 64;
 const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
   return (
-    <Reveal as="div" className="border-b border-line py-6 md:py-8">
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-3 md:mb-4 leading-[1.9]")}>{item.q}</p>
+    <Reveal as="div" className="border-b border-line py-4 md:py-5">
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-2 md:mb-3 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
         <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] leading-[1.15] text-ink m-0 text-balance">
           &ldquo;{item.a}&rdquo;
@@ -753,7 +753,7 @@ export const About = () => {
             <Reveal as="div">
               <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
               <blockquote className="m-0">
-                <p className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] leading-[1.4] text-ink m-0 text-balance mx-auto max-w-[26ch]">
+                <p className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] leading-[1.35] text-ink m-0 text-balance mx-auto max-w-[52ch]">
                   &ldquo;{ABOUT.opening[1]}&rdquo;
                 </p>
               </blockquote>
@@ -1199,7 +1199,7 @@ export const About = () => {
               turquoise mandala filling the studio wall behind him (PDF p11,
               paired with the geometrist question that follows). Native 3:2 so
               cover never crops. */}
-          <Reveal as="figure" className="m-0 mb-3 md:mb-4 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto">
+          <Reveal as="figure" className="m-0 mb-3 md:mb-4 max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
             <ImageReveal
               src="/img/about/28-at-the-drafting-table.jpg"
               alt="Stephen Meakin in glasses bent over a mandala print on the studio worktable, pencil in hand, a large turquoise mandala painting filling the wall behind him"
@@ -1248,7 +1248,7 @@ export const About = () => {
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
-                aspect="aspect-[2/3]"
+                aspect="aspect-[3/4]"
                 parallax={0.06}
               />
             </Reveal>
@@ -1336,7 +1336,7 @@ export const About = () => {
           <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-3 md:mt-4 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
-          <Reveal as="figure" className="m-0 mt-2.5 md:mt-3">
+          <Reveal as="figure" className="m-0 mt-2.5 md:mt-3 max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
             <ImageReveal
               src="/img/about/35-gathering-at-the-gallery.jpg"
               alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
@@ -1492,7 +1492,7 @@ export const About = () => {
         <section id="azzarqa" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="azzarqa" />
 
-          <Reveal as="figure" className="m-0 max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <Reveal as="figure" className="m-0 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto">
             <ContainImage
               src="/img/about/07-az-zarqa-students.jpg"
               alt="Stephen seated among a group of children, the mandalas they made held up around them"
@@ -1508,21 +1508,21 @@ export const About = () => {
 
           {/* THE LETTER — one whole-element Reveal. */}
           <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[1300px] mx-auto mt-2.5 md:mt-3">
-            <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-7 sm:p-10 md:p-14 3xl:p-16">
+            <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-6 sm:p-8 md:p-10 3xl:p-12">
               <p
-                className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.85] text-ink m-0"
+                className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.75] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 18, "wght" 400' }}
               >
                 {LETTER_BODY}
               </p>
-              <div aria-hidden className="h-px w-12 bg-ink/15 my-8" />
+              <div aria-hidden className="h-px w-12 bg-ink/15 my-5" />
               <p
                 className="font-display italic font-normal text-[clamp(22px,2.8vw,46px)] leading-[1.25] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
               >
                 {LETTER_CLOSE}
               </p>
-              <p className={cn(EYEBROW_MUTED, "m-0 mt-8")}>— Stephen, to his students</p>
+              <p className={cn(EYEBROW_MUTED, "m-0 mt-5")}>— Stephen, to his students</p>
             </article>
           </Reveal>
         </section>
@@ -1533,7 +1533,7 @@ export const About = () => {
             the classroom at cluster scale. The group photo MUST show in full
             (heads + all the mandalas) → contained, never cropped. */}
         <section className={cn(SECTION, "py-4 md:py-6")}>
-          <Reveal as="figure" className="m-0 max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto mb-4 md:mb-5">
+          <Reveal as="figure" className="m-0 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto mb-3 md:mb-4">
             <ContainImage
               src="/img/about/08-taga-group.jpg"
               alt="Stephen with a group of TAGA students, each holding a mandala they painted"
@@ -1597,7 +1597,7 @@ export const About = () => {
             reads as her posted memory of Steve (Hugo, 2026-06-29): a bio page is
             the wrong home for a funeral tribute. content.ts TRIBUTE / the
             MEMORIAL_QUOTE are unchanged — the quote still closes the home. */}
-        <section className={cn(SECTION, "pt-4 md:pt-6 pb-10 md:pb-14")}>
+        <section className={cn(SECTION, "pt-4 md:pt-6 pb-8 md:pb-10")}>
           <ClosingCTA onJoinFriends={openFriends} />
         </section>
       </main>

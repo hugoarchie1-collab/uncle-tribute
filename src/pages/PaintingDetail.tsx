@@ -9,7 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -59,7 +59,7 @@ import { nextNumber } from "../data/editions";
 import { useCurrency } from "../lib/currency";
 import { useConsent } from "../lib/consent";
 import { asset, webp, webpSrcSet } from "../lib/asset";
-import { IMAGE_VARIANT_WIDTHS } from "../lib/imageVariants";
+import { COLOURWAY_TINTS, DEFAULT_TINT } from "../lib/colourwayTints";
 import { cn } from "../lib/cn";
 import { addItem, subscribeToAdds } from "../lib/basket";
 import { ANCHOR_ARTWORK_SIZE, artworkSizeForTierId } from "../lib/artworkSizes";
@@ -195,18 +195,10 @@ const BTN_SECONDARY =
 const FRAME_LEAD_WEEKS = 2;
 const FINISH_LEAD_WEEKS = 2;
 
-/**
- * Ambient backdrop source — the page-wide blurred wash behind the PDP. It's a
- * CSS backgroundImage (no srcset possible), sits behind a 14px blur + the
- * ambient veil, and renders at background-size: cover — so the -w480 variant
- * (~49–112KB) is visually identical to the full ~2000px webp (0.4–1.27MB)
- * there. Falls back to the full-size webp for any path without a -w480
- * sibling (manifest: IMAGE_VARIANT_WIDTHS).
- */
-const ambientBackdropUrl = (jpgPath: string): string =>
-  jpgPath.endsWith(".jpg") && IMAGE_VARIANT_WIDTHS[jpgPath]?.includes(480)
-    ? asset(`${jpgPath.slice(0, -4)}-w480.webp`)
-    : asset(webp(jpgPath));
+/* (RETIRED 2026-07-03: the runtime-blurred page-wide ambient echo — and its
+ * ambientBackdropUrl -w480 helper — is replaced by the build-time "Painted
+ * Wall, Lit" tint atmosphere; see src/lib/colourwayTints.ts + the .pd-*
+ * classes in global.css.) */
 
 /**
  * SizePicker — the standard print tiers as radio cards. One-off tiers
@@ -292,7 +284,7 @@ const SizePicker = ({
             <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
               {tier.label}
               {tier.isAnchor && (
-                <span className={cn(EYEBROW_TIGHT, "text-[9.5px]")}>
+                <span className={cn(EYEBROW_TIGHT, "text-[13px]")}>
                   · most chosen
                 </span>
               )}
@@ -494,7 +486,7 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
             <button
               type="submit"
               disabled={status === "sending"}
-              className="shrink-0 bg-transparent border-0 border-l border-line px-4 font-sans text-[11px] font-bold tracking-[0.04em] text-ink cursor-pointer hover:bg-ink/5 transition-colors disabled:opacity-50"
+              className="shrink-0 bg-transparent border-0 border-l border-line px-4 font-sans text-[13px] font-bold tracking-[0.04em] text-ink cursor-pointer hover:bg-ink/5 transition-colors disabled:opacity-50"
             >
               {status === "sending" ? "Sending…" : "Send"}
             </button>
@@ -794,7 +786,7 @@ const Colourways = ({
                     `hidden` by default, shown only on sm+ AND (pointer:fine). */}
                 <span
                   aria-hidden="true"
-                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[11px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -899,7 +891,7 @@ const TrueSizeViewer = ({
               onKeyDown={(e) => onRadioKey(e, scaleTiers.length, i, (n) => onSelectTier(scaleTiers[n].id))}
               onClick={() => onSelectTier(t.id)}
               className={cn(
-                "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.04em] transition-colors",
+                "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.04em] transition-colors",
                 isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
               )}
             >
@@ -1490,7 +1482,7 @@ const BuyBox = ({
                 " "
               )}
             </p>
-            <p className="font-sans text-[12px] leading-[1.5] text-ink-muted mt-2.5 m-0">
+            <p className="font-sans text-[14px] leading-[1.5] text-ink-muted mt-2.5 m-0">
               The set saving is applied automatically at checkout.
             </p>
           </div>
@@ -1592,7 +1584,7 @@ const BuyBox = ({
                   finish never toggles the framing checkbox. Monochrome (#7). */}
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
-                  <p className="font-sans text-[12.5px] leading-[1.5] text-ink-muted m-0">
+                  <p className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
                     Choose your finish — every option is included, no extra
                     charge.
                   </p>
@@ -1607,7 +1599,7 @@ const BuyBox = ({
                           aria-pressed={frameStyle === f.id}
                           title={f.note}
                           className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
                             frameStyle === f.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1636,7 +1628,7 @@ const BuyBox = ({
                           aria-pressed={glazing === g.id}
                           title={g.note}
                           className={cn(
-                            "font-sans text-[12.5px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            "font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
                             glazing === g.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1868,7 +1860,7 @@ const CompanionWorks = ({
                 <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
                   {p.title}
                 </h3>
-                <p className="font-sans font-normal text-[clamp(12.5px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
+                <p className="font-sans font-normal text-[clamp(14px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
                   From {fmtP(fromPence)}
                 </p>
               </Link>
@@ -2361,6 +2353,14 @@ export const PaintingDetail = () => {
   const orderSentinelRef = useRef<HTMLDivElement>(null);
   const orderEndSentinelRef = useRef<HTMLDivElement>(null);
 
+  // "PAINTED WALL, LIT" — the picture-light halo recedes as the reader
+  // scrolls into the story (opacity 1 → 0.55 over the first 35% of the page);
+  // reduced-motion holds it steady at full.
+  // HOOKS, so they live here ABOVE the early returns (rules-of-hooks).
+  const atmosphereReduceMotion = useReducedMotion();
+  const { scrollYProgress: pageScroll } = useScroll();
+  const haloOpacityRaw = useTransform(pageScroll, [0, 0.35], [1, 0.55]);
+
   if (!painting) return <Navigate to="/collections" replace />;
   const selected =
     availableColourways.find((c) => c.name === selectedName) ?? initialColourway;
@@ -2370,6 +2370,11 @@ export const PaintingDetail = () => {
 
   const selectedTier =
     visibleTiers.find((t) => t.id === selectedTierId) ?? anchorTier;
+
+  // The page atmosphere follows the SELECTED colourway via two build-time
+  // tints (hue from the artwork, house lightness/chroma); the registered
+  // --pd-* vars re-tint the wall/halo/wash in one 0.9s ease on switch.
+  const tint = COLOURWAY_TINTS[selected.image] ?? DEFAULT_TINT;
 
   // "See on Your Wall": the modal opens on the tier's physical size (a one-off /
   // unsized tier falls back to the A2 anchor). The panel manages its own
@@ -2555,7 +2560,10 @@ export const PaintingDetail = () => {
     // creating a scroll container, so the sticky painting (below) still works.
     // overflow-hidden here silently disabled position:sticky and left a large
     // dark void beside the buy box on desktop. html/body already clip the X axis.
-    <div className="relative overflow-x-clip">
+    <div
+      className="pd-atmosphere relative overflow-x-clip"
+      style={{ "--pd-wall": tint.wall, "--pd-halo": tint.halo } as React.CSSProperties}
+    >
       <Seo
         title={pageTitleText}
         description={metaDescription}
@@ -2564,27 +2572,21 @@ export const PaintingDetail = () => {
         type="product"
         jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
-      {/* Ambient backdrop — selected colourway painting blurred behind the
-          page. Crossfades seamlessly between colourways as the user switches
-          swatches. (gotcha #8: page carries `isolate` below to keep this
-          backdrop from being re-ordered into the foreground by transforms.) */}
-      <div className="painting-detail__ambient" aria-hidden>
-        <AnimatePresence mode="sync">
-          <motion.div
-            key={selected.image}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 0.61, 0.36, 1] }}
-            className="painting-detail__ambient-bg"
-            style={{
-              // -w480 variant — blurred + veiled, so full-res here was pure
-              // wasted transfer (the hero <picture> no longer fetches it either).
-              backgroundImage: `url("${ambientBackdropUrl(selected.image)}")`,
-            }}
-          />
-        </AnimatePresence>
-        <div className="painting-detail__ambient-veil" />
+      {/* "PAINTED WALL, LIT" — the authored colour atmosphere (2026-07-03,
+          replacing the blurred image echo Hugo rejected). Flat painted-wall
+          gradient at the top, picture-light halo over the hero zone (receding
+          on scroll), a quiet reprise at the foot, and a fixed whisper wash so
+          the deep page still belongs to the colourway. All colour comes from
+          the registered --pd-* vars set on the page root — switching colourway
+          re-tints every layer in one 0.9s ease, no image fetch, no blur. */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden>
+        <div className="pd-wash" />
+        <div className="pd-wall" />
+        <motion.div
+          className="pd-halo"
+          style={{ opacity: atmosphereReduceMotion ? 1 : haloOpacityRaw }}
+        />
+        <div className="pd-reprise" />
       </div>
 
       <div className="relative z-[1] isolate">
@@ -2597,14 +2599,14 @@ export const PaintingDetail = () => {
           <div className="flex items-center justify-between gap-4 mb-4 md:mb-5">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
-              className="font-sans text-[12px] md:text-[13px] font-semibold tracking-[0.04em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
+              className="font-sans text-[14px] md:text-[13px] font-semibold tracking-[0.04em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
             >
               ← {collection ? collection.title.split(" — ")[0] : "All collections"}
             </Link>
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
@@ -2637,7 +2639,7 @@ export const PaintingDetail = () => {
                       onClick={() => setView(v)}
                       aria-pressed={view === v}
                       className={cn(
-                        "px-3.5 py-1.5 rounded-full font-sans text-[10px] font-bold tracking-[0.04em] transition-colors",
+                        "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.04em] transition-colors",
                         view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
                       )}
                     >
@@ -2712,7 +2714,7 @@ export const PaintingDetail = () => {
                   left, and the "closer look" affordance pulled inline-right (it
                   opens the same deep-zoom viewer the artwork itself opens). */}
               <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4">
-                <p className="m-0 font-sans text-[12px] md:text-[12.5px] leading-[1.5] text-ink-muted min-w-0">
+                <p className="m-0 font-sans text-[14px] md:text-[14px] leading-[1.5] text-ink-muted min-w-0">
                   <span className="text-ink">{painting.title}</span>
                   {painting.year !== "[ DATE ]" && <>, {painting.year}</>}
                   {painting.size && (
@@ -2757,7 +2759,7 @@ export const PaintingDetail = () => {
                 onClick={() => setWallOpen(true)}
                 onPointerEnter={() => void importSeeOnYourWall()}
                 onFocus={() => void importSeeOnYourWall()}
-                className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[12px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
+                className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
                   <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />

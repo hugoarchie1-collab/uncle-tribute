@@ -192,7 +192,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
@@ -339,7 +339,7 @@ export const FindAPrint = () => {
                 }}
                 className={cn(
                   BTN_SECONDARY,
-                  "min-h-[44px] px-4 py-2 text-[11px]",
+                  "min-h-[44px] px-4 py-2 text-[13px]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 )}
               >
@@ -370,7 +370,7 @@ export const FindAPrint = () => {
                   aria-checked={sel}
                   onClick={() => setBrowseTier(t)}
                   className={cn(
-                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-sans text-[12px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                     sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
                   )}
                 >
@@ -418,7 +418,7 @@ export const FindAPrint = () => {
                     {painting.title}
                   </h2>
                   <p
-                    className="mt-2 font-sans text-[11px] md:text-[clamp(12px,0.74vw,14px)] font-bold tracking-[0.04em] text-ink-muted m-0"
+                    className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.04em] text-ink-muted m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
                     Estate-stamped giclée · {sizeCode(browseTier)} {fmtP(browseTier.pricePence)}

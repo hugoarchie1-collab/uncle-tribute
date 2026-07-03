@@ -287,7 +287,7 @@ export const ModelViewerAR = ({
         </div>
       ) : (
         <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
-          <span className="rounded-full bg-black/55 px-5 py-2.5 text-center font-sans text-[12px] leading-[1.5] text-ink/90 backdrop-blur-sm">
+          <span className="rounded-full bg-black/55 px-5 py-2.5 text-center font-sans text-[14px] leading-[1.5] text-ink/90 backdrop-blur-sm">
             {modelState === "error"
               ? "AR couldn't load here — open this page on your phone."
               : "Open on your phone (Safari / Chrome) to place it on your wall in AR."}

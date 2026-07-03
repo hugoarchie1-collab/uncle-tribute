@@ -836,7 +836,7 @@ export const CloserLook = ({
             <span
               aria-hidden="true"
               className={cn(
-                "mr-1 rounded-full bg-[#0a0908]/70 ring-1 ring-line px-3 py-1.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink transition-opacity duration-500",
+                "mr-1 rounded-full bg-[#0a0908]/70 ring-1 ring-line px-3 py-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-ink transition-opacity duration-500",
                 indicator.on ? "opacity-100" : "opacity-0",
               )}
             >
@@ -897,7 +897,7 @@ export const CloserLook = ({
           <p
             aria-hidden="true"
             className={cn(
-              "pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 m-0 max-w-[80vw] text-center font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted transition-opacity duration-500",
+              "pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 m-0 max-w-[80vw] text-center font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted transition-opacity duration-500",
               touched ? "opacity-0" : "opacity-100",
             )}
           >

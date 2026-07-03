@@ -237,7 +237,7 @@ const SetSizeSelector = ({
             aria-checked={active}
             onClick={() => onChange(tier)}
             className={cn(
-              "snap-start shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 sm:px-5 py-2.5 font-sans text-[12.5px] md:text-[clamp(12.5px,0.75vw,15px)] leading-none ring-1 transition-colors duration-300",
+              "snap-start shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 sm:px-5 py-2.5 font-sans text-[14px] md:text-[clamp(14px,0.75vw,15px)] leading-none ring-1 transition-colors duration-300",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
               active
                 ? "bg-ink text-bg ring-ink font-semibold"
@@ -680,7 +680,7 @@ export const Collections = () => {
                 </p>
                 <Link
                   to="/for-you"
-                  className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                 >
                   Not sure where to start? Browse by colour <span aria-hidden="true">→</span>

@@ -112,7 +112,7 @@ export const BasketToast = () => {
               </svg>
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted">
+              <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted">
                 Added to basket
               </span>
               <span className="mt-0.5 block truncate font-sans text-[14px] leading-snug text-ink">
@@ -125,7 +125,7 @@ export const BasketToast = () => {
             <Link
               to="/basket"
               onClick={() => setToast(null)}
-              className="ml-1 shrink-0 self-center whitespace-nowrap border-l border-line pl-3.5 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted transition-colors duration-300 hover:text-accent"
+              className="ml-1 shrink-0 self-center whitespace-nowrap border-l border-line pl-3.5 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted transition-colors duration-300 hover:text-accent"
             >
               View basket <span aria-hidden="true">→</span>
             </Link>

@@ -506,7 +506,7 @@ export const WallCamera = ({
           onClick={() => setOptionsOpen((v) => !v)}
           aria-expanded={optionsOpen}
           aria-label={optionsOpen ? "Close options" : "Open options — colourway, size and frame"}
-          className="press inline-flex min-h-[44px] max-w-[75%] items-center gap-2 rounded-full bg-black/55 px-3.5 py-2 text-left font-sans text-[12px] text-white/90 ring-1 ring-white/25 backdrop-blur-sm"
+          className="press inline-flex min-h-[44px] max-w-[75%] items-center gap-2 rounded-full bg-black/55 px-3.5 py-2 text-left font-sans text-[14px] text-white/90 ring-1 ring-white/25 backdrop-blur-sm"
         >
           <span className="truncate">{caption}</span>
           <svg
@@ -537,7 +537,7 @@ export const WallCamera = ({
         <div className="absolute left-4 right-4 top-[76px] max-h-[62vh] max-w-[440px] overflow-y-auto rounded-2xl bg-black/75 p-4 ring-1 ring-white/20 backdrop-blur-md">
           {colourways.length > 1 && (
             <section className="mb-4">
-              <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+              <p className="m-0 mb-2 font-sans text-[13px] font-bold uppercase tracking-[0.32em] text-white/70">
                 Colourway · {colourway.name}
               </p>
               <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2.5">
@@ -569,7 +569,7 @@ export const WallCamera = ({
           )}
 
           <section className="mb-4">
-            <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+            <p className="m-0 mb-2 font-sans text-[13px] font-bold uppercase tracking-[0.32em] text-white/70">
               Size
             </p>
             <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
@@ -588,7 +588,7 @@ export const WallCamera = ({
                     )}
                   >
                     <span className="font-sans text-[13px] font-bold tracking-[0.08em]">{s.label}</span>
-                    <span className={cn("font-sans text-[10px] font-semibold", sel ? "text-black/60" : "text-white/55")}>
+                    <span className={cn("font-sans text-[13px] font-semibold", sel ? "text-black/60" : "text-white/55")}>
                       {s.cm}cm
                     </span>
                   </button>
@@ -598,7 +598,7 @@ export const WallCamera = ({
           </section>
 
           <section>
-            <p className="m-0 mb-2 font-sans text-[11px] font-bold uppercase tracking-[0.32em] text-white/70">
+            <p className="m-0 mb-2 font-sans text-[13px] font-bold uppercase tracking-[0.32em] text-white/70">
               Frame · {frame.label}
             </p>
             <div role="radiogroup" aria-label="Frame" className="flex flex-wrap gap-2">
@@ -625,7 +625,7 @@ export const WallCamera = ({
                           : "repeating-linear-gradient(45deg, #2a2620, #2a2620 3px, #14110d 3px, #14110d 6px)",
                       }}
                     />
-                    <span className={cn("font-sans text-[12px] font-bold tracking-[0.03em]", sel ? "text-white" : "text-white/70")}>
+                    <span className={cn("font-sans text-[14px] font-bold tracking-[0.03em]", sel ? "text-white" : "text-white/70")}>
                       {f.label}
                     </span>
                   </button>
@@ -639,18 +639,18 @@ export const WallCamera = ({
       {/* Bottom controls */}
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
         {cam === "denied" && (
-          <p className="max-w-[420px] rounded-2xl bg-black/60 px-4 py-2.5 text-center font-sans text-[12px] leading-[1.5] text-white/90 backdrop-blur-sm">
+          <p className="max-w-[420px] rounded-2xl bg-black/60 px-4 py-2.5 text-center font-sans text-[14px] leading-[1.5] text-white/90 backdrop-blur-sm">
             Camera access was blocked. Allow camera for this site, or use the drag/resize controls over the plain
             backdrop.
           </p>
         )}
         {cam === "unsupported" && (
-          <p className="max-w-[420px] rounded-2xl bg-black/60 px-4 py-2.5 text-center font-sans text-[12px] leading-[1.5] text-white/90 backdrop-blur-sm">
+          <p className="max-w-[420px] rounded-2xl bg-black/60 px-4 py-2.5 text-center font-sans text-[14px] leading-[1.5] text-white/90 backdrop-blur-sm">
             Open this on your phone (Safari / Chrome) to see it on your real wall. You can still position it here.
           </p>
         )}
         {!locked && (
-          <p className="rounded-full bg-black/45 px-3.5 py-1.5 font-sans text-[11px] text-white/80 backdrop-blur-sm">
+          <p className="rounded-full bg-black/45 px-3.5 py-1.5 font-sans text-[13px] text-white/80 backdrop-blur-sm">
             Drag to position · pinch or +/− to resize · then lock it on your wall
           </p>
         )}
@@ -705,7 +705,7 @@ export const WallCamera = ({
             )}
           </button>
         </div>
-        <p className="font-sans text-[11px] text-white/55">{frame.label} · your camera stays on your device</p>
+        <p className="font-sans text-[13px] text-white/55">{frame.label} · your camera stays on your device</p>
       </div>
     </div>,
     document.body,

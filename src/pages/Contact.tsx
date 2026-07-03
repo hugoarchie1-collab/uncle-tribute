@@ -183,7 +183,7 @@ export const Contact = () => {
         url="/contact"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-20 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1760px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-10 md:pb-14">
         {/* MASTHEAD — left-aligned front cover (no timid centred header). A meta
             rule, then "Write to the family" set in the refined shared masthead
             cut (MASTHEAD_TITLE_STYLE — Fraunces opsz 144 / wght 560, one italic

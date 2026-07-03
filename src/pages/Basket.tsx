@@ -591,7 +591,7 @@ export const Basket = () => {
                 <div className="flex items-baseline justify-between gap-6">
                   <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
                     Subtotal{" "}
-                    <span className="text-[clamp(12px,0.7vw,15px)]">(prints + selected add-ons)</span>
+                    <span className="text-[clamp(14px,0.7vw,15px)]">(prints + selected add-ons)</span>
                   </dt>
                   <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
                     {fmtMinor(subtotalMinor)}
@@ -633,7 +633,7 @@ export const Basket = () => {
 
               <div className="flex items-baseline justify-between gap-6 mb-3">
                 <p className={cn(EYEBROW_MUTED, "m-0 min-w-0")}>
-                  Total <span className="text-[clamp(12px,0.7vw,15px)] normal-case tracking-normal">(delivery free)</span>
+                  Total <span className="text-[clamp(14px,0.7vw,15px)] normal-case tracking-normal">(delivery free)</span>
                 </p>
                 <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] text-ink m-0 tabular-nums flex-shrink-0">
                   {fmtMinor(grandTotalMinor)}
@@ -670,13 +670,13 @@ export const Basket = () => {
                     </li>
                   ))}
                 </ul>
-                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
+                <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
                   Free delivery on every order — framed or unframed — with nothing
                   added at checkout. Each print ships within 7–10 working days.
                 </p>
               </div>
 
-              <p className="font-sans font-normal text-[clamp(12px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
+              <p className="font-sans font-normal text-[clamp(14px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
                 International buyers may be charged local import duties on delivery.
               </p>
 
@@ -732,7 +732,7 @@ export const Basket = () => {
                 </p>
                 {/* pl-[25px] = 15px glyph + 10px gap, so the second line
                     aligns with the first line's text, not the glyph. */}
-                <p className="font-sans font-normal text-[clamp(12.5px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
+                <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
                   Estate-stamped &amp; numbered within the edition · Free delivery worldwide ·
                   Damaged-in-transit replacement
                 </p>

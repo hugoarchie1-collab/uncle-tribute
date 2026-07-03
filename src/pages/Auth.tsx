@@ -164,7 +164,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
       <dl className="mt-5 pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 m-0">
         <div>
           <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Certificate ID</dt>
-          <dd className="m-0 font-mono text-[14px] md:text-[15px] tracking-[0.06em] text-ink break-all">
+          <dd className="m-0 font-mono text-[15px] md:text-[16px] tracking-[0.06em] text-ink break-all">
             {record.certificateId}
           </dd>
         </div>
@@ -302,7 +302,7 @@ export const Auth = () => {
         canonical="/auth"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16">
         <Reveal as="div">
           <PageMasthead
             eyebrow="Authentication"
@@ -315,7 +315,7 @@ export const Auth = () => {
           <Reveal as="div" className="lg:col-span-7 3xl:col-span-8">
             <form onSubmit={handleSubmit} noValidate>
               <span className={cn(EYEBROW, "block mb-3")}>Certificate ID</span>
-              <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
+              <div className="flex w-full flex-col sm:flex-row items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
                 <input
                   ref={inputRef}
                   type="text"
@@ -331,7 +331,7 @@ export const Auth = () => {
                 />
                 <button
                   type="submit"
-                  className="press shrink-0 whitespace-nowrap px-6 md:px-8 font-sans text-[12px] md:text-[13px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer"
+                  className="press shrink-0 whitespace-nowrap px-6 md:px-8 py-3.5 sm:py-0 font-sans text-[14px] md:text-[14.5px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer"
                 >
                   Authenticate
                 </button>
@@ -364,7 +364,7 @@ export const Auth = () => {
           </Reveal>
         </div>
 
-        <section className="mt-12 md:mt-16">
+        <section className="mt-8 md:mt-10">
           <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
             <span className={EYEBROW_MUTED}>What every certificate carries</span>
             <span aria-hidden className="h-px flex-1 bg-ink/15" />

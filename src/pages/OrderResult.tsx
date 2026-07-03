@@ -194,7 +194,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           />
         </picture>
       </div>
-      <p className="font-sans text-[14px] font-semibold leading-[1.3] text-ink m-0">
+      <p className="font-sans text-[15px] font-semibold leading-[1.3] text-ink m-0">
         {painting.title}
       </p>
       <p className={cn(EYEBROW_TIGHT, "mt-1.5")}>{colourwayName}</p>
@@ -216,7 +216,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
       </button>
       <p aria-live="polite" className="m-0 empty:hidden">
         {status === "error" && (
-          <span className="mt-2 block font-sans text-[12.5px] font-semibold text-ink">
+          <span className="mt-2 block font-sans text-[14px] font-semibold text-ink">
             {errorMsg}
           </span>
         )}
@@ -237,8 +237,8 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
   if (companions.length === 0) return null;
 
   return (
-    <Reveal as="div" className="mt-12 md:mt-16 text-left">
-      <div className="text-center mb-10 md:mb-12">
+    <Reveal as="div" className="mt-8 md:mt-10 text-left">
+      <div className="text-center mb-7 md:mb-8">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Complete the set</p>
         <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0">
           A companion piece
@@ -294,7 +294,7 @@ export const OrderSuccess = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v3.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order confirmed
@@ -308,13 +308,13 @@ export const OrderSuccess = () => {
           <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[15px] md:text-[16px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px]">
+          <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px]">
             Each print is made to order. We place yours with our atelier, Point 101 in London,
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
           </p>
           {sessionId && (
-            <p className="font-sans text-[13px] leading-[1.6] text-ink-muted m-0 mb-8">
+            <p className="font-sans text-[14.5px] leading-[1.6] text-ink-muted m-0 mb-6">
               Reference: {sessionId.slice(0, 18)}…
             </p>
           )}
@@ -367,7 +367,7 @@ export const OrderCancel = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v3.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-14 md:pt-16 pb-14 md:pb-20 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order cancelled

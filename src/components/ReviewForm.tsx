@@ -525,7 +525,7 @@ export const ReviewForm = ({
                         </span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose file
                         </span>
                         <input
@@ -539,7 +539,7 @@ export const ReviewForm = ({
                           {mediaName || "No file chosen"}
                         </span>
                       </label>
-                      <p className="mt-2 font-sans text-[12px] leading-[1.55] text-ink-muted m-0">
+                      <p className="mt-2 font-sans text-[14px] leading-[1.55] text-ink-muted m-0">
                         Reviews with a photo, video or audio clip are held for the
                         family to approve before they appear. Keep files under 4MB.
                       </p>
@@ -567,7 +567,7 @@ export const ReviewForm = ({
                           →
                         </span>
                       </button>
-                      <p className="font-sans text-[12px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
+                      <p className="font-sans text-[14px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
                         Your email stays private — it's only so the family can
                         thank you.
                       </p>

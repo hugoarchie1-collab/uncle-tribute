@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
         role="alert"
         className="fixed inset-0 z-[300] flex flex-col items-center justify-center gap-6 bg-bg px-6 text-center text-ink"
       >
-        <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/55">
+        <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55">
           The Art of Stephen Meakin
         </p>
         <h1 className="max-w-[18ch] font-display text-[clamp(28px,6vw,44px)] font-semibold leading-[1.1] tracking-[-0.01em]">
@@ -51,13 +51,13 @@ export class ErrorBoundary extends Component<Props, State> {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="press inline-flex items-center justify-center rounded-full bg-ink px-7 py-3 font-sans text-[12px] font-bold tracking-[0.04em] text-bg transition-colors hover:bg-accent"
+            className="press inline-flex items-center justify-center rounded-full bg-ink px-7 py-3 font-sans text-[14px] font-bold tracking-[0.04em] text-bg transition-colors hover:bg-accent"
           >
             Reload the page
           </button>
           <a
             href="/"
-            className="font-sans text-[12px] font-bold tracking-[0.04em] text-ink/55 transition-colors hover:text-ink"
+            className="font-sans text-[14px] font-bold tracking-[0.04em] text-ink/55 transition-colors hover:text-ink"
           >
             Return home
           </a>

@@ -84,9 +84,9 @@ export const BasketIcon = ({ count, className, size = 24 }: BasketIconProps) => 
         <span
           aria-hidden="true"
           className={cn(
-            "tasm-basket-badge absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-[5px]",
+            "tasm-basket-badge absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-[6px]",
             "inline-flex items-center justify-center rounded-full",
-            "bg-accent text-bg font-sans text-[9px] font-bold leading-none tabular-nums",
+            "bg-accent text-bg font-sans text-[11px] font-bold leading-none tabular-nums",
             // Soft ring in the canvas colour so the badge reads cleanly when it
             // overlaps the bag stroke.
             "ring-[1.5px] ring-bg",

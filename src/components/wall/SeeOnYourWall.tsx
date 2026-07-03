@@ -209,7 +209,7 @@ export const SeeOnYourWall = ({
             </svg>
             See it on your wall
           </button>
-          <p className="mt-2 mb-5 text-center font-sans text-[12px] leading-[1.6] text-ink-muted">
+          <p className="mt-2 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
             Your camera opens right here — drag &amp; pinch the whole print to place it, then <span className="text-ink">lock it on your wall</span>. Your camera stays on your device.
           </p>
 
@@ -217,11 +217,11 @@ export const SeeOnYourWall = ({
           <div className="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-bg/60 px-4 py-3 ring-1 ring-line">
             <div className="min-w-0">
               <p className="m-0 font-sans text-[13px] font-bold text-ink">Preview in a room photo</p>
-              <p className="m-0 mt-0.5 font-sans text-[12px] text-ink-muted">
+              <p className="m-0 mt-0.5 font-sans text-[14px] text-ink-muted">
                 True-to-size room images — coming soon.
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-white/8 px-3 py-1 font-sans text-[10px] font-bold uppercase tracking-[0.12em] text-ink-muted">
+            <span className="shrink-0 rounded-full bg-white/8 px-3 py-1 font-sans text-[13px] font-bold uppercase tracking-[0.12em] text-ink-muted">
               Photos coming soon
             </span>
           </div>
@@ -277,7 +277,7 @@ export const SeeOnYourWall = ({
                     )}
                   >
                     <span className="font-sans text-[13px] font-bold tracking-[0.08em]">{s.label}</span>
-                    <span className={cn("font-sans text-[10px] font-semibold", sel ? "text-bg/70" : "text-ink/60")}>
+                    <span className={cn("font-sans text-[13px] font-semibold", sel ? "text-bg/70" : "text-ink/60")}>
                       {s.cm}cm
                     </span>
                   </button>
@@ -313,14 +313,14 @@ export const SeeOnYourWall = ({
                           : "repeating-linear-gradient(45deg, #2a2620, #2a2620 3px, #14110d 3px, #14110d 6px)",
                       }}
                     />
-                    <span className={cn("font-sans text-[12px] font-bold tracking-[0.03em]", sel ? "text-ink" : "text-ink-muted")}>
+                    <span className={cn("font-sans text-[14px] font-bold tracking-[0.03em]", sel ? "text-ink" : "text-ink-muted")}>
                       {f.label}
                     </span>
                   </button>
                 );
               })}
             </div>
-            <p className="mt-2.5 m-0 font-sans text-[11px] leading-[1.6] text-ink-muted">
+            <p className="mt-2.5 m-0 font-sans text-[13px] leading-[1.6] text-ink-muted">
               {frame.id === "none"
                 ? "Shown unframed. Framing (oak · black · white · walnut) is added to your order."
                 : `${frame.label} frame added to your order. The AR preview shows the print itself at true size.`}

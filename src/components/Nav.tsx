@@ -344,7 +344,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "relative py-2 font-sans text-[11px] font-semibold tracking-[0.04em] transition-colors duration-300",
+                    "relative py-2 font-sans text-[13px] font-semibold tracking-[0.04em] transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
                     // DIRECTIONAL underline — grows in FROM the left (hover sets
                     // origin-left), and on hover-out the origin reverts to the
@@ -445,7 +445,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                     ? undefined
                     : { duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }
                 }
-                className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-[5px] inline-flex items-center justify-center rounded-full bg-accent text-bg font-sans text-[9px] font-bold leading-none"
+                className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-[6px] inline-flex items-center justify-center rounded-full bg-accent text-bg font-sans text-[11px] font-bold leading-none"
               >
                 {basketCount}
               </motion.span>

@@ -69,7 +69,7 @@ export const ReturningVisitorChip = () => {
     <span
       role="status"
       aria-live="polite"
-      className="hidden md:inline-flex items-center font-sans text-[10px] tracking-[0.04em] text-ink/55 animate-[fadeIn_0.45s_ease-out]"
+      className="hidden md:inline-flex items-center font-sans text-[13px] tracking-[0.04em] text-ink/55 animate-[fadeIn_0.45s_ease-out]"
     >
       Welcome back{firstName ? `, ${firstName}` : ""}
     </span>

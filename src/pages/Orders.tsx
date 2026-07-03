@@ -72,7 +72,7 @@ export const Orders = () => {
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <SceneBackdrop src="/img/scenes/orders-autumn-scene-v3.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-16 pb-20 md:pb-28">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-14 md:pb-20">
         <Reveal>
           <PageMasthead
             eyebrow="Orders & returns"
@@ -85,7 +85,7 @@ export const Orders = () => {
           />
         </Reveal>
 
-        <div className="mt-10 md:mt-14 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-14 items-start border-t border-line pt-10 md:pt-12">
+        <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start border-t border-line pt-8 md:pt-10">
           {/* TRACK AN ORDER */}
           <Reveal as="div" className="lg:col-span-7">
             <form onSubmit={onSubmit} noValidate>
@@ -113,7 +113,7 @@ export const Orders = () => {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[10px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   Track
                 </button>
@@ -174,7 +174,7 @@ export const Orders = () => {
             </p>
             <a
               href="mailto:info@themandalacompany.com?subject=Return%20or%20damage%20%E2%80%94%20order%20reference"
-              className="inline-flex items-center mt-6 px-6 py-3.5 ring-1 ring-line hover:ring-accent hover:text-accent transition-colors font-sans text-[11px] font-bold tracking-[0.04em] text-ink rounded-full"
+              className="inline-flex items-center mt-6 px-6 py-3.5 ring-1 ring-line hover:ring-accent hover:text-accent transition-colors font-sans text-[13px] font-bold tracking-[0.04em] text-ink rounded-full"
             >
               Start a return or report damage
             </a>

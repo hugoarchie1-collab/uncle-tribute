@@ -763,7 +763,7 @@ const LegalMasthead = ({
       />
     </Reveal>
 
-    <div className="mt-6 md:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6 items-start border-t border-line pt-6 md:pt-8">
+    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-4 md:pt-5">
       <Reveal as="div" className="lg:col-span-8">
         <p
           className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch] 3xl:max-w-[40ch]"
@@ -787,9 +787,9 @@ const LegalMasthead = ({
               <li key={i} className="break-inside-avoid mb-1.5">
                 <a
                   href={`#legal-${i}`}
-                  className="group flex items-baseline gap-2 font-sans text-[13.5px] md:text-[14px] 3xl:text-[clamp(14px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
+                  className="group flex items-baseline gap-2 font-sans text-[14.5px] md:text-[15px] 3xl:text-[clamp(15px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
                 >
-                  <span aria-hidden className="font-sans text-[11px] font-bold tracking-[0.18em] tabular-nums text-ink/55 group-hover:text-accent">
+                  <span aria-hidden className="font-sans text-[13px] font-bold tracking-[0.18em] tabular-nums text-ink/55 group-hover:text-accent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>{section.heading}</span>

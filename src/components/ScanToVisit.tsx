@@ -50,7 +50,7 @@ export function ScanToVisit({
   );
 
   const eyebrow = (
-    <span className="font-sans text-[11px] font-bold tracking-[0.04em] text-cream-ink-soft">
+    <span className="font-sans text-[13px] font-bold tracking-[0.04em] text-cream-ink-soft">
       {label}
     </span>
   );
@@ -95,7 +95,7 @@ export function ScanToVisit({
         {eyebrow}
         <span className="text-[17px]">{url}</span>
         {variant === "card" && (
-          <span className="font-sans text-[12px] leading-[1.5] text-cream-ink-soft mt-0.5">
+          <span className="font-sans text-[14px] leading-[1.5] text-cream-ink-soft mt-0.5">
             the art of stephen meakin.
           </span>
         )}

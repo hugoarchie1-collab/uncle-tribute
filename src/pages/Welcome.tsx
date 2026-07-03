@@ -912,7 +912,7 @@ export const Welcome = () => {
             <Reveal as="div" className="text-center">
               <MagneticLink
                 to="/collections"
-                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[11px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
                 ariaLabel="See every painting"
               >
                 See every painting <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
@@ -1084,7 +1084,7 @@ export const Welcome = () => {
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
                   front instead of burying it in prose. */}
-              <p className="font-sans text-[11px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-4">
+              <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-4">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
               <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>

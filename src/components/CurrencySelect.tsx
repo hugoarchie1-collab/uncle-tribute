@@ -228,7 +228,7 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
                       >
                         {cm.label}
                       </span>
-                      <span className="block font-sans text-[11.5px] leading-tight text-ink/70 mt-0.5 tabular-nums">
+                      <span className="block font-sans text-[13px] leading-tight text-ink/70 mt-0.5 tabular-nums">
                         {c}
                       </span>
                     </span>
@@ -239,7 +239,7 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
           </ul>
 
           <div className="px-4 py-3 border-t border-ink/60">
-            <p className="font-sans text-[12px] leading-snug text-ink-muted">
+            <p className="font-sans text-[13.5px] leading-snug text-ink-muted">
               Prices convert for reference and are charged in your chosen
               currency at checkout.
             </p>

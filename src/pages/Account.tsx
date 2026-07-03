@@ -343,7 +343,7 @@ export const Account = () => {
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="press shrink-0 whitespace-nowrap px-6 md:px-8 font-sans text-[12px] md:text-[13px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer disabled:opacity-50"
+                        className="press shrink-0 whitespace-nowrap px-6 md:px-8 font-sans text-[14px] md:text-[13px] font-bold tracking-[0.14em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer disabled:opacity-50"
                       >
                         {submitting ? "Sending…" : "Email me a link"}
                       </button>
