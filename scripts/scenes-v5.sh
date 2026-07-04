@@ -2,8 +2,10 @@
 # scenes-v5.sh — targeted -v5 re-bakes (Hugo 2026-07-04).
 #   basket:  "blur the basket background way more" — heavy gaussian 0x18 (the
 #            certified text-safe bar is 0x7); dreamy wash that recedes fully.
-#   account: swap to the misty temple-arches-at-dawn certified scene (the old
-#            account image echoed the home Earth); standard text-safe 0x7 bake.
+#   account: swap to the lone-tree-on-a-cliff certified scene (the old account
+#            image echoed the home Earth). "No repeats" (Hugo): this was the 2nd
+#            crossfade scene on /privacy, now REMOVED there (Legal.tsx Privacy is
+#            single-scene) so account owns it exclusively. Standard 0x7 bake → v6.
 # Same luma-normalise-to-30 + baked top-gradient recipe as certified-scenes-v3.sh.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -30,4 +32,4 @@ gen () { # gen <certified filename> <out stem> <sigma>
 }
 
 gen "Your basket page background .webp"                basket-scene-v5   18
-gen "trade and interior design page background.webp"  account-scene-v5  7
+gen "privacy background 2.jpeg"                        account-scene-v6  7

@@ -693,12 +693,10 @@ export const Privacy = () => (
     lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
     sections={PRIVACY}
     updated={UPDATED}
-    // Hugo's two certified privacy scenes (sunset silhouette → pine headland),
-    // crossfading seamlessly on scroll.
-    backdrop={[
-      "/img/scenes/privacy-scene-a-v3.webp",
-      "/img/scenes/privacy-scene-b-v3.webp",
-    ]}
+    // Privacy's certified sunset-silhouette scene. (Its 2nd scene — the lone-
+    // tree headland — was moved to be the ACCOUNT page's exclusive backdrop
+    // per Hugo's "no repeats" rule 2026-07-04, so privacy is single-scene now.)
+    backdrop="/img/scenes/privacy-scene-a-v3.webp"
   />
 );
 export const Terms = () => (
