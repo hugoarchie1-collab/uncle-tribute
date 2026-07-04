@@ -334,6 +334,14 @@ export const Account = () => {
                         below.
                       </p>
                     )}
+                    {/* Frames the passwordless flow as intentional — signing in
+                        AND creating an account are the same one step, so the page
+                        never reads as a missing sign-up form. */}
+                    <p className={cn(SUBTITLE, "m-0 mb-5 max-w-[56ch]")}>
+                      New here or returning, it's the same single step — no password to
+                      create or remember. Enter your email and we'll send a secure
+                      one-time link that signs you straight in.
+                    </p>
                     <span className={cn(EYEBROW, "block mb-3")}>Email address</span>
                     <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
                       <input
