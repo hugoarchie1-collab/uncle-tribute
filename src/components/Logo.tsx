@@ -9,10 +9,19 @@ interface LogoProps {
    *  next ("SITE") column. With this on, the brand box fills its column and
    *  the wordmark breaks cleanly to two lines rather than overlapping. */
   wordmarkWrap?: boolean;
+  /** Override the wordmark text. Defaults to the estate name; the top banner
+   *  passes "The SEM Experience" while the footer keeps the full name. */
+  wordmarkText?: string;
   className?: string;
 }
 
-export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, className }: LogoProps) => {
+export const Logo = ({
+  size = 30,
+  wordmark = true,
+  wordmarkWrap = false,
+  wordmarkText = "The Art of Stephen Meakin",
+  className,
+}: LogoProps) => {
   const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
@@ -71,7 +80,7 @@ export const Logo = ({ size = 30, wordmark = true, wordmarkWrap = false, classNa
           className={`inline font-display text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(19px,5vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.12] sm:leading-none min-w-0 max-w-full sm:max-w-none"}`}
           style={wordmarkWrap ? undefined : { fontVariationSettings: '"opsz" 28' }}
         >
-          The Art of Stephen Meakin
+          {wordmarkText}
         </span>
       )}
     </div>
