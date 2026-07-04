@@ -21,6 +21,7 @@ import { addItem } from "../lib/basket";
 import { asset } from "../lib/asset";
 import { useCurrency, formatMinorUnits, bundleMinorFigures } from "../lib/currency";
 import { Seo } from "../components/Seo";
+import { SITE_URL, absoluteUrl } from "../lib/seo";
 import { cn } from "../lib/cn";
 import { PageMasthead } from "../components/PageMasthead";
 import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, META } from "../components/ui/tokens";
@@ -566,6 +567,31 @@ export const Collections = () => {
   // bundle for different sizes"). The pure helpers (getCollectionBundle /
   // getCompleteCatalogueBundle) keep advertised == charged inside each card.
 
+  // CollectionPage + ItemList JSON-LD — makes the catalogue crawl-legible as a
+  // product listing (every painting as a positioned ListItem → its PDP). Names +
+  // URLs only, derived from the canonical PAINTINGS data (no invented copy). The
+  // PDP already carries the per-product Product/Offer schema; this is the parent
+  // list that ties them together for sitelinks / listing rich-results.
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": `${absoluteUrl("/collections")}#collection`,
+    name: "Mandala & Sacred Geometry Art Prints — The Collection",
+    url: absoluteUrl("/collections"),
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    about: { "@id": `${SITE_URL}/#person` },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: PAINTINGS.length,
+      itemListElement: PAINTINGS.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: absoluteUrl(`/collections/${p.id}`),
+        name: p.title,
+      })),
+    },
+  };
+
   return (
     <div className="relative">
       {/* This browse page is the natural ranker for the category head terms
@@ -576,6 +602,7 @@ export const Collections = () => {
         title="Mandala & Sacred Geometry Art Prints — The Collection"
         description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery."
         url="/collections"
+        jsonLd={collectionJsonLd}
       />
       <Nav />
 

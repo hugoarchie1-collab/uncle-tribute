@@ -102,6 +102,31 @@ const STATIC_ROUTES: RouteHead[] = [
     title: "Mandala & Sacred Geometry Art Prints — The Collection",
     description:
       "Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery.",
+    // CollectionPage + ItemList — the catalogue as a crawl-legible product
+    // listing (every painting a positioned ListItem → its PDP). Mirrors the
+    // runtime Collections.tsx <Seo jsonLd> exactly, so headMeta re-asserts the
+    // same block on mount (no second/appended graph). Names + URLs only.
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${absoluteUrl("/collections")}#collection`,
+        name: "Mandala & Sacred Geometry Art Prints — The Collection",
+        url: absoluteUrl("/collections"),
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        about: { "@id": `${SITE_URL}/#person` },
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: PAINTINGS.length,
+          itemListElement: PAINTINGS.map((p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: absoluteUrl(`/collections/${p.id}`),
+            name: p.title,
+          })),
+        },
+      },
+    ],
   },
   {
     routePath: "/about",
