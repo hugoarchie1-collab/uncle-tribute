@@ -258,7 +258,11 @@ export const Account = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip bg-bg">
-      <SceneBackdrop src="/img/scenes/account-scene-v4.webp" />
+      {/* Fresh backdrop (Hugo 2026-07-04): the misty temple-arches-at-dawn
+          certified scene — a calm "threshold / welcome" for the personal
+          account page, distinct from the home Earth motif the old account
+          image echoed. Text-safe sigma-7 bake, same recipe as every scene. */}
+      <SceneBackdrop src="/img/scenes/account-scene-v5.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         <Reveal as="header">
