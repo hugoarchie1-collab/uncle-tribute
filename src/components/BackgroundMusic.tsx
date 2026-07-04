@@ -18,6 +18,7 @@ import { asset } from "../lib/asset";
  * and never restarts on navigation.
  */
 const KEY = "tasm.music.v1"; // "on" | "off" — absent => default on
+const TIME_KEY = "tasm.music.t.v1"; // last playback position (seconds) for resume-on-reload
 const TARGET_VOL = 0.5;
 
 export const BackgroundMusic = () => {
@@ -32,6 +33,52 @@ export const BackgroundMusic = () => {
     } catch {
       /* private mode — default on */
     }
+  }, []);
+
+  // CONTINUITY (Hugo): the player is mounted once in App.tsx, so within the SPA
+  // it already plays UNBROKEN across route changes (React never remounts it).
+  // This adds belt-and-braces for a genuine page RELOAD: the current position is
+  // saved to sessionStorage as it plays, and restored on the next load so the
+  // track resumes exactly where it left off rather than restarting at 1:25.
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const seekToSaved = () => {
+      try {
+        const t = parseFloat(sessionStorage.getItem(TIME_KEY) || "0");
+        if (t > 0 && Number.isFinite(a.duration) && t < a.duration - 1) a.currentTime = t;
+      } catch {
+        /* ignore */
+      }
+    };
+    let last = 0;
+    const save = () => {
+      const now = a.currentTime;
+      if (Math.abs(now - last) < 3) return; // throttle to ~every 3s
+      last = now;
+      try {
+        sessionStorage.setItem(TIME_KEY, String(now));
+      } catch {
+        /* ignore */
+      }
+    };
+    const saveNow = () => {
+      try {
+        sessionStorage.setItem(TIME_KEY, String(a.currentTime));
+      } catch {
+        /* ignore */
+      }
+    };
+    a.addEventListener("loadedmetadata", seekToSaved, { once: true });
+    a.addEventListener("timeupdate", save);
+    window.addEventListener("pagehide", saveNow);
+    document.addEventListener("visibilitychange", saveNow);
+    return () => {
+      a.removeEventListener("loadedmetadata", seekToSaved);
+      a.removeEventListener("timeupdate", save);
+      window.removeEventListener("pagehide", saveNow);
+      document.removeEventListener("visibilitychange", saveNow);
+    };
   }, []);
 
   const fadeTo = useCallback((target: number) => {

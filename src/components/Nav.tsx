@@ -198,8 +198,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       if (delta > DELTA) {
         setHidden(true); // scrolling down → slide away
         lastYRef.current = y;
-      } else if (delta < -DELTA) {
-        setHidden(false); // scrolling up → slide back in
+      } else if (delta < -2) {
+        // Scrolling UP → slide back in. Deliberately EAGER (−2px, not −DELTA):
+        // Hugo wants the top bar to reappear on ANY scroll-up on every page,
+        // including the small, momentum-y scroll-ups mobile produces.
+        setHidden(false);
         lastYRef.current = y;
       }
     };

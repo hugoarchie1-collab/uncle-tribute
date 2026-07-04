@@ -169,7 +169,16 @@ const CosmicInterlude = () => {
         >
           {near && (
             <video
-              ref={videoRef}
+              // Muted set synchronously on mount (React's `muted` prop is
+              // unreliable; iOS needs a genuinely-muted element to autoplay
+              // with no tap) — the play() kicks below are the fallback.
+              ref={(el) => {
+                videoRef.current = el;
+                if (el) {
+                  el.defaultMuted = true;
+                  el.muted = true;
+                }
+              }}
               className="absolute inset-0 h-full w-full object-cover"
               poster={asset("/video/poster-garden-galaxy-v1.jpg")}
               autoPlay

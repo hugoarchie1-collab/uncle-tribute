@@ -113,7 +113,19 @@ export const LoopFilm = ({
       />
       {!reduceMotion && near && (
         <video
-          ref={videoRef}
+          // Set muted SYNCHRONOUSLY on mount via the ref callback — React's
+          // `muted` prop is unreliable (it often doesn't reflect to the DOM
+          // property), and iOS only honours muted-autoplay when the element is
+          // GENUINELY muted at the moment it evaluates the autoPlay attribute.
+          // Doing it here (before paint) is what makes it autoplay on mobile
+          // with no tap. The play() kicks in the effect are the fallback.
+          ref={(el) => {
+            videoRef.current = el;
+            if (el) {
+              el.defaultMuted = true;
+              el.muted = true;
+            }
+          }}
           className="absolute inset-0 h-full w-full object-cover"
           poster={asset(poster)}
           autoPlay
