@@ -1060,35 +1060,37 @@ export const About = () => {
             <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
-          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
-            <div>
-              <Reveal as="div">
-                <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.anegada[1]}</p>
-              </Reveal>
-              <Dinkus />
-              <Reveal as="div">
-                <p className={cn(BODY, "max-w-[62ch]")}>{ABOUT.anegada[2]}</p>
-              </Reveal>
-            </div>
-            <div className="mt-8 lg:mt-0">
-              {/* Pure-CSS sticky — inherently reduced-motion safe; releases
-                  below lg. The chart is small/low-res, so the mat stays
-                  contained at 440px. */}
-              <div className="lg:sticky lg:top-28">
-                <Reveal as="figure" className="m-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
-                  <AssetImage
-                    src="/img/about/25-harmonic-frequencies.jpg"
-                    alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
-                    width={612}
-                    height={502}
-                    loading="lazy"
-                    decoding="async"
-                    className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
-                  />
-                </Reveal>
-              </div>
-            </div>
+          {/* Lead + the cymatics chart, balanced SIDE BY SIDE — the lead is
+              short enough to match the chart, so neither leaves a blank half. */}
+          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-center max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
+            <Reveal as="div">
+              <p className={cn(LEAD, "max-w-[52ch]")}>{ABOUT.anegada[1]}</p>
+            </Reveal>
+            <Reveal as="figure" className="m-0 mt-8 lg:mt-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
+              <AssetImage
+                src="/img/about/25-harmonic-frequencies.jpg"
+                alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
+                width={612}
+                height={502}
+                loading="lazy"
+                decoding="async"
+                className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+              />
+            </Reveal>
           </div>
+
+          <Dinkus />
+
+          {/* The long practice passage as a TWO-COLUMN editorial spread so it
+              fills the width and never strands a blank half beside a narrow
+              column (Hugo 2026-07-04: "can't have any of this blank space and
+              stupid long paragraphs"). Stephen's words are VERBATIM + intact —
+              only the flow is columned. Single column below lg. */}
+          <Reveal as="div" className="max-w-[1180px] 3xl:max-w-[1380px] mx-auto mt-5 md:mt-6">
+            <p className={cn(BODY, "columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]")}>
+              {ABOUT.anegada[2]}
+            </p>
+          </Reveal>
 
           {/* THE RITUAL, IN MOTION — two archive clips of Stephen painting a
               mandala from above: the hundreds-of-hours practice described here,
@@ -1420,10 +1422,10 @@ export const About = () => {
             removed 2026-07-02 — grey/light boxes behind images). The
             purple→pink backdrop crossfade midpoint is tuned to land here. */}
         <section className={cn(SECTION, "py-4 md:py-6")}>
-          <Reveal as="div" className="max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto">
+          <Reveal as="div" className="max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1680px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
-              <div className="grid md:grid-cols-2 gap-4 md:gap-6 items-start">
+              <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-center">
                 <AssetImage
                   src="/img/about/05-force-india-layout.jpg"
                   alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
