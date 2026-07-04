@@ -833,7 +833,7 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="beginnings" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[0]}</p>
             </Reveal>
@@ -876,9 +876,10 @@ export const About = () => {
               terrace) so it rises to the full height of the long "Being unsure…"
               paragraph beside it — no more short image floating in the middle
               of a tall column with a void above and below (Hugo 2026-07-04:
-              "remove any empty space/gaps"). items-start tops the family photo
-              level with the drop-cap. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+              "remove any empty space/gaps"). items-center vertically centres the
+              shorter column so any residual slack splits top+bottom rather than
+              pooling as one dead band (Hugo 2026-07-04: symmetry / no lopsided gap). */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div" className="flex flex-col gap-5 md:gap-6">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
@@ -1012,7 +1013,7 @@ export const About = () => {
               (was a photo-less two-column text block — Hugo: "you haven't
               added that photo next to the text"). Photo alt is descriptive
               only; no caption (the caption convention was removed). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
             </Reveal>
@@ -1146,7 +1147,7 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="lewes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1212,7 +1213,7 @@ export const About = () => {
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="exhibitions" />
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-center max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
             </Reveal>
@@ -1264,7 +1265,7 @@ export const About = () => {
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
               right (the flyer's own wording only — see the Fairmont note). */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-3 md:mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-3 md:mb-4">
             <Reveal as="div" className="lg:col-span-7 flex flex-col gap-5 max-w-[62ch]">
               {INTERVIEW.context.map((p, i) => (
                 <p key={i} className={BODY}>
