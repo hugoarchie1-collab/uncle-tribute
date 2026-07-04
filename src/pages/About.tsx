@@ -831,7 +831,7 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="beginnings" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[0]}</p>
             </Reveal>
@@ -870,8 +870,14 @@ export const About = () => {
             top-to-bottom: photo → text → photo. */}
         <section id="bournemouth" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="bournemouth" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
-            <Reveal as="div">
+          {/* The image column STACKS both photographs (family group → café
+              terrace) so it rises to the full height of the long "Being unsure…"
+              paragraph beside it — no more short image floating in the middle
+              of a tall column with a void above and below (Hugo 2026-07-04:
+              "remove any empty space/gaps"). items-start tops the family photo
+              level with the drop-cap. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+            <Reveal as="div" className="flex flex-col gap-5 md:gap-6">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
                 alt="Four smartly dressed young men standing together outdoors under trees."
@@ -879,19 +885,17 @@ export const About = () => {
                 height={900}
                 sizes="(min-width: 768px) 48vw, 100vw"
               />
-            </Reveal>
-            <Reveal as="div" delay={0.06}>
-              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[1]}</p>
-            </Reveal>
-            <Reveal as="figure" delay={0.09} className="m-0 md:col-span-2 mx-auto w-full max-w-[600px] mt-2">
               <ImageReveal
                 src="/img/about/18-cafe-terrace.jpg"
                 alt="Stephen Meakin in a denim shirt smiling at an outdoor café table, a stoneware jug before him and cypress trees in the distance."
                 aspect="aspect-[4/3]"
                 edges="all"
                 parallax={0.1}
-                sizes="(min-width: 768px) 600px, 100vw"
+                sizes="(min-width: 768px) 48vw, 100vw"
               />
+            </Reveal>
+            <Reveal as="div" delay={0.06}>
+              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[1]}</p>
             </Reveal>
           </div>
 
@@ -1006,7 +1010,7 @@ export const About = () => {
               (was a photo-less two-column text block — Hugo: "you haven't
               added that photo next to the text"). Photo alt is descriptive
               only; no caption (the caption convention was removed). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
             </Reveal>
@@ -1094,7 +1098,7 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="lewes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"

@@ -126,7 +126,7 @@ const CosmicInterlude = () => {
       // with matched space above and below — no longer a tiny gap above + a big
       // one below. The masthead's justify-end places the lockup at the viewport
       // foot, so mt is the whole visible gap up to the wordmark.
-      className="relative z-30 w-full mt-[clamp(22px,4svh,52px)] mb-[clamp(22px,4svh,52px)]"
+      className="relative z-30 w-full mt-[clamp(12px,2svh,30px)] mb-[clamp(20px,3.5svh,48px)]"
     >
       {/* FULL-BLEED BANNER (Hugo: "fill the entire edges of screen so it's like
           a banner", edges softened like the photos below). Edge-to-edge width,
@@ -158,7 +158,7 @@ const CosmicInterlude = () => {
             wall becoming taller than the film can resolve while still ~55svh
             there. object-cover + the vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(380px,70svh,1360px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(480px,88svh,1560px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -452,7 +452,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(16px,3svh,38px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[84svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
