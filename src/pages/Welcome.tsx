@@ -1143,40 +1143,39 @@ export const Welcome = () => {
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
                   front instead of burying it in prose. */}
-              <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/70 m-0 mb-4">
+              <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/70 m-0">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
-              <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>
-                {WELCOME.bio[2]}
-              </p>
             </Reveal>
-            {/* Archive FILM — the 3.6-metre SunStar itself being painted
-                (timelapse from Stephen's studio archive): the making that
-                precedes the installed piece shown below. Framed like the
-                archive plate; muted / looping / lazy, reduced-motion holds the
-                poster. */}
-            {/* Kept SMALLER than the archive photo (Hugo 2026-07-04: "a little
-                smaller since quality is poor") — the archive footage is low-res,
-                so a restrained plate hides the softness; the larger, sharp
-                archive photo below carries the section. */}
-            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[440px] md:max-w-[560px]">
+
+            {/* Archive FILM — moved DIRECTLY under "Commissioned 2016" (Hugo
+                2026-07-04: "put video underneath commissioned 2016 … so it's
+                separated") and enlarged to match the other home film — the clip
+                is 720p, so it holds up big. The prose + the (now small) archive
+                photo sit BELOW, so the film and the photo are never stacked
+                adjacent. Muted / looping / lazy, feathered like the other film. */}
+            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[1100px]">
               <LoopFilm
                 src="/video/arista-timelapse-v1.mp4"
                 poster="/video/poster-arista-timelapse-v1.jpg"
                 label="The Arista SunStar being painted, in timelapse"
                 aspect="aspect-[16/9]"
-                edges="none"
-                frame
+                edges="all"
               />
             </Reveal>
 
-            {/* Archive photo — UNCROPPED at natural aspect (Hugo 2026-07-02:
-                the old 3/1 object-cover chopped Stephen's head; never re-crop)
-                but CAPPED near the source's real resolution (641×353): the
-                07-02 full-content-width version upscaled it ~2× and Hugo
-                rejected it ("way too huge, the quality is terrible"). 820px
-                ≈ 1.28× — prominent without visible softness. Ring frame kept. */}
-            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto w-full max-w-[720px] md:max-w-[820px]">
+            {/* The commission prose, between the film and the photo. */}
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center mt-6 md:mt-8">
+              <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>
+                {WELCOME.bio[2]}
+              </p>
+            </Reveal>
+
+            {/* Archive photo — now SMALL (Hugo 2026-07-04: "a lot smaller … since
+                quality is poor"; the source is only 641×353, so a restrained
+                plate keeps it crisp). Well separated from the film above by the
+                prose. Never cropped; ring frame kept. */}
+            <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[400px] md:max-w-[500px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"
