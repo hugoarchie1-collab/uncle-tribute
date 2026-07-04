@@ -1060,6 +1060,29 @@ export const About = () => {
             <p className={cn(SUBTITLE, "mx-auto max-w-[760px] 3xl:max-w-[880px]")}>— Stephen, on his practice, in his own words</p>
           </Reveal>
 
+          {/* Two archive photographs of Stephen at the board — the colour
+              mandala from above and the gold-knotwork piece (Hugo's supplied
+              studio shots). A full-width two-up that opens the practice
+              chapter, so his hands-at-work lead the words. */}
+          <Reveal as="div" className="mb-5 md:mb-6 mx-auto grid max-w-[1180px] 3xl:max-w-[1380px] grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <ImageReveal
+              src="/img/about/stephen-painting-colour-v1.jpg"
+              alt="Stephen Meakin painting a large colour mandala at his board, a finished mandala on the wall behind"
+              aspect="aspect-[3/2]"
+              edges="all"
+              parallax={0.08}
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <ImageReveal
+              src="/img/about/stephen-painting-compass-v1.jpg"
+              alt="Stephen Meakin laying gold knotwork into a mandala with compass and rule"
+              aspect="aspect-[3/2]"
+              edges="all"
+              parallax={0.08}
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </Reveal>
+
           {/* Lead + the cymatics chart, balanced SIDE BY SIDE — the lead is
               short enough to match the chart, so neither leaves a blank half. */}
           <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-center max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
