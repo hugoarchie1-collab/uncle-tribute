@@ -16,6 +16,7 @@ import { CustomCursor } from "./components/CustomCursor";
 import { BasketToast } from "./components/BasketToast";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { UpdatePrompt } from "./components/UpdatePrompt";
+import { BackgroundMusic } from "./components/BackgroundMusic";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -303,6 +304,11 @@ export default function App() {
               stale cached build hiding a fresh deploy. z-[115], between the
               consent bar (z-110) and toasts (z-120). */}
           <UpdatePrompt />
+          {/* Looping ambient score (Hugo). Audible autoplay is blocked by every
+              browser until the first user gesture, so it starts on first
+              interaction, then loops; a bottom-left speaker toggle mutes it and
+              the choice persists. Mounted once so it survives route changes. */}
+          <BackgroundMusic />
           {/* Privacy-friendly, cookieless Vercel Web Analytics. No-ops until
               Hugo enables Web Analytics in the Vercel dashboard. */}
           <Analytics />
