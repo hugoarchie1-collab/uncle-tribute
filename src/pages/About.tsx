@@ -720,6 +720,7 @@ export const About = () => {
             · Purple — Chapter VIII (TAGA)
             · Pink   — the Academy, the letter, farewell → footer */}
       <PavoBackdrop
+        fit="cover"
         fades={[
           [0.15, 0.23],
           [0.33, 0.41],

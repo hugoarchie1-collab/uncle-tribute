@@ -60,6 +60,7 @@ const PavoLayer = ({
   fades,
   scrollYProgress,
   reduceMotion,
+  fit,
 }: {
   slug: string;
   name: string;
@@ -67,6 +68,7 @@ const PavoLayer = ({
   fades: PavoFades;
   scrollYProgress: MotionValue<number>;
   reduceMotion: boolean | null;
+  fit: "contain" | "cover";
 }) => {
   // Layer i is full between the end of fade i-1 and the start of fade i;
   // first holds from the top, last holds to the foot.
@@ -117,38 +119,62 @@ const PavoLayer = ({
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v3.webp`)}")` }}
       />
-      {/* The WHOLE painting, zoomed out — full canvas visible at every
-          viewport, spanning the FULL viewport in its limiting axis (Hugo
-          2026-07-03: "the painting has to fill the entire screen… whole
-          screen filled 100%"). The -v3 fill is normalised to the SAME luma
-          as the plate, so the surround reads as the painting's own
-          background extended to the edges — one continuous image. */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      {fit === "cover" ? (
+        /* FULL-BLEED cover (About): the painting is STRETCHED to fill the
+           whole viewport edge-to-edge — no contained square + surround, so
+           there is no seam / "cut-off blurry repeat" (Hugo 2026-07-04: "fully
+           stretched out without this cut off thing… fully expanded"). A square
+           canvas into a landscape viewport crops only the blurred border rows;
+           the mandala still reads as one continuous stretched image. */
         <img
           src={asset(`/img/paintings/pavo-${slug}-whole-v3.webp`)}
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="object-contain"
-          style={{
-            // 116svh (not 100): on wide screens the canvas overshoots the
-            // viewport height so the painting DOMINATES — only its blurred
-            // border rows crop off-screen (the mandala stays whole); portrait
-            // phones stay width-bound at 100vw. Hugo 2026-07-03: "it's tiny…
-            // whole screen filled 100%".
-            width: "min(116svh, 100vw)",
-            height: "min(116svh, 100vw)",
-            maxWidth: "none",
-          }}
+          className="absolute inset-0 h-full w-full object-cover"
           loading={index === 0 ? "eager" : "lazy"}
           data-colourway={name}
         />
-      </div>
+      ) : (
+        /* CONTAINED (Home): full canvas visible, spanning the FULL viewport in
+            its limiting axis. The -v3 fill is normalised to the SAME luma as
+            the plate, so the surround reads as the painting's own background
+            extended to the edges — one continuous image. */
+        <div className="absolute inset-0 flex items-center justify-center">
+          <img
+            src={asset(`/img/paintings/pavo-${slug}-whole-v3.webp`)}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="object-contain"
+            style={{
+              // 116svh (not 100): on wide screens the canvas overshoots the
+              // viewport height so the painting DOMINATES — only its blurred
+              // border rows crop off-screen (the mandala stays whole); portrait
+              // phones stay width-bound at 100vw.
+              width: "min(116svh, 100vw)",
+              height: "min(116svh, 100vw)",
+              maxWidth: "none",
+            }}
+            loading={index === 0 ? "eager" : "lazy"}
+            data-colourway={name}
+          />
+        </div>
+      )}
     </motion.div>
   );
 };
 
-export const PavoBackdrop = ({ fades }: { fades: PavoFades }) => {
+export const PavoBackdrop = ({
+  fades,
+  fit = "contain",
+}: {
+  fades: PavoFades;
+  /** How the whole-painting layer fills the viewport. "contain" (Home) shows
+   *  the whole square canvas centred; "cover" (About) stretches it full-bleed
+   *  edge-to-edge with no seam. Default keeps Home unchanged. */
+  fit?: "contain" | "cover";
+}) => {
   const reduceMotion = useReducedMotion();
   // No `target` → whole-document scroll drives the colourway sequence.
   const { scrollYProgress } = useScroll();
@@ -167,6 +193,7 @@ export const PavoBackdrop = ({ fades }: { fades: PavoFades }) => {
           fades={fades}
           scrollYProgress={scrollYProgress}
           reduceMotion={reduceMotion}
+          fit={fit}
         />
       ))}
       {/* Legibility veil — the warm plum-rose radial (NOT neutral black),
