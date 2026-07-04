@@ -257,7 +257,7 @@ export const EnquireModal = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="mt-7 inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors"
+                    className="mt-7 inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                   >
                     Close
                   </button>
@@ -334,7 +334,7 @@ export const EnquireModal = ({
                     <button
                       type="submit"
                       disabled={status === "submitting"}
-                      className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                      className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                     >
                       {status === "submitting" ? "Sending…" : "Send your message"}{" "}
                       <span aria-hidden="true" className="ml-2">→</span>

@@ -151,7 +151,7 @@ export const NewsletterSignup = ({
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
@@ -234,7 +234,7 @@ export const NewsletterSignup = ({
               <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="inline-flex items-center justify-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                className="inline-flex items-center justify-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               >
                 {status === "submitting" ? "Sending…" : "Subscribe"}
               </button>
@@ -339,7 +339,7 @@ export const NewsletterSignup = ({
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
               {status === "submitting" ? "Subscribing…" : "Subscribe"}
               <span

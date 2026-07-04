@@ -90,7 +90,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+          className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
           Save your basket — email it to me
           <span aria-hidden="true" className="ml-2">→</span>
