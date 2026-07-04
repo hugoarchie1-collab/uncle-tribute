@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { EYEBROW_TIGHT, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
+import { PaymentMarks } from "./PaymentMarks";
 
 /**
  * ReassuranceRow — three honest, documented reassurances under the buy box.
@@ -46,6 +47,7 @@ export const ReassuranceRow = () => (
       <LockIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Secure checkout</span>
       <span className={META}>Cards, Apple&nbsp;Pay &amp; Google&nbsp;Pay via Stripe</span>
+      <PaymentMarks className="mt-1 text-ink/60" />
     </div>
     <div className="flex flex-col gap-1.5">
       <ReturnIcon className="w-[18px] h-[18px] text-ink/55" />

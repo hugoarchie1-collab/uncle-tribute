@@ -4,6 +4,7 @@ import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
 import { clearConsent } from "../lib/consent";
 import { EYEBROW_MUTED } from "./ui/tokens";
+import { PaymentMarks } from "./PaymentMarks";
 
 const YEAR = new Date().getFullYear();
 
@@ -185,6 +186,32 @@ export const Footer = () => (
       <div className="col-span-2 md:col-span-1">
         <NewsletterSignup variant="footer" />
       </div>
+    </div>
+
+    {/* Trust row — secure-payment reassurance + the monochrome card/wallet
+        acceptance marks. Every top-tier storefront closes the footer with the
+        networks it accepts; until now this site named them in prose only (on
+        the PDP/Basket) and showed NOTHING in the footer. The marks inherit the
+        footer's muted→ink ink via currentColor. Copy is literally true —
+        payments run on Stripe (Cards / Apple Pay / Google Pay). */}
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] mt-5 md:mt-6 pt-5 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <p className={cn(FOOTER_TEXT, "flex items-center gap-2 text-ink-muted m-0")}>
+        <svg
+          viewBox="0 0 24 24"
+          className="h-[15px] w-[15px] shrink-0 text-ink/55"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.25}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="5" y="11" width="14" height="9" rx="2" />
+          <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+        </svg>
+        Secure checkout by Stripe
+      </p>
+      <PaymentMarks className="text-ink-muted" />
     </div>
 
     {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·

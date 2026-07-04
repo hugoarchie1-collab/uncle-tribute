@@ -10,6 +10,7 @@ import { Separator } from "../components/ui/separator";
 import { EmailMyBasket } from "../components/EmailMyBasket";
 import { ExitSaveBasket } from "../components/ExitSaveBasket";
 import { NewsletterSignup } from "../components/NewsletterSignup";
+import { PaymentMarks } from "../components/PaymentMarks";
 import {
   getAnchorTier,
   getLowestTierPricePence,
@@ -740,6 +741,9 @@ export const Basket = () => {
                   Estate-stamped &amp; numbered within the edition · Free delivery worldwide ·
                   Damaged-in-transit replacement
                 </p>
+                {/* The wallet/card marks Stripe presents, shown as glyphs (not
+                    just named above) at the highest-intent spot on the site. */}
+                <PaymentMarks className="mt-3 pl-[25px] text-ink/70" />
               </div>
               {/* Inline "save your basket" affordance — quiet link below
                   the subtotal block. Renders nothing when the basket is
