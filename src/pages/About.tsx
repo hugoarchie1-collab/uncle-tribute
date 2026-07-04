@@ -11,6 +11,7 @@ import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
+import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
@@ -1088,6 +1089,27 @@ export const About = () => {
               </div>
             </div>
           </div>
+
+          {/* THE RITUAL, IN MOTION — two archive clips of Stephen painting a
+              mandala from above: the hundreds-of-hours practice described here,
+              in motion. Muted / looping / lazy; reduced-motion holds the poster.
+              A diptych at the chapter foot, feathered into the backdrop. */}
+          <Reveal as="div" className="mt-6 md:mt-8 mx-auto grid max-w-[1180px] 3xl:max-w-[1380px] grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <LoopFilm
+              src="/video/studio-paint-a-v1.mp4"
+              poster="/video/poster-studio-paint-a-v1.jpg"
+              label="Stephen Meakin painting a mandala, filmed from above"
+              aspect="aspect-[16/9]"
+              edges="all"
+            />
+            <LoopFilm
+              src="/video/studio-paint-b-v1.mp4"
+              poster="/video/poster-studio-paint-b-v1.jpg"
+              label="Stephen Meakin laying colour into a mandala, filmed from above"
+              aspect="aspect-[16/9]"
+              edges="all"
+            />
+          </Reveal>
         </section>
 
         {/* 9 · CHAPTER VI — LEWES & THE FOUR TRADITIONS (kicker-only — the
