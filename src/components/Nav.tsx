@@ -324,10 +324,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
         <DeliverTo variant="header" className="hidden lg:flex shrink-0" />
 
-        {/* Search removed from the top bar (Hugo: a lone dot looks trash) — the
-            full search field lives in the menu drawer instead. A flex-1 spacer
-            keeps the logo left + the icon cluster hard right. */}
-        <div className="flex-1" aria-hidden="true" />
+        {/* Desktop search — a compact header field filling the middle of the bar
+            (Hugo: "add a search bar on the top bar" for full-screen desktop). The
+            container is the flex-1 spacer that keeps the logo left + icons hard
+            right at every width; the field itself only appears from lg up, so the
+            phone/tablet bar stays uncluttered (search still lives in the drawer). */}
+        <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
+          <SearchBar variant="header" className="hidden lg:block w-full max-w-[520px]" />
+        </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
           {/* Primary links live in the always-on MENU drawer now (Hugo: the
@@ -632,6 +636,23 @@ const NavMenu = ({
                   small screens. */}
               <DeliverTo variant="menu" className="mb-3" />
               <CurrencySelect variant="menu" className="mb-5" />
+              {/* Home — a standalone primary link at the top of the drawer (Hugo:
+                  "add the home page to the menu"); `end` so it's only active on
+                  exactly "/". Same big-Fraunces treatment as the grouped links. */}
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) =>
+                  cn(
+                    "block py-2 mb-4 font-display font-semibold tracking-[-0.015em] leading-[1.08] text-[clamp(28px,7vw,38px)] outline-none transition-colors duration-200",
+                    isActive ? "text-accent" : "text-ink hover:text-accent",
+                    "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
+                  )
+                }
+                style={{ fontVariationSettings: '"opsz" 32' }}
+              >
+                Home
+              </NavLink>
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-6" : ""}>
                   <p className="mb-2 font-sans text-[13px] md:text-[14px] font-bold tracking-[0.08em] text-ink-muted">

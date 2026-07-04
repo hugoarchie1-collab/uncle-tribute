@@ -334,7 +334,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[74svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[74svh] md:landscape:min-h-[58svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The Mandala Company"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -362,7 +362,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 z-[1] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-2in] z-[1] overflow-hidden"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
