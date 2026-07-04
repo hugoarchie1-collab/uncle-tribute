@@ -391,8 +391,8 @@ export const News = () => {
             <div className="text-center">
               <p className={cn(EYEBROW, "m-0")}>{featured.displayDate}</p>
               <h2
-                className="mt-2 font-display font-bold tracking-[-0.04em] text-[clamp(28px,3.8vw,52px)] leading-[1.0] text-ink m-0"
-                style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
+                className="mt-2 font-display font-bold tracking-[-0.03em] text-[clamp(22px,2.8vw,40px)] leading-[1.05] text-ink m-0"
+                style={{ fontVariationSettings: '"opsz" 40, "wght" 700' }}
               >
                 The next release
               </h2>
@@ -418,8 +418,11 @@ export const News = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
                   {pillLabel(featured)}
                 </p>
+                {/* The release title is the DOMINANT element (Hugo: "bigger
+                    than rest as it's a title") — set well above "The next
+                    release" label so the hierarchy reads label → title. */}
                 <h3
-                  className="font-display font-bold tracking-[-0.04em] text-[clamp(30px,3.6vw,58px)] leading-[1.04] text-ink text-balance m-0 hero-text-shadow"
+                  className="font-display font-bold tracking-[-0.04em] text-[clamp(38px,4.8vw,74px)] leading-[1.0] text-ink text-balance m-0 hero-text-shadow"
                   style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
                 >
                   {featured.title}

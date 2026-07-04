@@ -1282,7 +1282,11 @@ export const Welcome = () => {
                 precedes the installed piece shown below. Framed like the
                 archive plate; muted / looping / lazy, reduced-motion holds the
                 poster. */}
-            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[720px] md:max-w-[900px]">
+            {/* Kept SMALLER than the archive photo (Hugo 2026-07-04: "a little
+                smaller since quality is poor") — the archive footage is low-res,
+                so a restrained plate hides the softness; the larger, sharp
+                archive photo below carries the section. */}
+            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[440px] md:max-w-[560px]">
               <LoopFilm
                 src="/video/arista-timelapse-v1.mp4"
                 poster="/video/poster-arista-timelapse-v1.jpg"
@@ -1299,7 +1303,7 @@ export const Welcome = () => {
                 07-02 full-content-width version upscaled it ~2× and Hugo
                 rejected it ("way too huge, the quality is terrible"). 820px
                 ≈ 1.28× — prominent without visible softness. Ring frame kept. */}
-            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[720px] md:max-w-[820px]">
+            <Reveal as="figure" className="m-0 mt-10 md:mt-14 mx-auto w-full max-w-[720px] md:max-w-[820px]">
               <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"

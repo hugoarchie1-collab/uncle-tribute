@@ -248,7 +248,7 @@ export const Reviews = ({
     <Reveal
       as="section"
       aria-labelledby="reviews-heading"
-      className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 mt-14 md:mt-20"
+      className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10"
     >
       <div className="h-px w-full bg-line mb-8" />
 
