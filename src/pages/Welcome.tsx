@@ -196,6 +196,134 @@ const CosmicInterlude = () => {
   );
 };
 
+/**
+ * LoopFilm — a reusable muted/looping autoplay video for the home page's
+ * archive footage (Stephen at work). Same robust playback contract as
+ * CosmicInterlude: lazy-mounts via IntersectionObserver, forces muted +
+ * imperative play() on mount / metadata / canplay + a first-interaction
+ * fallback so it loops with NO play button on iOS too. Reduced-motion holds
+ * the poster still (never null — the section must keep its visual). The box
+ * is driven by `aspect` (Tailwind class); `edges` feathers y / all / none;
+ * `frame` draws the archive-plate ring.
+ */
+const LoopFilm = ({
+  src,
+  poster,
+  label,
+  aspect,
+  edges = "y",
+  frame = false,
+  className,
+}: {
+  src: string;
+  poster: string;
+  label: string;
+  aspect: string;
+  edges?: "y" | "all" | "none";
+  frame?: boolean;
+  className?: string;
+}) => {
+  const reduceMotion = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [near, setNear] = useState(false);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (!near) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.load();
+    const tryPlay = () => void video.play?.().catch(() => {});
+    tryPlay();
+    video.addEventListener("loadedmetadata", tryPlay);
+    video.addEventListener("canplay", tryPlay);
+    const goEvents = ["touchstart", "pointerdown", "click", "scroll", "keydown"] as const;
+    for (const ev of goEvents) window.addEventListener(ev, tryPlay, { passive: true });
+    return () => {
+      video.removeEventListener("loadedmetadata", tryPlay);
+      video.removeEventListener("canplay", tryPlay);
+      for (const ev of goEvents) window.removeEventListener(ev, tryPlay);
+    };
+  }, [near]);
+
+  const mask =
+    edges === "y"
+      ? {
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%)",
+        }
+      : edges === "all"
+        ? {
+            WebkitMaskImage:
+              "radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%)",
+            maskImage:
+              "radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%)",
+          }
+        : undefined;
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "relative w-full overflow-hidden bg-transparent",
+        aspect,
+        frame && "rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]",
+        className,
+      )}
+      style={frame ? undefined : mask}
+    >
+      {/* Poster paints immediately (and is the reduced-motion still). */}
+      <img
+        src={asset(poster)}
+        alt={label}
+        loading="lazy"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      {!reduceMotion && near && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          poster={asset(poster)}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label={label}
+        >
+          <source src={asset(src)} type="video/mp4" />
+        </video>
+      )}
+    </div>
+  );
+};
+
 export const Welcome = () => {
   const reduceMotion = useReducedMotion();
   // Presentment currency — the "from £…" chips convert with the header picker.
@@ -942,6 +1070,25 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
+          {/* STEPHEN AT WORK — Hugo's supplied studio photograph: Stephen
+              painting at the easel with a finished mandala on the wall behind.
+              A full-content-width plate at native 3:2 (shown WHOLE, no crop)
+              that leads into the "ritual" section. */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <Reveal as="figure" className="m-0">
+              <ImageReveal
+                src="/img/welcome/stephen-painting-denim-v1.jpg"
+                alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
+                aspect="aspect-[3/2]"
+                edges="all"
+                parallax={0.08}
+                objectPosition="center"
+                shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
+                sizes="(min-width: 1400px) 1320px, 92vw"
+              />
+            </Reveal>
+          </section>
+
           {/* 6 · CRAFT — Each painting is a ritual.
               REFINED CONTAINER (Hugo 2026-06-03): this dense section (heading +
               intro + image + two paragraphs + a 6-item materials grid) needs a
@@ -1026,6 +1173,23 @@ export const Welcome = () => {
                 </ul>
               </Reveal>
             </div>
+          </section>
+
+          {/* THE RITUAL, IN MOTION — archive film of Stephen painting a mandala,
+              seen from above: hundreds of hours of the compass-and-brush ritual
+              the section above describes, in motion. Contained 16:9 plate,
+              muted/looping/lazy, feathered into the backdrop; reduced-motion
+              holds the poster still. */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <Reveal as="figure" className="m-0">
+              <LoopFilm
+                src="/video/studio-mandala-v1.mp4"
+                poster="/video/poster-studio-mandala-v1.jpg"
+                label="Stephen Meakin painting a mandala, filmed from above"
+                aspect="aspect-[4/3] sm:aspect-[16/9]"
+                edges="all"
+              />
+            </Reveal>
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
@@ -1113,6 +1277,22 @@ export const Welcome = () => {
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
+            {/* Archive FILM — the 3.6-metre SunStar itself being painted
+                (timelapse from Stephen's studio archive): the making that
+                precedes the installed piece shown below. Framed like the
+                archive plate; muted / looping / lazy, reduced-motion holds the
+                poster. */}
+            <Reveal as="figure" className="m-0 mt-4 md:mt-5 mx-auto w-full max-w-[720px] md:max-w-[900px]">
+              <LoopFilm
+                src="/video/arista-timelapse-v1.mp4"
+                poster="/video/poster-arista-timelapse-v1.jpg"
+                label="The Arista SunStar being painted, in timelapse"
+                aspect="aspect-[16/9]"
+                edges="none"
+                frame
+              />
+            </Reveal>
+
             {/* Archive photo — UNCROPPED at natural aspect (Hugo 2026-07-02:
                 the old 3/1 object-cover chopped Stephen's head; never re-crop)
                 but CAPPED near the source's real resolution (641×353): the
