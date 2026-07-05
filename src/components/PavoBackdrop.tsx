@@ -1,5 +1,20 @@
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from "framer-motion";
 import { asset } from "../lib/asset";
+
+/** Live "(pointer: fine)" — true only for mouse/trackpad (no touch hover). Used
+ *  to gate the cursor-reveal without a setState-in-effect. */
+const subscribeFinePointer = (cb: () => void) => {
+  const mq = window.matchMedia("(pointer: fine)");
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+const usePointerFine = () =>
+  useSyncExternalStore(
+    subscribeFinePointer,
+    () => window.matchMedia("(pointer: fine)").matches,
+    () => false,
+  );
 
 /**
  * PavoBackdrop — the Home + About "Pavo tapestry" (Hugo 2026-07-02).
@@ -61,6 +76,7 @@ const PavoLayer = ({
   scrollYProgress,
   reduceMotion,
   fit,
+  reveal,
 }: {
   slug: string;
   name: string;
@@ -69,6 +85,7 @@ const PavoLayer = ({
   scrollYProgress: MotionValue<number>;
   reduceMotion: boolean | null;
   fit: "contain" | "cover";
+  reveal: boolean;
 }) => {
   // Layer i is full between the end of fade i-1 and the start of fade i;
   // first holds from the top, last holds to the foot.
@@ -134,15 +151,49 @@ const PavoLayer = ({
            every edge so it never reveals the dark base as a seam; a square canvas
            in a landscape viewport just crops its outer rows — the mandala still
            reads as one continuous tapestry. */
-        <img
-          src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
-          loading={index === 0 ? "eager" : "lazy"}
-          data-colourway={name}
-        />
+        <>
+          <img
+            src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
+            loading={index === 0 ? "eager" : "lazy"}
+            data-colourway={name}
+          />
+          {/* SIGNATURE INTERACTION — "light through stained glass" (2026-07-05).
+              A SHARP copy of the same painting (v1, sigma-3.5) layered on top of
+              the soft v2 base, revealed ONLY inside a radial spotlight that
+              follows the cursor (CSS-var mask, updated rAF-throttled on the root).
+              The pattern sharpens where you point — sacred geometry answering
+              presence — and it doubles as "the backdrop isn't just a blur". Only
+              mounted when reveal is on (fine pointer + motion allowed); the mask
+              is GPU-cheap (one visible layer at a time, culled by the parent's
+              visibility). */}
+          {reveal && (
+            <img
+              src={asset(`/img/paintings/pavo-${slug}-whole-v1.webp`)}
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
+              loading="lazy"
+              data-colourway-sharp={name}
+              style={{
+                // A soft-edged circle mask centred on the cursor (px vars set on
+                // the root, inherited here). Only the lit disc shows the sharp
+                // painting; everything else stays the soft v2 base beneath.
+                WebkitMaskImage:
+                  "radial-gradient(circle var(--pavo-r, 260px) at var(--pavo-mx, 50%) var(--pavo-my, 42%), #000 0%, #000 40%, transparent 82%)",
+                maskImage:
+                  "radial-gradient(circle var(--pavo-r, 260px) at var(--pavo-mx, 50%) var(--pavo-my, 42%), #000 0%, #000 40%, transparent 82%)",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                willChange: "mask-image",
+              }}
+            />
+          )}
+        </>
       ) : (
         /* CONTAINED (Home): full canvas visible, spanning the FULL viewport in
             its limiting axis. The -v3 fill is normalised to the SAME luma as
@@ -187,10 +238,46 @@ export const PavoBackdrop = ({
   // No `target` → whole-document scroll drives the colourway sequence.
   const { scrollYProgress } = useScroll();
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  // The cursor-reveal is a fine-pointer, motion-allowed, cover-mode affordance
+  // (touch has no hover; reduced-motion opts out) — derived, never setState.
+  const pointerFine = usePointerFine();
+  const reveal = fit === "cover" && !reduceMotion && pointerFine;
+
+  useEffect(() => {
+    if (!reveal) return;
+    // Drive the spotlight from a single rAF-coalesced pointer read — the mask
+    // centre lives in CSS vars on the root, inherited by every sharp layer, so
+    // one write moves the reveal on whichever colourway is currently visible.
+    const el = rootRef.current;
+    if (!el) return;
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight * 0.42;
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      el.style.setProperty("--pavo-mx", `${x}px`);
+      el.style.setProperty("--pavo-my", `${y}px`);
+    };
+    const onMove = (e: PointerEvent) => {
+      x = e.clientX;
+      y = e.clientY;
+      if (!raf) raf = window.requestAnimationFrame(apply);
+    };
+    apply();
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [reveal]);
+
   return (
     <div
+      ref={rootRef}
       aria-hidden="true"
       className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#0d0a10]"
+      style={{ ["--pavo-r" as string]: "clamp(180px, 22vw, 320px)" }}
     >
       {PAVO_COLOURWAYS.map((c, i) => (
         <PavoLayer
@@ -202,6 +289,7 @@ export const PavoBackdrop = ({
           scrollYProgress={scrollYProgress}
           reduceMotion={reduceMotion}
           fit={fit}
+          reveal={reveal}
         />
       ))}
       {/* Legibility veil — the warm plum-rose radial (NOT neutral black),
