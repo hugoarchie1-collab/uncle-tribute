@@ -33,7 +33,7 @@
 // Tokens imported from ui/tokens (never re-typed). Reveal wraps WHOLE elements
 // only. AssetImage src is .jpg (picture swaps webp).
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -258,6 +258,105 @@ const NewsMasthead = () => (
   </section>
 );
 
+/**
+ * FEATURED HERO GALLERY — a swipeable set of the upcoming release covers (Hugo:
+ * "add both paintings as a swipe option"). CSS scroll-snap only (no Lenis/GSAP —
+ * gotcha #1): native horizontal swipe on touch, prev/next arrows + dots on
+ * desktop. Each square carries a small caption chip naming its painting so the
+ * two coming pieces read clearly. Falls back to a single static image when only
+ * one cover exists. Reduced-motion is fine — scroll-snap needs no JS animation.
+ */
+type GallerySlide = { cover: string; title: string };
+const FeaturedGallery = ({ slides }: { slides: GallerySlide[] }) => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+
+  const goTo = (i: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const clamped = Math.max(0, Math.min(slides.length - 1, i));
+    track.scrollTo({ left: clamped * track.clientWidth, behavior: "smooth" });
+  };
+  const onScroll = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    setIndex(Math.round(track.scrollLeft / track.clientWidth));
+  };
+
+  return (
+    <div className="w-full">
+      <div className="relative w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
+        <div
+          ref={trackRef}
+          onScroll={onScroll}
+          className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ touchAction: "pan-y pinch-zoom" }}
+        >
+          {slides.map((s) => (
+            <figure key={s.cover} className="relative m-0 w-full shrink-0 snap-center">
+              <AssetImage
+                src={s.cover}
+                alt={s.title}
+                className="block aspect-square w-full object-cover"
+              />
+              {/* Caption chip — names the piece so swiping between the two
+                  upcoming works is unambiguous. */}
+              <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-10">
+                <span className={cn(EYEBROW, "m-0 text-ink")}>{s.title}</span>
+              </figcaption>
+            </figure>
+          ))}
+
+          {/* Prev / next — desktop affordance; touch users just swipe. Hidden when
+              a single slide. */}
+        </div>
+
+        {slides.length > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous painting"
+              onClick={() => goTo(index - 1)}
+              disabled={index === 0}
+              className="press absolute left-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-bg/80 ring-1 ring-line h-10 w-10 text-ink transition-opacity duration-200 hover:bg-bg disabled:opacity-0 md:inline-flex"
+            >
+              <span aria-hidden="true" className="text-[20px] leading-none">‹</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Next painting"
+              onClick={() => goTo(index + 1)}
+              disabled={index === slides.length - 1}
+              className="press absolute right-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-bg/80 ring-1 ring-line h-10 w-10 text-ink transition-opacity duration-200 hover:bg-bg disabled:opacity-0 md:inline-flex"
+            >
+              <span aria-hidden="true" className="text-[20px] leading-none">›</span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Dots — the swipe indicator; also clickable. */}
+      {slides.length > 1 && (
+        <div className="mt-3 flex items-center justify-center gap-2.5">
+          {slides.map((s, i) => (
+            <button
+              key={s.cover}
+              type="button"
+              aria-label={`Show ${s.title}`}
+              aria-current={i === index}
+              onClick={() => goTo(i)}
+              className={cn(
+                "h-2.5 w-2.5 rounded-full outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                i === index ? "bg-accent" : "bg-ink/30 hover:bg-ink/55",
+              )}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const News = () => {
   const [active, setActive] = useState<NewsType | "all">("all");
   const filtered = useMemo(
@@ -271,6 +370,28 @@ export const News = () => {
   // shown as a hero, so it vanished from the page entirely (audit).
   const heroId =
     featured && isRelease(featured) && featured.cover ? featured.id : undefined;
+  // Hero swipe gallery — the featured release cover FIRST, then every other
+  // upcoming ("next"/"soon") release cover, deduped. Gives the hero its "swipe
+  // between both paintings" set without inventing anything (data-driven).
+  const heroSlides = useMemo<GallerySlide[]>(() => {
+    if (!heroId) return [];
+    const upcoming = NEWS.filter(
+      (e) => isRelease(e) && e.cover && (e.status === "next" || e.status === "soon"),
+    );
+    const ordered = [
+      ...upcoming.filter((e) => e.id === heroId),
+      ...upcoming.filter((e) => e.id !== heroId),
+    ];
+    const seen = new Set<string>();
+    const slides: GallerySlide[] = [];
+    for (const e of ordered) {
+      if (e.cover && !seen.has(e.cover)) {
+        seen.add(e.cover);
+        slides.push({ cover: e.cover, title: e.title });
+      }
+    }
+    return slides;
+  }, [heroId]);
   const groups = useMemo(
     () => groupByStatus(filtered, heroId),
     [filtered, heroId],
@@ -402,14 +523,10 @@ export const News = () => {
                 each other's vertical centre. Both halves share one mx-auto frame so
                 the composition sits dead-centre on the page axis. */}
             <div className="mt-5 md:mt-6 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
-              {/* ROSE-MANDALA COVER — the large square focal point (mandalas read
-                  best square), balanced against the text beside it. */}
-              <div className="md:col-span-6 w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
-                <AssetImage
-                  src={featured.cover}
-                  alt={featured.title}
-                  className="block aspect-square w-full object-cover"
-                />
+              {/* SWIPEABLE COVER GALLERY — the upcoming release paintings, square
+                  (mandalas read best square), swipe/dots to move between them. */}
+              <div className="md:col-span-6 w-full">
+                <FeaturedGallery slides={heroSlides} />
               </div>
               {/* TEXT — centred on mobile (matching the header axis), settling to
                   left-aligned beside the cover on md+ so the long-form summary reads
