@@ -35,6 +35,15 @@
         "--strictPort"
       ],
       "port": 4402
+    },
+    {
+      "name": "rescue-iso",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd /private/tmp/claude-501/-Users-archiehugo-Code/8afb806c-ed02-475d-b3e8-e89700748d41/scratchpad/ut-iso && exec npx vite preview --port 4508 --strictPort"
+      ],
+      "port": 4508
     }
   ]
 }
