@@ -5,6 +5,19 @@ import type { ArtworkSizeId } from "./artworkSizes";
 
 export const WALL_MODEL_VERSION = "v1";
 export const WALL_GLB_VERSION = "v2";
+
+/** Painting id → true aspect (height ÷ width). Only non-square masters are listed;
+ *  square paintings default to 1. Used to label a landscape print's real cm. */
+export const WALL_ASPECT: Readonly<Record<string, number>> = {"ophiuchus":0.811};
+
+/** True aspect (height ÷ width) of a painting's wall model — 1 for square. */
+export const wallAspect = (paintingId: string): number => WALL_ASPECT[paintingId] ?? 1;
+
+/** Real printed dimensions "W × H cm" for a (painting, square-nominal cm), aspect-aware. */
+export const wallDimsLabel = (paintingId: string, cm: number): string => {
+  const a = wallAspect(paintingId);
+  return a === 1 ? `${cm} × ${cm} cm` : `${cm} × ${Math.round(cm * a)} cm`;
+};
 /** Legacy neutral shell — fallback only; real coverage is per-combo (wallGlb). */
 export const WALL_SHELL_GLB = "/models/wall/canvas-frameless-v1.glb";
 

@@ -18,8 +18,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Colourway, Painting } from "../../data/paintings";
 import { paintingImageAlt } from "../../data/paintings";
-import { cmLabel, type ArtworkSize } from "../../lib/artworkSizes";
-import { wallFramedGlb, wallFramedUsdz } from "../../lib/wallModels";
+import type { ArtworkSize } from "../../lib/artworkSizes";
+import { wallDimsLabel, wallFramedGlb, wallFramedUsdz } from "../../lib/wallModels";
 import { asset, webp } from "../../lib/asset";
 import { SITE_URL } from "../../lib/seo";
 import { cn } from "../../lib/cn";
@@ -87,13 +87,13 @@ export const ModelViewerAR = ({
     ? `${asset(usdz)}#` +
       [
         `checkoutTitle=${encodeURIComponent(painting.title)}`,
-        `checkoutSubtitle=${encodeURIComponent(`${colourway.name} · ${size.label} · ${cmLabel(size)}`)}`,
+        `checkoutSubtitle=${encodeURIComponent(`${colourway.name} · ${size.label} · ${wallDimsLabel(painting.id, size.cm)}`)}`,
         `callToAction=${encodeURIComponent("View this print")}`,
         `canonicalWebPageURL=${encodeURIComponent(`${SITE_URL}/collections/${painting.id}?c=${encodeURIComponent(colourway.name)}&size=${size.id}`)}`,
       ].join("&")
     : undefined;
   const poster = asset(webp(colourway.image));
-  const alt = `${paintingImageAlt(painting.title, colourway.name)} — ${size.label} (${size.cm} × ${size.cm} cm)`;
+  const alt = `${paintingImageAlt(painting.title, colourway.name)} — ${size.label} (${wallDimsLabel(painting.id, size.cm)})`;
 
   const reportAvailability = useCallback(
     (available: boolean) => {

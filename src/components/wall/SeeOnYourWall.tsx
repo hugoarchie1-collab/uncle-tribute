@@ -16,7 +16,6 @@ import type { Painting } from "../../data/paintings";
 import { FRAME_STYLES } from "../../data/paintings";
 import {
   ARTWORK_SIZES,
-  cmLabel,
   getArtworkSize,
   type ArtworkSizeId,
 } from "../../lib/artworkSizes";
@@ -24,7 +23,7 @@ import QRCode from "qrcode";
 import { getPlatform, isInAppBrowser, probeArEnvironment, type Platform } from "../../lib/arCapability";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
-import { hasWallModel } from "../../lib/wallModels";
+import { hasWallModel, wallDimsLabel } from "../../lib/wallModels";
 import { SITE_URL } from "../../lib/seo";
 import { EYEBROW } from "../ui/tokens";
 import { trackWall } from "../../lib/wallAnalytics";
@@ -202,7 +201,7 @@ export const SeeOnYourWall = ({
               {painting.title}
             </h2>
             <p className="m-0 mt-0.5 font-sans text-[13px] text-ink-muted">
-              {colourway.name} · {size.label} · <span className="text-ink">{cmLabel(size)}</span> ·{" "}
+              {colourway.name} · {size.label} · <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span> ·{" "}
               {frame.label}
             </p>
           </div>
@@ -259,15 +258,15 @@ export const SeeOnYourWall = ({
               <p aria-live="polite" className="mt-3 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
                 {arAvailable ? (
                   <>
-                    Placed at true size — <span className="text-ink">{cmLabel(size)}</span>. Point your camera at the wall, then tap to set it in place.
+                    Placed at true size — <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span>. Point your camera at the wall, then tap to set it in place.
                   </>
                 ) : platform === "desktop" ? (
                   <>
-                    Drag to turn it, or scan the code to place it on your wall at true size — <span className="text-ink">{cmLabel(size)}</span>.
+                    Drag to turn it, or scan the code to place it on your wall at true size — <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span>.
                   </>
                 ) : (
                   <>
-                    Shown at true size — <span className="text-ink">{cmLabel(size)}</span>. Open in Safari or Chrome on your phone to place it on your wall.
+                    Shown at true size — <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span>. Open in Safari or Chrome on your phone to place it on your wall.
                   </>
                 )}
               </p>
