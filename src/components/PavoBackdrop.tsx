@@ -135,7 +135,7 @@ const PavoLayer = ({
            in a landscape viewport just crops its outer rows — the mandala still
            reads as one continuous tapestry. */
         <img
-          src={asset(`/img/paintings/pavo-${slug}-whole-v3.webp`)}
+          src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
           alt=""
           aria-hidden="true"
           draggable={false}
