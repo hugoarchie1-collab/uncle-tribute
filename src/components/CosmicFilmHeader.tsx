@@ -107,7 +107,8 @@ export const CosmicFilmHeader = () => {
                 preload="auto"
                 aria-hidden="true"
               >
-                <source src={asset("/video/garden-galaxy-v1.mp4")} type="video/mp4" />
+                <source src={asset("/video/garden-galaxy-v3.webm")} type="video/webm" />
+                <source src={asset("/video/garden-galaxy-v3.mp4")} type="video/mp4" />
               </video>
               {/* Gentle inner vignette for depth. */}
               <div

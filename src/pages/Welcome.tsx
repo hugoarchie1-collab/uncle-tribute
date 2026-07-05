@@ -188,7 +188,8 @@ const CosmicInterlude = () => {
               preload="auto"
               aria-hidden="true"
             >
-              <source src={asset("/video/garden-galaxy-v1.mp4")} type="video/mp4" />
+              <source src={asset("/video/garden-galaxy-v3.webm")} type="video/webm" />
+              <source src={asset("/video/garden-galaxy-v3.mp4")} type="video/mp4" />
             </video>
           )}
           {/* Gentle inner vignette for depth. */}
@@ -378,7 +379,7 @@ export const Welcome = () => {
               -12% marginLeft centres a slightly-overscanned limb reaching both
               edges; maxWidth:none lifts the global img clamp (gotcha). */}
           <img
-            src={asset("/img/scenes/earth-cutout.png")}
+            src={asset("/img/scenes/earth-cutout-v2.webp")}
             alt=""
             loading="eager"
             decoding="async"
