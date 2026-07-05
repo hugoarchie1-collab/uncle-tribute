@@ -99,7 +99,7 @@ export const CosmicFilmHeader = () => {
               <video
                 ref={videoRef}
                 className="absolute inset-0 h-full w-full object-cover"
-                poster={asset("/video/poster-garden-galaxy-v1.jpg")}
+                poster={asset("/video/poster-garden-galaxy-v3.webp")}
                 autoPlay
                 muted
                 loop

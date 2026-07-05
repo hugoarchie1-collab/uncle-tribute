@@ -119,18 +119,15 @@
       }
     </style>
 
-    <!-- Preload the intro poster (the home LCP) so the landing paints fast.
-         ⚠️ Points at the .JPG, not the .webp: the <video poster> attribute (the
-         frame actually painted on the common motion-allowed path) takes a single
-         URL and can't negotiate webp via <picture>, so it paints
-         poster-nebula-v1.jpg (VideoIntro.tsx). Preloading the .jpg therefore
-         feeds the REAL LCP; fetchpriority=high wins it the request race from
-         byte one. The webp poster is still used by the reduced-motion <picture>
-         fallback (loaded there, just not preloaded — a tiny minority). The
-         welcome hero painting preload was REMOVED 2026-06-11: it taxed every
-         NON-home direct entry (painting pages, /verify…) ~62KB for an image a
-         viewport below the fold. -->
-    <link rel="preload" as="image" href="/video/poster-nebula-v1.jpg" type="image/jpeg" fetchpriority="high" />
+    <!-- Preload the home masthead poster — the REAL LCP element (the garden→
+         galaxy banner <video>'s poster frame). ⚠️ 2026-07-05: this used to point
+         at poster-nebula-v1.jpg (the retired intro film), which Lighthouse
+         confirmed was NOT the LCP — so the actual masthead poster was discovered
+         only after the SPA mounted the <video> (a ~6s LCP "load delay"). Now
+         preloads the small webp poster the <video poster> attribute actually
+         paints, fetchpriority=high, so it wins the request race from byte one.
+         The welcome hero painting preload was REMOVED 2026-06-11 (below-fold). -->
+    <link rel="preload" as="image" href="/video/poster-garden-galaxy-v3.webp" type="image/webp" fetchpriority="high" />
 
     <!-- JSON-LD: site identity for search engines -->
     <script type="application/ld+json">
