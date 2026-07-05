@@ -62,7 +62,8 @@ import { asset, webp, webpSrcSet } from "../lib/asset";
 import { COLOURWAY_TINTS, DEFAULT_TINT } from "../lib/colourwayTints";
 import { cn } from "../lib/cn";
 import { addItem, subscribeToAdds } from "../lib/basket";
-import { ANCHOR_ARTWORK_SIZE, artworkSizeForTierId } from "../lib/artworkSizes";
+import { ANCHOR_ARTWORK_SIZE, artworkSizeForTierId, isArtworkSizeId } from "../lib/artworkSizes";
+import { hasWallModel } from "../lib/wallModels";
 import { trackWall } from "../lib/wallAnalytics";
 import { WallLoading } from "../components/wall/WallLoading";
 
@@ -2331,7 +2332,9 @@ export const PaintingDetail = () => {
   const [view, setView] = useState<"art" | "true-size">("art");
 
   // "See on Your Wall" modal — lazy, opened only on deliberate interaction.
-  const [wallOpen, setWallOpen] = useState(false);
+  const [wallOpen, setWallOpen] = useState(
+    () => searchParams.get("wall") === "1" && Boolean(painting && hasWallModel(painting.id)),
+  );
   const wallTriggerRef = useRef<HTMLButtonElement>(null);
   const wallUsedRef = useRef(false);
 
@@ -2384,6 +2387,14 @@ export const PaintingDetail = () => {
     setWallOpen(false);
     wallTriggerRef.current?.focus();
   };
+
+  // Desktop→phone QR deep-link: /collections/:id?c=…&size=…&wall=1 opens the
+  // wall panel straight into AR (colourway from ?c=, size from ?size=).
+  const wallSizeParam = searchParams.get("size");
+  const wallInitialSizeId =
+    searchParams.get("wall") === "1" && isArtworkSizeId(wallSizeParam)
+      ? wallSizeParam
+      : wallSize.id;
 
   // Price strip always reflects the anchor — size picker drives the buttons.
   const pricePence = anchorTier.pricePence;
@@ -2752,21 +2763,25 @@ export const PaintingDetail = () => {
 
               {/* See it on your wall — opens the AR "See on your wall" modal
                   (the standalone /gallery Virtual Exhibition was retired; the
-                  visualiser now lives here as a per-painting modal). */}
-              <button
-                ref={wallTriggerRef}
-                type="button"
-                onClick={() => setWallOpen(true)}
-                onPointerEnter={() => void importSeeOnYourWall()}
-                onFocus={() => void importSeeOnYourWall()}
-                className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] font-bold tracking-[0.06em] uppercase text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
-                  <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-                  <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-                </svg>
-                See it on your wall
-              </button>
+                  visualiser now lives here as a per-painting modal). Only shown
+                  when this piece has a real true-size wall model (ophiuchus's
+                  landscape master has none yet → no dead "coming soon" modal). */}
+              {hasWallModel(painting.id) && (
+                <button
+                  ref={wallTriggerRef}
+                  type="button"
+                  onClick={() => setWallOpen(true)}
+                  onPointerEnter={() => void importSeeOnYourWall()}
+                  onFocus={() => void importSeeOnYourWall()}
+                  className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] font-bold tracking-[0.01em] text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
+                    <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                    <path d="M3 6l7 3.8L17 6M10 9.8V17.8" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                  </svg>
+                  See it on your wall
+                </button>
+              )}
 
               {/* Sentinel below the hero — drives the sticky add bar's "user
                   has scrolled past the painting" detection. */}
@@ -2862,7 +2877,7 @@ export const PaintingDetail = () => {
           <SeeOnYourWall
             painting={painting}
             initialColourwayName={selected.name}
-            initialSizeId={wallSize.id}
+            initialSizeId={wallInitialSizeId}
             onClose={closeWall}
           />
         </Suspense>

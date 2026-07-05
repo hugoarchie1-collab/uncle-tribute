@@ -40,8 +40,22 @@ interface ModelViewerAttributes {
   "camera-controls"?: boolean;
   /** Initial camera orbit, e.g. "0deg 75deg 105%". */
   "camera-orbit"?: string;
-  /** Ground shadow strength, 0..1. */
+  /** Clamp the orbit so the framed print never tips past a plausible wall view. */
+  "min-camera-orbit"?: string;
+  "max-camera-orbit"?: string;
+  /** Disable panning so the model stays centred. */
+  "disable-pan"?: boolean;
+  /** Slowly turn the model when idle (boolean attribute) + its delay / speed. */
+  "auto-rotate"?: boolean;
+  "auto-rotate-delay"?: string | number;
+  "rotation-per-second"?: string;
+  /** Suppress the built-in "drag to rotate" hand prompt. */
+  "interaction-prompt"?: "auto" | "when-focused" | "none";
+  /** Ground shadow strength + softness, 0..1. */
   "shadow-intensity"?: string | number;
+  "shadow-softness"?: string | number;
+  /** Use the real room lighting for the model in the in-page WebXR AR session. */
+  "xr-environment"?: boolean;
   /** Lighting environment ("neutral", "legacy", or an .hdr URL). */
   "environment-image"?: string;
   /** Tone-mapping exposure. */

@@ -9,7 +9,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:ar": "node scripts/build-ar-assets.mjs",
     "build:qr": "node scripts/build-qr.mjs",
     "build:wall": "node scripts/build-wall-models.mjs",
     "validate:wall": "node scripts/validate-wall-models.mjs --deep",

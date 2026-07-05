@@ -1,6 +1,6 @@
 {
   "version": "v1",
-  "generatedAt": "2026-07-01T21:39:45.146Z",
+  "generatedAt": "2026-07-05T15:56:52.243Z",
   "shellGlb": "/models/wall/canvas-frameless-v1.glb",
   "records": [
     {
@@ -13,7 +13,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/wild-rose-sussex-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a3-v2.glb",
       "usdzUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -28,7 +28,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/wild-rose-sussex-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a2-v2.glb",
       "usdzUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -43,7 +43,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/wild-rose-sussex-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a1-v2.glb",
       "usdzUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -58,7 +58,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/wild-rose-sussex-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a0-v2.glb",
       "usdzUrl": "/models/wall/wild-rose-wild-rose-sussex-pink-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -73,7 +73,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/english-bluebells-v3.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/english-bluebells-english-bluebells-v3-a3-v2.glb",
       "usdzUrl": "/models/wall/english-bluebells-english-bluebells-v3-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -88,7 +88,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/english-bluebells-v3.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/english-bluebells-english-bluebells-v3-a2-v2.glb",
       "usdzUrl": "/models/wall/english-bluebells-english-bluebells-v3-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -103,7 +103,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/english-bluebells-v3.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/english-bluebells-english-bluebells-v3-a1-v2.glb",
       "usdzUrl": "/models/wall/english-bluebells-english-bluebells-v3-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -118,7 +118,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/english-bluebells-v3.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/english-bluebells-english-bluebells-v3-a0-v2.glb",
       "usdzUrl": "/models/wall/english-bluebells-english-bluebells-v3-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -133,7 +133,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchis7-rubedo-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a3-v2.glb",
       "usdzUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -148,7 +148,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchis7-rubedo-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a2-v2.glb",
       "usdzUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -163,7 +163,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchis7-rubedo-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a1-v2.glb",
       "usdzUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -178,7 +178,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchis7-rubedo-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a0-v2.glb",
       "usdzUrl": "/models/wall/orchis-7-orchis7-rubedo-red-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -193,7 +193,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/fol-kaleidoscope.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a3-v2.glb",
       "usdzUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -208,7 +208,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/fol-kaleidoscope.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a2-v2.glb",
       "usdzUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -223,7 +223,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/fol-kaleidoscope.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a1-v2.glb",
       "usdzUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -238,7 +238,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/fol-kaleidoscope.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a0-v2.glb",
       "usdzUrl": "/models/wall/flower-of-life-fol-kaleidoscope-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -253,7 +253,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-nebula-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a3-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -268,7 +268,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-nebula-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a2-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -283,7 +283,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-nebula-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a1-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -298,7 +298,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-nebula-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a0-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-nebula-purple-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -313,7 +313,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-lightning-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a3-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -328,7 +328,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-lightning-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a2-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -343,7 +343,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-lightning-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a1-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -358,7 +358,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-lightning-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a0-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-lightning-blue-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -373,7 +373,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-garnet-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a3-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -388,7 +388,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-garnet-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a2-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -403,7 +403,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-garnet-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a1-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -418,7 +418,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-garnet-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a0-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-garnet-red-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -433,7 +433,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-manipura-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a3-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -448,7 +448,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-manipura-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a2-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -463,7 +463,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-manipura-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a1-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -478,7 +478,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/orchids30-manipura-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a0-v2.glb",
       "usdzUrl": "/models/wall/slipper-orchids-orchids30-manipura-yellow-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -493,7 +493,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-persian-indigo.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a3-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -508,7 +508,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-persian-indigo.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a2-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -523,7 +523,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-persian-indigo.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a1-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -538,7 +538,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-persian-indigo.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a0-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-persian-indigo-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -553,7 +553,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-blood-moon-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a3-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -568,7 +568,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-blood-moon-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a2-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -583,7 +583,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-blood-moon-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a1-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -598,7 +598,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-blood-moon-red.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a0-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-blood-moon-red-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -613,7 +613,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-sahara-sand-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a3-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -628,7 +628,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-sahara-sand-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a2-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -643,7 +643,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-sahara-sand-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a1-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -658,7 +658,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-sahara-sand-yellow.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a0-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-sahara-sand-yellow-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -673,7 +673,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-moroccan-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a3-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -688,7 +688,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-moroccan-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a2-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -703,7 +703,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-moroccan-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a1-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -718,7 +718,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-moroccan-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a0-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-moroccan-purple-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -733,7 +733,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-mary-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a3-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -748,7 +748,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-mary-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a2-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -763,7 +763,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-mary-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a1-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -778,7 +778,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/peacock-mary-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a0-v2.glb",
       "usdzUrl": "/models/wall/peacock-minerva-peacock-mary-pink-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -793,7 +793,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-sage-green.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a3-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -808,7 +808,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-sage-green.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a2-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -823,7 +823,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-sage-green.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a1-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -838,7 +838,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-sage-green.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a0-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-sage-green-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -853,7 +853,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-moonstone-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a3-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -868,7 +868,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-moonstone-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a2-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -883,7 +883,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-moonstone-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a1-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -898,7 +898,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-moonstone-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a0-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-moonstone-blue-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -913,7 +913,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-supernova-violet.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a3-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -928,7 +928,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-supernova-violet.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a2-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -943,7 +943,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-supernova-violet.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a1-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -958,7 +958,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-supernova-violet.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a0-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-supernova-violet-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -973,7 +973,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-coral-reef.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a3-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -988,7 +988,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-coral-reef.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a2-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1003,7 +1003,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-coral-reef.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a1-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1018,7 +1018,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/tridecagon-coral-reef.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a0-v2.glb",
       "usdzUrl": "/models/wall/tridecagon-moon-star-tridecagon-coral-reef-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1033,7 +1033,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/lulin-original.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/lulin-lulin-original-a3-v2.glb",
       "usdzUrl": "/models/wall/lulin-lulin-original-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1048,7 +1048,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/lulin-original.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/lulin-lulin-original-a2-v2.glb",
       "usdzUrl": "/models/wall/lulin-lulin-original-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1063,7 +1063,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/lulin-original.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/lulin-lulin-original-a1-v2.glb",
       "usdzUrl": "/models/wall/lulin-lulin-original-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1078,7 +1078,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/lulin-original.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/lulin-lulin-original-a0-v2.glb",
       "usdzUrl": "/models/wall/lulin-lulin-original-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1093,7 +1093,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-cygnus-gold.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a3-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1108,7 +1108,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-cygnus-gold.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a2-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1123,7 +1123,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-cygnus-gold.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a1-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1138,7 +1138,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-cygnus-gold.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a0-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-cygnus-gold-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1153,7 +1153,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-glacier-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a3-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1168,7 +1168,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-glacier-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a2-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1183,7 +1183,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-glacier-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a1-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1198,7 +1198,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-glacier-blue.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a0-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-glacier-blue-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1213,7 +1213,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-solstice-orange.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a3-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1228,7 +1228,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-solstice-orange.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a2-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1243,7 +1243,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-solstice-orange.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a1-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1258,7 +1258,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-solstice-orange.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a0-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-solstice-orange-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1273,7 +1273,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-antique-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a3-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1288,7 +1288,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-antique-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a2-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1303,7 +1303,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-antique-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a1-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1318,7 +1318,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-antique-pink.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a0-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-antique-pink-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1333,7 +1333,7 @@
       "heightCm": 29.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-velvet-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a3-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a3-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1348,7 +1348,7 @@
       "heightCm": 42,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-velvet-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a2-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a2-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1363,7 +1363,7 @@
       "heightCm": 59.5,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-velvet-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a1-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a1-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"
@@ -1378,7 +1378,7 @@
       "heightCm": 84,
       "depthM": 0.03,
       "artworkSrc": "/img/paintings/enneagon-velvet-purple.jpg",
-      "glbUrl": "/models/wall/canvas-frameless-v1.glb",
+      "glbUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a0-v2.glb",
       "usdzUrl": "/models/wall/enneagon-swans-enneagon-velvet-purple-a0-v1.usdz",
       "status": "glb-shell+usdz",
       "version": "v1"

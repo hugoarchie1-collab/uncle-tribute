@@ -18,10 +18,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Colourway, Painting } from "../../data/paintings";
 import { paintingImageAlt } from "../../data/paintings";
-import type { ArtworkSize } from "../../lib/artworkSizes";
-import { shellScaleFor } from "../../lib/artworkSizes";
-import { WALL_SHELL_GLB, wallFramedUsdz } from "../../lib/wallModels";
+import { cmLabel, type ArtworkSize } from "../../lib/artworkSizes";
+import { wallFramedGlb, wallFramedUsdz } from "../../lib/wallModels";
 import { asset, webp } from "../../lib/asset";
+import { SITE_URL } from "../../lib/seo";
 import { cn } from "../../lib/cn";
 import { trackWall } from "../../lib/wallAnalytics";
 
@@ -65,7 +65,6 @@ export const ModelViewerAR = ({
   colourway,
   size,
   frameId = "none",
-  frameSwatch = null,
   onArAvailability,
   className,
 }: ModelViewerARProps) => {
@@ -74,13 +73,26 @@ export const ModelViewerAR = ({
   const [moduleError, setModuleError] = useState(false);
   const [modelState, setModelState] = useState<ModelState>("loading");
   const [arAvailable, setArAvailable] = useState(false);
-  // Guards texture-swap against stale async loads when the selection changes.
-  const applyToken = useRef(0);
 
+  // Per-(colourway × size × frame) textured models — the artwork, chosen frame
+  // and TRUE size are all baked in, so Scene Viewer / Quick Look show the real
+  // framed print at real cm on hand-off (a chosen frame opens its own model, not
+  // a silent frameless swap). Frameless when frameId === "none".
+  const glb = wallFramedGlb(painting.id, colourway.image, size.id, frameId);
   const usdz = wallFramedUsdz(painting.id, colourway.image, size.id, frameId);
-  const iosSrc = usdz ? `${asset(usdz)}#allowsContentScaling=0` : undefined;
+  // iOS Quick Look native banner (product name + size + "View this print" → the
+  // PDP): the standard Apple AR commerce bar. model-viewer appends
+  // #allowsContentScaling=0 itself (ar-scale="fixed"), so we don't repeat it.
+  const iosSrc = usdz
+    ? `${asset(usdz)}#` +
+      [
+        `checkoutTitle=${encodeURIComponent(painting.title)}`,
+        `checkoutSubtitle=${encodeURIComponent(`${colourway.name} · ${size.label} · ${cmLabel(size)}`)}`,
+        `callToAction=${encodeURIComponent("View this print")}`,
+        `canonicalWebPageURL=${encodeURIComponent(`${SITE_URL}/collections/${painting.id}?c=${encodeURIComponent(colourway.name)}&size=${size.id}`)}`,
+      ].join("&")
+    : undefined;
   const poster = asset(webp(colourway.image));
-  const scale = shellScaleFor(size);
   const alt = `${paintingImageAlt(painting.title, colourway.name)} — ${size.label} (${size.cm} × ${size.cm} cm)`;
 
   const reportAvailability = useCallback(
@@ -111,27 +123,12 @@ export const ModelViewerAR = ({
     };
   }, [painting.id, reportAvailability]);
 
-  // Apply the colourway texture + the true-size scale to the live model.
-  const apply = useCallback(async () => {
+  // The texture + true size are baked into the per-(colourway × size) model, so
+  // there is no runtime swap — just report whether this device can launch AR.
+  const reportFromViewer = useCallback(() => {
     const mv = viewerRef.current;
-    if (!mv) return;
-    const token = ++applyToken.current;
-    try {
-      if (mv.updateComplete) await mv.updateComplete;
-      if (token !== applyToken.current) return; // superseded by a newer selection
-      mv.scale = `${scale} ${scale} ${scale}`;
-      const mats = mv.model?.materials;
-      const mat = mats?.find((m) => m.name === "Artwork") ?? mats?.[0];
-      if (mat && mv.createTexture) {
-        const tex = await mv.createTexture(asset(colourway.image));
-        if (token !== applyToken.current) return;
-        mat.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
-      }
-      reportAvailability(!!mv.canActivateAR);
-    } catch {
-      /* poster + baked USDZ still carry the experience */
-    }
-  }, [scale, colourway.image, reportAvailability]);
+    if (mv) reportAvailability(!!mv.canActivateAR);
+  }, [reportAvailability]);
 
   // Wire load / error / ar-status once the module is ready.
   useEffect(() => {
@@ -141,7 +138,7 @@ export const ModelViewerAR = ({
     const onLoad = () => {
       setModelState("ready");
       trackWall("ar_model_loaded", { artwork: painting.id, size: size.id });
-      void apply();
+      reportFromViewer();
     };
     const onError = () => {
       setModelState("error");
@@ -154,14 +151,14 @@ export const ModelViewerAR = ({
     mv.addEventListener("ar-status", onArStatus);
     if (mv.loaded) {
       setModelState("ready");
-      void apply();
+      reportFromViewer();
     }
     return () => {
       mv.removeEventListener("load", onLoad);
       mv.removeEventListener("error", onError);
       mv.removeEventListener("ar-status", onArStatus);
     };
-  }, [moduleReady, apply, reportAvailability, painting.id, size.id]);
+  }, [moduleReady, reportFromViewer, reportAvailability, painting.id, size.id]);
 
   // Reset the orbit to front-on whenever the piece changes.
   useEffect(() => {
@@ -182,22 +179,41 @@ export const ModelViewerAR = ({
     if (!moduleReady) return;
     const mv = viewerRef.current;
     if (!mv) return;
-    mv.setAttribute("src", asset(WALL_SHELL_GLB));
+    if (glb) mv.setAttribute("src", asset(glb));
+    else mv.removeAttribute("src");
     mv.setAttribute("ar", "");
     mv.setAttribute("alt", alt);
-    mv.setAttribute("exposure", "1");
     mv.setAttribute("loading", "eager");
-    // reveal="manual" keeps the flat 3D canvas off screen — model-viewer is
-    // purely the device-AR launcher here. NO poster attribute: the poster paints
-    // the artwork FULL-BLEED behind the inset print overlay below, so the same
-    // image showed twice at two scales (the "glitched double image" on every
-    // painting). The overlay print IS the visual; this element stays invisible.
-    mv.setAttribute("reveal", "manual");
-  }, [moduleReady, alt]);
+    // `poster` is a non-hyphenated attribute React 19 won't apply to the custom
+    // element — set it imperatively so the print paints instantly, then the real
+    // 3D model reveals on load (one image only, so no "double image").
+    mv.setAttribute("poster", poster);
+
+    // model-viewer resolves AR support ASYNCHRONOUSLY after `load` and never
+    // fires an event when it flips to available — a single load-time read races
+    // it and can leave a real phone stuck on "open on your phone". Poll
+    // canActivateAR for a short window until it's true, then stop.
+    let timer = 0;
+    const started = Date.now();
+    const poll = () => {
+      const el = viewerRef.current;
+      if (!el) return;
+      if (el.canActivateAR) {
+        reportAvailability(true);
+        return;
+      }
+      if (Date.now() - started > 2600) return;
+      timer = window.setTimeout(poll, 160);
+    };
+    poll();
+    return () => {
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [moduleReady, alt, glb, poster, reportAvailability]);
 
   const launchAR = () => {
     const mv = viewerRef.current;
-    if (!mv?.activateAR) {
+    if (!mv?.activateAR || !mv.canActivateAR) {
       trackWall("ar_launch_failed", { artwork: painting.id, reason: "unavailable" });
       return;
     }
@@ -211,68 +227,47 @@ export const ModelViewerAR = ({
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      {/* model-viewer sits BEHIND, with NO camera-controls — so there is no
-          spinnable floating 3D "object", it's purely the device-AR launcher.
-          The artwork image below covers it and always shows the WHOLE print. */}
-      {moduleReady && !moduleError && (
+      {/* REAL interactive 3D preview — the framed print (baked moulding + real
+          12mm recess) you can orbit, AND the launcher for true-size device AR.
+          The print is the model's own poster (one visual only → no double image);
+          a flat image only stands in if the module or model fails to load. */}
+      {moduleReady && !moduleError && modelState !== "error" ? (
         <model-viewer
           ref={viewerRef as React.RefObject<HTMLElement>}
           ios-src={iosSrc}
           ar-modes="webxr scene-viewer quick-look"
           ar-placement="wall"
           ar-scale="fixed"
+          camera-controls
+          camera-orbit="0deg 88deg auto"
+          min-camera-orbit="-45deg 62deg auto"
+          max-camera-orbit="45deg 104deg auto"
+          disable-pan
+          auto-rotate
+          auto-rotate-delay="1400"
+          rotation-per-second="16deg"
           interaction-prompt="none"
-          shadow-intensity="0.4"
+          shadow-intensity="0.85"
+          shadow-softness="1"
+          exposure="1.05"
           environment-image="neutral"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", backgroundColor: "transparent" }}
+          xr-environment
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", backgroundColor: "transparent", "--poster-color": "transparent" } as React.CSSProperties}
         />
+      ) : (
+        <img src={poster} alt={alt} className="absolute inset-0 h-full w-full object-contain p-[9%]" />
       )}
 
-      {/* THE FULL PRINT — the complete square image, with the SELECTED frame
-          drawn directly around it (no white mat), or bare when unframed. */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-[7%]">
-        <div
-          className="relative aspect-square w-full max-w-full"
-          style={
-            frameSwatch
-              ? {
-                  padding: "4.5%",
-                  background: `linear-gradient(135deg, color-mix(in srgb, ${frameSwatch}, white 26%) 0%, ${frameSwatch} 45%, color-mix(in srgb, ${frameSwatch}, black 34%) 100%)`,
-                  boxShadow:
-                    "inset 0 0 0 1px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.22), inset 0 -3px 7px rgba(0,0,0,0.5), 0 18px 34px rgba(0,0,0,0.55)",
-                }
-              : { filter: "drop-shadow(0 16px 30px rgba(0,0,0,0.5))" }
-          }
-        >
-          <img
-            src={poster}
-            alt={alt}
-            className="block h-full w-full object-cover"
-            style={{ boxShadow: frameSwatch ? "0 0 0 1px rgba(0,0,0,0.55)" : "none" }}
-          />
-          {frameSwatch && (
-            <div
-              aria-hidden="true"
-              className="absolute inset-[4.5%]"
-              style={{
-                background:
-                  "linear-gradient(118deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 16%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 72%, rgba(255,255,255,0.05) 100%)",
-                mixBlendMode: "screen",
-              }}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Soft gradient so the button/label reads over any artwork */}
+      {/* Soft gradient so the button reads over the model */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5"
-        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0))" }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
+        style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0))" }}
       />
 
-      {/* Primary action: launch full-screen AR on a real device */}
-      {arAvailable ? (
+      {/* On a capable device: launch full-screen true-size AR. On desktop /
+          incapable devices the parent shows the QR + guidance (no dead pill). */}
+      {arAvailable && (
         <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
           <button
             type="button"
@@ -285,14 +280,6 @@ export const ModelViewerAR = ({
             </svg>
             View on your wall — true size
           </button>
-        </div>
-      ) : (
-        <div className="absolute inset-x-0 bottom-0 flex justify-center p-4">
-          <span className="rounded-full bg-black/55 px-5 py-2.5 text-center font-sans text-[14px] leading-[1.5] text-ink/90 backdrop-blur-sm">
-            {modelState === "error"
-              ? "AR couldn't load here — open this page on your phone."
-              : "Open on your phone (Safari / Chrome) to place it on your wall in AR."}
-          </span>
         </div>
       )}
     </div>

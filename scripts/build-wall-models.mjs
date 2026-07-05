@@ -70,9 +70,12 @@ const MANIFEST_JSON = join(OUT_DIR, "manifest.json");
 const IMG_DIR = join(ROOT, "public", "img", "paintings");
 
 const VERSION = "v1";
+// GLB content changed (real baked texture, per size) → NEW filename token so the
+// immutable 1yr /models cache serves the textured file, not a stale shell.
+const GLB_VERSION = "v2";
 const SHELL_GLB = `canvas-frameless-${VERSION}.glb`;
 const SQUARE_TOLERANCE = 0.015; // ≤1.5% edge difference counts as square (export rounding)
-const USDZ_TEXTURE_MAX_PX = 1024; // mobile-delivery downscale for iOS (keeps 460-file matrix small)
+const USDZ_TEXTURE_MAX_PX = 1000; // crisper A0/A1 in AR while keeping the ~920-file matrix shippable
 const GLB_WARN_BYTES = 3 * 1024 * 1024;
 const USDZ_WARN_BYTES = 6 * 1024 * 1024;
 
@@ -89,7 +92,7 @@ const flagVal = (name) => {
 const SAMPLE = hasFlag("--sample");
 const ALL_COLOURWAYS = hasFlag("--all-colourways");
 const NO_USDZ = hasFlag("--no-usdz");
-const FRAMED = hasFlag("--frames"); // also bake framed USDZ (colour × size × frame)
+const NO_FRAMES = hasFlag("--no-frames"); // skip framed models (default: bake every colour × size × frame)
 const SIZE_FILTER = (flagVal("sizes") || "").split(",").map((s) => s.trim()).filter(Boolean);
 const SIZES = (SIZE_FILTER.length ? ARTWORK_SIZES.filter((s) => SIZE_FILTER.includes(s.id)) : ARTWORK_SIZES).slice(
   0,
@@ -283,34 +286,33 @@ function boxGeometry(edge, depth) {
   return { front, rest };
 }
 
-// ---- GLB writer (frameless shell, 2 primitives: Artwork front + Canvas rest) -
-function buildShellGlb() {
-  const { front, rest } = boxGeometry(WALL_SHELL_BASE_METRES, CANVAS_DEPTH_M);
+// Recess of the print behind the moulding front (metres) — the frame rises proud
+// of the artwork so ARKit / ARCore cast a believable contact shadow + bevel.
+const FRAME_RECESS_M = 0.012;
 
-  // Assemble a primitive from a list of quad faces → position/normal/uv/index.
-  const prim = (faces) => {
-    const pos = [];
-    const nor = [];
-    const uv = [];
-    const idx = [];
-    let base = 0;
-    for (const f of faces) {
-      for (let v = 0; v < 4; v++) {
-        pos.push(...f.verts[v]);
-        nor.push(...f.normal);
-        uv.push(...f.uvs[v]);
-      }
-      idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
-      base += 4;
+// Assemble one primitive from quad faces → interleaved position/normal/uv/index.
+function primFromQuads(faces) {
+  const pos = [];
+  const nor = [];
+  const uv = [];
+  const idx = [];
+  let base = 0;
+  for (const f of faces) {
+    for (let v = 0; v < 4; v++) {
+      pos.push(...f.verts[v]);
+      nor.push(...f.normal);
+      uv.push(...f.uvs[v]);
     }
-    return { pos, nor, uv, idx };
-  };
-  const art = prim([front]);
-  const canvas = prim(rest);
+    idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    base += 4;
+  }
+  return { pos, nor, uv, idx };
+}
 
-  const png = neutralPng();
-
-  // Pack bufferViews (4-byte aligned). Order: art(pos,nor,uv,idx), canvas(...), image.
+// ---- Generic GLB packer ------------------------------------------------------
+// prims: [{ pos, nor, uv, idx, material }]. `image` = { buf, mime, name } shared
+// by any textured material (index 0), or null for an untextured model.
+function packGlb({ prims, materials, image, meshName }) {
   const views = [];
   const chunks = [];
   let offset = 0;
@@ -341,7 +343,7 @@ function buildShellGlb() {
   const max3 = (a) => [Math.max(...a.filter((_, i) => i % 3 === 0)), Math.max(...a.filter((_, i) => i % 3 === 1)), Math.max(...a.filter((_, i) => i % 3 === 2))];
 
   const accessors = [];
-  const buildPrim = (p, materialIndex) => {
+  const gltfPrims = prims.map((p) => {
     const vPos = addView(f32(p.pos), 34962);
     const vNor = addView(f32(p.nor), 34962);
     const vUv = addView(f32(p.uv), 34962);
@@ -351,39 +353,30 @@ function buildShellGlb() {
     const aNor = accessors.push({ bufferView: vNor, componentType: 5126, count, type: "VEC3" }) - 1;
     const aUv = accessors.push({ bufferView: vUv, componentType: 5126, count, type: "VEC2" }) - 1;
     const aIdx = accessors.push({ bufferView: vIdx, componentType: 5123, count: p.idx.length, type: "SCALAR" }) - 1;
-    return { attributes: { POSITION: aPos, NORMAL: aNor, TEXCOORD_0: aUv }, indices: aIdx, material: materialIndex };
-  };
-  const artPrim = buildPrim(art, 0);
-  const canvasPrim = buildPrim(canvas, 1);
-  const imgView = addView(png);
-
+    return { attributes: { POSITION: aPos, NORMAL: aNor, TEXCOORD_0: aUv }, indices: aIdx, material: p.material };
+  });
+  const imgView = image ? addView(image.buf) : null;
   const bin = Buffer.concat(chunks);
 
   const gltf = {
     asset: { version: "2.0", generator: "build-wall-models.mjs" },
     scene: 0,
     scenes: [{ nodes: [0] }],
-    nodes: [{ mesh: 0, name: "Canvas" }],
-    meshes: [{ name: "FramelessCanvas", primitives: [artPrim, canvasPrim] }],
+    nodes: [{ mesh: 0, name: meshName || "Model" }],
+    meshes: [{ name: meshName || "Model", primitives: gltfPrims }],
     accessors,
     bufferViews: views,
     buffers: [{ byteLength: bin.length }],
-    samplers: [{ magFilter: 9729, minFilter: 9987, wrapS: 33071, wrapT: 33071 }],
-    images: [{ bufferView: imgView, mimeType: "image/png", name: "ArtworkPlaceholder" }],
-    textures: [{ source: 0, sampler: 0 }],
-    materials: [
-      {
-        name: "Artwork",
-        pbrMetallicRoughness: { baseColorTexture: { index: 0 }, metallicFactor: 0, roughnessFactor: 0.85 },
-      },
-      {
-        name: "Canvas",
-        pbrMetallicRoughness: { baseColorFactor: [...CANVAS_RGB_LINEAR, 1], metallicFactor: 0, roughnessFactor: 0.95 },
-      },
-    ],
+    materials,
+    ...(image
+      ? {
+          samplers: [{ magFilter: 9729, minFilter: 9987, wrapS: 33071, wrapT: 33071 }],
+          images: [{ bufferView: imgView, mimeType: image.mime, name: image.name || "Artwork" }],
+          textures: [{ source: 0, sampler: 0 }],
+        }
+      : {}),
   };
 
-  // Pack GLB container.
   const jsonBuf = Buffer.from(JSON.stringify(gltf), "utf8");
   const jsonPad = (4 - (jsonBuf.length % 4)) % 4;
   const jsonChunk = Buffer.concat([jsonBuf, Buffer.alloc(jsonPad, 0x20)]);
@@ -400,6 +393,75 @@ function buildShellGlb() {
   binHead.writeUInt32LE(binChunk.length, 0);
   binHead.writeUInt32LE(0x004e4942, 4); // BIN
   return Buffer.concat([header, jsonHead, jsonChunk, binHead, binChunk]);
+}
+
+// ---- Frameless textured GLB (Artwork front + Canvas rest) --------------------
+// `texture` = { buf, mime } embeds the REAL colourway image on the front face at
+// true `edgeMetres`; null → a neutral placeholder (the legacy runtime-swap shell).
+function buildBoxGlb(edgeMetres, texture) {
+  const { front, rest } = boxGeometry(edgeMetres, CANVAS_DEPTH_M);
+  const img = texture ?? { buf: neutralPng(), mime: "image/png", name: "ArtworkPlaceholder" };
+  return packGlb({
+    meshName: "FramelessCanvas",
+    prims: [
+      { ...primFromQuads([front]), material: 0 },
+      { ...primFromQuads(rest), material: 1 },
+    ],
+    image: { ...img, name: texture ? "Artwork" : "ArtworkPlaceholder" },
+    materials: [
+      { name: "Artwork", pbrMetallicRoughness: { baseColorTexture: { index: 0 }, metallicFactor: 0, roughnessFactor: 0.85 } },
+      { name: "Canvas", pbrMetallicRoughness: { baseColorFactor: [...CANVAS_RGB_LINEAR, 1], metallicFactor: 0, roughnessFactor: 0.95 } },
+    ],
+  });
+}
+
+// ---- Framed textured GLB (print recessed behind a real 3D moulding) ----------
+// Mirrors buildFramedUsda's vertex layout: 12 points (front outer, recessed print,
+// back outer). The 4 front "bars" slant from the raised outer edge down to the
+// recessed print → a beveled reveal; outer sides + back give the frame depth.
+function buildFramedGlb(printMetres, frameWidthM, frameLinear, texture) {
+  const hi = printMetres / 2;
+  const ho = printMetres / 2 + frameWidthM;
+  const zf = CANVAS_DEPTH_M / 2;
+  const zb = -CANVAS_DEPTH_M / 2;
+  const zp = zf - FRAME_RECESS_M; // recessed print plane
+  const P = [
+    [-ho, -ho, zf], [ho, -ho, zf], [ho, ho, zf], [-ho, ho, zf], // 0-3 front outer
+    [-hi, -hi, zp], [hi, -hi, zp], [hi, hi, zp], [-hi, hi, zp], // 4-7 recessed print
+    [-ho, -ho, zb], [ho, -ho, zb], [ho, ho, zb], [-ho, ho, zb], // 8-11 back outer
+  ];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norm = (v) => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
+  const quad = (i, uvs) => {
+    const verts = [P[i[0]], P[i[1]], P[i[2]], P[i[3]]];
+    return { verts, normal: norm(cross(sub(verts[1], verts[0]), sub(verts[3], verts[0]))), uvs };
+  };
+  const printUV = [[0, 1], [1, 1], [1, 0], [0, 0]]; // bl,br,tr,tl → upright image
+  const solid = [[0, 0], [0, 0], [0, 0], [0, 0]];
+  const printFace = quad([4, 5, 6, 7], printUV);
+  const frameFaces = [
+    [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7], // 4 beveled front bars
+    [0, 8, 9, 1], [1, 9, 10, 2], [2, 10, 11, 3], [3, 11, 8, 0], // 4 outer sides
+    [8, 11, 10, 9], // back
+  ].map((i) => quad(i, solid));
+  return packGlb({
+    meshName: "FramedPrint",
+    prims: [
+      { ...primFromQuads([printFace]), material: 0 },
+      { ...primFromQuads(frameFaces), material: 1 },
+    ],
+    image: { ...texture, name: "Artwork" },
+    materials: [
+      { name: "Print", pbrMetallicRoughness: { baseColorTexture: { index: 0 }, metallicFactor: 0, roughnessFactor: 0.85 } },
+      { name: "Frame", doubleSided: true, pbrMetallicRoughness: { baseColorFactor: [...frameLinear, 1], metallicFactor: 0, roughnessFactor: 0.5 } },
+    ],
+  });
+}
+
+/** The legacy reusable frameless shell (neutral placeholder, A2 base metres). */
+function buildShellGlb() {
+  return buildBoxGlb(WALL_SHELL_BASE_METRES, null);
 }
 
 function validateGlb(glb) {
@@ -506,6 +568,7 @@ def Xform "Canvas" (kind = "component")
                 float2 inputs:st.connect = </Canvas/Materials/Artwork/St.outputs:result>
                 token inputs:wrapS = "clamp"
                 token inputs:wrapT = "clamp"
+                token inputs:sourceColorSpace = "sRGB"
                 float3 outputs:rgb
             }
             def Shader "St"
@@ -541,9 +604,10 @@ function buildFramedUsda(printMetres, frameWidthM, frameLinear, textureFile) {
   const ho = (printMetres / 2 + frameWidthM).toFixed(5);
   const zf = (CANVAS_DEPTH_M / 2).toFixed(5);
   const zb = (-CANVAS_DEPTH_M / 2).toFixed(5);
+  const zp = (CANVAS_DEPTH_M / 2 - FRAME_RECESS_M).toFixed(5); // recessed print plane
   const P = [
     [`-${ho}`, `-${ho}`, zf], [ho, `-${ho}`, zf], [ho, ho, zf], [`-${ho}`, ho, zf], // 0-3 front outer
-    [`-${hi}`, `-${hi}`, zf], [hi, `-${hi}`, zf], [hi, hi, zf], [`-${hi}`, hi, zf], // 4-7 front inner (print)
+    [`-${hi}`, `-${hi}`, zp], [hi, `-${hi}`, zp], [hi, hi, zp], [`-${hi}`, hi, zp], // 4-7 recessed print
     [`-${ho}`, `-${ho}`, zb], [ho, `-${ho}`, zb], [ho, ho, zb], [`-${ho}`, ho, zb], // 8-11 back outer
   ];
   const pts = P.map((p) => `(${p[0]}, ${p[1]}, ${p[2]})`).join(", ");
@@ -609,6 +673,7 @@ def Xform "Canvas" (kind = "component")
                 float2 inputs:st.connect = </Canvas/Materials/Artwork/St.outputs:result>
                 token inputs:wrapS = "clamp"
                 token inputs:wrapT = "clamp"
+                token inputs:sourceColorSpace = "sRGB"
                 float3 outputs:rgb
             }
             def Shader "St"
@@ -637,7 +702,7 @@ def Xform "Canvas" (kind = "component")
 }
 
 function makeUsdzTexture(srcJpg, destJpg) {
-  execFileSync("/usr/bin/sips", ["-Z", String(USDZ_TEXTURE_MAX_PX), "-s", "format", "jpeg", "-s", "formatOptions", "58", srcJpg, "--out", destJpg], { stdio: "ignore" });
+  execFileSync("/usr/bin/sips", ["-Z", String(USDZ_TEXTURE_MAX_PX), "-s", "format", "jpeg", "-s", "formatOptions", "62", srcJpg, "--out", destJpg], { stdio: "ignore" });
 }
 
 // ---- main -------------------------------------------------------------------
@@ -667,8 +732,14 @@ function main() {
   let usdzOk = 0;
   let usdzFail = 0;
   const framedKeys = [];
+  const framedGlbKeys = [];
   let framedOk = 0;
   let framedFail = 0;
+  let framedGlbOk = 0;
+  let framedGlbFail = 0;
+  const glbKeys = [];
+  let glbOk = 0;
+  let glbFail = 0;
 
   for (const p of paintings) {
     const colourways = p.colourways.filter((c) => c.available && (ALL_COLOURWAYS || c.isOriginal));
@@ -686,9 +757,40 @@ function main() {
       }
       const s = slug(c.image);
 
-      // USDZ per size (iOS). GLB is shared (shell).
+      // Shared 1024px JPEG texture — embedded in every GLB (and reused for USDZ).
+      const glbTexPath = join(tmp, `${p.id}-${s}-glbtex.jpg`);
+      let glbTexBuf = null;
+      try {
+        makeUsdzTexture(srcJpg, glbTexPath);
+        glbTexBuf = readFileSync(glbTexPath);
+      } catch {
+        try { glbTexBuf = readFileSync(srcJpg); } catch { glbTexBuf = null; }
+      }
+
+      // USDZ per size (iOS). GLB is per (colourway × size) — see buildBoxGlb.
       let usdzTex = null;
       for (const size of SIZES) {
+        // Per-(colourway × size) TEXTURED GLB — Android Scene Viewer + WebXR load
+        // this exact file on hand-off, so the artwork + true size survive.
+        let comboGlbUrl = null;
+        if (glbTexBuf) {
+          const glbName = `${p.id}-${s}-${size.id}-${GLB_VERSION}.glb`;
+          const gPath = join(OUT_DIR, glbName);
+          try {
+            const buf = buildBoxGlb(size.metres, { buf: glbTexBuf, mime: "image/jpeg" });
+            const gErr = validateGlb(buf);
+            if (gErr.length) throw new Error(gErr.join("; "));
+            writeFileSync(gPath, buf);
+            comboGlbUrl = `/models/wall/${glbName}`;
+            glbKeys.push(`${p.id}__${s}__${size.id}`);
+            glbOk++;
+            if (buf.length > GLB_WARN_BYTES) console.warn(`  ⚠ ${glbName} ${kb(buf.length)} large`);
+          } catch (e) {
+            glbFail++;
+            if (existsSync(gPath)) rmSync(gPath);
+            if (glbFail <= 3) console.warn(`  ⚠ glb failed ${p.id}-${s}-${size.id}: ${String(e.message || e).split("\n")[0]}`);
+          }
+        }
         const usdzName = `${p.id}-${s}-${size.id}-${VERSION}.usdz`;
         const usdzPath = join(OUT_DIR, usdzName);
         let usdzUrl = null;
@@ -722,25 +824,44 @@ function main() {
           }
         }
 
-        // FRAMED USDZ — one per website frame style (colour baked), for the
-        // ORIGINAL colourway of each painting (keeps the matrix tractable; other
-        // colourways fall back to frameless via wallFramedUsdz). Geometry is
-        // pre-validated, so skip the per-file usdchecker here for speed.
-        if (FRAMED && c.isOriginal && !NO_USDZ && usdToolsPresent && usdzTex) {
+        // FRAMED models — every website frame style, for EVERY colourway (not
+        // just the original), so a chosen frame always opens a REAL framed model
+        // at true size (Android GLB + iOS USDZ), never a silent frameless swap.
+        if (!NO_FRAMES) {
           const texName = `${p.id}-${s}.jpg`;
           for (const fr of FRAMES) {
-            const fName = `${p.id}-${s}-${size.id}-${fr.id}-${VERSION}.usdz`;
-            const fPath = join(OUT_DIR, fName);
-            try {
-              const usda = buildFramedUsda(size.metres, FRAME_WIDTH_M, fr.linear, texName);
-              const usdaPath = join(tmp, `${p.id}-${s}-${size.id}-${fr.id}.usda`);
-              writeFileSync(usdaPath, usda);
-              execFileSync(USDZIP, ["--arkitAsset", usdaPath, fPath], { cwd: tmp, stdio: "ignore" });
-              framedKeys.push(`${p.id}__${s}__${size.id}__${fr.id}`);
-              framedOk++;
-            } catch {
-              framedFail++;
-              if (existsSync(fPath)) rmSync(fPath);
+            // Framed GLB — Android Scene Viewer / WebXR.
+            if (glbTexBuf) {
+              const fgName = `${p.id}-${s}-${size.id}-${fr.id}-${GLB_VERSION}.glb`;
+              const fgPath = join(OUT_DIR, fgName);
+              try {
+                const buf = buildFramedGlb(size.metres, FRAME_WIDTH_M, fr.linear, { buf: glbTexBuf, mime: "image/jpeg" });
+                const gErr = validateGlb(buf);
+                if (gErr.length) throw new Error(gErr.join("; "));
+                writeFileSync(fgPath, buf);
+                framedGlbKeys.push(`${p.id}__${s}__${size.id}__${fr.id}`);
+                framedGlbOk++;
+              } catch (e) {
+                framedGlbFail++;
+                if (existsSync(fgPath)) rmSync(fgPath);
+                if (framedGlbFail <= 3) console.warn(`  ⚠ framed glb failed ${p.id}-${s}-${size.id}-${fr.id}: ${String(e.message || e).split("\n")[0]}`);
+              }
+            }
+            // Framed USDZ — iOS Quick Look.
+            if (!NO_USDZ && usdToolsPresent && usdzTex) {
+              const fName = `${p.id}-${s}-${size.id}-${fr.id}-${VERSION}.usdz`;
+              const fPath = join(OUT_DIR, fName);
+              try {
+                const usda = buildFramedUsda(size.metres, FRAME_WIDTH_M, fr.linear, texName);
+                const usdaPath = join(tmp, `${p.id}-${s}-${size.id}-${fr.id}.usda`);
+                writeFileSync(usdaPath, usda);
+                execFileSync(USDZIP, ["--arkitAsset", usdaPath, fPath], { cwd: tmp, stdio: "ignore" });
+                framedKeys.push(`${p.id}__${s}__${size.id}__${fr.id}`);
+                framedOk++;
+              } catch {
+                framedFail++;
+                if (existsSync(fPath)) rmSync(fPath);
+              }
             }
           }
         }
@@ -755,7 +876,7 @@ function main() {
           heightCm: size.cm,
           depthM: CANVAS_DEPTH_M,
           artworkSrc: c.image,
-          glbUrl: `/models/wall/${SHELL_GLB}`,
+          glbUrl: comboGlbUrl ?? `/models/wall/${SHELL_GLB}`,
           usdzUrl,
           status,
           version: VERSION,
@@ -776,13 +897,18 @@ function main() {
 
   // 4) Manifest (TS + JSON).
   const usdzKeys = records.filter((r) => r.usdzUrl).map((r) => `${r.paintingId}__${r.imageSlug}__${r.size}`);
-  const paintingsWithModels = [...new Set(records.map((r) => r.paintingId))];
+  const glbKeysUnique = [...new Set(glbKeys)].sort();
+  const framedGlbKeysUnique = [...new Set(framedGlbKeys)].sort();
+  // A painting is AR-covered only if at least one combo has a real textured GLB.
+  const paintingsWithModels = [...new Set(glbKeys.map((k) => k.split("__")[0]))];
   const ts = `// AUTO-GENERATED by scripts/build-wall-models.mjs — DO NOT hand-edit.
 // The frameless wall-model manifest for the "See on Your Wall" AR feature.
 // GLB shell is shared (runtime texture-swap + scale); USDZ is per size.
 import type { ArtworkSizeId } from "./artworkSizes";
 
 export const WALL_MODEL_VERSION = "${VERSION}";
+export const WALL_GLB_VERSION = "${GLB_VERSION}";
+/** Legacy neutral shell — fallback only; real coverage is per-combo (wallGlb). */
 export const WALL_SHELL_GLB = "/models/wall/${SHELL_GLB}";
 
 /** Slug a colourway image path → its wall-model asset stem. */
@@ -807,7 +933,30 @@ export const wallUsdz = (
     : null;
 };
 
-/** Whether a painting has wall-model coverage (the GLB shell always applies). */
+/** Generated per-(colourway × size) TEXTURED GLB keys: \`<paintingId>__<imageSlug>__<sizeId>\`. */
+const WALL_GLB_KEYS: ReadonlySet<string> = new Set(${JSON.stringify(glbKeysUnique, null, 0)});
+
+/** Android Scene Viewer / WebXR GLB for a (painting, colourway image, size), or null.
+ *  This is the file handed to Scene Viewer, so it carries the real artwork + true size. */
+export const wallGlb = (
+  paintingId: string,
+  image: string,
+  sizeId: ArtworkSizeId,
+): string | null => {
+  const key = \`\${paintingId}__\${wallSlug(image)}__\${sizeId}\`;
+  return WALL_GLB_KEYS.has(key)
+    ? \`/models/wall/\${paintingId}-\${wallSlug(image)}-\${sizeId}-${GLB_VERSION}.glb\`
+    : null;
+};
+
+/** Whether a (painting, colourway, size) has a REAL textured wall model (GLB + USDZ). */
+export const hasWallModelFor = (
+  paintingId: string,
+  image: string,
+  sizeId: ArtworkSizeId,
+): boolean => WALL_GLB_KEYS.has(\`\${paintingId}__\${wallSlug(image)}__\${sizeId}\`);
+
+/** Whether a painting has any real textured wall-model coverage. */
 export const hasWallModel = (paintingId: string): boolean => WALL_PAINTINGS.has(paintingId);
 
 /** Generated FRAMED USDZ keys: \`<paintingId>__<imageSlug>__<sizeId>__<frameId>\`. */
@@ -828,6 +977,25 @@ export const wallFramedUsdz = (
     ? \`/models/wall/\${paintingId}-\${slug}-\${sizeId}-\${frameId}-${VERSION}.usdz\`
     : wallUsdz(paintingId, image, sizeId);
 };
+
+/** Generated FRAMED GLB keys: \`<paintingId>__<imageSlug>__<sizeId>__<frameId>\`. */
+const WALL_FRAMED_GLB_KEYS: ReadonlySet<string> = new Set(${JSON.stringify(framedGlbKeysUnique, null, 0)});
+
+/** Android Scene Viewer / WebXR GLB for a (painting, colourway, size, FRAME), or null.
+ *  Falls back to the frameless GLB via wallGlb when a frame isn't baked. */
+export const wallFramedGlb = (
+  paintingId: string,
+  image: string,
+  sizeId: ArtworkSizeId,
+  frameId: string,
+): string | null => {
+  if (frameId === "none") return wallGlb(paintingId, image, sizeId);
+  const slug = wallSlug(image);
+  const key = \`\${paintingId}__\${slug}__\${sizeId}__\${frameId}\`;
+  return WALL_FRAMED_GLB_KEYS.has(key)
+    ? \`/models/wall/\${paintingId}-\${slug}-\${sizeId}-\${frameId}-${GLB_VERSION}.glb\`
+    : wallGlb(paintingId, image, sizeId);
+};
 `;
   writeFileSync(MANIFEST_TS, ts);
   writeFileSync(
@@ -839,7 +1007,7 @@ export const wallFramedUsdz = (
   rmSync(tmp, { recursive: true, force: true });
 
   console.log(`\n✓ manifest → src/lib/wallModels.ts  (+ public/models/wall/manifest.json)`);
-  console.log(`  records: ${records.length}   usdz ok: ${usdzOk}   usdz failed: ${usdzFail}   usd-tools: ${usdToolsPresent ? "present" : "ABSENT (usdz skipped)"}`);
+  console.log(`  records: ${records.length}   glb ok: ${glbOk}/${glbFail}f   usdz ok: ${usdzOk}/${usdzFail}f   framed glb: ${framedGlbOk}/${framedGlbFail}f   framed usdz: ${framedOk}/${framedFail}f   usd-tools: ${usdToolsPresent ? "present" : "ABSENT"}`);
   console.log(`  paintings covered: ${paintingsWithModels.length}   non-square skipped: ${nonSquare.length}   missing: ${missing.length}\n`);
 }
 

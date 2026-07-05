@@ -22,6 +22,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { ARTWORK_SIZES, CANVAS_DEPTH_M } from "../src/lib/artworkSizes.ts";
+import { PAINTINGS, FRAME_STYLES } from "../src/data/paintings.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -69,7 +70,20 @@ for (const r of manifest.records) {
   if (r.widthCm !== size.cm || r.heightCm !== size.cm) fail(`record ${r.paintingId}/${r.size}: dims ${r.widthCm}×${r.heightCm} ≠ ${size.cm}×${size.cm}`);
   if (r.widthCm !== r.heightCm) fail(`record ${r.paintingId}/${r.size}: not square`);
   if (r.depthM !== CANVAS_DEPTH_M) warn(`record ${r.paintingId}/${r.size}: depth ${r.depthM} ≠ config ${CANVAS_DEPTH_M}`);
-  if (r.glbUrl !== manifest.shellGlb) fail(`record ${r.paintingId}/${r.size}: glbUrl ≠ shell`);
+  // Per-combo textured GLB (Android/WebXR) must exist + be a valid GLB. A record
+  // still pointing at the shared shell means the artwork never got baked → a lie.
+  if (!r.glbUrl || r.glbUrl === manifest.shellGlb) {
+    fail(`record ${r.paintingId}/${r.size}: no textured GLB (fell back to shell)`);
+  } else {
+    const gp = join(ROOT, "public", r.glbUrl.replace(/^\//, ""));
+    if (!existsSync(gp)) fail(`GLB missing on disk: ${r.glbUrl}`);
+    else {
+      const g = readFileSync(gp);
+      if (g.length < 12 || g.readUInt32LE(0) !== 0x46546c67 || g.readUInt32LE(8) !== g.length)
+        fail(`GLB invalid container: ${r.glbUrl}`);
+      if (g.length > GLB_WARN) warn(`GLB large (${(g.length / 1024 / 1024).toFixed(1)}MB): ${r.glbUrl}`);
+    }
+  }
 
   if (r.usdzUrl) {
     if (seenUsdz.has(r.usdzUrl)) fail(`duplicate USDZ output: ${r.usdzUrl}`);
@@ -92,10 +106,12 @@ for (const r of manifest.records) {
   }
 }
 
-// 3) Orphan USDZ on disk not in manifest.
+// 3) Orphan USDZ on disk not accounted for (frameless in manifest OR framed key).
+const FRAME_IDS = FRAME_STYLES.map((f) => f.id);
+const isFramedFile = (f) => FRAME_IDS.some((id) => f.includes(`-${id}-`));
 const onDisk = readdirSync(OUT_DIR).filter((f) => f.endsWith(".usdz"));
 const inManifest = new Set(manifest.records.filter((r) => r.usdzUrl).map((r) => r.usdzUrl.split("/").pop()));
-for (const f of onDisk) if (!inManifest.has(f)) warn(`orphan USDZ on disk (not in manifest): ${f}`);
+for (const f of onDisk) if (!inManifest.has(f) && !isFramedFile(f)) warn(`orphan USDZ on disk (not in manifest): ${f}`);
 
 // 4) manifest.json ↔ wallModels.ts key agreement.
 if (existsSync(MANIFEST_TS)) {
@@ -105,6 +121,37 @@ if (existsSync(MANIFEST_TS)) {
   const jsonKeys = new Set(manifest.records.filter((r) => r.usdzUrl).map((r) => `${r.paintingId}__${r.imageSlug}__${r.size}`));
   for (const k of jsonKeys) if (!tsKeys.has(k)) fail(`wallModels.ts missing key present in manifest.json: ${k}`);
   for (const k of tsKeys) if (!jsonKeys.has(k)) fail(`wallModels.ts has key absent from manifest.json: ${k}`);
+}
+
+// 5) COVERAGE — every AVAILABLE, square colourway × size must have a real
+//    textured model, so the product UI can never offer AR that silently lies.
+//    Non-square masters (no square print model yet) are explicitly excluded.
+const NONSQUARE_EXCLUDE = new Set(["ophiuchus"]); // landscape master — documented, no square AR model
+const slugOf = (image) =>
+  image.replace("/img/paintings/", "").replace(/\.(jpe?g|png|webp)$/i, "").toLowerCase();
+const coveredGlb = new Set(
+  manifest.records
+    .filter((r) => r.glbUrl && r.glbUrl !== manifest.shellGlb)
+    .map((r) => `${r.paintingId}__${r.imageSlug}__${r.size}`),
+);
+const fileExists = (name) => existsSync(join(OUT_DIR, name));
+for (const p of PAINTINGS) {
+  if (NONSQUARE_EXCLUDE.has(p.id)) continue;
+  for (const c of p.colourways.filter((cw) => cw.available)) {
+    const slug = slugOf(c.image);
+    for (const s of ARTWORK_SIZES) {
+      const key = `${p.id}__${slug}__${s.id}`;
+      if (!coveredGlb.has(key))
+        fail(`COVERAGE: ${p.id} · ${c.name} · ${s.id} has no textured GLB (options must not lie — add a square master or bake the model)`);
+      // Every offered FRAME must open a real framed GLB + USDZ (never a silent frameless swap).
+      for (const fr of FRAME_STYLES) {
+        if (!fileExists(`${p.id}-${slug}-${s.id}-${fr.id}-v2.glb`))
+          fail(`COVERAGE: ${p.id} · ${c.name} · ${s.id} · ${fr.label} has no framed GLB`);
+        if (!fileExists(`${p.id}-${slug}-${s.id}-${fr.id}-v1.usdz`))
+          fail(`COVERAGE: ${p.id} · ${c.name} · ${s.id} · ${fr.label} has no framed USDZ`);
+      }
+    }
+  }
 }
 
 // ---- report -----------------------------------------------------------------

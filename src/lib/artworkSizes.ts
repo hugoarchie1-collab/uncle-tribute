@@ -16,9 +16,8 @@
 //
 // The `tierId` links each size to the canonical PRINT_TIERS ladder in
 // paintings.ts so a customer's selected tier resolves to the right AR size.
-// (The legacy framed AR path in lib/arAssets.ts carries its own copy of these
-// numbers — that module is auto-generated for the older framed-shell system and
-// is being superseded by this one; new code must import from HERE.)
+// This is now the SINGLE source (the old lib/arAssets.ts framed-shell path was
+// deleted 2026-07-04 when the wall models unified onto lib/wallModels.ts).
 // =============================================================================
 
 export type ArtworkSizeId = "a3" | "a2" | "a1" | "a0";

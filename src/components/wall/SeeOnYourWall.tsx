@@ -20,13 +20,15 @@ import {
   getArtworkSize,
   type ArtworkSizeId,
 } from "../../lib/artworkSizes";
-import { probeArEnvironment } from "../../lib/arCapability";
+import QRCode from "qrcode";
+import { getPlatform, isInAppBrowser, probeArEnvironment, type Platform } from "../../lib/arCapability";
 import { asset, webp } from "../../lib/asset";
 import { cn } from "../../lib/cn";
+import { hasWallModel } from "../../lib/wallModels";
+import { SITE_URL } from "../../lib/seo";
 import { EYEBROW } from "../ui/tokens";
 import { trackWall } from "../../lib/wallAnalytics";
 import { ModelViewerAR } from "./ModelViewerAR";
-import { WallCamera } from "./WallCamera";
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
@@ -72,9 +74,17 @@ export const SeeOnYourWall = ({
   const size = getArtworkSize(sizeId);
   const [frameId, setFrameId] = useState("none");
   const frame = FRAME_OPTIONS.find((f) => f.id === frameId) ?? FRAME_OPTIONS[0];
-  const [cameraOpen, setCameraOpen] = useState(false);
 
-  const [inApp, setInApp] = useState(false);
+  // Seed synchronously (no async probe needed for these) so the desktop QR shows
+  // on first paint instead of flashing in after the WebXR probe resolves.
+  const [inApp, setInApp] = useState(() => isInAppBrowser());
+  const [platform, setPlatform] = useState<Platform>(() => getPlatform());
+  const [arAvailable, setArAvailable] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+  // Whether this painting has a real true-size AR model (ophiuchus's landscape
+  // master has no square print model yet → no AR offered, never a fake one).
+  const modelled = hasWallModel(painting.id);
 
   // Analytics + environment probe on open. Never opens the camera.
   useEffect(() => {
@@ -83,6 +93,7 @@ export const SeeOnYourWall = ({
     void probeArEnvironment().then((e) => {
       if (cancelled) return;
       setInApp(e.inApp);
+      setPlatform(e.platform);
       trackWall("ar_capability_detected", {
         platform: e.platform,
         inApp: e.inApp,
@@ -143,6 +154,32 @@ export const SeeOnYourWall = ({
     trackWall("visualiser_size_changed", { artwork: painting.id, size: id });
   };
 
+  // Desktop → phone handoff: a QR that deep-links the phone to THIS painting +
+  // selected colourway/size/frame with wall=1 so it opens straight into AR.
+  useEffect(() => {
+    // Only the desktop QR panel renders qrDataUrl (guarded on platform below), so
+    // there's no need to clear it synchronously on other platforms.
+    if (platform !== "desktop" || !modelled) return;
+    let cancelled = false;
+    const url =
+      `${SITE_URL}/collections/${painting.id}` +
+      `?c=${encodeURIComponent(colourwayName)}&size=${sizeId}&frame=${frameId}&wall=1`;
+    void QRCode.toDataURL(url, {
+      margin: 1,
+      width: 320,
+      color: { dark: "#0a0908", light: "#ede6d6" },
+    })
+      .then((d) => {
+        if (!cancelled) setQrDataUrl(d);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [platform, modelled, painting.id, colourwayName, sizeId, frameId]);
+
   return createPortal(
     <div
       className="fixed inset-0 z-[130] flex items-stretch justify-center bg-black/75 backdrop-blur-sm sm:items-center sm:p-6"
@@ -184,47 +221,65 @@ export const SeeOnYourWall = ({
 
         {/* ---- Scrollable body ---- */}
         <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-          {/* View-on-your-wall tile — shows the artwork, launches true-size AR */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_50%_25%,#2a2620,#14110d)] ring-1 ring-line">
-            <ModelViewerAR
-              painting={painting}
-              colourway={colourway}
-              size={size}
-              frameId={frame.id}
-              frameSwatch={frame.swatch}
-              className="h-full w-full"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              trackWall("wall_camera_opened", { artwork: painting.id, size: sizeId });
-              setCameraOpen(true);
-            }}
-            className="press mt-3 inline-flex min-h-[54px] w-full items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[14px] font-bold tracking-[0.03em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h1L6.7 3.6A1 1 0 0 1 7.5 3h5a1 1 0 0 1 .8.6L14.5 5h1A1.5 1.5 0 0 1 17 6.5v8A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5v-8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              <circle cx="10" cy="10" r="2.6" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-            See it on your wall
-          </button>
-          <p className="mt-2 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
-            Your camera opens right here — drag &amp; pinch the whole print to place it, then <span className="text-ink">lock it on your wall</span>. Your camera stays on your device.
-          </p>
+          {modelled ? (
+            <>
+              {/* True-size AR tile — shows the print; on a capable phone the
+                  "View on your wall — true size" button launches Quick Look /
+                  Scene Viewer; on desktop it prompts to open on a phone. */}
+              <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[radial-gradient(120%_90%_at_50%_25%,#2a2620,#14110d)] ring-1 ring-line">
+                <ModelViewerAR
+                  painting={painting}
+                  colourway={colourway}
+                  size={size}
+                  frameId={frame.id}
+                  onArAvailability={setArAvailable}
+                  className="h-full w-full"
+                />
+              </div>
 
-          {/* Room photo — coming soon */}
-          <div className="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-bg/60 px-4 py-3 ring-1 ring-line">
-            <div className="min-w-0">
-              <p className="m-0 font-sans text-[13px] font-bold text-ink">Preview in a room photo</p>
-              <p className="m-0 mt-0.5 font-sans text-[14px] text-ink-muted">
-                True-to-size room images — coming soon.
+              {/* Desktop → phone QR handoff (carries colourway + size + frame). */}
+              {platform === "desktop" && qrDataUrl && (
+                <div className="mt-3 flex items-center gap-4 rounded-2xl bg-bg/60 px-4 py-4 ring-1 ring-line">
+                  <img
+                    src={qrDataUrl}
+                    alt="QR code to open this print on your phone in AR"
+                    width={92}
+                    height={92}
+                    className="h-[92px] w-[92px] shrink-0 rounded-lg"
+                  />
+                  <div className="min-w-0">
+                    <p className="m-0 font-sans text-[14px] font-bold text-ink">Scan to place it on your wall</p>
+                    <p className="m-0 mt-1 font-sans text-[14px] leading-[1.55] text-ink-muted">
+                      Opens {colourway.name} · {size.label} on your phone at true size, ready to hold on the wall in AR.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <p className="mt-3 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
+                {arAvailable ? (
+                  <>
+                    Placed at true size — <span className="text-ink">{cmLabel(size)}</span>. Point your camera at the wall, then tap to set it in place.
+                  </>
+                ) : platform === "desktop" ? (
+                  <>
+                    Drag to turn it, or scan the code to place it on your wall at true size — <span className="text-ink">{cmLabel(size)}</span>.
+                  </>
+                ) : (
+                  <>
+                    Shown at true size — <span className="text-ink">{cmLabel(size)}</span>. Open in Safari or Chrome on your phone to place it on your wall.
+                  </>
+                )}
+              </p>
+            </>
+          ) : (
+            <div className="mb-5 rounded-2xl bg-bg/60 px-5 py-6 text-center ring-1 ring-line">
+              <p className="m-0 font-sans text-[14px] font-bold text-ink">Wall preview coming soon</p>
+              <p className="m-0 mt-1.5 font-sans text-[14px] leading-[1.6] text-ink-muted">
+                This piece is landscape — its true-size wall preview is being prepared.
               </p>
             </div>
-            <span className="shrink-0 rounded-full bg-white/8 px-3 py-1 font-sans text-[13px] font-bold uppercase tracking-[0.12em] text-ink-muted">
-              Photos coming soon
-            </span>
-          </div>
+          )}
 
           {/* Colourway */}
           {colourways.length > 1 && (
@@ -322,31 +377,18 @@ export const SeeOnYourWall = ({
             </div>
             <p className="mt-2.5 m-0 font-sans text-[13px] leading-[1.6] text-ink-muted">
               {frame.id === "none"
-                ? "Shown unframed. Framing (oak · black · white · walnut) is added to your order."
-                : `${frame.label} frame added to your order. The AR preview shows the print itself at true size.`}
+                ? "Shown unframed. Framing (oak · black · white · walnut) can be added to your order."
+                : `${frame.label} framing — shown on your wall at true size, and added to your order.`}
             </p>
           </section>
 
-          {inApp && (
+          {inApp && !arAvailable && (
             <p className="mt-5 m-0 rounded-2xl bg-accent/10 px-4 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink ring-1 ring-accent/30">
               For the AR experience, open this page in Safari or Chrome.
             </p>
           )}
         </div>
       </div>
-
-      {cameraOpen && (
-        <WallCamera
-          painting={painting}
-          colourway={colourway}
-          onColourwayChange={setColourwayName}
-          sizeId={sizeId}
-          onSizeChange={pickSize}
-          frameId={frame.id}
-          onFrameChange={setFrameId}
-          onClose={() => setCameraOpen(false)}
-        />
-      )}
     </div>,
     document.body,
   );
