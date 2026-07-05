@@ -39,8 +39,14 @@ export const getPlatform = (): Platform => {
   const s = ua();
   if (!s) return "unknown";
   if (/iPhone|iPad|iPod/i.test(s)) return "ios";
-  // iPadOS 13+ reports as desktop Safari; catch it via touch + Macintosh.
-  if (/Macintosh/i.test(s) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1)
+  // iPadOS 13+ reports as desktop Safari; catch it via touch + Macintosh, but not
+  // a touch-screen Mac running Chrome/Firefox (those aren't Quick Look devices).
+  if (
+    /Macintosh/i.test(s) &&
+    typeof navigator !== "undefined" &&
+    navigator.maxTouchPoints > 1 &&
+    !/Chrome|CriOS|FxiOS/i.test(s)
+  )
     return "ios";
   if (/Android/i.test(s)) return "android";
   if (/Windows|Macintosh|Linux|CrOS/i.test(s)) return "desktop";

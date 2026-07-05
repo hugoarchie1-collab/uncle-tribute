@@ -256,7 +256,7 @@ export const SeeOnYourWall = ({
                 </div>
               )}
 
-              <p className="mt-3 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
+              <p aria-live="polite" className="mt-3 mb-5 text-center font-sans text-[14px] leading-[1.6] text-ink-muted">
                 {arAvailable ? (
                   <>
                     Placed at true size — <span className="text-ink">{cmLabel(size)}</span>. Point your camera at the wall, then tap to set it in place.
@@ -298,7 +298,9 @@ export const SeeOnYourWall = ({
                       onClick={() => setColourwayName(c.name)}
                       className={cn(
                         "h-12 w-12 overflow-hidden rounded-full outline-none ring-1 ring-white/25 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent",
-                        sel ? "ring-2 ring-accent scale-110" : "opacity-90 hover:scale-105 hover:opacity-100",
+                        sel
+                          ? "ring-2 ring-accent ring-offset-2 ring-offset-bg scale-110"
+                          : "opacity-90 hover:scale-105 hover:opacity-100",
                       )}
                       style={{ backgroundColor: c.hex }}
                     >

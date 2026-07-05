@@ -67,8 +67,11 @@ for (const r of manifest.records) {
     fail(`record ${r.paintingId}/${r.size}: unknown size id`);
     continue;
   }
-  if (r.widthCm !== size.cm || r.heightCm !== size.cm) fail(`record ${r.paintingId}/${r.size}: dims ${r.widthCm}×${r.heightCm} ≠ ${size.cm}×${size.cm}`);
-  if (r.widthCm !== r.heightCm) fail(`record ${r.paintingId}/${r.size}: not square`);
+  // Width tracks the size's cm; height may differ (a landscape master bakes at
+  // its TRUE aspect, e.g. ophiuchus), so validate height against the recorded aspect.
+  if (r.widthCm !== size.cm) fail(`record ${r.paintingId}/${r.size}: width ${r.widthCm} ≠ ${size.cm}`);
+  const expectH = Math.round(size.cm * (r.aspect ?? 1) * 10) / 10;
+  if (Math.abs(r.heightCm - expectH) > 0.2) fail(`record ${r.paintingId}/${r.size}: height ${r.heightCm} ≠ ${expectH} (aspect ${r.aspect ?? 1})`);
   if (r.depthM !== CANVAS_DEPTH_M) warn(`record ${r.paintingId}/${r.size}: depth ${r.depthM} ≠ config ${CANVAS_DEPTH_M}`);
   // Per-combo textured GLB (Android/WebXR) must exist + be a valid GLB. A record
   // still pointing at the shared shell means the artwork never got baked → a lie.
@@ -126,7 +129,7 @@ if (existsSync(MANIFEST_TS)) {
 // 5) COVERAGE — every AVAILABLE, square colourway × size must have a real
 //    textured model, so the product UI can never offer AR that silently lies.
 //    Non-square masters (no square print model yet) are explicitly excluded.
-const NONSQUARE_EXCLUDE = new Set(["ophiuchus"]); // landscape master — documented, no square AR model
+const NONSQUARE_EXCLUDE = new Set(); // every available painting now bakes (landscape masters at true aspect)
 const slugOf = (image) =>
   image.replace("/img/paintings/", "").replace(/\.(jpe?g|png|webp)$/i, "").toLowerCase();
 const coveredGlb = new Set(

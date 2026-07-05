@@ -177,11 +177,13 @@ function neutralPng(n = 8, rgb = [200, 194, 182]) {
 }
 
 // ---- Frameless box geometry -------------------------------------------------
-// Square front (edge W) facing +Z; depth D into -Z toward the wall. Returns two
-// vertex groups: `front` (the Artwork face) and `rest` (back + 4 sides = Canvas).
-function boxGeometry(edge, depth) {
-  const hx = edge / 2,
-    hy = edge / 2;
+// Front face (width × height) facing +Z; depth D into -Z toward the wall. Returns
+// two vertex groups: `front` (the Artwork face) and `rest` (back + 4 sides). Non-
+// square supported (width ≠ height) so a landscape master (e.g. ophiuchus) bakes
+// at its true aspect rather than being cropped.
+function boxGeometry(width, height, depth) {
+  const hx = width / 2,
+    hy = height / 2;
   const zF = depth / 2, // front plane
     zB = -depth / 2; // back plane
   const face = (verts, normal, uvs) => ({ verts, normal, uvs });
@@ -398,8 +400,8 @@ function packGlb({ prims, materials, image, meshName }) {
 // ---- Frameless textured GLB (Artwork front + Canvas rest) --------------------
 // `texture` = { buf, mime } embeds the REAL colourway image on the front face at
 // true `edgeMetres`; null → a neutral placeholder (the legacy runtime-swap shell).
-function buildBoxGlb(edgeMetres, texture) {
-  const { front, rest } = boxGeometry(edgeMetres, CANVAS_DEPTH_M);
+function buildBoxGlb(widthMetres, heightMetres, texture) {
+  const { front, rest } = boxGeometry(widthMetres, heightMetres, CANVAS_DEPTH_M);
   const img = texture ?? { buf: neutralPng(), mime: "image/png", name: "ArtworkPlaceholder" };
   return packGlb({
     meshName: "FramelessCanvas",
@@ -419,16 +421,18 @@ function buildBoxGlb(edgeMetres, texture) {
 // Mirrors buildFramedUsda's vertex layout: 12 points (front outer, recessed print,
 // back outer). The 4 front "bars" slant from the raised outer edge down to the
 // recessed print → a beveled reveal; outer sides + back give the frame depth.
-function buildFramedGlb(printMetres, frameWidthM, frameLinear, texture) {
-  const hi = printMetres / 2;
-  const ho = printMetres / 2 + frameWidthM;
+function buildFramedGlb(printW, printH, frameWidthM, frameLinear, texture) {
+  const hiX = printW / 2;
+  const hiY = printH / 2;
+  const hoX = printW / 2 + frameWidthM;
+  const hoY = printH / 2 + frameWidthM;
   const zf = CANVAS_DEPTH_M / 2;
   const zb = -CANVAS_DEPTH_M / 2;
   const zp = zf - FRAME_RECESS_M; // recessed print plane
   const P = [
-    [-ho, -ho, zf], [ho, -ho, zf], [ho, ho, zf], [-ho, ho, zf], // 0-3 front outer
-    [-hi, -hi, zp], [hi, -hi, zp], [hi, hi, zp], [-hi, hi, zp], // 4-7 recessed print
-    [-ho, -ho, zb], [ho, -ho, zb], [ho, ho, zb], [-ho, ho, zb], // 8-11 back outer
+    [-hoX, -hoY, zf], [hoX, -hoY, zf], [hoX, hoY, zf], [-hoX, hoY, zf], // 0-3 front outer
+    [-hiX, -hiY, zp], [hiX, -hiY, zp], [hiX, hiY, zp], [-hiX, hiY, zp], // 4-7 recessed print
+    [-hoX, -hoY, zb], [hoX, -hoY, zb], [hoX, hoY, zb], [-hoX, hoY, zb], // 8-11 back outer
   ];
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
@@ -461,7 +465,7 @@ function buildFramedGlb(printMetres, frameWidthM, frameLinear, texture) {
 
 /** The legacy reusable frameless shell (neutral placeholder, A2 base metres). */
 function buildShellGlb() {
-  return buildBoxGlb(WALL_SHELL_BASE_METRES, null);
+  return buildBoxGlb(WALL_SHELL_BASE_METRES, WALL_SHELL_BASE_METRES, null);
 }
 
 function validateGlb(glb) {
@@ -481,9 +485,9 @@ const USDCHECKER = "/usr/bin/usdchecker";
 const usdToolsPresent = existsSync(USDZIP);
 
 /** Author a frameless textured-box USDA at TRUE metres, front face textured. */
-function buildUsda(edge, depth, textureFile) {
-  const hx = (edge / 2).toFixed(5);
-  const hy = (edge / 2).toFixed(5);
+function buildUsda(width, height, depth, textureFile) {
+  const hx = (width / 2).toFixed(5);
+  const hy = (height / 2).toFixed(5);
   const zF = (depth / 2).toFixed(5);
   const zB = (-depth / 2).toFixed(5);
   // 8 corner points; faces reference them. Order faces: front, back, right, left, top, bottom.
@@ -599,16 +603,18 @@ def Xform "Canvas" (kind = "component")
 /** Author a FRAMED textured box: the print + a flat wood border (no mat) at
  *  TRUE metres. doubleSided so face winding can never blank a face. Frame colour
  *  is baked (iOS can't recolour at runtime). Validated geometry (usdchecker --arkit). */
-function buildFramedUsda(printMetres, frameWidthM, frameLinear, textureFile) {
-  const hi = (printMetres / 2).toFixed(5);
-  const ho = (printMetres / 2 + frameWidthM).toFixed(5);
+function buildFramedUsda(printW, printH, frameWidthM, frameLinear, textureFile) {
+  const hiX = (printW / 2).toFixed(5);
+  const hiY = (printH / 2).toFixed(5);
+  const hoX = (printW / 2 + frameWidthM).toFixed(5);
+  const hoY = (printH / 2 + frameWidthM).toFixed(5);
   const zf = (CANVAS_DEPTH_M / 2).toFixed(5);
   const zb = (-CANVAS_DEPTH_M / 2).toFixed(5);
   const zp = (CANVAS_DEPTH_M / 2 - FRAME_RECESS_M).toFixed(5); // recessed print plane
   const P = [
-    [`-${ho}`, `-${ho}`, zf], [ho, `-${ho}`, zf], [ho, ho, zf], [`-${ho}`, ho, zf], // 0-3 front outer
-    [`-${hi}`, `-${hi}`, zp], [hi, `-${hi}`, zp], [hi, hi, zp], [`-${hi}`, hi, zp], // 4-7 recessed print
-    [`-${ho}`, `-${ho}`, zb], [ho, `-${ho}`, zb], [ho, ho, zb], [`-${ho}`, ho, zb], // 8-11 back outer
+    [`-${hoX}`, `-${hoY}`, zf], [hoX, `-${hoY}`, zf], [hoX, hoY, zf], [`-${hoX}`, hoY, zf], // 0-3 front outer
+    [`-${hiX}`, `-${hiY}`, zp], [hiX, `-${hiY}`, zp], [hiX, hiY, zp], [`-${hiX}`, hiY, zp], // 4-7 recessed print
+    [`-${hoX}`, `-${hoY}`, zb], [hoX, `-${hoY}`, zb], [hoX, hoY, zb], [`-${hoX}`, hoY, zb], // 8-11 back outer
   ];
   const pts = P.map((p) => `(${p[0]}, ${p[1]}, ${p[2]})`).join(", ");
   // print, 4 border bars, 4 sides, back
@@ -750,11 +756,17 @@ function main() {
         continue;
       }
       const dims = jpegSize(readFileSync(srcJpg));
-      const isSquare = dims && Math.abs(dims.w - dims.h) / Math.max(dims.w, dims.h) <= SQUARE_TOLERANCE;
-      if (!isSquare) {
-        nonSquare.push(`${p.id} · ${c.name} → ${dims ? `${dims.w}×${dims.h}` : "unknown"} (needs a square master; SKIPPED — never cropped)`);
+      if (!dims) {
+        nonSquare.push(`${p.id} · ${c.name} → unreadable dimensions (SKIPPED)`);
         continue;
       }
+      // True aspect from the master: square masters snap to exactly 1:1 (identical
+      // output as before); a genuinely non-square master (e.g. landscape ophiuchus)
+      // bakes at its REAL proportions — never cropped. Width tracks the size's cm.
+      const aspect =
+        Math.abs(dims.w - dims.h) / Math.max(dims.w, dims.h) <= SQUARE_TOLERANCE
+          ? 1
+          : dims.h / dims.w;
       const s = slug(c.image);
 
       // Shared 1024px JPEG texture — embedded in every GLB (and reused for USDZ).
@@ -770,6 +782,8 @@ function main() {
       // USDZ per size (iOS). GLB is per (colourway × size) — see buildBoxGlb.
       let usdzTex = null;
       for (const size of SIZES) {
+        const widthM = size.metres;
+        const heightM = size.metres * aspect; // === widthM for square masters
         // Per-(colourway × size) TEXTURED GLB — Android Scene Viewer + WebXR load
         // this exact file on hand-off, so the artwork + true size survive.
         let comboGlbUrl = null;
@@ -777,7 +791,7 @@ function main() {
           const glbName = `${p.id}-${s}-${size.id}-${GLB_VERSION}.glb`;
           const gPath = join(OUT_DIR, glbName);
           try {
-            const buf = buildBoxGlb(size.metres, { buf: glbTexBuf, mime: "image/jpeg" });
+            const buf = buildBoxGlb(widthM, heightM, { buf: glbTexBuf, mime: "image/jpeg" });
             const gErr = validateGlb(buf);
             if (gErr.length) throw new Error(gErr.join("; "));
             writeFileSync(gPath, buf);
@@ -805,7 +819,7 @@ function main() {
             const texName = `${p.id}-${s}.jpg`;
             const texInTmp = join(tmp, texName);
             if (texInTmp !== usdzTex) writeFileSync(texInTmp, readFileSync(usdzTex));
-            const usda = buildUsda(size.metres, CANVAS_DEPTH_M, texName);
+            const usda = buildUsda(widthM, heightM, CANVAS_DEPTH_M, texName);
             const usdaPath = join(tmp, `${p.id}-${s}-${size.id}.usda`);
             writeFileSync(usdaPath, usda);
             // Package (must run in tmp so the relative texture path resolves).
@@ -835,7 +849,7 @@ function main() {
               const fgName = `${p.id}-${s}-${size.id}-${fr.id}-${GLB_VERSION}.glb`;
               const fgPath = join(OUT_DIR, fgName);
               try {
-                const buf = buildFramedGlb(size.metres, FRAME_WIDTH_M, fr.linear, { buf: glbTexBuf, mime: "image/jpeg" });
+                const buf = buildFramedGlb(widthM, heightM, FRAME_WIDTH_M, fr.linear, { buf: glbTexBuf, mime: "image/jpeg" });
                 const gErr = validateGlb(buf);
                 if (gErr.length) throw new Error(gErr.join("; "));
                 writeFileSync(fgPath, buf);
@@ -852,7 +866,7 @@ function main() {
               const fName = `${p.id}-${s}-${size.id}-${fr.id}-${VERSION}.usdz`;
               const fPath = join(OUT_DIR, fName);
               try {
-                const usda = buildFramedUsda(size.metres, FRAME_WIDTH_M, fr.linear, texName);
+                const usda = buildFramedUsda(widthM, heightM, FRAME_WIDTH_M, fr.linear, texName);
                 const usdaPath = join(tmp, `${p.id}-${s}-${size.id}-${fr.id}.usda`);
                 writeFileSync(usdaPath, usda);
                 execFileSync(USDZIP, ["--arkitAsset", usdaPath, fPath], { cwd: tmp, stdio: "ignore" });
@@ -873,7 +887,8 @@ function main() {
           imageSlug: s,
           size: size.id,
           widthCm: size.cm,
-          heightCm: size.cm,
+          heightCm: Math.round(size.cm * aspect * 10) / 10,
+          aspect,
           depthM: CANVAS_DEPTH_M,
           artworkSrc: c.image,
           glbUrl: comboGlbUrl ?? `/models/wall/${SHELL_GLB}`,
