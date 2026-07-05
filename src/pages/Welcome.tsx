@@ -335,7 +335,7 @@ export const Welcome = () => {
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
         className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[74svh] md:landscape:min-h-[58svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
-        aria-label="The Mandala Company"
+        aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
             backdrop reads continuously up to the Earth limb; the wordmark keeps
@@ -446,7 +446,7 @@ export const Welcome = () => {
                       "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
                   }}
                 >
-                  The Mandala Company
+                  The SEM Experience
                 </span>
               ) : (
                 <motion.span
@@ -466,7 +466,7 @@ export const Welcome = () => {
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
                 >
-                  {["The", "Mandala", "Company"].map((word, i) => (
+                  {["The", "SEM", "Experience"].map((word, i) => (
                     <motion.span
                       key={word}
                       style={{ display: "inline-block" }}
