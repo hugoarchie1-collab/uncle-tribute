@@ -114,24 +114,32 @@ const PavoLayer = ({
         transform: "translateZ(0)",
       }}
     >
-      {/* Ambient fill — the same painting, heavy-blurred, covers the surround. */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v3.webp`)}")` }}
-      />
+      {/* Ambient fill — the same painting, heavy-blurred, covers the surround.
+          ONLY in contain mode: in cover mode the whole painting already fills
+          the viewport, so a second blurred copy behind it read through the
+          feathered edges as a "repeated blurry mess" (Hugo 2026-07-05). Dropping
+          it lets the painting fade to clean dark instead. */}
+      {fit === "contain" && (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url("${asset(`/img/paintings/pavo-${slug}-fill-v3.webp`)}")` }}
+        />
+      )}
       {fit === "cover" ? (
-        /* FULL-BLEED cover (About): the painting is STRETCHED to fill the
-           whole viewport edge-to-edge — no contained square + surround, so
-           there is no seam / "cut-off blurry repeat" (Hugo 2026-07-04: "fully
-           stretched out without this cut off thing… fully expanded"). A square
-           canvas into a landscape viewport crops only the blurred border rows;
-           the mandala still reads as one continuous stretched image. */
+        /* FULL-BLEED cover (Home + About): the whole painting fills the viewport
+           edge-to-edge, ONE clean expanded image — no contained square, no blurred
+           fill behind, so there is no "repeated blurry mess" (Hugo 2026-07-05:
+           "not expanded properly, just repeated again behind and blurred"). A
+           slight overscan (scale 1.08) pushes the feathered alpha border off
+           every edge so it never reveals the dark base as a seam; a square canvas
+           in a landscape viewport just crops its outer rows — the mandala still
+           reads as one continuous tapestry. */
         <img
           src={asset(`/img/paintings/pavo-${slug}-whole-v3.webp`)}
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
           loading={index === 0 ? "eager" : "lazy"}
           data-colourway={name}
         />

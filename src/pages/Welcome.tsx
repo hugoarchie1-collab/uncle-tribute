@@ -159,7 +159,7 @@ const CosmicInterlude = () => {
             wall becoming taller than the film can resolve while still ~55svh
             there. object-cover + the vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(480px,88svh,1560px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(360px,58svh,1040px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -388,7 +388,7 @@ export const Welcome = () => {
             // Scale it UP on smaller widths so it anchors the top and the limb
             // reads as a real Earth curve, not a hairline (the marginLeft keeps
             // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[230%] ml-[-65%] sm:w-[150%] sm:ml-[-25%] md:w-[124%] md:ml-[-12%]"
+            className="block h-auto select-none w-[250%] ml-[-75%] sm:w-[164%] sm:ml-[-32%] md:w-[142%] md:ml-[-21%]"
             style={{
               display: "block",
               maxWidth: "none",
@@ -520,6 +520,7 @@ export const Welcome = () => {
             zoomed out, crossfading on page-scroll. Shared with About. Fade
             windows: indigo holds the hero, Mary Pink holds the finale. */}
         <PavoBackdrop
+          fit="cover"
           fades={[
             [0.16, 0.24],
             [0.36, 0.44],
