@@ -316,7 +316,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-label="The SEM Experience — home"
           className="press inline-flex items-center min-w-0"
         >
-          <Logo size={50} wordmark wordmarkText="The Mandala Company" />
+          <Logo size={44} wordmark wordmarkText="The Mandala Company" />
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the

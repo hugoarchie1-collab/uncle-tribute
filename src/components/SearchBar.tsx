@@ -234,7 +234,7 @@ export const SearchBar = ({
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="search"
-          placeholder="Search artworks, collections, anything…"
+          placeholder={isPage ? "Search artworks, collections, anything…" : "Search artworks…"}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
