@@ -133,7 +133,7 @@ export const Footer = () => (
           wordmark
           wordmarkWrap
           wordmarkText="The Mandala Company"
-          className="max-w-[280px] mb-5 [&>span]:leading-[1.4]"
+          className="max-w-[280px] mb-5"
         />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>
           A tribute to the life and work of Stephen Meakin (SEM) — Mandala
