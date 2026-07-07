@@ -39,6 +39,12 @@ const FRAME_OPTIONS: { id: string; label: string; swatch: string | null }[] = [
   ...FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, swatch: f.swatch })),
 ];
 
+// Master switch for the live AR wall preview. Set to `false` while the AR is
+// temporarily unavailable — the panel still opens (print preview + options) with
+// a calm "temporarily unavailable" notice. Flip to `true` to restore full AR
+// (all the models, routing and QR are intact — nothing was removed).
+const WALL_AR_ENABLED = false;
+
 interface SeeOnYourWallProps {
   painting: Painting;
   initialColourwayName?: string;
@@ -84,6 +90,10 @@ export const SeeOnYourWall = ({
   // Whether this painting has a real true-size AR model (ophiuchus's landscape
   // master has no square print model yet → no AR offered, never a fake one).
   const modelled = hasWallModel(painting.id);
+  // Show the live AR only when the master switch is on AND this painting has a
+  // real true-size model. When off, the panel still opens with all the options
+  // and a calm "temporarily unavailable" notice.
+  const showAr = WALL_AR_ENABLED && modelled;
 
   // Analytics + environment probe on open. Never opens the camera.
   useEffect(() => {
@@ -158,7 +168,7 @@ export const SeeOnYourWall = ({
   useEffect(() => {
     // Only the desktop QR panel renders qrDataUrl (guarded on platform below), so
     // there's no need to clear it synchronously on other platforms.
-    if (platform !== "desktop" || !modelled) return;
+    if (!WALL_AR_ENABLED || platform !== "desktop" || !modelled) return;
     let cancelled = false;
     const url =
       `${SITE_URL}/collections/${painting.id}` +
@@ -220,7 +230,7 @@ export const SeeOnYourWall = ({
 
         {/* ---- Scrollable body ---- */}
         <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-          {modelled ? (
+          {showAr ? (
             <>
               {/* True-size AR tile — shows the print; on a capable phone the
                   "View on your wall — true size" button launches Quick Look /
@@ -271,6 +281,13 @@ export const SeeOnYourWall = ({
                 )}
               </p>
             </>
+          ) : !WALL_AR_ENABLED ? (
+            <div className="mb-5 rounded-2xl bg-bg/60 px-5 py-6 text-center ring-1 ring-line">
+              <p className="m-0 font-sans text-[14px] font-bold text-ink">Wall preview temporarily unavailable</p>
+              <p className="m-0 mt-1.5 font-sans text-[14px] leading-[1.6] text-ink-muted">
+                Choose your colourway, size and frame below — every piece is shown to scale on the product page. The live wall preview is back soon.
+              </p>
+            </div>
           ) : (
             <div className="mb-5 rounded-2xl bg-bg/60 px-5 py-6 text-center ring-1 ring-line">
               <p className="m-0 font-sans text-[14px] font-bold text-ink">Wall preview coming soon</p>
@@ -383,7 +400,7 @@ export const SeeOnYourWall = ({
             </p>
           </section>
 
-          {inApp && !arAvailable && (
+          {WALL_AR_ENABLED && inApp && !arAvailable && (
             <p className="mt-5 m-0 rounded-2xl bg-accent/10 px-4 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink ring-1 ring-accent/30">
               For the AR experience, open this page in Safari or Chrome.
             </p>

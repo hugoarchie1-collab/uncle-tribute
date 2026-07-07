@@ -31,6 +31,11 @@ interface ImageRevealProps {
    *  Default "100vw" is conservative — pass an accurate value where the frame
    *  is narrower than the viewport. */
   sizes?: string;
+  /** Static zoom applied to the image. Default 1.04 gives the parallax a little
+   *  bleed so a drift never reveals a hard edge. Pass `1` for images that MUST
+   *  show WHOLE with zero crop (e.g. the home studio photo) — only safe when the
+   *  box ratio equals the image's intrinsic ratio and `parallax` is 0. */
+  zoom?: number;
 }
 
 /**
@@ -55,6 +60,7 @@ export const ImageReveal = ({
   objectPosition = "center",
   tilt = false,
   sizes = "100vw",
+  zoom = 1.04,
 }: ImageRevealProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
@@ -164,12 +170,13 @@ export const ImageReveal = ({
           // under reduced motion / coarse pointer to avoid needless layers.
           style={{
             y,
+            scale: zoom,
             objectPosition,
             willChange: !noParallax && near ? "transform" : undefined,
           }}
           animate={tilt ? { rotateX: tiltState.rx, rotateY: tiltState.ry } : undefined}
           transition={tilt ? { type: "spring", stiffness: 150, damping: 18 } : undefined}
-          className="w-full h-full object-cover scale-[1.04]"
+          className="w-full h-full object-cover"
         />
       </picture>
     </div>
