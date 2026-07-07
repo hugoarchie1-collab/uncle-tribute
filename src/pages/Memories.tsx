@@ -304,18 +304,20 @@ const CommentRow = ({
             {expanded ? "Show less" : "Read more"}
           </button>
         ) : null}
-        {/* OPTIONAL IMAGE — inline comment attachment scale, not a hero. The one
-            allowed ring (on the image, never on the row). */}
+        {/* SHARED PHOTO — presented like a social post: full-width within the
+            card, rounded, soft depth, gentle hover. The whole photo is shown
+            (capped height, centred) so a shared memory reads as a proper post,
+            never a plopped-in thumbnail. */}
         {memory.imageUrl ? (
-          <div className="mt-2.5 block w-full md:inline-block overflow-hidden rounded-xl ring-1 ring-line bg-bg md:max-w-[clamp(200px,60%,400px)]">
+          <figure className="mt-3.5 overflow-hidden rounded-2xl bg-bg ring-1 ring-line/70 shadow-[0_12px_36px_-10px_rgba(0,0,0,0.6)]">
             <img
               src={memory.imageUrl}
               alt={`A photograph shared by ${memory.name}`}
               loading="lazy"
               decoding="async"
-              className="block w-full h-auto object-cover object-top md:max-h-[clamp(220px,42vw,380px)]"
+              className="block w-full max-h-[600px] object-cover object-center transition-transform duration-[600ms] ease-out group-hover:scale-[1.015]"
             />
-          </div>
+          </figure>
         ) : null}
       </div>
     </article>
