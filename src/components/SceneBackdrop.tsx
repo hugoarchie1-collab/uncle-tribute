@@ -27,14 +27,17 @@ import { asset } from "../lib/asset";
 // light 0.38→0.80 risked text on busy images — this MIDDLE keeps every scene
 // vivid + visible while the cream copy still reads. EVERY scene page uses this
 // exact value so the site is coherent across pages + platforms.
+// 2026-07-07 (Hugo: "reveal the background clearer on every page like home"):
+// lightened the top/mid so the scene READS like the home Pavo backdrop, while
+// keeping the FOOT heavy (0.52) where body copy sits so cream text stays legible.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.22) 0%, rgba(8,7,6,0.38) 45%, rgba(8,7,6,0.56) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.12) 0%, rgba(8,7,6,0.26) 42%, rgba(8,7,6,0.52) 100%)";
 
 /** Brightness/saturation lift applied to the scene image layer so the (baked-
- *  dark) photos are actually VISIBLE under the softened scrim — reversible CSS,
- *  no asset re-bake. Cream copy stays legible because SCENE_SCRIM still carries
- *  a floor of shading, heaviest at the foot where most body copy sits. */
-const SCENE_IMAGE_FILTER = "brightness(1.38) saturate(1.06)";
+ *  dark) photos read CLEARLY — like the home backdrop — under the lighter scrim.
+ *  Reversible CSS, no asset re-bake. Cream copy stays legible because SCENE_SCRIM
+ *  still carries a floor of shading, heaviest at the foot where body copy sits. */
+const SCENE_IMAGE_FILTER = "brightness(1.62) saturate(1.14)";
 
 /** One crossfade layer — full during its scroll band, ramping in/out at the
  *  band boundaries (first holds from the top, last holds to the foot). Each

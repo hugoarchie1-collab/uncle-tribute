@@ -19,6 +19,7 @@ import { UpdatePrompt } from "./components/UpdatePrompt";
 import { BackgroundMusic } from "./components/BackgroundMusic";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
+import { AmbientBackdrop } from "./components/AmbientBackdrop";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
@@ -260,6 +261,16 @@ export default function App() {
         <RouteHeadDefaults />
           {/* Sitewide film-grain texture — sits above content at z-100,
               opacity tuned low so it textures without obscuring. */}
+          {/* PERSISTENT atmospheric ground (2026-07-07, Hugo: "background
+              glitches when you click a page" + "reveal it clearer like home").
+              Every page's OWN backdrop sits INSIDE the route crossfade, so
+              during a navigation both fade and the bare #0a0908 canvas flashed
+              through — the "glitch". This one peacock layer lives OUTSIDE the
+              transition, so the dissolve reads scene → soft atmosphere → scene
+              instead of scene → black → scene. A page's own opaque backdrop
+              covers it in normal viewing; it only shows in the transition gap
+              (and behind any page that lacks its own). */}
+          <AmbientBackdrop opacity={0.6} />
           <div aria-hidden="true" className="film-grain" />
           {/* Premium custom cursor — fine-pointer + motion-allowed only;
               renders nothing (native cursor) on touch / reduced-motion. */}

@@ -650,8 +650,11 @@ export const Collections = () => {
             // own gradient into a black bar at the very top (Hugo). Ramps darker
             // toward the foot for the catalogue/footer seam; the page-intro +
             // tile copy carry their own text-shadow for legibility.
+            // 2026-07-07 lightened (Hugo: "reveal the background clearer, like
+            // home") — top/mid opened up so the collection scene reads clearly;
+            // foot kept heavier for the catalogue/footer seam + tile legibility.
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.26) 0%, rgba(8,7,6,0.40) 45%, rgba(8,7,6,0.60) 100%)",
           }}
         />
       </div>
