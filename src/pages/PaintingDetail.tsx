@@ -1660,7 +1660,7 @@ const BuyBox = ({
                   <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
                     <span className="flex items-baseline justify-between gap-3">
                       <strong className="text-ink">
-                        Hand-finished by Polly Wedge
+                        Hand-finished by Polly Wedge (Stephen's sister)
                       </strong>
                       {embellishPriceLabel && (
                         <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">

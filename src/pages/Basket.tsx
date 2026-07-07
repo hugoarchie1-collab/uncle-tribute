@@ -512,7 +512,7 @@ export const Basket = () => {
                           {embellishPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Hand-finished by Polly Wedge
+                                Hand-finished by Polly Wedge (Stephen's sister)
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {fmt(embellishPence)}

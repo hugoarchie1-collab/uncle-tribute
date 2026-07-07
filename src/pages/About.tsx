@@ -956,7 +956,7 @@ export const About = () => {
             </p>
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 items-stretch mt-2.5 md:mt-3 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch mt-2.5 md:mt-3 max-w-[900px] 3xl:max-w-[1080px] 4xl:max-w-[1200px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/21-at-the-helm.jpg"
@@ -975,17 +975,6 @@ export const About = () => {
                 width={1200}
                 height={1600}
                 sizes="(min-width: 640px) 32vw, 100vw"
-                fill
-                aspect="aspect-[4/5]"
-              />
-            </Reveal>
-            <Reveal as="div" delay={0.18}>
-              <Plate
-                src="/img/about/23-costume-evening.jpg"
-                alt="Stephen Meakin smiling with his arm around a friend dressed in a gold costume headdress at an evening gathering."
-                width={1600}
-                height={1411}
-                sizes="(min-width: 768px) 32vw, 100vw"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -1596,15 +1585,6 @@ export const About = () => {
             the classroom at cluster scale. The group photo MUST show in full
             (heads + all the mandalas) → contained, never cropped. */}
         <section className={cn(SECTION, "py-4 md:py-6")}>
-          <Reveal as="figure" className="m-0 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto mb-3 md:mb-4">
-            <ContainImage
-              src="/img/about/08-taga-group.jpg"
-              alt="Stephen with a group of TAGA students, each holding a mandala they painted"
-              aspect="aspect-[4/3]"
-              parallax={0.05}
-              sizes="(min-width: 1160px) 1100px, calc(100vw - 32px)"
-            />
-          </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1300px] 4xl:max-w-[1440px] mx-auto">
             <Reveal as="figure" className="m-0">
               <ImageReveal

@@ -133,6 +133,10 @@ const ARTIST_MEMORY: WallMemory = {
   name: "Stephen Meakin (SEM)",
   relationship: "In his own words, to his students",
   message: ABOUT.studentsLetter,
+  // Stephen with his TAGA workshop students, each holding a mandala they
+  // painted — moved here from the About page (Hugo) to sit with his own words
+  // to those students.
+  imageUrl: "/img/about/08-taga-group.jpg",
 };
 
 // The family's farewell — Polly Wedge's funeral tribute, moved here from the
@@ -147,6 +151,9 @@ const FAMILY_TRIBUTE: WallMemory = {
   name: "Polly Wedge",
   relationship: "Written for Stephen's funeral",
   message: TRIBUTE.paragraphs.join("\n\n"),
+  // Stephen with Polly — moved here from the About page (Hugo) so her farewell
+  // carries a photo of them together.
+  imageUrl: "/img/about/23-costume-evening.jpg",
 };
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4MB — matches the endpoint's cap

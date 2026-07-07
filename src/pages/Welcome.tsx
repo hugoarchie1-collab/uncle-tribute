@@ -162,7 +162,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,66svh,1240px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(400px,54svh,980px)] 3xl:h-[clamp(400px,48svh,900px)] 4xl:h-[clamp(400px,44svh,860px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -366,7 +366,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-2in] z-[1] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
@@ -412,7 +412,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -549,7 +549,7 @@ export const Welcome = () => {
               blank space around it"). No side column, no text-over-image overlap:
               the headline sits ABOVE the photo; the photo owns the full width. */}
           <section className="relative isolate w-full overflow-hidden pt-4 md:pt-6">
-            <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
               <Reveal as="div" className="text-center">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mx-auto text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[0.98]">
@@ -619,7 +619,7 @@ export const Welcome = () => {
               close, never on body-size glyphs where it fuzzed the edges.
               Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
               only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="relative isolate mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* NO local reading scrim. Hugo flagged the old radial deepening
                 here as "black boxes behind the text" — at the wide essay measure
                 the soft-edged radial still read as a dark rectangle sitting on
@@ -832,7 +832,7 @@ export const Welcome = () => {
             </figure>
 
             {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[22svh] md:py-0">
+            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[22svh] md:py-0">
               <Reveal as="div" className="w-full md:max-w-[52%] lg:max-w-[50%]">
                 {/* MOBILE portrait — above the copy. */}
                 <figure className="m-0 mb-6 md:hidden max-w-[460px]">
@@ -880,7 +880,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-4 md:mb-5">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
@@ -968,7 +968,7 @@ export const Welcome = () => {
               painting at the easel with a finished mandala on the wall behind.
               A full-content-width plate at native 3:2 (shown WHOLE, no crop)
               that leads into the "ritual" section. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/welcome/stephen-painting-denim-v1.jpg"
@@ -994,7 +994,7 @@ export const Welcome = () => {
               a translucent dark fill that lets the blurred mandala glow
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] mx-auto hero-text-shadow")}>
@@ -1074,7 +1074,7 @@ export const Welcome = () => {
               the section above describes, in motion. Contained 16:9 plate,
               muted/looping/lazy, feathered into the backdrop; reduced-motion
               holds the poster still. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="figure" className="m-0">
               <LoopFilm
                 src="/video/studio-mandala-v1.mp4"
@@ -1087,7 +1087,7 @@ export const Welcome = () => {
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-4 md:mb-5">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
@@ -1154,7 +1154,7 @@ export const Welcome = () => {
               backdrop into a crisp gallery object. The source is low-res
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016

@@ -63,7 +63,7 @@ export const FooterCatalogue = () => {
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-bg via-bg/55 to-transparent"
       />
-      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px]">
+      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] 4xl:max-w-[2100px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
           The Catalogue · {tiles.length}
         </p>
@@ -79,7 +79,7 @@ export const FooterCatalogue = () => {
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
           variants={variants}
-          className="group/cat flex flex-wrap justify-center gap-2.5 list-none p-0 m-0"
+          className="group/cat grid grid-cols-10 gap-2.5 list-none p-0 m-0"
         >
           {tiles.map((t) => (
             <li
@@ -87,7 +87,7 @@ export const FooterCatalogue = () => {
               // Hovering any tile recedes the siblings so the strip reads as a
               // curated wall, not a flat contact-sheet (the hovered tile resets
               // to full via hover:!opacity-100).
-              className="m-0 min-w-0 flex-[0_1_calc(10%-9px)] transition-opacity duration-500 group-hover/cat:opacity-55 hover:!opacity-100"
+              className="m-0 min-w-0 transition-opacity duration-500 group-hover/cat:opacity-55 hover:!opacity-100"
             >
               <Link
                 to={`/collections/${t.id}`}

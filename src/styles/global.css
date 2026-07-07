@@ -507,6 +507,19 @@
   -webkit-appearance: none;
   appearance: none;
 }
+/* Broadened 2026-07-07 (Hugo: "I don't wanna manually click any videos"): the
+   SAME kill applies to EVERY autoplay film site-wide (masthead banner,
+   CosmicFilmHeader, LoopFilm archive clips), not just the intro — any
+   muted-autoplay <video autoplay> must never paint the iOS tap-to-play glyph;
+   the first scroll/touch kicks play(). Reviews videos use `controls` (no
+   autoplay attr) so they keep their normal player. */
+video[autoplay]::-webkit-media-controls-start-playback-button,
+video[autoplay]::-webkit-media-controls-play-button,
+video[autoplay]::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
 .video-intro__vignette {
   position: absolute;
   inset: 0;
