@@ -123,11 +123,13 @@ const CosmicInterlude = () => {
       // overlap the wordmark on the screens where content fills the masthead).
       // The soft top feather melts the seam either way.
       // SYMMETRIC breathing room (Hugo: "right up to the text… not too close…
-      // make symmetrical"): equal mt/mb so the film sits just under the lockup
+      // make symmetrical"): EQUAL mt/mb so the film sits just under the lockup
       // with matched space above and below — no longer a tiny gap above + a big
       // one below. The masthead's justify-end places the lockup at the viewport
-      // foot, so mt is the whole visible gap up to the wordmark.
-      className="relative z-30 w-full mt-[clamp(12px,2svh,30px)] mb-[clamp(20px,3.5svh,48px)]"
+      // foot, so mt is the whole visible gap up to the wordmark. Tightened so
+      // the (now larger) film sits RIGHT up under "The Art of Stephen Meakin"
+      // without touching it.
+      className="relative z-30 w-full mt-[clamp(12px,2svh,28px)] mb-[clamp(12px,2svh,28px)]"
     >
       {/* FULL-BLEED BANNER (Hugo: "fill the entire edges of screen so it's like
           a banner", edges softened like the photos below). Edge-to-edge width,
@@ -153,13 +155,14 @@ const CosmicInterlude = () => {
             seam on engines which silently drop the composite keyword. Same soft
             dissolve as the .soft-edge-y photos elsewhere on the page. */}
         {/* CINEMATIC HEIGHT (Hugo 2026-07-02: the 24vw/38svh strip read as "a
-            tiny bar, which is ridiculous"): ~62% of the viewport height on every
-            device — a genuinely large full-bleed band. The 340px floor keeps it
-            substantial on short landscape phones; the 1200px ceiling stops a 4K
-            wall becoming taller than the film can resolve while still ~55svh
-            there. object-cover + the vertical feather handle every ratio. */}
+            tiny bar, which is ridiculous"; 2026-07-05: "have video larger" — the
+            film is now a commanding ~66svh band): a genuinely large full-bleed
+            banner on every device. The 440px floor keeps it substantial on short
+            landscape phones; the 1240px ceiling stops a 4K wall becoming taller
+            than the film can resolve while still ~62svh there. object-cover + the
+            vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(360px,58svh,1040px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,66svh,1240px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -438,10 +441,12 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(60px, 14vw, 200px), 16svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 200px), 16svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
+                    overflowWrap: "normal",
+                    wordBreak: "keep-all",
                     color: "#ede6d6",
                     textShadow:
                       "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
@@ -455,10 +460,12 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(60px, 14vw, 200px), 16svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 200px), 16svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
+                    overflowWrap: "normal",
+                    wordBreak: "keep-all",
                     color: "#ede6d6",
                     textShadow:
                       "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
@@ -470,7 +477,7 @@ export const Welcome = () => {
                   {["The", "SEM", "Experience"].map((word, i) => (
                     <motion.span
                       key={word}
-                      style={{ display: "inline-block" }}
+                      style={{ display: "inline-block", whiteSpace: "nowrap" }}
                       variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
                       transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
                     >
@@ -574,18 +581,21 @@ export const Welcome = () => {
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
               <Reveal as="figure" className="m-0 mt-6 md:mt-7">
                 {/* The studio photo shows WHOLE — its box matches the source's
-                    native 3:2 ratio (1200×800), so object-cover fits it edge-to-
-                    edge with no crop (the earlier aspect-[3/1] sliced away the
-                    top + bottom third — Hugo: "stop cropping my main image").
-                    The soft-edge feather hides the tiny scale-[1.04] parallax
-                    bleed, so the full frame reads. */}
+                    native 3:2 ratio (1200×800) AND it renders at zoom={1} with
+                    parallax OFF, so NOTHING is cropped: no object-cover slice (the
+                    ratios are identical) and no scale-[1.04] edge trim (the default
+                    parallax bleed that was still shaving ~2% off every side — Hugo:
+                    "stop cropping my main image after so here we are"). The full
+                    1200×800 frame reads edge-to-edge; the soft-edge feather just
+                    melts it into the page. */}
                 <ImageReveal
                   src="/img/welcome/01-painting-wild-rose.jpg"
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
                   aspect="aspect-[3/2]"
                   edges="all"
-                  parallax={0.08}
+                  parallax={0}
+                  zoom={1}
                   objectPosition="center"
                   shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
                   sizes="(min-width: 1400px) 1320px, 92vw"

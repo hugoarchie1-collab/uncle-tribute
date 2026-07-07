@@ -132,7 +132,7 @@ export const Footer = () => (
           size={28}
           wordmark
           wordmarkWrap
-          wordmarkText="The SEM Experience"
+          wordmarkText="The Mandala Company"
           className="max-w-[280px] mb-5 [&>span]:leading-[1.4]"
         />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>

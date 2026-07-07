@@ -1450,27 +1450,37 @@ export const About = () => {
           <Reveal as="div" className="max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1680px] mx-auto">
             <p className={cn(EYEBROW_MUTED, "m-0 mb-6 text-center")}>From the design archive</p>
             <figure className="m-0">
+              {/* Each AssetImage is wrapped in its own div: AssetImage renders a
+                  <picture display:contents>, whose <source> child would otherwise
+                  leak into this grid as an extra cell and push the second image
+                  onto its own row — leaving ~450px of dead space (Hugo: "so much
+                  empty space by Force India"). The div makes each image ONE grid
+                  cell, so the two sheets sit cleanly side by side. */}
               <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-center">
-                <AssetImage
-                  src="/img/about/05-force-india-layout.jpg"
-                  alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
-                  width={960}
-                  height={640}
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
-                  className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
-                />
-                <AssetImage
-                  src="/img/about/06-force-india-final.jpg"
-                  alt="Stephen's mandala design for the Sahara Force India Formula One car"
-                  width={904}
-                  height={639}
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
-                  className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
-                />
+                <div className="min-w-0">
+                  <AssetImage
+                    src="/img/about/05-force-india-layout.jpg"
+                    alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
+                    width={960}
+                    height={640}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
+                    className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <AssetImage
+                    src="/img/about/06-force-india-final.jpg"
+                    alt="Stephen's mandala design for the Sahara Force India Formula One car"
+                    width={904}
+                    height={639}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 1100px) 500px, (min-width: 768px) 48vw, 100vw"
+                    className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+                  />
+                </div>
               </div>
             </figure>
           </Reveal>
