@@ -482,26 +482,15 @@ const AnegadaPoster = () => (
         </h3>
       </Reveal>
 
-      {/* The first-person Anegada story BESIDE the sand-circle photograph
-          (Hugo: the photo next to the text — not long bits of text alone).
-          The photograph is UNCAPTIONED and its alt is purely descriptive —
-          it must never claim Anegada, 1995 or "the first" (see the caption
-          law above). Stacks below md. */}
-      <div className="mt-4 md:mt-5 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center text-left">
-        <Reveal as="div">
-          <p className={BODY}>{ABOUT.anegada[0]}</p>
-        </Reveal>
-        <Reveal as="figure" delay={0.08} className="m-0">
-          <ImageReveal
-            src="/img/about/24-circle-in-the-sand.jpg"
-            alt="A large circular pattern of radiating petal-like forms drawn into the sand of a beach, the shoreline and sea beyond."
-            aspect="aspect-square"
-            edges="all"
-            parallax={0.08}
-            sizes="(min-width: 768px) 48vw, 100vw"
-          />
-        </Reveal>
-      </div>
+      {/* The first-person Anegada story — set as ONE centred reading measure.
+          The sand-circle photograph was removed 2026-07-07 (Hugo doesn't have
+          the original yet); rather than leave a blank half in the old two-column
+          grid, the story now reads as a single clean column between the
+          "Everything is connected." headline and the pull-quote below. Drop a
+          new figure back into a grid here once the real image exists. */}
+      <Reveal as="div" className="mx-auto max-w-[64ch] mt-5 md:mt-6 text-left">
+        <p className={BODY}>{ABOUT.anegada[0]}</p>
+      </Reveal>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
           content.ts (ABOUT.anegadaQuote), never truncated or re-typed.
