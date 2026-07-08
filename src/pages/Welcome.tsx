@@ -392,7 +392,7 @@ export const Welcome = () => {
             // Scale it UP on smaller widths so it anchors the top and the limb
             // reads as a real Earth curve, not a hairline (the marginLeft keeps
             // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[250%] ml-[-75%] sm:w-[164%] sm:ml-[-32%] md:w-[142%] md:ml-[-21%]"
+            className="block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[142%] md:ml-[-21%]"
             style={{
               display: "block",
               maxWidth: "none",
