@@ -63,15 +63,15 @@ const config: Config = {
         // 2026-06-20: ceilings + vw growth raised so type FILLS big screens
         // (Hugo: "increase font size + fill screen, too much spacing"). Mobile
         // floors barely move; large screens grow markedly bolder.
-        hero: ["clamp(50px, 8vw, 124px)", { lineHeight: "1.02", letterSpacing: "-0.04em" }],
-        h1: ["clamp(42px, 6.2vw, 100px)", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
-        h2: ["clamp(33px, 4.7vw, 68px)", { lineHeight: "1.08", letterSpacing: "-0.035em" }],
-        h3: ["clamp(25px, 2.9vw, 44px)", { lineHeight: "1.18", letterSpacing: "-0.025em" }],
+        hero: ["clamp(50px, 8.4vw, 152px)", { lineHeight: "1.02", letterSpacing: "-0.04em" }],
+        h1: ["clamp(42px, 6.6vw, 124px)", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
+        h2: ["clamp(33px, 5vw, 92px)", { lineHeight: "1.08", letterSpacing: "-0.035em" }],
+        h3: ["clamp(25px, 3.1vw, 56px)", { lineHeight: "1.18", letterSpacing: "-0.025em" }],
         // Fluid body — grows on large screens so prose scales with the viewport
         // (dynamic cross-platform unison) instead of looking tiny in a sea of
         // dead space at fullscreen. Mobile/laptop ≈ the old 18/16px.
-        body: ["clamp(18px, 0.46vw + 14.3px, 25px)", { lineHeight: "1.75" }],
-        "body-sm": ["clamp(16px, 0.34vw + 13px, 20px)", { lineHeight: "1.72" }],
+        body: ["clamp(18px, 0.6vw + 14.3px, 29px)", { lineHeight: "1.7" }],
+        "body-sm": ["clamp(16px, 0.44vw + 13px, 23px)", { lineHeight: "1.68" }],
         label: ["12px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {

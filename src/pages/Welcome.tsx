@@ -338,7 +338,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[74svh] md:landscape:min-h-[58svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -724,7 +724,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] columns-1 md:columns-2 gap-x-10 lg:gap-x-16 2xl:gap-x-20 [column-fill:_balance]">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1560px] 4xl:max-w-[1740px] columns-1 md:columns-2 gap-x-10 lg:gap-x-16 2xl:gap-x-20 [column-fill:_balance]">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -740,7 +740,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.6vw+17px,25px)] leading-[1.45] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 text-pretty hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -760,7 +760,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1} className="mt-5 md:mt-7 text-center">
               <div aria-hidden="true" className="mx-auto mb-3 md:mb-4 h-px w-16 bg-ink/20" />
-              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] text-center hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1560px] 4xl:max-w-[1740px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
                   style={{
@@ -885,7 +885,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -997,7 +997,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
-                <h2 className={cn(TITLE, "my-0 max-w-[860px] mx-auto hero-text-shadow")}>
+                <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
                 <p className={cn(SUBTITLE, "my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto")}>
@@ -1092,7 +1092,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1155,7 +1155,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
               </p>
@@ -1186,7 +1186,7 @@ export const Welcome = () => {
             </Reveal>
 
             {/* The commission prose, between the film and the photo. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1300px] 3xl:max-w-[1460px] text-center mt-6 md:mt-8">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center mt-6 md:mt-8">
               <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>
                 {WELCOME.bio[2]}
               </p>

@@ -81,9 +81,16 @@ const RouteHeadDefaults = () => {
   return null;
 };
 
+// Transparent fallback (NOT bg-bg): a lazy chunk loading mid-navigation must
+// never paint an opaque black screen OVER the persistent AmbientBackdrop — that
+// opaque cover was the residual "glitches out every time you click a new page"
+// flash the 2026-07-07 ambient layer couldn't fix on its own (the ambient sits
+// BEHIND this fallback, so an opaque fallback hid it on every uncached nav).
+// Transparent → the dissolve reads scene → soft atmosphere → scene, never
+// scene → black → scene, on first visits too.
 const LoadingFallback = () => (
   <div
-    className="min-h-screen bg-bg flex items-center justify-center"
+    className="min-h-screen flex items-center justify-center"
     role="status"
     aria-label="Loading"
   >
