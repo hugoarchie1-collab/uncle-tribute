@@ -1011,31 +1011,11 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              {/* FEATURE IMAGE — full width of the panel so it reads large with
-                  no dead space beside it. ⚠️ CROP (Hugo 2026-07-02: "you cut his
-                  whole head off"): the source is 4:3 (2048×1536) with Stephen's
-                  + his companion's heads in the TOP ~8–35% of the frame — the
-                  old aspect-[5/2]/[3/1] centre crop kept only the middle 44%,
-                  beheading both. Phones now show the (near-)full 4:3 frame;
-                  md+ uses a gentler 16:9 anchored toward the top
-                  (objectPosition "center 18%") so the heads AND the mandala on
-                  the table stay in frame at every breakpoint — only ceiling
-                  shelf + foreground floor are trimmed. */}
-              <Reveal as="figure" className="m-0 mb-4 md:mb-6">
-                <ImageReveal
-                  src="/img/about/02-painting-table.jpg"
-                  alt="Stephen and a companion working over a large mandala print at his drafting table"
-                  aspect="aspect-[4/3] md:aspect-[16/9]"
-                  edges="all"
-                  parallax={0.08}
-                  objectPosition="center 18%"
-                  // Inside the max-w-[1320px]→[1720px] Craft panel, full panel
-                  // width minus section + panel padding: ~the container at wide
-                  // widths, near-full viewport on phones.
-                  sizes="(min-width: 1400px) 1200px, 92vw"
-                />
-              </Reveal>
-
+              {/* No feature photo here: 02-painting-table lives in the About
+                  monograph (Chapter "Return"), and Hugo 2026-07-08 asked that the
+                  same painting photos not repeat across Home + About. The ritual
+                  panel now leads straight from the lead into the process dossier —
+                  which also trims home scroll. */}
               {/* DOSSIER spread (2026-06-28 bold redesign, agent cherry-pick:
                   Hermès craftsmanship register) — the process PROSE runs as a
                   left text well; the six material facts become a RIGHT vertical
