@@ -85,13 +85,13 @@ import {
  *  the 0.85 `text-ink-soft` token; `text-ink-muted` is reserved for captions /
  *  cites / meta, so brightest→quietest (body > caption) reads. */
 const BODY =
-  "font-sans font-normal text-[18px] md:text-[19px] 3xl:text-[clamp(19px,1.18vw,24px)] leading-[1.7] text-ink-soft text-pretty m-0";
+  "font-sans font-normal text-[18px] md:text-[19px] 3xl:text-[clamp(19px,1.18vw,24px)] leading-[1.58] md:leading-[1.7] text-ink-soft text-pretty m-0";
 
 /** LEAD scale — the FIRST body paragraph of a chapter lifts one step above
  *  BODY (the two-scale drop that kills uniform-stack monotony). Never used on
  *  two consecutive paragraphs. */
 const LEAD =
-  "font-sans font-normal text-[19px] md:text-[21px] 3xl:text-[clamp(21px,1.35vw,27px)] leading-[1.75] text-ink/85 text-pretty m-0";
+  "font-sans font-normal text-[19px] md:text-[21px] 3xl:text-[clamp(21px,1.35vw,27px)] leading-[1.6] md:leading-[1.75] text-ink/85 text-pretty m-0";
 
 const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
 
@@ -615,6 +615,22 @@ const signOffAt = ABOUT.studentsLetter.lastIndexOf(LETTER_SIGN_OFF);
 const LETTER_BODY =
   signOffAt > 0 ? ABOUT.studentsLetter.slice(0, signOffAt).trimEnd() : ABOUT.studentsLetter;
 const LETTER_CLOSE = signOffAt > 0 ? ABOUT.studentsLetter.slice(signOffAt) : "";
+
+// Split a VERBATIM string into readable paragraphs on sentence boundaries so a
+// long single-string passage reads as an article on mobile instead of one
+// endless unbroken wall (Hugo 2026-07-07: "long-winded paragraphs… look
+// unformatted on mobile"). Every character renders exactly once, in order — the
+// SAME slicing discipline as LETTER_BODY / pullSentence above: no word is ever
+// changed, re-typed, or dropped, only wrapped across <p> elements.
+const paragraphize = (text: string, per = 3): string[] => {
+  const sentences = text.match(/[^.!?]+(?:[.!?]+["'”’)\]]*\s*|$)/g);
+  if (!sentences || sentences.length <= per) return [text];
+  const out: string[] = [];
+  for (let i = 0; i < sentences.length; i += per) {
+    out.push(sentences.slice(i, i + per).join("").trim());
+  }
+  return out.filter(Boolean);
+};
 
 // ─── Verbatim pull-lines — the chapter "standout moments" ────────────────────
 // EVERY standout sentence on this page is a literal substring of its chapter's
@@ -1550,12 +1566,18 @@ export const About = () => {
           {/* THE LETTER — one whole-element Reveal. */}
           <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[1300px] mx-auto mt-2.5 md:mt-3">
             <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-6 sm:p-8 md:p-10 3xl:p-12">
-              <p
-                className="drop-cap font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.75] text-ink m-0"
-                style={{ fontVariationSettings: '"opsz" 18, "wght" 400' }}
-              >
-                {LETTER_BODY}
-              </p>
+              {paragraphize(LETTER_BODY, 3).map((para, i) => (
+                <p
+                  key={i}
+                  className={cn(
+                    "font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 3xl:text-[clamp(20px,1.3vw,26px)] leading-[1.62] md:leading-[1.7] text-ink m-0",
+                    i === 0 ? "drop-cap" : "mt-4 md:mt-5",
+                  )}
+                  style={{ fontVariationSettings: '"opsz" 18, "wght" 400' }}
+                >
+                  {para}
+                </p>
+              ))}
               <div aria-hidden className="h-px w-12 bg-ink/15 my-5" />
               <p
                 className="font-display italic font-normal text-[clamp(22px,2.8vw,46px)] leading-[1.25] text-ink m-0"
