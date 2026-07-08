@@ -875,7 +875,7 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="beginnings" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.earlyLife[0]} className={LEAD} dropCap />
             </Reveal>
@@ -921,7 +921,7 @@ export const About = () => {
               "remove any empty space/gaps"). items-center vertically centres the
               shorter column so any residual slack splits top+bottom rather than
               pooling as one dead band (Hugo 2026-07-04: symmetry / no lopsided gap). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div" className="flex flex-col gap-5 md:gap-6">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
@@ -1043,7 +1043,7 @@ export const About = () => {
               (was a photo-less two-column text block — Hugo: "you haven't
               added that photo next to the text"). Photo alt is descriptive
               only; no caption (the caption convention was removed). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.earlyLife[3]} className={LEAD} dropCap />
             </Reveal>
@@ -1117,7 +1117,7 @@ export const About = () => {
 
           {/* Lead + the cymatics chart, balanced SIDE BY SIDE — the lead is
               short enough to match the chart, so neither leaves a blank half. */}
-          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-center max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
+          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.anegada[1]} className={cn(LEAD, "max-w-[52ch]")} />
             </Reveal>
@@ -1175,7 +1175,7 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="lewes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1241,7 +1241,7 @@ export const About = () => {
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-24 py-4 md:py-6")}>
           <ChapterHead id="exhibitions" />
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-center max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-start max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.legacy[1]} className={cn(LEAD, "max-w-[62ch]")} />
             </Reveal>
@@ -1293,7 +1293,7 @@ export const About = () => {
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
               right (the flyer's own wording only — see the Fairmont note). */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-3 md:mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-3 md:mb-4">
             <Reveal as="div" className="lg:col-span-7 flex flex-col gap-5 max-w-[62ch]">
               {INTERVIEW.context.map((p, i) => (
                 <p key={i} className={BODY}>
@@ -1324,7 +1324,7 @@ export const About = () => {
 
           {/* Q2 beside the portrait easel shot (PDF p12 top) — Stephen seated
               at the tilted circular canvas. Portrait + people → contained. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-3 md:mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-start mt-3 md:mt-4">
             <Reveal as="figure" className="m-0 md:col-span-5 max-w-[520px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
@@ -1342,7 +1342,7 @@ export const About = () => {
 
           {/* Q3 beside the rose-window painting in progress (PDF p12 bottom) —
               mirrored composition. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-3 md:mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-start mt-3 md:mt-4">
             <div className="md:col-span-7 order-2 md:order-1">
               <div className="border-t border-line">
                 <InterviewQA item={INTERVIEW.qa[2]} />
@@ -1433,7 +1433,7 @@ export const About = () => {
           <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-3 md:mt-4 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[5]} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-center mt-2.5 md:mt-3">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 md:items-start mt-2.5 md:mt-3">
             <Reveal as="figure" className="m-0 md:col-span-5">
               <ImageReveal
                 src="/img/about/36-mystic-rose-exhibition.jpg"
@@ -1484,7 +1484,7 @@ export const About = () => {
                   onto its own row — leaving ~450px of dead space (Hugo: "so much
                   empty space by Force India"). The div makes each image ONE grid
                   cell, so the two sheets sit cleanly side by side. */}
-              <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-center">
+              <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-start">
                 <div className="min-w-0">
                   <AssetImage
                     src="/img/about/05-force-india-layout.jpg"
@@ -1541,7 +1541,7 @@ export const About = () => {
                 long text). The studio easel shot sits in the narrower column;
                 the founding quote + the Az-Zarqa passage stack in the wider
                 reading column beside it. Alt descriptive only, no caption. */}
-            <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-12 gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-8 items-center border-t border-line pt-5 md:pt-6">
+            <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-12 gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-8 items-start border-t border-line pt-5 md:pt-6">
               <Reveal as="figure" className="m-0 md:col-span-5">
                 <ImageReveal
                   src="/img/about/11-ophiuchus-painting.jpg"
