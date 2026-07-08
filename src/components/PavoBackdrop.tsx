@@ -242,7 +242,12 @@ export const PavoBackdrop = ({
   // The cursor-reveal is a fine-pointer, motion-allowed, cover-mode affordance
   // (touch has no hover; reduced-motion opts out) — derived, never setState.
   const pointerFine = usePointerFine();
-  const reveal = fit === "cover" && !reduceMotion && pointerFine;
+  // ⚠️ DISABLED 2026-07-08 (Hugo: "so glitchy … terrible except iPhone"). The
+  // spotlight layered a SECOND full-viewport painting and repainted its
+  // mask-image on every pointermove — a desktop-ONLY cost (touch has no hover,
+  // hence iPhone was fine) that stacked on the scroll crossfade and read as
+  // constant jank. Flip back to the derived value below to restore it.
+  const reveal = false && fit === "cover" && !reduceMotion && pointerFine;
 
   useEffect(() => {
     if (!reveal) return;

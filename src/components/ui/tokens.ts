@@ -53,7 +53,7 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   // Clamp ceiling held at 150px (the 2026-06-20 fill-the-screen ceiling) — bold
   // at large widths but never the crude 220px logo the 700/opsz-48 cut hit in
   // its first (rejected) form.
-  fontSize: "clamp(50px, 9vw, 150px)",
+  fontSize: "clamp(50px, 9.6vw, 186px)",
   lineHeight: 0.92,
   letterSpacing: "-0.03em",
 };
@@ -62,7 +62,7 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
 export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontVariationSettings: '"opsz" 48, "wght" 700',
   fontWeight: 700,
-  fontSize: "clamp(42px, 7vw, 104px)",
+  fontSize: "clamp(42px, 7.6vw, 132px)",
   lineHeight: 0.96,
   letterSpacing: "-0.028em",
 };
@@ -88,7 +88,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(40px,6.6vw,96px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(42px,7.4vw,120px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -104,7 +104,7 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(20px,0.9vw_+_15px,37px)] leading-[1.58] text-ink-muted";
+  "font-sans font-normal text-[clamp(21px,1.05vw_+_15px,42px)] leading-[1.58] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
