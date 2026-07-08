@@ -162,7 +162,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(400px,54svh,980px)] 3xl:h-[clamp(400px,48svh,900px)] 4xl:h-[clamp(400px,44svh,860px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 3xl:h-[clamp(440px,62svh,980px)] 4xl:h-[clamp(440px,56svh,940px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -338,7 +338,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[58svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -392,7 +392,7 @@ export const Welcome = () => {
             // Scale it UP on smaller widths so it anchors the top and the limb
             // reads as a real Earth curve, not a hairline (the marginLeft keeps
             // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[142%] md:ml-[-21%]"
+            className="block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
             style={{
               display: "block",
               maxWidth: "none",
@@ -579,7 +579,12 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="m-0 mt-6 md:mt-7">
+              <Reveal as="figure" className="m-0 mt-6 md:mt-7 mx-auto w-full max-w-[1180px] 3xl:max-w-[1300px]">
+                {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
+                    (Hugo 2026-07-08: "no image should take up the full screen") —
+                    at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
+                    per his standing "stop cropping my main image" rule). The peacock
+                    backdrop fills the space either side, never a grey void. */}
                 {/* The studio photo shows WHOLE — its box matches the source's
                     native 3:2 ratio (1200×800) AND it renders at zoom={1} with
                     parallax OFF, so NOTHING is cropped: no object-cover slice (the
@@ -799,7 +804,7 @@ export const Welcome = () => {
             {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge. Reined in
                 2026-06-03 (Hugo: images too big) to match the trimmed hero —
                 a contained framed portrait, not a full-viewport takeover. */}
-            <figure className="m-0 hidden md:block absolute top-0 bottom-0 left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 -translate-y-1/2 h-[78svh] left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
               {/* EVEN melt: feather the portrait on ALL FOUR sides (was y-only,
                   which left a hard rectangular left/right edge against the page
                   gutter). With edges="all" it dissolves into the page identically
@@ -969,7 +974,9 @@ export const Welcome = () => {
               A full-content-width plate at native 3:2 (shown WHOLE, no crop)
               that leads into the "ritual" section. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="figure" className="m-0">
+            {/* Width-capped so the 3:2 plate never exceeds the viewport height
+                (Hugo 2026-07-08: no full-screen images); shown WHOLE, no crop. */}
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1180px] 3xl:max-w-[1300px]">
               <ImageReveal
                 src="/img/welcome/stephen-painting-denim-v1.jpg"
                 alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
