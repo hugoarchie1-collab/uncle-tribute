@@ -489,7 +489,7 @@ const AnegadaPoster = () => (
           "Everything is connected." headline and the pull-quote below. Drop a
           new figure back into a grid here once the real image exists. */}
       <Reveal as="div" className="mx-auto max-w-[64ch] mt-5 md:mt-6 text-left">
-        <p className={BODY}>{ABOUT.anegada[0]}</p>
+        <Prose text={ABOUT.anegada[0]} className={BODY} />
       </Reveal>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
@@ -632,6 +632,41 @@ const paragraphize = (text: string, per = 3): string[] => {
   return out.filter(Boolean);
 };
 
+/** Renders a VERBATIM string as sentence-grouped paragraphs (paragraphize) so no
+ *  passage is an endless unbroken wall on mobile. A short string renders as a
+ *  single <p>; every character is preserved. `dropCap` styles the FIRST
+ *  paragraph; `breakInside` (for CSS-column parents) keeps each paragraph whole
+ *  within a column. Paragraphs after the first get top spacing. */
+const Prose = ({
+  text,
+  className,
+  per = 3,
+  dropCap = false,
+  breakInside = false,
+}: {
+  text: string;
+  className?: string;
+  per?: number;
+  dropCap?: boolean;
+  breakInside?: boolean;
+}) => (
+  <>
+    {paragraphize(text, per).map((para, i) => (
+      <p
+        key={i}
+        className={cn(
+          className,
+          i === 0 && dropCap ? "drop-cap" : "",
+          i > 0 ? "mt-4 md:mt-5" : "",
+          breakInside ? "[break-inside:avoid]" : "",
+        )}
+      >
+        {para}
+      </p>
+    ))}
+  </>
+);
+
 // ─── Verbatim pull-lines — the chapter "standout moments" ────────────────────
 // EVERY standout sentence on this page is a literal substring of its chapter's
 // own content.ts prose, EXTRACTED by slicing (never re-typed) — the same
@@ -760,9 +795,11 @@ export const About = () => {
             <Reveal as="div">
               <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
               <blockquote className="m-0">
-                <p className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] leading-[1.35] text-ink m-0 text-balance mx-auto max-w-[52ch]">
-                  &ldquo;{ABOUT.opening[1]}&rdquo;
-                </p>
+                <Prose
+                  text={`“${ABOUT.opening[1]}”`}
+                  per={2}
+                  className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] leading-[1.35] text-ink m-0 text-balance mx-auto max-w-[52ch]"
+                />
               </blockquote>
             </Reveal>
             {/* Facts rail — dt/dd from content.ts constants; Staffordshire is
@@ -840,7 +877,7 @@ export const About = () => {
           <ChapterHead id="beginnings" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
-              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[0]}</p>
+              <Prose text={ABOUT.earlyLife[0]} className={LEAD} dropCap />
             </Reveal>
             <div className="flex flex-col gap-6">
               <Reveal as="div">
@@ -903,7 +940,7 @@ export const About = () => {
               />
             </Reveal>
             <Reveal as="div" delay={0.06}>
-              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[1]}</p>
+              <Prose text={ABOUT.earlyLife[1]} className={LEAD} dropCap />
             </Reveal>
           </div>
 
@@ -953,12 +990,11 @@ export const About = () => {
               centred column), collapsing to one column below lg. The drop-cap
               opens the first column; column-fill:balance keeps the two columns
               even-bottomed (no lopsided tail). */}
-          <Reveal as="div" className={cn(READING_WIDE, "mt-5 md:mt-6")}>
-            <p
-              className={cn(LEAD, "drop-cap lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
-            >
-              {ABOUT.earlyLife[2]}
-            </p>
+          <Reveal
+            as="div"
+            className={cn(READING_WIDE, "mt-5 md:mt-6 lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
+          >
+            <Prose text={ABOUT.earlyLife[2]} className={LEAD} dropCap breakInside />
           </Reveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch mt-2.5 md:mt-3 max-w-[900px] 3xl:max-w-[1080px] 4xl:max-w-[1200px] mx-auto">
@@ -1009,7 +1045,7 @@ export const About = () => {
               only; no caption (the caption convention was removed). */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 3xl:gap-14 items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
             <Reveal as="div">
-              <p className={cn(LEAD, "drop-cap")}>{ABOUT.earlyLife[3]}</p>
+              <Prose text={ABOUT.earlyLife[3]} className={LEAD} dropCap />
             </Reveal>
             <Reveal as="figure" delay={0.08} className="m-0">
               <ImageReveal
@@ -1083,7 +1119,7 @@ export const About = () => {
               short enough to match the chart, so neither leaves a blank half. */}
           <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-center max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
             <Reveal as="div">
-              <p className={cn(LEAD, "max-w-[52ch]")}>{ABOUT.anegada[1]}</p>
+              <Prose text={ABOUT.anegada[1]} className={cn(LEAD, "max-w-[52ch]")} />
             </Reveal>
             <Reveal as="figure" className="m-0 mt-8 lg:mt-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
               <AssetImage
@@ -1105,10 +1141,8 @@ export const About = () => {
               column (Hugo 2026-07-04: "can't have any of this blank space and
               stupid long paragraphs"). Stephen's words are VERBATIM + intact —
               only the flow is columned. Single column below lg. */}
-          <Reveal as="div" className="max-w-[1180px] 3xl:max-w-[1380px] mx-auto mt-5 md:mt-6">
-            <p className={cn(BODY, "columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]")}>
-              {ABOUT.anegada[2]}
-            </p>
+          <Reveal as="div" className="max-w-[1180px] 3xl:max-w-[1380px] mx-auto mt-5 md:mt-6 columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]">
+            <Prose text={ABOUT.anegada[2]} className={BODY} breakInside />
           </Reveal>
 
           {/* THE RITUAL, IN MOTION — two archive clips of Stephen painting a
@@ -1151,7 +1185,7 @@ export const About = () => {
               />
             </Reveal>
             <Reveal as="div" delay={0.08}>
-              <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[0]}</p>
+              <Prose text={ABOUT.legacy[0]} className={cn(LEAD, "max-w-[62ch]")} />
             </Reveal>
           </div>
 
@@ -1209,7 +1243,7 @@ export const About = () => {
           <ChapterHead id="exhibitions" />
           <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 md:gap-12 items-center max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
             <Reveal as="div">
-              <p className={cn(LEAD, "max-w-[62ch]")}>{ABOUT.legacy[1]}</p>
+              <Prose text={ABOUT.legacy[1]} className={cn(LEAD, "max-w-[62ch]")} />
             </Reveal>
             {/* The documented exhibitions & commissions — rendered from the
                 canonical CREDENTIALS export (content.ts), never re-typed, as
@@ -1521,12 +1555,12 @@ export const About = () => {
               <div className="md:col-span-7 flex flex-col gap-8">
                 <Reveal as="div">
                   <blockquote className="m-0">
-                    <p className={BODY}>{ABOUT.academyQuote}</p>
+                    <Prose text={ABOUT.academyQuote} className={BODY} />
                     <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
                   </blockquote>
                 </Reveal>
                 <Reveal as="div" delay={0.08}>
-                  <p className={BODY}>{ABOUT.palestine}</p>
+                  <Prose text={ABOUT.palestine} className={BODY} />
                 </Reveal>
               </div>
             </div>
