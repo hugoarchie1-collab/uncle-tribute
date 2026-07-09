@@ -115,7 +115,7 @@ const READING_WIDE = "mx-auto w-full max-w-[1180px] 3xl:max-w-[1320px] 4xl:max-w
 // on two opsz values (36 vs 40). Locked here to ONE step so the register reads
 // as a single voice: Fraunces opsz-40 / wght-600, one clamp, one leading.
 const STANDOUT_CLASS =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(26px,3.3vw,54px)] 2xl:text-[clamp(26px,3.9vw,66px)] leading-[1.12] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(24px,2.1vw,40px)] leading-[1.18] text-ink";
 const STANDOUT_STYLE = { fontVariationSettings: '"opsz" 40, "wght" 600' } as const;
 
 // ─── CHAPTERS — the page's editorial signature ("the rule and the year") ─────
@@ -594,7 +594,7 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
     <Reveal as="div" className="border-b border-line py-4 md:py-5">
       <p className={cn(EYEBROW_MUTED, "m-0 mb-2 md:mb-3 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
-        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(26px,3.4vw,56px)] 2xl:text-[clamp(26px,3.8vw,64px)] leading-[1.15] text-ink m-0 text-balance">
+        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(24px,2.3vw,40px)] leading-[1.15] text-ink m-0 text-balance">
           &ldquo;{item.a}&rdquo;
         </p>
       ) : (
@@ -798,7 +798,7 @@ export const About = () => {
                 <Prose
                   text={`“${ABOUT.opening[1]}”`}
                   per={2}
-                  className="font-display italic tracking-[-0.01em] text-[clamp(24px,3vw,52px)] 2xl:text-[clamp(24px,3.4vw,60px)] leading-[1.35] text-ink m-0 text-balance mx-auto max-w-[52ch]"
+                  className="font-sans font-normal not-italic tracking-normal text-[clamp(18px,0.5vw+15px,23px)] leading-[1.62] text-ink/90 m-0 text-pretty mx-auto max-w-[64ch] text-left sm:text-center"
                 />
               </blockquote>
             </Reveal>
@@ -994,7 +994,11 @@ export const About = () => {
             as="div"
             className={cn(READING_WIDE, "mt-3 md:mt-4 lg:[column-count:2] lg:[column-gap:3.5rem] lg:[column-fill:balance]")}
           >
-            <Prose text={ABOUT.earlyLife[2]} className={LEAD} dropCap breakInside />
+            {/* NO breakInside: let the passage FLOW across both balanced columns
+                (column-fill:balance) so it fills the width evenly — with
+                break-inside-avoid a single paragraph piled into column 1 and left
+                column 2 empty (Hugo 2026-07-08: "empty right / jigsaw"). */}
+            <Prose text={ABOUT.earlyLife[2]} className={LEAD} dropCap />
           </Reveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch mt-2.5 md:mt-3 max-w-[900px] 3xl:max-w-[1080px] 4xl:max-w-[1200px] mx-auto">
@@ -1271,7 +1275,7 @@ export const About = () => {
               outranks it; no other internal edits). */}
           <Reveal as="div" className="mb-3 md:mb-4">
             <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
-            <h3 className="font-display italic font-normal tracking-[-0.02em] text-[clamp(24px,3vw,52px)] 2xl:text-[clamp(24px,3.4vw,60px)] leading-[1.1] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
+            <h3 className="font-display italic font-normal tracking-[-0.02em] text-[clamp(22px,2.1vw,38px)] leading-[1.1] text-ink text-balance m-0 max-w-[760px] 3xl:max-w-[920px]">
               In conversation.
             </h3>
           </Reveal>
