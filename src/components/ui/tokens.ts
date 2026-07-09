@@ -118,6 +118,66 @@ export const EYEBROW_TIGHT =
 /** Meta / spec / fine-detail body. */
 export const META = "font-sans text-[15px] leading-[1.6] text-ink-muted";
 
+// =============================================================================
+// ABOUT MONOGRAPH TYPE SCALE — the seven-role scale the About rebuild composes
+// from. ONE modular ladder, seven roles, nothing else, so nothing on that page
+// jumps "massive → tiny" beside a gap. Every DESKTOP ceiling (the clamp/2xl/3xl
+// max term) is capped to its role; every mobile floor + base/sm/md class is
+// frozen. Seven desktop ceilings: title 58 · pull-line 42 · subhead 34 ·
+// lead 23 · body 20 · caption 16 · eyebrow 15 (the EYEBROW / EYEBROW_MUTED
+// tokens above). No adjacent-role jump exceeds ~1.4×. Colour ramp encodes the
+// hierarchy so size doesn't have to: lead text-ink/90 → body text-ink-soft →
+// caption/meta text-ink-muted. Prose roles (BODY / LEAD) are ALWAYS sans;
+// Fraunces (font-display) is reserved for roles 1–3 (TITLE_ABOUT / SUBHEAD /
+// STANDOUT), the masthead h1, the Anegada headline and italic caption titles.
+// Exported here (the canonical shared-constant home) so About.tsx imports them
+// rather than re-typing bespoke clamps per section — the drift the rebuild kills.
+// =============================================================================
+
+/** ROLE 5 — BODY (sans). The default running-prose measure. Desktop ceiling
+ *  20px (was a 25px runaway). Leading eases to 1.6 on desktop. Mobile floors
+ *  (18px / 1.58) + the md: step (19px / 1.7) are frozen. */
+export const ABOUT_BODY =
+  "font-sans font-normal text-[18px] md:text-[19px] 2xl:text-[20px] 3xl:text-[20px] " +
+  "leading-[1.58] md:leading-[1.7] 2xl:leading-[1.6] tracking-normal text-ink-soft text-pretty m-0";
+
+/** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
+ *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
+ *  floors + the md: step are frozen. */
+export const ABOUT_LEAD =
+  "font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] 3xl:text-[23px] " +
+  "leading-[1.6] md:leading-[1.75] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0";
+
+/** ROLE 2 — PULL-LINE / STANDOUT (Fraunces). The ONE interior display-serif
+ *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired
+ *  STYLE below. */
+export const ABOUT_STANDOUT =
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(24px,2.1vw,42px)] leading-[1.16] text-ink";
+export const ABOUT_STANDOUT_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 40, "wght" 600',
+};
+
+/** ROLE 3 — SUBHEAD / interview question (Fraunces, roman). Ceiling 34px. */
+export const ABOUT_SUBHEAD =
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(22px,1.7vw,34px)] leading-[1.2] text-ink";
+export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 40, "wght" 600',
+};
+
+/** ROLE 1 — CHAPTER / SECTION TITLE (Fraunces). The largest RECURRING type on
+ *  the page — ceiling 58px (the hero h1 + the sole Anegada poster are the only
+ *  sanctioned larger moments). */
+export const ABOUT_TITLE =
+  "font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.4vw,58px)] leading-[1.06] text-ink";
+export const ABOUT_TITLE_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 40, "wght" 600',
+};
+
+/** ROLE 6 — CAPTION / META (sans, fixed small — never clamps up). Ceiling
+ *  16px; the quietest ink so brightest→quietest (body > caption) reads. */
+export const ABOUT_CAPTION =
+  "font-sans font-normal text-[15px] 2xl:text-[16px] leading-[1.45] tracking-[0.01em] text-ink-muted";
+
 /** Primary CTA pill — filled ink → accent on hover. */
 export const BTN_PRIMARY =
   "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink disabled:opacity-60";
