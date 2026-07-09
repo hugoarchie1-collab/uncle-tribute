@@ -1121,9 +1121,11 @@ export const About = () => {
 
           {/* Lead + the cymatics chart, balanced SIDE BY SIDE — the lead is
               short enough to match the chart, so neither leaves a blank half. */}
-          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-start max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
+          <div className="lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 3xl:gap-16 items-center max-w-[1180px] 3xl:max-w-[1380px] 4xl:max-w-[1520px] mx-auto">
             <Reveal as="div">
-              <Prose text={ABOUT.anegada[1]} className={cn(LEAD, "max-w-[52ch]")} />
+              {/* No 52ch cap: the lead fills its column so it's not a tall narrow
+                  block leaving a band beside the shorter chart (Hugo: gaps). */}
+              <Prose text={ABOUT.anegada[1]} className={LEAD} />
             </Reveal>
             <Reveal as="figure" className="m-0 mt-8 lg:mt-0 max-w-[520px] 3xl:max-w-[600px] mx-auto lg:mx-0">
               <AssetImage
