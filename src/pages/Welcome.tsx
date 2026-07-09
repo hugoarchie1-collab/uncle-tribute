@@ -162,7 +162,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 2xl:h-[clamp(440px,60svh,980px)] 3xl:h-[clamp(440px,56svh,940px)] 4xl:h-[clamp(440px,52svh,900px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 2xl:h-[clamp(520px,82svh,1300px)] 3xl:h-[clamp(520px,82svh,1400px)] 4xl:h-[clamp(520px,80svh,1500px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
