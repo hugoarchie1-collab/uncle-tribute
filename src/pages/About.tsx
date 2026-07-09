@@ -869,17 +869,25 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="beginnings" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
+          {/* Text as a full-width readable block, then the two photographs in an
+              EVEN side-by-side row below (equal-height 3:2 contain tiles, no crop).
+              The old text | two-stacked-photos grid towered the image column far
+              past the short text and left a big dead band beside it — Hugo
+              2026-07-08: "why do you keep doing this gappy shit". Stacked layout =
+              no side-by-side height mismatch, so no gap. */}
+          <div className="max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
-              <Prose text={ABOUT.earlyLife[0]} className={LEAD} dropCap />
+              <Prose text={ABOUT.earlyLife[0]} className={cn(LEAD, "max-w-[66ch]")} dropCap />
             </Reveal>
-            <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-2 gap-4 md:gap-6 mt-5 md:mt-6">
               <Reveal as="div">
                 <Plate
                   src="/img/about/15-wedding-top-hats.jpg"
                   alt="A bride and three young men in morning dress and grey top hats at a family wedding."
                   width={1353}
                   height={814}
+                  fill
+                  aspect="aspect-[3/2]"
                   sizes="(min-width: 768px) 48vw, 100vw"
                 />
               </Reveal>
@@ -889,6 +897,8 @@ export const About = () => {
                   alt="A teenager in a yellow patterned shirt on a floral sofa beside two teenage girls — a family photograph."
                   width={1600}
                   height={1200}
+                  fill
+                  aspect="aspect-[3/2]"
                   sizes="(min-width: 768px) 48vw, 100vw"
                 />
               </Reveal>
@@ -908,34 +918,38 @@ export const About = () => {
             top-to-bottom: photo → text → photo. */}
         <section id="bournemouth" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="bournemouth" />
-          {/* The image column STACKS both photographs (family group → café
-              terrace) so it rises to the full height of the long "Being unsure…"
-              paragraph beside it — no more short image floating in the middle
-              of a tall column with a void above and below (Hugo 2026-07-04:
-              "remove any empty space/gaps"). items-center vertically centres the
-              shorter column so any residual slack splits top+bottom rather than
-              pooling as one dead band (Hugo 2026-07-04: symmetry / no lopsided gap). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
-            <Reveal as="div" className="flex flex-col gap-5 md:gap-6">
-              <Plate
-                src="/img/about/17-bournemouth-friends.jpg"
-                alt="Four smartly dressed young men standing together outdoors under trees."
-                width={1600}
-                height={900}
-                sizes="(min-width: 768px) 48vw, 100vw"
-              />
-              <ImageReveal
-                src="/img/about/18-cafe-terrace.jpg"
-                alt="Stephen Meakin in a denim shirt smiling at an outdoor café table, a stoneware jug before him and cypress trees in the distance."
-                aspect="aspect-[4/3]"
-                edges="all"
-                parallax={0.1}
-                sizes="(min-width: 768px) 48vw, 100vw"
-              />
-            </Reveal>
+          {/* Text block, then the two photographs in an EVEN side-by-side row
+              (equal-height 3:2 contain tiles). Was text | two-stacked-photos,
+              which towered the image column past the text = dead band (Hugo:
+              "gappy shit"). */}
+          <div className="max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div" delay={0.06}>
-              <Prose text={ABOUT.earlyLife[1]} className={LEAD} dropCap />
+              <Prose text={ABOUT.earlyLife[1]} className={cn(LEAD, "max-w-[66ch]")} dropCap />
             </Reveal>
+            <div className="grid grid-cols-2 gap-4 md:gap-6 mt-5 md:mt-6">
+              <Reveal as="div">
+                <Plate
+                  src="/img/about/17-bournemouth-friends.jpg"
+                  alt="Four smartly dressed young men standing together outdoors under trees."
+                  width={1600}
+                  height={900}
+                  fill
+                  aspect="aspect-[3/2]"
+                  sizes="(min-width: 768px) 48vw, 100vw"
+                />
+              </Reveal>
+              <Reveal as="div" delay={0.09}>
+                <Plate
+                  src="/img/about/18-cafe-terrace.jpg"
+                  alt="Stephen Meakin in a denim shirt smiling at an outdoor café table, a stoneware jug before him and cypress trees in the distance."
+                  width={1600}
+                  height={1200}
+                  fill
+                  aspect="aspect-[3/2]"
+                  sizes="(min-width: 768px) 48vw, 100vw"
+                />
+              </Reveal>
+            </div>
           </div>
 
           {/* STANDOUT — the dusty-hardback discovery, pulled VERBATIM from
