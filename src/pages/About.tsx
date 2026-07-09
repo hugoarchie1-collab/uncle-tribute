@@ -1296,15 +1296,15 @@ export const About = () => {
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
               right (the flyer's own wording only — see the Fairmont note). */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-3 md:mb-4">
-            <Reveal as="div" className="lg:col-span-7 flex flex-col gap-5 max-w-[62ch]">
+          <div className="max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto mb-3 md:mb-4">
+            <Reveal as="div" className="flex flex-col gap-5 max-w-[64ch]">
               {INTERVIEW.context.map((p, i) => (
                 <p key={i} className={BODY}>
                   {p}
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className="m-0 lg:col-span-5" delay={0.08}>
+            <Reveal as="figure" className="m-0 mt-5 md:mt-6 max-w-[440px]" delay={0.08}>
               <AssetImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
                 alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
@@ -1325,10 +1325,15 @@ export const About = () => {
             <InterviewQA item={INTERVIEW.qa[0]} />
           </div>
 
-          {/* Q2 beside the portrait easel shot (PDF p12 top) — Stephen seated
-              at the tilted circular canvas. Portrait + people → contained. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 md:items-start 2xl:items-center mt-3 md:mt-4">
-            <Reveal as="figure" className="m-0 md:col-span-5 max-w-[520px] md:max-w-none mx-auto md:mx-0 w-full">
+          {/* Q2 + the easel portrait. STACKED (Hugo: "gaps worse than ever") —
+              the portrait beside short Q&A left a dead band; now the Q&A runs
+              full measure, then the portrait sits at a sensible size beside the
+              rose-window landscape below, so no tall-photo-vs-short-text gap. */}
+          <div className="max-w-[920px] 3xl:max-w-[1060px] mt-3 md:mt-4 border-t border-line">
+            <InterviewQA item={INTERVIEW.qa[1]} />
+          </div>
+          <div className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-[minmax(0,360px)_1fr] gap-6 md:gap-10 items-stretch max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] mx-auto">
+            <Reveal as="figure" className="m-0 max-w-[360px] mx-auto md:mx-0 w-full self-start">
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
@@ -1336,32 +1341,22 @@ export const About = () => {
                 parallax={0.06}
               />
             </Reveal>
-            <div className="md:col-span-7">
-              <div className="border-t border-line">
-                <InterviewQA item={INTERVIEW.qa[1]} />
-              </div>
+            <div className="border-t border-line self-center">
+              <InterviewQA item={INTERVIEW.qa[2]} />
             </div>
           </div>
 
-          {/* Q3 beside the rose-window painting in progress (PDF p12 bottom) —
-              mirrored composition. */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 md:items-start 2xl:items-center mt-3 md:mt-4">
-            <div className="md:col-span-7 order-2 md:order-1">
-              <div className="border-t border-line">
-                <InterviewQA item={INTERVIEW.qa[2]} />
-              </div>
-            </div>
-            <Reveal as="figure" className="m-0 md:col-span-5 order-1 md:order-2">
-              <ImageReveal
-                src="/img/about/30-painting-in-progress.jpg"
-                alt="Stephen Meakin painting a circular rose-window-patterned mandala in the studio"
-                aspect="aspect-[3/2]"
-                edges="all"
-                parallax={0.1}
-                sizes="(min-width: 768px) 42vw, 100vw"
-              />
-            </Reveal>
-          </div>
+          {/* The rose-window painting in progress — a full-width landscape band. */}
+          <Reveal as="figure" className="m-0 mt-5 md:mt-6 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto 2xl:max-h-[64svh] 2xl:overflow-hidden">
+            <ImageReveal
+              src="/img/about/30-painting-in-progress.jpg"
+              alt="Stephen Meakin painting a circular rose-window-patterned mandala in the studio"
+              aspect="aspect-[16/9]"
+              edges="all"
+              parallax={0.1}
+              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
+            />
+          </Reveal>
 
           {/* Q4, then the pair the PDF places with it — the studio wall
               crowded with finished paintings, and the paintings at home. */}
@@ -1436,19 +1431,19 @@ export const About = () => {
           <div className="max-w-[860px] 3xl:max-w-[1000px] 4xl:max-w-[1100px] mx-auto mt-3 md:mt-4 border-t border-line">
             <InterviewQA item={INTERVIEW.qa[5]} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 md:items-start 2xl:items-center mt-2.5 md:mt-3">
-            <Reveal as="figure" className="m-0 md:col-span-5">
-              <ImageReveal
-                src="/img/about/36-mystic-rose-exhibition.jpg"
-                alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
-                aspect="aspect-[4/3]"
-                edges="all"
-                parallax={0.08}
-                sizes="(min-width: 768px) 42vw, 100vw"
-              />
-            </Reveal>
-            <Reveal as="div" className="md:col-span-7" delay={0.08}>
-              <p className="font-display italic tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] 2xl:text-[clamp(17px,2vw,34px)] leading-[1.55] text-ink m-0 mb-5 max-w-[56ch]">
+          <Reveal as="figure" className="m-0 mt-2.5 md:mt-3 max-w-[1180px] 3xl:max-w-[1400px] 4xl:max-w-[1560px] mx-auto 2xl:max-h-[62svh] 2xl:overflow-hidden">
+            <ImageReveal
+              src="/img/about/36-mystic-rose-exhibition.jpg"
+              alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
+              aspect="aspect-[16/9]"
+              edges="all"
+              parallax={0.08}
+              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
+            />
+          </Reveal>
+          <div className="max-w-[820px] mt-4 md:mt-5">
+            <Reveal as="div" delay={0.08}>
+              <p className="font-sans not-italic font-normal text-[clamp(17px,0.4vw+14px,21px)] leading-[1.65] text-ink/90 m-0 mb-4 max-w-[62ch]">
                 {INTERVIEW.source.note}
               </p>
               <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
@@ -1544,12 +1539,14 @@ export const About = () => {
                 long text). The studio easel shot sits in the narrower column;
                 the founding quote + the Az-Zarqa passage stack in the wider
                 reading column beside it. Alt descriptive only, no caption. */}
-            <div className="mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-12 gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-5 items-start 2xl:items-center border-t border-line pt-5 md:pt-6">
-              <Reveal as="figure" className="m-0 md:col-span-5">
+            <div className="mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-12 gap-x-12 lg:gap-x-16 3xl:gap-x-20 gap-y-5 items-stretch border-t border-line pt-5 md:pt-6">
+              {/* The painting FILLS its column to the text's height (it's an
+                  artwork, not a face — cover-crop is safe), so no dead band. */}
+              <Reveal as="figure" className="m-0 md:col-span-5 md:min-h-[420px]">
                 <ImageReveal
                   src="/img/about/11-ophiuchus-painting.jpg"
                   alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
-                  aspect="aspect-square"
+                  fill
                   edges="all"
                   parallax={0.06}
                   sizes="(min-width: 768px) 42vw, 100vw"
