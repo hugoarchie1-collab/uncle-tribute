@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import {
   motion,
   useScroll,
@@ -499,14 +500,14 @@ const AnegadaPoster = () => (
         <span
           aria-hidden
           className="block font-display font-semibold leading-[0.8] text-accent/60 select-none"
-          style={{ fontVariationSettings: '"opsz" 48, "wght" 600', fontSize: "clamp(64px,7vw,150px)" }}
+          style={{ fontVariationSettings: '"opsz" 48, "wght" 600', fontSize: "clamp(44px,3.6vw,72px)" }}
         >
           &ldquo;
         </span>
         <blockquote className="m-0">
           <p
-            className="font-display italic font-normal tracking-[-0.01em] text-[clamp(26px,3.3vw,58px)] text-ink m-0"
-            style={{ lineHeight: 1.18 }}
+            className="font-display italic font-normal tracking-[-0.01em] text-[clamp(21px,1.6vw,31px)] text-ink m-0 max-w-[40ch]"
+            style={{ lineHeight: 1.3 }}
           >
             {ABOUT.anegadaQuote}
           </p>
@@ -594,11 +595,11 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
     <Reveal as="div" className="border-b border-line py-4 md:py-5">
       <p className={cn(EYEBROW_MUTED, "m-0 mb-2 md:mb-3 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
-        <p className="quote-hang font-display italic font-semibold tracking-[-0.02em] text-[clamp(24px,2.3vw,40px)] leading-[1.15] text-ink m-0 text-balance">
+        <p className="font-display font-semibold not-italic tracking-[-0.02em] text-[clamp(22px,1.4vw,29px)] leading-[1.25] text-ink m-0 max-w-[34ch]">
           &ldquo;{item.a}&rdquo;
         </p>
       ) : (
-        <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] 2xl:text-[clamp(17px,2vw,34px)] leading-[1.6] text-ink m-0">
+        <p className="font-sans font-normal text-[clamp(17px,0.4vw+14px,21px)] leading-[1.7] text-ink/90 m-0 max-w-[68ch] text-pretty">
           {item.a}
         </p>
       )}
@@ -606,15 +607,8 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   );
 };
 
-// ─── The students letter — the sign-off lands alone ──────────────────────────
-// Derived by SLICING the ONE verbatim string (the Welcome.reminderLong
-// precedent): every character renders exactly once, nothing re-typed. The
-// closing line appears once on the page, as Stephen's own sign-off.
-const LETTER_SIGN_OFF = "May you have a wonderful journey.";
-const signOffAt = ABOUT.studentsLetter.lastIndexOf(LETTER_SIGN_OFF);
-const LETTER_BODY =
-  signOffAt > 0 ? ABOUT.studentsLetter.slice(0, signOffAt).trimEnd() : ABOUT.studentsLetter;
-const LETTER_CLOSE = signOffAt > 0 ? ABOUT.studentsLetter.slice(signOffAt) : "";
+// (The students-letter slicing helpers were removed 2026-07-08 with the letter
+// itself — it now lives only as the pinned founding memory on /memories.)
 
 // Split a VERBATIM string into readable paragraphs on sentence boundaries so a
 // long single-string passage reads as an article on mobile instead of one
@@ -1179,13 +1173,17 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="lewes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
-            <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
+          {/* Asymmetric so the tall 3:4 portrait stays a sensible size (a full
+              50/50 column on a widened grid made it ~1150px tall with a big dead
+              band beside the shorter text — Hugo: "so much dead space"). Photo in
+              a capped left column, text fills the rest, top-aligned. */}
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,460px)_1fr] gap-6 md:gap-10 3xl:gap-16 items-start max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
+            <Reveal as="figure" className="m-0 max-w-[460px] mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
                 alt="Stephen standing on a stone cairn in the desert"
                 aspect="aspect-[3/4]"
-                sizes="(min-width: 768px) 48vw, 100vw"
+                sizes="(min-width: 768px) 460px, 100vw"
               />
             </Reveal>
             <Reveal as="div" delay={0.08}>
@@ -1280,20 +1278,9 @@ export const About = () => {
             </h3>
           </Reveal>
 
-          {/* Opening photograph — Stephen at work over a mandala print, the
-              turquoise mandala filling the studio wall behind him (PDF p11,
-              paired with the geometrist question that follows). Native 3:2 so
-              cover never crops. */}
-          <Reveal as="figure" className="m-0 mb-3 md:mb-4 max-w-[1040px] 3xl:max-w-[1240px] 4xl:max-w-[1380px] mx-auto 2xl:max-h-[72svh] 2xl:overflow-hidden">
-            <ImageReveal
-              src="/img/about/28-at-the-drafting-table.jpg"
-              alt="Stephen Meakin in glasses bent over a mandala print on the studio worktable, pencil in hand, a large turquoise mandala painting filling the wall behind him"
-              aspect="aspect-[16/9]"
-              edges="all"
-              parallax={0.1}
-              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
-            />
-          </Reveal>
+          {/* (Opening photo 28-at-the-drafting-table REMOVED 2026-07-08 — Hugo:
+              "don't repeat images." It was near-identical to 02-painting-table in
+              the Return chapter, Stephen bent over a mandala on the worktable.) */}
 
           {/* Scene-setting — estate-voice context left, the Mystic Rose flyer
               right (the flyer's own wording only — see the Fairmont note). */}
@@ -1597,34 +1584,19 @@ export const About = () => {
             />
           </Reveal>
 
-          <Reveal as="div" className="mt-2 md:mt-3 text-center">
-            <p className={cn(SUBTITLE, "mx-auto max-w-[52ch]")}>{ABOUT.studentsIntro}</p>
-          </Reveal>
-
-          {/* THE LETTER — one whole-element Reveal. */}
-          <Reveal as="div" className="max-w-[1000px] 3xl:max-w-[1180px] 4xl:max-w-[1300px] mx-auto mt-2.5 md:mt-3">
-            <article className="bg-ink/[0.04] ring-1 ring-ink/10 p-6 sm:p-8 md:p-10 3xl:p-12">
-              {paragraphize(LETTER_BODY, 3).map((para, i) => (
-                <p
-                  key={i}
-                  className={cn(
-                    "font-display font-normal tracking-[-0.005em] text-[18px] md:text-[20px] 2xl:text-[22px] 3xl:text-[clamp(22px,1.2vw,27px)] leading-[1.62] md:leading-[1.7] 2xl:leading-[1.6] text-ink m-0",
-                    i === 0 ? "drop-cap" : "mt-2 md:mt-3",
-                  )}
-                  style={{ fontVariationSettings: '"opsz" 18, "wght" 400' }}
-                >
-                  {para}
-                </p>
-              ))}
-              <div aria-hidden className="h-px w-12 bg-ink/15 my-5" />
-              <p
-                className="font-display italic font-normal text-[clamp(22px,2.8vw,46px)] leading-[1.25] text-ink m-0"
-                style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
-              >
-                {LETTER_CLOSE}
-              </p>
-              <p className={cn(EYEBROW_MUTED, "m-0 mt-5")}>— Stephen, to his students</p>
-            </article>
+          {/* The LETTER (and its "he left these words:" intro) was REMOVED from
+              About 2026-07-08 (Hugo: "don't repeat in two places — keep to the
+              memories page only"): Stephen's letter to his students is the PINNED
+              founding memory on /memories (Memories.tsx, ABOUT.studentsLetter).
+              A quiet pointer sends readers there instead of duplicating it. */}
+          <Reveal as="div" className="mt-3 md:mt-4">
+            <Link
+              to="/memories"
+              className={cn(EYEBROW, "group inline-flex items-center gap-2 no-underline")}
+            >
+              His words to his students, in the Book of Memories
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+            </Link>
           </Reveal>
         </section>
 
