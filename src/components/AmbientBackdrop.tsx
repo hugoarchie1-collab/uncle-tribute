@@ -66,9 +66,14 @@ export const AmbientBackdrop = ({
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `url("${asset(src)}")`,
-          // Lift the baked-dark peacock wash so it's actually visible; reversible
-          // CSS only, no asset re-bake. The radial scrim below still grounds copy.
-          filter: "brightness(1.34) saturate(1.05)",
+          // ⚠️ Kept DARK + heavily blurred on purpose (Hugo 2026-07-08: "the
+          // background glitches out — shows a zoomed-in / random image for a
+          // split second" on every page click). This layer only shows in the
+          // route-transition GAP before the incoming page's own backdrop loads;
+          // at high brightness the bg-cover peacock read as a distinct ZOOMED
+          // image flashing between pages. Darkened + blurred so the gap reads as
+          // a quiet dark atmosphere, never a recognisable image.
+          filter: "brightness(0.72) saturate(0.85) blur(8px)",
           opacity,
         }}
       />

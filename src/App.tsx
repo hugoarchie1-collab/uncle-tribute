@@ -277,7 +277,7 @@ export default function App() {
               instead of scene → black → scene. A page's own opaque backdrop
               covers it in normal viewing; it only shows in the transition gap
               (and behind any page that lacks its own). */}
-          <AmbientBackdrop opacity={0.6} />
+          <AmbientBackdrop opacity={0.32} />
           <div aria-hidden="true" className="film-grain" />
           {/* Premium custom cursor — fine-pointer + motion-allowed only;
               renders nothing (native cursor) on touch / reduced-motion. */}
