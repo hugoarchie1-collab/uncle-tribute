@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { asset } from "../lib/asset";
 
 /**
  * Canonical fixed atmospheric backdrop.
@@ -19,12 +18,9 @@ import { asset } from "../lib/asset";
  * `relative z-10` on the page's <main> (and drop any opaque `bg-bg` from root).
  */
 export const AmbientBackdrop = ({
-  src = "/img/paintings/peacock-persian-indigo-blur-v3.webp",
-  opacity = 0.68,
+  opacity = 0.9,
 }: {
-  /** Pre-blurred WebP under /public. Defaults to the calm Persian-indigo peacock. */
-  src?: string;
-  /** Image opacity — keep low on text-heavy pages so it never competes with copy. */
+  /** How present the dark atmospheric wash is. */
   opacity?: number;
 }) => {
   // This layer never moves or crossfades — it's a single static fixed image.
@@ -62,27 +58,20 @@ export const AmbientBackdrop = ({
       className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
       style={promote}
     >
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url("${asset(src)}")`,
-          // ⚠️ Kept DARK + heavily blurred on purpose (Hugo 2026-07-08: "the
-          // background glitches out — shows a zoomed-in / random image for a
-          // split second" on every page click). This layer only shows in the
-          // route-transition GAP before the incoming page's own backdrop loads;
-          // at high brightness the bg-cover peacock read as a distinct ZOOMED
-          // image flashing between pages. Darkened + blurred so the gap reads as
-          // a quiet dark atmosphere, never a recognisable image.
-          filter: "brightness(0.72) saturate(0.85) blur(8px)",
-          opacity,
-        }}
-      />
-      {/* Exact shared scrim — matches Welcome / Collections / PaintingDetail. */}
+      {/* ⚠️ NO IMAGE — a quiet dark gradient only. This layer exists ONLY to
+          fill the route-transition GAP before the incoming page's own backdrop
+          loads. It used to be a bg-cover peacock photo, which — center-cropped —
+          read as a "zoomed / random image" flashing IN AND OUT on every page
+          click (Hugo 2026-07-08, twice). A pure dark gradient fills the gap
+          invisibly: there is no image, so nothing can zoom or look random; the
+          dissolve reads scene → calm dark → scene. `opacity` still tunes how
+          present it is. Do NOT put an image back here. */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(75% 60% at 50% 35%, rgba(10,9,8,0.34) 0%, rgba(10,9,8,0.1) 100%)",
+            "radial-gradient(120% 95% at 50% 32%, #18121e 0%, #0e0b12 46%, #0a0908 100%)",
+          opacity,
         }}
       />
     </div>
