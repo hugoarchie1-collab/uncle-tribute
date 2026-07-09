@@ -1051,25 +1051,17 @@ export const About = () => {
             VERBATIM from content.ts. */}
         <section id="return" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="return" />
-          {/* The study-years passage BESIDE the painting-table photograph
-              (was a photo-less two-column text block — Hugo: "you haven't
-              added that photo next to the text"). Photo alt is descriptive
-              only; no caption (the caption convention was removed). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
-            <Reveal as="div">
-              <Prose text={ABOUT.earlyLife[3]} className={LEAD} dropCap />
-            </Reveal>
-            <Reveal as="figure" delay={0.08} className="m-0">
-              <ImageReveal
-                src="/img/about/02-painting-table.jpg"
-                alt="Stephen Meakin and a companion leaning over a large blue mandala print laid flat on the studio worktable."
-                aspect="aspect-[4/3]"
-                edges="all"
-                parallax={0.08}
-                sizes="(min-width: 768px) 48vw, 100vw"
-              />
-            </Reveal>
-          </div>
+          {/* Two balanced text columns (fills the width, no photo). The photo
+              02-painting-table was REMOVED 2026-07-08 — Hugo kept flagging it as
+              a repeat (it reads like the home wild-rose desk shot: Stephen at a
+              table with a mandala). Text-only in two columns = fills the width
+              with no side-by-side photo, so no dead gap. */}
+          <Reveal
+            as="div"
+            className={cn(READING_WIDE, "columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]")}
+          >
+            <Prose text={ABOUT.earlyLife[3]} className={LEAD} dropCap />
+          </Reveal>
 
           {/* The first-mandala line — a verbatim STANDOUT moment that spans the
               measure, centred, under a hairline. The "1999 … He never stopped."
@@ -1187,37 +1179,43 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="lewes" />
-          {/* Asymmetric so the tall 3:4 portrait stays a sensible size (a full
-              50/50 column on a widened grid made it ~1150px tall with a big dead
-              band beside the shorter text — Hugo: "so much dead space"). Photo in
-              a capped left column, text fills the rest, top-aligned. */}
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,460px)_1fr] gap-6 md:gap-10 3xl:gap-16 items-start max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
-            <Reveal as="figure" className="m-0 max-w-[460px] mx-auto md:mx-0 w-full">
+          {/* STACKED (Hugo 2026-07-08: "gaps worse than ever"): text in two
+              balanced columns that fill the width, then the cairn portrait beside
+              the four-traditions strip below — NOT a tall portrait next to short
+              text (which left a big dead band). */}
+          <Reveal
+            as="div"
+            className={cn(READING_WIDE, "columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]")}
+          >
+            <Prose text={ABOUT.legacy[0]} className={LEAD} dropCap />
+          </Reveal>
+          {/* Cairn portrait beside the four key components as a STACKED list —
+              the list is set to match the portrait's height (each item stretches
+              to share the row), so neither leaves a dead band. */}
+          <div className="mt-5 md:mt-7 grid grid-cols-1 md:grid-cols-[minmax(0,380px)_1fr] gap-8 md:gap-12 items-stretch max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
+            <Reveal as="figure" className="m-0 max-w-[380px] mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
                 alt="Stephen standing on a stone cairn in the desert"
                 aspect="aspect-[3/4]"
-                sizes="(min-width: 768px) 460px, 100vw"
+                sizes="(min-width: 768px) 380px, 100vw"
               />
             </Reveal>
-            <Reveal as="div" delay={0.08}>
-              <Prose text={ABOUT.legacy[0]} className={cn(LEAD, "max-w-[62ch]")} />
+            <Reveal as="ul" className="m-0 p-0 list-none flex flex-col justify-between gap-4">
+              {TRADITIONS.map((t) => (
+                <li key={t.numeral} className="border-t border-line pt-4 flex-1 flex flex-col justify-center">
+                  <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
+                  <p className="font-display font-normal tracking-[-0.01em] text-[clamp(22px,1.8vw,34px)] leading-[1.2] text-ink m-0 text-balance">
+                    {t.name}
+                  </p>
+                </li>
+              ))}
             </Reveal>
           </div>
 
-          {/* The four key components, named exactly as in legacy[0]. */}
-          <Reveal as="div" className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5 mt-2.5 md:mt-3 mb-2 md:mb-3">
-            {TRADITIONS.map((t) => (
-              <div key={t.numeral} className="border-t border-line pt-4">
-                <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
-                <p className="font-display font-normal tracking-[-0.01em] text-[clamp(17px,1.8vw,28px)] 2xl:text-[clamp(17px,2vw,34px)] leading-[1.3] text-ink m-0 text-balance">
-                  {t.name}
-                </p>
-              </div>
-            ))}
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto">
+          {/* (The four-components strip now sits BESIDE the cairn portrait above,
+              filling what used to be dead space — no separate row here.) */}
+          <div className="mt-4 md:mt-5 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] 3xl:max-w-[1100px] 4xl:max-w-[1240px] mx-auto">
             <Reveal as="figure" className="m-0">
               <ImageReveal
                 src="/img/about/26-persian-geometry.jpg"
