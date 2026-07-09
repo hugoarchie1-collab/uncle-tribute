@@ -105,7 +105,7 @@ const SECTION = "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4x
 // (READING — the old ~940px centred prose measure — was retired 2026-07-02:
 // its last user, the Anegada story, now sits BESIDE its photograph in a
 // two-column grid inside READING_WIDE.)
-const READING_WIDE = "mx-auto w-full max-w-[1180px] 3xl:max-w-[1320px] 4xl:max-w-[1440px]";
+const READING_WIDE = "mx-auto w-full max-w-[1180px] 2xl:max-w-[1440px] 3xl:max-w-[1640px] 4xl:max-w-[1800px]";
 
 // ─── STANDOUT — the one interior "pull-line" display register ────────────────
 // The mid-tier standouts (ChapterStandout, the first-mandala line, the TAGA
@@ -177,7 +177,7 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
   const chapter = CHAPTERS[index];
   const numeral = ROMAN_NUMERALS[index];
   return (
-    <header className={cn(READING_WIDE, "text-center mb-3 md:mb-4")}>
+    <header className={cn(READING_WIDE, "mb-3 md:mb-4")}>
       <Reveal as="div">
         <div aria-hidden className="h-px w-full bg-ink/15" />
       </Reveal>
@@ -730,10 +730,10 @@ const ChapterStandout = ({
 }) => {
   if (!children) return null;
   return (
-    <Reveal as="div" className={cn(READING_WIDE, "text-center", className)}>
-      <div aria-hidden className="mx-auto mb-2 md:mb-3 h-px w-16 bg-ink/15" />
+    <Reveal as="div" className={cn(READING_WIDE, className)}>
+      <div aria-hidden className="mb-3 md:mb-4 h-px w-16 bg-ink/25" />
       <p
-        className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[34ch]")}
+        className={cn(STANDOUT_CLASS, "m-0 text-balance max-w-[26ch]")}
         style={STANDOUT_STYLE}
       >
         {children}
@@ -791,14 +791,14 @@ export const About = () => {
           {/* His own words set as a wide display statement (it fills the band
               instead of sitting as a thin centred quote in a wide void), with
               the facts rail spread edge-to-edge of the same measure beneath. */}
-          <div className={cn(READING_WIDE, "text-center")}>
+          <div className={cn(READING_WIDE)}>
             <Reveal as="div">
               <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
               <blockquote className="m-0">
                 <Prose
                   text={`“${ABOUT.opening[1]}”`}
                   per={2}
-                  className="font-sans font-normal not-italic tracking-normal text-[clamp(18px,0.5vw+15px,23px)] leading-[1.62] text-ink/90 m-0 text-pretty mx-auto max-w-[64ch] text-left sm:text-center"
+                  className="font-sans font-normal not-italic tracking-normal text-[clamp(18px,0.5vw+15px,23px)] leading-[1.62] text-ink/90 m-0 text-pretty max-w-[68ch] text-left"
                 />
               </blockquote>
             </Reveal>
@@ -875,7 +875,7 @@ export const About = () => {
             off-grid below the first. */}
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="beginnings" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.earlyLife[0]} className={LEAD} dropCap />
             </Reveal>
@@ -921,7 +921,7 @@ export const About = () => {
               "remove any empty space/gaps"). items-center vertically centres the
               shorter column so any residual slack splits top+bottom rather than
               pooling as one dead band (Hugo 2026-07-04: symmetry / no lopsided gap). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div" className="flex flex-col gap-5 md:gap-6">
               <Plate
                 src="/img/about/17-bournemouth-friends.jpg"
@@ -960,7 +960,7 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="wandering" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1100px] 3xl:max-w-[1320px] 4xl:max-w-[1480px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-start max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
               <Plate
                 src="/img/about/19-evening-with-friends.jpg"
@@ -1047,7 +1047,7 @@ export const About = () => {
               (was a photo-less two-column text block — Hugo: "you haven't
               added that photo next to the text"). Photo alt is descriptive
               only; no caption (the caption convention was removed). */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.earlyLife[3]} className={LEAD} dropCap />
             </Reveal>
@@ -1066,7 +1066,7 @@ export const About = () => {
           {/* The first-mandala line — a verbatim STANDOUT moment that spans the
               measure, centred, under a hairline. The "1999 … He never stopped."
               sentence set large fills its own band (no stranded column). */}
-          <Reveal as="div" className={cn(READING_WIDE, "mt-2 md:mt-3 text-center")}>
+          <Reveal as="div" className={cn(READING_WIDE, "mt-2 md:mt-3")}>
             <div aria-hidden className="mx-auto mb-2 md:mb-3 h-px w-16 bg-ink/15" />
             <p
               className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[18ch]")}
@@ -1179,7 +1179,7 @@ export const About = () => {
             CLAIM-FREE (no place, no date). */}
         <section id="lewes" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="lewes" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 3xl:gap-14 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="figure" className="m-0 max-w-[460px] md:max-w-none mx-auto md:mx-0 w-full">
               <ContainImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1245,7 +1245,7 @@ export const About = () => {
             flyer itself says; never date it January 2011. */}
         <section id="exhibitions" className={cn(SECTION, "scroll-mt-24 py-2 md:py-3")}>
           <ChapterHead id="exhibitions" />
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-4 md:gap-6 items-start 2xl:items-center max-w-[1120px] 3xl:max-w-[1320px] 4xl:max-w-[1460px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-4 md:gap-6 items-start 2xl:items-center max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
               <Prose text={ABOUT.legacy[1]} className={cn(LEAD, "max-w-[62ch]")} />
             </Reveal>
@@ -1531,10 +1531,10 @@ export const About = () => {
               sit as a BALANCED two-column spread beneath a hairline — so the
               chapter fills the width instead of stranding a thin centred column
               in a wide side-void. Equal columns, one centred axis. */}
-          <div className="max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1420px] mx-auto">
+          <div className="max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] mx-auto">
             <Reveal as="div">
               <p
-                className={cn(STANDOUT_CLASS, "m-0 text-balance mx-auto max-w-[20ch] text-center")}
+                className={cn(STANDOUT_CLASS, "m-0 text-balance max-w-[24ch]")}
                 style={STANDOUT_STYLE}
               >
                 {ABOUT.legacy[2]}
