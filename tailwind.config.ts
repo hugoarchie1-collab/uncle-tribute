@@ -66,12 +66,12 @@ const config: Config = {
         hero: ["clamp(50px, 8.8vw, 190px)", { lineHeight: "1.02", letterSpacing: "-0.04em" }],
         h1: ["clamp(42px, 7vw, 154px)", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
         h2: ["clamp(34px, 5.4vw, 116px)", { lineHeight: "1.08", letterSpacing: "-0.035em" }],
-        h3: ["clamp(25px, 3.3vw, 70px)", { lineHeight: "1.18", letterSpacing: "-0.025em" }],
+        h3: ["clamp(25px, 3.3vw, 64px)", { lineHeight: "1.12", letterSpacing: "-0.025em" }],
         // Fluid body — grows on large screens so prose scales with the viewport
         // (dynamic cross-platform unison) instead of looking tiny in a sea of
         // dead space at fullscreen. Mobile/laptop ≈ the old 18/16px.
-        body: ["clamp(18px, 0.68vw + 14.3px, 33px)", { lineHeight: "1.7" }],
-        "body-sm": ["clamp(16px, 0.5vw + 13px, 26px)", { lineHeight: "1.68" }],
+        body: ["clamp(18px, 0.34vw + 15.6px, 24px)", { lineHeight: "1.7" }],
+        "body-sm": ["clamp(16px, 0.25vw + 13.4px, 20px)", { lineHeight: "1.68" }],
         label: ["12px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {

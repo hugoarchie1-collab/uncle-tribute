@@ -162,7 +162,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 3xl:h-[clamp(440px,62svh,980px)] 4xl:h-[clamp(440px,56svh,940px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 2xl:h-[clamp(440px,60svh,980px)] 3xl:h-[clamp(440px,56svh,940px)] 4xl:h-[clamp(440px,52svh,900px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -804,7 +804,7 @@ export const Welcome = () => {
             {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge. Reined in
                 2026-06-03 (Hugo: images too big) to match the trimmed hero —
                 a contained framed portrait, not a full-viewport takeover. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 -translate-y-1/2 h-[78svh] left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
+            <figure className="m-0 hidden md:block absolute top-1/2 -translate-y-1/2 h-[78svh] 2xl:h-[66svh] left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
               {/* EVEN melt: feather the portrait on ALL FOUR sides (was y-only,
                   which left a hard rectangular left/right edge against the page
                   gutter). With edges="all" it dissolves into the page identically
@@ -942,7 +942,7 @@ export const Welcome = () => {
                         the price, so a11y is unchanged. */}
                     <div className="flex items-baseline justify-between gap-4 pt-4 border-t border-line">
                       <div className="min-w-0">
-                        <h3 className="font-display font-bold text-[18px] md:text-[22px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
+                        <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                           {painting.title}
                         </h3>
                         <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] mt-1.5 m-0")}>
