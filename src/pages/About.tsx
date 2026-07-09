@@ -406,7 +406,12 @@ const Plate = ({
 }) => (
   <figure className="m-0 flex h-full flex-col">
     {fill ? (
-      <div className={cn("relative w-full", aspect)}>
+      // object-COVER (not contain) so every tile in a row fills its box to the
+      // SAME visible size — a landscape + a portrait no longer letterbox to
+      // different sizes (Hugo: "perfect symmetry, no jigsaw"). objectPosition
+      // "center 30%" biases the crop UP toward where faces sit, so a face is
+      // not cut (the album photos put people in the upper-centre).
+      <div className={cn("relative w-full overflow-hidden", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -415,7 +420,8 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          style={{ objectPosition: "center 30%" }}
+          className="absolute inset-0 h-full w-full object-cover drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
         />
       </div>
     ) : (
