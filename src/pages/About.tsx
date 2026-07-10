@@ -97,16 +97,16 @@ const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, ceili
 // aspect child collapses to 0×0 (documented gotcha). All ladders include w-full.
 /** Reading measure — prose, heads, pull-lines. */
 const READING_WIDE =
-  "mx-auto w-full max-w-[1180px] 2xl:max-w-[1440px] 3xl:max-w-[1640px] 4xl:max-w-[1800px]";
+  "mx-auto w-full max-w-[1180px] 2xl:max-w-[1560px] 3xl:max-w-[1780px] 4xl:max-w-[1960px]";
 /** Wide photo blocks — people rows needing room, portrait+list. */
 const PHOTO_WIDE =
-  "mx-auto w-full max-w-[1400px] 2xl:max-w-[1560px] 3xl:max-w-[1720px] 4xl:max-w-[1880px]";
+  "mx-auto w-full max-w-[1400px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px]";
 /** Tight 2-up photo rows. */
 const PHOTO_TIGHT = "mx-auto w-full max-w-[1080px]";
 
 /** The one shared section shell + the delimiter rhythm (P8). */
 const SECTION =
-  "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // =============================================================================
 // LAYOUT PRIMITIVES — P1–P8. Defined ONCE; every section composes exactly one.
@@ -130,8 +130,15 @@ const ProseFull = ({
   dropCap?: boolean;
   per?: number;
 }) => (
-  <Reveal as="div" className={READING_WIDE}>
-    <Prose text={text} per={per} className={cn(lead ? LEAD : BODY, "max-w-[66ch]")} dropCap={dropCap} />
+  // FILL THE WIDTH (Hugo 2026-07-09: "empty space is the enemy"): flow the text
+  // into TWO balanced columns on lg+ so it spans the full (widened) measure
+  // instead of a single 66ch column stranding the right half. Mobile = ONE
+  // column (frozen). [column-fill:_balance] keeps the columns even-bottomed.
+  <Reveal
+    as="div"
+    className={cn(READING_WIDE, "columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]")}
+  >
+    <Prose text={text} per={per} className={cn(lead ? LEAD : BODY)} dropCap={dropCap} />
   </Reveal>
 );
 
@@ -631,9 +638,9 @@ const AnegadaPoster = () => (
         </h3>
       </Reveal>
 
-      {/* The first-person Anegada story — LEFT-aligned, sane measure. */}
-      <Reveal as="div" className="mt-5 md:mt-6">
-        <Prose text={ABOUT.anegada[0]} className={cn(BODY, "max-w-[64ch]")} />
+      {/* The first-person Anegada story — 2-column on lg+ to fill the width. */}
+      <Reveal as="div" className="mt-5 md:mt-6 columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
+        <Prose text={ABOUT.anegada[0]} className={cn(BODY)} />
       </Reveal>
 
       {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
@@ -799,16 +806,9 @@ const pullSentence = (
   return source.slice(start, endAt + endMarkerInclusive.length);
 };
 
-const PULL_BEGINNINGS = pullSentence(
-  ABOUT.earlyLife[0],
-  "Eventually, it was an exhibition",
-  "inspired him most.",
-);
-const PULL_BOURNEMOUTH = pullSentence(
-  ABOUT.earlyLife[1],
-  "On finding something",
-  "his passion for geometry was born.",
-);
+// (PULL_BEGINNINGS / PULL_BOURNEMOUTH removed 2026-07-09 — now the chapter prose
+// is shown in full 2-column, a pull-line quoting a sentence FROM that same prose
+// read as a repeat. Hugo: no repeats.)
 const PULL_EARTH_MEASURE = pullSentence(
   INTERVIEW.qa[0].a,
   "the word geometry means",
@@ -852,7 +852,10 @@ export const About = () => {
           <div className={READING_WIDE}>
             <Reveal as="div">
               <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
-              <Prose text={ABOUT.opening[1]} per={2} className={cn(BODY, "max-w-[68ch]")} />
+              {/* 2-column on lg+ so his words fill the width (no stranded right). */}
+              <div className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
+                <Prose text={ABOUT.opening[1]} per={2} className={cn(BODY)} />
+              </div>
             </Reveal>
             <Reveal as="div" delay={0.1} className="mt-5 md:mt-6 2xl:mt-8">
               <dl className="flex flex-wrap justify-between items-start gap-x-10 gap-y-4 border-y border-line py-4">
@@ -942,7 +945,6 @@ export const About = () => {
               </Reveal>
             </PhotoRow>
           </div>
-          <PullLine text={PULL_BEGINNINGS} />
         </section>
 
         {/* 5 · CHAPTER II — BOURNEMOUTH. P1 lead (dropCap) → P3 (2-up people) → P7. */}
@@ -975,7 +977,6 @@ export const About = () => {
               </Reveal>
             </PhotoRow>
           </div>
-          <PullLine text={PULL_BOURNEMOUTH} />
         </section>
 
         {/* 6 · CHAPTER III — THE WANDERING YEARS. P2 (columns) → P3 ×2 (2-up
