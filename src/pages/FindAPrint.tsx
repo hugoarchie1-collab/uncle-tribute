@@ -74,21 +74,15 @@ export const FindAPrint = () => {
   const { scrollYProgress } = useScroll();
   const backdropY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
 
+  // SINGLE-SELECT (Hugo 2026-07-09: "can't click more than one box at a time").
+  // Clicking a swatch selects ONLY it (clearing any other in that lens); clicking
+  // the active one again clears it. Colour + intention are independent lenses,
+  // each holding at most ONE choice.
   const toggle = (k: ColourFamily) =>
-    setActive((prev) => {
-      const next = new Set(prev);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
+    setActive((prev) => (prev.has(k) ? new Set() : new Set([k])));
 
   const toggleIntent = (k: IntentionKey) =>
-    setIntent((prev) => {
-      const next = new Set(prev);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
+    setIntent((prev) => (prev.has(k) ? new Set() : new Set([k])));
 
   // Each painting with its available colourways + the families they span.
   const entries = useMemo(
