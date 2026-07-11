@@ -33,21 +33,25 @@ const FORYOU_BACKDROP = "/img/scenes/foryou-scene-v3.webp";
 // it. A second, meaning-led way in alongside colour. Never invented: e.g.
 // flower-of-life IS the "Mandala of Transformation"; ophiuchus IS the healer
 // (Asclepius); enneagon-swans is "we are each other"; the Habundia flowers ARE
-// wild abundance; the wild rose keeps its thorns inside the circle (protection).
+// wild abundance; the wild rose keeps its thorns inside the circle (protection);
+// orchis-7 IS Jung's "the psyche's own attempt to picture its wholeness"
+// (wholeness); lulin is "already gone, made permanent" (remembrance).
 type IntentionKey =
   | "transformation"
   | "abundance"
   | "protection"
   | "healing"
   | "unity"
-  | "stillness";
+  | "wholeness"
+  | "remembrance";
 const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = [
-  { key: "transformation", label: "Transformation", paintings: ["flower-of-life", "lulin", "tridecagon-moon-star"] },
+  { key: "transformation", label: "Transformation", paintings: ["flower-of-life", "peacock-minerva", "tridecagon-moon-star"] },
   { key: "abundance", label: "Abundance", paintings: ["wild-rose", "english-bluebells", "slipper-orchids"] },
-  { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva"] },
+  { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva", "ophiuchus"] },
   { key: "healing", label: "Healing", paintings: ["ophiuchus"] },
-  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "flower-of-life"] },
-  { key: "stillness", label: "Stillness", paintings: ["enneagon-swans", "english-bluebells"] },
+  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans"] },
+  { key: "wholeness", label: "Wholeness", paintings: ["orchis-7", "flower-of-life"] },
+  { key: "remembrance", label: "Remembrance", paintings: ["lulin", "enneagon-swans"] },
 ];
 
 /**

@@ -21,7 +21,7 @@ export const COLOUR_FAMILIES: { key: ColourFamily; label: string; swatch: string
   { key: "greens", label: "Greens", swatch: "#88a37d" },
   { key: "blues", label: "Blues & teals", swatch: "#5f86b8" },
   { key: "purples", label: "Purples & violets", swatch: "#7d6da3" },
-  { key: "neutrals", label: "Neutrals & sand", swatch: "#d2b07a" },
+  { key: "neutrals", label: "Neutrals & sand", swatch: "#c9b79a" },
   { key: "dark", label: "Dark & indigo", swatch: "#262a52" },
 ];
 
