@@ -413,12 +413,16 @@ const Plate = ({
 }) => (
   <figure className="m-0 flex h-full flex-col">
     {fill ? (
-      // object-COVER (not contain) so every tile in a row fills its box to the
-      // SAME visible size — a landscape + a portrait no longer letterbox to
-      // different sizes (Hugo: "perfect symmetry, no jigsaw"). objectPosition
-      // "center 30%" biases the crop UP toward where faces sit, so a face is
-      // not cut (the album photos put people in the upper-centre).
-      <div className={cn("relative w-full overflow-hidden", aspect)}>
+      // object-CONTAIN, ALWAYS — these are family photographs and NOBODY may be
+      // cropped out (Hugo, 2026-07-11: "why are the images cut off on about page
+      // with family"). The whole snapshot shows inside its aspect slot. NEVER
+      // object-cover here — an even-tile crop that beheads a family member is the
+      // worse sin. SYMMETRY FIX (Hugo, "jigsaw ... symmetry across all desktop"):
+      // at md+ the slot is a uniform warm-paper MATTE MOUNT (identical bg + ring +
+      // padding + card-shadow on every tile), so contain-letterboxed photos of
+      // mixed orientation read as matched museum mats, not ragged floating photos.
+      // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
+      <div className={cn("relative w-full md:overflow-hidden md:rounded-[3px] md:bg-ink/[0.04] md:ring-1 md:ring-line md:p-4 md:drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -427,8 +431,8 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          style={{ objectPosition: "center 30%" }}
-          className="absolute inset-0 h-full w-full object-cover drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          style={{ objectPosition: "center" }}
+          className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)] md:inset-4 md:h-[calc(100%-2rem)] md:w-[calc(100%-2rem)] md:drop-shadow-none"
         />
       </div>
     ) : (
@@ -543,7 +547,7 @@ const ContainImage = ({
   const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
 
   return (
-    <div ref={ref} className={cn("relative w-full", aspect)}>
+    <div ref={ref} className={cn("relative w-full md:overflow-hidden md:rounded-[3px] md:bg-ink/[0.04] md:ring-1 md:ring-line md:p-4 md:drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]", aspect)}>
       <motion.div
         className={cn("absolute inset-0", !reduceMotion && "will-change-transform")}
         style={reduceMotion ? undefined : { y }}
@@ -554,7 +558,7 @@ const ContainImage = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)] md:inset-4 md:h-[calc(100%-2rem)] md:w-[calc(100%-2rem)] md:drop-shadow-none"
         />
       </motion.div>
     </div>
@@ -1061,9 +1065,11 @@ export const About = () => {
             </p>
           </Reveal>
 
-          {/* Two archive photographs of Stephen at the board — art tiles. */}
+          {/* Two archive photographs of Stephen at the board — art tiles.
+              width="wide" gives a clean 2-up (was cols={3} with only 2 children
+              → a ragged empty third column on md+). */}
           <div className="mt-5 md:mt-6 2xl:mt-8">
-            <PhotoRow cols={3}>
+            <PhotoRow width="wide">
               <Reveal as="figure" className="m-0">
                 <ImageReveal
                   src="/img/about/stephen-painting-colour-v1.jpg"
