@@ -189,9 +189,9 @@ const initialsOf = (name: string) => {
 const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
   <span
     aria-hidden="true"
-    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)]"
+    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]"
   >
-    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(14px,3vw,15px)]">
+    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(15px,3vw,17px)]">
       {initialsOf(name)}
     </span>
   </span>
@@ -218,111 +218,186 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(15px,1.6vw,19px)] leading-[1.5] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(15px,1.5vw,17.5px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
 
-const CommentRow = ({
+// ---------------------------------------------------------------------------
+// PostCard — the ONE self-contained social POST of the feed (Instagram/Threads/
+// X idiom). Replaces the old flat CommentRow. `pinned` makes it the artist's
+// founding post (a warm ring + a "Pinned" chip + top position — never enlarged,
+// never a different surface). Otherwise it is the family tribute or a visitor
+// memory, IDENTICAL grammar.
+//
+// The card is `overflow-hidden rounded-[20px]` so the attached media can BLEED
+// edge-to-edge to the card's rounded corners — the fix for images reading as
+// "not attached". Header + body get horizontal padding; the media does NOT, so
+// it sits flush to the card edge under a hairline `border-t` seam, exactly like
+// a photo attached to an IG/Threads post.
+//
+// MEDIA is `object-contain` on a dark matte with a `max-h` cap (NEVER `cover`,
+// NEVER a forced aspect ratio): the group + couple photos must never slice a
+// face (hard memorial rule), and the height cap kills the old "massive" full-
+// width max-h-[600px] treatment — a shared photo now reads as a normal in-feed
+// image, not a page-dominating slab.
+//
+// The pinned artist letter (~1632 chars, one paragraph) still folds to ~4 lines
+// with an inline "Read more" that expands IN PLACE (a layout slice swap,
+// reduced-motion safe). Visitor + family posts render in full.
+// ---------------------------------------------------------------------------
+const PostCard = ({
   memory,
   pinned = false,
-  tile = false,
 }: {
   memory: WallMemory;
   pinned?: boolean;
-  /** Masonry-tile variant: the visitor card register. The row sits on a subtle
-   *  surface + hairline ring so the dense `columns` masonry reads as distinct
-   *  framed cards instead of run-together text. Body rendering is unchanged. */
-  tile?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const paragraphs = splitParagraphs(memory.message);
   const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
   // The letter is ONE ~1632-char paragraph (zero newlines) so paragraph-count
   // folding never fires. Use line-clamp on the collapsed body for a true ~4-line
-  // YouTube-style fold that reflows at every width.
+  // fold that reflows at every width.
   const plain = pinned ? memory.message.replace(/\s+/g, " ").trim() : "";
   const needsFold = pinned && plain.length > 280;
   return (
     <article
       className={cn(
-        "group flex gap-[clamp(0.625rem,2vw,0.8rem)]",
-        tile
-          ? "rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(0.85rem,2vw,1.1rem)] transition-colors duration-300 hover:ring-line-strong"
-          : "py-[clamp(0.4rem,1.2vw,0.6rem)]",
+        "group relative overflow-hidden rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
+        pinned && "ring-accent/40 hover:ring-accent/55",
       )}
     >
-      {/* AVATAR GUTTER — the contributor's PUBLIC profile picture if they set
-          one (shown to everyone, the point of "public" pics); otherwise the
-          calm monogram. Same circular size for all. */}
-      {memory.avatar ? (
-        <img
-          src={memory.avatar}
-          alt={memory.name}
-          className="shrink-0 rounded-full object-cover ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)]"
-        />
-      ) : (
-        <Monogram name={memory.name} />
-      )}
-      {/* BODY COLUMN — min-w-0 stops long words overflowing the flex track */}
-      <div className="min-w-0 flex-1">
+      {/* HEADER — avatar + name over a quiet meta "handle" line (STACKED, the
+          key "reads as a post" lever), + the Pinned chip. Text is padded; the
+          media below will run flush to the card edge. */}
+      <header className="flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] px-[clamp(1rem,2.4vw,1.4rem)] pt-[clamp(1rem,2.4vw,1.35rem)]">
+        {/* The contributor's PUBLIC profile picture if they set one; else the
+            calm monogram. Same circular size for all. */}
+        {memory.avatar ? (
+          <img
+            src={memory.avatar}
+            alt={memory.name}
+            className="shrink-0 rounded-full object-cover ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]"
+          />
+        ) : (
+          <Monogram name={memory.name} />
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="m-0 font-sans font-semibold text-[clamp(15.5px,1.5vw,18px)] leading-[1.25] text-ink truncate">
+            {memory.name}
+          </p>
+          {meta ? (
+            <p className="m-0 font-sans text-[clamp(13px,1.3vw,15px)] leading-[1.3] text-ink-muted truncate">
+              {meta}
+            </p>
+          ) : null}
+        </div>
         {pinned ? (
-          <span className="mb-1 inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-accent">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <span className="shrink-0 ml-auto inline-flex items-center gap-1 rounded-full bg-accent/12 px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.05em] uppercase text-accent">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
             Pinned
           </span>
         ) : null}
-        {/* HEADER LINE — bold name + quiet inline meta on one wrapping baseline */}
-        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span className="font-sans font-semibold text-[clamp(15.5px,1.7vw,19px)] leading-[1.3] text-ink break-words">
-            {memory.name}
-          </span>
-          {meta ? (
-            <span className="font-sans font-normal text-[clamp(14px,1.5vw,16px)] leading-[1.3] text-ink-muted break-words">
-              {meta}
-            </span>
-          ) : null}
-        </div>
-        {/* BODY — upright sans for EVERY row incl. the letter. NEVER italic / serif */}
-        <div className="mt-1">
-          {needsFold && !expanded ? (
-            <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
-          ) : (
-            paragraphs.map((p, i) => (
-              <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-2")}>
-                {p}
-              </p>
-            ))
-          )}
-        </div>
+      </header>
+
+      {/* BODY — upright sans for EVERY post incl. the letter. NEVER italic/serif */}
+      <div className="px-[clamp(1rem,2.4vw,1.4rem)] pt-[clamp(0.7rem,1.4vw,0.9rem)] pb-[clamp(0.9rem,1.8vw,1.15rem)]">
+        {needsFold && !expanded ? (
+          <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
+        ) : (
+          paragraphs.map((p, i) => (
+            <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-2.5")}>
+              {p}
+            </p>
+          ))
+        )}
         {needsFold ? (
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="mt-1.5 -mb-3 inline-flex items-center min-h-[44px] font-sans text-[clamp(14.5px,1.5vw,16px)] font-semibold text-ink-muted hover:text-accent transition-colors"
+            className="mt-1.5 inline-flex items-center min-h-[44px] font-sans text-[clamp(14.5px,1.5vw,16px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
             {expanded ? "Show less" : "Read more"}
           </button>
         ) : null}
-        {/* SHARED PHOTO — presented like a social post: full-width within the
-            card, rounded, soft depth, gentle hover. The whole photo is shown
-            (capped height, centred) so a shared memory reads as a proper post,
-            never a plopped-in thumbnail. */}
-        {memory.imageUrl ? (
-          <figure className="mt-3.5 overflow-hidden rounded-2xl bg-bg ring-1 ring-line/70 shadow-[0_12px_36px_-10px_rgba(0,0,0,0.6)]">
-            <img
-              src={memory.imageUrl}
-              alt={`A photograph shared by ${memory.name}`}
-              loading="lazy"
-              decoding="async"
-              className="block w-full max-h-[600px] object-cover object-center transition-transform duration-[600ms] ease-out group-hover:scale-[1.015]"
-            />
-          </figure>
-        ) : null}
       </div>
+
+      {/* ATTACHED MEDIA — full-bleed to the card's rounded edges (via the card's
+          overflow-hidden), welded to the body by a hairline seam. object-contain
+          on a dark matte + a height cap: whole photo shown (faces never sliced),
+          never page-dominating. */}
+      {memory.imageUrl ? (
+        <figure className="m-0 border-t border-line/60 bg-bg">
+          <img
+            src={memory.imageUrl}
+            alt={`A photograph shared by ${memory.name}`}
+            loading="lazy"
+            decoding="async"
+            className="block w-full h-auto max-h-[min(56svh,520px)] object-contain object-center mx-auto transition-transform duration-500 ease-out group-hover:scale-[1.01] motion-reduce:transform-none"
+          />
+        </figure>
+      ) : null}
     </article>
   );
 };
+
+// ---------------------------------------------------------------------------
+// ComposerCard — the "add a post" affordance in the PostCard surface (X /
+// Threads idiom): a pencil-glyph avatar + a placeholder line + a quiet "Post"
+// pill. The whole card is a button that opens the share modal. Lives in a rail
+// on desktop and as the first feed item on mobile.
+// ---------------------------------------------------------------------------
+const ComposerCard = ({ onShare }: { onShare: () => void }) => (
+  <button
+    type="button"
+    onClick={onShare}
+    className="group w-full flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] text-left rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1rem,2.4vw,1.35rem)] transition-colors hover:ring-line-strong"
+  >
+    <span
+      aria-hidden="true"
+      className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)] bg-bg-elevated ring-1 ring-line text-ink-muted transition-colors group-hover:ring-accent group-hover:text-accent"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+      </svg>
+    </span>
+    <span className="min-w-0 flex-1 font-sans text-[clamp(14.5px,1.6vw,17px)] text-ink-muted transition-colors group-hover:text-ink">
+      Share a memory of Steve…
+    </span>
+    <span
+      aria-hidden="true"
+      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-3.5 py-1.5 font-sans text-[13px] font-bold tracking-[0.04em] uppercase text-accent"
+    >
+      Post
+    </span>
+  </button>
+);
+
+// ---------------------------------------------------------------------------
+// EmptyStateCard — the feed's empty state in the PostCard surface, so an empty
+// wall reads as "a feed waiting for its first post": a dashed-ring "+" avatar +
+// a sans invitation (NO italic). Composed, not broken.
+// ---------------------------------------------------------------------------
+const EmptyStateCard = () => (
+  <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.6rem)]">
+    <span
+      aria-hidden="true"
+      className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)] border border-dashed border-line bg-bg-elevated"
+    >
+      <span className="font-display not-italic text-ink-faint text-[clamp(15px,3vw,17px)] leading-none">
+        +
+      </span>
+    </span>
+    <div className="min-w-0 flex-1">
+      <p className="font-sans font-normal text-[clamp(15px,1.6vw,18px)] leading-[1.55] text-ink-muted m-0">
+        No memories have been shared yet — be the first to leave one for Steve,
+        using the box above.
+      </p>
+    </div>
+  </article>
+);
 
 // ---------------------------------------------------------------------------
 // Share-a-memory modal — preserved from the original implementation (focus
@@ -899,114 +974,103 @@ export const Memories = () => {
             floated a sub-scale h1 in dead horizontal space. */}
         <MemoriesMasthead onShare={() => setModalOpen(true)} />
 
-        {/* 2 · THE WALL — full-width now (NOT a stranded 640px channel). The
-            pinned artist comment leads as ONE wide feature row; visitor
-            memories then TILE into a balanced CSS-`columns` masonry so they
-            fill the width as dense framed cards (PAGE NOTE: tile densely, not a
-            tall single column). Container widths track the rest of the site
-            (max-w-[1320px]→[1720px]) so the wall reads edge-to-edge, never a
-            lonely ribbon on a 4K screen. */}
+        {/* 2 · THE FEED — a single vertical column of self-contained social
+            POST cards (Instagram/Threads/X idiom), flanked on desktop by
+            populated sticky rails so a wide screen fills edge-to-edge while the
+            feed still reads as a feed. Masonry was rejected: the visitor seed is
+            usually empty, so a multi-column wall of 2 cards + an empty state
+            reads as broken air — the exact stranded-empty-space failure. One
+            honest column is the true IG/Threads atom, and the rails carry REAL,
+            verbatim furniture (invitation + composer), never decorative filler.
+            Rails collapse below xl → a pure single-column mobile feed. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(1.5rem,3vw,2.5rem)]"
+          className="mx-auto w-full max-w-[720px] xl:max-w-[1180px] 2xl:max-w-[1440px] 3xl:max-w-[1600px] 4xl:max-w-[1840px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,3.5rem)]"
         >
-          {/* a · PINNED artist comment — Stephen's own words lead the wall as a
-              single wide feature row (its long letter folds; it would never
-              tile cleanly in a column). Composer sits inline to its right on
-              lg+ so the share affordance + the founding voice share one band —
-              no separate full-width composer strip eating vertical air. */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-[clamp(1.5rem,3vw,2.5rem)] gap-y-4 items-start border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
-            <Reveal as="div" delay={0} className="lg:col-span-8">
-              <CommentRow memory={ARTIST_MEMORY} pinned />
-            </Reveal>
-            {/* composer — the "add a comment" box (X / YouTube idiom): a generic
-                avatar + a rounded input placeholder that opens the share modal,
-                held in a quiet panel beside the pinned voice. */}
-            <div className="lg:col-span-4">
-              <button
-                type="button"
-                onClick={() => setModalOpen(true)}
-                className="group w-full flex items-center gap-[clamp(0.625rem,2vw,0.8rem)] text-left rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(0.85rem,2vw,1.05rem)] transition-colors hover:ring-line-strong"
-              >
-                <span
-                  aria-hidden="true"
-                  className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] bg-bg-elevated ring-1 ring-line text-ink-muted transition-colors group-hover:ring-accent group-hover:text-accent"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                  </svg>
-                </span>
-                <span className="min-w-0 flex-1 font-sans text-[clamp(14.5px,1.6vw,17px)] text-ink-muted transition-colors group-hover:text-ink">
-                  Share a memory of Steve…
-                </span>
-              </button>
-            </div>
-          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,300px)_minmax(0,640px)] 2xl:grid-cols-[minmax(0,320px)_minmax(0,700px)_minmax(0,360px)] xl:justify-center gap-[clamp(1.5rem,3vw,2.75rem)]">
 
-          {/* a2 · THE FAMILY'S FAREWELL — Polly Wedge's funeral tribute, the
-              cornerstone family memory. Featured full-width like the pinned
-              voice (a 4-paragraph tribute would never tile cleanly as a masonry
-              card, and it carries too much weight to sit among the visitor
-              tiles). Moved here from the About page at Hugo's direction; reads
-              as her posted memory of Steve. Shown in full — never folded. */}
-          <Reveal as="div" className="mt-[clamp(1rem,2vw,1.5rem)] border-b border-line pb-[clamp(1rem,2vw,1.5rem)]">
-            <CommentRow memory={FAMILY_TRIBUTE} />
-          </Reveal>
-
-          {/* b · quiet section eyebrow — a thread divider under the pinned band */}
-          <Reveal as="div" className="mt-[clamp(1.1rem,2.5vw,1.9rem)] mb-[clamp(0.75rem,1.5vw,1.1rem)]">
-            <p className={cn(EYEBROW_MUTED, "m-0")}>
-              {hasVisitorMemories ? "From those who knew him" : "The wall"}
-            </p>
-          </Reveal>
-
-          {/* c · visitor comments TILED into a balanced masonry. CSS `columns`
-              (1 → 2 → 3 → 4 with width) packs the cards densely; each tile is
-              break-inside-avoid so a card never splits across a column. Each
-              reveals with a small staggered delay capped at 0.2s so a long wall
-              never accumulates visible lag; Reveal short-circuits under reduced
-              motion. The CommentRow body rendering of the verbatim memory text
-              is unchanged — only the row's surface (the `tile` variant) frames
-              it inside the column. */}
-          {hasVisitorMemories ? (
-            <div className="columns-1 sm:columns-2 lg:columns-3 2xl:columns-4 4xl:columns-5 gap-[clamp(0.625rem,1.4vw,0.9rem)] [column-fill:_balance]">
-              {visitorMemories.map((memory, i) => (
-                <Reveal
-                  key={memory.id}
-                  as="div"
-                  delay={Math.min(i * 0.04, 0.2)}
-                  className="mb-[clamp(0.625rem,1.4vw,0.9rem)] break-inside-avoid"
-                >
-                  <CommentRow memory={memory} tile />
-                </Reveal>
-              ))}
-            </div>
-          ) : (
-            // Empty state recast in the tile idiom — one card in the same
-            // grammar, a dashed-ring "+" avatar + a SANS invitation (no italic).
-            // Composed, not broken; spans the FULL wall width (the old
-            // max-w-[480px] hugged the left and stranded two-thirds of the
-            // band as dead space on desktop).
-            <Reveal as="div" delay={0.08}>
-              <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-2xl bg-bg-soft/70 ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.8rem)]">
-                <span
-                  aria-hidden="true"
-                  className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(34px,7.5vw,40px)] w-[clamp(34px,7.5vw,40px)] border border-dashed border-line bg-bg-elevated"
-                >
-                  <span className="font-display not-italic text-ink-faint text-[clamp(14px,3vw,15px)] leading-none">
-                    +
-                  </span>
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-sans font-normal text-[clamp(15px,1.6vw,20px)] leading-[1.55] text-ink-muted m-0">
-                    No memories have been shared yet — be the first to leave one
-                    for Steve, using the box above.
+            {/* LEFT RAIL (xl+) — the sticky "about the wall" panel: the invitation
+                (verbatim from the masthead) + a persistent Share button, so the
+                wall's purpose stays in view as the masthead scrolls away. At xl
+                (no right rail) it also carries the composer. */}
+            <aside className="hidden xl:block">
+              <div className="sticky top-[clamp(5rem,9vw,7rem)] flex flex-col gap-5">
+                <div className="rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,1.6vw,1.5rem)]">
+                  <div className="flex items-center gap-3 border-b border-line pb-3">
+                    <span className={cn(EYEBROW, "shrink-0")}>The Pin Board</span>
+                    <span aria-hidden className="h-px flex-1 bg-ink/15" />
+                    <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+                  </div>
+                  <p className="mt-4 font-sans text-[clamp(14.5px,0.9vw,16px)] leading-[1.6] text-ink-soft m-0">
+                    Stephen to some, SEM to the art world, Steve to his family. If
+                    he touched your life, add a memory below — the family reads
+                    every one.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(true)}
+                    className={cn(BTN_PRIMARY, "mt-5 w-full")}
+                  >
+                    Share a memory <span aria-hidden="true" className="ml-2">→</span>
+                  </button>
                 </div>
-              </article>
-            </Reveal>
-          )}
+                {/* composer lives here ONLY at xl (the right rail carries it 2xl+) */}
+                <div className="2xl:hidden">
+                  <ComposerCard onShare={() => setModalOpen(true)} />
+                </div>
+              </div>
+            </aside>
+
+            {/* CENTER — THE FEED. Pinned artist post leads; family tribute next;
+                then, under a quiet label, the visitor posts (or the empty state).
+                Below xl the composer is the first item so mobile opens on it. */}
+            <div className="flex flex-col gap-[clamp(0.85rem,1.8vw,1.2rem)]">
+              <div className="xl:hidden">
+                <ComposerCard onShare={() => setModalOpen(true)} />
+              </div>
+
+              {/* PINNED — Stephen's own words to his students (its long letter
+                  folds). Rank = position + warm ring + chip only. */}
+              <Reveal as="div" delay={0}>
+                <PostCard memory={ARTIST_MEMORY} pinned />
+              </Reveal>
+
+              {/* FAMILY — Polly Wedge's funeral tribute; shown in full, plain
+                  card. Weight comes from position + the tribute itself. */}
+              <Reveal as="div" delay={0.05}>
+                <PostCard memory={FAMILY_TRIBUTE} />
+              </Reveal>
+
+              {hasVisitorMemories ? (
+                <Reveal as="div" className="pt-[clamp(0.5rem,1.2vw,0.9rem)]">
+                  <p className={cn(EYEBROW_MUTED, "m-0")}>From those who knew him</p>
+                </Reveal>
+              ) : null}
+
+              {hasVisitorMemories ? (
+                visitorMemories.map((memory, i) => (
+                  <Reveal key={memory.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
+                    <PostCard memory={memory} />
+                  </Reveal>
+                ))
+              ) : (
+                <Reveal as="div" delay={0.08}>
+                  <EmptyStateCard />
+                </Reveal>
+              )}
+            </div>
+
+            {/* RIGHT RAIL (2xl+) — the sticky composer + a quiet standing note
+                (verbatim from the share modal). */}
+            <aside className="hidden 2xl:block">
+              <div className="sticky top-[clamp(5rem,9vw,7rem)] flex flex-col gap-4">
+                <ComposerCard onShare={() => setModalOpen(true)} />
+                <p className="font-sans text-[clamp(13.5px,0.85vw,15px)] leading-[1.6] text-ink-muted m-0 px-1">
+                  We read each one with care before it joins the wall.
+                </p>
+              </div>
+            </aside>
+          </div>
         </section>
 
       </main>
