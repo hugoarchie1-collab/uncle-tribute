@@ -142,7 +142,7 @@ const PRIVACY: Section[] = [
           <><strong>Vercel</strong> — site hosting, serverless functions and cookieless, aggregate Web Analytics (US / EU).{" "}
             <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Vercel Privacy Policy</a>
           </>,
-          <><strong>Point 101</strong> — print fulfilment (UK). Your name and shipping address are shared so they can post the print.</>,
+          <><strong>Our print atelier</strong> — print fulfilment (UK). Your name and shipping address are shared so they can post the print.</>,
           <><strong>IONOS</strong> — email hosting for the <code>themandalacompany.com</code> inbox (Germany / EU).</>,
           <><strong>Google</strong> — analytics (Google Analytics 4), only if you allow analytics cookies on our banner.{" "}
             <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Google Privacy Policy</a>

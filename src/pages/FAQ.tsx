@@ -80,13 +80,13 @@ const FAQS: QA[] = [
       <>
         As standard, every print is made on <strong>350gsm Hahnemühle archival
         cotton-rag paper</strong>, printed with pigment inks on a 12-colour
-        large-format giclée press. Each is made to order at Point 101, London —
+        large-format giclée press. Each is made to order in London, at
         a Hahnemühle Certified Studio used by museums and contemporary artists
         alike. Lifespan under normal display conditions is in excess of 200
         years.
         <br />
         <br />
-        Prefer a different finish? Point 101 also prints across a range of
+        Prefer a different finish? Our atelier also prints across a range of
         fine-art papers and gallery <strong>canvas</strong>. As a guide: choose{" "}
         <strong>paper</strong> if you plan to glass-frame the piece in the
         traditional way; choose <strong>canvas</strong> for a bold, tactile,

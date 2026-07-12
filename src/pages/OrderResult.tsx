@@ -309,7 +309,7 @@ export const OrderSuccess = () => {
             Your payment has been received. Stripe is sending your receipt now.
           </p>
           <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px]">
-            Each print is made to order. We place yours with our atelier, Point 101 in London,
+            Each print is made to order. We place yours with our London atelier
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
           </p>

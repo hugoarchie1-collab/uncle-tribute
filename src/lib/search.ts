@@ -119,7 +119,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "The print itself",
     question: "What are the prints made on?",
     answer:
-      "350gsm Hahnemühle archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at Point 101, London — one of the UK's leading giclée print ateliers, used by museums and contemporary artists alike. Lifespan under normal display conditions is in excess of 200 years.",
+      "350gsm Hahnemühle archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Lifespan under normal display conditions is in excess of 200 years.",
   },
   {
     eyebrow: "Lead time",

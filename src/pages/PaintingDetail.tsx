@@ -1558,7 +1558,7 @@ const BuyBox = ({
                       )}
                     </span>
                     <span>
-                      Made to order by Point 101 in the finish of your choice —
+                      Made to order in the finish of your choice —
                       solid-wood or contemporary tray frame, with optional
                       anti-reflective museum-grade glazing (all shatter-safe for
                       transit), conservation-mounted and ready to hang. Every
@@ -1937,16 +1937,19 @@ const Story = ({ painting }: { painting: Painting }) => (
         className="lg:sticky lg:top-[80px] ring-1 ring-line px-6 py-6 md:px-7 md:py-6"
       >
         {/* HOW EACH ORDER ARRIVES — Hugo's presentation note. Made to order,
-            printed by Point 101, sealed with the wax-seal sticker, posted with
-            a printed catalogue. ⚠️ PACKAGING FACTS (Gary at Point 101,
+            atelier-printed in London, sealed with the wax-seal sticker, posted
+            with a printed catalogue. ⚠️ The printer (Point 101) is NOT named to
+            buyers (Hugo, 2026-07-11 — perceived value / one-off status); keep the
+            copy unnamed but premium. ⚠️ PACKAGING FACTS (Gary at Point 101,
             2026-07-03): prints up to A3 are dispatched FLAT; sizes above A3
-            arrive boxed. NEVER say "hand-rolled" — that was wrong. printer
-            line reuses ESTATE_AUTHENTICATION.printer verbatim. */}
+            arrive boxed. NOTHING IS EVER ROLLED (Hugo's rule) — NEVER say
+            "hand-rolled" / "tube". printer line reuses
+            ESTATE_AUTHENTICATION.printer verbatim (also unnamed). */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
         <p className={cn(BODY, "text-ink m-0 mb-4")}>
           Every print is made to order &mdash; never warehoused. When your order
-          is placed it is printed and prepared by Point&nbsp;101 in London,
-          the United Kingdom&rsquo;s leading giclée atelier, the same studio
+          is placed it is printed and prepared in London, at one of the
+          United Kingdom&rsquo;s leading giclée ateliers &mdash; the same studio
           Stephen trusted with his own work. It is packed to be opened slowly.
         </p>
         <dl className="grid grid-cols-1 gap-y-3 m-0 border-t border-line pt-4">

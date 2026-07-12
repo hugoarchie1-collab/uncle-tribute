@@ -56,7 +56,7 @@ const OFFERINGS: Offering[] = [
       <>
         Every work in the catalogue is available as an estate-stamped giclée
         print, numbered within its edition, on 350gsm Hahnemühle archival paper,
-        printed to order at Point 101, London. For multi-room schemes, repeat
+        printed to order at our London atelier. For multi-room schemes, repeat
         placements or a full suite across a property, volume and project
         pricing is offered <strong>on request</strong> — tell us the spaces
         and the scale and we will prepare a considered quotation.

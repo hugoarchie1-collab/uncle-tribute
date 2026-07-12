@@ -229,7 +229,7 @@ const lineRetailPence = (item: NormalisedItem): number => {
 
 // Boilerplate spec line used in Stripe product description.
 const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, numbered within its edition. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at Point 101, London.";
+  "Estate-stamped by The Mandala Company, numbered within its edition. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at our London atelier.";
 
 // The edition the catalogue is currently issuing under (mirror of
 // CURRENT_EDITION in src/data/paintings.ts — gotcha #5 forbids importing it
@@ -788,7 +788,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           unit_amount: toMinor(item.tier.framingPricePence),
           product_data: {
             name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
-            description: `${finish}, conservation-mounted and ready to hang. Hand-finished by Point 101 for the ${item.tier.label} edition.`,
+            description: `${finish}, conservation-mounted and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
           },
         },
       });

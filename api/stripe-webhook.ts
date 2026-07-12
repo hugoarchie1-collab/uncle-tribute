@@ -704,7 +704,7 @@ const renderOrderConfirmationHtml = (p: {
     stamp: "Estate-stamped by The Mandala Company",
     numbering: "Numbered within its edition",
     coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
-    printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
+    printer: "Printed at a leading giclée atelier in London",
   };
   // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 — the
   // add-on wording lives in several places). Lead time is "up to two weeks"
@@ -763,7 +763,7 @@ const renderOrderConfirmationHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
-    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order at Point 101 in London, the UK's leading giclée print atelier, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
+    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order in London at a leading giclée atelier, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
@@ -784,7 +784,7 @@ const renderOrderConfirmationHtml = (p: {
     + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry)}.</p>`
     + `</div>`
     + `<h2 style="${s.subheading}">What happens next</h2>`
-    + `<p style="${s.body}">We'll place your print with Point 101 in the next working day, and notify you the moment it leaves the studio. If anything about the colourway or sizing needs another look, just reply to this email — we read everything ourselves.</p>`
+    + `<p style="${s.body}">We'll place your print with our atelier in the next working day, and notify you the moment it leaves the studio. If anything about the colourway or sizing needs another look, just reply to this email — we read everything ourselves.</p>`
     + `<p style="${s.signoff}">With love from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`
@@ -842,7 +842,7 @@ const renderGiftHtml = (p: {
     : `Thank you, ${firstOf(p.buyerName, "there")}.`;
 
   const intro = p.toRecipient
-    ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards a signed, estate-stamped giclée print of one of Stephen's mandalas, each one made to order at Point 101 in London.</p>`
+    ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards a signed, estate-stamped giclée print of one of Stephen's mandalas, each one made to order at our London atelier.</p>`
     : `<p style="${s.body}">Your gift card for <em>The Art of Stephen Meakin</em> is ready. Below is the code and how it's redeemed — forward this email to whomever it's for, or keep it for yourself.</p>`;
 
   const noteHtml =

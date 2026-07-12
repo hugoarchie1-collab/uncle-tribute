@@ -101,7 +101,7 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at Point 101, London.";
+  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at our London atelier.";
 
 /**
  * The edition the catalogue is CURRENTLY issuing under. Every artwork is
@@ -169,8 +169,13 @@ export const ESTATE_AUTHENTICATION = {
   numberingLabel: "Numbered within the edition",
   coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
-  printer: "Printed at Point 101, London — the UK's leading giclée print atelier",
-  printerLabel: "Printed at Point 101",
+  // NOTE: the print atelier is deliberately NOT named to buyers (Hugo, 2026-07-11:
+  // naming the printer can read as un-prestigious to snobbier collectors; value sits
+  // in the estate stamp + one-off status, not the vendor). The real supplier
+  // (Point 101, London) stays named ONLY in internal/estate-facing surfaces (the
+  // fulfilment email + code comments). Buyer copy: unnamed but premium.
+  printer: "Printed at a leading giclée atelier in London",
+  printerLabel: "Atelier-printed in London",
 };
 
 /**
