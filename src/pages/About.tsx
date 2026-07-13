@@ -95,14 +95,21 @@ const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, ceili
 // ─── Canonical width ladder — reuse EXACTLY (invent no new max-w) ────────────
 // ⚠️ every mx-auto'd aspect-ratio block MUST also carry w-full, or a bare
 // aspect child collapses to 0×0 (documented gotcha). All ladders include w-full.
-/** Reading measure — prose, heads, pull-lines. */
-const READING_WIDE =
-  "mx-auto w-full max-w-[1180px] 2xl:max-w-[1560px] 3xl:max-w-[1780px] 4xl:max-w-[1960px]";
-/** Wide photo blocks — people rows needing room, portrait+list. */
-const PHOTO_WIDE =
-  "mx-auto w-full max-w-[1400px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px]";
-/** Tight 2-up photo rows. */
-const PHOTO_TIGHT = "mx-auto w-full max-w-[1080px]";
+// ⚠️ ONE canonical content width for EVERYTHING — prose, photos, grids, bands all
+// share this EXACT max-w so every block's left + right edge lines up down the whole
+// page (the root fix for the "jigsaw": prose used to sit at 1180 and photos at 1400,
+// so nothing shared a spine). RUTHLESS UNIFORMITY — invent NO other content max-w.
+// Ladder kept ≤ SECTION's content box at every step so the inner width always
+// governs (no clip). If a block needs to be narrower, it still uses THIS and insets
+// its inner column — never a bespoke max-w.
+// max-w matches the SECTION ladder so `w-full` always governs (SECTION's content
+// box is always ≤ this) — every block fills the SAME box → ONE left + right edge
+// down the page, and fills WIDE (no centred inset gutter).
+const ONE_WIDTH =
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px]";
+/** All three aliases now point at the ONE width so old call-sites stay uniform. */
+const READING_WIDE = ONE_WIDTH;
+const PHOTO_WIDE = ONE_WIDTH;
 
 /** The one shared section shell + the delimiter rhythm (P8). */
 const SECTION =
@@ -171,10 +178,11 @@ const ProseColumns = ({
 // use <Plate fill> (object-contain — face never cut); art/room/doc tiles use
 // <ImageReveal> (cover-safe). NEVER mix aspects in one row; never a 4-up. The
 // caller passes the correct tile children; `items-stretch` levels the row.
+// `width` is accepted (call-sites still pass it) but IGNORED — every photo row
+// uses the ONE canonical width so its edges line up with the prose above/below.
 const PhotoRow = ({
   cols = 2,
   children,
-  width = "tight",
 }: {
   cols?: 2 | 3;
   width?: "tight" | "wide";
@@ -183,7 +191,7 @@ const PhotoRow = ({
   <Reveal
     as="div"
     className={cn(
-      width === "wide" ? PHOTO_WIDE : cols === 3 ? "mx-auto w-full max-w-[1180px]" : PHOTO_TIGHT,
+      ONE_WIDTH,
       "grid grid-cols-2 gap-4 md:gap-6 items-stretch",
       cols === 3 && "md:grid-cols-3",
     )}
@@ -214,7 +222,7 @@ const TextBesideArt = ({
   sizes?: string;
   per?: number;
 }) => (
-  <div className="mx-auto w-full max-w-[1180px] 3xl:max-w-[1380px] lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 lg:items-stretch">
+  <div className={cn(ONE_WIDTH, "lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 lg:items-stretch")}>
     <Reveal as="div">
       {/* NO ch cap — the prose fills the 1fr column so the art matches its height. */}
       <Prose text={text} per={per} className={lead ? LEAD : BODY} />
@@ -294,7 +302,8 @@ const ImageBand = ({
   <Reveal
     as="figure"
     className={cn(
-      "m-0 mx-auto w-full max-w-[1180px] 3xl:max-w-[1400px]",
+      ONE_WIDTH,
+      "m-0",
       cap === "64svh" && "2xl:max-h-[64svh] 2xl:overflow-hidden",
       cap === "56svh" && "2xl:max-h-[56svh] 2xl:overflow-hidden",
     )}
@@ -1111,7 +1120,7 @@ export const About = () => {
           <ProseColumns text={ABOUT.anegada[2]} breakInside />
 
           {/* THE RITUAL, IN MOTION — two archive clips, an even diptych. */}
-          <Reveal as="div" className="mt-5 md:mt-6 2xl:mt-8 mx-auto grid max-w-[1180px] 3xl:max-w-[1400px] grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch">
+          <Reveal as="div" className={cn(ONE_WIDTH, "mt-5 md:mt-6 2xl:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch")}>
             <LoopFilm
               src="/video/studio-paint-a-v1.mp4"
               poster="/video/poster-studio-paint-a-v1.jpg"
@@ -1220,7 +1229,7 @@ export const About = () => {
 
           {/* Scene-setting context beside the Mystic Rose flyer (a DOCUMENT →
               cover-safe; cover-fills to the context height). */}
-          <div className="mx-auto w-full max-w-[1180px] 3xl:max-w-[1380px] lg:grid lg:grid-cols-[1fr_440px] 3xl:grid-cols-[1fr_500px] lg:gap-12 lg:items-stretch">
+          <div className={cn(ONE_WIDTH, "lg:grid lg:grid-cols-[1fr_440px] 3xl:grid-cols-[1fr_500px] lg:gap-12 lg:items-stretch")}>
             <Reveal as="div">
               {INTERVIEW.context.map((p, i) => (
                 <p key={i} className={cn(BODY, i > 0 ? "mt-3 md:mt-4" : "")}>
@@ -1339,7 +1348,7 @@ export const About = () => {
           <div className={cn(READING_WIDE, "mt-5 md:mt-6")}>
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
-          <Reveal as="figure" className="m-0 mt-5 md:mt-6 mx-auto w-full max-w-[1180px] 3xl:max-w-[1400px] 2xl:max-h-[64svh] 2xl:overflow-hidden">
+          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0 mt-5 md:mt-6 2xl:max-h-[64svh] 2xl:overflow-hidden")}>
             <Plate
               src="/img/about/35-gathering-at-the-gallery.jpg"
               alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
@@ -1423,7 +1432,7 @@ export const About = () => {
           </Reveal>
           {/* P4 — the painting cover-fills to the stacked passages' height. */}
           <div className="mt-5 md:mt-6 2xl:mt-8">
-            <div className="mx-auto w-full max-w-[1180px] 3xl:max-w-[1380px] lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 lg:items-stretch">
+            <div className={cn(ONE_WIDTH, "lg:grid lg:grid-cols-[1fr_520px] 3xl:grid-cols-[1fr_600px] lg:gap-12 lg:items-stretch")}>
               <div className="flex flex-col gap-8">
                 <Reveal as="div">
                   <blockquote className="m-0">
