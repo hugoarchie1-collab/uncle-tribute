@@ -1287,21 +1287,30 @@ export const About = () => {
           <div className={READING_WIDE}>
             <InterviewQA item={INTERVIEW.qa[1]} />
           </div>
-          {/* Home's stacked module — the easel portrait (contained, no crop) as
-              its own generous figure, then Q3 full-width beneath it. */}
-          <div className={BLOCK_GAP}>
-            <Reveal as="figure" className={cn(ONE_WIDTH, "m-0 w-full")}>
+          {/* Q3 (the LONG "sacred geometrist" answer) BESIDE the easel portrait,
+              both filling the row — text ~60%, portrait a capped column. Was a
+              full-width 16/9 slot that letterboxed the tall portrait with huge
+              empty sides (Hugo: "empty space" in the interview). object-contain
+              keeps the whole figure; no face crop. */}
+          <div
+            className={cn(
+              ONE_WIDTH,
+              BLOCK_GAP,
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] gap-8 lg:gap-12 items-start",
+            )}
+          >
+            <div className="min-w-0">
+              <InterviewQA item={INTERVIEW.qa[2]} />
+            </div>
+            <Reveal as="figure" className="m-0 w-full">
               <ContainImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
-                aspect="aspect-[16/9]"
-                sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
+                aspect="aspect-[4/5]"
+                sizes="(min-width: 1024px) 420px, 100vw"
                 parallax={0.06}
               />
             </Reveal>
-          </div>
-          <div className={cn(READING_WIDE, BLOCK_GAP)}>
-            <InterviewQA item={INTERVIEW.qa[2]} />
           </div>
 
           {/* The rose-window painting in progress — P6 band (≤64svh). */}
