@@ -266,21 +266,35 @@ const NewsMasthead = () => (
  * two coming pieces read clearly. Falls back to a single static image when only
  * one cover exists. Reduced-motion is fine — scroll-snap needs no JS animation.
  */
-type GallerySlide = { cover: string; title: string };
-const FeaturedGallery = ({ slides }: { slides: GallerySlide[] }) => {
+type GallerySlide = { cover: string; entry: NewsEntry };
+const FeaturedGallery = ({
+  slides,
+  onIndexChange,
+}: {
+  slides: GallerySlide[];
+  /** Reports the active slide up so the hero TEXT (title/summary) can follow the
+   *  swipe — otherwise the words stayed on slide 0 while the cover moved. */
+  onIndexChange?: (i: number) => void;
+}) => {
   const trackRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 
+  const setActive = (i: number) => {
+    setIndex(i);
+    onIndexChange?.(i);
+  };
   const goTo = (i: number) => {
     const track = trackRef.current;
     if (!track) return;
     const clamped = Math.max(0, Math.min(slides.length - 1, i));
+    setActive(clamped); // update text immediately on arrow/dot click
     track.scrollTo({ left: clamped * track.clientWidth, behavior: "smooth" });
   };
   const onScroll = () => {
     const track = trackRef.current;
     if (!track) return;
-    setIndex(Math.round(track.scrollLeft / track.clientWidth));
+    const i = Math.round(track.scrollLeft / track.clientWidth);
+    if (i !== index) setActive(i);
   };
 
   return (
@@ -296,13 +310,13 @@ const FeaturedGallery = ({ slides }: { slides: GallerySlide[] }) => {
             <figure key={s.cover} className="relative m-0 w-full shrink-0 snap-center">
               <AssetImage
                 src={s.cover}
-                alt={s.title}
+                alt={s.entry.title}
                 className="block aspect-square w-full object-cover"
               />
               {/* Caption chip — names the piece so swiping between the two
                   upcoming works is unambiguous. */}
               <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-10">
-                <span className={cn(EYEBROW, "m-0 text-ink")}>{s.title}</span>
+                <span className={cn(EYEBROW, "m-0 text-ink")}>{s.entry.title}</span>
               </figcaption>
             </figure>
           ))}
@@ -342,7 +356,7 @@ const FeaturedGallery = ({ slides }: { slides: GallerySlide[] }) => {
             <button
               key={s.cover}
               type="button"
-              aria-label={`Show ${s.title}`}
+              aria-label={`Show ${s.entry.title}`}
               aria-current={i === index}
               onClick={() => goTo(i)}
               className={cn(
@@ -387,14 +401,22 @@ export const News = () => {
     for (const e of ordered) {
       if (e.cover && !seen.has(e.cover)) {
         seen.add(e.cover);
-        slides.push({ cover: e.cover, title: e.title });
+        slides.push({ cover: e.cover, entry: e });
       }
     }
     return slides;
   }, [heroId]);
+  // Which hero slide is on screen — drives the hero TEXT so the title/summary
+  // ALWAYS match the cover you swiped to (was frozen on the featured entry).
+  const [heroIndex, setHeroIndex] = useState(0);
+  const activeHero = heroSlides[heroIndex]?.entry ?? featured;
+  // Show EVERY entry in its status section (Hugo: "all paintings arent in section
+  // for all"). Previously the featured entry was HIDDEN from the feed (only in the
+  // hero swipe), so a painting vanished from its section. Now nothing is hidden —
+  // the hero swipe is a highlight ABOVE the full, complete feed.
   const groups = useMemo(
-    () => groupByStatus(filtered, heroId),
-    [filtered, heroId],
+    () => groupByStatus(filtered, undefined),
+    [filtered],
   );
   // Until the family adds real entries to src/data/news.ts, the page shows a
   // dignified, CENTRED "being prepared" state — never invented releases/dates.
@@ -510,7 +532,7 @@ export const News = () => {
             {/* CENTRED HEADER — the status eyebrow + section heading on a shared
                 top axis, so the whole feature hangs from one centred spine. */}
             <div className="text-center">
-              <p className={cn(EYEBROW, "m-0")}>{featured.displayDate}</p>
+              <p className={cn(EYEBROW, "m-0")}>{activeHero.displayDate}</p>
               <h2
                 className="mt-2 font-display font-bold tracking-[-0.03em] text-[clamp(22px,2.8vw,40px)] leading-[1.05] text-ink m-0"
                 style={{ fontVariationSettings: '"opsz" 40, "wght" 700' }}
@@ -526,14 +548,14 @@ export const News = () => {
               {/* SWIPEABLE COVER GALLERY — the upcoming release paintings, square
                   (mandalas read best square), swipe/dots to move between them. */}
               <div className="md:col-span-6 w-full">
-                <FeaturedGallery slides={heroSlides} />
+                <FeaturedGallery slides={heroSlides} onIndexChange={setHeroIndex} />
               </div>
               {/* TEXT — centred on mobile (matching the header axis), settling to
                   left-aligned beside the cover on md+ so the long-form summary reads
                   on a clean measure rather than ragged-centred. */}
               <div className="md:col-span-6 text-center md:text-left">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
-                  {pillLabel(featured)}
+                  {pillLabel(activeHero)}
                 </p>
                 {/* The release title is the DOMINANT element (Hugo: "bigger
                     than rest as it's a title") — set well above "The next
@@ -542,10 +564,10 @@ export const News = () => {
                   className="font-display font-bold tracking-[-0.04em] text-[clamp(38px,4.8vw,74px)] leading-[1.0] text-ink text-balance m-0 hero-text-shadow"
                   style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
                 >
-                  {featured.title}
+                  {activeHero.title}
                 </h3>
                 <p className={cn(SUBTITLE, "mt-4 md:mt-5 mb-0 mx-auto md:mx-0 max-w-[60ch] 3xl:max-w-[68ch]")}>
-                  {featured.summary}
+                  {activeHero.summary}
                 </p>
                 {/* A single quiet CTA to the Friends & Family sign-up at the foot
                     (#notify) — the full form lives there, so the hero stays clean
