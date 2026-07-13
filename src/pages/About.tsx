@@ -423,8 +423,8 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          style={{ objectPosition: "center" }}
-          className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          style={{ objectPosition: "center 30%" }}
+          className="absolute inset-0 h-full w-full object-cover drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
         />
       </div>
     ) : (
@@ -550,7 +550,7 @@ const ContainImage = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="absolute inset-0 w-full h-full object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          className="absolute inset-0 w-full h-full object-cover object-[50%_30%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
         />
       </motion.div>
     </div>
