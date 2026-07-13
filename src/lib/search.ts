@@ -131,7 +131,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £245 (issued within each edition, no fixed allocation). Collector Edition A2 at £450 (200 allocated per edition). Atelier Edition A1 at £850 (75 per edition). Heirloom Edition A0 at £1,750 (18 per edition).",
+      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £275 (issued within each edition, no fixed allocation). Collector Edition A2 at £495 (200 allocated per edition). Atelier Edition A1 at £925 (75 per edition). Heirloom Edition A0 at £1,895 (18 per edition). Every price includes free UK delivery.",
   },
   {
     eyebrow: "Framing",

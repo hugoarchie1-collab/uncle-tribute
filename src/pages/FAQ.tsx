@@ -118,11 +118,11 @@ const FAQS: QA[] = [
     answer: (
       <>
         Four tiers, each estate-stamped and issued within the estate's release
-        cycle. <strong>Open Edition A3</strong> at £245 (issued within each
-        edition, no fixed allocation). <strong>Collector Edition A2</strong> at
-        £450 (edition of 200). <strong>Atelier Edition A1</strong> at £850
-        (edition of 75). <strong>Heirloom Edition A0</strong> at £1,750
-        (edition of 18).
+        cycle, every price including free UK delivery. <strong>Open Edition
+        A3</strong> at £275 (issued within each edition, no fixed allocation).{" "}
+        <strong>Collector Edition A2</strong> at £495 (edition of 200).{" "}
+        <strong>Atelier Edition A1</strong> at £925 (edition of 75).{" "}
+        <strong>Heirloom Edition A0</strong> at £1,895 (edition of 18).
       </>
     ),
   },

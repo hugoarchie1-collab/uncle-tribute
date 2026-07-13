@@ -200,7 +200,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier",
     label: "Open Edition",
     size: "A3 (29.5 × 29.5 cm)",
-    pricePence: 24500, // £245
+    pricePence: 27500, // £275 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: null, // Open Edition — no allocation cap, not numbered
     editionLabel: "Open Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
@@ -212,7 +212,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "collector",
     label: "Collector Edition",
     size: "A2 (42 × 42 cm)",
-    pricePence: 45000, // £450
+    pricePence: 49500, // £495 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 200, // per-edition allocation
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     editionPromise: "allocated within the current edition",
@@ -227,7 +227,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "A1 (59.5 × 59.5 cm)",
-    pricePence: 85000, // £850
+    pricePence: 92500, // £925 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 75, // per-edition allocation
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     editionPromise: "allocated within the current edition",
@@ -241,7 +241,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "heirloom",
     label: "Heirloom Edition",
     size: "A0 (84 × 84 cm)",
-    pricePence: 175000, // £1,750
+    pricePence: 189500, // £1,895 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 18, // per-edition allocation
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     editionPromise: "allocated within the current edition",
@@ -258,7 +258,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "studio",
     label: "Original — One of One",
     size: "A1 (59.5 × 59.5 cm)",
-    pricePence: 245000, // £2,450
+    pricePence: 265000, // £2,650 (marked up 2026-07-13, hidden tier — kept above A0)
     editionTotal: 1,
     editionLabel: "Unique — one of one",
     description: "Hand-painted by Polly Wedge, one of one",
@@ -317,7 +317,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 45000, // £450 — anchor tier (A2 Collector Edition)
+  pricePence: 49500, // £495 — anchor tier (A2 Collector Edition)
   size: "Giclée print, A2 (42 × 42 cm), Collector Edition, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
