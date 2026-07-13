@@ -1,6 +1,6 @@
-import { useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal, RevealStagger } from "../components/Reveal";
@@ -49,33 +49,106 @@ const SET_CARD_SCRIM =
   "radial-gradient(120% 100% at 50% 50%, rgba(9,7,6,0.86) 0%, rgba(9,7,6,0.78) 40%, rgba(9,7,6,0.42) 78%, rgba(9,7,6,0) 100%)";
 
 /**
- * Fixed backdrop layer for a collection scene. Held as a plain STATIC bg-cover
- * layer at a calm opacity. (The old per-section scroll-driven cross-fade +
- * ±6% parallax `y` + inset-[-8%] overscan jumped to a stale scroll position on
- * route transitions, reading as a zoom+jump — so each scene is a static image
- * now. The isFirst scene sits at full opacity as the page's base; the others
- * layer over it at a calm opacity.) `sectionRef` is retained in the signature
- * for the caller's per-section refs but is no longer read here.
+ * Fixed backdrop layer that cross-fades between collection scenes as the
+ * user scrolls. Each backdrop tracks its own section's visibility — when a
+ * section is in view, its backdrop fades to full opacity; when leaving, it
+ * fades back out. Adjacent backdrops overlap, eliminating the hard
+ * horizontal seam between collections.
  */
 const ScrollBackdrop = ({
   photoUrl,
+  sectionRef,
   isFirst = false,
+  isLast = false,
 }: {
   photoUrl: string;
   sectionRef: RefObject<HTMLElement | null>;
   isFirst?: boolean;
   isLast?: boolean;
-}) => (
-  <div
-    style={{
-      opacity: isFirst ? 1 : 0.5,
-      backgroundImage: `url("${photoUrl}")`,
-      willChange: "auto",
-    }}
-    className="absolute inset-0 bg-cover bg-center"
-    aria-hidden="true"
-  />
-);
+}) => {
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  // Hold near full opacity across the bulk of the section so the photo
+  // is never invisible while the user is reading the collection. Soft
+  // fade at the very edges keeps adjacent collections cross-dissolving.
+  // The FIRST collection opens at FULL opacity from the top (no fade-up from
+  // 0) so the page is never bare black before the first scroll — the intro
+  // sits on its backdrop immediately (Hugo: "before scrolling the background
+  // is black"). It still fades out normally as the second collection arrives.
+  // The LAST collection (Born in the Sky — the nebula) NEVER fades out: it
+  // EXTENDS through the complete-catalogue panel + footer to the very end of
+  // the page (Hugo 2026-07-03: "the nebula as last image, extended — don't
+  // add the first one again"): without the hold, the foot fell back to the
+  // indigo base wash, which read as the opening image returning.
+  const opacity = useTransform(
+    scrollYProgress,
+    isFirst ? [0, 0.88, 1] : isLast ? [0, 0.12, 1] : [0, 0.12, 0.88, 1],
+    isFirst ? [1, 1, 0] : isLast ? [0, 1, 1] : [0, 1, 1, 0],
+  );
+  // Parallax `y` + the inset-[-8%] overscan were REMOVED (2026-07-13): that
+  // transform snapped to a stale scroll position on route change = the
+  // "background zooms/jumps on every page click" bug. The scroll-driven OPACITY
+  // crossfade STAYS — it's what makes each collection show its OWN backdrop
+  // (Hugo: "3 different backgrounds", not born-in-the-sky for everyone).
+
+  // Promote to a GPU layer ONLY while this collection is in view, so the two
+  // off-screen collections don't each hold a full-viewport compositing layer
+  // alive for the whole page lifetime (texture memory → mobile jank).
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      // 10% (was 20%): release the GPU-promoted backdrop layer sooner once it
+      // scrolls away, without dropping so low (5%) that it promotes too late
+      // and stalls/flashes on the way in.
+      { rootMargin: "10% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [sectionRef]);
+
+  // Reduced-motion: drop the parallax/scale entirely, hold the backdrop at a
+  // calm static opacity, and release the GPU layer (will-change:auto) so we
+  // don't keep a promoted compositing layer alive for motion that never runs.
+  if (reduceMotion) {
+    return (
+      <div
+        style={{
+          opacity: 0.5,
+          backgroundImage: `url("${photoUrl}")`,
+          willChange: "auto",
+        }}
+        className="absolute inset-0 bg-cover bg-center"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  return (
+    <motion.div
+      style={{
+        opacity,
+        backgroundImage: `url("${photoUrl}")`,
+        // GPU-promote ONLY the in-view backdrop (gated above) so the opacity
+        // crossfade composites cleanly without keeping promoted full-viewport
+        // layers alive for the 2 off-screen collections. Opacity only now.
+        willChange: inView ? "opacity" : "auto",
+      }}
+      // inset-0 (no overscan) — the overscan only existed to hide the parallax
+      // y-shift's edge gap; with y removed there's nothing to overscan for.
+      className="absolute inset-0 bg-cover bg-center"
+      aria-hidden="true"
+    />
+  );
+};
 
 // -----------------------------------------------------------------------------
 // BUNDLE SIZE SELECTOR — which sizes a set may be taken in

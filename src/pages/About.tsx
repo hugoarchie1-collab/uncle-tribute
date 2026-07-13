@@ -576,7 +576,7 @@ const AboutMasthead = () => (
           2xl:max-h-[52svh] 2xl:overflow-hidden CROPPED it (Hugo: "cropped and cut
           in half") — REMOVED. items-center balances it beside the name/bio.
           aspect + w-full are LOAD-BEARING (0×0 lazy-load deadlock without them). */}
-      <Reveal as="figure" className="m-0 mx-auto w-full max-w-[440px] md:max-w-[600px] lg:max-w-none lg:col-span-4">
+      <Reveal as="figure" className="m-0 mx-auto w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-none lg:col-span-4">
         <ImageReveal
           src="/img/about/12-stephen-portrait.jpg"
           alt="Stephen Meakin"
