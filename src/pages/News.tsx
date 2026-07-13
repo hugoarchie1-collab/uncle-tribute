@@ -35,7 +35,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -59,51 +58,20 @@ import {
 
 /**
  * Fixed full-page backdrop — a blurred rainbow-mountain scene behind the whole
- * estate calendar. The Collections
- * treatment, simplified for ONE image: a single bg-cover layer at full opacity
- * that drifts ±6% with WHOLE-PAGE scroll (useScroll over the document, no section
- * target), inset-[-8%] overscan so the parallax `y` can never expose an
- * uncovered strip, clipped by the overflow-hidden parent. Reduced-motion drops
- * the parallax entirely and holds the layer static (matches Collections').
+ * estate calendar. A single STATIC bg-cover layer at full opacity. (The old
+ * scroll-parallax + inset-[-8%] overscan jumped to a stale scroll position on
+ * route transitions, reading as a zoom+jump — so it's a plain static image now.)
  */
-const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => {
-  const reduceMotion = useReducedMotion();
-  // No `target` → tracks the viewport's scroll over the whole document, so the
-  // single backdrop drifts across the entire page rather than one section.
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-
-  // Reduced-motion: drop the parallax, hold the backdrop static, and release the
-  // GPU layer (will-change:auto) — no motion means no need for a promoted layer.
-  if (reduceMotion) {
-    return (
-      <div
-        style={{
-          backgroundImage: `url("${photoUrl}")`,
-          willChange: "auto",
-        }}
-        className="absolute inset-0 bg-cover bg-center"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  return (
-    <motion.div
-      style={{
-        y,
-        backgroundImage: `url("${photoUrl}")`,
-        willChange: "transform",
-      }}
-      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift can
-      // NEVER expose an uncovered strip (the black page background) at the top —
-      // the same fix Collections carries. The parent is overflow-hidden, so the
-      // overscan is clipped.
-      className="absolute inset-[-8%] bg-cover bg-center"
-      aria-hidden="true"
-    />
-  );
-};
+const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => (
+  <div
+    style={{
+      backgroundImage: `url("${photoUrl}")`,
+      willChange: "auto",
+    }}
+    className="absolute inset-0 bg-cover bg-center"
+    aria-hidden="true"
+  />
+);
 
 // Quiet type pill — the EYEBROW_TIGHT recipe inside a rounded-full hairline
 // chip (the one tasteful nod to Beeper's chip vocabulary). ink-muted at rest;

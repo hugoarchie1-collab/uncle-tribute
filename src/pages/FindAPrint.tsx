@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
@@ -70,13 +69,7 @@ export const FindAPrint = () => {
   const [browseTier, setBrowseTier] = useState<PrintTier>(
     BROWSE_TIERS.find((t) => t.isAnchor) ?? BROWSE_TIERS[0],
   );
-  const reduceMotion = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
-
-  // Whole-document parallax — no `target`, so the single backdrop drifts ±6%
-  // across the entire page, exactly like Collections / the other scene pages.
-  const { scrollYProgress } = useScroll();
-  const backdropY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
 
   // SINGLE-SELECT (Hugo 2026-07-09: "can't click more than one box at a time").
   // Clicking a swatch selects ONLY it (clearing any other in that lens); clicking
@@ -140,42 +133,23 @@ export const FindAPrint = () => {
         url="/for-you"
       />
 
-      {/* FIXED BACKDROP LAYER — one rainbow-wave scene drifting ±6% over the
-          WHOLE-PAGE scroll. Treatment (overscan + parallax + scrim) cloned from
-          Collections' ScrollBackdrop; a single bg-cover layer at full opacity. */}
+      {/* FIXED BACKDROP LAYER — one rainbow-wave scene held as a plain STATIC
+          bg-cover layer at full opacity. (The old scroll-parallax + inset-[-8%]
+          overscan jumped to a stale scroll position on route transitions,
+          reading as a zoom+jump — so it's a static image now.) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {reduceMotion ? (
-          // Reduced-motion: drop the parallax entirely and hold the scene static,
-          // releasing the GPU layer (will-change:auto) — matches the other scenes.
-          <div
-            style={{
-              backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
-              // Bias toward the rainbow (left of frame) so it survives the
-              // portrait center-crop on mobile — on desktop the bar is wide
-              // enough that this still shows the wave too. Cross-platform parity.
-              backgroundPosition: "28% center",
-              willChange: "auto",
-            }}
-            className="absolute inset-0 bg-cover"
-            aria-hidden="true"
-          />
-        ) : (
-          <motion.div
-            style={{
-              y: backdropY,
-              backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
-              // Bias toward the rainbow (left of frame) so it survives the
-              // portrait center-crop on mobile — cross-platform parity.
-              backgroundPosition: "28% center",
-              willChange: "transform",
-            }}
-            // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can
-            // NEVER expose an uncovered strip — the parent is overflow-hidden,
-            // so the overscan is clipped (Collections' "black bar" fix).
-            className="absolute inset-[-8%] bg-cover"
-            aria-hidden="true"
-          />
-        )}
+        <div
+          style={{
+            backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
+            // Bias toward the rainbow (left of frame) so it survives the
+            // portrait center-crop on mobile — on desktop the bar is wide
+            // enough that this still shows the wave too. Cross-platform parity.
+            backgroundPosition: "28% center",
+            willChange: "auto",
+          }}
+          className="absolute inset-0 bg-cover"
+          aria-hidden="true"
+        />
         {/* Shared scrim — EXACT gradient used on Collections / the rest of the
             site, so the colour swatches + tile copy read clearly over the
             scenes while the photo stays a subdued, moody texture. */}

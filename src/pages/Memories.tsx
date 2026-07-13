@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -74,58 +74,22 @@ type Status = "idle" | "submitting" | "success" | "error";
 type WallMemory = Memory & { imageUrl?: string; avatar?: string };
 
 // ---------------------------------------------------------------------------
-// ScrollBackdrop — the single full-page atmospheric layer, cloned from the
-// Collections treatment (src/pages/Collections.tsx ScrollBackdrop) but
-// simplified for ONE image with no cross-fade. A blurred peacock-plumage scene
-// sits behind the whole comments feed at full opacity, drifting ±6% as the user
-// scrolls the document (parallax), so the page reads as part of the same world
-// as Collections / Welcome rather than a flatter, separate microsite.
-//
-// Differences from Collections' ScrollBackdrop: there is only ONE backdrop, so
-// it tracks the DOCUMENT scroll (useScroll() with no target) instead of a per-
-// section ref, and holds at full opacity throughout (no in/out cross-fade).
-// Everything else matches: inset-[-8%] overscan so the ±6% `y` shift can never
-// expose an uncovered strip (the parent is overflow-hidden, so the overscan is
-// clipped); bg-cover bg-center; and the EXACT shared scrim gradient on top.
-//
-// Reduced-motion: drop the parallax entirely and render the static div exactly
-// like Collections' fallback (calm opacity, will-change:auto so no promoted
-// compositing layer is held alive for motion that never runs).
+// ScrollBackdrop — the single full-page atmospheric layer. A blurred peacock-
+// plumage scene sits behind the whole comments feed at full opacity, held as a
+// plain STATIC bg-cover layer. (The old scroll-parallax + inset-[-8%] overscan
+// jumped to a stale scroll position on route transitions, reading as a
+// zoom+jump — so it's a static image now.)
 // ---------------------------------------------------------------------------
-const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => {
-  const reduceMotion = useReducedMotion();
-  // Whole-document parallax — no `target`, so this tracks the page scroll.
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-
-  if (reduceMotion) {
-    return (
-      <div
-        style={{
-          backgroundImage: `url("${photoUrl}")`,
-          willChange: "auto",
-        }}
-        className="absolute inset-0 bg-cover bg-center"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  return (
-    <motion.div
-      style={{
-        y,
-        backgroundImage: `url("${photoUrl}")`,
-        willChange: "transform",
-      }}
-      // OVERSCAN the layer 8% beyond every edge so the ±6% parallax `y` shift
-      // can NEVER expose an uncovered strip at the top/bottom — the parent is
-      // overflow-hidden, so the overscan is clipped (mirrors Collections).
-      className="absolute inset-[-8%] bg-cover bg-center"
-      aria-hidden="true"
-    />
-  );
-};
+const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => (
+  <div
+    style={{
+      backgroundImage: `url("${photoUrl}")`,
+      willChange: "auto",
+    }}
+    className="absolute inset-0 bg-cover bg-center"
+    aria-hidden="true"
+  />
+);
 
 // The pinned founding memory — Stephen's letter to his students, verbatim.
 const ARTIST_MEMORY: WallMemory = {

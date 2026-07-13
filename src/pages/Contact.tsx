@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -17,49 +16,23 @@ import { cn } from "../lib/cn";
 const BACKDROP = asset("/img/scenes/contact-scene-v3.webp");
 
 /**
- * Fixed full-page backdrop, cloned from Collections' ScrollBackdrop treatment
- * but simplified for ONE static image (no cross-fade between sections). One
- * bg-cover layer at full opacity drifts ±6% over the whole document scroll —
- * useScroll() with no target tracks the page, y "6%"→"-6%" — and is overscanned
- * inset-[-8%] so the parallax can never expose an uncovered strip (the parent is
- * overflow-hidden, so the overscan is clipped). The EXACT shared scrim gradient
- * Collections uses sits on top so the cream copy stays legible.
- *
- * Reduced-motion: drop the parallax entirely, hold a calm static layer, and
- * release the GPU promotion (will-change:auto) — identical short-circuit to
- * Collections' ScrollBackdrop.
+ * Fixed full-page backdrop — one STATIC bg-cover layer at full opacity. (The
+ * old scroll-parallax + inset-[-8%] overscan jumped to a stale scroll position
+ * on route transitions, reading as a zoom+jump — so it's a plain static image
+ * now.) The EXACT shared scrim gradient Collections uses sits on top so the
+ * cream copy stays legible.
  */
 const ContactBackdrop = () => {
-  const reduceMotion = useReducedMotion();
-  // No `target` — track the whole document scroll for one page-wide drift.
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      {reduceMotion ? (
-        <div
-          style={{
-            backgroundImage: `url("${BACKDROP}")`,
-            willChange: "auto",
-          }}
-          className="absolute inset-0 bg-cover bg-center"
-          aria-hidden="true"
-        />
-      ) : (
-        <motion.div
-          style={{
-            y,
-            backgroundImage: `url("${BACKDROP}")`,
-            willChange: "transform",
-          }}
-          // OVERSCAN 8% beyond every edge so the ±6% parallax `y` shift can NEVER
-          // expose an uncovered strip at the top/bottom — same guard Collections
-          // uses. The parent is overflow-hidden, so the overscan is clipped.
-          className="absolute inset-[-8%] bg-cover bg-center"
-          aria-hidden="true"
-        />
-      )}
+      <div
+        style={{
+          backgroundImage: `url("${BACKDROP}")`,
+          willChange: "auto",
+        }}
+        className="absolute inset-0 bg-cover bg-center"
+        aria-hidden="true"
+      />
       {/* Shared scrim — the EXACT gradient Collections uses, so /contact reads as
           part of the same world and the cream copy stays legible over the photo. */}
       <div
