@@ -874,16 +874,17 @@ export const About = () => {
           </div>
         </section>
 
-        {/* 3 · PHOTO CLUSTER — P3 (3-up people, ONE aspect). The man, wordless. */}
+        {/* 3 · PHOTO CLUSTER — 2-up people (the family-group photo removed at
+            Hugo's request 2026-07-13; two portraits left, even). */}
         <section className={cn(SECTION, SECTION_PAD)}>
-          <PhotoRow cols={3}>
+          <PhotoRow>
             <Reveal as="div">
               <Plate
                 src="/img/about/13-stephen-outdoor-portrait.jpg"
                 alt="Stephen Meakin outdoors in sunlight, sunglasses resting on his head and earphones in, palms and greenery behind him."
                 width={1600}
                 height={1200}
-                sizes="(min-width: 768px) 33vw, 100vw"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -894,18 +895,7 @@ export const About = () => {
                 alt="Stephen Meakin standing beside one of his framed mandala paintings in a gallery."
                 width={800}
                 height={1200}
-                sizes="(min-width: 768px) 33vw, 50vw"
-                fill
-                aspect="aspect-[4/5]"
-              />
-            </Reveal>
-            <Reveal as="div" delay={0.18}>
-              <Plate
-                src="/img/about/14-family-group.jpg"
-                alt="Stephen Meakin standing at the back of a family group of six, an older couple seated together at the centre."
-                width={828}
-                height={852}
-                sizes="(min-width: 768px) 33vw, 50vw"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 fill
                 aspect="aspect-[4/5]"
               />
@@ -982,52 +972,39 @@ export const About = () => {
         <section id="wandering" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
           <ChapterHead id="wandering" />
           <ProseColumns text={ABOUT.earlyLife[2]} lead dropCap />
+          {/* Three portraits, even 3-up (the landscape "evening with friends"
+              photo removed at Hugo's request 2026-07-13). */}
           <div className={BLOCK_GAP}>
-            <PhotoRow>
+            <PhotoRow cols={3}>
               <Reveal as="div">
-                <Plate
-                  src="/img/about/19-evening-with-friends.jpg"
-                  alt="Three friends in white shirts at a party table at night, balloons strung from the beam behind them, Stephen Meakin among them."
-                  width={1600}
-                  height={1200}
-                  sizes="(min-width: 768px) 48vw, 100vw"
-                  fill
-                  aspect="aspect-[4/5]"
-                />
-              </Reveal>
-              <Reveal as="div" delay={0.09}>
                 <Plate
                   src="/img/about/20-island-evening.jpg"
                   alt="Stephen Meakin in a loose white shirt and jeans, seated outdoors at night during his years abroad."
                   width={818}
                   height={1134}
-                  sizes="(min-width: 768px) 48vw, 50vw"
-                  fill
-                  aspect="aspect-[4/5]"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-          <div className={BLOCK_GAP}>
-            <PhotoRow>
-              <Reveal as="div">
-                <Plate
-                  src="/img/about/21-at-the-helm.jpg"
-                  alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him."
-                  width={1200}
-                  height={1600}
-                  sizes="(min-width: 768px) 48vw, 100vw"
+                  sizes="(min-width: 768px) 33vw, 100vw"
                   fill
                   aspect="aspect-[4/5]"
                 />
               </Reveal>
               <Reveal as="div" delay={0.09}>
                 <Plate
+                  src="/img/about/21-at-the-helm.jpg"
+                  alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him."
+                  width={1200}
+                  height={1600}
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  fill
+                  aspect="aspect-[4/5]"
+                />
+              </Reveal>
+              <Reveal as="div" delay={0.18}>
+                <Plate
                   src="/img/about/22-fancy-dress-party.jpg"
                   alt="Stephen Meakin in pirate fancy dress with a toy parrot on his shoulder, a friend in an eyepatch reclining in front of him."
                   width={1200}
                   height={1600}
-                  sizes="(min-width: 768px) 48vw, 100vw"
+                  sizes="(min-width: 768px) 33vw, 100vw"
                   fill
                   aspect="aspect-[4/5]"
                 />
