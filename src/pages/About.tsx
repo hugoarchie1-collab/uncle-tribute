@@ -223,43 +223,8 @@ const PhotoRow = ({
 // images may cover-fill inside a capped aspect (never a people photo — those use
 // ContainImage). Height-capped so nothing is a full-screen slab. `caption`
 // optional; `aspect` defaults to a wide 3/2.
-const TextThenArt = ({
-  text,
-  lead = true,
-  imgSrc,
-  imgAlt,
-  sizes,
-  per = 3,
-  aspect = "aspect-[3/2]",
-  caption,
-}: {
-  text: string;
-  lead?: boolean;
-  imgSrc: string;
-  imgAlt: string;
-  sizes?: string;
-  per?: number;
-  aspect?: string;
-  caption?: ReactNode;
-}) => (
-  <div className={ONE_WIDTH}>
-    <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-      <Prose text={text} per={per} className={lead ? LEAD : BODY} />
-    </Reveal>
-    <Reveal as="figure" className={cn("relative m-0", BLOCK_GAP, "2xl:max-h-[64svh] 2xl:overflow-hidden")}>
-      <ImageReveal
-        src={imgSrc}
-        alt={imgAlt}
-        aspect={aspect}
-        sizes={sizes}
-        edges="all"
-        objectPosition="center"
-        parallax={0.06}
-      />
-      {caption && <figcaption className={cn(CAPTION, "mt-4")}>{caption}</figcaption>}
-    </Reveal>
-  </div>
-);
+// (TextThenArt removed 2026-07-13 — its only remaining caller, the cymatics
+// chart, is now a capped centred figure inline. No other caller.)
 
 // ─── P6 · ImageBand — capped full-width landscape image ──────────────────────
 // One wide art/room/in-progress shot, height-capped so it can never become a
@@ -1064,17 +1029,30 @@ export const About = () => {
             </PhotoRow>
           </div>
 
-          {/* Home's stacked module — the practice passage full-width, then the
-              cymatics chart as its own contained captioned figure below. */}
+          {/* Practice passage full-width, then the cymatics chart as a MODEST
+              CENTRED figure. It's a reference document, NOT a hero — full-width
+              6/5 rendered it ~1460px tall (Hugo: "why is this so big, awful").
+              Capped max-w so the whole 12-pattern grid reads at a sane size. */}
           <div className={BLOCK_GAP}>
-            <TextThenArt
-              text={ABOUT.anegada[1]}
-              lead
-              imgSrc="/img/about/25-harmonic-frequencies.jpg"
-              imgAlt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
-              aspect="aspect-[6/5]"
-              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
-            />
+            <div className={ONE_WIDTH}>
+              <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
+                <Prose text={ABOUT.anegada[1]} per={3} className={LEAD} />
+              </Reveal>
+              <Reveal
+                as="figure"
+                className={cn("relative m-0 mx-auto w-full max-w-[520px] md:max-w-[640px]", BLOCK_GAP)}
+              >
+                <ImageReveal
+                  src="/img/about/25-harmonic-frequencies.jpg"
+                  alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
+                  aspect="aspect-[6/5]"
+                  edges="all"
+                  objectPosition="center"
+                  parallax={0.06}
+                  sizes="(min-width: 768px) 640px, 100vw"
+                />
+              </Reveal>
+            </div>
           </div>
 
           <Dinkus />
