@@ -322,15 +322,21 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         {/* Deliver-to — Amazon-pattern location control sitting left of the
             search. Free worldwide delivery, so it's an informational preference
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
-        <DeliverTo variant="header" className="hidden 2xl:flex shrink-0" />
+        <DeliverTo variant="header" className="hidden 3xl:flex shrink-0" />
 
         {/* Desktop search — a compact header field filling the middle of the bar
             (Hugo: "add a search bar on the top bar" for full-screen desktop). The
             container is the flex-1 spacer that keeps the logo left + icons hard
             right at every width; the field itself only appears from lg up, so the
             phone/tablet bar stays uncluttered (search still lives in the drawer). */}
-        <div className="flex-1 min-w-0 lg:min-w-[240px] flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden lg:block w-full min-w-[220px] max-w-[520px]" />
+        {/* Desktop search — a LONG bar, shown only from 2xl where the row has
+            genuine room for it beside the wordmark; below that it lives in the
+            drawer. NEVER collapses to a circular "dot" and NEVER overlaps the
+            logo (Hugo): the flex-1 spacer stays min-w-0 so when the bar is hidden
+            the space fully collapses, and when shown it only appears at a width
+            that fits a min-[320px] long field without crowding the logo. */}
+        <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
+          <SearchBar variant="header" className="hidden 2xl:block w-full min-w-[320px] max-w-[460px]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
