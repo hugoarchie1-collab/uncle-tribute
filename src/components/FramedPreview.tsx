@@ -22,8 +22,11 @@ type FrameMeta = { face: string; light: string; dark: string; grain?: boolean; t
 
 // Keyed to FRAME_STYLES ids in paintings.ts.
 const FRAME_META: Record<string, FrameMeta> = {
+  // stained-black is a charcoal, NOT pure black — a true-black face disappears
+  // into the near-black page wall (#0a0908). Lifted face + a bright lit bevel
+  // edge keep it clearly readable as a frame.
   "natural-oak": { face: "#c9a368", light: "#e7ca95", dark: "#7f5f34", grain: true },
-  "stained-black": { face: "#1b1917", light: "#34302a", dark: "#040302" },
+  "stained-black": { face: "#2b2824", light: "#565049", dark: "#070605" },
   white: { face: "#ece7df", light: "#ffffff", dark: "#bdb7ab" },
   "walnut-tray": { face: "#5a4030", light: "#835f48", dark: "#291d13", grain: true, tray: true },
 };
@@ -54,8 +57,13 @@ export const FrameWrap = ({
         padding: moulding,
         background: `${grain}linear-gradient(135deg, ${m.light} 0%, ${m.face} 45%, ${m.dark} 100%)`,
         boxShadow:
-          `0 30px 58px rgba(0,0,0,0.55), inset 0 0 0 1px ${m.dark}, ` +
-          "inset 2px 2px 3px rgba(255,255,255,0.22), inset -3px -3px 7px rgba(0,0,0,0.5)",
+          // faint light outer keyline first — separates a dark frame from the
+          // near-black wall; drop-shadow (invisible on black bg) for depth on
+          // light walls; then the bevel: crisp inner edge + lit top-left / shaded
+          // bottom-right.
+          "0 0 0 1.5px rgba(237,230,214,0.14), 0 30px 58px rgba(0,0,0,0.55), " +
+          `inset 0 0 0 1px ${m.dark}, ` +
+          "inset 3px 3px 4px rgba(255,255,255,0.28), inset -4px -4px 8px rgba(0,0,0,0.55)",
         borderRadius: "2px",
       }}
     >
