@@ -279,8 +279,18 @@ const PullLine = ({ text, className }: { text: string; className?: string }) => 
   if (!text) return null;
   return (
     <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP, BLOCK_GAP_B, className)}>
-      <div aria-hidden className="mb-3 md:mb-4 h-px w-16 bg-ink/25" />
-      <p className={cn(STANDOUT_CLASS, "m-0 max-w-[26ch] text-balance")} style={STANDOUT_STYLE}>
+      {/* A full-width hairline + a BOLD statement that spans the whole measure on
+          lg+ (was a 42px line capped at 26ch, which left the band's right half
+          empty — Hugo's "blank space"). Now it fills the band edge-to-edge as a
+          display beat. */}
+      <div aria-hidden className="mb-4 md:mb-5 h-px w-full bg-ink/25" />
+      <p
+        className="m-0 font-display font-semibold tracking-[-0.02em] leading-[1.08] text-ink text-balance max-w-[24ch] md:max-w-[34ch] lg:max-w-none"
+        style={{
+          fontVariationSettings: '"opsz" 40, "wght" 600',
+          fontSize: "clamp(26px, 3.2vw, 56px)",
+        }}
+      >
         {text}
       </p>
     </Reveal>
@@ -1105,12 +1115,16 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,440px)] gap-8 lg:gap-12 items-start",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] gap-8 lg:gap-12 items-stretch",
             )}
           >
-            <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+            {/* On lg+ the four traditions spread down a single column to FILL the
+                tall portrait's height (justify-between over h-full) — a tall index,
+                no dead space beneath a top-clustered 2×2 grid. Below lg they stack
+                as an even 2×2. */}
+            <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 lg:flex lg:flex-col lg:justify-between lg:gap-0 lg:h-full">
               {TRADITIONS.map((t) => (
-                <li key={t.numeral} className="flex flex-col justify-start border-t border-line pt-4">
+                <li key={t.numeral} className="flex flex-col justify-start border-t border-line pt-4 lg:pb-4">
                   <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
                   <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
                     {t.name}
@@ -1404,30 +1418,38 @@ export const About = () => {
               {ABOUT.legacy[2]}
             </p>
           </Reveal>
-          {/* Home's stacked module — the founding quote + palestine passage flow
-              full-width (balanced 2-column), then the Ophiuchus painting sits
-              below as its own contained captioned figure (no crop, capped). */}
-          <div className={BLOCK_GAP}>
-            <div className={ONE_WIDTH}>
-              <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-                <blockquote className="m-0 [break-inside:avoid]">
-                  <Prose text={ABOUT.academyQuote} className={cn(BODY, "[&_p]:[break-inside:avoid]")} />
-                  <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
-                </blockquote>
-                <Prose text={ABOUT.palestine} className={cn(BODY, "[&_p]:[break-inside:avoid]")} />
-              </Reveal>
-              <Reveal as="figure" className={cn("relative m-0", BLOCK_GAP, "2xl:max-h-[64svh] 2xl:overflow-hidden")}>
-                <ImageReveal
-                  src="/img/about/11-ophiuchus-painting.jpg"
-                  alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
-                  aspect="aspect-square"
-                  edges="all"
-                  objectPosition="center"
-                  parallax={0.06}
-                  sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
-                />
-              </Reveal>
+          {/* The founding quote + palestine passage flow in the LEFT column, the
+              Ophiuchus painting sits BESIDE them as a capped, sticky square (was a
+              full-width aspect-square that rendered ~1270px tall — "this image
+              shouldn't be that big" — AND its 2xl overflow-hidden cropped the
+              artwork). Now the row fills: text on the left, a ~500px square on the
+              right that stays in view as the longer text scrolls. Never oversized,
+              never cropped, no side void. */}
+          <div
+            className={cn(
+              ONE_WIDTH,
+              BLOCK_GAP,
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,500px)] gap-8 lg:gap-14 items-start",
+            )}
+          >
+            <div className="min-w-0">
+              <blockquote className="m-0">
+                <Prose text={ABOUT.academyQuote} className={BODY} />
+                <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
+              </blockquote>
+              <Prose text={ABOUT.palestine} className={cn(BODY, "mt-5 md:mt-6")} />
             </div>
+            <Reveal as="figure" className="relative m-0 w-full lg:sticky lg:top-24">
+              <ImageReveal
+                src="/img/about/11-ophiuchus-painting.jpg"
+                alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
+                aspect="aspect-square"
+                edges="all"
+                objectPosition="center"
+                parallax={0.06}
+                sizes="(min-width: 1024px) 500px, 100vw"
+              />
+            </Reveal>
           </div>
         </section>
 
