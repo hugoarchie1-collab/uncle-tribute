@@ -800,68 +800,38 @@ export const Welcome = () => {
               left ~44% of the viewport at full height, bleeding to the screen
               edge; the invocation + bio sit to the right, melting out of the
               photo's inner edge. Stacks to portrait-then-text below md. */}
-          <section className="relative isolate w-full overflow-hidden">
-            {/* DESKTOP/TABLET — portrait bleeding to the LEFT edge. Reined in
-                2026-06-03 (Hugo: images too big) to match the trimmed hero —
-                a contained framed portrait, not a full-viewport takeover. */}
-            <figure className="m-0 hidden md:block absolute top-1/2 -translate-y-1/2 h-[78svh] 2xl:h-[66svh] left-4 sm:left-6 md:left-8 lg:left-12 w-[44%] lg:w-[42%]">
-              {/* EVEN melt: feather the portrait on ALL FOUR sides (was y-only,
-                  which left a hard rectangular left/right edge against the page
-                  gutter). With edges="all" it dissolves into the page identically
-                  top, bottom, left and right — the mirror of the hero figure's
-                  "melts even" treatment, no single hard seam. */}
-              <ImageReveal
-                src="/img/welcome/02-portrait-denim.jpg"
-                alt="Stephen Meakin"
-                fill
-                edges="all"
-                parallax={0.1}
-                objectPosition="center 35%"
-                shadow=""
-              />
-              {/* Inner-right calm zone — a SOFT elliptical wash anchored at the
-                  portrait's inner-right (where the copy overlaps), fading to FULLY
-                  TRANSPARENT (alpha 0) at every edge so it can never read as a box
-                  or a one-sided dark strip. Replaces the old one-directional melt
-                  that started at solid #0a0908 and quieted only the right half —
-                  now it quiets the area under the text evenly, the same recipe the
-                  hero figure uses (mirrored to the inner-right). */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(95% 100% at 110% 50%, rgba(10,9,8,0.46) 0%, rgba(10,9,8,0.24) 22%, rgba(10,9,8,0.08) 46%, rgba(10,9,8,0) 66%)",
-                }}
-              />
-            </figure>
-
-            {/* Text column — right of the portrait, vertically centred. */}
-            <div className="relative z-10 mx-auto flex max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] items-center justify-end px-4 sm:px-6 md:px-8 lg:px-12 py-4 md:min-h-[22svh] md:py-0">
-              <Reveal as="div" className="w-full md:max-w-[52%] lg:max-w-[50%]">
-                {/* MOBILE portrait — above the copy. */}
-                <figure className="m-0 mb-6 md:hidden max-w-[460px]">
-                  <ImageReveal
-                    src="/img/welcome/02-portrait-denim.jpg"
-                    alt="Stephen Meakin"
-                    aspect="aspect-[4/5]"
-                    edges="all"
-                    parallax={0.12}
-                    objectPosition="center"
-                    shadow="shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
-                  />
-                </figure>
-                <p className={cn(EYEBROW, "m-0 mb-4")}>
-                  {WELCOME.invocation}
-                </p>
-                <h2 className={cn(TITLE, "m-0 mb-3 md:mb-4 hero-text-shadow")}>
+          {/* 3 · MEET STEPHEN — contained, balanced. The portrait COVER-FILLS its
+              column to the text's exact height (items-stretch) so there is NO gap
+              above or below it (Hugo: "huge gap above and below, looks crap"). The
+              descriptive title is a SMALL heading along the top of the copy — not
+              the screen-filling display title it briefly became. */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <Reveal
+              as="div"
+              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
+            >
+              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] overflow-hidden rounded-[4px] ring-1 ring-line">
+                <ImageReveal
+                  src="/img/welcome/02-portrait-denim.jpg"
+                  alt="Stephen Meakin"
+                  fill
+                  edges="none"
+                  parallax={0.06}
+                  objectPosition="center 28%"
+                  shadow=""
+                />
+              </figure>
+              <div className="min-w-0 flex flex-col justify-center">
+                <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.invocation}</p>
+                <h2
+                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance m-0 mb-4 md:mb-5"
+                  style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+                >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className={cn(SUBTITLE, "m-0")}>
-                  {WELCOME.bio[0]}
-                </p>
-              </Reveal>
-            </div>
+                <p className={cn(SUBTITLE, "m-0")}>{WELCOME.bio[0]}</p>
+              </div>
+            </Reveal>
           </section>
 
           {/* 4 · STUDIO — full-bleed cinematic break. ⚠️ Keep this a REAL band:

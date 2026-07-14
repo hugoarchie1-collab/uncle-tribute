@@ -88,7 +88,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(48px,7.8vw,132px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(38px,4.8vw,80px)] leading-[1.04] md:leading-[1.0] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -104,7 +104,7 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(24px,1.15vw_+_17px,48px)] leading-[1.55] text-ink-muted";
+  "font-sans font-normal text-[clamp(21px,0.7vw_+_17px,34px)] leading-[1.55] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */

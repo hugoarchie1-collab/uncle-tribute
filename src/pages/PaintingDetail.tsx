@@ -1911,78 +1911,61 @@ const Story = ({ painting }: { painting: Painting }) => (
       </Reveal>
     )}
 
-    {/* TWO-COLUMN EDITORIAL SPREAD — description (primary, left) + estate spec
-        aside (right) share one axis and fill the width on lg+. The aside is
-        sticky so the eye keeps it while the longer prose scrolls; the grid
-        columns are balanced (1.7fr ↔ 1fr) so the prose fills the width and
-        runs SHORTER vertically. */}
-    <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-x-10 xl:gap-x-14 gap-y-8 items-start">
-      {/* PRIMARY — the painting's own words (verbatim description). Wider
-          measure (80ch) so the prose fills the column and the block is shorter
-          vertically; tightened paragraph rhythm + leading. */}
-      <Reveal
-        as="div"
-        className="max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(16px,1vw,21px)] md:text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink-muted"
-      >
-        {painting.description.split("\n\n").map((para, i) => (
-          <p key={i} className="m-0">{para}</p>
-        ))}
-      </Reveal>
+    {/* DESCRIPTION — the painting's own verbatim words, FULL WIDTH at a readable
+        measure. Was a 2-col spread with a tall sticky aside that stranded a big
+        empty column beside short descriptions (Hugo: "huge gaps"). Now the order
+        info stacks BELOW as a horizontal card, so nothing dangles. */}
+    <Reveal
+      as="div"
+      className="mt-8 md:mt-10 max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink-muted"
+    >
+      {painting.description.split("\n\n").map((para, i) => (
+        <p key={i} className="m-0">{para}</p>
+      ))}
+    </Reveal>
 
-      {/* ASIDE — the estate's quiet ledger: how each order arrives + the
-          original-print spec, framed as a hairline card so the right column
-          reads as authored, not as leftover empty space. Sticky on lg+. */}
-      <Reveal
-        as="section"
-        className="lg:sticky lg:top-[80px] ring-1 ring-line px-6 py-6 md:px-7 md:py-6"
-      >
-        {/* HOW EACH ORDER ARRIVES — Hugo's presentation note. Made to order,
-            atelier-printed in London, sealed with the wax-seal sticker, posted
-            with a printed catalogue. ⚠️ The printer (Point 101) is NOT named to
-            buyers (Hugo, 2026-07-11 — perceived value / one-off status); keep the
-            copy unnamed but premium. ⚠️ PACKAGING FACTS (Gary at Point 101,
-            2026-07-03): prints up to A3 are dispatched FLAT; sizes above A3
-            arrive boxed. NOTHING IS EVER ROLLED (Hugo's rule) — NEVER say
-            "hand-rolled" / "tube". printer line reuses
-            ESTATE_AUTHENTICATION.printer verbatim (also unnamed). */}
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
-        <p className={cn(BODY, "text-ink m-0 mb-4")}>
-          Every print is made to order &mdash; never warehoused. When your order
-          is placed it is printed and prepared in London, at one of the
-          United Kingdom&rsquo;s leading giclée ateliers &mdash; the same studio
-          Stephen trusted with his own work. It is packed to be opened slowly.
-        </p>
-        <dl className="grid grid-cols-1 gap-y-3 m-0 border-t border-line pt-4">
-          <div>
-            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
-              {ESTATE_AUTHENTICATION.printer} &mdash; each print checked and
-              interleaved; dispatched flat up to A3, boxed for larger sizes.
-            </dd>
-          </div>
-          <div>
-            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Sealed with</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">
-              The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose,
-              pressed as a sticker over the wrapping.
-            </dd>
-          </div>
-          <div>
-            <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Enclosed</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">
-              A printed catalogue of Stephen&rsquo;s paintings, so your piece
-              arrives in the company of the wider body of work.
-            </dd>
-          </div>
-        </dl>
-
-        <Separator className="bg-line my-5" />
-        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Original print</p>
-        <p className={cn(BODY, "text-ink-muted m-0")}>
-          {ORIGINAL_PRINT_SPEC}
-        </p>
-      </Reveal>
-    </div>
+    {/* HOW EACH ORDER ARRIVES — full-width card, the four facts in a horizontal
+        grid (no tall side column) so it can never strand empty space. ⚠️ printer
+        (Point 101) NOT named to buyers; NOTHING is ever rolled — flat to A3, boxed
+        above; printer line reuses ESTATE_AUTHENTICATION.printer verbatim. */}
+    <Reveal as="section" className="mt-8 md:mt-10 ring-1 ring-line px-6 py-6 md:px-8 md:py-7">
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
+      <p className={cn(BODY, "text-ink m-0 mb-6 max-w-[80ch]")}>
+        Every print is made to order &mdash; never warehoused. When your order is
+        placed it is printed and prepared in London, at one of the United
+        Kingdom&rsquo;s leading giclée ateliers &mdash; the same studio Stephen
+        trusted with his own work. It is packed to be opened slowly.
+      </p>
+      <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 m-0 border-t border-line pt-6">
+        <div>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
+          <dd className={cn(SPEC_VALUE, "m-0")}>
+            {ESTATE_AUTHENTICATION.printer} &mdash; each print checked and
+            interleaved; dispatched flat up to A3, boxed for larger sizes.
+          </dd>
+        </div>
+        <div>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Sealed with</dt>
+          <dd className={cn(SPEC_VALUE, "m-0")}>
+            The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose, pressed
+            as a sticker over the wrapping.
+          </dd>
+        </div>
+        <div>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Enclosed</dt>
+          <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>
+            A printed catalogue of Stephen&rsquo;s paintings, so your piece arrives
+            in the company of the wider body of work.
+          </dd>
+        </div>
+        <div>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Original print</dt>
+          <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>
+            {ORIGINAL_PRINT_SPEC}
+          </dd>
+        </div>
+      </dl>
+    </Reveal>
   </div>
 );
 

@@ -53,12 +53,12 @@ export const SCENE_SCRIM =
  *  dark) photos read CLEARLY — like the home backdrop — under the lighter scrim.
  *  Reversible CSS, no asset re-bake. Cream copy stays legible because SCENE_SCRIM
  *  still carries a floor of shading, heaviest at the foot where body copy sits. */
-const SCENE_IMAGE_FILTER = "brightness(1.62) saturate(1.14)";
+const SCENE_IMAGE_FILTER = "brightness(2.0) saturate(1.16)";
 
 /** The livelier grade shown inside the cursor spotlight — the "clear" reveal:
  *  brighter + more saturated + a touch more contrast so the scene POPS where the
  *  pointer is, over the softer scrimmed base. */
-const SCENE_REVEAL_FILTER = "brightness(1.82) saturate(1.4) contrast(1.2)";
+const SCENE_REVEAL_FILTER = "brightness(2.35) saturate(1.45) contrast(1.18)";
 
 export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
   // STATIC backdrop — no parallax, no overscan, no crossfade (see history above).
