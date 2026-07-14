@@ -46,12 +46,16 @@ export const GlazingOverlay = ({ glazing }: { glazing: string }) => {
       style={{
         mixBlendMode: "screen",
         background: acrylic
-          ? // a defined diagonal reflection band (a bright "window glare" streak)
-            // + a strong top-left corner highlight — obviously glossy glass.
-            "linear-gradient(122deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.24) 33%, rgba(255,255,255,0.34) 39%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0) 57%, rgba(255,255,255,0) 82%, rgba(255,255,255,0.10) 94%, rgba(255,255,255,0.16) 100%), radial-gradient(150% 120% at 10% 4%, rgba(255,255,255,0.26), rgba(255,255,255,0) 42%)"
+          ? // A natural gallery-glass reflection: a soft specular bloom in the
+            // top-left corner + a broad, heavily-feathered diagonal light wash
+            // fading to clear by the lower-right, over a gentle top-down veil.
+            // No hard band — reads like real light on acrylic, not a painted stripe.
+            "radial-gradient(135% 100% at 11% 5%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 24%, rgba(255,255,255,0) 48%), " +
+            "linear-gradient(117deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.075) 20%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.008) 58%, rgba(255,255,255,0) 72%), " +
+            "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.008) 55%, rgba(255,255,255,0) 100%)"
           : // anti-reflective: NO glare — the whole point. Just a whisper so it
             // still reads as glazed.
-            "linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.004) 100%)",
+            "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.004) 100%)",
       }}
     />
   );
