@@ -96,7 +96,7 @@ const TIERS: Record<TierId, TierDef> = {
     size: "A2 (42 × 42 cm)",
     pricePence: 49500,
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
-    framingPricePence: 29500,
+    framingPricePence: 34500,
     embellishmentPricePence: 35000,
     available: true,
   },
@@ -106,7 +106,7 @@ const TIERS: Record<TierId, TierDef> = {
     size: "A1 (59.5 × 59.5 cm)",
     pricePence: 92500,
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
-    framingPricePence: 39500,
+    framingPricePence: 44500,
     embellishmentPricePence: 49500,
     available: true,
   },
@@ -116,8 +116,13 @@ const TIERS: Record<TierId, TierDef> = {
     size: "A0 (84 × 84 cm)",
     pricePence: 189500,
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
-    // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,750 charged
+    // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
+    // Framing + hand-finish add-ons enabled on A0 (2026-07-14) — mirror of
+    // PRINT_TIERS["heirloom"]. ⚠️ framed A0 is arranged per-order (glazed >610mm
+    // can't ship via Point 101 — estate places these manually).
+    framingPricePence: 69500,
+    embellishmentPricePence: 79500,
     available: true,
   },
   studio: {
@@ -371,7 +376,7 @@ const FRAME_STYLE_LABELS: Record<string, string> = {
   "natural-oak": "Natural oak",
   "stained-black": "Stained black",
   white: "White",
-  "walnut-tray": "Walnut tray",
+  "walnut-tray": "Walnut",
 };
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Art acrylic",

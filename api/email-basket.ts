@@ -84,7 +84,7 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A2 (42 × 42 cm)",
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     pricePence: 49500,
-    framingPricePence: 29500,
+    framingPricePence: 34500,
     embellishmentPricePence: 35000,
     available: true,
   },
@@ -93,7 +93,7 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A1 (59.5 × 59.5 cm)",
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     pricePence: 92500,
-    framingPricePence: 39500,
+    framingPricePence: 44500,
     embellishmentPricePence: 49500,
     available: true,
   },
@@ -102,6 +102,8 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A0 (84 × 84 cm)",
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     pricePence: 189500,
+    framingPricePence: 69500,
+    embellishmentPricePence: 79500,
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was
     // silently downgraded to the A2 anchor in the email (£450 vs £1,750).

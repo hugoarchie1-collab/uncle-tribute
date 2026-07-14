@@ -216,7 +216,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: 200, // per-edition allocation
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 29500, // £295 framing add-on
+    framingPricePence: 34500, // £345 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
     description:
       "Collector Edition of 200, estate-stamped, hand-numbered, COA",
@@ -231,7 +231,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: 75, // per-edition allocation
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 39500, // £395 framing add-on
+    framingPricePence: 44500, // £445 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
     description:
       "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
@@ -247,6 +247,12 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     description:
       "Heirloom Edition of 18, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
+    // Framing + hand-finish enabled on A0 (2026-07-14) — the highest-value
+    // buyers can now add the biggest finishes. ⚠️ A0 (84cm) exceeds Point 101's
+    // 610mm glazed-delivery cap, so a framed A0 is arranged per-order (unglazed
+    // ship, canvas, or collection) — the estate places these manually anyway.
+    framingPricePence: 69500, // £695 framing add-on (A0)
+    embellishmentPricePence: 79500, // £795 hand-finishing by Polly Wedge (A0)
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,
@@ -404,7 +410,7 @@ export const FRAME_STYLES = [
   { id: "natural-oak", label: "Natural oak", note: "Warm, light solid oak", swatch: "#c9a368" },
   { id: "stained-black", label: "Stained black", note: "Deep matt-black solid wood", swatch: "#1c1a18" },
   { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2" },
-  { id: "walnut-tray", label: "Walnut tray", note: "Contemporary float frame in solid walnut", swatch: "#5a4030" },
+  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030" },
 ] as const;
 
 export const GLAZING_OPTIONS = [

@@ -29,7 +29,7 @@ const FRAME_META: Record<string, FrameMeta> = {
   "natural-oak": { face: "#c9a368", light: "#e7ca95", dark: "#7f5f34", grain: true },
   "stained-black": { face: "#2b2824", light: "#565049", dark: "#070605" },
   white: { face: "#ece7df", light: "#ffffff", dark: "#bdb7ab" },
-  "walnut-tray": { face: "#5a4030", light: "#835f48", dark: "#291d13", grain: true, tray: true },
+  "walnut-tray": { face: "#5a4030", light: "#835f48", dark: "#291d13", grain: true },
 };
 
 /* ── Glazing ────────────────────────────────────────────────────────────────
