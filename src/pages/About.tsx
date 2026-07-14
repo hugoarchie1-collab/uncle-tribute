@@ -1455,9 +1455,9 @@ export const About = () => {
             </div>
             <Reveal as="figure" className="relative m-0 w-full lg:sticky lg:top-24">
               <ImageReveal
-                src="/img/about/11-ophiuchus-painting.jpg"
-                alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
-                aspect="aspect-square"
+                src="/img/about/07-az-zarqa-students.jpg"
+                alt="Stephen seated among a group of children, the mandalas they made held up around them"
+                aspect="aspect-[4/3]"
                 edges="all"
                 objectPosition="center"
                 parallax={0.06}
@@ -1481,18 +1481,17 @@ export const About = () => {
           <div
             className={cn(
               ONE_WIDTH,
-              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-stretch",
+              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-start",
             )}
           >
-            <Reveal as="figure" className="relative m-0 w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[260px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line">
+            <Reveal as="figure" className="relative m-0 w-full aspect-[4/3] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line bg-bg-soft/40">
               <AssetImage
-                src="/img/about/07-az-zarqa-students.jpg"
-                alt="Stephen seated among a group of children, the mandalas they made held up around them"
+                src="/img/about/11-ophiuchus-painting.jpg"
+                alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 620px, 100vw"
-                style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                className="absolute inset-0 h-full w-full object-contain object-center"
               />
             </Reveal>
             {/* The text panel SPANS the photo's height (intro pinned top, pointer

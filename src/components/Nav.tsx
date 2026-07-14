@@ -322,15 +322,15 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         {/* Deliver-to — Amazon-pattern location control sitting left of the
             search. Free worldwide delivery, so it's an informational preference
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
-        <DeliverTo variant="header" className="hidden lg:flex shrink-0" />
+        <DeliverTo variant="header" className="hidden 2xl:flex shrink-0" />
 
         {/* Desktop search — a compact header field filling the middle of the bar
             (Hugo: "add a search bar on the top bar" for full-screen desktop). The
             container is the flex-1 spacer that keeps the logo left + icons hard
             right at every width; the field itself only appears from lg up, so the
             phone/tablet bar stays uncluttered (search still lives in the drawer). */}
-        <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden lg:block w-full max-w-[520px]" />
+        <div className="flex-1 min-w-0 lg:min-w-[240px] flex justify-center px-3 lg:px-6">
+          <SearchBar variant="header" className="hidden lg:block w-full min-w-[220px] max-w-[520px]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
