@@ -415,8 +415,8 @@ export const FRAME_STYLES = [
 ] as const;
 
 export const GLAZING_OPTIONS = [
-  { id: "museum-glass", label: "Anti-reflective", note: "Museum-grade anti-glare glazing — near-invisible, shatter-safe in transit" },
-  { id: "art-acrylic", label: "Art acrylic", note: "Ultra-clear, 99% UV-filtering, shatter-safe" },
+  { id: "museum-glass", label: "Anti-glare glass", note: "Museum-grade anti-reflective glazing — near-invisible, no glare, shatter-safe in transit" },
+  { id: "art-acrylic", label: "Clear acrylic", note: "Ultra-clear standard glazing, 99% UV-filtering, shatter-safe" },
 ] as const;
 
 export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
