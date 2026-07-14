@@ -67,26 +67,14 @@ export type PavoFades = [
   [number, number],
 ];
 
-/** One colourway: fill + whole painting, faded as a single composited unit. */
-const PavoLayer = ({
-  slug,
-  name,
-  index,
-  fades,
-  scrollYProgress,
-  reduceMotion,
-  fit,
-  reveal,
-}: {
-  slug: string;
-  name: string;
-  index: number;
-  fades: PavoFades;
-  scrollYProgress: MotionValue<number>;
-  reduceMotion: boolean | null;
-  fit: "contain" | "cover";
-  reveal: boolean;
-}) => {
+/** The scroll-driven opacity + visibility for colourway `index` — shared by the
+ *  soft base layer AND the sharp cursor-reveal so both crossfade in lockstep off
+ *  ONE source (a mismatch would ghost the sharp painting against the soft one). */
+const usePavoLayerOpacity = (
+  index: number,
+  fades: PavoFades,
+  scrollYProgress: MotionValue<number>,
+) => {
   // Layer i is full between the end of fade i-1 and the start of fade i;
   // first holds from the top, last holds to the foot.
   let frames: number[];
@@ -112,6 +100,61 @@ const PavoLayer = ({
   const visibility = useTransform(opacity, (v: number): "visible" | "hidden" =>
     v < 0.004 ? "hidden" : "visible",
   );
+  return { opacity, visibility };
+};
+
+/** One SHARP colourway inside the cursor spotlight. Geometry is IDENTICAL to the
+ *  soft base cover img (h-full w-full object-cover scale-[1.08], scaled about its
+ *  own centre = the viewport centre once the counter-translate pins it) so the lit
+ *  disc reveals the same painting in perfect register — no ghost edge. Crossfades
+ *  off the SAME opacity source as its base layer. */
+const PavoSharpSpot = ({
+  slug,
+  name,
+  index,
+  fades,
+  scrollYProgress,
+}: {
+  slug: string;
+  name: string;
+  index: number;
+  fades: PavoFades;
+  scrollYProgress: MotionValue<number>;
+}) => {
+  const { opacity, visibility } = usePavoLayerOpacity(index, fades, scrollYProgress);
+  return (
+    <motion.img
+      src={asset(`/img/paintings/pavo-${slug}-whole-v1.webp`)}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
+      loading="lazy"
+      data-colourway-sharp={name}
+      style={{ opacity, visibility }}
+    />
+  );
+};
+
+/** One colourway: fill + whole painting, faded as a single composited unit. */
+const PavoLayer = ({
+  slug,
+  name,
+  index,
+  fades,
+  scrollYProgress,
+  reduceMotion,
+  fit,
+}: {
+  slug: string;
+  name: string;
+  index: number;
+  fades: PavoFades;
+  scrollYProgress: MotionValue<number>;
+  reduceMotion: boolean | null;
+  fit: "contain" | "cover";
+}) => {
+  const { opacity, visibility } = usePavoLayerOpacity(index, fades, scrollYProgress);
 
   return (
     <motion.div
@@ -151,49 +194,15 @@ const PavoLayer = ({
            every edge so it never reveals the dark base as a seam; a square canvas
            in a landscape viewport just crops its outer rows — the mandala still
            reads as one continuous tapestry. */
-        <>
-          <img
-            src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
-            loading={index === 0 ? "eager" : "lazy"}
-            data-colourway={name}
-          />
-          {/* SIGNATURE INTERACTION — "light through stained glass" (2026-07-05).
-              A SHARP copy of the same painting (v1, sigma-3.5) layered on top of
-              the soft v2 base, revealed ONLY inside a radial spotlight that
-              follows the cursor (CSS-var mask, updated rAF-throttled on the root).
-              The pattern sharpens where you point — sacred geometry answering
-              presence — and it doubles as "the backdrop isn't just a blur". Only
-              mounted when reveal is on (fine pointer + motion allowed); the mask
-              is GPU-cheap (one visible layer at a time, culled by the parent's
-              visibility). */}
-          {reveal && (
-            <img
-              src={asset(`/img/paintings/pavo-${slug}-whole-v1.webp`)}
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-              className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
-              loading="lazy"
-              data-colourway-sharp={name}
-              style={{
-                // A soft-edged circle mask centred on the cursor (px vars set on
-                // the root, inherited here). Only the lit disc shows the sharp
-                // painting; everything else stays the soft v2 base beneath.
-                WebkitMaskImage:
-                  "radial-gradient(circle var(--pavo-r, 260px) at var(--pavo-mx, 50%) var(--pavo-my, 42%), #000 0%, #000 40%, transparent 82%)",
-                maskImage:
-                  "radial-gradient(circle var(--pavo-r, 260px) at var(--pavo-mx, 50%) var(--pavo-my, 42%), #000 0%, #000 40%, transparent 82%)",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                willChange: "mask-image",
-              }}
-            />
-          )}
-        </>
+        <img
+          src={asset(`/img/paintings/pavo-${slug}-whole-v2.webp`)}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 h-full w-full object-cover scale-[1.08]"
+          loading={index === 0 ? "eager" : "lazy"}
+          data-colourway={name}
+        />
       ) : (
         /* CONTAINED (Home): full canvas visible, spanning the FULL viewport in
             its limiting axis. The -v3 fill is normalised to the SAME luma as
@@ -242,18 +251,22 @@ export const PavoBackdrop = ({
   // The cursor-reveal is a fine-pointer, motion-allowed, cover-mode affordance
   // (touch has no hover; reduced-motion opts out) — derived, never setState.
   const pointerFine = usePointerFine();
-  // ⚠️ DISABLED 2026-07-08 (Hugo: "so glitchy … terrible except iPhone"). The
-  // spotlight layered a SECOND full-viewport painting and repainted its
-  // mask-image on every pointermove — a desktop-ONLY cost (touch has no hover,
-  // hence iPhone was fine) that stacked on the scroll crossfade and read as
-  // constant jank. Flip back to the derived value below to restore it.
-  const reveal = false && fit === "cover" && !reduceMotion && pointerFine;
+  // Cursor-reveal: fine-pointer, motion-allowed, cover-mode only (touch has no
+  // hover; reduced-motion opts out) — derived, never setState.
+  // RE-ENGINEERED 2026-07-14: the old version (disabled 07-08 as "so glitchy")
+  // repainted a full-viewport `mask-image` on EVERY pointermove — paint-bound,
+  // desktop-only jank. This version moves a fixed-mask spotlight WINDOW by
+  // `transform` only (compositor thread, zero per-move repaint); the sharp
+  // painting inside counter-translates to stay viewport-pinned, so the lit disc
+  // slides over a still image like a magnifier. Cursor px live in --pavo-mx/my;
+  // the window/counter offsets do the `± r` in CSS so JS writes two vars a frame.
+  const reveal = fit === "cover" && !reduceMotion && pointerFine;
 
   useEffect(() => {
     if (!reveal) return;
-    // Drive the spotlight from a single rAF-coalesced pointer read — the mask
-    // centre lives in CSS vars on the root, inherited by every sharp layer, so
-    // one write moves the reveal on whichever colourway is currently visible.
+    // One rAF-coalesced pointer read writes the cursor px to CSS vars on the
+    // root; the spotlight window + its counter-translated painting both derive
+    // their transforms from those two vars, so one write moves the whole reveal.
     const el = rootRef.current;
     if (!el) return;
     let x = window.innerWidth / 2;
@@ -282,7 +295,10 @@ export const PavoBackdrop = ({
       ref={rootRef}
       aria-hidden="true"
       className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#0d0a10]"
-      style={{ ["--pavo-r" as string]: "clamp(180px, 22vw, 320px)" }}
+      style={{
+        ["--pavo-r" as string]: "clamp(180px, 22vw, 320px)",
+        ["--pavo-d" as string]: "calc(2 * var(--pavo-r))",
+      }}
     >
       {PAVO_COLOURWAYS.map((c, i) => (
         <PavoLayer
@@ -294,9 +310,57 @@ export const PavoBackdrop = ({
           scrollYProgress={scrollYProgress}
           reduceMotion={reduceMotion}
           fit={fit}
-          reveal={reveal}
         />
       ))}
+      {/* SIGNATURE INTERACTION — "light through stained glass". A cursor-following
+          spotlight whose lit disc reveals a SHARP copy of the painting over the
+          soft base (sacred geometry sharpening where you point). The WINDOW is a
+          --pavo-d square carrying a STATIC circular mask, moved by transform only
+          (no per-move repaint); inside, a viewport-sized stack of sharp colourways
+          counter-translates to stay pinned, so only the disc region shows and it
+          crossfades in lockstep with the base. Sits above the base, below the
+          veils (so the disc is grounded by the same legibility wash). */}
+      {reveal && (
+        <div
+          aria-hidden="true"
+          className="absolute left-0 top-0"
+          style={{
+            width: "var(--pavo-d)",
+            height: "var(--pavo-d)",
+            transform:
+              "translate3d(calc(var(--pavo-mx, 50vw) - var(--pavo-r)), calc(var(--pavo-my, 42vh) - var(--pavo-r)), 0)",
+            WebkitMaskImage:
+              "radial-gradient(circle at center, #000 0%, #000 34%, transparent 72%)",
+            maskImage:
+              "radial-gradient(circle at center, #000 0%, #000 34%, transparent 72%)",
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            willChange: "transform",
+          }}
+        >
+          <div
+            className="absolute left-0 top-0"
+            style={{
+              width: "100vw",
+              height: "100vh",
+              transform:
+                "translate3d(calc(var(--pavo-r) - var(--pavo-mx, 50vw)), calc(var(--pavo-r) - var(--pavo-my, 42vh)), 0)",
+              willChange: "transform",
+            }}
+          >
+            {PAVO_COLOURWAYS.map((c, i) => (
+              <PavoSharpSpot
+                key={c.slug}
+                slug={c.slug}
+                name={c.name}
+                index={i}
+                fades={fades}
+                scrollYProgress={scrollYProgress}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       {/* Legibility veil — the warm plum-rose radial (NOT neutral black),
           deepest where running copy sits, dissolving to clear at the edges so
           the painting still clearly shows through (Hugo: clearly see the
