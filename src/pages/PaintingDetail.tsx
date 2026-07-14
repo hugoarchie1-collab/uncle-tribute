@@ -14,6 +14,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
+import { FrameWrap } from "../components/FramedPreview";
 import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
@@ -2664,6 +2665,10 @@ export const PaintingDetail = () => {
                     data-cursor-label="Closer look"
                     className="block w-full bg-transparent border-0 p-0 cursor-zoom-in"
                   >
+                    {/* Live framed preview — when framing is ticked, the print
+                        shows INSIDE the selected moulding (no mat), updating per
+                        frame style. Plain print otherwise. */}
+                    <FrameWrap active={framing} frameStyle={frameStyle}>
                     <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}
@@ -2703,6 +2708,7 @@ export const PaintingDetail = () => {
                         />
                       </motion.picture>
                     </AnimatePresence>
+                    </FrameWrap>
                   </button>
                 </div>
               </Reveal>
