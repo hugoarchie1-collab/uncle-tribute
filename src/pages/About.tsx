@@ -1467,7 +1467,7 @@ export const About = () => {
           <div
             className={cn(
               ONE_WIDTH,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] gap-8 lg:gap-12 items-center",
+              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-center",
             )}
           >
             <Reveal as="figure" className="m-0 w-full">
@@ -1476,10 +1476,17 @@ export const About = () => {
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
                 aspect="aspect-[4/3]"
                 parallax={0.06}
-                sizes="(min-width: 1024px) calc(100vw - 460px), 100vw"
+                sizes="(min-width: 1024px) 620px, 100vw"
               />
             </Reveal>
-            <Reveal as="div" delay={0.08}>
+            {/* A real text panel fills the column beside the photo — the verbatim
+                students intro as a lead statement, then the pointer to the letter
+                on /memories — instead of a lone one-line link stranding a ~500px
+                void beside the photo. */}
+            <Reveal as="div" delay={0.08} className="flex flex-col justify-center gap-6 md:gap-7">
+              <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
+                {ABOUT.studentsIntro}
+              </p>
               <Link
                 to="/memories"
                 className={cn(EYEBROW, "group inline-flex items-center gap-2 no-underline")}
