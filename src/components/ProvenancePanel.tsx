@@ -1,4 +1,3 @@
-import { type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   ESTATE_AUTHENTICATION,
@@ -9,35 +8,18 @@ import { EYEBROW_MUTED, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
- * ProvenancePanel — the full provenance / materials / shipping detail, kept
- * OUT of the buy box (which stays tight) and placed below the Story as three
- * accessible native <details> disclosures. All copy from single-source data.
- * Chevron rotation is the only motion and is reduced-motion-safe.
+ * ProvenancePanel — the provenance / materials / shipping detail below the Story.
+ * Was three COLLAPSED <details> accordions in a narrow 720px centred column,
+ * which stranded big empty side margins and read as empty/badly-formatted
+ * (Hugo). Now it's a FULL-WIDTH, three-column OPEN spec block: every fact is
+ * visible at once, the row fills the measure, and there is no dead space. All
+ * copy from single-source data.
  */
-const Disclosure = ({ summary, children }: { summary: string; children: ReactNode }) => (
-  <details className="group border-b border-white/8">
-    <summary
-      className={cn(
-        EYEBROW_MUTED,
-        "cursor-pointer list-none flex items-center justify-between py-4 [&::-webkit-details-marker]:hidden",
-      )}
-    >
-      {summary}
-      <span
-        aria-hidden="true"
-        className="text-ink/40 text-[18px] leading-none transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
-      >
-        ⌄
-      </span>
-    </summary>
-    <div className="pb-5 pt-1">{children}</div>
-  </details>
-);
-
 export const ProvenancePanel = () => (
-  <div className="max-w-[720px] 2xl:max-w-[820px] 3xl:max-w-[920px] 4xl:max-w-[1040px] mx-auto mt-6 md:mt-8">
-    <Disclosure summary="Authentication & provenance">
-      <ul className="list-none m-0 p-0 flex flex-col gap-2">
+  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto mt-10 md:mt-12 border-t border-line pt-8 md:pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-14">
+    <section>
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Authentication &amp; provenance</p>
+      <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
         <li className={META}>{ESTATE_AUTHENTICATION.stamp}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.numbering}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.coa}</li>
@@ -49,12 +31,14 @@ export const ProvenancePanel = () => (
           </Link>
         </li>
       </ul>
-    </Disclosure>
-    <Disclosure summary="The edition & materials">
+    </section>
+    <section>
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>The edition &amp; materials</p>
       <p className={cn(META, "m-0")}>{ORIGINAL_PRINT_SPEC}</p>
-    </Disclosure>
-    <Disclosure summary="Shipping & care">
-      <ul className="list-none m-0 p-0 flex flex-col gap-2">
+    </section>
+    <section>
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Shipping &amp; care</p>
+      <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
         <li className={META}>Each print is made to order and ships within 7–10 working days.</li>
         <li className={META}>Delivery is free worldwide — UK, Europe and beyond, framed or unframed — with nothing added at checkout.</li>
         <li className={META}>
@@ -65,6 +49,6 @@ export const ProvenancePanel = () => (
           .
         </li>
       </ul>
-    </Disclosure>
+    </section>
   </div>
 );

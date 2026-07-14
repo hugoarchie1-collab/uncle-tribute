@@ -1118,13 +1118,13 @@ export const About = () => {
               "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] gap-8 lg:gap-12 items-stretch",
             )}
           >
-            {/* On lg+ the four traditions spread down a single column to FILL the
-                tall portrait's height (justify-between over h-full) — a tall index,
-                no dead space beneath a top-clustered 2×2 grid. Below lg they stack
-                as an even 2×2. */}
-            <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 lg:flex lg:flex-col lg:justify-between lg:gap-0 lg:h-full">
+            {/* Compact 2×2 index (natural spacing — NOT spread thin down the
+                column, which read as sparse/empty). The list drives the row
+                height; the cairn photo cover-fills to match it, so both columns
+                end level with no dead space and no sparse gaps. */}
+            <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
               {TRADITIONS.map((t) => (
-                <li key={t.numeral} className="flex flex-col justify-start border-t border-line pt-4 lg:pb-4">
+                <li key={t.numeral} className="flex flex-col justify-start border-t border-line pt-4">
                   <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
                   <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
                     {t.name}
@@ -1132,13 +1132,18 @@ export const About = () => {
                 </li>
               ))}
             </ul>
-            <Reveal as="figure" className="m-0 w-full">
-              <ContainImage
+            <Reveal
+              as="figure"
+              className="relative m-0 w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[300px] lg:min-h-0 overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+            >
+              <AssetImage
                 src="/img/about/03-stephen-on-cairn.jpg"
                 alt="Stephen standing on a stone cairn in the desert"
-                aspect="aspect-[3/4]"
-                sizes="(min-width: 1024px) 440px, 100vw"
-                parallax={0.06}
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 1024px) 420px, 100vw"
+                style={{ filter: PHOTO_GRADE_SHADOW }}
+                className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
               />
             </Reveal>
           </div>
