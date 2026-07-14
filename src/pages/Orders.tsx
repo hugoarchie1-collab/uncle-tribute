@@ -113,7 +113,7 @@ export const Orders = () => {
                 />
                 <button
                   type="submit"
-                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
+                  className="shrink-0 whitespace-nowrap px-5 md:px-7 font-sans text-[14.5px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 border-l border-line cursor-pointer"
                 >
                   Track
                 </button>
@@ -174,7 +174,7 @@ export const Orders = () => {
             </p>
             <a
               href="mailto:info@themandalacompany.com?subject=Return%20or%20damage%20%E2%80%94%20order%20reference"
-              className="inline-flex items-center mt-6 px-6 py-3.5 ring-1 ring-line hover:ring-accent hover:text-accent transition-colors font-sans text-[13px] font-bold tracking-[0.04em] text-ink rounded-full"
+              className="inline-flex items-center mt-6 px-6 py-3.5 ring-1 ring-line hover:ring-accent hover:text-accent transition-colors font-sans text-[14.5px] font-bold tracking-[0.04em] text-ink rounded-full"
             >
               Start a return or report damage
             </a>
