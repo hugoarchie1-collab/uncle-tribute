@@ -351,7 +351,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "relative py-2 font-sans text-[13px] font-semibold tracking-[0.04em] transition-colors duration-300",
+                    "relative py-2 font-sans text-[15px] font-semibold tracking-[0.03em] transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
                     // DIRECTIONAL underline — grows in FROM the left (hover sets
                     // origin-left), and on hover-out the origin reverts to the
