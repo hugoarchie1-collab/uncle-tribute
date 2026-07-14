@@ -148,9 +148,9 @@ const SPEC_VALUE = "font-sans text-[15px] leading-[1.55] text-ink";
 // sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
 const BODY = "font-sans font-normal text-[clamp(15px,0.9vw,18px)] leading-[1.6]";
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-ink/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-ink/85 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:ring-ink/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:ring-ink/60 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page

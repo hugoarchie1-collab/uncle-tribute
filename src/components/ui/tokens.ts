@@ -178,13 +178,15 @@ export const ABOUT_TITLE_STYLE: CSSProperties = {
 export const ABOUT_CAPTION =
   "font-sans font-normal text-[15px] 2xl:text-[16px] leading-[1.45] tracking-[0.01em] text-ink-muted";
 
-/** Primary CTA pill — filled ink → accent on hover. */
+/** Primary CTA pill — filled ink → accent on hover. Tactile press: scales in
+ *  quickly (100ms) on :active and eases back over 300ms; disabled under
+ *  reduced-motion. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60";
 
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100";
 
 // =============================================================================
 // MOTION CANON — single source of truth for the site's signature easing +

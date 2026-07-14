@@ -346,6 +346,16 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
   );
 };
 
+// Unifying editorial grade for the family SNAPSHOTS only (never the artworks):
+// a warm, gently-desaturated film tone that harmonises ~28 mixed amateur photos
+// — different cameras, decades, exposures — into ONE intentional collection
+// (family album → art book). Baked into the SAME `filter` as the plate shadow so
+// the whole thing rasterises once (a static texture) and costs nothing per frame
+// under the scroll parallax. Dial the numbers to taste; `PHOTO_GRADE` alone is
+// the tone, `_SHADOW` adds the lift for shadowed plates.
+const PHOTO_GRADE = "saturate(0.72) sepia(0.22) contrast(1.1) brightness(1.02)";
+const PHOTO_GRADE_SHADOW = `${PHOTO_GRADE} drop-shadow(0 24px 48px rgba(0,0,0,0.5))`;
+
 // ─── Plate ───────────────────────────────────────────────────────────────────
 // The family-album register: a personal snapshot shown at object-CONTAIN inside
 // a fixed-aspect slot (fill) or whole at native ratio, sitting directly on the
@@ -388,8 +398,8 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          style={{ objectPosition: "center 30%" }}
-          className="absolute inset-0 h-full w-full object-cover drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          style={{ objectPosition: "center 30%", filter: PHOTO_GRADE_SHADOW }}
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
     ) : (
@@ -401,7 +411,8 @@ const Plate = ({
         loading="lazy"
         decoding="async"
         sizes={sizes}
-        className="block w-full h-auto drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+        style={{ filter: PHOTO_GRADE_SHADOW }}
+        className="block w-full h-auto"
       />
     )}
   </figure>
@@ -515,7 +526,8 @@ const ContainImage = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          className="absolute inset-0 w-full h-full object-cover object-[50%_30%] drop-shadow-[0_24px_48px_rgba(0,0,0,0.5)]"
+          style={{ filter: PHOTO_GRADE_SHADOW }}
+          className="absolute inset-0 w-full h-full object-cover object-[50%_30%]"
         />
       </motion.div>
     </div>
