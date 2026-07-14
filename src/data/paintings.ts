@@ -408,15 +408,15 @@ export const FRAME_STYLES = [
 ] as const;
 
 export const GLAZING_OPTIONS = [
-  { id: "art-acrylic", label: "Art acrylic", note: "Ultra-clear, 99% UV-filtering, shatter-safe" },
   { id: "museum-glass", label: "Anti-reflective", note: "Museum-grade anti-glare glazing — near-invisible, shatter-safe in transit" },
+  { id: "art-acrylic", label: "Art acrylic", note: "Ultra-clear, 99% UV-filtering, shatter-safe" },
 ] as const;
 
 export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
 export type GlazingId = (typeof GLAZING_OPTIONS)[number]["id"];
 
 export const DEFAULT_FRAME_STYLE: FrameStyleId = "natural-oak";
-export const DEFAULT_GLAZING: GlazingId = "art-acrylic";
+export const DEFAULT_GLAZING: GlazingId = "museum-glass";
 
 export const frameStyleLabel = (id: string | undefined): string =>
   FRAME_STYLES.find((f) => f.id === id)?.label ?? FRAME_STYLES[0].label;
