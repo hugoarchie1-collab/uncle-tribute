@@ -109,22 +109,47 @@ export const SiteEntrance = () => {
         if (lifting) setPlaying(false);
       }}
     >
-      {/* The emblem breathes — a slow, gentle opacity pulse (no spin, no scale
-          travel beyond a hair) — while the veil holds. */}
-      <motion.img
-        src={asset("/logo/logo-seal-v9-w512.png")}
-        alt=""
-        width={512}
-        height={512}
-        className="h-20 w-20 md:h-28 md:w-28"
+      {/* Warm plum-rose bloom behind the seal — depth, so the veil reads as a lit
+          chamber rather than flat black. Blooms up on arrival, swells as it lifts. */}
+      <motion.div
+        aria-hidden
+        className="absolute left-1/2 top-1/2 h-[80vmin] w-[80vmin] -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
-          filter:
-            "drop-shadow(0 2px 10px rgba(0,0,0,0.55)) drop-shadow(0 0 18px rgba(150,28,28,0.45))",
+          background:
+            "radial-gradient(circle, rgba(150,28,28,0.30) 0%, rgba(40,10,16,0.18) 34%, rgba(10,9,8,0) 68%)",
         }}
-        initial={{ opacity: 0.55, scale: 0.985 }}
-        animate={{ opacity: [0.55, 0.95, 0.55], scale: [0.985, 1, 0.985] }}
-        transition={{ duration: 2.4, ease: "easeInOut", repeat: Infinity }}
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: lifting ? 0.9 : 1, scale: lifting ? 1.15 : 1 }}
+        transition={{ duration: lifting ? FADE_MS : 1.1, ease: EASE }}
       />
+      {/* The seal RESOLVES INTO FOCUS on arrival — soft + small + blurred → sharp
+          + settled (sacred geometry coming into clarity), then breathes while the
+          veil holds, and rises a touch toward the viewer as the curtain parts. */}
+      <motion.div
+        className="relative"
+        initial={{ opacity: 0, scale: 0.72, filter: "blur(12px)" }}
+        animate={{
+          opacity: 1,
+          scale: lifting ? 1.09 : 1,
+          filter: "blur(0px)",
+        }}
+        transition={{ duration: lifting ? FADE_MS : 0.9, ease: EASE }}
+      >
+        <motion.img
+          src={asset("/logo/logo-seal-v9-w512.png")}
+          alt=""
+          width={512}
+          height={512}
+          className="h-24 w-24 md:h-32 md:w-32"
+          style={{
+            filter:
+              "drop-shadow(0 2px 10px rgba(0,0,0,0.55)) drop-shadow(0 0 24px rgba(150,28,28,0.5))",
+          }}
+          initial={{ opacity: 0.72, scale: 0.99 }}
+          animate={{ opacity: [0.72, 1, 0.72], scale: [0.99, 1, 0.99] }}
+          transition={{ duration: 2.6, ease: "easeInOut", repeat: Infinity }}
+        />
+      </motion.div>
     </motion.div>
   );
 };
