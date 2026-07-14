@@ -677,6 +677,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     // / missing defaults to GBP. The session is charged in this currency at the
     // converted amount the buyer was shown.
     currency?: unknown;
+    // Order-level add-on bumps (chosen on the basket page) — each a single flat
+    // line item. Mirror the pence values in src/pages/Basket.tsx ORDER_BUMPS.
+    giftWrap?: unknown;
+    careKit?: unknown;
   };
   try {
     body =
@@ -718,6 +722,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     : "gbp";
   const toMinor = (gbpPence: number): number =>
     convertFromGbpMinor(gbpPence, currencyCode);
+
+  // Order-level add-on bumps (GBP pence) — mirror src/pages/Basket.tsx ORDER_BUMPS.
+  const GIFT_WRAP_PENCE = 2500; // £25
+  const CARE_KIT_PENCE = 2000; // £20
 
   // Split + normalise. A line with kind === "gift" is a digital gift card;
   // everything else is a print (kind absent / "print" — preserves the legacy
@@ -846,6 +854,39 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     });
   }
 
+  // ---- Order add-on bumps (gift wrap / hanging & care kit) ----------------
+  // Flat, order-level single line items chosen on the basket page. Priced via
+  // price_data.unit_amount so advertised == charged in every currency. NOT part
+  // of `normalised`, so the bundle coupon never touches them.
+  if (body.giftWrap === true) {
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: currencyCode,
+        unit_amount: toMinor(GIFT_WRAP_PENCE),
+        product_data: {
+          name: "Gift wrapping & handwritten card",
+          description:
+            "Wrapped by hand in estate tissue with a wax seal and a handwritten card — ready to give.",
+        },
+      },
+    });
+  }
+  if (body.careKit === true) {
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: currencyCode,
+        unit_amount: toMinor(CARE_KIT_PENCE),
+        product_data: {
+          name: "Hanging & care kit",
+          description:
+            "Wall fixings, D-rings and a microfibre cloth with a care card — everything to hang and keep your print.",
+        },
+      },
+    });
+  }
+
   // ---- Metadata ----------------------------------------------------------
   // For a single print we keep the historical key names so any existing
   // webhook-log dashboards keep parsing cleanly. For multi-print we add
@@ -917,6 +958,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       metadata.gift_message = giftMetaTrim(gifts[0].giftMessage);
     }
   }
+
+  // Order add-on bumps — surfaced in the order metadata so the estate knows to
+  // wrap / enclose the kit when fulfilling.
+  if (body.giftWrap === true) metadata.gift_wrap = "yes";
+  if (body.careKit === true) metadata.care_kit = "yes";
 
   // UTM attribution (contract C1) — appended last. All keys are utm_-prefixed
   // so they can never collide with the order keys above; only non-empty
