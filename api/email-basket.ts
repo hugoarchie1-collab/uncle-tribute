@@ -102,7 +102,6 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A0 (84 × 84 cm)",
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     pricePence: 189500,
-    framingPricePence: 69500,
     embellishmentPricePence: 79500,
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was

@@ -247,11 +247,12 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     description:
       "Heirloom Edition of 18, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
-    // Framing + hand-finish enabled on A0 (2026-07-14) — the highest-value
-    // buyers can now add the biggest finishes. ⚠️ A0 (84cm) exceeds Point 101's
-    // 610mm glazed-delivery cap, so a framed A0 is arranged per-order (unglazed
-    // ship, canvas, or collection) — the estate places these manually anyway.
-    framingPricePence: 69500, // £695 framing add-on (A0)
+    // Hand-finish enabled on A0 (2026-07-14) — the highest-value buyers can add
+    // Polly's hand-finishing (deliverable: it's the print itself). ⚠️ FRAMING is
+    // deliberately NOT offered on A0: a glazed A0 frame (84cm) exceeds Point
+    // 101's 610mm glazed-delivery cap, so we must not sell a framed+glazed A0
+    // with a free-worldwide-delivery promise we can't honour. If a buyer wants
+    // A0 framed, it's a bespoke enquiry (like custom sizes), arranged per-order.
     embellishmentPricePence: 79500, // £795 hand-finishing by Polly Wedge (A0)
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].

@@ -118,10 +118,8 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
-    // Framing + hand-finish add-ons enabled on A0 (2026-07-14) — mirror of
-    // PRINT_TIERS["heirloom"]. ⚠️ framed A0 is arranged per-order (glazed >610mm
-    // can't ship via Point 101 — estate places these manually).
-    framingPricePence: 69500,
+    // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
+    // (glazed A0 exceeds Point 101's 610mm delivery cap — see paintings.ts).
     embellishmentPricePence: 79500,
     available: true,
   },
@@ -1043,16 +1041,39 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
   }
 
+  // Discount as a FIXED AMOUNT on the PRINT lines only — NOT a session-wide
+  // percent_off. A percent coupon applies to EVERY line item at Stripe, so it
+  // would also discount gift cards + order-bump add-ons, while the basket total
+  // (Basket.tsx grandTotalMinor) adds those UNDISCOUNTED → advertised != charged
+  // whenever a bundle runs alongside a gift/bump. Computing amount_off in the
+  // presentment currency, summed over the print line items exactly the way the
+  // client sums bundleDiscountMinor (per-line-item rounding), keeps the Stripe
+  // charge identical to the shown total to the penny, and leaves gifts/bumps at
+  // full price in both places.
+  let bundleDiscountMinor = 0;
   if (percentOff > 0) {
+    for (const item of normalised) {
+      const parts = [toMinor(item.tier.pricePence)];
+      if (item.framing && typeof item.tier.framingPricePence === "number")
+        parts.push(toMinor(item.tier.framingPricePence));
+      if (item.embellished && typeof item.tier.embellishmentPricePence === "number")
+        parts.push(toMinor(item.tier.embellishmentPricePence));
+      for (const a of parts) bundleDiscountMinor += Math.round((a * percentOff) / 100);
+    }
+  }
+
+  if (bundleDiscountMinor > 0) {
     try {
       const coupon = await stripe.coupons.create({
-        percent_off: percentOff,
+        amount_off: bundleDiscountMinor,
+        currency: currencyCode,
         duration: "once",
         name: "Estate bundle thank-you",
         metadata: {
           source: "bundle_discount",
           item_count: String(normalised.length),
           percent_off: String(percentOff),
+          amount_off_minor: String(bundleDiscountMinor),
         },
       });
       discounts = [{ coupon: coupon.id }];
