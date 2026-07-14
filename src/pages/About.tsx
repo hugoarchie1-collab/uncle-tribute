@@ -252,8 +252,8 @@ const ImageBand = ({
     className={cn(
       ONE_WIDTH,
       "m-0",
-      cap === "64svh" && "2xl:max-h-[64svh] 2xl:overflow-hidden",
-      cap === "56svh" && "2xl:max-h-[56svh] 2xl:overflow-hidden",
+      cap === "64svh" && "max-h-[62svh] overflow-hidden",
+      cap === "56svh" && "max-h-[54svh] overflow-hidden",
     )}
   >
     <ImageReveal
@@ -399,7 +399,7 @@ const Plate = ({
       // padding + card-shadow on every tile), so contain-letterboxed photos of
       // mixed orientation read as matched museum mats, not ragged floating photos.
       // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
-      <div className={cn("relative w-full md:overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
+      <div className={cn("relative w-full max-h-[62svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -1220,7 +1220,7 @@ export const About = () => {
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className={cn("relative m-0", BLOCK_GAP)} delay={0.08}>
+            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px]", BLOCK_GAP)} delay={0.08}>
               <ContainImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
                 alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
