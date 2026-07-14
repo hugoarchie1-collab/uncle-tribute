@@ -1432,39 +1432,36 @@ export const About = () => {
               {ABOUT.legacy[2]}
             </p>
           </Reveal>
-          {/* The founding quote + palestine passage flow in the LEFT column, the
-              Ophiuchus painting sits BESIDE them as a capped, sticky square (was a
-              full-width aspect-square that rendered ~1270px tall — "this image
-              shouldn't be that big" — AND its 2xl overflow-hidden cropped the
-              artwork). Now the row fills: text on the left, a ~500px square on the
-              right that stays in view as the longer text scrolls. Never oversized,
-              never cropped, no side void. */}
-          <div
+          {/* ISLAND CARD (x.com / Memories register, Hugo): the photo runs full
+              WIDTH on top — object-contain on a dark matte, height-capped so it
+              never fills the screen and is never cropped — welded by a hairline
+              seam to the founding quote + palestine passage below. Replaces the
+              beside-text grid that stranded an ugly side void. */}
+          <Reveal
+            as="div"
             className={cn(
-              ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,500px)] gap-8 lg:gap-14 items-start",
+              "mx-auto w-full max-w-[900px] overflow-hidden rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px]",
             )}
           >
-            <div className="min-w-0">
+            <figure className="m-0 border-b border-line/60 bg-bg">
+              <AssetImage
+                src="/img/about/07-az-zarqa-students.jpg"
+                alt="Stephen seated among a group of children, the mandalas they made held up around them"
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 1024px) 900px, 100vw"
+                className="block w-full h-[clamp(300px,46svh,460px)] object-cover object-center"
+              />
+            </figure>
+            <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
               <blockquote className="m-0">
                 <Prose text={ABOUT.academyQuote} className={BODY} />
                 <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
               </blockquote>
               <Prose text={ABOUT.palestine} className={cn(BODY, "mt-5 md:mt-6")} />
             </div>
-            <Reveal as="figure" className="relative m-0 w-full lg:sticky lg:top-24">
-              <ImageReveal
-                src="/img/about/07-az-zarqa-students.jpg"
-                alt="Stephen seated among a group of children, the mandalas they made held up around them"
-                aspect="aspect-[4/3]"
-                edges="all"
-                objectPosition="center"
-                parallax={0.06}
-                sizes="(min-width: 1024px) 500px, 100vw"
-              />
-            </Reveal>
-          </div>
+          </Reveal>
         </section>
 
         {/* 13 · CHAPTER IX — AZ-ZARQA. PEOPLE photo (contained, LEFT) + the
@@ -1473,43 +1470,39 @@ export const About = () => {
             lives ONLY on /memories. */}
         <section id="azzarqa" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
           <ChapterHead id="azzarqa" />
-          {/* The students photo BESIDE the memories pointer (chapter content is
-              thin — the letter lives on /memories), so a wide 4:3 photo and a
-              short pointer fill the row together on ONE_WIDTH instead of the
-              photo stranding a bespoke-width slot with a one-line link below it
-              (was max-w-[760px] + orphan link = a ~10x vertical void). */}
-          <div
+          {/* ISLAND CARD (x.com / Memories register): the painting runs full
+              WIDTH on top — object-contain on a dark matte so the whole work
+              shows (never cropped, never a full-screen wall) — welded by a
+              hairline seam to the memories pointer below. */}
+          <Reveal
+            as="div"
             className={cn(
-              ONE_WIDTH,
-              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-start",
+              "mx-auto w-full max-w-[900px] overflow-hidden rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px]",
             )}
           >
-            <Reveal as="figure" className="relative m-0 w-full aspect-[4/3] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line bg-bg-soft/40">
+            <figure className="m-0 border-b border-line/60 bg-[#0b0a09]">
               <AssetImage
                 src="/img/about/11-ophiuchus-painting.jpg"
                 alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
                 loading="lazy"
                 decoding="async"
-                sizes="(min-width: 1024px) 620px, 100vw"
-                className="absolute inset-0 h-full w-full object-contain object-center"
+                sizes="(min-width: 1024px) 900px, 100vw"
+                className="block w-full h-[clamp(320px,50svh,520px)] object-contain object-center"
               />
-            </Reveal>
-            {/* The text panel SPANS the photo's height (intro pinned top, pointer
-                pinned bottom) so both columns end on the same line — no dead space
-                beside the photo. A hairline carries the space between them. */}
-            <Reveal as="div" delay={0.08} className="flex flex-col justify-between h-full gap-6">
+            </figure>
+            <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
               <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
                 {ABOUT.studentsIntro}
               </p>
               <Link
                 to="/memories"
-                className={cn(EYEBROW, "group inline-flex items-center gap-2 no-underline")}
+                className={cn(EYEBROW, "group inline-flex items-center gap-2 no-underline mt-6")}
               >
                 His words to his students, in the Book of Memories
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
               </Link>
-            </Reveal>
-          </div>
+            </div>
+          </Reveal>
         </section>
 
         {/* 14 · THE ACADEMY CLOSE — P3 (2-up, ONE register). Both tiles Plate

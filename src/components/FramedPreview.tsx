@@ -77,7 +77,7 @@ export const FrameWrap = ({
   if (!active) return <>{children}</>;
 
   const sizerClass =
-    "mx-auto block max-w-full max-h-[80vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]";
+    "mx-auto block max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]";
 
   const m = FRAME_META[frameStyle] ?? FRAME_META["natural-oak"];
   const moulding = "clamp(15px, 2.6vw, 40px)";
