@@ -131,7 +131,7 @@ const TRUESIZE_PAINTING_IDS = new Set<string>([]);
 // This is the museum wall-label idiom: the work's name in TRUE Fraunces italic
 // at a controlled opsz 40 (clean strokes, gotcha #7), one tier above the price.
 const PDP_TITLE =
-  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(28px,3.1vw,46px)] leading-[1.06] text-ink text-balance";
+  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(34px,3.6vw,58px)] leading-[1.05] text-ink text-balance";
 // One ledger-card geometry for every secondary buy-box card (one-off / custom
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
@@ -140,17 +140,17 @@ const CARD = "ring-1 ring-line px-5 py-5";
 // 1.55 leading, primary ink tone. A deliberately secondary value (provenance,
 // pigment) composes cn(SPEC_VALUE, "text-ink-muted") — a rule-based two-tone,
 // not the old ad-hoc spray of text-ink vs text-ink-muted at the same size.
-const SPEC_VALUE = "font-sans text-[15px] leading-[1.55] text-ink";
+const SPEC_VALUE = "font-sans text-[17px] leading-[1.55] text-ink";
 // ONE lead/running-body clamp for the story + card prose (order-arrives lead,
 // original-print spec, colourway-set desc, finish intro). Collapses the former
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
 // of running prose is exactly one size. Colour is applied per-block on the two
 // sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
-const BODY = "font-sans font-normal text-[clamp(15px,0.9vw,18px)] leading-[1.6]";
+const BODY = "font-sans font-normal text-[clamp(17px,1vw,21px)] leading-[1.62]";
 const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-ink/85 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[17px] md:text-[18px] font-semibold tracking-[0.02em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-ink/85 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[15px] md:text-[16px] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:ring-ink/60 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 text-ink px-7 py-[18px] font-sans text-[17px] md:text-[18px] font-semibold tracking-[0.02em] rounded-full transition-all duration-300 hover:ring-ink/60 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /* =============================================================================
  * TYPE SCALE — Painting Detail page

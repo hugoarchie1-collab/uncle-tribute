@@ -330,7 +330,7 @@ export const Basket = () => {
           the basket background change with this image") — the sakura-and-Fuji
           image from the Mandala Company folder, softly blurred + luma-normalised
           so the cream basket copy still reads. */}
-      <SceneBackdrop src="/img/scenes/basket-mountain-scene-v1.webp" />
+      <SceneBackdrop src="/img/scenes/basket-mountain-scene-v2.webp" />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same

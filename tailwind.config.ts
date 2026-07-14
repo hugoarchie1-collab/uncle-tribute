@@ -70,9 +70,9 @@ const config: Config = {
         // Fluid body — grows on large screens so prose scales with the viewport
         // (dynamic cross-platform unison) instead of looking tiny in a sea of
         // dead space at fullscreen. Mobile/laptop ≈ the old 18/16px.
-        body: ["clamp(18px, 0.34vw + 15.6px, 24px)", { lineHeight: "1.7" }],
-        "body-sm": ["clamp(16px, 0.25vw + 13.4px, 20px)", { lineHeight: "1.68" }],
-        label: ["12px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
+        body: ["clamp(19px, 0.42vw + 16.6px, 27px)", { lineHeight: "1.65" }],
+        "body-sm": ["clamp(17px, 0.3vw + 14.4px, 22px)", { lineHeight: "1.65" }],
+        label: ["13px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {
         // Hybrid theme — dark shell + cream cards.

@@ -30,7 +30,7 @@ const usePointerFine = () =>
  */
 export const SceneReveal = ({
   photoUrl,
-  filter = "brightness(2.05) saturate(1.5) contrast(1.24)",
+  filter = "brightness(1.82) saturate(1.4) contrast(1.2)",
 }: {
   photoUrl: string;
   filter?: string;

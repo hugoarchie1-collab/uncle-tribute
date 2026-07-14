@@ -77,7 +77,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
  *  verbatim invocation, which uppercasing would mangle. This is the canonical
  *  home value. */
 export const EYEBROW =
-  "font-sans text-[14px] md:text-[15px] font-bold tracking-[0.14em] text-accent";
+  "font-sans text-[15px] md:text-[16px] font-bold tracking-[0.14em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -88,7 +88,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(42px,7.4vw,120px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(48px,7.8vw,132px)] leading-[1.02] md:leading-[0.97] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -104,19 +104,19 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(21px,1.05vw_+_15px,42px)] leading-[1.58] text-ink-muted";
+  "font-sans font-normal text-[clamp(24px,1.15vw_+_17px,48px)] leading-[1.55] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[14px] md:text-[15px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[15px] md:text-[16px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[15px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[15px] leading-[1.6] text-ink-muted";
+export const META = "font-sans text-[17px] leading-[1.6] text-ink-muted";
 
 // =============================================================================
 // ABOUT MONOGRAPH TYPE SCALE — the seven-role scale the About rebuild composes
@@ -138,28 +138,28 @@ export const META = "font-sans text-[15px] leading-[1.6] text-ink-muted";
  *  20px (was a 25px runaway). Leading eases to 1.6 on desktop. Mobile floors
  *  (18px / 1.58) + the md: step (19px / 1.7) are frozen. */
 export const ABOUT_BODY =
-  "font-sans font-normal text-[18px] md:text-[19px] 2xl:text-[20px] 3xl:text-[20px] " +
-  "leading-[1.58] md:leading-[1.7] 2xl:leading-[1.6] tracking-normal text-ink-soft text-pretty m-0";
+  "font-sans font-normal text-[20px] md:text-[21px] 2xl:text-[23px] 3xl:text-[24px] " +
+  "leading-[1.6] md:leading-[1.68] 2xl:leading-[1.62] tracking-normal text-ink-soft text-pretty m-0";
 
 /** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
  *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
  *  floors + the md: step are frozen. */
 export const ABOUT_LEAD =
-  "font-sans font-normal text-[19px] md:text-[21px] 2xl:text-[23px] 3xl:text-[23px] " +
-  "leading-[1.6] md:leading-[1.75] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0";
+  "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[27px] 3xl:text-[28px] " +
+  "leading-[1.55] md:leading-[1.66] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0";
 
 /** ROLE 2 — PULL-LINE / STANDOUT (Fraunces). The ONE interior display-serif
  *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired
  *  STYLE below. */
 export const ABOUT_STANDOUT =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(24px,2.1vw,42px)] leading-[1.16] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,50px)] leading-[1.14] text-ink";
 export const ABOUT_STANDOUT_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
 
 /** ROLE 3 — SUBHEAD / interview question (Fraunces, roman). Ceiling 34px. */
 export const ABOUT_SUBHEAD =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(22px,1.7vw,34px)] leading-[1.2] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(25px,1.9vw,40px)] leading-[1.18] text-ink";
 export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -168,7 +168,7 @@ export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
  *  the page — ceiling 58px (the hero h1 + the sole Anegada poster are the only
  *  sanctioned larger moments). */
 export const ABOUT_TITLE =
-  "font-display font-semibold tracking-[-0.03em] text-[clamp(28px,3.4vw,58px)] leading-[1.06] text-ink";
+  "font-display font-semibold tracking-[-0.03em] text-[clamp(32px,3.8vw,66px)] leading-[1.05] text-ink";
 export const ABOUT_TITLE_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -176,17 +176,17 @@ export const ABOUT_TITLE_STYLE: CSSProperties = {
 /** ROLE 6 — CAPTION / META (sans, fixed small — never clamps up). Ceiling
  *  16px; the quietest ink so brightest→quietest (body > caption) reads. */
 export const ABOUT_CAPTION =
-  "font-sans font-normal text-[15px] 2xl:text-[16px] leading-[1.45] tracking-[0.01em] text-ink-muted";
+  "font-sans font-normal text-[16px] 2xl:text-[17px] leading-[1.45] tracking-[0.01em] text-ink-muted";
 
 /** Primary CTA pill — filled ink → accent on hover. Tactile press: scales in
  *  quickly (100ms) on :active and eases back over 300ms; disabled under
  *  reduced-motion. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60";
 
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 px-7 py-4 font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100";
 
 // =============================================================================
 // MOTION CANON — single source of truth for the site's signature easing +
