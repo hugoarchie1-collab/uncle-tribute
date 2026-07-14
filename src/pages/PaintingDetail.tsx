@@ -1559,11 +1559,16 @@ const BuyBox = ({
                       )}
                     </span>
                     <span>
-                      Made to order in the finish of your choice —
-                      solid-wood or contemporary tray frame, with optional
-                      anti-reflective museum-grade glazing (all shatter-safe for
-                      transit), conservation-mounted and ready to hang. Every
-                      finish is included. Allow {FRAME_LEAD_WEEKS} weeks.
+                      Your giclée print — pigment inks on 350gsm Hahnemühle
+                      archival paper (not canvas) — hand-framed to order in a
+                      real solid-wood moulding of your choice: natural oak,
+                      stained black, painted white, or a contemporary walnut
+                      float-tray. Glazed behind ultra-clear art acrylic or
+                      museum anti-reflective glass (both shatter-safe for
+                      transit), with the image running right to the frame — no
+                      mount border. Fitted with hanging cord and arrives ready
+                      to hang. Every finish is included. Allow{" "}
+                      {FRAME_LEAD_WEEKS} weeks.
                     </span>
                     {/* Free delivery applies to framed prints too — reassurance
                         shown the moment a frame is ticked. There is no framed-
@@ -1616,6 +1621,12 @@ const BuyBox = ({
                         </button>
                       ))}
                     </div>
+                    {/* Visible detail of the CHOSEN frame — the note was only in
+                        a hover title before (Hugo: no info without hovering). */}
+                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                      {FRAME_STYLES.find((f) => f.id === frameStyle)?.note}
+                      {" — solid-wood moulding, hand-finished."}
+                    </p>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <span className={EYEBROW_TIGHT}>
@@ -1640,6 +1651,10 @@ const BuyBox = ({
                         </button>
                       ))}
                     </div>
+                    {/* Visible detail of the CHOSEN glazing (was hover-only). */}
+                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                      {GLAZING_OPTIONS.find((g) => g.id === glazing)?.note}
+                    </p>
                   </div>
                 </div>
               )}
@@ -2668,7 +2683,7 @@ export const PaintingDetail = () => {
                     {/* Live framed preview — when framing is ticked, the print
                         shows INSIDE the selected moulding (no mat), updating per
                         frame style. Plain print otherwise. */}
-                    <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} embellished={embellished} aspectRatio={heroDims.w / heroDims.h}>
+                    <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h}>
                     <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}
@@ -2676,7 +2691,7 @@ export const PaintingDetail = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
-                        className={framing || embellished ? "absolute inset-0 block w-full h-full" : "block w-full"}
+                        className={framing ? "absolute inset-0 block w-full h-full" : "block w-full"}
                       >
                         {/* Responsive variants (#perf): webpSrcSet advertises the
                             -w480/-w800/-w1200/-w1600 siblings + the ~2000w full
@@ -2705,7 +2720,7 @@ export const PaintingDetail = () => {
                           width={heroDims.w}
                           height={heroDims.h}
                           className={
-                            framing || embellished
+                            framing
                               ? "block w-full h-full object-contain"
                               : "block mx-auto h-auto w-auto max-w-full max-h-[80vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
                           }
