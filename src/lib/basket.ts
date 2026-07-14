@@ -48,6 +48,12 @@ export interface BasketItem {
    */
   embellished?: boolean;
   /**
+   * Optional "print on canvas" add-on. Ready-to-hang stretched canvas instead
+   * of a framed/unframed paper print. Mutually exclusive with framing (a canvas
+   * isn't glazed-framed). Only meaningful for tiers with canvasPricePence.
+   */
+  canvas?: boolean;
+  /**
    * Optional Point 101 framing finishes (frame-style + glazing ids). Only
    * meaningful when `framing === true`; absent on bare-print lines. NO price
    * impact — every finish is included in the framing price, so older entries
@@ -165,7 +171,9 @@ const readFromStorage = (): BasketLine[] => {
         // Defensive default — anything stored without a tierId (e.g. a v2
         // entry written by a buggy older build) reconciles to the anchor.
         const tierId: PrintTier["id"] = isTierId(o.tierId) ? o.tierId : "collector";
-        const framing = o.framing === true ? true : undefined;
+        // Canvas is mutually exclusive with framing — a canvas isn't glazed-framed.
+        const canvas = o.canvas === true ? true : undefined;
+        const framing = !canvas && o.framing === true ? true : undefined;
         const embellished = o.embellished === true ? true : undefined;
         // Finishes only ride along when the line is framed.
         const frameStyle =
@@ -179,6 +187,7 @@ const readFromStorage = (): BasketLine[] => {
           tierId,
           framing,
           embellished,
+          ...(canvas ? { canvas } : {}),
           ...(frameStyle ? { frameStyle } : {}),
           ...(glazing ? { glazing } : {}),
           addedAt: o.addedAt,
@@ -337,6 +346,7 @@ export const addItem = (
   embellished?: boolean,
   frameStyle?: string,
   glazing?: string,
+  canvas?: boolean,
 ): void => {
   const current = ensureCache();
   let resolvedTierId: PrintTier["id"] = tierId ?? "collector";
@@ -352,10 +362,12 @@ export const addItem = (
     paintingId,
     colourwayName,
     tierId: resolvedTierId,
-    ...(framing ? { framing: true } : {}),
+    // Canvas + framing are mutually exclusive — canvas wins.
+    ...(canvas ? { canvas: true } : {}),
+    ...(framing && !canvas ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
-    ...(framing && frameStyle ? { frameStyle } : {}),
-    ...(framing && glazing ? { glazing } : {}),
+    ...(framing && !canvas && frameStyle ? { frameStyle } : {}),
+    ...(framing && !canvas && glazing ? { glazing } : {}),
     addedAt: Date.now(),
   };
   setCache([...current, added]);

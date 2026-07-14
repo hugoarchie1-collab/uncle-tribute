@@ -64,6 +64,7 @@ interface EmailTier {
   pricePence: number;
   framingPricePence?: number;
   embellishmentPricePence?: number;
+  canvasPricePence?: number;
   available: boolean;
   // Studio one-off — no add-ons; it IS the hand-finished piece.
   isOneOff?: boolean;
@@ -86,6 +87,7 @@ const TIERS: Record<TierId, EmailTier> = {
     pricePence: 49500,
     framingPricePence: 34500,
     embellishmentPricePence: 35000,
+    canvasPricePence: 14500,
     available: true,
   },
   "atelier-grande": {
@@ -95,6 +97,7 @@ const TIERS: Record<TierId, EmailTier> = {
     pricePence: 92500,
     framingPricePence: 44500,
     embellishmentPricePence: 49500,
+    canvasPricePence: 18500,
     available: true,
   },
   heirloom: {
@@ -103,6 +106,7 @@ const TIERS: Record<TierId, EmailTier> = {
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     pricePence: 189500,
     embellishmentPricePence: 79500,
+    canvasPricePence: 26500,
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was
     // silently downgraded to the A2 anchor in the email (£450 vs £1,750).
@@ -358,6 +362,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tierId?: unknown;
       framing?: unknown;
       embellished?: unknown;
+      canvas?: unknown;
     }>;
   };
   try {
@@ -400,6 +405,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     tierId?: string;
     framing?: boolean;
     embellished?: boolean;
+    canvas?: boolean;
   }> = [];
   let subtotalPence = 0;
   for (const raw of rawItems) {
@@ -418,15 +424,19 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         ? (rawTierId as TierId)
         : ANCHOR_TIER_ID;
     const tier = TIERS[tierId];
-    const framing = raw?.framing === true && !!tier.framingPricePence;
+    // Canvas is mutually exclusive with framing (a canvas isn't glazed-framed).
+    const canvas = raw?.canvas === true && !!tier.canvasPricePence;
+    const framing = !canvas && raw?.framing === true && !!tier.framingPricePence;
     const embellished = raw?.embellished === true && !!tier.embellishmentPricePence;
     const linePence =
       tier.pricePence +
       (framing ? (tier.framingPricePence ?? 0) : 0) +
-      (embellished ? (tier.embellishmentPricePence ?? 0) : 0);
+      (embellished ? (tier.embellishmentPricePence ?? 0) : 0) +
+      (canvas ? (tier.canvasPricePence ?? 0) : 0);
     // Tail micro-text shown after the size — surfaces the add-ons so the
     // buyer sees the same shape they'll see at Stripe Checkout.
     const tail: string[] = [tier.editionLabel];
+    if (canvas) tail.push("stretched canvas");
     if (framing) tail.push("hand-made frame");
     if (embellished) tail.push("hand-finished by Polly");
     lines.push({
@@ -443,6 +453,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if (rawTierId) restoreItem.tierId = rawTierId;
     if (typeof raw?.framing === "boolean") restoreItem.framing = raw.framing;
     if (typeof raw?.embellished === "boolean") restoreItem.embellished = raw.embellished;
+    if (typeof raw?.canvas === "boolean") restoreItem.canvas = raw.canvas;
     restoreItems.push(restoreItem);
   }
 

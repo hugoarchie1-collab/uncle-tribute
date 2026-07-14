@@ -69,8 +69,11 @@ const validateLine = (raw: unknown): RestoredLine | null => {
 
   // Add-ons survive only where the tier actually prices them — mirrors how
   // api/checkout.ts silently ignores framing on tiers that don't offer it.
+  // Canvas is mutually exclusive with framing (a canvas isn't glazed-framed).
+  const canvas =
+    o.canvas === true && typeof tier.canvasPricePence === "number";
   const framing =
-    o.framing === true && typeof tier.framingPricePence === "number";
+    !canvas && o.framing === true && typeof tier.framingPricePence === "number";
   const embellished =
     o.embellished === true && typeof tier.embellishmentPricePence === "number";
 
@@ -79,6 +82,7 @@ const validateLine = (raw: unknown): RestoredLine | null => {
     paintingId: painting.id,
     colourwayName: colourway.name,
     tierId: tier.id,
+    ...(canvas ? { canvas: true } : {}),
     ...(framing ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
   };

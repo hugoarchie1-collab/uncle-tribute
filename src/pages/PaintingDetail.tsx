@@ -37,6 +37,8 @@ import {
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
+  getCanvasPricePence,
+  CANVAS_NOTE,
   getLowestTierPricePence,
   getPaintingById,
   getPaintingsByCollection,
@@ -1070,10 +1072,12 @@ const BuyBox = ({
   onSelectTier,
   framing,
   embellished,
+  canvas,
   frameStyle,
   glazing,
   onFramingChange,
   onEmbellishedChange,
+  onCanvasChange,
   onFrameStyleChange,
   onGlazingChange,
   orderSentinelRef,
@@ -1090,10 +1094,12 @@ const BuyBox = ({
   onSelectTier: (id: PrintTier["id"]) => void;
   framing: boolean;
   embellished: boolean;
+  canvas: boolean;
   frameStyle: string;
   glazing: string;
   onFramingChange: (next: boolean) => void;
   onEmbellishedChange: (next: boolean) => void;
+  onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
   onGlazingChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
@@ -1130,15 +1136,18 @@ const BuyBox = ({
     !isOneOffSelected && getFramingPricePence(selectedTier) !== null;
   const embellishOffered =
     !isOneOffSelected && getEmbellishmentPricePence(selectedTier) !== null;
+  const canvasOffered =
+    !isOneOffSelected && getCanvasPricePence(selectedTier) !== null;
   // The promoted "Finish your piece" step appears only when at least one finish
   // is actually offered at the selected size (and never on the one-off original,
   // which IS the finished work). On A3/A0 the step is simply absent.
-  const showAddOns = !isOneOffSelected && (framingOffered || embellishOffered);
+  const showAddOns =
+    !isOneOffSelected && (framingOffered || embellishOffered || canvasOffered);
   // Effective add-on selections — an add-on is only "on" if it's both offered
-  // at this size AND ticked. Switching to a size that doesn't offer an add-on
-  // silently turns it off for pricing/total/lead-time purposes (the box also
-  // disables + unchecks visually).
-  const framingActive = framingOffered && framing;
+  // at this size AND ticked. Canvas is ready-to-hang (no glass, no frame), so it
+  // is MUTUALLY EXCLUSIVE with framing — canvas wins and framing reads off.
+  const canvasActive = canvasOffered && canvas;
+  const framingActive = framingOffered && framing && !canvasActive;
   const embellishActive = embellishOffered && embellished;
 
   // Add-on prices read from the data layer's helpers so they can never drift
@@ -1146,6 +1155,7 @@ const BuyBox = ({
   // helpers return null at sizes that don't offer the add-on (A3/A0).
   const framingPricePence = getFramingPricePence(selectedTier);
   const embellishPricePence = getEmbellishmentPricePence(selectedTier);
+  const canvasPricePence = getCanvasPricePence(selectedTier);
   const framingPriceLabel =
     framingPricePence !== null
       ? fmtP(framingPricePence)
@@ -1154,6 +1164,8 @@ const BuyBox = ({
     embellishPricePence !== null
       ? fmtP(embellishPricePence)
       : null;
+  const canvasPriceLabel =
+    canvasPricePence !== null ? fmtP(canvasPricePence) : null;
 
   // Running line total = print + (frame if active) + (hand-finish if active).
   // Updates live as the buyer ticks add-ons (DMCC: the running total must
@@ -1162,8 +1174,9 @@ const BuyBox = ({
   const lineTotalPence =
     selectedTier.pricePence +
     (framingActive ? framingPricePence ?? 0 : 0) +
-    (embellishActive ? embellishPricePence ?? 0 : 0);
-  const hasAddOnSelected = framingActive || embellishActive;
+    (embellishActive ? embellishPricePence ?? 0 : 0) +
+    (canvasActive ? canvasPricePence ?? 0 : 0);
+  const hasAddOnSelected = framingActive || embellishActive || canvasActive;
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
   // hand-finishing 2 wks. Nothing selected → the standard print lead time.
@@ -1206,6 +1219,7 @@ const BuyBox = ({
       embellishActive,
       framingActive ? frameStyle : undefined,
       framingActive ? glazing : undefined,
+      canvasActive,
     );
     // Marketing analytics (consent-gated no-op otherwise) — AddToCart /
     // add_to_cart at the SELECTED tier's print price.
@@ -1266,6 +1280,7 @@ const BuyBox = ({
           tierId: selectedTier.id,
           framing: framingActive,
           embellished: embellishActive,
+          canvas: canvasActive,
           ...(framingActive ? { frameStyle, glazing } : {}),
           currency: currencyCode,
           ...(utm ? { utm } : {}),
@@ -1686,6 +1701,42 @@ const BuyBox = ({
                     </span>
                     <span className="text-ink-muted">{EMBELLISHMENT_NOTE}</span>
                     <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
+                  </span>
+                </label>
+              )}
+
+              {/* PRINT ON CANVAS — a ready-to-hang alternative to a paper print;
+                  mutually exclusive with framing (a canvas isn't glazed-framed),
+                  so ticking it clears the frame selection. */}
+              {canvasOffered && (
+                <label
+                  className={cn(
+                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
+                    canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={canvasActive}
+                    onChange={(e) => onCanvasChange(e.target.checked)}
+                    className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
+                  />
+                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <strong className="text-ink">Print on stretched canvas</strong>
+                      {canvasPriceLabel && (
+                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                          +{canvasPriceLabel}
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-ink-muted">{CANVAS_NOTE}</span>
+                    {canvasActive && (
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
+                        Ready to hang — no framing or glazing needed. Delivered
+                        free worldwide.
+                      </span>
+                    )}
                   </span>
                 </label>
               )}
@@ -2305,8 +2356,19 @@ export const PaintingDetail = () => {
   // share one source of truth.
   const [framing, setFraming] = useState(false);
   const [embellished, setEmbellished] = useState(false);
+  const [canvas, setCanvas] = useState(false);
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
+  // Canvas + framing are mutually exclusive (a canvas isn't glazed-framed):
+  // ticking one clears the other.
+  const selectCanvas = (next: boolean) => {
+    setCanvas(next);
+    if (next) setFraming(false);
+  };
+  const selectFraming = (next: boolean) => {
+    setFraming(next);
+    if (next) setCanvas(false);
+  };
 
   // Re-sync the SIZE + add-ons when the painting changes (SPA nav between works
   // keeps this component mounted). The colourway already re-syncs above; without
@@ -2317,6 +2379,7 @@ export const PaintingDetail = () => {
     setSelectedTierId(anchorTier?.id);
     setFraming(false);
     setEmbellished(false);
+    setCanvas(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);
     setGlazing(DEFAULT_GLAZING);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -2813,10 +2876,12 @@ export const PaintingDetail = () => {
                 onSelectTier={setSelectedTierId}
                 framing={framing}
                 embellished={embellished}
+                canvas={canvas}
                 frameStyle={frameStyle}
                 glazing={glazing}
-                onFramingChange={setFraming}
+                onFramingChange={selectFraming}
                 onEmbellishedChange={setEmbellished}
+                onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
                 onGlazingChange={setGlazing}
                 orderSentinelRef={orderSentinelRef}

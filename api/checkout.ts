@@ -75,6 +75,7 @@ interface TierDef {
   editionLabel: string;
   framingPricePence?: number;
   embellishmentPricePence?: number;
+  canvasPricePence?: number;
   available: boolean;
   // True for the Studio one-off — it IS the hand-finished piece, so it
   // never carries framing / embellishment add-on line items.
@@ -98,6 +99,7 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     framingPricePence: 34500,
     embellishmentPricePence: 35000,
+    canvasPricePence: 14500,
     available: true,
   },
   "atelier-grande": {
@@ -108,6 +110,7 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     framingPricePence: 44500,
     embellishmentPricePence: 49500,
+    canvasPricePence: 18500,
     available: true,
   },
   heirloom: {
@@ -121,6 +124,7 @@ const TIERS: Record<TierId, TierDef> = {
     // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
     // (glazed A0 exceeds Point 101's 610mm delivery cap — see paintings.ts).
     embellishmentPricePence: 79500,
+    canvasPricePence: 26500,
     available: true,
   },
   studio: {
@@ -226,6 +230,9 @@ const lineRetailPence = (item: NormalisedItem): number => {
     typeof item.tier.embellishmentPricePence === "number"
   ) {
     total += item.tier.embellishmentPricePence;
+  }
+  if (item.canvas && typeof item.tier.canvasPricePence === "number") {
+    total += item.tier.canvasPricePence;
   }
   return total;
 };
@@ -388,6 +395,7 @@ interface NormalisedItem {
   tier: TierDef;
   framing: boolean;     // true only if framing is offered AND requested
   embellished: boolean; // true only if hand-finishing is offered AND requested
+  canvas: boolean;      // true only if canvas is offered AND requested (excludes framing)
   // Framing finishes (display labels) — only set when framing === true. These
   // ride into the Stripe line item so the estate knows which frame to order;
   // they carry NO price (every finish is included in framingPricePence).
@@ -403,6 +411,7 @@ const normaliseItem = (
   embellishedRaw: unknown,
   frameStyleRaw?: unknown,
   glazingRaw?: unknown,
+  canvasRaw?: unknown,
 ): NormalisedItem | { error: string } => {
   if (!paintingId || !VALID_PAINTING_IDS.has(paintingId)) {
     return { error: `Unknown painting "${paintingId ?? ""}".` };
@@ -415,8 +424,12 @@ const normaliseItem = (
   }
   const colourway = colourwayName?.trim() || "Original";
   const title = PAINTING_TITLES[paintingId] ?? paintingId;
-  // Framing requested only counts if the tier actually offers it.
-  const framing = framingRaw === true && typeof tier.framingPricePence === "number";
+  // Canvas requested only counts if the tier offers it; canvas is ready-to-hang
+  // and NOT framed, so it takes precedence over (and disables) framing.
+  const canvas = canvasRaw === true && typeof tier.canvasPricePence === "number";
+  // Framing requested only counts if the tier offers it AND canvas isn't chosen.
+  const framing =
+    !canvas && framingRaw === true && typeof tier.framingPricePence === "number";
   // Hand-embellishment requested only counts if the tier actually offers it.
   const embellished =
     embellishedRaw === true && typeof tier.embellishmentPricePence === "number";
@@ -435,6 +448,7 @@ const normaliseItem = (
     tier,
     framing,
     embellished,
+    canvas,
     frameStyle,
     glazing,
   };
@@ -651,6 +665,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     tierId?: unknown;
     framing?: unknown;
     embellished?: unknown;
+    canvas?: unknown;
     frameStyle?: unknown;
     glazing?: unknown;
     items?: Array<{
@@ -660,6 +675,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tierId?: unknown;
       framing?: unknown;
       embellished?: unknown;
+      canvas?: unknown;
       frameStyle?: unknown;
       glazing?: unknown;
       // Gift-card line fields (kind === "gift"):
@@ -700,6 +716,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           tierId: body.tierId,
           framing: body.framing,
           embellished: body.embellished,
+          canvas: body.canvas,
           frameStyle: body.frameStyle,
           glazing: body.glazing,
         },
@@ -745,6 +762,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       raw?.embellished,
       raw?.frameStyle,
       raw?.glazing,
+      raw?.canvas,
     );
     if ("error" in result) return send(400, result);
     normalised.push(result);
@@ -821,6 +839,21 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             // sync with api/stripe-webhook.ts + PaintingDetail FINISH_LEAD_WEEKS.
             description:
               "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow up to two weeks.",
+          },
+        },
+      });
+    }
+    if (item.canvas && typeof item.tier.canvasPricePence === "number") {
+      lineItems.push({
+        quantity: 1,
+        price_data: {
+          currency: currencyCode,
+          unit_amount: toMinor(item.tier.canvasPricePence),
+          product_data: {
+            name: `Stretched canvas — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            // Mirror of CANVAS_NOTE in src/data/paintings.ts (gotcha #9).
+            description:
+              "Printed onto fine-art canvas, stretched over a solid subframe and finished ready to hang — no glass, no separate frame. Made to order.",
           },
         },
       });
@@ -1058,6 +1091,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         parts.push(toMinor(item.tier.framingPricePence));
       if (item.embellished && typeof item.tier.embellishmentPricePence === "number")
         parts.push(toMinor(item.tier.embellishmentPricePence));
+      if (item.canvas && typeof item.tier.canvasPricePence === "number")
+        parts.push(toMinor(item.tier.canvasPricePence));
       for (const a of parts) bundleDiscountMinor += Math.round((a * percentOff) / 100);
     }
   }

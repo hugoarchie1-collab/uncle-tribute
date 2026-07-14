@@ -49,6 +49,13 @@ export interface PrintTier {
    * + A1 (the sizes worth her time); A3 / A0 omit.
    */
   embellishmentPricePence?: number;
+  /**
+   * Optional "print on stretched canvas" surcharge. The image is printed onto
+   * fine-art canvas, stretched on a subframe and finished ready-to-hang (no
+   * glass, no separate frame — so it's mutually exclusive with framing). A2/A1/
+   * A0 only; A3 is too small for canvas. Point 101 fulfilment.
+   */
+  canvasPricePence?: number;
   description?: string;         // optional one-liner (e.g. gold-leaf detail)
   available: boolean;           // hide tier site-wide by flipping to false
   isAnchor?: boolean;           // marks the recommended / default tier
@@ -218,6 +225,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     framingPricePence: 34500, // £345 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
+    canvasPricePence: 14500, // £145 — print on stretched canvas, ready to hang
     description:
       "Collector Edition of 200, estate-stamped, hand-numbered, COA",
     available: true,
@@ -233,6 +241,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     framingPricePence: 44500, // £445 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
+    canvasPricePence: 18500, // £185 — print on stretched canvas, ready to hang
     description:
       "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
     available: true,
@@ -254,6 +263,7 @@ export const PRINT_TIERS: PrintTier[] = [
     // with a free-worldwide-delivery promise we can't honour. If a buyer wants
     // A0 framed, it's a bespoke enquiry (like custom sizes), arranged per-order.
     embellishmentPricePence: 79500, // £795 hand-finishing by Polly Wedge (A0)
+    canvasPricePence: 26500, // £265 — print on stretched canvas, ready to hang
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,
@@ -396,6 +406,18 @@ export const getLowestTierPricePence = (painting: Painting): number => {
  */
 export const getFramingPricePence = (tier: PrintTier): number | null =>
   tier.framingPricePence ?? null;
+
+/**
+ * Returns the "print on canvas" surcharge for a tier, or null if canvas isn't
+ * offered at that size (A2/A1/A0 only). Canvas is ready-to-hang and NOT framed
+ * behind glass, so the UI makes canvas + framing mutually exclusive.
+ */
+export const getCanvasPricePence = (tier: PrintTier): number | null =>
+  tier.canvasPricePence ?? null;
+
+/** Copy for the canvas add-on, mirrored into api/checkout.ts (gotcha #9, label only). */
+export const CANVAS_NOTE =
+  "Printed onto fine-art canvas, stretched over a solid subframe and finished ready to hang — no glass, no separate frame. Made to order.";
 
 // ── Point 101 framing finishes ───────────────────────────────────────────────
 // The Bespoke framing add-on offers Point 101's full range of museum-grade

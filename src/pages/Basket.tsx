@@ -97,9 +97,17 @@ const lineEmbellishPence = (line: ResolvedLine): number =>
     ? line.tier.embellishmentPricePence
     : 0;
 
-/** Full pre-discount price of a line = print + framing + hand-finishing. */
+const lineCanvasPence = (line: ResolvedLine): number =>
+  line.item.canvas === true && typeof line.tier.canvasPricePence === "number"
+    ? line.tier.canvasPricePence
+    : 0;
+
+/** Full pre-discount price of a line = print + framing + hand-finishing + canvas. */
 const lineTotalPence = (line: ResolvedLine): number =>
-  line.tier.pricePence + lineFramingPence(line) + lineEmbellishPence(line);
+  line.tier.pricePence +
+  lineFramingPence(line) +
+  lineEmbellishPence(line) +
+  lineCanvasPence(line);
 
 /**
  * The Stripe LINE ITEMS one basket line expands into (pence each). Mirrors the
@@ -114,6 +122,8 @@ const stripeLineItemsFor = (line: ResolvedLine): number[] => {
   if (framing > 0) items.push(framing);
   const embellish = lineEmbellishPence(line);
   if (embellish > 0) items.push(embellish);
+  const canvas = lineCanvasPence(line);
+  if (canvas > 0) items.push(canvas);
   return items;
 };
 
@@ -285,6 +295,7 @@ export const Basket = () => {
               tierId: l.tier.id,
               framing: l.item.framing === true,
               embellished: l.item.embellished === true,
+              canvas: l.item.canvas === true,
               // Framing finishes (no price impact) — forwarded so the Stripe
               // line item names the frame the estate should order from Point 101.
               ...(l.item.framing === true && l.item.frameStyle
@@ -431,7 +442,9 @@ export const Basket = () => {
                 {lines.map((line, i) => {
                   const framingPence = lineFramingPence(line);
                   const embellishPence = lineEmbellishPence(line);
-                  const hasAddOns = framingPence > 0 || embellishPence > 0;
+                  const canvasPence = lineCanvasPence(line);
+                  const hasAddOns =
+                    framingPence > 0 || embellishPence > 0 || canvasPence > 0;
                   return (
                     <li
                       key={line.item.addedAt}
@@ -526,6 +539,16 @@ export const Basket = () => {
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {fmt(embellishPence)}
+                              </span>
+                            </div>
+                          )}
+                          {canvasPence > 0 && (
+                            <div className="flex items-baseline justify-between gap-4">
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
+                                Stretched canvas (ready to hang)
+                              </span>
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                                + {fmt(canvasPence)}
                               </span>
                             </div>
                           )}
