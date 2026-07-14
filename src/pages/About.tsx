@@ -1247,19 +1247,28 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] 3xl:grid-cols-[1fr_minmax(0,480px)] gap-8 lg:gap-12 items-start",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] 3xl:grid-cols-[1fr_minmax(0,480px)] gap-8 lg:gap-12 items-stretch",
             )}
           >
             <div className="min-w-0">
               <InterviewQA item={INTERVIEW.qa[2]} />
             </div>
-            <Reveal as="figure" className="m-0 w-full">
-              <ContainImage
+            {/* Portrait COVER-FILLS the column to the text's exact height (lg: h-full
+                on an items-stretch row) so the two columns end on the same line on
+                every device — no dangling space beside the answer. Face-safe crop
+                (object top). Mobile: a portrait aspect, stacked (no side gap). */}
+            <Reveal
+              as="figure"
+              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[280px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+            >
+              <AssetImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
-                aspect="aspect-[2/3]"
+                loading="lazy"
+                decoding="async"
                 sizes="(min-width: 1024px) 480px, 100vw"
-                parallax={0.06}
+                style={{ filter: PHOTO_GRADE_SHADOW }}
+                className="absolute inset-0 h-full w-full object-cover object-[50%_22%]"
               />
             </Reveal>
           </div>
@@ -1467,23 +1476,24 @@ export const About = () => {
           <div
             className={cn(
               ONE_WIDTH,
-              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-center",
+              "grid grid-cols-1 lg:grid-cols-[minmax(0,620px)_1fr] gap-8 lg:gap-14 items-stretch",
             )}
           >
-            <Reveal as="figure" className="m-0 w-full">
-              <ContainImage
+            <Reveal as="figure" className="relative m-0 w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[260px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line">
+              <AssetImage
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
-                aspect="aspect-[4/3]"
-                parallax={0.06}
+                loading="lazy"
+                decoding="async"
                 sizes="(min-width: 1024px) 620px, 100vw"
+                style={{ filter: PHOTO_GRADE_SHADOW }}
+                className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </Reveal>
-            {/* A real text panel fills the column beside the photo — the verbatim
-                students intro as a lead statement, then the pointer to the letter
-                on /memories — instead of a lone one-line link stranding a ~500px
-                void beside the photo. */}
-            <Reveal as="div" delay={0.08} className="flex flex-col justify-center gap-6 md:gap-7">
+            {/* The text panel SPANS the photo's height (intro pinned top, pointer
+                pinned bottom) so both columns end on the same line — no dead space
+                beside the photo. A hairline carries the space between them. */}
+            <Reveal as="div" delay={0.08} className="flex flex-col justify-between h-full gap-6">
               <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
                 {ABOUT.studentsIntro}
               </p>
