@@ -1173,7 +1173,7 @@ export const getCompleteCatalogueBundle = (
     fullPricePence * (1 - discountPercent / 100),
   );
   return {
-    title: "The Complete Catalogue",
+    title: "The Full Collection",
     paintingIds: paintings.map((p) => p.id),
     items,
     paintingCount: paintings.length,

@@ -383,10 +383,28 @@ export const News = () => {
   // for all"). Previously the featured entry was HIDDEN from the feed (only in the
   // hero swipe), so a painting vanished from its section. Now nothing is hidden —
   // the hero swipe is a highlight ABOVE the full, complete feed.
-  const groups = useMemo(
-    () => groupByStatus(filtered, undefined),
-    [filtered],
-  );
+  // ONE "Coming soon" section, not two (Hugo: the "Coming next" vs "On the
+  // horizon" split "makes no sense and looks ugly"). Merge next + soon into a
+  // single upcoming group; keep "recent" separate if it ever fills. Worded to
+  // reflect that this is an early selection of Stephen's work, more to come.
+  const groups = useMemo(() => {
+    const raw = groupByStatus(filtered, undefined);
+    const coming = raw
+      .filter((g) => g.status === "next" || g.status === "soon")
+      .flatMap((g) => g.entries);
+    const recent = raw.find((g) => g.status === "recent");
+    const merged: ReturnType<typeof groupByStatus> = [];
+    if (coming.length) {
+      merged.push({
+        status: "next",
+        heading: "Coming soon",
+        note: "New collections in preparation",
+        entries: coming,
+      });
+    }
+    if (recent && recent.entries.length) merged.push(recent);
+    return merged;
+  }, [filtered]);
   // Until the family adds real entries to src/data/news.ts, the page shows a
   // dignified, CENTRED "being prepared" state — never invented releases/dates.
   // ALL feed JSX (featured hero + filter tabs + status groups) is gated on this

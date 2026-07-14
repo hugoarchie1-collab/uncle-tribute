@@ -509,14 +509,14 @@ const CatalogueSetCard = () => {
         className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
         style={{ background: SET_CARD_SCRIM }}
       >
-        <p className={cn(EYEBROW, "m-0 mb-4")}>The complete catalogue</p>
+        <p className={cn(EYEBROW, "m-0 mb-4")}>The full collection</p>
         <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>
-          His life&rsquo;s work, in one collection.
+          Every print, in one home.
         </h2>
         <p className={cn(SUBTITLE, "mt-3 md:mt-4 max-w-[74ch] mx-auto my-0")}>
           One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
-          {catalogue.paintingCount} of Stephen&rsquo;s paintings: the entire,
-          finite body of his work, gathered for one home.
+          {catalogue.paintingCount} paintings currently on the site, gathered for
+          one home &mdash; with more of Stephen&rsquo;s work still to come.
         </p>
         <SetSizeSelector value={tier} onChange={setTier} />
         <p className={cn(META, "m-0 mb-5")}>
@@ -534,7 +534,7 @@ const CatalogueSetCard = () => {
           onClick={acquireCatalogue}
           className={cn(BTN_PRIMARY, "gap-2")}
         >
-          Add the complete catalogue to basket
+          Add the full collection to basket
           <span aria-hidden="true">→</span>
         </button>
         <p className={cn(META, "m-0 mt-4")}>
@@ -672,7 +672,7 @@ export const Collections = () => {
           className={cn(PAGE_ENVELOPE, "relative pt-10 md:pt-12 pb-6 md:pb-8")}
         >
           <PageMasthead
-            eyebrow="Everything he finished"
+            eyebrow="Estate editions"
             meta="The estate catalogue"
             // CENTRE the masthead so its axis matches the centred collection
             // headers below (the title was left-aligned against centred content).
@@ -682,7 +682,7 @@ export const Collections = () => {
             }}
             title={
               <>
-                The complete <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>works</em>
+                The <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>collection</em>
               </>
             }
           >
@@ -703,9 +703,9 @@ export const Collections = () => {
                   textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
                 }}
               >
-                The finite body of Stephen's finished work, held by the estate and
-                issued as editioned giclée prints — every piece he completed,
-                gathered in one place.
+                Mandala paintings by Stephen Meakin, held by the estate and issued
+                as editioned giclée prints — the collection as it stands today,
+                with more of his work still to come.
               </p>
               <div className="lg:pt-1.5 flex flex-col gap-4">
                 <p

@@ -1531,13 +1531,13 @@ export const About = () => {
         {/* 15 · THE BODY OF WORK — coda. P6 band (≤64svh) + a factual caption. */}
         <section className={cn(SECTION, SECTION_PAD)}>
           <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP_B)}>
-            <p className={cn(EYEBROW, "m-0")}>The body of work</p>
+            <p className={cn(EYEBROW, "m-0")}>The collection so far</p>
           </Reveal>
           <ImageBand
             src="/img/welcome/04-paintings-collection.jpg"
             alt="Stephen Meakin's mandala paintings gathered together against the timber walls of the studio"
             parallax={0.1}
-            caption="Ten paintings across three collections — Habundia, Genesis and Born in the Sky"
+            caption="Ten paintings across three collections — Habundia, Genesis and Born in the Sky. More of Stephen's work will follow."
           />
         </section>
 
