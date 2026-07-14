@@ -183,7 +183,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(15px,1.5vw,17.5px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink [overflow-wrap:anywhere] m-0";
 
 // ---------------------------------------------------------------------------
 // PostCard — the ONE self-contained social POST of the feed (Instagram/Threads/
@@ -226,7 +226,7 @@ const PostCard = ({
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
+        "group relative overflow-hidden rounded-[20px] bg-bg-soft/92 backdrop-blur-[3px] ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
         pinned && "ring-accent/40 hover:ring-accent/55",
       )}
     >
@@ -299,7 +299,7 @@ const PostCard = ({
             alt={`A photograph shared by ${memory.name}`}
             loading="lazy"
             decoding="async"
-            className="block w-full h-auto max-h-[min(56svh,520px)] object-contain object-center mx-auto transition-transform duration-500 ease-out group-hover:scale-[1.01] motion-reduce:transform-none"
+            className="block w-full h-auto max-h-[380px] object-contain object-center mx-auto transition-transform duration-500 ease-out group-hover:scale-[1.01] motion-reduce:transform-none"
           />
         </figure>
       ) : null}
@@ -317,7 +317,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
   <button
     type="button"
     onClick={onShare}
-    className="group w-full flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] text-left rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1rem,2.4vw,1.35rem)] transition-colors hover:ring-line-strong"
+    className="group w-full flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] text-left rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1rem,2.4vw,1.35rem)] transition-colors hover:ring-line-strong"
   >
     <span
       aria-hidden="true"
@@ -346,7 +346,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
 // a sans invitation (NO italic). Composed, not broken.
 // ---------------------------------------------------------------------------
 const EmptyStateCard = () => (
-  <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.6rem)]">
+  <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.6rem)]">
     <span
       aria-hidden="true"
       className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)] border border-dashed border-line bg-bg-elevated"
@@ -963,13 +963,12 @@ export const Memories = () => {
                 (no right rail) it also carries the composer. */}
             <aside className="hidden xl:block">
               <div className="sticky top-[clamp(5rem,9vw,7rem)] flex flex-col gap-5">
-                <div className="rounded-[20px] bg-bg-soft/80 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,1.6vw,1.5rem)]">
-                  <div className="flex items-center gap-3 border-b border-line pb-3">
-                    <span className={cn(EYEBROW, "shrink-0")}>The Pin Board</span>
-                    <span aria-hidden className="h-px flex-1 bg-ink/15" />
-                    <span className={cn(EYEBROW_MUTED, "shrink-0")}>{LIFE_DATES}</span>
+                <div className="rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,1.6vw,1.5rem)]">
+                  <div className="border-b border-line pb-3">
+                    <span className={cn(EYEBROW, "block")}>The Pin Board</span>
+                    <span className={cn(EYEBROW_MUTED, "block mt-1.5 tracking-[0.02em]")}>{LIFE_DATES}</span>
                   </div>
-                  <p className="mt-4 font-sans text-[clamp(14.5px,0.9vw,16px)] leading-[1.6] text-ink-soft m-0">
+                  <p className="mt-4 font-sans text-[clamp(14.5px,0.9vw,16px)] leading-[1.6] text-ink/85 m-0">
                     Stephen to some, SEM to the art world, Steve to his family. If
                     he touched your life, add a memory below — the family reads
                     every one.

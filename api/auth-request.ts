@@ -82,16 +82,25 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const magicLinkEmail = (link: string): string => {
   const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
   const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+  const logo = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
+  // TABLE-based with the dark card on a <td> background (NOT the <body>): Gmail
+  // strips <body> backgrounds in light mode, which turned the light cream text
+  // invisible on white. A td bgcolor is honoured everywhere, so the dark card —
+  // with its solid, high-contrast text + the wax-seal logo — always renders.
   return (
-    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="color-scheme" content="dark only"/></head>` +
-    `<body style="background:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;">` +
-    `<div style="max-width:520px;margin:0 auto;">` +
-    `<p style="font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px;">The Mandala Company · The estate of Stephen Meakin</p>` +
-    `<h1 style="font-family:${DISPLAY};font-weight:700;font-size:30px;line-height:1.15;margin:0 0 18px;">Your sign-in link</h1>` +
-    `<p style="font-size:15px;line-height:1.7;color:rgba(237,230,214,0.8);margin:0 0 24px;">Tap the button below to sign in to your account and view your orders. The link is valid for 15 minutes and can be used once.</p>` +
-    `<p style="margin:0 0 28px;"><a href="${link}" style="display:inline-block;background:#ede6d6;color:#0a0908;font-size:13px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:4px;">Sign in</a></p>` +
-    `<p style="font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0;">If you didn't request this, you can safely ignore it — no one can access your account without this link.</p>` +
-    `</div></body></html>`
+    `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/></head>` +
+    `<body style="margin:0;padding:0;background:#0a0908;">` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0908;"><tr>` +
+    `<td align="center" style="padding:32px 16px;">` +
+    `<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="width:100%;max-width:520px;background:#100c11;border:1px solid #2b2622;border-radius:16px;"><tr>` +
+    `<td style="padding:38px 34px;font-family:${SANS};">` +
+    `<img src="${logo}" width="54" height="54" alt="The Mandala Company" style="display:block;border:0;margin:0 0 22px;"/>` +
+    `<p style="font-size:12px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:#d98a52;margin:0 0 16px;">The Mandala Company</p>` +
+    `<h1 style="font-family:${DISPLAY};font-weight:700;font-size:30px;line-height:1.15;color:#f4eddf;margin:0 0 16px;">Your sign-in link</h1>` +
+    `<p style="font-size:16px;line-height:1.65;color:#ddd5c6;margin:0 0 26px;">Tap the button below to sign in to your account and view your orders. The link is valid for 15 minutes and can be used once.</p>` +
+    `<p style="margin:0 0 28px;"><a href="${link}" style="display:inline-block;background:#ede6d6;color:#0a0908;font-size:14px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 34px;border-radius:8px;">Sign in</a></p>` +
+    `<p style="font-size:13px;line-height:1.6;color:#9d9788;margin:0;">If you didn't request this, you can safely ignore it — no one can access your account without this link.</p>` +
+    `</td></tr></table></td></tr></table></body></html>`
   );
 };
 
