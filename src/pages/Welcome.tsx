@@ -441,7 +441,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 200px), 16svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -460,7 +460,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 200px), 16svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -494,7 +494,7 @@ export const Welcome = () => {
                 style={{
                   fontVariationSettings: '"opsz" 36, "wght" 600',
                   fontWeight: 600,
-                  fontSize: "clamp(22px, 4vw, 42px)",
+                  fontSize: "clamp(22px, 4vw, 50px)",
                   letterSpacing: "-0.005em",
                   lineHeight: 1.1,
                   color: "#f1ead9",
