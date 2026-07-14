@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
+import { SceneReveal } from "../components/SceneReveal";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, META } from "../components/ui/tokens";
@@ -924,6 +925,9 @@ export const Memories = () => {
               "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
           }}
         />
+        {/* Cursor-clarity reveal — the scene brightens/clears where the pointer
+            is, the same affordance as the home/About backdrop. */}
+        <SceneReveal photoUrl={asset("/img/scenes/memories-scene-v3.webp")} />
       </div>
       <Seo
         title="Memories"

@@ -37,6 +37,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { SceneReveal } from "../components/SceneReveal";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
 import { Seo } from "../components/Seo";
@@ -408,6 +409,9 @@ export const News = () => {
               "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
           }}
         />
+        {/* Cursor-clarity reveal — the scene brightens/clears where the pointer
+            is, the same affordance as the home/About backdrop. */}
+        <SceneReveal photoUrl={asset("/img/scenes/news-scene-v3.webp")} />
       </div>
       <Seo
         title="News"
