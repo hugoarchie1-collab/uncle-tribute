@@ -2668,7 +2668,7 @@ export const PaintingDetail = () => {
                     {/* Live framed preview — when framing is ticked, the print
                         shows INSIDE the selected moulding (no mat), updating per
                         frame style. Plain print otherwise. */}
-                    <FrameWrap active={framing} frameStyle={frameStyle}>
+                    <FrameWrap active={framing} frameStyle={frameStyle} aspectRatio={heroDims.w / heroDims.h}>
                     <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}
@@ -2676,7 +2676,7 @@ export const PaintingDetail = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
-                        className="block w-full"
+                        className={framing ? "absolute inset-0 block w-full h-full" : "block w-full"}
                       >
                         {/* Responsive variants (#perf): webpSrcSet advertises the
                             -w480/-w800/-w1200/-w1600 siblings + the ~2000w full
@@ -2704,7 +2704,11 @@ export const PaintingDetail = () => {
                           alt={paintingImageAlt(painting.title, selected.name)}
                           width={heroDims.w}
                           height={heroDims.h}
-                          className="block mx-auto h-auto w-auto max-w-full max-h-[80vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
+                          className={
+                            framing
+                              ? "block w-full h-full object-contain"
+                              : "block mx-auto h-auto w-auto max-w-full max-h-[80vh] lg:max-h-[calc(100vh-72px-2rem)] 2xl:max-h-[86vh]"
+                          }
                         />
                       </motion.picture>
                     </AnimatePresence>
