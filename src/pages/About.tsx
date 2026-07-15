@@ -1023,6 +1023,26 @@ export const About = () => {
             </p>
           </Reveal>
 
+          {/* An intimate opening beat for the ritual chapter — his hand and a
+              fine brush laying detail into the Wild Rose mandala. Contained,
+              height-capped so it never fills the screen. */}
+          <Reveal
+            as="figure"
+            className={cn(
+              "relative m-0 mx-auto w-full max-w-[880px] overflow-hidden rounded-[6px] ring-1 ring-line",
+              BLOCK_GAP,
+            )}
+          >
+            <AssetImage
+              src="/img/about/hand-finishing-brush-v1.jpg"
+              alt="Stephen's hand laying fine brushwork into a Wild Rose mandala, petal by petal"
+              loading="lazy"
+              decoding="async"
+              sizes="(min-width: 768px) 880px, 100vw"
+              className="block w-full h-auto max-h-[58svh] object-cover object-center"
+            />
+          </Reveal>
+
           {/* Two archive photographs of Stephen at the board — art tiles.
               width="wide" gives a clean 2-up (was cols={3} with only 2 children
               → a ragged empty third column on md+). */}
@@ -1546,6 +1566,25 @@ export const About = () => {
             parallax={0.1}
             caption="Ten paintings across three collections — Habundia, Genesis and Born in the Sky. More of Stephen's work will follow."
           />
+        </section>
+
+        {/* 15b · A FINAL, WARM LOOK — Stephen in his studio doorway, his work
+            behind him. A quiet, present portrait to land on before the family's
+            farewell. Contained + height-capped (never a full-screen wall). */}
+        <section className={cn(SECTION, "pt-2 md:pt-3", SECTION_PAD)}>
+          <Reveal
+            as="figure"
+            className="relative m-0 mx-auto w-full max-w-[440px] overflow-hidden rounded-[6px] ring-1 ring-line"
+          >
+            <AssetImage
+              src="/img/about/stephen-doorway-portrait-v1.jpg"
+              alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
+              loading="lazy"
+              decoding="async"
+              sizes="(min-width: 768px) 440px, 88vw"
+              className="block w-full h-auto max-h-[64svh] object-cover object-center"
+            />
+          </Reveal>
         </section>
 
         {/* 16 · CLOSING CTA — the family's farewell. */}
