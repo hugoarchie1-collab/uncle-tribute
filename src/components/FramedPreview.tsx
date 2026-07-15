@@ -46,13 +46,15 @@ export const GlazingOverlay = ({ glazing }: { glazing: string }) => {
       style={{
         mixBlendMode: "screen",
         background: acrylic
-          ? // A natural gallery-glass reflection: a soft specular bloom in the
-            // top-left corner + a broad, heavily-feathered diagonal light wash
-            // fading to clear by the lower-right, over a gentle top-down veil.
-            // No hard band — reads like real light on acrylic, not a painted stripe.
-            "radial-gradient(135% 100% at 11% 5%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 24%, rgba(255,255,255,0) 48%), " +
-            "linear-gradient(117deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.075) 20%, rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.008) 58%, rgba(255,255,255,0) 72%), " +
-            "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.008) 55%, rgba(255,255,255,0) 100%)"
+          ? // Clearly-visible gallery glass, but still natural: a bright specular
+            // BLOOM in the top-left corner + a defined-yet-soft-edged diagonal
+            // GLEAM band sweeping the upper-left, feathering fully to clear before
+            // the lower-right — so the reflection reads unmistakably as glass while
+            // the rest of the print stays crisp and legible (no washed-out haze).
+            // A faint parallel second gleam sells the "sheet of glass" read.
+            "radial-gradient(140% 105% at 9% 3%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.10) 22%, rgba(255,255,255,0) 44%), " +
+            "linear-gradient(121deg, rgba(255,255,255,0) 6%, rgba(255,255,255,0.12) 18%, rgba(255,255,255,0.34) 30%, rgba(255,255,255,0.14) 39%, rgba(255,255,255,0.02) 48%, rgba(255,255,255,0) 58%), " +
+            "linear-gradient(121deg, rgba(255,255,255,0) 62%, rgba(255,255,255,0.07) 73%, rgba(255,255,255,0) 85%)"
           : // anti-reflective: NO glare — the whole point. Just a whisper so it
             // still reads as glazed.
             "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.004) 100%)",
