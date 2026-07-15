@@ -10,7 +10,7 @@ import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
-import { PAINTINGS, COLLECTIONS, getLowestTierPricePence, paintingImageAlt } from "../data/paintings";
+import { PAINTINGS, COLLECTIONS, getLowestTierPricePence, paintingImageAlt, EMBELLISHMENT_NOTE } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
@@ -937,6 +937,69 @@ export const Welcome = () => {
                 See the collection <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
               </MagneticLink>
             </Reveal>
+          </section>
+
+          {/* 5b · HAND-FINISHED UPSELL — the estate's highest-margin add-on,
+              given its own commercial moment right after the buyable grid. Real
+              footage of the hand-finishing (dots of paint + individually-placed
+              sequins) on the left; a clear "what you get + from-price + CTA" on
+              the right. Frosted panel matches the craft register. */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-4 sm:p-5 md:p-6 lg:p-7">
+              <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
+                {/* Craft photo — hand-finishing in progress (paint + sequins).
+                    Capped height so it's never a full-screen wall. */}
+                <figure className="relative m-0 w-full aspect-[4/5] max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-white/10">
+                  <AssetImage
+                    src="/img/welcome/hand-finishing-v1.jpg"
+                    alt="Two hands finishing a mandala print by hand — dots of paint and sequins placed one by one"
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 768px) 42vw, 92vw"
+                    className="absolute inset-0 h-full w-full object-cover object-center"
+                  />
+                </figure>
+                <div className="min-w-0">
+                  <p className={cn(EYEBROW, "m-0 mb-3")}>The hand-finished edition</p>
+                  <h2
+                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,3vw,50px)] leading-[1.08] text-ink text-balance m-0 mb-4"
+                    style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+                  >
+                    Take a print further — finished by hand.
+                  </h2>
+                  <p className={cn(SUBTITLE, "m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
+                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+                    {[
+                      "Dots of paint, applied by hand",
+                      "Sequins placed one by one, symmetrically",
+                      "In Stephen's geometric tradition",
+                      "One of one — no two alike",
+                    ].map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 font-sans text-[clamp(14px,0.9vw,17px)] leading-[1.5] text-ink-muted">
+                        <span aria-hidden className="mt-2 h-1.5 w-1.5 rotate-45 bg-accent/70 shrink-0" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                    <MagneticLink
+                      to="/collections"
+                      className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] transition-all duration-300 hover:bg-accent"
+                      ariaLabel="Choose a print to hand-finish"
+                    >
+                      Choose a print to finish
+                      <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+                    </MagneticLink>
+                    {/* Marketing anchor — mirrors the A2 embellishmentPricePence
+                        (£350) in paintings.ts; the real per-size price shows on the
+                        product page. */}
+                    <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
+                      From £350 · on A2 &amp; A1 prints · allow 2 weeks
+                    </span>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
           </section>
 
           {/* STEPHEN AT WORK — Hugo's supplied studio photograph: Stephen
