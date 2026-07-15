@@ -1482,6 +1482,34 @@ export const About = () => {
               <Prose text={ABOUT.palestine} className={cn(BODY, "mt-5 md:mt-6")} />
             </div>
           </Reveal>
+
+          {/* The Academy as it was — a place of teaching AND making. Two archive
+              photographs at ONE aspect (never mix in a row): students at their
+              tables, and Stephen absorbed in finishing a large mandala by hand. */}
+          <div className={BLOCK_GAP}>
+            <PhotoRow width="wide">
+              <Reveal as="figure" className="m-0">
+                <ImageReveal
+                  src="/img/about/students-working-v1.jpg"
+                  alt="Students at the Academy's tables, working on their own geometry in colour"
+                  aspect="aspect-[3/2]"
+                  edges="all"
+                  parallax={0.08}
+                  sizes="(min-width: 640px) 48vw, 100vw"
+                />
+              </Reveal>
+              <Reveal as="figure" className="m-0" delay={0.09}>
+                <ImageReveal
+                  src="/img/about/finishing-large-mandala-v1.jpg"
+                  alt="Stephen absorbed in finishing a large mandala by hand at the studio table"
+                  aspect="aspect-[3/2]"
+                  edges="all"
+                  parallax={0.08}
+                  sizes="(min-width: 640px) 48vw, 100vw"
+                />
+              </Reveal>
+            </PhotoRow>
+          </div>
         </section>
 
         {/* 13 · CHAPTER IX — AZ-ZARQA. PEOPLE photo (contained, LEFT) + the

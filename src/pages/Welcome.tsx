@@ -947,16 +947,17 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-4 sm:p-5 md:p-6 lg:p-7">
               <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
-                {/* Craft photo — hand-finishing in progress (paint + sequins).
-                    Capped height so it's never a full-screen wall. */}
-                <figure className="relative m-0 w-full aspect-[4/5] max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-white/10">
-                  <AssetImage
-                    src="/img/welcome/hand-finishing-v1.jpg"
-                    alt="Two hands finishing a mandala print by hand — dots of paint and sequins placed one by one"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(min-width: 768px) 42vw, 92vw"
-                    className="absolute inset-0 h-full w-full object-cover object-center"
+                {/* Craft FILM — the hand-finishing in motion (dots of paint +
+                    sequins placed by hand). Muted autoplay loop; the still is the
+                    poster (and the reduced-motion fallback). Capped height so it's
+                    never a full-screen wall. */}
+                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-white/10">
+                  <LoopFilm
+                    src="/video/hand-finishing-loop-v1.mp4"
+                    poster="/img/welcome/hand-finishing-v1.jpg"
+                    label="Hands finishing a mandala print by hand — dots of paint and sequins placed one by one"
+                    aspect="aspect-[4/5]"
+                    edges="none"
                   />
                 </figure>
                 <div className="min-w-0">
