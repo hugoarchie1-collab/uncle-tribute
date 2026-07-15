@@ -38,7 +38,6 @@ import {
   getEmbellishmentPricePence,
   getFramingPricePence,
   getCanvasPricePence,
-  CANVAS_NOTE,
   getLowestTierPricePence,
   getPaintingById,
   getPaintingsByCollection,
@@ -1534,24 +1533,91 @@ const BuyBox = ({
               </span>
             </legend>
             <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
-              Take it further than the print alone — framed ready to hang, or
-              hand-finished by the estate. Both are optional and made to order.
+              First choose your material — museum fine-art paper or ready-to-hang
+              stretched canvas — then take it further with framing or
+              hand-finishing by the estate. All optional and made to order.
             </p>
 
-            {/* Quiet lead to the eye — guidance, NOT a default selection. Sits
-                above the framing option it points to (DMCC: no pre-tick). */}
-            {framingOffered && (
-              <p
-                className={cn(EYEBROW_TIGHT, "m-0 mb-2.5 flex items-center gap-2")}
-              >
-                <span aria-hidden="true" className="text-ink/40">—</span>
-                Most collectors choose hand-framed
-              </p>
-            )}
-
             <div className="flex flex-col gap-2.5">
+              {/* MATERIAL — the explicit substrate choice (Hugo: kill the "is
+                  canvas the normal option?" confusion). Fine-art PAPER is the
+                  standard giclée base (highest margin); stretched canvas is a
+                  ready-to-hang alternative. Maps to the existing `canvas`
+                  boolean (paper = off). Canvas can't be glazed-framed, so
+                  choosing it hides the framing + hand-finishing options. */}
+              {canvasOffered && (
+                <div className="flex flex-col gap-2">
+                  <span className={EYEBROW_TIGHT}>Material</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onCanvasChange(false)}
+                      aria-pressed={!canvasActive}
+                      className={cn(
+                        "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                        !canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                      )}
+                    >
+                      <span className="flex w-full items-baseline justify-between gap-2">
+                        <strong className="font-sans text-[14px] text-ink">
+                          Fine-art paper
+                        </strong>
+                        <span className="font-sans text-[13px] font-semibold text-ink-muted whitespace-nowrap">
+                          Included
+                        </span>
+                      </span>
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                        Museum giclée — pigment inks on 350gsm Hahnemühle
+                        archival paper. Frame it below, or leave it bare.
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onCanvasChange(true)}
+                      aria-pressed={canvasActive}
+                      className={cn(
+                        "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                        canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                      )}
+                    >
+                      <span className="flex w-full items-baseline justify-between gap-2">
+                        <strong className="font-sans text-[14px] text-ink">
+                          Stretched canvas
+                        </strong>
+                        {canvasPriceLabel && (
+                          <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
+                            +{canvasPriceLabel}
+                          </span>
+                        )}
+                      </span>
+                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                        Gallery-wrapped over a wooden stretcher — ready to hang,
+                        no frame needed.
+                      </span>
+                    </button>
+                  </div>
+                  {canvasActive && (
+                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted ring-1 ring-ink/70 px-2.5 py-1.5">
+                      Ready to hang — no framing or glazing needed. Delivered
+                      free worldwide.
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Quiet lead to the eye for the paper path — guidance, NOT a
+                  default selection (DMCC: no pre-tick). Hidden on canvas. */}
+              {framingOffered && !canvasActive && (
+                <p
+                  className={cn(EYEBROW_TIGHT, "m-0 flex items-center gap-2")}
+                >
+                  <span aria-hidden="true" className="text-ink/40">—</span>
+                  Most collectors choose hand-framed
+                </p>
+              )}
+
               {/* FRAME */}
-              {framingOffered && (
+              {framingOffered && !canvasActive && (
                 <label
                   className={cn(
                     "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
@@ -1674,8 +1740,9 @@ const BuyBox = ({
                 </div>
               )}
 
-              {/* HAND-FINISHING by Polly Wedge */}
-              {embellishOffered && (
+              {/* HAND-FINISHING by Polly Wedge — paper prints only (hidden on
+                  canvas, which follows a clean ready-to-hang path). */}
+              {embellishOffered && !canvasActive && (
                 <label
                   className={cn(
                     "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
@@ -1705,41 +1772,9 @@ const BuyBox = ({
                 </label>
               )}
 
-              {/* PRINT ON CANVAS — a ready-to-hang alternative to a paper print;
-                  mutually exclusive with framing (a canvas isn't glazed-framed),
-                  so ticking it clears the frame selection. */}
-              {canvasOffered && (
-                <label
-                  className={cn(
-                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
-                    canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    checked={canvasActive}
-                    onChange={(e) => onCanvasChange(e.target.checked)}
-                    className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
-                  />
-                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
-                    <span className="flex items-baseline justify-between gap-3">
-                      <strong className="text-ink">Print on stretched canvas</strong>
-                      {canvasPriceLabel && (
-                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
-                          +{canvasPriceLabel}
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-ink-muted">{CANVAS_NOTE}</span>
-                    {canvasActive && (
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
-                        Ready to hang — no framing or glazing needed. Delivered
-                        free worldwide.
-                      </span>
-                    )}
-                  </span>
-                </label>
-              )}
+              {/* Canvas is now chosen up top in the Material selector — the old
+                  standalone "add canvas" checkbox was removed (it read as an
+                  add-on and confused the base-substrate story). */}
             </div>
 
             {/* RUNNING TOTAL + LEAD TIME — updates live as finishes are ticked.

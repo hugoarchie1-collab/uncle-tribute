@@ -24,6 +24,7 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
     links: [
       { to: "/collections", label: "Collections" },
       { to: "/for-you", label: "Find a print" },
+      { to: "/gift", label: "Gift cards" },
       { to: "/trade", label: "Trade & Interiors" },
     ],
   },
@@ -50,11 +51,10 @@ const NAV_LINKS: NavItem[] = [
   ...NAV_GROUPS.flatMap((g) => g.links),
 ];
 
-/** Quiet drawer-footer set — Gift cards now lives HERE (Hugo: down with the
- *  others), beside account/orders + FAQ + legal. Basket has its own top-bar
- *  icon so it's intentionally absent. */
+/** Quiet drawer-footer set — account/orders + FAQ + legal. Gift cards moved UP
+ *  into the Shop group (Hugo: it belongs in the shop menu). Basket has its own
+ *  top-bar icon so it's intentionally absent. */
 const SECONDARY_LINKS = [
-  { to: "/gift", label: "Gift cards" },
   { to: "/account", label: "Your account" },
   { to: "/orders", label: "Orders & returns" },
   { to: "/faq", label: "FAQ" },

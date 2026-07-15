@@ -607,10 +607,16 @@ video[autoplay]::-webkit-media-controls {
   z-index: 0;
   pointer-events: none;
   transform: translateZ(0);
+  /* 2026-07-16 (Hugo: "make the colourway change the background in an ambient
+     beautiful way like before"). The tint system was intact but too faint to
+     notice — strengthened every layer so switching a colourway visibly shifts
+     the page atmosphere over the 0.9s ease. The wall is a DARK tint (helps text
+     legibility) and the halo glows over the ARTWORK, not the buy copy, so this
+     stays legible. */
   background: radial-gradient(
     120% 100% at 50% -10%,
-    color-mix(in srgb, var(--pd-wall) 8%, transparent),
-    transparent 70%
+    color-mix(in srgb, var(--pd-wall) 15%, transparent),
+    transparent 72%
   );
 }
 .pd-wall {
@@ -619,8 +625,8 @@ video[autoplay]::-webkit-media-controls {
   height: min(175vh, 100%);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--pd-wall) 52%, transparent),
-    color-mix(in srgb, var(--pd-wall) 26%, transparent) 44%,
+    color-mix(in srgb, var(--pd-wall) 74%, transparent),
+    color-mix(in srgb, var(--pd-wall) 42%, transparent) 44%,
     transparent
   );
 }
@@ -630,7 +636,7 @@ video[autoplay]::-webkit-media-controls {
   height: 70vh;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--pd-wall) 34%, transparent),
+    color-mix(in srgb, var(--pd-wall) 50%, transparent),
     transparent
   );
 }
@@ -642,8 +648,8 @@ video[autoplay]::-webkit-media-controls {
   height: 120vh;
   background: radial-gradient(
     60% 46% at 50% 40%,
-    color-mix(in srgb, var(--pd-halo) 28%, transparent),
-    color-mix(in srgb, var(--pd-halo) 8%, transparent) 55%,
+    color-mix(in srgb, var(--pd-halo) 48%, transparent),
+    color-mix(in srgb, var(--pd-halo) 18%, transparent) 55%,
     transparent 76%
   );
 }

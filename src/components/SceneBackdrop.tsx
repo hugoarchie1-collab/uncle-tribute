@@ -46,19 +46,24 @@ const usePointerFine = () =>
 // 2026-07-07 (Hugo: "reveal the background clearer on every page like home"):
 // lightened the top/mid so the scene READS like the home Pavo backdrop, while
 // keeping the FOOT heavy (0.52) where body copy sits so cream text stays legible.
+// 2026-07-16 (Hugo: "most of the backgrounds are way too bright, you can
+// barely read the text") — REVERSED the 2026-07-07 lightening: the top/mid were
+// too thin (0.12/0.26) over a brightened image, washing out the cream copy.
+// Darkened the whole ramp back toward the legible-dark family (composited luma
+// ≈28) while still letting the scene read. Text legibility beats vividness.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.12) 0%, rgba(8,7,6,0.26) 42%, rgba(8,7,6,0.52) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.36) 0%, rgba(8,7,6,0.50) 42%, rgba(8,7,6,0.68) 100%)";
 
 /** Brightness/saturation lift applied to the scene image layer so the (baked-
  *  dark) photos read CLEARLY — like the home backdrop — under the lighter scrim.
  *  Reversible CSS, no asset re-bake. Cream copy stays legible because SCENE_SCRIM
  *  still carries a floor of shading, heaviest at the foot where body copy sits. */
-const SCENE_IMAGE_FILTER = "brightness(2.0) saturate(1.16)";
+const SCENE_IMAGE_FILTER = "brightness(1.28) saturate(0.96)";
 
 /** The livelier grade shown inside the cursor spotlight — the "clear" reveal:
  *  brighter + more saturated + a touch more contrast so the scene POPS where the
  *  pointer is, over the softer scrimmed base. */
-const SCENE_REVEAL_FILTER = "brightness(2.35) saturate(1.45) contrast(1.18)";
+const SCENE_REVEAL_FILTER = "brightness(1.68) saturate(1.28) contrast(1.1)";
 
 export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
   // STATIC backdrop — no parallax, no overscan, no crossfade (see history above).
