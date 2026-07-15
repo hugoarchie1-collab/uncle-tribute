@@ -48,6 +48,7 @@ const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })
 const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
+const Links = lazy(() => import("./pages/Links").then((m) => ({ default: m.Links })));
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
 const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
 const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
@@ -142,6 +143,7 @@ const AnimatedRoutes = () => {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/:certId" element={<Auth />} />
+          <Route path="/links" element={<Links />} />
           {/* /verify kept as a permanent redirect to the renamed Authentication
               page so old links + printed certificates keep resolving. */}
           <Route path="/verify" element={<Navigate to="/auth" replace />} />
