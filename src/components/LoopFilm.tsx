@@ -103,10 +103,12 @@ export const LoopFilm = ({
       )}
       style={frame ? undefined : mask}
     >
-      {/* Poster paints immediately (and is the reduced-motion still). */}
+      {/* Poster paints immediately (and is the reduced-motion still). The video
+          below carries the accessible label, so the poster is presentational to
+          avoid a duplicate announcement (empty alt). */}
       <img
         src={asset(poster)}
-        alt={label}
+        alt=""
         loading="lazy"
         decoding="async"
         className="absolute inset-0 h-full w-full object-cover"

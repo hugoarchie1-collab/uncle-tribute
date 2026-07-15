@@ -143,7 +143,7 @@ export const Gift = () => {
     if (!resolved) {
       setError(
         selection.kind === "custom"
-          ? `Please enter a whole-pound amount between £${minPounds} and £${maxPounds.toLocaleString()}.`
+          ? `Please enter a whole-pound amount between ${fmtP(GIFT_MIN_PENCE)} and ${fmtP(GIFT_MAX_PENCE)}.`
           : "Please choose an amount.",
       );
       return;

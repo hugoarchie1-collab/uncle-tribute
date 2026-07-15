@@ -641,6 +641,12 @@ export const News = () => {
                   </div>
                 </section>
               ))}
+              {groups.length === 0 && (
+                <p className={cn(META, "m-0 py-8 text-ink-muted")}>
+                  Nothing under this filter just yet — check back soon, or join
+                  the waitlist below.
+                </p>
+              )}
             </div>
           </>
         )}

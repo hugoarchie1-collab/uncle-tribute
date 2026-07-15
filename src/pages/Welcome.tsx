@@ -338,7 +338,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[58svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[100svh] justify-end pt-[max(6rem,10svh)] sm:pt-[max(6rem,9svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -808,9 +808,9 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
+              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-center"
             >
-              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] overflow-hidden rounded-[4px] ring-1 ring-line">
+              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] md:max-h-[64svh] overflow-hidden rounded-[4px] ring-1 ring-line">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"

@@ -679,15 +679,17 @@ export const Basket = () => {
                   net, then mandatory delivery — all shown upfront with equal
                   prominence, nothing first revealed at Stripe. */}
               <dl className="m-0 flex flex-col gap-2 mb-4">
-                <div className="flex items-baseline justify-between gap-6">
-                  <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
-                    Subtotal{" "}
-                    <span className="text-[clamp(14px,0.7vw,15px)]">(prints + selected add-ons)</span>
-                  </dt>
-                  <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
-                    {fmtMinor(subtotalMinor)}
-                  </dd>
-                </div>
+                {lines.length > 0 && (
+                  <div className="flex items-baseline justify-between gap-6">
+                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
+                      Subtotal{" "}
+                      <span className="text-[clamp(14px,0.7vw,15px)]">(prints + selected add-ons)</span>
+                    </dt>
+                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
+                      {fmtMinor(subtotalMinor)}
+                    </dd>
+                  </div>
+                )}
                 {bundleDiscountPercent > 0 && (
                   <div className="flex items-baseline justify-between gap-6">
                     <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-accent m-0 min-w-0">

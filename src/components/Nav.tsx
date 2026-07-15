@@ -313,7 +313,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
         <Link
           to="/"
-          aria-label="The SEM Experience — home"
+          aria-label="The Mandala Company — home"
           className="press inline-flex items-center min-w-0"
         >
           <Logo size={44} wordmark wordmarkText="The Mandala Company" />

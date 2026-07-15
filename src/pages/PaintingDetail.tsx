@@ -2048,6 +2048,7 @@ const StickyAddBar = ({
   selectedTier,
   framing,
   embellished,
+  canvas,
   frameStyle,
   glazing,
   heroSentinelRef,
@@ -2059,6 +2060,7 @@ const StickyAddBar = ({
   selectedTier: PrintTier;
   framing: boolean;
   embellished: boolean;
+  canvas: boolean;
   frameStyle: string;
   glazing: string;
   heroSentinelRef: React.RefObject<HTMLDivElement | null>;
@@ -2145,8 +2147,24 @@ const StickyAddBar = ({
     !isOneOffSelected && typeof selectedTier.framingPricePence === "number";
   const embellishOffered =
     !isOneOffSelected && typeof selectedTier.embellishmentPricePence === "number";
+  const canvasOffered =
+    !isOneOffSelected && typeof selectedTier.canvasPricePence === "number";
+  // Running total shown on the floating bar — mirrors the buy box so the figure
+  // reflects the ticked add-ons (canvas wins over framing), never a bare-print
+  // number while an add-on is selected.
+  const barCanvas = canvasOffered && canvas;
+  const barFramed = framingOffered && framing && !barCanvas;
+  const barTotalPence =
+    selectedTier.pricePence +
+    (barFramed ? selectedTier.framingPricePence ?? 0 : 0) +
+    (embellishOffered && embellished ? selectedTier.embellishmentPricePence ?? 0 : 0) +
+    (barCanvas ? selectedTier.canvasPricePence ?? 0 : 0);
   const onAdd = useCallback(() => {
-    const framed = framingOffered && framing;
+    // Canvas is ready-to-hang (no frame) — it wins over framing, mirroring the
+    // buy box. Without this the floating bar would drop the canvas add-on and
+    // add a cheaper bare paper print.
+    const useCanvas = canvasOffered && canvas;
+    const framed = framingOffered && framing && !useCanvas;
     addItem(
       painting.id,
       selected.name,
@@ -2155,6 +2173,7 @@ const StickyAddBar = ({
       embellishOffered && embellished,
       framed ? frameStyle : undefined,
       framed ? glazing : undefined,
+      useCanvas,
     );
     // Same consent-gated AddToCart as the buy box — this bar is just the
     // floating twin of that handler.
@@ -2176,6 +2195,8 @@ const StickyAddBar = ({
     glazing,
     embellishOffered,
     embellished,
+    canvasOffered,
+    canvas,
   ]);
 
   return (
@@ -2212,7 +2233,7 @@ const StickyAddBar = ({
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink [font-variant-numeric:tabular-nums]">
-              {fmtP(selectedTier.pricePence)}
+              {fmtP(barTotalPence)}
             </span>
           </span>
           <button
@@ -2245,7 +2266,7 @@ const StickyAddBar = ({
               {selected.name}
             </span>
             <span className="font-display font-semibold tracking-[-0.01em] text-[16px] text-ink">
-              {fmtP(selectedTier.pricePence)}
+              {fmtP(barTotalPence)}
             </span>
           </span>
           <button
@@ -2927,6 +2948,7 @@ export const PaintingDetail = () => {
         selectedTier={selectedTier}
         framing={framing}
         embellished={embellished}
+        canvas={canvas}
         frameStyle={frameStyle}
         glazing={glazing}
         heroSentinelRef={heroSentinelRef}

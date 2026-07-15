@@ -1444,14 +1444,14 @@ export const About = () => {
               "mx-auto w-full max-w-[900px] overflow-hidden rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px]",
             )}
           >
-            <figure className="m-0 border-b border-line/60 bg-bg">
+            <figure className="m-0 border-b border-line/60 bg-[#0b0a09]">
               <AssetImage
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-[clamp(300px,46svh,460px)] object-cover object-center"
+                className="block w-full h-[clamp(300px,46svh,460px)] object-contain object-center"
               />
             </figure>
             <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">

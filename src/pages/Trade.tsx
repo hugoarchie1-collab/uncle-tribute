@@ -101,7 +101,7 @@ export const Trade = () => {
   const closeEnquire = () => setEnquireOpen(false);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <SceneBackdrop src="/img/scenes/trade-scene-v3.webp" />
       <Seo
         title="Trade & Interior Design"
