@@ -1147,7 +1147,7 @@ const BuyBox = ({
   // is MUTUALLY EXCLUSIVE with framing — canvas wins and framing reads off.
   const canvasActive = canvasOffered && canvas;
   const framingActive = framingOffered && framing && !canvasActive;
-  const embellishActive = embellishOffered && embellished;
+  const embellishActive = embellishOffered && embellished && !canvasActive;
 
   // Add-on prices read from the data layer's helpers so they can never drift
   // from the source ladder (gotcha #9 — pricing must not be hand-typed). The
@@ -2192,7 +2192,7 @@ const StickyAddBar = ({
   const barTotalPence =
     selectedTier.pricePence +
     (barFramed ? selectedTier.framingPricePence ?? 0 : 0) +
-    (embellishOffered && embellished ? selectedTier.embellishmentPricePence ?? 0 : 0) +
+    (embellishOffered && embellished && !barCanvas ? selectedTier.embellishmentPricePence ?? 0 : 0) +
     (barCanvas ? selectedTier.canvasPricePence ?? 0 : 0);
   const onAdd = useCallback(() => {
     // Canvas is ready-to-hang (no frame) — it wins over framing, mirroring the
@@ -2416,10 +2416,15 @@ export const PaintingDetail = () => {
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
   // Canvas + framing are mutually exclusive (a canvas isn't glazed-framed):
-  // ticking one clears the other.
+  // ticking one clears the other. Canvas ALSO clears hand-finishing — its
+  // checkbox is hidden on canvas, so a stranded `embellished` flag would
+  // otherwise silently charge for an invisible, un-removable add-on.
   const selectCanvas = (next: boolean) => {
     setCanvas(next);
-    if (next) setFraming(false);
+    if (next) {
+      setFraming(false);
+      setEmbellished(false);
+    }
   };
   const selectFraming = (next: boolean) => {
     setFraming(next);
