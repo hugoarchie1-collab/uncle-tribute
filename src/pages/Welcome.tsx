@@ -338,7 +338,7 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[64svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[78svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
