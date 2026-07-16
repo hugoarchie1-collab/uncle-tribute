@@ -191,30 +191,26 @@ export const Contact = () => {
             </h1>
           </Reveal>
 
-          <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
-            <Reveal as="div" className="lg:col-span-3">
-              <p
-                className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
-                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-              >
-                Commissions · partnerships · press
-              </p>
-            </Reveal>
-            <Reveal as="div" delay={0.06} className="lg:col-span-9">
-              <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[40ch] 3xl:max-w-[46ch]"
-                style={{
-                  fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(20px, 2vw, 34px)",
-                  lineHeight: 1.3,
-                  textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
-                }}
-              >
-                Write to The Mandala Company about a particular work, a
-                commission, or working together.
-              </p>
-            </Reveal>
-          </div>
+          <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+            <p
+              className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.8]")}
+              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+            >
+              Commissions · partnerships · press
+            </p>
+            <p
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[52ch] 3xl:max-w-[60ch]"
+              style={{
+                fontVariationSettings: '"opsz" 32, "wght" 400',
+                fontSize: "clamp(20px, 2vw, 34px)",
+                lineHeight: 1.3,
+                textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+              }}
+            >
+              Write to The Mandala Company about a particular work, a
+              commission, or working together.
+            </p>
+          </Reveal>
         </header>
 
         {/* THE WORKING SURFACE — a dense, asymmetric two-column block: the form

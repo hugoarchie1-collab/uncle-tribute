@@ -456,7 +456,7 @@ export const Gift = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
                 <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,116px)] text-ink m-0 leading-[0.85]"
                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}>
-                  {resolved ? fmtP(resolved.amountPence) : <span className="text-ink-faint">{fmtP(GIFT_MIN_PENCE)}</span>}
+                  {resolved ? fmtP(resolved.amountPence) : <span className="text-ink-muted">{fmtP(GIFT_MIN_PENCE)}</span>}
                 </p>
                 {/* Echo the chosen denomination label (existing `resolved.label`
                     state — no new copy) so the sticky rail carries figure +

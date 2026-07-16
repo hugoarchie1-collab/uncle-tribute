@@ -125,30 +125,27 @@ export const Trade = () => {
               </>
             }
           >
-            <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-3 items-start border-t border-line pt-4 md:pt-5">
-              <Reveal as="div" className="lg:col-span-3">
-                <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}>
-                  The estate of Stephen Meakin · SEM
-                </p>
-              </Reveal>
-              <Reveal as="div" delay={0.06} className="lg:col-span-9">
-                <p
-                  className="font-display font-normal tracking-[-0.01em] text-ink m-0"
-                  style={{
-                    fontVariationSettings: '"opsz" 32, "wght" 400',
-                    fontSize: "clamp(21px, 2.5vw, 34px)",
-                    lineHeight: 1.26,
-                  }}
-                >
-                  The estate works directly with interior designers, art
-                  consultants and hospitality buyers — hotels, restaurants and
-                  wellness spaces. Whether you are placing a suite of
-                  estate-stamped prints across a property or commissioning a
-                  single defining piece, the conversation starts here and is
-                  handled, quietly and personally, by the family.
-                </p>
-              </Reveal>
-            </div>
+            <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
+              <p className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.8]")}>
+                The estate of Stephen Meakin · SEM
+              </p>
+              <p
+                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[68ch]"
+                style={{
+                  fontVariationSettings: '"opsz" 32, "wght" 400',
+                  fontSize: "clamp(21px, 2.5vw, 34px)",
+                  lineHeight: 1.26,
+                  textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+                }}
+              >
+                The estate works directly with interior designers, art
+                consultants and hospitality buyers — hotels, restaurants and
+                wellness spaces. Whether you are placing a suite of
+                estate-stamped prints across a property or commissioning a
+                single defining piece, the conversation starts here and is
+                handled, quietly and personally, by the family.
+              </p>
+            </Reveal>
           </PageMasthead>
         </Reveal>
 

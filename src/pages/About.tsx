@@ -666,7 +666,16 @@ const AnegadaPoster = () => (
 // ─── ClosingCTA ────────────────────────────────────────────────────────────────
 // The conversion beat. Gentle scale + opacity scrub on enter; reduced-motion
 // renders it statically.
-const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
+// `align` controls the CTA's cross-axis alignment. "center" (default) is the
+// standalone farewell; "responsive" centres it on mobile and left-aligns it on
+// lg+ so it reads as a composed column BESIDE the doorway portrait spread.
+const ClosingCTA = ({
+  onJoinFriends,
+  align = "center",
+}: {
+  onJoinFriends: () => void;
+  align?: "center" | "responsive";
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -675,14 +684,24 @@ const ClosingCTA = ({ onJoinFriends }: { onJoinFriends: () => void }) => {
   });
   const scale = useTransform(scrollYProgress, [0, 1], [0.94, 1.04]);
   const opacity = useTransform(scrollYProgress, [0, 1], [0.4, 1]);
+  const responsive = align === "responsive";
 
   return (
     <motion.div
       ref={ref}
       style={reduceMotion ? undefined : { scale, opacity }}
-      className={cn("flex flex-col items-center gap-4", !reduceMotion && "will-change-transform")}
+      className={cn(
+        "flex flex-col gap-4",
+        responsive ? "items-center lg:items-start" : "items-center",
+        !reduceMotion && "will-change-transform",
+      )}
     >
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div
+        className={cn(
+          "flex flex-wrap items-center gap-3",
+          responsive ? "justify-center lg:justify-start" : "justify-center",
+        )}
+      >
         <MagneticLink
           to="/collections"
           className={cn(BTN_PRIMARY, "w-fit")}
@@ -1043,7 +1062,7 @@ export const About = () => {
           <Reveal
             as="figure"
             className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px] overflow-hidden rounded-[6px] ring-1 ring-line",
+              "relative m-0 mx-auto w-full max-w-[880px] overflow-hidden rounded-[3px] ring-1 ring-line",
               BLOCK_GAP,
             )}
           >
@@ -1569,28 +1588,51 @@ export const About = () => {
           />
         </section>
 
-        {/* 15b · A FINAL, WARM LOOK — Stephen in his studio doorway, his work
-            behind him. A quiet, present portrait to land on before the family's
-            farewell. Contained + height-capped (never a full-screen wall). */}
-        <section className={cn(SECTION, "pt-2 md:pt-3", SECTION_PAD)}>
+        {/* 15b + 16 · THE FAREWELL — a DELIBERATELY COMPOSED closing beat
+            (2026-07-16, owner: the doorway portrait "looks so out of place …
+            deserves home-page effort"). The portrait was a lone ~440px ring-boxed
+            rectangle centred in the full section width, floating in a big pool of
+            dead peacock backdrop to its left + right. Now it's an intentional
+            asymmetric editorial spread: the portrait sits on the LEFT, its hard
+            rectangular edge dissolved into the backdrop with the shared
+            .soft-edge-img four-side feather + a warm gallery mount (no stark ring
+            box), and the family's farewell CTA fills the RIGHT — so the two share
+            one spine and the row fills the measure with NO dead space. CONTAINED,
+            never a full-bleed wall (owner's standing rule): the portrait column is
+            capped and the section keeps ONE_WIDTH. Stacks to portrait-then-CTA
+            below lg (mobile frozen). */}
+        <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
           <Reveal
-            as="figure"
-            className="relative m-0 mx-auto w-full max-w-[440px] overflow-hidden rounded-[6px] ring-1 ring-line"
+            as="div"
+            className={cn(
+              ONE_WIDTH,
+              "grid grid-cols-1 lg:grid-cols-[minmax(0,46%)_1fr] gap-8 md:gap-12 lg:gap-16 items-center",
+            )}
           >
-            <AssetImage
-              src="/img/about/stephen-doorway-portrait-v1.jpg"
-              alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
-              loading="lazy"
-              decoding="async"
-              sizes="(min-width: 768px) 440px, 88vw"
-              className="block w-full h-auto max-h-[64svh] object-cover object-center"
-            />
-          </Reveal>
-        </section>
+            {/* The portrait — a warm gallery MOUNT (matte paper bg + hairline
+                ring) whose photo is soft-edge feathered so the hard rectangle
+                melts into the peacock wash rather than sitting as a box in a void.
+                object-CONTAIN so the doorway figure is never cropped; capped
+                height so it stays a contained moment, not a screen-filling wall. */}
+            <figure className="relative m-0 mx-auto w-full max-w-[420px] lg:max-w-none">
+              <div className="rounded-[10px] bg-ink/[0.045] p-[clamp(10px,1.4vw,20px)] ring-1 ring-line/70 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.65)]">
+                <AssetImage
+                  src="/img/about/stephen-doorway-portrait-v1.jpg"
+                  alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
+                  loading="lazy"
+                  decoding="async"
+                  sizes="(min-width: 1024px) 640px, 88vw"
+                  className="soft-edge-img block w-full h-auto max-h-[62svh] 2xl:max-h-[64svh] object-contain object-center rounded-[4px]"
+                />
+              </div>
+            </figure>
 
-        {/* 16 · CLOSING CTA — the family's farewell. */}
-        <section className={cn(SECTION, "pt-4 md:pt-6 pb-8 md:pb-10")}>
-          <ClosingCTA onJoinFriends={openFriends} />
+            {/* The family's farewell — the CTA, now a composed column BESIDE the
+                portrait (left-aligned on lg+ so it reads as a designed spread,
+                centred when stacked). No invented heading — verbatim-only copy
+                rule; the CTA carries the farewell. */}
+            <ClosingCTA onJoinFriends={openFriends} align="responsive" />
+          </Reveal>
         </section>
       </main>
 

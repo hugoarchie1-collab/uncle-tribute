@@ -162,7 +162,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(440px,68svh,1040px)] 2xl:h-[clamp(520px,82svh,1300px)] 3xl:h-[clamp(520px,82svh,1400px)] 4xl:h-[clamp(520px,80svh,1500px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(480px,76svh,1180px)] 2xl:h-[clamp(560px,84svh,1320px)] 3xl:h-[clamp(560px,84svh,1420px)] 4xl:h-[clamp(560px,82svh,1520px)]"
           style={{
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
@@ -338,7 +338,13 @@ export const Welcome = () => {
         // film's own mt), and the tall wordmark rises to brush the Earth limb —
         // the intended open composition. Portrait keeps min-h-0 (hugs content),
         // so justify-end is a no-op there and the film already tucks under.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[78svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
+        // 2026-07-16 (Hugo: "SEM Experience is way too far down, want more of
+        // the video on first look"): landscape masthead shortened 78svh → 68svh
+        // so the bottom-anchored wordmark rises ~10svh and ~10svh more of the
+        // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
+        // which crowds/hides the Earth limb per the durable note above) — the
+        // balance point between the defended Earth open and showing more film.
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[68svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -562,14 +568,14 @@ export const Welcome = () => {
                 <div className="mt-6 md:mt-7 flex flex-wrap items-center justify-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="press group inline-flex w-fit items-center bg-ink text-bg px-6 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
+                    className="press group inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
                     See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">&rarr;</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-8 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
+                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     His story
@@ -656,7 +662,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[20px] md:text-[22px] 2xl:text-[24px] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
+                  className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -910,7 +916,7 @@ export const Welcome = () => {
                         the existing "From £…" as a tabular figure on the right,
                         across a hairline rule. The Link's aria-label still spells
                         the price, so a11y is unchanged. */}
-                    <div className="flex items-baseline justify-between gap-4 pt-4 border-t border-line">
+                    <div className="flex items-start justify-between gap-4 pt-4 border-t border-line">
                       <div className="min-w-0">
                         <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                           {painting.title}
@@ -919,7 +925,7 @@ export const Welcome = () => {
                           {hasYear ? painting.year : collectionTitle}
                         </p>
                       </div>
-                      <span className="shrink-0 font-sans text-[13px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
+                      <span className="shrink-0 font-sans text-[14px] md:text-[15px] 2xl:text-[16px] 3xl:text-[18px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
                         From {fmtPrice(fromPrice)}
                       </span>
                     </div>
@@ -931,7 +937,7 @@ export const Welcome = () => {
             <Reveal as="div" className="text-center">
               <MagneticLink
                 to="/collections"
-                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
                 ariaLabel="See the collection"
               >
                 See the collection <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>

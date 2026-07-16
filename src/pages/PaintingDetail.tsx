@@ -1641,7 +1641,7 @@ const BuyBox = ({
                     <span className="flex items-baseline justify-between gap-3">
                       <span className="flex items-center gap-2 flex-wrap">
                         <strong className="text-ink">Bespoke framing</strong>
-                        <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-muted ring-1 ring-line px-1.5 py-0.5">
+                        <span className="font-sans text-[13px] font-semibold uppercase tracking-[0.16em] text-ink-muted ring-1 ring-line px-1.5 py-0.5">
                           Recommended
                         </span>
                       </span>
@@ -1831,7 +1831,7 @@ const BuyBox = ({
             // "Add to basket" clearly leads (the single-confident-action
             // pattern), but full-ink legible — height carries the hierarchy,
             // not dimmed text. The express path is still one tap.
-            className={cn(BTN_SECONDARY, "group w-full !py-3 hover:text-accent disabled:opacity-60")}
+            className={cn(BTN_SECONDARY, "group w-full !py-3 disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
             <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
@@ -1950,7 +1950,7 @@ const CompanionWorks = ({
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ?? "the estate"}
       </p>
-      <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-5 md:gap-8">
+      <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-8">
         {companions.map((p) => {
           const cover =
             p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
@@ -1962,7 +1962,7 @@ const CompanionWorks = ({
                 className="group block"
                 aria-label={`${p.title} — from ${fmtP(fromPence)}`}
               >
-                <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
+                <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-ink/40">
                   <AssetImage
                     src={cover.image}
                     alt={`${p.title} — ${cover.name}`}
@@ -1972,7 +1972,7 @@ const CompanionWorks = ({
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                   />
                 </div>
-                <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-ink transition-colors duration-300">
                   {p.title}
                 </h3>
                 <p className="font-sans font-normal text-[clamp(14px,0.72vw,15px)] leading-[1.5] text-ink-muted m-0 mt-1">
