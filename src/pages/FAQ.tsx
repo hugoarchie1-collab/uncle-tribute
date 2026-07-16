@@ -1,3 +1,4 @@
+import { isValidElement, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -135,7 +136,7 @@ const FAQS: QA[] = [
         <strong>finish</strong> — a solid-wood or contemporary tray frame
         (natural oak, stained black, white or walnut tray), with shatter-safe
         acrylic glazing as standard or a museum-grade anti-reflective upgrade,
-        every finish included in the framing price. Add £295 on A2 and £395
+        every finish included in the framing price. Add £345 on A2 and £445
         on A1. Delivery is free worldwide, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
@@ -192,6 +193,37 @@ const FAQS: QA[] = [
     ),
   },
 ];
+
+/** Flatten an answer's React node to plain text for the FAQPage schema — one
+ *  source of truth so the structured data can never drift from the visible
+ *  answer (Google requires the two match). */
+const nodeText = (node: ReactNode): string => {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join("");
+  if (isValidElement(node)) {
+    if (node.type === "br") return " ";
+    const props = node.props as { children?: ReactNode };
+    return nodeText(props.children);
+  }
+  return "";
+};
+
+/** FAQPage structured data — wins expandable FAQ rich-results in Google (free
+ *  organic SERP real estate). Built from the SAME FAQS the page renders (via
+ *  nodeText), so the schema text can never diverge from what the user sees. */
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((qa) => ({
+    "@type": "Question",
+    name: qa.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: nodeText(qa.answer).replace(/\s+/g, " ").trim(),
+    },
+  })),
+};
 
 /** Two-digit ordinal for the question rail — 01 · 02 · 03 … */
 const ordinal = (i: number) => String(i + 1).padStart(2, "0");
@@ -284,6 +316,7 @@ export const FAQ = () => {
         title="Frequently asked"
         description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
         url="/faq"
+        jsonLd={FAQ_JSONLD}
       />
       <Nav />
       <main className="relative z-10 flex-1">
