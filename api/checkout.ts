@@ -695,6 +695,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     // line item. Mirror the pence values in src/pages/Basket.tsx ORDER_BUMPS.
     giftWrap?: unknown;
     careKit?: unknown;
+    presentationBox?: unknown;
   };
   try {
     body =
@@ -741,6 +742,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // Order-level add-on bumps (GBP pence) — mirror src/pages/Basket.tsx ORDER_BUMPS.
   const GIFT_WRAP_PENCE = 2500; // £25
   const CARE_KIT_PENCE = 2000; // £20
+  const PRESENTATION_BOX_PENCE = 4500; // £45
 
   // Split + normalise. A line with kind === "gift" is a digital gift card;
   // everything else is a print (kind absent / "print" — preserves the legacy
@@ -917,6 +919,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       },
     });
   }
+  if (body.presentationBox === true) {
+    lineItems.push({
+      quantity: 1,
+      price_data: {
+        currency: currencyCode,
+        unit_amount: toMinor(PRESENTATION_BOX_PENCE),
+        product_data: {
+          name: "Heirloom presentation box",
+          description:
+            "A rigid archival box, tissue-lined and wax-sealed — your print arrives as a keepsake to open, and stores safely between framings.",
+        },
+      },
+    });
+  }
 
   // ---- Metadata ----------------------------------------------------------
   // For a single print we keep the historical key names so any existing
@@ -994,6 +1010,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // wrap / enclose the kit when fulfilling.
   if (body.giftWrap === true) metadata.gift_wrap = "yes";
   if (body.careKit === true) metadata.care_kit = "yes";
+  if (body.presentationBox === true) metadata.presentation_box = "yes";
 
   // UTM attribution (contract C1) — appended last. All keys are utm_-prefixed
   // so they can never collide with the order keys above; only non-empty

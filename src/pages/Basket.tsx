@@ -250,10 +250,14 @@ export const Basket = () => {
   // Order-level add-on bumps — mirror api/checkout.ts GIFT_WRAP_PENCE / CARE_KIT_PENCE.
   const GIFT_WRAP_PENCE = 2500; // £25
   const CARE_KIT_PENCE = 2000; // £20
+  const PRESENTATION_BOX_PENCE = 4500; // £45
   const [giftWrap, setGiftWrap] = useState(false);
   const [careKit, setCareKit] = useState(false);
+  const [presentationBox, setPresentationBox] = useState(false);
   const bumpMinor =
-    (giftWrap ? convert(GIFT_WRAP_PENCE) : 0) + (careKit ? convert(CARE_KIT_PENCE) : 0);
+    (giftWrap ? convert(GIFT_WRAP_PENCE) : 0) +
+    (careKit ? convert(CARE_KIT_PENCE) : 0) +
+    (presentationBox ? convert(PRESENTATION_BOX_PENCE) : 0);
   const grandTotalMinor =
     subtotalMinor - bundleDiscountMinor + giftMinor + bumpMinor;
   const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode);
@@ -320,6 +324,7 @@ export const Basket = () => {
           currency: currencyCode,
           ...(giftWrap ? { giftWrap: true } : {}),
           ...(careKit ? { careKit: true } : {}),
+          ...(presentationBox ? { presentationBox: true } : {}),
           ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
@@ -643,6 +648,13 @@ export const Basket = () => {
                         pence: CARE_KIT_PENCE,
                         note: "Wall fixings, D-rings and a microfibre cloth with a care card — everything to hang and keep your print.",
                       },
+                      {
+                        on: presentationBox,
+                        set: setPresentationBox,
+                        label: "Heirloom presentation box",
+                        pence: PRESENTATION_BOX_PENCE,
+                        note: "A rigid archival box, tissue-lined and wax-sealed — your print arrives as a keepsake to open, and stores safely between framings.",
+                      },
                     ] as const
                   ).map((b) => (
                     <label
@@ -727,6 +739,16 @@ export const Basket = () => {
                     </dt>
                     <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
                       {fmtMinor(convert(CARE_KIT_PENCE))}
+                    </dd>
+                  </div>
+                )}
+                {presentationBox && (
+                  <div className="flex items-baseline justify-between gap-6">
+                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
+                      Heirloom presentation box
+                    </dt>
+                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
+                      {fmtMinor(convert(PRESENTATION_BOX_PENCE))}
                     </dd>
                   </div>
                 )}
