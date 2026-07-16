@@ -56,6 +56,12 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   fontSize: "clamp(50px, 9.6vw, 186px)",
   lineHeight: 0.92,
   letterSpacing: "-0.03em",
+  // Default legibility halo for mastheads that sit over the photographic
+  // SceneBackdrop (Auth/Basket/Links/Orders lacked one — 2026-07-16). Invisible
+  // on the plain dark bg (dark-on-dark); pages that pass their own titleStyle
+  // textShadow (e.g. Collections) still override it via the {...base,...override}
+  // spread in PageMasthead.
+  textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
 };
 
 /** A smaller companion cut for secondary mastheads / large section heads. */
@@ -65,6 +71,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontSize: "clamp(42px, 7.6vw, 132px)",
   lineHeight: 0.96,
   letterSpacing: "-0.028em",
+  textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
 };
 
 /** Section / chapter label — accent tone (Welcome's section eyebrow).
@@ -182,11 +189,11 @@ export const ABOUT_CAPTION =
  *  quickly (100ms) on :active and eases back over 300ms; disabled under
  *  reduced-motion. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60";
+  "inline-flex items-center justify-center bg-ink text-bg px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 // =============================================================================
 // MOTION CANON — single source of truth for the site's signature easing +
