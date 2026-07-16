@@ -1,5 +1,4 @@
-import { useCallback, useRef, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useScroll,
@@ -324,7 +323,6 @@ const CHAPTERS: readonly Chapter[] = [
   { id: "lewes", kicker: "Four traditions", tag: "Lewes · Phoenix Place" },
   { id: "exhibitions", kicker: "Exhibitions & commissions", tag: "Dubai · London · Brighton" },
   { id: "academy", kicker: "The Academy", tag: "Phoenix Place, Lewes · 2010" },
-  { id: "azzarqa", kicker: "Az-Zarqa", tag: "Jordan" },
 ];
 
 type ChapterId = Chapter["id"];
@@ -517,6 +515,22 @@ const ContainImage = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  // Only promote the parallax layer to its own GPU layer while it's NEAR the
+  // viewport — About renders ~16 of these, and promoting them ALL (the old
+  // always-on will-change) held 16 live compositor layers, a big share of the
+  // fullscreen scroll jank. IntersectionObserver keeps only the ~2-3 on screen
+  // promoted. (2026-07-16 scroll-jank fix; mirrors ImageReveal's discipline.)
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduceMotion) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setNear(entry.isIntersecting),
+      { rootMargin: "300px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduceMotion]);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -527,7 +541,7 @@ const ContainImage = ({
   return (
     <div ref={ref} className={cn("relative w-full md:overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
       <motion.div
-        className={cn("absolute inset-0", !reduceMotion && "will-change-transform")}
+        className={cn("absolute inset-0", near && !reduceMotion && "will-change-transform")}
         style={reduceMotion ? undefined : { y }}
       >
         <AssetImage
@@ -1510,47 +1524,6 @@ export const About = () => {
               </Reveal>
             </PhotoRow>
           </div>
-        </section>
-
-        {/* 13 · CHAPTER IX — AZ-ZARQA. PEOPLE photo (contained, LEFT) + the
-            memories pointer as a text panel beside it (stacked composition;
-            a people photo can't cover-fill, so P4 is illegal here). The letter
-            lives ONLY on /memories. */}
-        <section id="azzarqa" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="azzarqa" />
-          {/* ISLAND CARD (x.com / Memories register): the painting runs full
-              WIDTH on top — object-contain on a dark matte so the whole work
-              shows (never cropped, never a full-screen wall) — welded by a
-              hairline seam to the memories pointer below. */}
-          <Reveal
-            as="div"
-            className={cn(
-              "mx-auto w-full max-w-[900px] overflow-hidden rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px]",
-            )}
-          >
-            <figure className="m-0 border-b border-line/60 bg-[#0b0a09]">
-              <AssetImage
-                src="/img/about/11-ophiuchus-painting.jpg"
-                alt="A large purple, blue and gold geometric painting standing on a paint-spattered easel in the studio."
-                loading="lazy"
-                decoding="async"
-                sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-[clamp(320px,50svh,520px)] object-contain object-center"
-              />
-            </figure>
-            <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
-              <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
-                {ABOUT.studentsIntro}
-              </p>
-              <Link
-                to="/memories"
-                className={cn(EYEBROW, "group inline-flex items-center gap-2 no-underline mt-6")}
-              >
-                His words to his students, in the Book of Memories
-                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-              </Link>
-            </div>
-          </Reveal>
         </section>
 
         {/* 14 · THE ACADEMY CLOSE — P3 (2-up, ONE register). Both tiles Plate

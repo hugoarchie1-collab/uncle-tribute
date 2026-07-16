@@ -16,6 +16,26 @@ const usePointerFine = () =>
     () => false,
   );
 
+/** True when the viewport is large / high-DPI / low-power enough that the extra
+ *  cursor-reveal spotlight (a SECOND stack of 5 full-viewport painting layers)
+ *  would jank scrolling — the "laggy in full screen / 4K" case Hugo reported. We
+ *  gate on PHYSICAL pixels (CSS width × devicePixelRatio) because a Retina laptop
+ *  maximised is ~3000px wide physically = a 4K compositing load. Reactive to
+ *  resize + fullscreen toggles. The base tapestry is untouched — only the
+ *  mouse-follow flourish is shed on the exact screens where it hurts. */
+const subscribeViewport = (cb: () => void) => {
+  window.addEventListener("resize", cb, { passive: true });
+  return () => window.removeEventListener("resize", cb);
+};
+const heavyViewportSnapshot = () => {
+  const physicalWidth = window.innerWidth * (window.devicePixelRatio || 1);
+  const cores = navigator.hardwareConcurrency ?? 8;
+  const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
+  return physicalWidth >= 2600 || cores <= 4 || mem <= 4;
+};
+const useHeavyViewport = () =>
+  useSyncExternalStore(subscribeViewport, heavyViewportSnapshot, () => false);
+
 /**
  * PavoBackdrop — the Home + About "Pavo tapestry" (Hugo 2026-07-02).
  *
@@ -170,8 +190,10 @@ const PavoLayer = ({
           : visibility,
         // One composited unit per colourway: fill + whole fade together so the
         // dissolve into the next colourway is a single seamless blend.
+        // will-change:opacity already promotes this to its own compositor layer;
+        // a translateZ(0) here was a redundant SECOND promotion hint (dropped
+        // 2026-07-16 as part of the fullscreen scroll-jank fix).
         willChange: "opacity",
-        transform: "translateZ(0)",
       }}
     >
       {/* Ambient fill — the same painting, heavy-blurred, covers the surround.
@@ -251,6 +273,9 @@ export const PavoBackdrop = ({
   // The cursor-reveal is a fine-pointer, motion-allowed, cover-mode affordance
   // (touch has no hover; reduced-motion opts out) — derived, never setState.
   const pointerFine = usePointerFine();
+  // Shed the cursor-reveal spotlight (5 extra full-viewport layers) on large /
+  // high-DPI / low-power screens — the fullscreen-4K scroll-jank fix.
+  const heavyViewport = useHeavyViewport();
   // Cursor-reveal: fine-pointer, motion-allowed, cover-mode only (touch has no
   // hover; reduced-motion opts out) — derived, never setState.
   // RE-ENGINEERED 2026-07-14: the old version (disabled 07-08 as "so glitchy")
@@ -260,7 +285,7 @@ export const PavoBackdrop = ({
   // painting inside counter-translates to stay viewport-pinned, so the lit disc
   // slides over a still image like a magnifier. Cursor px live in --pavo-mx/my;
   // the window/counter offsets do the `± r` in CSS so JS writes two vars a frame.
-  const reveal = fit === "cover" && !reduceMotion && pointerFine;
+  const reveal = fit === "cover" && !reduceMotion && pointerFine && !heavyViewport;
 
   useEffect(() => {
     if (!reveal) return;
