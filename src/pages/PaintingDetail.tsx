@@ -1605,23 +1605,30 @@ const BuyBox = ({
                 </div>
               )}
 
-              {/* Quiet lead to the eye for the paper path — guidance, NOT a
-                  default selection (DMCC: no pre-tick). Hidden on canvas. */}
+              {/* Quiet lead to the eye for the paper path — guidance toward the
+                  recommended presentation, NOT a default selection (DMCC: the
+                  frame charge is never pre-ticked). Hidden on canvas. */}
               {framingOffered && !canvasActive && (
                 <p
                   className={cn(EYEBROW_TIGHT, "m-0 flex items-center gap-2")}
                 >
                   <span aria-hidden="true" className="text-ink/40">—</span>
-                  Most collectors choose hand-framed
+                  Recommended: hand-framed, ready to hang
                 </p>
               )}
 
-              {/* FRAME */}
+              {/* FRAME — the recommended presentation. Given a gently stronger
+                  resting outline + a "Recommended" tag so it draws the eye (the
+                  ready-to-hang framed piece is the highest-AOV, highest-
+                  satisfaction option), but the CHARGE stays opt-in — never
+                  pre-ticked (DMCC drip-pricing rule). */}
               {framingOffered && !canvasActive && (
                 <label
                   className={cn(
                     "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
-                    framingActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                    framingActive
+                      ? "ring-ink"
+                      : "ring-ink/35 hover:ring-ink/60",
                   )}
                 >
                   <input
@@ -1632,7 +1639,12 @@ const BuyBox = ({
                   />
                   <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
                     <span className="flex items-baseline justify-between gap-3">
-                      <strong className="text-ink">Bespoke framing</strong>
+                      <span className="flex items-center gap-2 flex-wrap">
+                        <strong className="text-ink">Bespoke framing</strong>
+                        <span className="font-sans text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-muted ring-1 ring-line px-1.5 py-0.5">
+                          Recommended
+                        </span>
+                      </span>
                       {framingPriceLabel && (
                         <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
                           +{framingPriceLabel}
