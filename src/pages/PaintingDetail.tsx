@@ -2038,47 +2038,51 @@ const Story = ({ painting }: { painting: Painting }) => (
       ))}
     </Reveal>
 
-    {/* HOW EACH ORDER ARRIVES — full-width card, the four facts in a horizontal
-        grid (no tall side column) so it can never strand empty space. ⚠️ printer
-        (Point 101) NOT named to buyers; NOTHING is ever rolled — flat to A3, boxed
-        above; printer line reuses ESTATE_AUTHENTICATION.printer verbatim. */}
+    {/* INCLUDED WITH EVERY ORDER — the estate's free inclusions, framed as the
+        value/incentive: every order (any size) arrives with the estate box, a
+        printed catalogue and the wax-rose seal, all at no extra cost. ⚠️ printer
+        (Point 101) NOT named to buyers; NOTHING is ever rolled — flat to A3,
+        boxed above; printer line reuses ESTATE_AUTHENTICATION.printer. */}
     <Reveal as="section" className="mt-8 md:mt-10 ring-1 ring-line px-6 py-6 md:px-8 md:py-7">
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>How each order arrives</p>
-      <p className={cn(BODY, "text-ink m-0 mb-6 max-w-[80ch]")}>
-        Every print is made to order &mdash; never warehoused. When your order is
-        placed it is printed and prepared in London, at one of the United
-        Kingdom&rsquo;s leading giclée ateliers &mdash; the same studio Stephen
-        trusted with his own work. It is packed to be opened slowly.
+      <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
+        Included with every order · with our compliments
       </p>
-      <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 m-0 border-t border-line pt-6">
+      <p className={cn(BODY, "text-ink m-0 mb-6 max-w-[80ch]")}>
+        Whatever you choose, your order arrives complete &mdash; three things from
+        the estate, enclosed at no extra cost, so every piece reaches you as a
+        considered gift, not just a parcel.
+      </p>
+      <dl className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-6 m-0 border-t border-line pt-6">
         <div>
-          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Prepared by</dt>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>The estate box</dt>
           <dd className={cn(SPEC_VALUE, "m-0")}>
-            {ESTATE_AUTHENTICATION.printer} &mdash; each print checked and
-            interleaved; dispatched flat up to A3, boxed for larger sizes.
+            A presentation box designed by the family &mdash; your print arrives
+            inside it, made to be opened slowly and kept.
           </dd>
         </div>
         <div>
-          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Sealed with</dt>
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>A printed catalogue</dt>
           <dd className={cn(SPEC_VALUE, "m-0")}>
-            The estate&rsquo;s deep-red wax-seal &mdash; the Mandala rose, pressed
-            as a sticker over the wrapping.
+            Stephen&rsquo;s collected paintings, so your piece arrives in the
+            company of the wider body of work.
           </dd>
         </div>
         <div>
-          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Enclosed</dt>
-          <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>
-            A printed catalogue of Stephen&rsquo;s paintings, so your piece arrives
-            in the company of the wider body of work.
-          </dd>
-        </div>
-        <div>
-          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>Original print</dt>
-          <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>
-            {ORIGINAL_PRINT_SPEC}
+          <dt className={cn(EYEBROW_TIGHT, "mb-1.5")}>The wax-rose seal</dt>
+          <dd className={cn(SPEC_VALUE, "m-0")}>
+            Every parcel closed with the estate&rsquo;s deep-red Mandala-rose seal,
+            pressed as a sticker over the wrapping.
           </dd>
         </div>
       </dl>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 m-0 mt-6 pt-5 border-t border-line">
+        <p className={cn(META, "text-ink-muted m-0")}>
+          {ESTATE_AUTHENTICATION.printer} &mdash; made to order in London and
+          checked by hand, never warehoused; dispatched flat up to A3, boxed for
+          larger sizes, with free delivery worldwide.
+        </p>
+        <p className={cn(META, "text-ink-muted m-0")}>{ORIGINAL_PRINT_SPEC}</p>
+      </div>
     </Reveal>
   </div>
 );
