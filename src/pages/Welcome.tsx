@@ -1065,7 +1065,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* Width-capped so the 3:2 plate never exceeds the viewport height
                 (Hugo 2026-07-08: no full-screen images); shown WHOLE, no crop. */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1180px] 3xl:max-w-[1300px]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1180px,110svh)] 3xl:max-w-[min(1300px,110svh)]">
               <ImageReveal
                 src="/img/welcome/stephen-painting-denim-v1.jpg"
                 alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"

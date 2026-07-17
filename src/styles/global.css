@@ -615,7 +615,7 @@ video[autoplay]::-webkit-media-controls {
      stays legible. */
   background: radial-gradient(
     120% 100% at 50% -10%,
-    color-mix(in srgb, var(--pd-wall) 15%, transparent),
+    color-mix(in srgb, var(--pd-wall) 22%, transparent),
     transparent 72%
   );
 }
@@ -625,8 +625,8 @@ video[autoplay]::-webkit-media-controls {
   height: min(175vh, 100%);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--pd-wall) 74%, transparent),
-    color-mix(in srgb, var(--pd-wall) 42%, transparent) 44%,
+    color-mix(in srgb, var(--pd-wall) 86%, transparent),
+    color-mix(in srgb, var(--pd-wall) 54%, transparent) 44%,
     transparent
   );
 }
@@ -636,7 +636,7 @@ video[autoplay]::-webkit-media-controls {
   height: 70vh;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--pd-wall) 50%, transparent),
+    color-mix(in srgb, var(--pd-wall) 62%, transparent),
     transparent
   );
 }
@@ -648,8 +648,8 @@ video[autoplay]::-webkit-media-controls {
   height: 120vh;
   background: radial-gradient(
     60% 46% at 50% 40%,
-    color-mix(in srgb, var(--pd-halo) 48%, transparent),
-    color-mix(in srgb, var(--pd-halo) 18%, transparent) 55%,
+    color-mix(in srgb, var(--pd-halo) 64%, transparent),
+    color-mix(in srgb, var(--pd-halo) 28%, transparent) 55%,
     transparent 76%
   );
 }
