@@ -303,7 +303,7 @@ const CollectionSetCard = ({
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM }}
+        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
         <h3 className={cn(TITLE, "my-0")}>
@@ -387,7 +387,7 @@ const ComposeSetCard = () => {
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM }}
+        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
         <h3 className={cn(TITLE, "my-0")}>
@@ -507,7 +507,7 @@ const CatalogueSetCard = () => {
     >
       <div
         className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM }}
+        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The full collection</p>
         <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>

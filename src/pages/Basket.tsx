@@ -842,7 +842,7 @@ export const Basket = () => {
                   basket has nothing to ship, so this would contradict itself). */}
               {lines.length > 0 && (
                 <>
-                  <div className="border border-ink/70 rounded-2xl p-4 mb-3">
+                  <div className="ring-1 ring-line rounded-2xl p-4 mb-3">
                     <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
                       Delivery — free worldwide
                     </p>
