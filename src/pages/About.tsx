@@ -1481,7 +1481,7 @@ export const About = () => {
         <section id="academy" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
           <ChapterHead id="academy" />
           <Reveal as="div" className={READING_WIDE}>
-            <p className={cn(STANDOUT_CLASS, "m-0 max-w-[24ch] text-balance")} style={STANDOUT_STYLE}>
+            <p className={cn(STANDOUT_CLASS, "m-0 max-w-[22ch] md:max-w-[40ch] lg:max-w-none text-balance")} style={STANDOUT_STYLE}>
               {ABOUT.legacy[2]}
             </p>
           </Reveal>
