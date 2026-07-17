@@ -94,6 +94,24 @@ export const WELCOME = {
 
   invocation: "In Steve's own words…",
 
+  // Home-page legacy statement (2026-07-16, Hugo's direction: "a message
+  // clearly explaining this is only ~10% of his portfolio, with more coming
+  // quarterly — a tribute to his legacy, in the same conversation as the
+  // greatest; the site is missing confidence"). Kept factual: the four
+  // traditions named are verbatim from his own bio above (Insular island arts,
+  // rose windows, Persian geometry, Tibetan mandala) — no invented accolades.
+  // Rendered as its own bold band on the home page. `emphasis` is the one
+  // italic word in the headline (house two-tier convention).
+  archiveStatement: {
+    eyebrow: "The archive",
+    headline: "What you see here is less than a tenth of him.",
+    emphasis: "tenth",
+    body: [
+      "Stephen Meakin gave his life to sacred geometry, and left behind far more than could ever be shown here — the prints gathered on this site are less than a tenth of the archive, with new collections and single releases issued every quarter as more of his work is brought forward.",
+      "His work belongs in the same breath as the traditions he drew from — the Insular island arts, the great rose windows of medieval Europe, the geometry of Persia and the sacred mandala of Tibet. To take one into your home now is to be early to all of it.",
+    ],
+  },
+
   bio: [
     "Stephen Meakin — SEM — was a British artist specialising in geometric paintings and mandala art. He explored ideas about abstract pattern as visual medicine, working across the traditions of oculi, mandala, sigil and yantra. His signature aesthetic is beautiful and powerful — mandala art paintings of such ethereal beauty that they are like viewing music in cross-section, each mandala with its own number, rhythm, cadence and tone.",
     "As a skilful practitioner of Sacred Geometry, his artworks amplify the language of nature. His mission was to transcend cultural boundaries and weave together four key components: the spirit of ancient Insular Island Arts, the great Rose Windows of Medieval Europe, the Art of Persian Geometry and the Sacred Mandala of Tibet. His unique mandala art paintings celebrate the universe in all its awesome, radiant beauty — from snowflake to supernova, everything is connected in this art of visual henosis.",

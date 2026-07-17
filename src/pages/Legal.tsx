@@ -746,7 +746,7 @@ const LegalMasthead = ({
   updated: string;
   sections: Section[];
 }) => (
-  <section className="relative px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
+  <section className="relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
     <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
       <span className={EYEBROW}>The Mandala Company</span>
       <span aria-hidden className="h-px flex-1 bg-ink/15" />

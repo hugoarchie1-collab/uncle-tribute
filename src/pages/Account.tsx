@@ -300,7 +300,11 @@ export const Account = () => {
                   Welcome back — <span className="not-italic text-ink-muted">{auth.email}</span>
                 </p>
                 {auth.orders.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  // items-start so each bordered card sizes to its OWN content
+                  // (variable item counts) — never stretched to its row-mate's
+                  // height, which would strand a hollow void beneath the shorter
+                  // card's last line inside its own border.
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                     {auth.orders.map((o) => (
                       <OrderCard key={o.ref} order={o} />
                     ))}

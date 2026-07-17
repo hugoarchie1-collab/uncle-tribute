@@ -957,6 +957,43 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
+          {/* 5a · THE ARCHIVE — legacy statement (Hugo, 2026-07-16): a
+              confident band right after the featured grid making clear that
+              what's shown is less than a tenth of Stephen's work, with more
+              issued quarterly, and placing him among the great traditions he
+              drew from. Verbatim from WELCOME.archiveStatement (content.ts) —
+              no words are typed inline here. Transparent over the peacock
+              backdrop like every section; hero-text-shadow keeps it legible. */}
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="border-t border-line pt-9 md:pt-12 text-center">
+              <Reveal as="div">
+                <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.archiveStatement.eyebrow}</p>
+              </Reveal>
+              <Reveal as="div" delay={0.05}>
+                <h2 className={cn(TITLE, "my-0 max-w-[1080px] 2xl:max-w-[1280px] 3xl:max-w-[1480px] mx-auto hero-text-shadow")}>
+                  {(() => {
+                    const { headline, emphasis } = WELCOME.archiveStatement;
+                    const [before, after] = headline.split(emphasis);
+                    return (
+                      <>
+                        {before}
+                        <em className="italic font-normal">{emphasis}</em>
+                        {after}
+                      </>
+                    );
+                  })()}
+                </h2>
+              </Reveal>
+              <Reveal as="div" delay={0.1} className="mt-5 md:mt-6 mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[900px] space-y-4">
+                {WELCOME.archiveStatement.body.map((para, i) => (
+                  <p key={i} className={cn(SUBTITLE, "m-0")}>
+                    {para}
+                  </p>
+                ))}
+              </Reveal>
+            </div>
+          </section>
+
           {/* 5b · HAND-FINISHED UPSELL — the estate's highest-margin add-on,
               given its own commercial moment right after the buyable grid. Real
               footage of the hand-finishing (dots of paint + individually-placed

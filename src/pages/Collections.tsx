@@ -693,7 +693,7 @@ export const Collections = () => {
                 the shared page envelope — no narrow centred column, no empty
                 side margins. AI framing only — Stephen's verbatim collection
                 descriptions are untouched below. */}
-            <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-2 gap-x-12 2xl:gap-x-16 gap-y-4 items-start border-t border-line pt-4 md:pt-5">
+            <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-2 gap-x-12 2xl:gap-x-16 gap-y-4 lg:items-stretch border-t border-line pt-4 md:pt-5">
               <p
                 className="font-display font-normal tracking-[-0.012em] text-ink m-0"
                 style={{
@@ -707,7 +707,7 @@ export const Collections = () => {
                 as editioned giclée prints — the collection as it stands today,
                 with more of his work still to come.
               </p>
-              <div className="lg:pt-1.5 flex flex-col gap-4">
+              <div className="lg:pt-1.5 flex flex-col gap-4 lg:h-full lg:justify-between">
                 <p
                   className="font-sans font-normal text-[15px] md:text-[clamp(16px,0.95vw,21px)] leading-[1.75] text-ink-muted m-0"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}

@@ -228,6 +228,43 @@ const FAQ_JSONLD = {
 /** Two-digit ordinal for the question rail — 01 · 02 · 03 … */
 const ordinal = (i: number) => String(i + 1).padStart(2, "0");
 
+// ─── QaItem ──────────────────────────────────────────────────────────────────
+// One question block — the ordinal + eyebrow header, the Fraunces question, then
+// the verbatim answer. Carries its ORIGINAL index `i` so the ordinal + schema
+// numbering never drift as items flow across the two multi-columns. Each item
+// owns a top hairline + break-inside-avoid so it stays whole within a column and
+// stacked items read as dense, divided blocks.
+const QaItem = ({ qa, i }: { qa: QA; i: number }) => (
+  <section
+    aria-labelledby={`faq-q-${i}`}
+    className="relative flex break-inside-avoid flex-col border-t border-line pt-3.5 md:pt-4 pb-3.5 md:pb-4"
+  >
+    <div className="flex items-baseline gap-4">
+      <span
+        aria-hidden
+        className="font-display font-semibold leading-none text-accent select-none shrink-0"
+        style={{
+          fontVariationSettings: '"opsz" 32, "wght" 600',
+          fontSize: "clamp(22px,1.9vw,30px)",
+        }}
+      >
+        {ordinal(i)}
+      </span>
+      <p className={cn(EYEBROW, "m-0 self-center")}>{qa.eyebrow}</p>
+    </div>
+    <h2
+      id={`faq-q-${i}`}
+      className={cn(
+        "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-balance text-ink m-0 mt-2",
+        "text-[clamp(24px,2.4vw,38px)] leading-[1.05]",
+      )}
+    >
+      {qa.question}
+    </h2>
+    <div className={cn(SUBTITLE, "max-w-none mt-2.5 md:mt-3")}>{qa.answer}</div>
+  </section>
+);
+
 // ─── FaqMasthead ─────────────────────────────────────────────────────────────
 // The refined front cover — the shared MASTHEAD_TITLE_STYLE cut (opsz 144,
 // real loaded weight 560, font-synthesis none): a meta rule (eyebrow + hairline
@@ -324,51 +361,32 @@ export const FAQ = () => {
         <FaqMasthead />
 
         {/* 2 · THE QUESTIONS — a numbered two-column editorial register. Each
-            answer / eyebrow / question is verbatim; only the LAYOUT changed
-            from the old single thin column with gap-14 dead air. The grid is
-            self-densifying — items flow two-up on md+ filling the horizontal
-            space, divided by hairlines so they read as dense blocks, not an
-            endless scroll. */}
+            answer / eyebrow / question is verbatim; only the LAYOUT changed —
+            from a single CSS grid (whose paired cells shared the taller row's
+            height, hollowing out a void under a short answer) to CSS
+            multi-columns that flow and pack independently with no row coupling,
+            divided by hairlines so they read as dense blocks, not an endless
+            scroll. */}
         <section
           className={cn(SECTION, "pb-6 md:pb-9")}
           style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
         >
+          {/* TWO INDEPENDENT NEWSPAPER COLUMNS — CSS multi-column so each item
+              packs tightly against the one above it with NO shared row height.
+              The old single CSS grid coupled both cells in a row to the taller
+              one's height, leaving a hollow void under a short answer (the
+              "shipping"/"lead time" jigsaw gap). Multi-column has no rows to
+              couple: items flow down column one, then column two, auto-balanced
+              to roughly equal heights, in ascending 01→09 order (so mobile's
+              single column stays in sequence too). Each item carries a top
+              hairline and break-inside-avoid, so both columns open on a clean
+              divider aligned at the top and stacked items read as dense blocks. */}
           <Reveal
             as="div"
-            className="mx-auto grid w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 gap-y-0 border-t border-line"
+            className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] md:columns-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 [column-fill:balance]"
           >
             {FAQS.map((qa, i) => (
-              <section
-                key={i}
-                aria-labelledby={`faq-q-${i}`}
-                className="relative flex flex-col pt-3.5 md:pt-4 pb-3.5 md:pb-4 border-t border-line first:border-t-0 md:[&:nth-child(2)]:border-t-0"
-              >
-                <div className="flex items-baseline gap-4">
-                  <span
-                    aria-hidden
-                    className="font-display font-semibold leading-none text-accent select-none shrink-0"
-                    style={{
-                      fontVariationSettings: '"opsz" 32, "wght" 600',
-                      fontSize: "clamp(22px,1.9vw,30px)",
-                    }}
-                  >
-                    {ordinal(i)}
-                  </span>
-                  <p className={cn(EYEBROW, "m-0 self-center")}>{qa.eyebrow}</p>
-                </div>
-                <h2
-                  id={`faq-q-${i}`}
-                  className={cn(
-                    "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-balance text-ink m-0 mt-2",
-                    "text-[clamp(24px,2.4vw,38px)] leading-[1.05]",
-                  )}
-                >
-                  {qa.question}
-                </h2>
-                <div className={cn(SUBTITLE, "max-w-none mt-2.5 md:mt-3")}>
-                  {qa.answer}
-                </div>
-              </section>
+              <QaItem key={i} qa={qa} i={i} />
             ))}
           </Reveal>
         </section>
