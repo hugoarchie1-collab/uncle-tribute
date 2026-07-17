@@ -264,8 +264,38 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Email-safe font stacks — matched to the site (Fraunces display + Schibsted
+// Grotesk body). Custom webfonts don't load in Gmail, so the serif/sans
+// fallbacks (Georgia / Helvetica) are what most inboxes actually render — the
+// design is built to look intentional in the fallback, not to depend on the
+// linked fonts. (Apple Mail honours the <link> and shows the real faces.)
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
+const LOGO_URL = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
+
+// Bulletproof-dark palette. The old templates set the dark background via CSS
+// on <body>/<div>, which Gmail STRIPS (then force-inverts the light text) —
+// that was the black-on-black bug. This build sets the dark background via the
+// `bgcolor=` HTML attribute on every table + cell (which Gmail keeps) and hard-
+// codes an explicit colour on every text node, with solid-hex muted tones
+// (no rgba) so it stays dark and legible in every client + dark mode.
+const C = {
+  bg: "#0a0908", // near-black page (site bg.DEFAULT)
+  card: "#14120f", // lifted card (site bg.soft)
+  cream: "#ede6d6", // body ink (site ink.DEFAULT)
+  muted: "#a9a498", // 70%-cream muted, flattened to solid hex
+  faint: "#878379", // 55%-cream faint, flattened to solid hex
+  rust: "#c97844", // accent (site accent.DEFAULT)
+  line: "#2a2825", // hairline (12%-cream over bg, flattened)
+};
+
+// One estate-authentication trust cell (mirrors the site's PDP provenance
+// cluster / ESTATE_AUTHENTICATION copy).
+const authCell = (label: string, sub: string): string =>
+  `<td width="50%" style="width:50%;vertical-align:top;padding:14px 14px 0 0;">`
+  + `<div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:${C.cream};">${label}</div>`
+  + `<div style="font-family:${SANS};font-size:12px;line-height:1.45;color:${C.faint};margin-top:3px;">${sub}</div>`
+  + `</td>`;
 
 const renderBasketSavedHtml = (p: {
   buyerName?: string | null;
@@ -277,58 +307,81 @@ const renderBasketSavedHtml = (p: {
   // intro copy promises cross-device pick-up only when the link can honour it.
   restoreCarried: boolean;
 }): string => {
-  const first = (() => {
-    const t = (p.buyerName ?? "").trim();
-    return t ? esc(t.split(/\s+/)[0]) : "there";
-  })();
-  const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
-    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    orderRow: `font-family:${SANS};font-size:14px;line-height:1.55;color:#ede6d6;margin:0 0 4px 0;`,
-    orderMeta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
-    link: `color:#c97844;text-decoration:underline;`,
-    button: `display:inline-block;background-color:#ede6d6;color:#0a0908;padding:12px 28px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border-radius:999px;`,
-  };
+  // Editorial spec-rows: painting title in Fraunces italic (the site's signature
+  // for painting titles), colourway as a rust eyebrow, size/edition faint, price
+  // in Fraunces roman right-aligned.
   const lineHtml = p.lines
     .map((line, idx) => {
-      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
-        + `<p style="${s.orderRow}"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`
-        + `<p style="${s.orderMeta}">${esc(line.size)}</p>`
-        + `<p style="${s.orderMeta}margin-top:4px;color:#ede6d6;">${esc(line.price)}</p>`
-        + `</div>`;
+      const topBorder = idx === 0 ? "0" : `1px solid ${C.line}`;
+      return `<tr><td style="border-top:${topBorder};padding:${idx === 0 ? "0" : "16px"} 0 16px 0;">`
+        + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;"><tr>`
+        + `<td style="vertical-align:top;">`
+        + `<div style="font-family:${DISPLAY};font-style:italic;font-size:17px;line-height:1.3;color:${C.cream};">${esc(line.title)}</div>`
+        + `<div style="font-family:${SANS};font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:${C.rust};margin-top:6px;">${esc(line.colourway)}</div>`
+        + `<div style="font-family:${SANS};font-size:12px;line-height:1.5;color:${C.faint};margin-top:5px;">${esc(line.size)}</div>`
+        + `</td>`
+        + `<td align="right" style="vertical-align:top;text-align:right;white-space:nowrap;padding-left:16px;">`
+        + `<div style="font-family:${DISPLAY};font-size:16px;color:${C.cream};">${esc(line.price)}</div>`
+        + `</td>`
+        + `</tr></table></td></tr>`;
     })
     .join("");
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><meta name="supported-color-schemes" content="dark only"/><title>Your basket — The Art of Stephen Meakin</title></head>`
-    + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
-    + `<h1 style="${s.heading}">Your basket, ${first}.</h1>`
-    + `<p style="${s.body}">${
-      p.restoreCarried
-        ? `Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and your basket will be waiting just as you left it.`
-        : `Here are the prints you set aside on the estate website. They live in this email now — follow the link below and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.`
-    }</p>`
-    + `<hr style="${s.divider}"/>`
-    + `<p style="${s.eyebrow}">Your basket</p>`
-    + `<div style="${s.card}">${lineHtml}`
-    + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
-    + `<p style="${s.orderRow}display:flex;justify-content:space-between;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Subtotal</span> <strong style="color:#ede6d6;font-size:16px;">${esc(p.subtotal)}</strong></p>`
-    + `<p style="${s.small}margin:8px 0 0 0;">Delivery is free worldwide — framed or unframed — with nothing added at checkout.</p>`
-    + `</div>`
-    + `<p style="text-align:center;margin:28px 0 24px 0;"><a href="${esc(p.basketUrl)}" style="${s.button}">Open your basket</a></p>`
-    + `<p style="${s.body}">Each print is individually made to order at a small UK atelier and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</p>`
-    + `<p style="${s.signoff}">With love from the estate,</p>`
-    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
-    + `<hr style="${s.divider}"/>`
-    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
-    + `</div></body></html>`;
+  const intro = p.restoreCarried
+    ? `Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and your basket will be waiting just as you left it.`
+    : `Here are the prints you set aside on the estate website. They live in this email now — follow the link below and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark"/><meta name="supported-color-schemes" content="dark"/><title>Your basket — The Art of Stephen Meakin</title>`
+    + `<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet"/>`
+    + `</head>`
+    + `<body bgcolor="${C.bg}" style="margin:0;padding:0;background-color:${C.bg};">`
+    + `<span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;mso-hide:all;">Your saved basket at The Mandala Company — the estate of Stephen Meakin.</span>`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.bg}" style="background-color:${C.bg};margin:0;padding:0;"><tr><td align="center" style="padding:24px 12px;">`
+    + `<table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="${C.bg}" style="width:600px;max-width:600px;background-color:${C.bg};">`
+    // ---- masthead ----
+    + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:40px 40px 32px 40px;border-bottom:1px solid ${C.line};">`
+    + `<img src="${LOGO_URL}" width="66" height="66" alt="The Mandala Company" style="display:block;border:0;outline:none;text-decoration:none;width:66px;height:66px;margin:0 auto 18px auto;"/>`
+    + `<div style="font-family:${DISPLAY};font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:${C.cream};line-height:1.15;">The Mandala Company</div>`
+    + `<div style="font-family:${SANS};font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};margin-top:10px;">The Art of Stephen Meakin</div>`
+    + `</td></tr>`
+    // ---- intro ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:38px 40px 6px 40px;">`
+    + `<div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};margin:0 0 16px 0;">Your basket</div>`
+    + `<div style="font-family:${DISPLAY};font-size:34px;line-height:1.12;color:${C.cream};margin:0 0 20px 0;">Your basket, kept safe.</div>`
+    + `<div style="font-family:${SANS};font-size:15px;line-height:1.7;color:${C.muted};">${intro}</div>`
+    + `</td></tr>`
+    // ---- items card ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:26px 40px 0 40px;">`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.card}" style="width:100%;background-color:${C.card};border:1px solid ${C.line};"><tr><td style="padding:22px 24px;">`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;">${lineHtml}</table>`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid ${C.line};margin-top:4px;"><tr>`
+    + `<td style="padding-top:16px;font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:${C.muted};">Subtotal</td>`
+    + `<td align="right" style="padding-top:16px;text-align:right;font-family:${DISPLAY};font-size:20px;color:${C.cream};">${esc(p.subtotal)}</td>`
+    + `</tr></table>`
+    + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Delivery is free worldwide — framed or unframed — with nothing added at checkout.</div>`
+    + `</td></tr></table>`
+    + `</td></tr>`
+    // ---- CTA ----
+    + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 6px 40px;">`
+    + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.cream}" style="background-color:${C.cream};">`
+    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:15px 42px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.bg};text-decoration:none;">Open your basket</a>`
+    + `</td></tr></table></td></tr>`
+    // ---- reassurance + estate authentication cluster ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:32px 40px 0 40px;">`
+    + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order at a leading giclée atelier in London and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:24px;border-top:1px solid ${C.line};">`
+    + `<tr>${authCell("Estate-stamped", "By The Mandala Company")}${authCell("Hand-numbered", "Within its edition")}</tr>`
+    + `<tr>${authCell("Certificate", "A unique Certificate ID")}${authCell("Atelier giclée", "Printed in London")}</tr>`
+    + `</table>`
+    + `</td></tr>`
+    // ---- sign-off ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 40px 40px;">`
+    + `<div style="font-family:${DISPLAY};font-style:italic;font-size:17px;color:${C.cream};margin:0 0 5px 0;">With love from the estate,</div>`
+    + `<div style="font-family:${SANS};font-size:14px;color:${C.muted};">— The Mandala Company</div>`
+    + `</td></tr>`
+    // ---- footer ----
+    + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:26px 40px 36px 40px;border-top:1px solid ${C.line};">`
+    + `<div style="font-family:${SANS};font-size:12px;line-height:1.8;color:${C.faint};">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="color:${C.rust};text-decoration:none;">${esc(p.estateEmail)}</a><br/>The Art of Stephen Meakin · Lewes, East Sussex</div>`
+    + `</td></tr>`
+    + `</table></td></tr></table></body></html>`;
 };
 
 export default async function handler(req: VercelReq, res: VercelRes) {
