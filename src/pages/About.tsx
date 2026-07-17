@@ -653,7 +653,7 @@ const AnegadaPoster = () => (
           &ldquo;
         </span>
         <blockquote className="m-0">
-          <p className={cn(STANDOUT_CLASS, "font-normal italic m-0 max-w-[26ch] text-balance")} style={STANDOUT_STYLE}>
+          <p className={cn(STANDOUT_CLASS, "font-normal italic m-0 max-w-[22ch] md:max-w-[40ch] lg:max-w-none text-balance")} style={STANDOUT_STYLE}>
             {ABOUT.anegadaQuote}
           </p>
           <cite className={cn(EYEBROW_MUTED, "not-italic block mt-6")}>SEM</cite>
@@ -1062,7 +1062,7 @@ export const About = () => {
           <Reveal
             as="figure"
             className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px] overflow-hidden rounded-[3px] ring-1 ring-line",
+              "relative m-0 mx-auto w-full max-w-[880px]",
               BLOCK_GAP,
             )}
           >
@@ -1072,7 +1072,7 @@ export const About = () => {
               loading="lazy"
               decoding="async"
               sizes="(min-width: 768px) 880px, 100vw"
-              className="block w-full h-auto max-h-[58svh] object-cover object-center"
+              className="soft-edge-img block w-full h-auto max-h-[58svh] object-cover object-center"
             />
           </Reveal>
 
