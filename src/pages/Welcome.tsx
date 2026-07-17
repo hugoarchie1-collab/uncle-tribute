@@ -419,6 +419,18 @@ export const Welcome = () => {
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+          {/* Soft local legibility halo behind the lockup (2026-07-16): raising
+              the wordmark into the brighter middle of the backdrop cost contrast,
+              so a gentle radial backs ONLY the text and fades to transparent well
+              before any edge — reads as depth, never a black box (Hugo's rule). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 -z-10 h-[150%]"
+            style={{
+              background:
+                "radial-gradient(58% 62% at 50% 50%, rgba(9,7,13,0.52) 0%, rgba(9,7,13,0.30) 46%, rgba(9,7,13,0) 78%)",
+            }}
+          />
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -874,7 +886,7 @@ export const Welcome = () => {
                 big-lead-plus-satellites read as a glitched, uneven layout). All
                 six tiles are the SAME size in clean rows: 2-up on mobile, 3-up on
                 desktop (3×2). min-w-0 stops a long title token widening a column. */}
-            <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
+            <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
               {featured.map(({ painting, cover }) => {
                 const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
