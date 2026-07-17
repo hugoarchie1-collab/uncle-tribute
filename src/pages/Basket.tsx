@@ -654,7 +654,7 @@ export const Basket = () => {
                             {p.title}
                           </p>
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
-                            From {fmt(getLowestTierPricePence(p))}
+                            From {fmtP(getLowestTierPricePence(p))}
                           </p>
                         </Link>
                       </li>
@@ -838,40 +838,48 @@ export const Basket = () => {
                   ships free, framed or unframed. These £0 figures mirror the £0
                   (free) rate api/checkout.ts charges at Stripe — advertised ==
                   charged to the penny (mirror invariant, gotcha #9). */}
-              <div className="border border-ink/70 rounded-2xl p-4 mb-3">
-                <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
-                  Delivery — free worldwide
-                </p>
-                <ul className="list-none p-0 m-0 flex flex-col gap-1">
-                  {(
-                    [
-                      ["United Kingdom", shipping.ukPence],
-                      ["Europe", shipping.euPence],
-                      ["Worldwide", shipping.wwPence],
-                    ] as const
-                  ).map(([region, pence]) => (
-                    <li
-                      key={region}
-                      className="flex items-baseline justify-between gap-4"
-                    >
-                      <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                        {region}
-                      </span>
-                      <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                        {pence === 0 ? "Free" : fmt(pence)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
-                  Free delivery on every order — framed or unframed — with nothing
-                  added at checkout. Each print ships within 7–10 working days.
-                </p>
-              </div>
+              {/* Physical-delivery panel — gated to print orders (a gift-card-only
+                  basket has nothing to ship, so this would contradict itself). */}
+              {lines.length > 0 && (
+                <>
+                  <div className="border border-ink/70 rounded-2xl p-4 mb-3">
+                    <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
+                      Delivery — free worldwide
+                    </p>
+                    <ul className="list-none p-0 m-0 flex flex-col gap-1">
+                      {(
+                        [
+                          ["United Kingdom", shipping.ukPence],
+                          ["Europe", shipping.euPence],
+                          ["Worldwide", shipping.wwPence],
+                        ] as const
+                      ).map(([region, pence]) => (
+                        <li
+                          key={region}
+                          className="flex items-baseline justify-between gap-4"
+                        >
+                          <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
+                            {region}
+                          </span>
+                          <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
+                            {pence === 0 ? "Free" : fmt(pence)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
+                      Free delivery on every order — framed or unframed — with
+                      nothing added at checkout. Each print ships within 7–10
+                      working days.
+                    </p>
+                  </div>
 
-              <p className="font-sans font-normal text-[clamp(14px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
-                International buyers may be charged local import duties on delivery.
-              </p>
+                  <p className="font-sans font-normal text-[clamp(14px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
+                    International buyers may be charged local import duties on
+                    delivery.
+                  </p>
+                </>
+              )}
 
               <div className="flex flex-wrap items-center gap-4">
                 <button

@@ -403,7 +403,7 @@ const ComposeSetCard = () => {
             commanding row at 3xl (the FooterCatalogue 10-up idiom) so the AOV
             builder fills its wide card instead of sitting as a half-empty
             contact-sheet; a clean 5×2 below. */}
-        <div className="mt-5 md:mt-6 grid grid-cols-3 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
+        <div className="mt-5 md:mt-6 grid grid-cols-2 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
             const cover =
               p.colourways.find((c) => c.isOriginal && c.available) ??

@@ -1332,29 +1332,29 @@ const BuyBox = ({
         {painting.year !== "[ DATE ]" && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Date</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.year}</dd>
+            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.year}</dd>
           </>
         )}
         {painting.size && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Size</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.size}</dd>
+            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.size}</dd>
           </>
         )}
         {painting.location && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Painted in</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink">{painting.location}</dd>
+            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.location}</dd>
           </>
         )}
         {painting.pigmentNote && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Pigment</dt>
-            <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">{painting.pigmentNote}</dd>
+            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink-muted">{painting.pigmentNote}</dd>
           </>
         )}
         <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Original</dt>
-        <dd className="m-0 font-sans text-[15px] leading-[1.55] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
+        <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
       </dl>
 
       {/* Hushed register for the privately-held original — sits directly
@@ -1613,7 +1613,7 @@ const BuyBox = ({
                   className={cn(EYEBROW_TIGHT, "m-0 flex items-center gap-2")}
                 >
                   <span aria-hidden="true" className="text-ink/40">—</span>
-                  Recommended: hand-framed, ready to hang
+                  Most collectors choose it hand-framed, ready to hang
                 </p>
               )}
 
@@ -1950,7 +1950,7 @@ const CompanionWorks = ({
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ?? "the estate"}
       </p>
-      <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-8">
+      <ul className="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-8">
         {companions.map((p) => {
           const cover =
             p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];

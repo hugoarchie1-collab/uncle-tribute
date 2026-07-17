@@ -284,11 +284,11 @@ const PullLine = ({ text, className }: { text: string; className?: string }) => 
           display beat. */}
       <div aria-hidden className="mb-4 md:mb-5 h-px w-full bg-ink/25" />
       <p
-        className="m-0 font-display font-semibold tracking-[-0.02em] leading-[1.08] text-ink text-balance max-w-[24ch] md:max-w-[34ch] lg:max-w-none"
-        style={{
-          fontVariationSettings: '"opsz" 40, "wght" 600',
-          fontSize: "clamp(26px, 3.2vw, 56px)",
-        }}
+        className={cn(
+          STANDOUT_CLASS,
+          "m-0 text-balance max-w-[24ch] md:max-w-[34ch] lg:max-w-none",
+        )}
+        style={STANDOUT_STYLE}
       >
         {text}
       </p>
@@ -551,7 +551,7 @@ const ContainImage = ({
           decoding="async"
           sizes={sizes}
           style={{ filter: PHOTO_GRADE_SHADOW }}
-          className="absolute inset-0 w-full h-full object-cover object-[50%_30%]"
+          className="absolute inset-0 w-full h-full object-contain object-center"
         />
       </motion.div>
     </div>
