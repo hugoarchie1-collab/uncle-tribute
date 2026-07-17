@@ -9,6 +9,7 @@ import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
 import { useBasketLines } from "../lib/basket";
+import { openCartDrawer } from "../lib/cartDrawer";
 import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
 
 /**
@@ -416,20 +417,17 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             )}
           </NavLink>
 
-          {/* Basket — icon + count badge (count appears only when ≥ 1). */}
-          <NavLink
-            to="/basket"
+          {/* Basket — opens the slide-in cart drawer (mini-cart), the way the
+              best shops do; the drawer's CTA then goes through to /basket. */}
+          <button
+            type="button"
+            onClick={() => openCartDrawer()}
             aria-label={
               basketCount > 0
                 ? `Basket, ${basketCount} item${basketCount === 1 ? "" : "s"}`
                 : "Basket, empty"
             }
-            className={({ isActive }) =>
-              cn(
-                "press relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
-                isActive ? "text-ink" : "text-ink/55 hover:text-accent",
-              )
-            }
+            className="press relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300 text-ink/55 hover:text-accent bg-transparent border-0 cursor-pointer"
           >
             <BasketIcon className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
             {basketCount > 0 && (
@@ -463,7 +461,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 {basketCount}
               </motion.span>
             )}
-          </NavLink>
+          </button>
 
           {/* Hamburger — below `lg`. Toggles the accessible menu. */}
           <button

@@ -1827,11 +1827,11 @@ const BuyBox = ({
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            // Quiet alternate, NOT a co-primary: shorter (!py-3) so the filled
-            // "Add to basket" clearly leads (the single-confident-action
-            // pattern), but full-ink legible — height carries the hierarchy,
-            // not dimmed text. The express path is still one tap.
-            className={cn(BTN_SECONDARY, "group w-full !py-3 disabled:opacity-60")}
+            // Quiet alternate, NOT a co-primary. SAME height as "Add to basket"
+            // so the two stacked full-width buttons read as a balanced pair —
+            // the hierarchy is carried by FILL (filled ink vs. hairline outline),
+            // not by an uneven height (the old !py-3 made them look lopsided).
+            className={cn(BTN_SECONDARY, "group w-full disabled:opacity-60")}
           >
             {status === "loading" ? "Opening checkout…" : "Buy now"}
             <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
@@ -2775,7 +2775,7 @@ export const PaintingDetail = () => {
               (right) on lg+. On mobile this collapses to a single column:
               image first, then the buy box (so buyers reach the controls
               quickly, before the story). */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_minmax(380px,1fr)] gap-5 lg:gap-10 xl:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_minmax(356px,1fr)] gap-5 lg:gap-8 xl:gap-12 items-start">
             {/* LEFT — painting image. Sticky on desktop so it stays in view
                 while the buy box scrolls. Click opens the fullscreen lightbox. */}
             <div className="lg:sticky lg:top-[72px]">

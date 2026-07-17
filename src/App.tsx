@@ -13,7 +13,7 @@ import { useMenuOpen, getDrawerWidthPx } from "./lib/menuStore";
 import { Analytics } from "@vercel/analytics/react";
 import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
-import { BasketToast } from "./components/BasketToast";
+import { CartDrawer } from "./components/CartDrawer";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { BackgroundMusic } from "./components/BackgroundMusic";
@@ -310,7 +310,7 @@ export default function App() {
               basket store's add side-channel, so every add path triggers it
               with no per-button wiring. Mounted once; sits at z-[120], below
               modals (z-200) + cursor (z-250). */}
-          <BasketToast />
+          <CartDrawer />
           {/* Consent banner — quiet bottom bar, renders only while no
               decision exists in tasm.consent.v1. GA4 + Meta Pixel load ONLY
               after "Allow analytics"; the footer's "Cookie preferences" link
