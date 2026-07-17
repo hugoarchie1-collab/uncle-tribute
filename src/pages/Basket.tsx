@@ -258,6 +258,14 @@ export const Basket = () => {
     subtotalMinor - bundleDiscountMinor + giftMinor + bumpMinor;
   const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode);
 
+  // Cross-sell rail — fills the left column when there are few items (kills the
+  // dead void beside the tall sticky summary Hugo flagged) AND lifts AOV.
+  // Paintings not already in the basket; every extra ships free in the same box.
+  const basketPaintingIds = new Set(lines.map((l) => l.paintingId));
+  const crossSell = PAINTINGS.filter(
+    (p) => !basketPaintingIds.has(p.id),
+  ).slice(0, 4);
+
   // Mandatory shipping (shown upfront, equal prominence) + framed surcharge.
   const shipping = shippingPreview();
 
@@ -608,6 +616,50 @@ export const Basket = () => {
                       </div>
                     </li>
                   ))}
+                </ul>
+              </Reveal>
+            )}
+
+            {/* CROSS-SELL — fills the tall left void beside the sticky summary
+                (Hugo's flagged gap) and lifts AOV. Paintings not in the basket. */}
+            {lines.length > 0 && crossSell.length > 0 && (
+              <Reveal as="div" className="mt-10 md:mt-12 border-t border-line pt-8">
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>
+                  Add another to your order
+                </p>
+                <p className="font-sans text-[14px] leading-[1.55] text-ink-muted m-0 mb-5 max-w-[54ch]">
+                  Every additional piece ships free, in the same estate box &mdash;
+                  with its own catalogue and seal.
+                </p>
+                <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-6">
+                  {crossSell.map((p) => {
+                    const cw =
+                      p.colourways.find((c) => c.available) ?? p.colourways[0];
+                    return (
+                      <li key={p.id} className="m-0">
+                        <Link
+                          to={`/collections/${p.id}`}
+                          className="group block"
+                        >
+                          <div className="w-full aspect-square overflow-hidden ring-1 ring-line">
+                            <AssetImage
+                              src={cw.image}
+                              alt={p.title}
+                              sizes="(min-width: 640px) 22vw, 44vw"
+                              loading="lazy"
+                              className="w-full h-full object-cover object-center block transition-transform duration-500 group-hover:scale-[1.04]"
+                            />
+                          </div>
+                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] text-ink leading-tight mt-2.5 group-hover:text-accent transition-colors">
+                            {p.title}
+                          </p>
+                          <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
+                            From {fmt(getLowestTierPricePence(p))}
+                          </p>
+                        </Link>
+                      </li>
+                    );
+                  })}
                 </ul>
               </Reveal>
             )}
