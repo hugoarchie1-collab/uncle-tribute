@@ -397,7 +397,7 @@ const Plate = ({
       // padding + card-shadow on every tile), so contain-letterboxed photos of
       // mixed orientation read as matched museum mats, not ragged floating photos.
       // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
-      <div className={cn("relative w-full max-h-[62svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
+      <div className={cn("relative w-full max-h-[62svh] overflow-hidden bg-ink/[0.04] md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -406,8 +406,8 @@ const Plate = ({
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          style={{ objectPosition: "center 30%", filter: PHOTO_GRADE_SHADOW }}
-          className="absolute inset-0 h-full w-full object-cover"
+          style={{ filter: PHOTO_GRADE_SHADOW }}
+          className="absolute inset-0 h-full w-full object-contain"
         />
       </div>
     ) : (
@@ -1196,7 +1196,7 @@ export const About = () => {
                 decoding="async"
                 sizes="(min-width: 1024px) 420px, 100vw"
                 style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
+                className="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
               />
             </Reveal>
           </div>
@@ -1528,6 +1528,7 @@ export const About = () => {
                   aspect="aspect-[3/2]"
                   edges="all"
                   parallax={0.08}
+                  objectPosition="center 35%"
                   sizes="(min-width: 640px) 48vw, 100vw"
                 />
               </Reveal>
@@ -1538,6 +1539,7 @@ export const About = () => {
                   aspect="aspect-[3/2]"
                   edges="all"
                   parallax={0.08}
+                  objectPosition="center 35%"
                   sizes="(min-width: 640px) 48vw, 100vw"
                 />
               </Reveal>
