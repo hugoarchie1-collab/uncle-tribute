@@ -1504,7 +1504,7 @@ export const About = () => {
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-auto max-h-[70svh] object-contain object-center"
+                className="block w-full h-auto max-h-[62svh] object-contain object-center"
               />
             </figure>
             <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
