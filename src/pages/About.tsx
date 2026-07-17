@@ -710,11 +710,11 @@ const ClosingCTA = ({
           View the prints <span aria-hidden="true" className="ml-2">→</span>
         </MagneticLink>
         <MagneticLink
-          to="/collections"
+          to="/memories"
           className={cn(BTN_SECONDARY, "w-fit")}
-          ariaLabel="Browse the collections"
+          ariaLabel="Leave a memory"
         >
-          The collections
+          Leave a memory
         </MagneticLink>
       </div>
       <button type="button" onClick={onJoinFriends} className={cn(EYEBROW_MUTED, "mt-2 hover:text-accent transition-colors")}>
@@ -1504,7 +1504,7 @@ export const About = () => {
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-[clamp(300px,46svh,460px)] object-contain object-center"
+                className="block w-full h-auto max-h-[70svh] object-contain object-center"
               />
             </figure>
             <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
@@ -1601,37 +1601,32 @@ export const About = () => {
             never a full-bleed wall (owner's standing rule): the portrait column is
             capped and the section keeps ONE_WIDTH. Stacks to portrait-then-CTA
             below lg (mobile frozen). */}
+        {/* The farewell close — a single CENTRED island card (same register as
+            the TAGA card) holding the portrait above the CTA. The old 46%/1fr
+            grid stranded the small CTA in a huge empty right column ("so much
+            black space"); a bounded centred panel has no lonely column to strand
+            and reads as a composed, intentional close. Portrait object-CONTAIN
+            (never cropped) + soft-edge feather + capped height (never a
+            screen-filling wall). Verbatim-only: the CTA carries the farewell. */}
         <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
           <Reveal
             as="div"
             className={cn(
-              ONE_WIDTH,
-              "grid grid-cols-1 lg:grid-cols-[minmax(0,46%)_1fr] gap-8 md:gap-12 lg:gap-16 items-center",
+              BLOCK_GAP,
+              "mx-auto flex w-full max-w-[720px] flex-col items-center gap-8 md:gap-10 rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px] px-[clamp(1.25rem,4vw,3rem)] py-[clamp(1.75rem,4.2vw,3rem)] text-center",
             )}
           >
-            {/* The portrait — a warm gallery MOUNT (matte paper bg + hairline
-                ring) whose photo is soft-edge feathered so the hard rectangle
-                melts into the peacock wash rather than sitting as a box in a void.
-                object-CONTAIN so the doorway figure is never cropped; capped
-                height so it stays a contained moment, not a screen-filling wall. */}
-            <figure className="relative m-0 mx-auto w-full max-w-[420px] lg:max-w-none">
-              <div className="rounded-[10px] bg-ink/[0.045] p-[clamp(10px,1.4vw,20px)] ring-1 ring-line/70 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.65)]">
-                <AssetImage
-                  src="/img/about/stephen-doorway-portrait-v1.jpg"
-                  alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(min-width: 1024px) 640px, 88vw"
-                  className="soft-edge-img block w-full h-auto max-h-[62svh] 2xl:max-h-[64svh] object-contain object-center rounded-[4px]"
-                />
-              </div>
+            <figure className="relative m-0 w-full max-w-[440px]">
+              <AssetImage
+                src="/img/about/stephen-doorway-portrait-v1.jpg"
+                alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 768px) 440px, 88vw"
+                className="soft-edge-img block w-full h-auto max-h-[52svh] object-contain object-center rounded-[6px]"
+              />
             </figure>
-
-            {/* The family's farewell — the CTA, now a composed column BESIDE the
-                portrait (left-aligned on lg+ so it reads as a designed spread,
-                centred when stacked). No invented heading — verbatim-only copy
-                rule; the CTA carries the farewell. */}
-            <ClosingCTA onJoinFriends={openFriends} align="responsive" />
+            <ClosingCTA onJoinFriends={openFriends} align="center" />
           </Reveal>
         </section>
       </main>

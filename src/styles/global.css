@@ -211,20 +211,20 @@
        accept multi-layer -webkit-mask-image but silently drop the compositing
        keyword (older WebKit / some Android WebViews) get this safe single
        layer instead of a blanked region. */
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
   }
   /* Only apply the four-edge intersect mask where the compositing keyword is
      genuinely supported (prefixed OR unprefixed). */
   @supports (mask-composite: intersect) or (-webkit-mask-composite: source-in) {
     .soft-edge {
       -webkit-mask-image:
-        linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%),
-        linear-gradient(to right,  transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+        linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%),
+        linear-gradient(to right,  transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
       -webkit-mask-composite: source-in;
       mask-image:
-        linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%),
-        linear-gradient(to right,  transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+        linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%),
+        linear-gradient(to right,  transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
       mask-composite: intersect;
     }
   }
@@ -232,8 +232,8 @@
      the viewport edges horizontally. Same ~32px pixel feather as .soft-edge
      so every editorial photo dissolves with one consistent softness. */
   .soft-edge-y {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
   }
   /* Four-side feather for a bare <img> that is NOT wrapped by ImageReveal
      (e.g. the Arista archive photo, which sits in a gallery mat). Mirrors the
@@ -241,18 +241,18 @@
      ImageReveal photos. Separate class (not .soft-edge) so it can live on a
      plain <img> without inheriting ImageReveal's overflow/aspect wrapper. */
   .soft-edge-img {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
-    mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
   }
   @supports (mask-composite: intersect) or (-webkit-mask-composite: source-in) {
     .soft-edge-img {
       -webkit-mask-image:
-        linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%),
-        linear-gradient(to right,  transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+        linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%),
+        linear-gradient(to right,  transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
       -webkit-mask-composite: source-in;
       mask-image:
-        linear-gradient(to bottom, transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%),
-        linear-gradient(to right,  transparent 0, #000 28px, #000 calc(100% - 28px), transparent 100%);
+        linear-gradient(to bottom, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%),
+        linear-gradient(to right,  transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%);
       mask-composite: intersect;
     }
   }

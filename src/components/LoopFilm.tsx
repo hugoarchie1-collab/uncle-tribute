@@ -86,9 +86,9 @@ export const LoopFilm = ({
       : edges === "all"
         ? {
             WebkitMaskImage:
-              "radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%)",
+              "radial-gradient(140% 140% at 50% 50%, #000 88%, transparent 100%)",
             maskImage:
-              "radial-gradient(120% 120% at 50% 50%, #000 62%, transparent 100%)",
+              "radial-gradient(140% 140% at 50% 50%, #000 88%, transparent 100%)",
           }
         : undefined;
 
