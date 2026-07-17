@@ -273,20 +273,21 @@ const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 const LOGO_URL = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
 
-// Bulletproof-dark palette. The old templates set the dark background via CSS
-// on <body>/<div>, which Gmail STRIPS (then force-inverts the light text) —
-// that was the black-on-black bug. This build sets the dark background via the
-// `bgcolor=` HTML attribute on every table + cell (which Gmail keeps) and hard-
-// codes an explicit colour on every text node, with solid-hex muted tones
-// (no rgba) so it stays dark and legible in every client + dark mode.
+// Light "estate paper" palette (Hugo: no black backgrounds). Warm cream page +
+// dark ink — the site's own cream-card palette, so it's coherent with the brand
+// yet fully readable everywhere. Still built bulletproof: the background is set
+// via the `bgcolor=` HTML attribute on every table + cell (which Gmail keeps,
+// unlike CSS background on <body>/<div> which it strips + inverts), with an
+// explicit solid-hex colour on every text node. Key names are role-stable so
+// the markup below is untouched: `bg` = the paper, `cream` = the primary ink.
 const C = {
-  bg: "#0a0908", // near-black page (site bg.DEFAULT)
-  card: "#14120f", // lifted card (site bg.soft)
-  cream: "#ede6d6", // body ink (site ink.DEFAULT)
-  muted: "#a9a498", // 70%-cream muted, flattened to solid hex
-  faint: "#878379", // 55%-cream faint, flattened to solid hex
+  bg: "#f5efe3", // warm paper page (site cream.DEFAULT)
+  card: "#ece4d5", // lifted items card (site cream.soft)
+  cream: "#1a1612", // primary ink on paper (site cream.ink)
+  muted: "#5a544a", // body / muted ink (site cream.ink-soft)
+  faint: "#8a8172", // captions
   rust: "#c97844", // accent (site accent.DEFAULT)
-  line: "#2a2825", // hairline (12%-cream over bg, flattened)
+  line: "#ddd3bf", // hairline (site cream.line)
 };
 
 // One estate-authentication trust cell (mirrors the site's PDP provenance
@@ -326,10 +327,18 @@ const renderBasketSavedHtml = (p: {
         + `</tr></table></td></tr>`;
     })
     .join("");
-  const intro = p.restoreCarried
-    ? `Here are the prints you set aside on the estate website. They live in this email now — open it on whichever device you'd like to use for checkout, follow the link, and your basket will be waiting just as you left it.`
-    : `Here are the prints you set aside on the estate website. They live in this email now — follow the link below and you can pick up where you left off. The basket itself sits in your browser, so it will quietly wait until you're ready.`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark"/><meta name="supported-color-schemes" content="dark"/><title>Your basket — The Art of Stephen Meakin</title>`
+  // Personal greeting — the recipient's first name (capitalised), else "Hello,".
+  const first = (() => {
+    const t = (p.buyerName ?? "").trim();
+    if (!t) return "";
+    const f = t.split(/\s+/)[0];
+    return esc(f.charAt(0).toUpperCase() + f.slice(1));
+  })();
+  const greeting = first ? `Dear ${first},` : `Hello,`;
+  const message = p.restoreCarried
+    ? `Thank you for spending a little time with Stephen's work. You set a few pieces aside on the estate website — open this on whichever device you'd like to check out on, follow the link below, and your basket will be waiting exactly as you left it.`
+    : `Thank you for spending a little time with Stephen's work. You set a few pieces aside on the estate website, and we've kept them safe for you here — follow the link below whenever the moment feels right, and they'll be waiting exactly as you left them.`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light"/><meta name="supported-color-schemes" content="light"/><title>Your basket — The Art of Stephen Meakin</title>`
     + `<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Schibsted+Grotesk:wght@400;500;600&display=swap" rel="stylesheet"/>`
     + `</head>`
     + `<body bgcolor="${C.bg}" style="margin:0;padding:0;background-color:${C.bg};">`
@@ -342,14 +351,14 @@ const renderBasketSavedHtml = (p: {
     + `<div style="font-family:${DISPLAY};font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:${C.cream};line-height:1.15;">The Mandala Company</div>`
     + `<div style="font-family:${SANS};font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};margin-top:10px;">The Art of Stephen Meakin</div>`
     + `</td></tr>`
-    // ---- intro ----
-    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:38px 40px 6px 40px;">`
-    + `<div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};margin:0 0 16px 0;">Your basket</div>`
-    + `<div style="font-family:${DISPLAY};font-size:34px;line-height:1.12;color:${C.cream};margin:0 0 20px 0;">Your basket, kept safe.</div>`
-    + `<div style="font-family:${SANS};font-size:15px;line-height:1.7;color:${C.muted};">${intro}</div>`
+    // ---- personal greeting + message ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:38px 40px 2px 40px;">`
+    + `<div style="font-family:${DISPLAY};font-size:25px;line-height:1.25;color:${C.cream};margin:0 0 16px 0;">${greeting}</div>`
+    + `<div style="font-family:${SANS};font-size:15px;line-height:1.72;color:${C.muted};">${message}</div>`
     + `</td></tr>`
-    // ---- items card ----
-    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:26px 40px 0 40px;">`
+    // ---- your basket ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 0 40px;">`
+    + `<div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};border-top:1px solid ${C.line};padding-top:24px;margin-bottom:16px;">Your basket</div>`
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.card}" style="width:100%;background-color:${C.card};border:1px solid ${C.line};"><tr><td style="padding:22px 24px;">`
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;">${lineHtml}</table>`
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid ${C.line};margin-top:4px;"><tr>`
@@ -361,8 +370,8 @@ const renderBasketSavedHtml = (p: {
     + `</td></tr>`
     // ---- CTA ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 6px 40px;">`
-    + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.cream}" style="background-color:${C.cream};">`
-    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:15px 42px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.bg};text-decoration:none;">Open your basket</a>`
+    + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.rust}" style="background-color:${C.rust};">`
+    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:15px 42px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.cream};text-decoration:none;">Open your basket</a>`
     + `</td></tr></table></td></tr>`
     // ---- reassurance + estate authentication cluster ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:32px 40px 0 40px;">`
