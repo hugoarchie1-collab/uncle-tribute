@@ -674,15 +674,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
 
     if (sendResult.error) {
       console.error("[newsletter-subscribe] Resend send error:", sendResult.error);
-    } else {
-      console.log("[newsletter-subscribe] welcome email sent", {
-        email,
-        resend_id: sendResult.data?.id,
+      return send(502, {
+        error: "We couldn't send your welcome email just now — please try again.",
       });
     }
+    console.log("[newsletter-subscribe] welcome email sent", {
+      email,
+      resend_id: sendResult.data?.id,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[newsletter-subscribe] welcome email failed:", message);
+    return send(502, {
+      error: "We couldn't send your welcome email just now — please try again.",
+    });
   }
 
   return send(200, { ok: true });

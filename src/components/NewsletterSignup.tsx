@@ -90,14 +90,14 @@ export const NewsletterSignup = ({
         form.reset();
         return;
       }
-      // Soft-success even on non-ok — operator log captures the truth.
-      setStatus("success");
-      form.reset();
+      // Real failure — surface it so the visitor can retry, instead of masking
+      // a backend error behind a fake "thank you" (the old behaviour that made
+      // the form look like it "didn't work").
+      setStatus("error");
+      setErrorMsg("Something went wrong on our end — please try again in a moment.");
     } catch {
-      // Network drop: treat as success in copy. The user can re-submit later
-      // if it really failed (they'll know because no email arrived).
-      setStatus("success");
-      form.reset();
+      setStatus("error");
+      setErrorMsg("Couldn't reach us just now — check your connection and try again.");
     }
   };
 
@@ -119,6 +119,9 @@ export const NewsletterSignup = ({
               name="botcheck"
               tabIndex={-1}
               autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore
+              data-form-type="other"
               style={{
                 position: "absolute",
                 width: "1px",
@@ -194,6 +197,9 @@ export const NewsletterSignup = ({
               name="botcheck"
               tabIndex={-1}
               autoComplete="off"
+              data-lpignore="true"
+              data-1p-ignore
+              data-form-type="other"
               style={{
                 position: "absolute",
                 width: "1px",
