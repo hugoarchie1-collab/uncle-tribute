@@ -450,7 +450,7 @@ export const Basket = () => {
                     >
                       <div className="flex gap-5 sm:gap-7 items-start">
                         <Link
-                          to={`/collections/${line.paintingId}`}
+                          to={`/collections/${line.paintingId}?c=${encodeURIComponent(line.colourwayName)}`}
                           className="block flex-shrink-0 w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] 2xl:w-[128px] 2xl:h-[128px] overflow-hidden ring-1 ring-line"
                           aria-label={`${line.title} — view painting`}
                         >
@@ -471,7 +471,7 @@ export const Basket = () => {
                             </div>
                           )}
                           <Link
-                            to={`/collections/${line.paintingId}`}
+                            to={`/collections/${line.paintingId}?c=${encodeURIComponent(line.colourwayName)}`}
                             className="font-display font-semibold tracking-[-0.025em] text-[clamp(20px,2.2vw,32px)] text-ink leading-tight hover:text-accent transition-colors"
                           >
                             {line.title}
@@ -485,13 +485,21 @@ export const Basket = () => {
                           <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
                             {line.colourwayName}
                           </p>
-                          <button
-                            type="button"
-                            onClick={() => removeItem(line.item.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                          >
-                            Remove
-                          </button>
+                          <div className="mt-2 flex items-center gap-5">
+                            <Link
+                              to={`/collections/${line.paintingId}?c=${encodeURIComponent(line.colourwayName)}`}
+                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors"
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(line.item.addedAt)}
+                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                         {/* Print price for this size. When add-ons are present
                             this is the PRINT-ONLY figure and the line subtotal
