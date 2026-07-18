@@ -271,7 +271,27 @@ const esc = (s: string): string =>
 // linked fonts. (Apple Mail honours the <link> and shows the real faces.)
 const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
-const LOGO_URL = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
+const SITE_ORIGIN = "https://themandalacompany.com";
+// The real brand lockup (wax-seal rose + "The Art of Stephen Meakin" in the
+// house serif, baked into a PNG so it renders identically in every client —
+// Gmail won't load the webfont, so an image is the only way to get the true
+// wordmark). Dark-on-transparent → sits cleanly on the cream masthead.
+const LOGO_LOCKUP_URL = `${SITE_ORIGIN}/logo/logo-lockup-art-dark-v1.png`;
+// Painting cover thumbnails for the basket lines — a self-contained mirror of
+// one representative colourway image per painting (gotcha #5: no imports from
+// src/data). Keep in sync with src/data/paintings.ts if a cover changes.
+const PAINTING_COVERS: Record<string, string> = {
+  "wild-rose": "/img/paintings/wild-rose-sussex-pink.jpg",
+  "english-bluebells": "/img/paintings/english-bluebells-v3.jpg",
+  "orchis-7": "/img/paintings/orchis7-rubedo-red.jpg",
+  "flower-of-life": "/img/paintings/fol-kaleidoscope.jpg",
+  "slipper-orchids": "/img/paintings/orchids30-nebula-purple.jpg",
+  "peacock-minerva": "/img/paintings/peacock-persian-indigo.jpg",
+  "ophiuchus": "/img/paintings/ophiuchus-original.jpg",
+  "tridecagon-moon-star": "/img/paintings/tridecagon-sage-green.jpg",
+  "lulin": "/img/paintings/lulin-original.jpg",
+  "enneagon-swans": "/img/paintings/enneagon-cygnus-gold.jpg",
+};
 
 // Light "estate paper" palette (Hugo: no black backgrounds). Warm cream page +
 // dark ink — the site's own cream-card palette, so it's coherent with the brand
@@ -300,7 +320,7 @@ const authCell = (label: string, sub: string): string =>
 
 const renderBasketSavedHtml = (p: {
   buyerName?: string | null;
-  lines: Array<{ title: string; colourway: string; size: string; price: string }>;
+  lines: Array<{ title: string; colourway: string; size: string; price: string; image?: string }>;
   subtotal: string;
   basketUrl: string;
   estateEmail: string;
@@ -316,6 +336,9 @@ const renderBasketSavedHtml = (p: {
       const topBorder = idx === 0 ? "0" : `1px solid ${C.line}`;
       return `<tr><td style="border-top:${topBorder};padding:${idx === 0 ? "0" : "16px"} 0 16px 0;">`
         + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;"><tr>`
+        + (line.image
+          ? `<td width="64" style="width:64px;vertical-align:top;padding-right:16px;"><img src="${SITE_ORIGIN}${esc(line.image)}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;border:1px solid ${C.line};"/></td>`
+          : "")
         + `<td style="vertical-align:top;">`
         + `<div style="font-family:${DISPLAY};font-style:italic;font-size:17px;line-height:1.3;color:${C.cream};">${esc(line.title)}</div>`
         + `<div style="font-family:${SANS};font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:${C.rust};margin-top:6px;">${esc(line.colourway)}</div>`
@@ -347,9 +370,7 @@ const renderBasketSavedHtml = (p: {
     + `<table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="${C.bg}" style="width:600px;max-width:600px;background-color:${C.bg};">`
     // ---- masthead ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:40px 40px 32px 40px;border-bottom:1px solid ${C.line};">`
-    + `<img src="${LOGO_URL}" width="66" height="66" alt="The Mandala Company" style="display:block;border:0;outline:none;text-decoration:none;width:66px;height:66px;margin:0 auto 18px auto;"/>`
-    + `<div style="font-family:${DISPLAY};font-size:23px;letter-spacing:0.12em;text-transform:uppercase;color:${C.cream};line-height:1.15;">The Mandala Company</div>`
-    + `<div style="font-family:${SANS};font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:${C.rust};margin-top:10px;">The Art of Stephen Meakin</div>`
+    + `<img src="${LOGO_LOCKUP_URL}" width="300" height="38" alt="The Art of Stephen Meakin — The Mandala Company" style="display:block;border:0;outline:none;text-decoration:none;width:300px;max-width:80%;height:auto;margin:0 auto;"/>`
     + `</td></tr>`
     // ---- personal greeting + message ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:38px 40px 2px 40px;">`
@@ -455,6 +476,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     colourway: string;
     size: string;
     price: string;
+    image?: string;
   }> = [];
   // Sanitised mirror of the POSTed items for the restore link (contract C2).
   // Same field names the client sent — /basket re-validates every line on
@@ -506,6 +528,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       colourway,
       size: `${tier.label} · ${sizeFor(id, tierId)} · ${tail.join(" · ")}`,
       price: formatGBP(linePence),
+      image: PAINTING_COVERS[id],
     });
     subtotalPence += linePence;
 

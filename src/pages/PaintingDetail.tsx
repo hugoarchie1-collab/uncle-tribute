@@ -1863,8 +1863,9 @@ const BuyBox = ({
 
         {/* Made-to-order reassurance — surfaces the REAL 24-hour goodwill
             cancellation window (Legal.tsx "Your right to cancel") so the
-            no-returns rule on custom sizes doesn't scare a first-time buyer. */}
-        <p className={cn(META, "mt-4 m-0")}>
+            no-returns rule on custom sizes doesn't scare a first-time buyer.
+            mt-7 keeps clear air below the CTA pair (was mt-4 — read as cramped). */}
+        <p className={cn(META, "mt-7 m-0")}>
           Changed your mind?{" "}
           <Link
             to="/returns"

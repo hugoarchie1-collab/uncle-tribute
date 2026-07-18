@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import type { BasketItem } from "../lib/basket";
 
 /**
@@ -29,6 +29,17 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  // Pre-fill the name from a prior newsletter/returning-visitor capture so the
+  // emailed basket greets the buyer by name ("Dear Hugo,") instead of "Hello,".
+  const [savedName, setSavedName] = useState("");
+
+  useEffect(() => {
+    try {
+      setSavedName(window.localStorage.getItem("tasm.subscriberName") || "");
+    } catch {
+      /* private mode — non-fatal */
+    }
+  }, []);
 
   if (items.length === 0) return null;
 
@@ -90,10 +101,14 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="group inline-flex items-center gap-2.5 ring-1 ring-line hover:ring-accent bg-transparent px-5 py-3 rounded-full font-sans text-[14px] font-semibold tracking-[0.02em] text-ink hover:text-accent transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          Save your basket — email it to me
-          <span aria-hidden="true" className="ml-2">→</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
+            <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M3.2 6l6.8 4.8L16.8 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Email my basket to me
+          <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
         </button>
       )}
 
@@ -113,6 +128,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 name="name"
                 type="text"
                 autoComplete="name"
+                defaultValue={savedName}
                 placeholder="Your name (optional)"
                 className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
