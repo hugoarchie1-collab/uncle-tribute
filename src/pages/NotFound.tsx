@@ -46,18 +46,8 @@ export const NotFound = () => {
           no centered afterthought, no dead vertical air. */}
       <main className="relative z-10 flex-1 px-4 pt-10 pb-10 sm:px-6 md:px-8 md:pt-12 md:pb-12 lg:px-12">
         <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px]">
-          {/* Meta rule — the AboutMasthead recipe: eyebrow · hairline · tag. */}
-          <Reveal
-            as="div"
-            className="flex items-center gap-4 border-b border-line pb-4 md:gap-6 md:pb-5"
-          >
-            <span className={EYEBROW}>Error 404</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0")}>Page not found</span>
-          </Reveal>
-
           {/* The giant numeral + the statement, on one bold asymmetric line. */}
-          <div className="mt-5 grid grid-cols-1 items-end gap-x-10 gap-y-4 md:mt-7 lg:grid-cols-12">
+          <div className="grid grid-cols-1 items-end gap-x-10 gap-y-4 lg:grid-cols-12">
             <Reveal as="div" className="lg:col-span-7 xl:col-span-8">
               <h1
                 className="m-0 font-display font-bold tracking-[-0.045em] text-ink hero-text-shadow leading-[0.82]"

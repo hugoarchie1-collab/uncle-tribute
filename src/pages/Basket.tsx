@@ -247,15 +247,8 @@ export const Basket = () => {
           0,
         );
   const giftMinor = giftCards.reduce((sum, g) => sum + convert(g.amountPence), 0);
-  // Order-level add-on bumps — mirror api/checkout.ts GIFT_WRAP_PENCE / CARE_KIT_PENCE.
-  const GIFT_WRAP_PENCE = 2500; // £25
-  const CARE_KIT_PENCE = 2000; // £20
-  const [giftWrap, setGiftWrap] = useState(false);
-  const [careKit, setCareKit] = useState(false);
-  const bumpMinor =
-    (giftWrap ? convert(GIFT_WRAP_PENCE) : 0) + (careKit ? convert(CARE_KIT_PENCE) : 0);
   const grandTotalMinor =
-    subtotalMinor - bundleDiscountMinor + giftMinor + bumpMinor;
+    subtotalMinor - bundleDiscountMinor + giftMinor;
   const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode);
 
   // Cross-sell rail — fills the left column when there are few items (kills the
@@ -326,8 +319,6 @@ export const Basket = () => {
           // converts every pence figure into it so the Stripe charge matches
           // the price shown on this page (advertised == charged, any currency).
           currency: currencyCode,
-          ...(giftWrap ? { giftWrap: true } : {}),
-          ...(careKit ? { careKit: true } : {}),
           ...(utm ? { utm } : {}),
         }),
         signal: controller.signal,
@@ -673,14 +664,17 @@ export const Basket = () => {
                   Print orders only. Purely reassurance — nothing priced here. */}
               {lines.length > 0 && (
                 <div className="mb-5 rounded-xl bg-ink/[0.04] ring-1 ring-line px-4 py-3.5">
-                  <p className={cn(EYEBROW_TIGHT, "m-0 mb-2 text-ink")}>
+                  <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>
                     Included free with every order
+                  </p>
+                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mb-2.5">
+                    The finishing others would add to the bill — ours, with our warmth.
                   </p>
                   <ul className="m-0 p-0 list-none flex flex-col gap-1.5">
                     {[
+                      "Hand-wrapped in soft estate tissue, sealed with the wax rose",
+                      "A printed catalogue of Stephen’s paintings, enclosed",
                       "The estate presentation box, designed by the family",
-                      "A printed catalogue of Stephen’s paintings",
-                      "The estate’s wax-rose seal on the wrapping",
                     ].map((t) => (
                       <li
                         key={t}
@@ -693,59 +687,6 @@ export const Basket = () => {
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
-
-              {/* FINISHING TOUCHES — order-level add-on bumps (near-pure margin,
-                  fitting a gift/memorial purchase). Mirror api/checkout.ts. Only
-                  shown when the order has a print (not gift-cards only). */}
-              {lines.length > 0 && (
-                <div className="flex flex-col gap-2.5 mb-4">
-                  <p className={cn(EYEBROW_TIGHT, "m-0")}>Finishing touches</p>
-                  {(
-                    [
-                      {
-                        on: giftWrap,
-                        set: setGiftWrap,
-                        label: "Gift wrapping & handwritten card",
-                        pence: GIFT_WRAP_PENCE,
-                        note: "Wrapped by hand in estate tissue with a wax seal and a handwritten card — ready to give.",
-                      },
-                      {
-                        on: careKit,
-                        set: setCareKit,
-                        label: "Hanging & care kit",
-                        pence: CARE_KIT_PENCE,
-                        note: "Wall fixings, D-rings and a microfibre cloth with a care card — everything to hang and keep your print.",
-                      },
-                    ] as const
-                  ).map((b) => (
-                    <label
-                      key={b.label}
-                      className={cn(
-                        "flex items-start gap-3 ring-1 px-4 py-3 cursor-pointer transition-all duration-300",
-                        b.on ? "ring-ink" : "ring-line hover:ring-ink/40",
-                      )}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={b.on}
-                        onChange={(e) => b.set(e.target.checked)}
-                        className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
-                      />
-                      <span className="flex flex-col gap-0.5 min-w-0">
-                        <span className="flex items-baseline justify-between gap-3">
-                          <strong className="font-sans text-[15px] text-ink">{b.label}</strong>
-                          <span className="font-sans text-[14px] font-semibold text-ink whitespace-nowrap">
-                            +{fmt(b.pence)}
-                          </span>
-                        </span>
-                        <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                          {b.note}
-                        </span>
-                      </span>
-                    </label>
-                  ))}
                 </div>
               )}
 
@@ -782,26 +723,6 @@ export const Basket = () => {
                     </dt>
                     <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
                       {fmtMinor(giftMinor)}
-                    </dd>
-                  </div>
-                )}
-                {giftWrap && (
-                  <div className="flex items-baseline justify-between gap-6">
-                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
-                      Gift wrapping &amp; card
-                    </dt>
-                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
-                      {fmtMinor(convert(GIFT_WRAP_PENCE))}
-                    </dd>
-                  </div>
-                )}
-                {careKit && (
-                  <div className="flex items-baseline justify-between gap-6">
-                    <dt className="font-sans text-[clamp(14px,0.82vw,17px)] leading-[1.5] text-ink-muted m-0 min-w-0">
-                      Hanging &amp; care kit
-                    </dt>
-                    <dd className="font-sans text-[clamp(15px,0.88vw,18px)] text-ink m-0 tabular-nums flex-shrink-0">
-                      {fmtMinor(convert(CARE_KIT_PENCE))}
                     </dd>
                   </div>
                 )}

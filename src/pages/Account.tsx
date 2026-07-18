@@ -268,10 +268,8 @@ export const Account = () => {
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
         <Reveal as="header">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
-            <span className={EYEBROW}>Account</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            {signedIn && (
+          {signedIn && (
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => void signOut()}
@@ -279,10 +277,10 @@ export const Account = () => {
               >
                 Sign out
               </button>
-            )}
-          </div>
+            </div>
+          )}
           <h1
-            className="font-display text-ink m-0 mt-5 md:mt-6 text-balance text-pretty"
+            className="font-display text-ink m-0 text-balance text-pretty"
             style={MASTHEAD_TITLE_STYLE}
           >
             {signedIn ? "Your orders." : "Your account."}

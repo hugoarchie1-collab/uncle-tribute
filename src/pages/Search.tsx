@@ -222,20 +222,7 @@ export const Search = () => {
         {/* MASTHEAD — the refined estate front cover carrying the query (eyebrow
             + hairline meta rule → a composed Fraunces display title, never shouty). */}
         <header>
-          <Reveal
-            as="div"
-            className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5"
-          >
-            <span className={EYEBROW}>Search</span>
-            <span aria-hidden="true" className="h-px flex-1 bg-ink/15" />
-            <span aria-live="polite" className={cn(EYEBROW_MUTED, "shrink-0")}>
-              {trimmed
-                ? `${total} ${total === 1 ? "result" : "results"}`
-                : "The estate"}
-            </span>
-          </Reveal>
-
-          <Reveal as="div" className="mt-5 md:mt-7">
+          <Reveal as="div">
             <h1
               className="m-0 font-display text-ink text-balance text-pretty"
               style={MASTHEAD_TITLE_STYLE}

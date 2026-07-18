@@ -175,17 +175,7 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 const NewsMasthead = () => (
   <section className="relative pt-8 md:pt-10 pb-6 md:pb-8">
     <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
-      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-        <span className={cn(EYEBROW, "shrink-0")} style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
-          The estate calendar
-        </span>
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-        <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>The Mandala Company</span>
-        <span aria-hidden className="h-px flex-1 bg-ink/15 hidden sm:block" />
-      </Reveal>
-
-      <Reveal as="div" className="mt-4 md:mt-5">
+      <Reveal as="div">
         <h1
           className="font-display text-ink m-0 text-balance"
           style={{

@@ -172,15 +172,7 @@ export const FindAPrint = () => {
             axis-centred block over the rainbow-wave scene. Verbatim copy unchanged;
             only the framing moves. */}
         <section className="mx-auto w-full max-w-[1280px] 3xl:max-w-[1460px] text-center">
-          <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={EYEBROW} style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}>
-              For you · Where to begin
-            </span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-          </Reveal>
-
-          <Reveal as="div" className="mt-5 md:mt-6">
+          <Reveal as="div">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
               style={MASTHEAD_TITLE_STYLE}

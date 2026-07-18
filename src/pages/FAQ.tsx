@@ -283,17 +283,7 @@ const FaqMasthead = () => (
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px] text-center">
-      <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-3.5">
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-        <span className={cn(EYEBROW, "shrink-0")}>Before you buy</span>
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-        <span className={cn(EYEBROW_MUTED, "shrink-0")}>
-          {ordinal(FAQS.length - 1)} questions
-        </span>
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      </Reveal>
-
-      <Reveal as="div" className="mt-2.5 md:mt-3">
+      <Reveal as="div">
         <h1
           className="font-display text-ink m-0"
           style={{ ...MASTHEAD_TITLE_STYLE, fontSynthesis: "none" }}
