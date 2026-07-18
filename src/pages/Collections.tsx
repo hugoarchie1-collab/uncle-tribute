@@ -902,7 +902,7 @@ export const Collections = () => {
                           </div>
                           <figcaption className="pt-3 md:pt-4 text-center">
                             <h3
-                              className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.025em] text-ink m-0 transition-colors duration-300 group-hover:text-accent"
+                              className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.025em] text-ink m-0 min-h-[2.4em] flex items-center justify-center transition-colors duration-300 group-hover:text-accent"
                               style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                             >
                               {painting.title}

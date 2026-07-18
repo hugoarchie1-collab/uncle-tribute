@@ -404,7 +404,7 @@ export const Basket = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                           />
                         </div>
-                        <h3 className="font-display font-bold tracking-[-0.015em] text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] text-ink m-0 mt-3 group-hover:text-accent transition-colors duration-300">
+                        <h3 className="font-display font-bold tracking-[-0.015em] text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] text-ink m-0 mt-3 min-h-[2.5em] group-hover:text-accent transition-colors duration-300">
                           {painting.title}
                         </h3>
                         <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
