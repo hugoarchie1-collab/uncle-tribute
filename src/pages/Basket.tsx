@@ -30,7 +30,7 @@ import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY } from "../components/ui/tokens";
 import { useNoindexHead } from "../lib/useNoindexHead";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 
@@ -367,13 +367,8 @@ export const Basket = () => {
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
             clamp ≤116px) instead of the old over-bold 700/opsz-48 logo. */}
         <Reveal as="div" className="mb-9 md:mb-12">
-          <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-3 md:pb-4">
-            <span className={EYEBROW}>Made to order</span>
-            <span aria-hidden className="h-px flex-1 bg-ink/15" />
-            <span className={cn(EYEBROW_MUTED, "shrink-0")}>The Mandala Company</span>
-          </div>
           <h1
-            className="font-display text-ink m-0 mt-4 md:mt-5 text-balance text-pretty"
+            className="font-display text-ink m-0 text-balance text-pretty"
             style={MASTHEAD_TITLE_STYLE}
           >
             Your basket

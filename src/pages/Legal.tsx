@@ -5,7 +5,7 @@ import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
+import { EYEBROW_MUTED } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
@@ -738,7 +738,6 @@ export const Returns = () => (
 const LegalMasthead = ({
   title,
   lead,
-  updated,
   sections,
 }: {
   title: string;
@@ -747,13 +746,7 @@ const LegalMasthead = ({
   sections: Section[];
 }) => (
   <section className="relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
-    <Reveal as="div" className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-      <span className={EYEBROW}>The Mandala Company</span>
-      <span aria-hidden className="h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0")}>Updated {updated}</span>
-    </Reveal>
-
-    <Reveal as="div" className="mt-4 md:mt-6">
+    <Reveal as="div">
       <h1
         className="font-display text-ink m-0 text-balance text-pretty [&_br]:hidden sm:[&_br]:block"
         style={MASTHEAD_TITLE_STYLE}

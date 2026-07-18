@@ -26,7 +26,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, MASTHEAD_TITLE_STYLE } from "./ui/tokens";
+import { MASTHEAD_TITLE_STYLE } from "./ui/tokens";
 
 // The masthead title-style recipes (MASTHEAD_TITLE_STYLE / _SM) live in
 // ./ui/tokens.ts — import them from there. They are NOT re-exported here so this
@@ -58,8 +58,9 @@ export interface PageMastheadProps {
  * whatever supporting content the page passes as children.
  */
 export const PageMasthead = ({
-  eyebrow,
-  meta,
+  // eyebrow + meta are still accepted (callers pass them) but no longer rendered
+  // — the owner had the eyebrow/meta rule removed from every page's masthead
+  // (2026-07-18: "the two lines at the top … looks crap on every page").
   title,
   titleStyle,
   titleClassName,
@@ -70,16 +71,9 @@ export const PageMasthead = ({
   const Heading = as;
   return (
     <header className={className}>
-      <div className="flex items-center gap-4 md:gap-6 border-b border-line pb-4 md:pb-5">
-        <span className={EYEBROW}>{eyebrow}</span>
-        <span aria-hidden className="h-px flex-1 bg-ink/15" />
-        {meta ? (
-          <span className={cn(EYEBROW_MUTED, "shrink-0 hidden sm:inline")}>{meta}</span>
-        ) : null}
-      </div>
       <Heading
         className={cn(
-          "font-display text-ink m-0 mt-5 md:mt-7 text-balance text-pretty",
+          "font-display text-ink m-0 text-balance text-pretty",
           titleClassName,
         )}
         style={{ ...MASTHEAD_TITLE_STYLE, ...titleStyle }}
