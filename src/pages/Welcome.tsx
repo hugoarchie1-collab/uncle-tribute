@@ -570,7 +570,7 @@ export const Welcome = () => {
             <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
               <Reveal as="div" className="text-center">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mx-auto text-balance hero-text-shadow">
-                  <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[0.98]">
+                  <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[1.02]">
                     So here we are on Earth
                   </span>
                   <span className="block font-normal italic text-[clamp(26px,4.4vw,56px)] leading-[1.12] mt-3 md:mt-4 text-ink/90">
@@ -763,7 +763,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.

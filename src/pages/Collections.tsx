@@ -707,7 +707,7 @@ export const Collections = () => {
                 as editioned giclée prints — the collection as it stands today,
                 with more of his work still to come.
               </p>
-              <div className="lg:pt-1.5 flex flex-col gap-4 lg:h-full lg:justify-between">
+              <div className="lg:pt-1.5 flex flex-col gap-4 lg:justify-start">
                 <p
                   className="font-sans font-normal text-[15px] md:text-[clamp(16px,0.95vw,21px)] leading-[1.75] text-ink-muted m-0"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}

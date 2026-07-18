@@ -457,7 +457,7 @@ export const Basket = () => {
                           <AssetImage
                             src={line.image}
                             alt={`${line.title} — ${line.colourwayName}`}
-                            className="w-full h-full object-cover object-top block"
+                            className="w-full h-full object-cover object-center block"
                             sizes="(min-width: 1536px) 128px, (min-width: 640px) 104px, 88px"
                             loading="lazy"
                           />
