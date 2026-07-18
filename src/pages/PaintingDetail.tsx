@@ -2863,7 +2863,7 @@ export const PaintingDetail = () => {
                           className={
                             framing
                               ? "block w-full h-full object-contain"
-                              : "block h-auto w-auto max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]"
+                              : "block mx-auto h-auto w-auto max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]"
                           }
                         />
                       </motion.picture>
