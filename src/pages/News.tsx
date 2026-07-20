@@ -341,8 +341,17 @@ export const News = () => {
   // the hero (a release WITH a cover — the same gate the hero JSX uses below).
   // Otherwise a non-cover "next" entry was excluded from the feed yet never
   // shown as a hero, so it vanished from the page entirely (audit).
-  const heroId =
-    featured && isRelease(featured) && featured.cover ? featured.id : undefined;
+  // The hero only belongs on views where the featured (release) entry actually
+  // fits the active filter — otherwise a release hero floats above an empty
+  // "nothing under this filter" feed (audit). "All" + "Releases" show it; the
+  // other tabs (exhibitions / workshops / events) correctly hide it.
+  const heroVisible = !!(
+    featured &&
+    isRelease(featured) &&
+    featured.cover &&
+    (active === "all" || featured.type === active)
+  );
+  const heroId = heroVisible && featured ? featured.id : undefined;
   // Hero swipe gallery — the featured release cover FIRST, then every other
   // upcoming ("next"/"soon") release cover, deduped. Gives the hero its "swipe
   // between both paintings" set without inventing anything (data-driven).
@@ -388,7 +397,7 @@ export const News = () => {
       merged.push({
         status: "next",
         heading: "Coming soon",
-        note: "New collections in preparation",
+        note: "New editions in preparation",
         entries: coming,
       });
     }
@@ -503,7 +512,7 @@ export const News = () => {
             on-axis feature, never a single card floating off-centre below the
             label. The previous build buried the eyebrow inside an asymmetric text
             column, which read as the card drifting below a stray COMING SOON tag. */}
-        {hasNews && featured && isRelease(featured) && featured.cover ? (
+        {hasNews && heroVisible ? (
           <Reveal
             as="section"
             delay={0.05}

@@ -279,7 +279,7 @@ const FaqMasthead = () => (
   // backdrop must never out-shout the text). Whole-element, not per-glyph, so
   // gotcha #2 (no SplitReveal blockiness) is not triggered.
   <section
-    className={cn(SECTION, "pt-5 md:pt-7 pb-3 md:pb-4")}
+    className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px] text-center">
