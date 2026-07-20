@@ -2007,13 +2007,12 @@ const Story = ({ painting }: { painting: Painting }) => (
   <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto">
     {painting.artistQuote && (
       <Reveal as="div" className="max-w-[940px] 2xl:max-w-[1040px]">
-        {/* AboutMasthead grammar adapted to the monochrome PDP: a full-measure
-            hairline + muted-ink eyebrow, then the artist quote lifted to a
-            confident Fraunces statement (opsz ≤48, real italic 400) — the
-            page's bold prose header. COPY IS VERBATIM from paintings.ts
+        {/* Muted-ink eyebrow, then the artist quote lifted to a confident
+            Fraunces statement (opsz ≤48, real italic 400) — the page's bold
+            prose header. Sections separate by whitespace, not rules (Hugo:
+            no divider lines). COPY IS VERBATIM from paintings.ts
             (painting.artistQuote), never re-typed. */}
-        <div aria-hidden className="h-px w-full bg-line" />
-        <p className={cn(EYEBROW_MUTED, "m-0 mt-4 mb-4")}>In Stephen&rsquo;s words</p>
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>In Stephen&rsquo;s words</p>
         <blockquote className="m-0">
           <p
             className="font-display italic font-normal tracking-[-0.015em] text-[clamp(22px,2.6vw,40px)] leading-[1.18] text-ink m-0 mb-3 text-balance"
@@ -2972,8 +2971,7 @@ export const PaintingDetail = () => {
               as the hero/page so the editorial spread fills the width instead
               of collapsing to a narrow column. Read after the buyer has seen
               the price + options. */}
-          <div className="mt-6 md:mt-8">
-            <Separator className="bg-line mb-5 md:mb-6 max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto" />
+          <div className="mt-10 md:mt-14">
             <Story painting={painting} />
             <ProvenancePanel />
           </div>
