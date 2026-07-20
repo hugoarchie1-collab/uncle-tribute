@@ -696,7 +696,7 @@ export const Privacy = () => (
     // Privacy's certified sunset-silhouette scene. (Its 2nd scene — the lone-
     // tree headland — was moved to be the ACCOUNT page's exclusive backdrop
     // per Hugo's "no repeats" rule 2026-07-04, so privacy is single-scene now.)
-    backdrop="/img/scenes/privacy-scene-a-v3.webp"
+    backdrop="/img/scenes/privacy-scene-a-v4.webp"
   />
 );
 export const Terms = () => (
