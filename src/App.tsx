@@ -52,6 +52,8 @@ const Links = lazy(() => import("./pages/Links").then((m) => ({ default: m.Links
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
 const Account = lazy(() => import("./pages/Account").then((m) => ({ default: m.Account })));
 const Orders = lazy(() => import("./pages/Orders").then((m) => ({ default: m.Orders })));
+// Print-only catalogue (not in nav) — rendered to PDF via headless Chrome.
+const PrintCatalogue = lazy(() => import("./pages/PrintCatalogue").then((m) => ({ default: m.PrintCatalogue })));
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
 
@@ -128,6 +130,7 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Welcome />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/collections/:id" element={<PaintingDetail />} />
+          <Route path="/print-catalogue" element={<PrintCatalogue />} />
           {/* Old /gallery (Virtual Exhibition) retired — AR now lives in the
               "See on your wall" modal on each painting. Redirect legacy links. */}
           <Route path="/gallery" element={<Navigate to="/collections" replace />} />
@@ -261,6 +264,18 @@ export default function App() {
   useEffect(() => {
     captureUtm();
     initTrackingIfConsented();
+  }, []);
+
+  // Capture mode (?bare): hide only the nav / cookie banner / cursor / grain so
+  // a live page can be screenshotted clean for the print catalogue clone. Keeps
+  // the fixed peacock backdrop + hero video intact (unlike printing-catalogue).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("bare")) {
+      document.body.classList.add("cap-bare");
+      const y = params.get("y");
+      if (y) window.setTimeout(() => window.scrollTo(0, parseInt(y, 10) || 0), 500);
+    }
   }, []);
 
   return (

@@ -847,3 +847,17 @@ video[autoplay]::-webkit-media-controls {
     rgba(34, 6, 7, 0.98) 100%
   );
 }
+
+/* Capture mode for the print-catalogue clone (?bare): hide chrome only, keep
+   the fixed peacock backdrop + hero video so a page screenshots clean. */
+body.cap-bare nav,
+body.cap-bare header,
+body.cap-bare .cc-flower,
+body.cap-bare .film-grain,
+body.cap-bare [class*="z-[110]"],
+body.cap-bare [class*="z-[115]"],
+body.cap-bare [class*="z-[120]"] { display: none !important; }
+
+/* In capture mode, force framer scroll-faded content fully visible so
+   below-the-fold sections render in a headless screenshot (rAF is frozen). */
+body.cap-bare [style*="opacity"] { opacity: 1 !important; }
