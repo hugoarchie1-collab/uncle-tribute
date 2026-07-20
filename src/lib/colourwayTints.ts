@@ -12,7 +12,7 @@ export interface ColourwayTint {
 
 const GENERATED: Record<string, ColourwayTint> = {
   "/img/paintings/wild-rose-sussex-pink.jpg": { wall: "#3c320d", halo: "#998542" }, // H 93
-  "/img/paintings/english-bluebells-v3.jpg": { wall: "#1d344e", halo: "#5d89bb" }, // H 252
+  "/img/paintings/english-bluebells-v4.jpg": { wall: "#1d344e", halo: "#5d89bb" }, // H 252
   "/img/paintings/orchis7-rubedo-red.jpg": { wall: "#4b2726", halo: "#b6706f" }, // H 21
   "/img/paintings/fol-kaleidoscope.jpg": { wall: "#2e2f4e", halo: "#7d7fbb" }, // H 282
   "/img/paintings/orchids30-nebula-purple.jpg": { wall: "#2e2f4e", halo: "#7d7fbb" }, // H 282

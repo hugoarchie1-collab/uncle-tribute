@@ -3,7 +3,7 @@
 // sibling exists on disk (e.g. /img/paintings/wild-rose-sussex-pink-w800.webp).
 // Regenerate with the sharp script if new paintings are added — do not hand-edit.
 export const IMAGE_VARIANT_WIDTHS: Record<string, readonly number[]> = {
-  "/img/paintings/english-bluebells-v3.jpg": [480, 800, 1200, 1600],
+  "/img/paintings/english-bluebells-v4.jpg": [480, 800, 1200, 1600],
   "/img/paintings/enneagon-antique-pink.jpg": [480, 800, 1200, 1600],
   "/img/paintings/enneagon-cygnus-gold.jpg": [480, 800, 1200, 1600],
   "/img/paintings/enneagon-glacier-blue.jpg": [480, 800, 1200, 1600],

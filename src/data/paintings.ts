@@ -658,12 +658,12 @@ export const PAINTINGS: Painting[] = [
     colourways: [
       {
         name: "Sussex Blue",
-        // -v3 filename busts Vercel's 1-year immutable /img cache after the
-        // re-crop. v2 was over-zoomed (cropped INTO the mandala, losing the
-        // corners); v3 removes ONLY the lavender border off the raw original
-        // so the full mandala + sky corners show with the same breathing room
-        // Wild Rose gets across the site.
-        image: "/img/paintings/english-bluebells-v3.jpg",
+        // -v4 filename busts Vercel's 1-year immutable /img cache after the
+        // re-crop. v2 over-zoomed INTO the mandala; v3 then cropped square and
+        // lost the painting's lavender cloud border entirely. v4 RESTORES the
+        // full frame from the print-ready original (square center-crop, no
+        // distortion) so Stephen's lilac sky border shows as painted.
+        image: "/img/paintings/english-bluebells-v4.jpg",
         hex: "#a9b9d6",
         isOriginal: true,
         available: true,
