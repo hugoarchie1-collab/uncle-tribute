@@ -22,6 +22,7 @@ import {
   DEATH_DATE,
   INTERVIEW,
   LIFE_DATES,
+  TRIBUTE,
 } from "../data/content";
 import { Seo } from "../components/Seo";
 import { PavoBackdrop } from "../components/PavoBackdrop";
@@ -1518,6 +1519,40 @@ export const About = () => {
             and reads as a composed, intentional close. Portrait object-CONTAIN
             (never cropped) + soft-edge feather + capped height (never a
             screen-filling wall). Verbatim-only: the CTA carries the farewell. */}
+        {/* THE STUDENTS' LETTER — the words he left every student. Verbatim
+            from ABOUT.studentsIntro + studentsLetter; centered, no rules/boxes. */}
+        <section className={cn(SECTION, SECTION_PAD)}>
+          <Reveal as="div" className="text-center mb-5 md:mb-7">
+            <p className={cn(EYEBROW, "m-0 mb-3")}>To his students</p>
+            <h2 className={cn(TITLE, "my-0 mx-auto max-w-[1000px] hero-text-shadow")}>
+              May you have a <em className="italic font-normal">wonderful</em> journey.
+            </h2>
+          </Reveal>
+          <Reveal as="div" delay={0.06} className="mx-auto max-w-[74ch] text-center">
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>{ABOUT.studentsIntro}</p>
+            <blockquote className="m-0">
+              <Prose text={ABOUT.studentsLetter} className={cn(SUBTITLE, "italic")} />
+            </blockquote>
+          </Reveal>
+        </section>
+
+        {/* IN LOVING MEMORY — Polly Wedge's funeral tribute, VERBATIM
+            (untouchable). Centered, no rules/boxes. */}
+        <section className={cn(SECTION, SECTION_PAD)}>
+          <Reveal as="div" className="text-center mb-5 md:mb-7">
+            <p className={cn(EYEBROW, "m-0 mb-3")}>{TRIBUTE.eyebrow}</p>
+            <h2 className={cn(TITLE, "my-0 mx-auto max-w-[1000px] hero-text-shadow")}>
+              Steve, we will love you <em className="italic font-normal">forever</em>.
+            </h2>
+          </Reveal>
+          <Reveal as="div" delay={0.06} className="mx-auto max-w-[74ch] text-center flex flex-col gap-4 md:gap-5">
+            {TRIBUTE.paragraphs.map((para, i) => (
+              <p key={i} className={cn(SUBTITLE, "m-0")}>{para}</p>
+            ))}
+            <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>{TRIBUTE.attribution}</p>
+          </Reveal>
+        </section>
+
         <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
           <Reveal as="div" className={cn(BLOCK_GAP, "text-center")}>
             <p className={cn(EYEBROW, "m-0 mb-6")}>The Art of Stephen Meakin</p>
