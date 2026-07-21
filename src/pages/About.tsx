@@ -30,6 +30,8 @@ import {
   EYEBROW,
   EYEBROW_MUTED,
   EYEBROW_TIGHT,
+  TITLE,
+  SUBTITLE,
   ABOUT_BODY,
   ABOUT_LEAD,
   ABOUT_STANDOUT,
@@ -37,8 +39,6 @@ import {
   ABOUT_SUBHEAD,
   ABOUT_SUBHEAD_STYLE,
   ABOUT_CAPTION,
-  BTN_PRIMARY,
-  BTN_SECONDARY,
 } from "../components/ui/tokens";
 
 // =============================================================================
@@ -282,7 +282,6 @@ const PullLine = ({ text, className }: { text: string; className?: string }) => 
           lg+ (was a 42px line capped at 26ch, which left the band's right half
           empty — Hugo's "blank space"). Now it fills the band edge-to-edge as a
           display beat. */}
-      <div aria-hidden className="mb-4 md:mb-5 h-px w-full bg-ink/25" />
       <p
         className={cn(
           STANDOUT_CLASS,
@@ -337,20 +336,16 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
   const index = CHAPTERS.findIndex((c) => c.id === id);
   const chapter = CHAPTERS[index];
   const numeral = ROMAN_NUMERALS[index];
+  // Home's centered header unit: a rust eyebrow + a big Fraunces TITLE, no rule.
   return (
-    <header className={cn(READING_WIDE, "mb-3 md:mb-4 2xl:mb-5")}>
-      <Reveal as="div">
-        <div aria-hidden className="h-px w-full bg-ink/15" />
-      </Reveal>
-      <Reveal as="div" delay={0.06}>
-        <p className="m-0 mt-3">
-          <span className={EYEBROW}>Chapter {numeral}</span>
-          <span className={cn(EYEBROW_MUTED, "ml-3")}>
-            {chapter.kicker} · {chapter.tag}
-          </span>
-        </p>
-      </Reveal>
-    </header>
+    <Reveal as="header" className="text-center mb-5 md:mb-7">
+      <p className={cn(EYEBROW, "m-0 mb-3")}>
+        Chapter {numeral} · {chapter.tag}
+      </p>
+      <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] mx-auto hero-text-shadow")}>
+        {chapter.kicker}
+      </h2>
+    </Reveal>
   );
 };
 
@@ -361,8 +356,9 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
 // the whole thing rasterises once (a static texture) and costs nothing per frame
 // under the scroll parallax. Dial the numbers to taste; `PHOTO_GRADE` alone is
 // the tone, `_SHADOW` adds the lift for shadowed plates.
-const PHOTO_GRADE = "saturate(0.72) sepia(0.22) contrast(1.1) brightness(1.02)";
-const PHOTO_GRADE_SHADOW = `${PHOTO_GRADE} drop-shadow(0 24px 48px rgba(0,0,0,0.5))`;
+// Photos render in TRUE colour (Hugo: the sepia grade "ruined the colouring").
+// A single soft lift only — no tone shift, no heavy dark halo.
+const PHOTO_GRADE_SHADOW = "drop-shadow(0 10px 26px rgba(0,0,0,0.30))";
 
 // ─── Plate ───────────────────────────────────────────────────────────────────
 // The family-album register: a personal snapshot shown at object-CONTAIN inside
@@ -397,7 +393,7 @@ const Plate = ({
       // padding + card-shadow on every tile), so contain-letterboxed photos of
       // mixed orientation read as matched museum mats, not ragged floating photos.
       // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
-      <div className={cn("relative w-full max-h-[62svh] overflow-hidden bg-ink/[0.04] md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
+      <div className={cn("relative w-full max-h-[62svh] overflow-hidden", aspect)}>
         <AssetImage
           src={src}
           alt={alt}
@@ -429,13 +425,8 @@ const Plate = ({
 // ─── Dinkus ──────────────────────────────────────────────────────────────────
 // The quiet section-break mark — used exactly twice (Art as ritual; the
 // exhibitions→interview turn). Static.
-const Dinkus = () => (
-  <div role="separator" aria-hidden className="mx-auto my-4 flex w-fit items-center gap-4">
-    <span className="h-px w-12 bg-ink/15" />
-    <span className="block h-1.5 w-1.5 rotate-45 bg-accent/50" />
-    <span className="h-px w-12 bg-ink/15" />
-  </div>
-);
+// Sections separate by whitespace, never a rule (Hugo: no lines anywhere).
+const Dinkus = () => null;
 
 // ─── WordReveal ────────────────────────────────────────────────────────────
 // Stagger every word into place. Used on the one cinematic headline (Anegada).
@@ -539,7 +530,7 @@ const ContainImage = ({
   const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
 
   return (
-    <div ref={ref} className={cn("relative w-full md:overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line", aspect)}>
+    <div ref={ref} className={cn("relative w-full md:overflow-hidden", aspect)}>
       <motion.div
         className={cn("absolute inset-0", near && !reduceMotion && "will-change-transform")}
         style={reduceMotion ? undefined : { y }}
@@ -565,50 +556,32 @@ const ContainImage = ({
 // was Hugo's #1 "massive text" complaint. Portrait keeps aspect + w-full (the
 // 0×0 lazy-load gotcha).
 const AboutMasthead = () => (
-  <section className={cn(SECTION, "relative pt-6 md:pt-8 pb-5 md:pb-6")}>
-    <Reveal as="div" className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-6 border-b border-line pb-4 md:pb-5">
-      <span className={cn(EYEBROW, "shrink-0")}>In memoriam</span>
-      <span aria-hidden className="hidden sm:block h-px flex-1 bg-ink/15" />
-      <span className={cn(EYEBROW_MUTED, "shrink-0 !tracking-[0.18em] sm:!tracking-[0.32em]")}>{LIFE_DATES}</span>
+  <section className={cn(SECTION, "relative pt-6 md:pt-10")}>
+    {/* Centered home-style header — eyebrow + big Fraunces name, no rules. */}
+    <Reveal as="div" className="text-center mb-6 md:mb-8">
+      <p className={cn(EYEBROW, "m-0 mb-3")}>In memoriam · {LIFE_DATES}</p>
+      <h1 className={cn(TITLE, "my-0 mx-auto hero-text-shadow")}>Stephen Meakin</h1>
+      <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>
+        Mandala artist &amp; sacred geometer
+      </p>
     </Reveal>
-
-    <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-center border-t border-line pt-4 md:pt-5">
-      {/* His portrait — PEOPLE → ImageReveal at native ratio, NO crop. The old
-          2xl:max-h-[52svh] 2xl:overflow-hidden CROPPED it (Hugo: "cropped and cut
-          in half") — REMOVED. items-center balances it beside the name/bio.
-          aspect + w-full are LOAD-BEARING (0×0 lazy-load deadlock without them). */}
-      <Reveal as="figure" className="m-0 mx-auto w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-none lg:col-span-4">
+    {/* Contained, centered, true-colour portrait — never full-bleed, framed
+        with the single hairline ring like home's figures (no card, no box). */}
+    <Reveal as="figure" delay={0.06} className="m-0 mx-auto w-full max-w-[420px] md:max-w-[460px]">
+      <div className="overflow-hidden rounded-[4px] ring-1 ring-line">
         <ImageReveal
           src="/img/about/12-stephen-portrait.jpg"
           alt="Stephen Meakin"
           aspect="aspect-[1337/1600]"
-          edges="all"
-          parallax={0.06}
-          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 600px, 100vw"
+          edges="none"
+          parallax={0}
+          sizes="(min-width: 768px) 460px, 90vw"
         />
-      </Reveal>
-      {/* Name sits BESIDE the portrait so the text column fills to the
-          portrait's height (matched, no dead band beside a short intro). */}
-      <div className="lg:col-span-8 flex flex-col justify-center">
-        <Reveal as="div">
-          <h1
-            className="font-display font-bold tracking-[-0.045em] text-ink m-0 leading-[0.84]"
-            style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontSize: "clamp(52px, 8vw, 140px)" }}
-          >
-            Stephen<br />Meakin
-          </h1>
-        </Reveal>
-        <Reveal as="div" delay={0.04}>
-          <p className={cn(EYEBROW_MUTED, "m-0 mt-4 md:mt-5 mb-4 md:mb-5 leading-[1.8]")}>
-            SEM · Mandala artist &amp; sacred geometer
-          </p>
-        </Reveal>
-        <Reveal as="div" delay={0.08}>
-          {/* opening[0] renders as LEAD (sans, ≤23px), never display serif. */}
-          <Prose text={ABOUT.opening[0]} per={2} className={cn(LEAD, "max-w-[62ch]")} />
-        </Reveal>
       </div>
-    </div>
+    </Reveal>
+    <Reveal as="div" delay={0.1} className="mx-auto max-w-[70ch] text-center mt-6 md:mt-8">
+      <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "m-0")} />
+    </Reveal>
   </section>
 );
 
@@ -663,67 +636,6 @@ const AnegadaPoster = () => (
   </div>
 );
 
-// ─── ClosingCTA ────────────────────────────────────────────────────────────────
-// The conversion beat. Gentle scale + opacity scrub on enter; reduced-motion
-// renders it statically.
-// `align` controls the CTA's cross-axis alignment. "center" (default) is the
-// standalone farewell; "responsive" centres it on mobile and left-aligns it on
-// lg+ so it reads as a composed column BESIDE the doorway portrait spread.
-const ClosingCTA = ({
-  onJoinFriends,
-  align = "center",
-}: {
-  onJoinFriends: () => void;
-  align?: "center" | "responsive";
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "center center"],
-  });
-  const scale = useTransform(scrollYProgress, [0, 1], [0.94, 1.04]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.4, 1]);
-  const responsive = align === "responsive";
-
-  return (
-    <motion.div
-      ref={ref}
-      style={reduceMotion ? undefined : { scale, opacity }}
-      className={cn(
-        "flex flex-col gap-4",
-        responsive ? "items-center lg:items-start" : "items-center",
-        !reduceMotion && "will-change-transform",
-      )}
-    >
-      <div
-        className={cn(
-          "flex flex-wrap items-center gap-3",
-          responsive ? "justify-center lg:justify-start" : "justify-center",
-        )}
-      >
-        <MagneticLink
-          to="/collections"
-          className={cn(BTN_PRIMARY, "w-fit")}
-          ariaLabel="View the prints"
-        >
-          View the prints <span aria-hidden="true" className="ml-2">→</span>
-        </MagneticLink>
-        <MagneticLink
-          to="/memories"
-          className={cn(BTN_SECONDARY, "w-fit")}
-          ariaLabel="Leave a memory"
-        >
-          Leave a memory
-        </MagneticLink>
-      </div>
-      <button type="button" onClick={onJoinFriends} className={cn(EYEBROW_MUTED, "mt-2 hover:text-accent transition-colors")}>
-        Join Friends &amp; Family
-      </button>
-    </motion.div>
-  );
-};
-
 // The four traditions Stephen wove together (named exactly as in ABOUT.legacy[0]).
 const TRADITIONS = [
   { numeral: "I", name: "Ancient Insular Island Arts" },
@@ -746,7 +658,7 @@ const BEAT_ANSWER_MAX_CHARS = 64;
 const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
   return (
-    <Reveal as="div" className="border-t border-line py-4 md:py-5">
+    <Reveal as="div" className="py-4 md:py-5">
       <p className={cn(EYEBROW_MUTED, "m-0 mb-2 md:mb-3 leading-[1.9]")}>{item.q}</p>
       {isBeat ? (
         <p className={cn(SUBHEAD, "m-0 max-w-[34ch]")} style={SUBHEAD_STYLE}>
@@ -837,7 +749,6 @@ export const About = () => {
   // Friends & Family enquiry modal — opened from the closing CTA.
   const [friendsOpen, setFriendsOpen] = useState(false);
   const closeFriends = useCallback(() => setFriendsOpen(false), []);
-  const openFriends = useCallback(() => setFriendsOpen(true), []);
 
   return (
     <div className="relative">
@@ -876,7 +787,7 @@ export const About = () => {
               </div>
             </Reveal>
             <Reveal as="div" delay={0.1} className={BLOCK_GAP}>
-              <dl className="flex flex-wrap justify-between items-start gap-x-10 gap-y-4 border-y border-line py-4 md:py-5">
+              <dl className="flex flex-wrap justify-between items-start gap-x-10 gap-y-4 py-4 md:py-5">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
                   <dd className={cn(CAPTION, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
@@ -1168,7 +1079,7 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] gap-8 lg:gap-12 items-stretch",
+              "grid grid-cols-1 gap-8 lg:gap-10 justify-items-center max-w-[860px] mx-auto",
             )}
           >
             {/* Compact 2×2 index (natural spacing — NOT spread thin down the
@@ -1177,7 +1088,7 @@ export const About = () => {
                 end level with no dead space and no sparse gaps. */}
             <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
               {TRADITIONS.map((t) => (
-                <li key={t.numeral} className="flex flex-col justify-start border-t border-line pt-4">
+                <li key={t.numeral} className="flex flex-col justify-start pt-4">
                   <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
                   <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
                     {t.name}
@@ -1242,7 +1153,7 @@ export const About = () => {
             </Reveal>
             <Reveal as="ul" className={cn("m-0 list-none p-0 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-0", BLOCK_GAP)}>
               {CREDENTIALS.map((item) => (
-                <li key={item} className={cn(CAPTION, "border-t border-line py-4 md:py-5")}>
+                <li key={item} className={cn(CAPTION, "py-4 md:py-5")}>
                   {item}
                 </li>
               ))}
@@ -1305,7 +1216,7 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,420px)] 3xl:grid-cols-[1fr_minmax(0,480px)] gap-8 lg:gap-12 items-stretch",
+              "grid grid-cols-1 gap-8 lg:gap-10 justify-items-center max-w-[860px] mx-auto",
             )}
           >
             <div className="min-w-0">
@@ -1492,22 +1403,19 @@ export const About = () => {
               beside-text grid that stranded an ugly side void. */}
           <Reveal
             as="div"
-            className={cn(
-              BLOCK_GAP,
-              "mx-auto w-full max-w-[900px] overflow-hidden rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px]",
-            )}
+            className={cn(BLOCK_GAP, "mx-auto w-full max-w-[900px]")}
           >
-            <figure className="m-0 border-b border-line/60 bg-[#0b0a09]">
+            <figure className="m-0 overflow-hidden rounded-[4px]">
               <AssetImage
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-auto max-h-[62svh] object-contain object-center"
+                className="block w-full h-auto max-h-[62svh] object-cover object-center"
               />
             </figure>
-            <div className="p-[clamp(1.25rem,3.4vw,2.6rem)]">
+            <div className="mt-6 md:mt-8 mx-auto max-w-[70ch] text-center">
               <blockquote className="m-0">
                 <Prose text={ABOUT.academyQuote} className={BODY} />
                 <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
@@ -1611,24 +1519,18 @@ export const About = () => {
             (never cropped) + soft-edge feather + capped height (never a
             screen-filling wall). Verbatim-only: the CTA carries the farewell. */}
         <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
-          <Reveal
-            as="div"
-            className={cn(
-              BLOCK_GAP,
-              "mx-auto flex w-full max-w-[720px] flex-col items-center gap-8 md:gap-10 rounded-[20px] bg-bg-soft/92 ring-1 ring-line backdrop-blur-[3px] px-[clamp(1.25rem,4vw,3rem)] py-[clamp(1.75rem,4.2vw,3rem)] text-center",
-            )}
-          >
-            <figure className="relative m-0 w-full max-w-[440px]">
-              <AssetImage
-                src="/img/about/stephen-doorway-portrait-v1.jpg"
-                alt="Stephen Meakin in the doorway of his studio, his mandala work behind him"
-                loading="lazy"
-                decoding="async"
-                sizes="(min-width: 768px) 440px, 88vw"
-                className="soft-edge-img block w-full h-auto max-h-[52svh] object-contain object-center rounded-[6px]"
-              />
-            </figure>
-            <ClosingCTA onJoinFriends={openFriends} align="center" />
+          <Reveal as="div" className={cn(BLOCK_GAP, "text-center")}>
+            <p className={cn(EYEBROW, "m-0 mb-6")}>The Art of Stephen Meakin</p>
+            <div className="flex justify-center">
+              <MagneticLink
+                to="/collections"
+                className="press group inline-flex items-center gap-2 bg-ink text-bg px-8 py-4 font-sans text-[15px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
+                ariaLabel="View the prints"
+              >
+                View the prints{" "}
+                <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+              </MagneticLink>
+            </div>
           </Reveal>
         </section>
       </main>

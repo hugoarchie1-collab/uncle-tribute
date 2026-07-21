@@ -22,7 +22,7 @@ export const Logo = ({
   wordmarkText = "The Art of Stephen Meakin",
   className,
 }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
+  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v1.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
@@ -59,7 +59,7 @@ export const Logo = ({
         width={size}
         height={size}
         decoding="async"
-        className="block shrink-0"
+        className="block shrink-0 rounded-full"
         style={{
           width: size,
           height: size,
