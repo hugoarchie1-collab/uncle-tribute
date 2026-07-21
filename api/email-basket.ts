@@ -276,7 +276,9 @@ const SITE_ORIGIN = "https://themandalacompany.com";
 // house serif, baked into a PNG so it renders identically in every client —
 // Gmail won't load the webfont, so an image is the only way to get the true
 // wordmark). Dark-on-transparent → sits cleanly on the cream masthead.
-const LOGO_LOCKUP_URL = `${SITE_ORIGIN}/logo/logo-lockup-art-dark-v1.png`;
+// The round "THE MANDALA COMPANY" wax-seal logo (transparent PNG, reads on the
+// cream email paper). Hugo: use the logo, not the "Art of Stephen Meakin" text.
+const LOGO_SEAL_URL = `${SITE_ORIGIN}/logo/mandala-company-seal-v1.png`;
 // Painting cover thumbnails for the basket lines — a self-contained mirror of
 // one representative colourway image per painting (gotcha #5: no imports from
 // src/data). Keep in sync with src/data/paintings.ts if a cover changes.
@@ -370,7 +372,7 @@ const renderBasketSavedHtml = (p: {
     + `<table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="${C.bg}" style="width:600px;max-width:600px;background-color:${C.bg};">`
     // ---- masthead ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:40px 40px 32px 40px;border-bottom:1px solid ${C.line};">`
-    + `<img src="${LOGO_LOCKUP_URL}" width="300" height="38" alt="The Art of Stephen Meakin — The Mandala Company" style="display:block;border:0;outline:none;text-decoration:none;width:300px;max-width:80%;height:auto;margin:0 auto;"/>`
+    + `<img src="${LOGO_SEAL_URL}" width="128" height="128" alt="The Mandala Company" style="display:block;border:0;outline:none;text-decoration:none;width:128px;height:128px;margin:0 auto;"/>`
     + `</td></tr>`
     // ---- personal greeting + message ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:38px 40px 2px 40px;">`
