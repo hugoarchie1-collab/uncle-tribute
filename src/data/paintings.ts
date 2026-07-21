@@ -437,8 +437,8 @@ export const FRAME_STYLES = [
 ] as const;
 
 export const GLAZING_OPTIONS = [
-  { id: "museum-glass", label: "Anti-glare glass", note: "Museum-grade anti-reflective glazing — near-invisible, no glare, shatter-safe in transit" },
-  { id: "art-acrylic", label: "Clear acrylic", note: "Ultra-clear standard glazing, 99% UV-filtering, shatter-safe" },
+  { id: "museum-glass", label: "Anti-glare glass", note: "Anti-reflective glass — near-invisible, with virtually no glare thanks to an anti-reflective coating" },
+  { id: "art-acrylic", label: "Clear acrylic", note: "Ultra-clear acrylic glazing — UV-filtering and shatter-safe" },
 ] as const;
 
 export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
@@ -626,7 +626,7 @@ export const PAINTINGS: Painting[] = [
     year: "2018",
     collection: "habundia",
     pigmentNote:
-      "Painted with real wild-rose oil — the painting contains the flower it depicts.",
+      "The original was painted using oil pressed from the wild rose itself — this is a fine-art reproduction of that work.",
     size: "60 × 60 cm (approx. 24 × 24 in)",
     location: "Ditchling, Sussex",
     description:
@@ -649,7 +649,7 @@ export const PAINTINGS: Painting[] = [
     year: "2019",
     collection: "habundia",
     pigmentNote:
-      "Painted with real bluebell oil — the flower pressed into the work itself.",
+      "The original was painted using oil pressed from the bluebell itself — this is a fine-art reproduction of that work.",
     size: "60 × 60 cm (approx. 24 × 24 in)",
     description:
       "The second painting from the Habundia collection. As with the Wild Rose, Stephen painted it using actual bluebell oil.\n\nNot a painting of bluebells. A painting about being there.\n\nSix large bells. Twelve small. Forty-eight buds, three white and one pink among them: the exceptions noticed, named, counted. Five open blooms and one pentangle. The pentangle is a five-pointed star, the geometry of Venus, the planet that traces a five-petalled rose across the sky in its eight-year orbit with Earth. The wild rose carries it in its petals. Stephen found it again here.\n\nSix owls sit in six trees whose leaves have not yet opened. The bluebell blooms in a narrow window each spring, before the canopy closes and the light disappears from the forest floor. The owls are in the bare branches above. They see in darkness what others cannot.\n\nThis was the centrepiece of Stephen's final exhibition, at Unique Arts Gallery in Brighton, 2019.",

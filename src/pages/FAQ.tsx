@@ -83,8 +83,8 @@ const FAQS: QA[] = [
         cotton-rag paper</strong>, printed with pigment inks on a 12-colour
         large-format giclée press. Each is made to order in London, at
         a Hahnemühle Certified Studio used by museums and contemporary artists
-        alike. Lifespan under normal display conditions is in excess of 200
-        years.
+        alike. Under normal display conditions it carries archival,
+        museum-grade lightfastness rated by the paper manufacturer.
         <br />
         <br />
         Prefer a different finish? Our atelier also prints across a range of
@@ -105,11 +105,12 @@ const FAQS: QA[] = [
     question: "How long until my print arrives?",
     answer: (
       <>
-        Unframed prints dispatch within <strong>7–10 working days</strong> of
-        your order, with free delivery worldwide. Framed orders add roughly
-        <strong> two weeks</strong> to that. Prints hand-finished by Polly Wedge
-        dispatch within <strong>two weeks</strong> maximum. You'll receive an
-        email with tracking the moment your print leaves the studio.
+        Unframed prints are <strong>dispatched within 7–10 working days</strong>{" "}
+        of your order; with tracked courier transit on top, most orders arrive
+        within <strong>roughly two to three weeks</strong>. Delivery is free
+        worldwide. Framed orders add roughly two weeks to that. Prints
+        hand-finished by Polly Wedge dispatch within two weeks maximum. You'll
+        receive an email with tracking the moment your print leaves the studio.
       </>
     ),
   },
@@ -134,9 +135,9 @@ const FAQS: QA[] = [
       <>
         Yes — framing is offered on the A2 and A1 tiers. Choose your{" "}
         <strong>finish</strong> — a solid-wood or contemporary tray frame
-        (natural oak, stained black, white or walnut tray), with shatter-safe
-        acrylic glazing as standard or a museum-grade anti-reflective upgrade,
-        every finish included in the framing price. Add £345 on A2 and £445
+        (natural oak, stained black, white or walnut tray), with UV-filtering,
+        shatter-safe acrylic glazing as standard or an anti-reflective glass
+        upgrade, every finish included in the framing price. Add £345 on A2 and £445
         on A1. Delivery is free worldwide, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
@@ -161,9 +162,8 @@ const FAQS: QA[] = [
     question: "Do you ship internationally?",
     answer: (
       <>
-        Yes — to the UK, Europe, North America, Australia and New Zealand.
-        Delivery is free worldwide on every order, framed or unframed, with
-        nothing added at checkout. International buyers may be charged local
+        Yes — we ship worldwide. Delivery is free on every order, framed or
+        unframed, with nothing added at checkout. International buyers may be charged local
         import duties or VAT on delivery by their courier — these are set by
         your country's customs authority, not by us.
       </>

@@ -114,6 +114,9 @@ export const Footer = () => (
           <br />
           213 Elm Drive, Hove, East Sussex, BN3 7JD, UK
         </p>
+        <p className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-3 max-w-[280px] m-0">
+          The Mandala Company is a trading name of Hugo Archie Charles Wedge.
+        </p>
         {/* Follow the estate — official social profiles (mirrored into the
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             40px hit-area (a11y), muted→ink with a soft lift on hover. */}

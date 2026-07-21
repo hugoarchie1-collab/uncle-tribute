@@ -290,6 +290,12 @@ export const Reviews = ({
         ) : null}
       </div>
 
+      <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-9 max-w-[560px]">
+        Reviews are posted by visitors and shown after moderation. We never
+        write or buy reviews. To ask us to remove one, email
+        info@themandalacompany.com.
+      </p>
+
       {/* BODY — the real reviews, or the empty state. We only commit to the
           empty state AFTER the fetch settles, so we never flash "no reviews"
           over a list that's about to arrive. */}

@@ -765,6 +765,12 @@ const ShareMemoryModal = ({
                       <p className={cn(META, "mb-4 m-0 text-accent")}>{errorMsg}</p>
                     )}
 
+                    <p className={cn(META, "mb-4 m-0")}>
+                      Your name and memory will be shown publicly on this wall.
+                      Your email stays private and is only used if we need to
+                      reach you.
+                    </p>
+
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
                       <button
                         type="submit"

@@ -150,6 +150,12 @@ const PRIVACY: Section[] = [
           <><strong>Meta</strong> — advertising measurement: the Meta Pixel only if you allow analytics cookies, plus a hashed order identifier sent server-side when an order completes (see "Cookies &amp; analytics" below).{" "}
             <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Meta Privacy Policy</a>
           </>,
+          <><strong>OpenAI</strong> — automated moderation of anything you post publicly (a memory on the Book of Memories, or a review); the text and any image are checked for harmful content before publication (US).{" "}
+            <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">OpenAI Privacy Policy</a>
+          </>,
+          <><strong>Klaviyo</strong> — email marketing platform: if you sign up to hear from the estate, your name and email are stored here to send you our updates (US).{" "}
+            <a href="https://www.klaviyo.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Klaviyo Privacy Policy</a>
+          </>,
         ],
       },
       {
@@ -163,7 +169,7 @@ const PRIVACY: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Some of our processors (Stripe, Resend, Vercel, and — if you allow analytics cookies — Google and Meta) operate servers outside the UK. Where personal data leaves the UK, transfers are made under UK-approved mechanisms — Standard Contractual Clauses or the UK International Data Transfer Addendum (IDTA) — so your data continues to receive an equivalent standard of protection.",
+        text: "Some of our processors (Stripe, Resend, Vercel, OpenAI, Klaviyo, and — if you allow analytics cookies — Google and Meta) operate servers outside the UK, including in the United States. Where personal data leaves the UK, transfers are made under UK-approved mechanisms — Standard Contractual Clauses or the UK International Data Transfer Addendum (IDTA) — so your data continues to receive an equivalent standard of protection.",
       },
     ],
   },
@@ -299,17 +305,13 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
-        // TODO (TRADER IDENTITY — LEGALLY REQUIRED): a full geographic postal
-        // trading address must be inserted before the site is promoted. The
-        // CCR 2013 (Sch 2) / DMCC 2024 require a trader's geographic address to
-        // be given before a distance contract is concluded — a town alone is
-        // not sufficient. Hugo has not yet supplied the address. To complete
-        // this, set TRADER_POSTAL_ADDRESS below to the full postal address
-        // (e.g. "1 Example Street, Lewes, East Sussex, BN7 0AA, United
-        // Kingdom") — a paid mail-forwarding / service address is fine. The
-        // copy below renders the address automatically once that one line is
-        // set, and falls back to the town only while it is null. Do NOT ship a
-        // visible "[address]" placeholder to customers.
+        // TRADER IDENTITY (LEGALLY REQUIRED): the full geographic trading
+        // address is set in TRADER_POSTAL_ADDRESS at the top of this file and
+        // renders below — required by CCR 2013 (Sch 2) / DMCC 2024 before a
+        // distance contract concludes. ⚠️ It MUST remain a real address the
+        // trader controls (home or a paid mail-forwarding/service address);
+        // never ship a placeholder. If it is ever cleared to null the copy
+        // falls back to the town alone, which is NOT sufficient on its own.
         text: (
           <>
             These terms govern any order you place on this site. The contract
@@ -377,7 +379,7 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "We ship to Europe, North America, Australia and New Zealand. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. Refusing a parcel to avoid duties does not entitle you to a full refund.",
+        text: "We ship worldwide. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. For any unframed print you keep your 14-day right to cancel (you would bear the cost of returning it); but simply refusing delivery of a bespoke, cancellation-exempt order to avoid duties does not entitle you to a refund.",
       },
     ],
   },
@@ -397,10 +399,10 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>A3 "Open Edition" prints.</strong> The A3 Open
-            Edition is estate-stamped and issued in the estate's
-            editions (not numbered). For this tier
-            you have the full statutory <strong>14-day cancellation right</strong>{" "}
+            <strong>Unframed prints — every size (A3, A2, A1 and A0).</strong>{" "}
+            Whether it's the A3 Open Edition or a larger numbered edition, an
+            unframed print in a colourway and size chosen from our catalogue
+            carries the full statutory <strong>14-day cancellation right</strong>{" "}
             under the{" "}
             <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>.
             You may cancel for any reason, without giving a reason, from the
@@ -424,17 +426,16 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Made-to-order prints (the A2 Collector, A1 Atelier and
-            A0 Heirloom Editions, the hand-painted Studio piece, and any framed or
-            hand-finished order).</strong>{" "}
-            These are made to your specification — your chosen colourway, tier
-            and add-ons are sent to the atelier for an individual,
-            estate-stamped print run numbered within its edition, and the Studio
-            piece is hand-painted uniquely for you. Under the same Regulations,{" "}
+            <strong>Bespoke orders (framed prints, hand-finished prints, and
+            the hand-painted Studio one-of-one).</strong>{" "}
+            A frame is cut and mounted to your chosen piece, a hand-finished
+            print is worked over individually by hand, and the Studio piece is
+            hand-painted uniquely for you — each is genuinely made to your
+            specification or personalised. Under the same Regulations,{" "}
             <em>regulation 28(1)(b)</em>, goods "made to the consumer's
             specifications or clearly personalised" are exempt from the 14-day
             distance-selling cancellation right, so the statutory cooling-off
-            period does not apply to these orders.
+            period does not apply to these bespoke orders.
           </>
         ),
       },
@@ -442,10 +443,10 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Goodwill window on made-to-order prints.</strong> Even
-            though the made-to-order tiers above are exempt, as a goodwill
+            <strong>Goodwill window on bespoke orders.</strong> Even
+            though the bespoke orders above are exempt, as a goodwill
             measure the estate will accept a full cancellation request within{" "}
-            <strong>24 hours</strong> of order, provided the print run has not
+            <strong>24 hours</strong> of order, provided the piece has not
             yet been sent to the atelier. Email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
@@ -475,7 +476,12 @@ const TERMS: Section[] = [
             </a>
             {" "}within <strong>14 days of receipt</strong> with photographs of
             the damage and the packaging. We will arrange a replacement print
-            at no cost to you, or a full refund — your choice.
+            at no cost to you, or a full refund — your choice. Reporting
+            promptly helps us claim against the carrier, but it does not affect
+            your statutory rights: under the <strong>Consumer Rights Act 2015</strong>{" "}
+            you have up to <strong>30 days</strong> to reject faulty or
+            not-as-described goods for a full refund, alongside your rights to a
+            repair or replacement.
           </>
         ),
       },
@@ -563,18 +569,19 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Your cancellation rights depend on which print you bought, so we've split it out clearly below. The short version: the A3 Open Edition print carries the full 14-day right to change your mind; the larger Collector, Atelier and Heirloom Editions, the hand-painted piece and any framed or hand-finished order are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts.",
+        text: "Your cancellation rights depend on what you bought, so we've split it out clearly below. The short version: any unframed print — every size, A3 through A0 — carries the full 14-day right to change your mind; the genuinely bespoke orders (a framed print, a hand-finished print, or the hand-painted one-of-one) are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts. Faulty or damaged goods are always covered by your statutory rights, whatever you bought.",
       },
     ],
   },
   {
-    heading: "Cancelling an A3 Open Edition print",
+    heading: "Cancelling an unframed print (any size, A3–A0)",
     blocks: [
       {
         kind: "p",
         text: (
           <>
-            With the A3 Open Edition print you have the full statutory{" "}
+            With any unframed print — every size, from the A3 Open Edition to
+            the A0 Heirloom — you have the full statutory{" "}
             <strong>14-day cancellation right</strong> under
             the Consumer Contracts Regulations 2013. You can cancel for any
             reason from when you order until 14 days after the day it arrives —
@@ -593,11 +600,11 @@ const RETURNS: Section[] = [
     ],
   },
   {
-    heading: "Cancelling a made-to-order print (A2, A1, A0, framed or hand-finished)",
+    heading: "Cancelling a bespoke order (framed, hand-finished, or the one-of-one)",
     blocks: [
       {
         kind: "p",
-        text: "The A2 Collector, A1 Atelier and A0 Heirloom Editions, the hand-painted Studio piece, and any framed or hand-finished order are made specifically for you — an individual, estate-stamped print run numbered within its edition, or a unique hand-painted work. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these personalised items are exempt from the 14-day cancellation right.",
+        text: "A framed print (cut and mounted to your chosen piece), a hand-finished print (worked over individually by hand), and the hand-painted Studio one-of-one are made specifically for you or personalised to your order. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these bespoke items are exempt from the 14-day cancellation right. Plain unframed prints of any size are not affected — they keep the full 14-day right (see above).",
       },
       {
         kind: "p",
@@ -649,7 +656,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "For the A3 Open Edition print you can change your mind within 14 days of receiving it, as set out above. For the made-to-order prints — the Collector, Atelier and Heirloom Editions, the hand-painted piece, and any framed or hand-finished order, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
+        text: "For any unframed print — every size, A3 through A0 — you can change your mind within 14 days of receiving it, as set out above. For the bespoke orders — a framed print, a hand-finished print, or the hand-painted one-of-one, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
       },
     ],
   },
@@ -658,7 +665,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Local import duties or VAT applied by your country's customs are your responsibility. Refusing a parcel to avoid duties is treated as a change of mind — the order is not refundable in that case.",
+        text: "Local import duties or VAT applied by your country's customs are your responsibility. For an unframed print you keep your 14-day right to cancel and return it; but refusing delivery of a bespoke, cancellation-exempt order purely to avoid duties is treated as a change of mind and is not refundable in that case.",
       },
     ],
   },

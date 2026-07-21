@@ -119,25 +119,25 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "The print itself",
     question: "What are the prints made on?",
     answer:
-      "350gsm Hahnemühle archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Lifespan under normal display conditions is in excess of 200 years.",
+      "350gsm Hahnemühle archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer.",
   },
   {
     eyebrow: "Lead time",
     question: "How long until my print arrives?",
     answer:
-      "Unframed prints dispatch within 7–10 working days of your order, with free delivery worldwide. Framed orders add roughly two weeks to that. Prints hand-finished by Polly Wedge dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
+      "Unframed prints are dispatched within 7–10 working days of your order; with tracked courier transit on top, most orders arrive within roughly two to three weeks. Delivery is free worldwide. Framed orders add roughly two weeks to that. Prints hand-finished by Polly Wedge dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
   },
   {
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £275 (issued within each edition, no fixed allocation). Collector Edition A2 at £495 (200 allocated per edition). Atelier Edition A1 at £925 (75 per edition). Heirloom Edition A0 at £1,895 (18 per edition). Every price includes free UK delivery.",
+      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £275 (issued within each edition, no fixed allocation). Collector Edition A2 at £495 (200 allocated per edition). Atelier Edition A1 at £925 (75 per edition). Heirloom Edition A0 at £1,895 (18 per edition). Every price includes free worldwide delivery.",
   },
   {
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Yes — framing is offered on the A2 and A1 tiers. Choose your finish: a solid-wood or contemporary tray frame (natural oak, stained black, white or walnut tray), with shatter-safe acrylic glazing as standard or a museum-grade anti-reflective upgrade — every finish included in the framing price. Add £295 on A2 and £395 on A1. Delivery is free worldwide, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
+      "Yes — framing is offered on the A2 and A1 tiers. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £345 on A2 and £445 on A1. Delivery is free worldwide, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
   },
   {
     eyebrow: "Hand-finishing",

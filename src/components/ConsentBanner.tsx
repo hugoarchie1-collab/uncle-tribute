@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useConsent, setConsent } from "../lib/consent";
 import { initTrackingIfConsented } from "../lib/tracking";
-import { BTN_PRIMARY, EASE_SIGNATURE } from "./ui/tokens";
-import { cn } from "../lib/cn";
+import { BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "./ui/tokens";
 
 /**
  * Consent banner — the estate's quiet answer to the cookie-popup cliché.
@@ -57,23 +56,20 @@ export const ConsentBanner = () => {
             How we handle data
           </Link>
         </p>
-        <div className="flex items-center gap-4 flex-shrink-0">
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => decide(false)}
+            className={BTN_SECONDARY}
+          >
+            Essential only
+          </button>
           <button
             type="button"
             onClick={() => decide(true)}
             className={BTN_PRIMARY}
           >
             Allow analytics
-          </button>
-          <button
-            type="button"
-            onClick={() => decide(false)}
-            className={cn(
-              "font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted",
-              "hover:text-ink transition-colors duration-300 bg-transparent border-0 p-0 cursor-pointer min-h-[44px]",
-            )}
-          >
-            Essential only
           </button>
         </div>
       </div>
