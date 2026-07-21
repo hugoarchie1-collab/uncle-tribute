@@ -49,6 +49,7 @@ import {
   formatGBP,
   getColourwaySetBundle,
   parseSizeCm,
+  CURRENT_EDITION,
   type Colourway,
   type Painting,
   type PrintTier,
@@ -336,7 +337,15 @@ const SizePicker = ({
                   Next to be allocated in this edition: No. {allocated} of{" "}
                   {tier.editionTotal}
                 </span>
-              ) : null;
+              ) : (
+                // Honest early-mover cue — the edition has just opened, so the
+                // lowest hand-numbers are genuinely still unallocated. Frames
+                // being first as the reward it is (never a fabricated count).
+                <span className={cn(META, "col-span-2 mt-1 text-ink")}>
+                  {CURRENT_EDITION.label} · founding collectors receive the
+                  lowest numbers of {tier.editionTotal}
+                </span>
+              );
             })()}
         </button>
       );
