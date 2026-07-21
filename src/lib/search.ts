@@ -149,7 +149,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Shipping",
     question: "Do you ship internationally?",
     answer:
-      "Yes — to the UK, Europe, North America, Australia and New Zealand. Delivery is free worldwide on every order, framed or unframed, with nothing added at checkout. International buyers may be charged local import duties or VAT on delivery by their courier — these are set by your country's customs authority, not by us.",
+      "Yes — we ship worldwide. Delivery is free on every order, framed or unframed, with nothing added at checkout. International buyers may be charged local import duties or VAT on delivery by their courier — these are set by your country's customs authority, not by us.",
   },
   {
     eyebrow: "After-sale care",

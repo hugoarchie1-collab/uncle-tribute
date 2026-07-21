@@ -69,9 +69,9 @@ const OFFERINGS: Offering[] = [
     title: "Framed, glazed and delivery-ready.",
     body: (
       <>
-        Prints can be supplied framed in a choice of solid-wood or tray
+        Prints can be supplied framed in a choice of solid-wood
         finishes (natural oak, stained black, white or walnut), with
-        shatter-safe acrylic or museum-grade anti-reflective glazing —
+        shatter-safe acrylic or an anti-reflective glass upgrade —
         specified for safe transit and ready to hang on install. Sizing,
         glazing and finish can be tailored to a project's specification; we
         will quote framing and crated delivery alongside the edition.

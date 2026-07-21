@@ -1659,10 +1659,10 @@ const BuyBox = ({
                       Your giclée print — pigment inks on 350gsm Hahnemühle
                       archival paper (not canvas) — hand-framed to order in a
                       real solid-wood moulding of your choice: natural oak,
-                      stained black, painted white, or a contemporary walnut
-                      float-tray. Glazed behind ultra-clear art acrylic or
-                      museum anti-reflective glass (both shatter-safe for
-                      transit), with the image running right to the frame — no
+                      stained black, painted white, or warm walnut. Glazed
+                      behind ultra-clear shatter-safe acrylic or an
+                      anti-reflective glass upgrade, with the image running
+                      right to the frame — no
                       mount border. Fitted with hanging cord and arrives ready
                       to hang. Every finish is included. Allow{" "}
                       {FRAME_LEAD_WEEKS} weeks.
@@ -1900,14 +1900,30 @@ const BuyBox = ({
             no-returns rule on custom sizes doesn't scare a first-time buyer.
             mt-7 keeps clear air below the CTA pair (was mt-4 — read as cramped). */}
         <p className={cn(META, "mt-7 m-0")}>
-          Changed your mind?{" "}
-          <Link
-            to="/returns"
-            className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
-          >
-            Cancel free within 24 hours
-          </Link>
-          , before your print enters production.
+          {framingActive || embellishActive ? (
+            <>
+              Changed your mind? A framed or hand-finished piece is made to
+              order —{" "}
+              <Link
+                to="/returns"
+                className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
+              >
+                cancel free within 24 hours
+              </Link>
+              , before it enters production.
+            </>
+          ) : (
+            <>
+              Changed your mind? An unframed print carries the full{" "}
+              <Link
+                to="/returns"
+                className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
+              >
+                14-day right to cancel
+              </Link>
+              {" "}from the day it arrives.
+            </>
+          )}
         </p>
 
         {/* A quiet path to ask before committing to a £245–£1,750 piece —

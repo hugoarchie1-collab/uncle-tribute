@@ -164,8 +164,10 @@ export const Orders = () => {
           <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
             <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>Returns &amp; after-sale</p>
             <p className="font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-soft m-0 max-w-[40ch]">
-              Every print is made to order. The A3 Open Edition carries the full 14-day
-              change-of-mind right; if anything arrives less than perfect, we replace or refund it.
+              Every print is made to order. Any unframed print — every size —
+              carries the full 14-day change-of-mind right (only framed and
+              hand-finished pieces are bespoke and exempt); and if anything
+              arrives less than perfect, we replace or refund it.
               The full policy lives on the{" "}
               <Link to="/returns" className="underline underline-offset-4 hover:text-accent">returns</Link>{" "}
               and{" "}

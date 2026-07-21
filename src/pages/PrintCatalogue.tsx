@@ -730,7 +730,7 @@ function FinishesPage() {
               <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(frA2)} A2 · +{gbp(frA1)} A1</span>
             </div>
             <p className="font-sans text-ink-muted" style={{ fontSize: 14.5, lineHeight: 1.5, margin: "8px 0 0" }}>
-              Museum-grade bespoke framing. Every finish is included in the one price — choose a moulding and a glazing:
+              Bespoke solid-wood framing. Every finish is included in the one price — choose a moulding and a glazing:
             </p>
             <p className="font-sans text-accent" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", margin: "14px 0 6px" }}>Moulding</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 14px" }}>

@@ -1065,7 +1065,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         parts.push(toMinor(item.tier.embellishmentPricePence));
       if (item.canvas && typeof item.tier.canvasPricePence === "number")
         parts.push(toMinor(item.tier.canvasPricePence));
-      for (const a of parts) bundleDiscountMinor += Math.round((a * percentOff) / 100);
+      // × item.quantity: the Stripe line item is unit_amount × quantity, so the
+      // discount must scale with quantity too — and rounds PER LINE ITEM on
+      // (unit × qty), byte-identical to Basket.tsx's bundleDiscountMinor. Without
+      // the quantity factor a multi-line qty≥2 bundle undercounts the discount →
+      // Stripe charges MORE than the advertised total (advertised==charged break).
+      for (const a of parts)
+        bundleDiscountMinor += Math.round((a * item.quantity * percentOff) / 100);
     }
   }
 
