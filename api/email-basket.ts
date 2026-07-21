@@ -282,7 +282,7 @@ const LOGO_LOCKUP_URL = `${SITE_ORIGIN}/logo/logo-lockup-art-dark-v1.png`;
 // src/data). Keep in sync with src/data/paintings.ts if a cover changes.
 const PAINTING_COVERS: Record<string, string> = {
   "wild-rose": "/img/paintings/wild-rose-sussex-pink.jpg",
-  "english-bluebells": "/img/paintings/english-bluebells-v3.jpg",
+  "english-bluebells": "/img/paintings/english-bluebells-v4.jpg",
   "orchis-7": "/img/paintings/orchis7-rubedo-red.jpg",
   "flower-of-life": "/img/paintings/fol-kaleidoscope.jpg",
   "slipper-orchids": "/img/paintings/orchids30-nebula-purple.jpg",
@@ -389,11 +389,23 @@ const renderBasketSavedHtml = (p: {
     + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Delivery is free worldwide — framed or unframed — with nothing added at checkout.</div>`
     + `</td></tr></table>`
     + `</td></tr>`
+    // ---- First Edition · founding collectors — the reason to return now ----
+    + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:28px 40px 0 40px;">`
+    + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.card}" style="width:100%;background-color:${C.card};border:1px solid ${C.line};"><tr><td style="padding:22px 24px;">`
+    + `<div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${C.rust};margin-bottom:10px;">The First Edition — now open</div>`
+    + `<div style="font-family:${DISPLAY};font-style:italic;font-size:21px;line-height:1.3;color:${C.cream};margin-bottom:10px;">Founding collectors receive the lowest numbers.</div>`
+    + `<div style="font-family:${SANS};font-size:13.5px;line-height:1.65;color:${C.muted};">Stephen's work has just opened as hand-numbered editions — Collector of 200, Atelier of 75, Heirloom of only 18. The earliest collectors take the lowest numbers, recorded in the estate register. Your basket is held — complete it whenever you're ready, and your numbers are among the first.</div>`
+    + `</td></tr></table>`
+    + `</td></tr>`
     // ---- CTA ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 6px 40px;">`
     + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.rust}" style="background-color:${C.rust};">`
-    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:15px 42px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.cream};text-decoration:none;">Open your basket</a>`
+    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:16px 46px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.cream};text-decoration:none;">Return to your basket</a>`
     + `</td></tr></table></td></tr>`
+    // ---- secondary link: the full First Edition ----
+    + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:12px 40px 0 40px;">`
+    + `<a href="${SITE_ORIGIN}/collections" style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.06em;color:${C.rust};text-decoration:none;">Explore the full First Edition &rarr;</a>`
+    + `</td></tr>`
     // ---- reassurance + estate authentication cluster ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:32px 40px 0 40px;">`
     + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order at a leading giclée atelier in London and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
