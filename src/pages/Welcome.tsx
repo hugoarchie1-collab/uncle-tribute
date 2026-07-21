@@ -291,7 +291,7 @@ export const Welcome = () => {
           suffix). ⚠️ "estate-stamped", never "signed" — Stephen is deceased. */}
       <Seo
         title="Mandala & Sacred Geometry Art Prints — The Art of Stephen Meakin"
-        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in Lewes — free worldwide delivery."
+        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in Lewes — free delivery."
       />
       {/* Nav overlays the intro video (fixed) so the logo + links stay pinned
           to the top of the screen from the very first frame — and remain there
@@ -1291,10 +1291,55 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* Sacred Geometry finale REMOVED 2026-06-30 (Hugo): keep the
-              garden->galaxy "as above so below" video, but drop the sun +
-              the SACRED GEOMETRY close entirely. The home now ends on the
-              Arista SunStar archive photo above, into the footer. */}
+          {/* ── EARTH CLOSE · "as above, so below" ─────────────────────────
+              A true MIRROR of the top masthead's Earth, closing the page.
+              Hugo 2026-07-21: "see the earth high quality upside down at the
+              top — do the same at the bottom but turned the other way facing
+              up, a mirror in size and style, just as high quality." So this is
+              the SAME asset the masthead uses (earth-cutout-v2.webp) — there,
+              spun (scaleY -1) so the limb curves DOWN from the top; here, its
+              NATURAL orientation (no flip) so the identical limb curves UP from
+              the foot of the page. Reusing the exact masthead asset guarantees
+              the quality + style match to the pixel (an internet stand-in would
+              never mirror it). The radial mask keeps it solid along the bottom
+              edge and dissolves upward into the peacock backdrop; a warm rim
+              halo glows along the very foot, mirroring the top's halo.
+              Decorative only (aria-hidden). Sacred Geometry finale stays
+              removed (2026-06-30) — this Earth is the new quiet close. */}
+          <section aria-hidden="true" className="relative z-20 isolate w-full overflow-hidden mt-[clamp(2.5rem,6vh,5rem)]">
+            {/* Warm rim halo along the very foot — atmosphere, mirroring the
+                masthead's top halo. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[45%]"
+              style={{
+                background:
+                  "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
+              }}
+            />
+            {/* The natural Earth limb, curving UP — identical asset + width
+                classes to the masthead so the size mirrors exactly; NO scaleY
+                flip. maxWidth:none lifts the global img clamp (gotcha). */}
+            <img
+              src={asset("/img/scenes/earth-cutout-v2.webp")}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="relative z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              style={{
+                display: "block",
+                maxWidth: "none",
+                height: "auto",
+                // Same radial dissolve as the masthead Earth — unflipped here so
+                // it is solid at the pinned BOTTOM edge and melts UP into the
+                // peacock backdrop.
+                WebkitMaskImage:
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                maskImage:
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+              }}
+            />
+          </section>
         </main>
 
         <FooterCatalogue />

@@ -1405,7 +1405,7 @@ const BuyBox = ({
         {/* Free delivery — quiet sentence-case reassurance beside the price (was
             a third stacked all-caps eyebrow). Mirrors the £0 rate api/checkout.ts
             charges in every region; framed or unframed (mirror invariant #9). */}
-        <p className={cn(META, "m-0 mb-4")}>Free delivery worldwide.</p>
+        <p className={cn(META, "m-0 mb-4")}>Free delivery.</p>
 
         {/* Dimension chip — instant size reassurance, updates with the tier. */}
         <div className="mb-5">
@@ -1612,7 +1612,7 @@ const BuyBox = ({
                   {canvasActive && (
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted ring-1 ring-ink/70 px-2.5 py-1.5">
                       Ready to hang — no framing or glazing needed. Delivered
-                      free worldwide.
+                      free.
                     </span>
                   )}
                 </div>
@@ -1682,7 +1682,7 @@ const BuyBox = ({
                         is a positive note, not a DMCC drip-pricing disclosure. */}
                     {framingActive && (
                       <span className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
-                        Framed and delivered free — UK, Europe and Worldwide.
+                        Framed and delivered free — UK, Europe, North America, Australia & NZ.
                         No delivery charge is added at checkout.
                       </span>
                     )}
@@ -2138,7 +2138,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         <p className={cn(META, "text-ink-muted m-0")}>
           {ESTATE_AUTHENTICATION.printer} &mdash; made to order in London and
           checked by hand, never warehoused; dispatched flat up to A3, boxed for
-          larger sizes, with free delivery worldwide.
+          larger sizes, with free delivery.
         </p>
         <p className={cn(META, "text-ink-muted m-0")}>{ORIGINAL_PRINT_SPEC}</p>
       </div>
@@ -2629,7 +2629,7 @@ export const PaintingDetail = () => {
   // from-price tier is the Open Edition (no cap, NOT numbered) under the edition
   // model (PRINT_TIERS / ESTATE_AUTHENTICATION / GLOBAL_DROP_NOTE).
   const fromPriceLabel = formatGBP(getLowestTierPricePence(painting));
-  const metaDescription = `Estate-stamped giclée print of ${painting.title} by British mandala artist Stephen Meakin — sacred geometry, made to order, from ${fromPriceLabel}. Free worldwide delivery.`;
+  const metaDescription = `Estate-stamped giclée print of ${painting.title} by British mandala artist Stephen Meakin — sacred geometry, made to order, from ${fromPriceLabel}. Free delivery.`;
   // Title leads with buyer intent AND names the artist, so pageTitle() returns
   // it verbatim (it already contains "Stephen Meakin" → no brand suffix appended,
   // avoiding "…by Stephen Meakin · The Art of Stephen Meakin").

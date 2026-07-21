@@ -388,7 +388,7 @@ const renderBasketSavedHtml = (p: {
     + `<td style="padding-top:16px;font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:${C.muted};">Subtotal</td>`
     + `<td align="right" style="padding-top:16px;text-align:right;font-family:${DISPLAY};font-size:20px;color:${C.cream};">${esc(p.subtotal)}</td>`
     + `</tr></table>`
-    + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Delivery is free worldwide — framed or unframed — with nothing added at checkout.</div>`
+    + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Delivery is free — framed or unframed — with nothing added at checkout.</div>`
     + `</td></tr></table>`
     + `</td></tr>`
     // ---- First Edition · founding collectors — the reason to return now ----

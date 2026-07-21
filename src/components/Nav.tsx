@@ -293,7 +293,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the
-            search. Free worldwide delivery, so it's an informational preference
+            search. Free delivery, so it's an informational preference
             only (never touches pricing). lg+ in the bar; in the drawer below. */}
         <DeliverTo variant="header" className="hidden 3xl:flex shrink-0" />
 

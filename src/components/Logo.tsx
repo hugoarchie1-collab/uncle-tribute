@@ -22,7 +22,7 @@ export const Logo = ({
   wordmarkText = "The Art of Stephen Meakin",
   className,
 }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v1.png`;
+  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v2.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
@@ -59,7 +59,11 @@ export const Logo = ({
         width={size}
         height={size}
         decoding="async"
-        className="block shrink-0 rounded-full"
+        /* v2 (2026-07-21): the disc is now keyed to full TRANSPARENCY (the cream
+           ground Hugo hated is gone), so NO rounded-full clip — a circle would
+           slice the ends of the arced "THE MANDALA COMPANY" wordmark. The mark
+           floats clean on any ground, like a Nike symbol (Hugo's ask). */
+        className="block shrink-0"
         style={{
           width: size,
           height: size,

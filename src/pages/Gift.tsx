@@ -234,7 +234,7 @@ export const Gift = () => {
                   A digital gift card · redeemed against any edition
                 </p>
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7] sm:text-right")}>
-                  Estate-stamped giclée · free worldwide delivery
+                  Estate-stamped giclée · free delivery
                 </p>
               </div>
             </div>

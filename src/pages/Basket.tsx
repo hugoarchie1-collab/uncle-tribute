@@ -828,14 +828,14 @@ export const Basket = () => {
                 <>
                   <div className="ring-1 ring-line rounded-2xl p-4 mb-3">
                     <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
-                      Delivery — free worldwide
+                      Delivery — free
                     </p>
                     <ul className="list-none p-0 m-0 flex flex-col gap-1">
                       {(
                         [
                           ["United Kingdom", shipping.ukPence],
                           ["Europe", shipping.euPence],
-                          ["Worldwide", shipping.wwPence],
+                          ["International", shipping.wwPence],
                         ] as const
                       ).map(([region, pence]) => (
                         <li
@@ -918,7 +918,7 @@ export const Basket = () => {
                 {/* pl-[25px] = 15px glyph + 10px gap, so the second line
                     aligns with the first line's text, not the glyph. */}
                 <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
-                  Estate-stamped &amp; numbered within the edition · Free delivery worldwide ·
+                  Estate-stamped &amp; numbered within the edition · Free delivery ·
                   Damaged-in-transit replacement
                 </p>
                 {/* The wallet/card marks Stripe presents, shown as glyphs (not

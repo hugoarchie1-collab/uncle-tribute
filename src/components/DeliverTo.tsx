@@ -255,7 +255,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           {/* Quiet reassurance line beneath the list. */}
           <div className="px-4 py-3 border-t border-ink/60">
             <p className="font-sans text-[13.5px] leading-snug text-ink-muted">
-              Free worldwide delivery on every order.
+              Free delivery on every order.
             </p>
           </div>
         </div>

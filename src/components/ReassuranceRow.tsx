@@ -6,7 +6,7 @@ import { PaymentMarks } from "./PaymentMarks";
 /**
  * ReassuranceRow — three honest, documented reassurances under the buy box.
  * Every claim is literally true for this stack: payments via Stripe,
- * damaged-in-transit replacement (see /returns), and free worldwide delivery
+ * damaged-in-transit replacement (see /returns), and free delivery
  * with estate dispatch in 7–10 days (see /faq — FREE SHIPPING POLICY 2026-06-06,
  * the estate absorbs all delivery cost into the print margin). Deliberately NOT
  * an unconditional 14-day refund (made-to-order, UK CCR 2013 reg 28) and NO
@@ -60,7 +60,7 @@ export const ReassuranceRow = () => (
       <ParcelIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Free delivery</span>
       <Link to="/faq" className={cn(META, "underline underline-offset-4 hover:text-ink transition-colors")}>
-        Worldwide · ships in 7–10 days →
+        Free delivery · ships in 7–10 days →
       </Link>
     </div>
   </div>

@@ -640,7 +640,7 @@ const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) 
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "Worldwide — free delivery (10-14 working days)",
+      display_name: "International — free delivery (10-14 working days)",
     },
   },
 ];

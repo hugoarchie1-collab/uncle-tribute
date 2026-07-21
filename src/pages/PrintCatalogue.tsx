@@ -679,7 +679,7 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
                 ))}
               </div>
               <p className="font-sans text-ink-muted" style={{ fontSize: 13.5, margin: "8px 0 0" }}>
-                Framing +{gbp(tiers.find((t) => t.id === "collector")?.framingPricePence ?? 0)} · hand-finishing available · free delivery worldwide.
+                Framing +{gbp(tiers.find((t) => t.id === "collector")?.framingPricePence ?? 0)} · hand-finishing available · free delivery.
               </p>
             </div>
             <div>
@@ -764,7 +764,7 @@ function FinishesPage() {
           </div>
         </div>
         <p className="font-sans text-ink-muted" style={{ fontSize: 13.5, letterSpacing: "0.02em", margin: 0 }}>
-          Framing is offered on A2 &amp; A1 · hand-finishing on A2, A1 &amp; A0 · both made to order, allow up to two weeks · free delivery worldwide.
+          Framing is offered on A2 &amp; A1 · hand-finishing on A2, A1 &amp; A0 · both made to order, allow up to two weeks · free delivery.
         </p>
       </div>
     </section>
@@ -808,7 +808,7 @@ function EditionsPage() {
           <p className="ed-lead font-sans text-ink">
             Each mandala is issued in four archival giclée editions — from an
             open A3 to the A0 Heirloom — every one estate-stamped, numbered and
-            certified. Free delivery worldwide, from {gbp(lowest)}.
+            certified. Free delivery, from {gbp(lowest)}.
           </p>
         </header>
 
@@ -972,7 +972,7 @@ function BackCover() {
         <div style={{ textAlign: "center" }}>
           <h2 className={DISPLAY} style={{ fontSize: 40, margin: 0 }}>Bring one home</h2>
           <p className="font-sans text-ink-muted" style={{ fontSize: 13, margin: "10px 0 0" }}>
-            Every print, from £245 · free worldwide delivery · priced in £ · $ · € · A$ · C$.
+            Every print, from £245 · free delivery · priced in £ · $ · € · A$ · C$.
           </p>
           <p className="font-sans" style={{ fontSize: 14, margin: "16px 0 0" }}>
             <b className="text-ink">themandalacompany.com</b>

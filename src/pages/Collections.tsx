@@ -597,7 +597,7 @@ export const Collections = () => {
           H1 ("The complete works.") is unchanged. */}
       <Seo
         title="Mandala & Sacred Geometry Art Prints — The Collection"
-        description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery."
+        description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free delivery."
         url="/collections"
         jsonLd={collectionJsonLd}
       />

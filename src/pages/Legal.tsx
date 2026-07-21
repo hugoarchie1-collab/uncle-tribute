@@ -379,7 +379,7 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "We ship worldwide. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. For any unframed print you keep your 14-day right to cancel (you would bear the cost of returning it); but simply refusing delivery of a bespoke, cancellation-exempt order to avoid duties does not entitle you to a refund.",
+        text: "We ship to the UK, Europe, North America, Australia and New Zealand. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. For any unframed print you keep your 14-day right to cancel (you would bear the cost of returning it); but simply refusing delivery of a bespoke, cancellation-exempt order to avoid duties does not entitle you to a refund.",
       },
     ],
   },

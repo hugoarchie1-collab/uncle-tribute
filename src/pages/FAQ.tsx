@@ -108,7 +108,7 @@ const FAQS: QA[] = [
         Unframed prints are <strong>dispatched within 7–10 working days</strong>{" "}
         of your order; with tracked courier transit on top, most orders arrive
         within <strong>roughly two to three weeks</strong>. Delivery is free
-        worldwide. Framed orders add roughly two weeks to that. Prints
+        to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints
         hand-finished by Polly Wedge dispatch within two weeks maximum. You'll
         receive an email with tracking the moment your print leaves the studio.
       </>
@@ -138,7 +138,7 @@ const FAQS: QA[] = [
         (natural oak, stained black, white or walnut tray), with UV-filtering,
         shatter-safe acrylic glazing as standard or an anti-reflective glass
         upgrade, every finish included in the framing price. Add £345 on A2 and £445
-        on A1. Delivery is free worldwide, framed or unframed — there is no
+        on A1. Delivery is free, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
       </>
@@ -162,7 +162,7 @@ const FAQS: QA[] = [
     question: "Do you ship internationally?",
     answer: (
       <>
-        Yes — we ship worldwide. Delivery is free on every order, framed or
+        Yes — we ship to the UK, Europe, North America, Australia and New Zealand. Delivery is free on every order, framed or
         unframed, with nothing added at checkout. International buyers may be charged local
         import duties or VAT on delivery by their courier — these are set by
         your country's customs authority, not by us.

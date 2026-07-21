@@ -40,7 +40,7 @@ export const ProvenancePanel = () => (
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Shipping &amp; care</p>
       <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
         <li className={META}>Each print is made to order and ships within 7–10 working days.</li>
-        <li className={META}>Delivery is free worldwide — UK, Europe and beyond, framed or unframed — with nothing added at checkout.</li>
+        <li className={META}>Delivery is free to the UK, Europe, North America, Australia and New Zealand — framed or unframed — with nothing added at checkout.</li>
         <li className={META}>
           Damaged or lost in transit? See{" "}
           <Link to="/returns" className="underline underline-offset-4 hover:text-ink transition-colors">
