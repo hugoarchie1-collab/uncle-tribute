@@ -361,20 +361,22 @@ const renderWelcomeHtml = (p: {
     return t ? esc(t.split(/\s+/)[0]) : "there";
   })();
   const hasGift = !!(p.thankYouCode && p.thankYouValue && p.thankYouExpiry);
+  // Estate-paper palette (cream, dark ink) — matches the saved-basket email
+  // (Hugo: no black email backgrounds).
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#1a1612;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
     code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
-    cta: `display:inline-block;background-color:#ede6d6;color:#0a0908;padding:12px 28px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border-radius:999px;`,
+    cta: `display:inline-block;background-color:#1a1612;color:#f5efe3;padding:12px 28px;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;border-radius:999px;`,
   };
   const giftHtml = hasGift
     ? `<div style="${s.giftCard}">`
@@ -384,9 +386,10 @@ const renderWelcomeHtml = (p: {
       + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry as string)}.</p>`
       + `</div>`
     : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><meta name="supported-color-schemes" content="dark only"/><title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<p style="text-align:center;margin:0 0 26px 0;"><img src="https://themandalacompany.com/logo/mandala-company-seal-v1.png" width="112" height="112" alt="The Mandala Company" style="display:inline-block;width:112px;height:112px;border:0;outline:none;"/></p>`
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
     + `<p style="${s.body}">You've been added to Friends &amp; Family — a small list the family keeps for quarterly notes on new editions of <em>The Art of Stephen Meakin</em>, exhibitions, and the occasional piece of writing from the archive. No more than four notes a year, and never a marketing blast.</p>`
     + `<p style="${s.body}">Stephen worked for over three decades in Lewes, East Sussex — mandalas, sacred geometry, and a lifelong study of pattern. We release a small number of estate-stamped giclée prints so his work can live in homes rather than only in archives. If anything catches your eye, the current catalogue is here:</p>`
