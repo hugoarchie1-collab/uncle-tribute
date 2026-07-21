@@ -18,7 +18,6 @@ import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../components/ui/tokens";
-import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
 
 const formatDate = (iso: string | null): string => {
@@ -224,7 +223,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
   );
 };
 
-export const Account = () => {
+export const AccountPanel = () => {
   const [params] = useSearchParams();
   const auth = useAuth();
   const [email, setEmail] = useState("");
@@ -232,10 +231,6 @@ export const Account = () => {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const linkExpired = params.get("error") === "link";
-
-  // Private sign-in page — keep it out of the index (mirrors Basket).
-  usePageTitle("Your account");
-  useNoindexHead();
 
   // Returning via the magic link lands here with a fresh session cookie — make
   // sure the store reflects it (the lazy initial fetch may have run signed-out).
@@ -257,17 +252,8 @@ export const Account = () => {
   const signedIn = auth.status === "signedIn";
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-clip bg-bg">
-      {/* Fresh backdrop (Hugo 2026-07-04, "no repeats"): the serene lone-tree-
-          on-a-cliff certified scene — contemplative + fitting for the personal
-          account page, and distinct from the home Earth motif the old account
-          image (Earth-from-space) echoed. This image is now account-EXCLUSIVE:
-          it was the 2nd crossfade scene on /privacy, removed there so nothing
-          repeats. Text-safe sigma-7 bake, same recipe as every scene. */}
-      <SceneBackdrop src="/img/scenes/account-scene-v6.webp" />
-      <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
-        <Reveal as="header">
+    <>
+      <Reveal as="header">
           {signedIn && (
             <div className="flex justify-end">
               <button
@@ -279,12 +265,16 @@ export const Account = () => {
               </button>
             </div>
           )}
-          <h1
-            className="font-display text-ink m-0 text-balance text-pretty"
-            style={MASTHEAD_TITLE_STYLE}
+          <h2
+            className="font-display text-ink m-0 text-balance"
+            style={{
+              fontVariationSettings: '"opsz" 40, "wght" 560',
+              fontSize: "clamp(26px, 3.4vw, 42px)",
+              lineHeight: 1.05,
+            }}
           >
-            {signedIn ? "Your orders." : "Your account."}
-          </h1>
+            {signedIn ? "Your orders" : "Your account"}
+          </h2>
         </Reveal>
 
         <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-10 items-start border-t border-line pt-8 md:pt-10">
@@ -406,6 +396,27 @@ export const Account = () => {
             </ul>
           </Reveal>
         </div>
+    </>
+  );
+};
+
+/**
+ * /account — the standalone account page. The account UI itself lives in the
+ * reusable <AccountPanel/>, which is ALSO rendered on /basket (the "two-in-one"
+ * basket + account page). The nav no longer carries an account/profile icon;
+ * the merged basket page is the way in.
+ */
+export const Account = () => {
+  usePageTitle("Your account");
+  // Private route — keep it out of the index (mirrors Basket).
+  useNoindexHead();
+  return (
+    <div className="relative min-h-screen flex flex-col overflow-x-clip bg-bg">
+      {/* Serene lone-tree-on-a-cliff certified scene — account-exclusive. */}
+      <SceneBackdrop src="/img/scenes/account-scene-v6.webp" />
+      <Nav />
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-16 md:pb-24">
+        <AccountPanel />
       </main>
       <FooterCatalogue />
       <Footer />

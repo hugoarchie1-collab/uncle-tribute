@@ -10,6 +10,7 @@ import { Separator } from "../components/ui/separator";
 import { EmailMyBasket } from "../components/EmailMyBasket";
 import { ExitSaveBasket } from "../components/ExitSaveBasket";
 import { NewsletterSignup } from "../components/NewsletterSignup";
+import { AccountPanel } from "./Account";
 import { PaymentMarks } from "../components/PaymentMarks";
 import {
   getAnchorTier,
@@ -23,7 +24,7 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { useCurrency, formatMinorUnits } from "../lib/currency";
-import { useBasket, useGiftCards, removeItem, type BasketItem, type GiftBasketItem } from "../lib/basket";
+import { useBasket, useGiftCards, removeItem, setItemQuantity, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
 import { trackInitiateCheckout } from "../lib/tracking";
@@ -213,7 +214,10 @@ export const Basket = () => {
   // Genuine PRE-discount subtotal — print + every selected add-on across all
   // lines. This is the honest "before any bundle saving" figure (DMCC: show
   // the real subtotal, then the discount, then the total).
-  const subtotalPence = lines.reduce((sum, l) => sum + lineTotalPence(l), 0);
+  const subtotalPence = lines.reduce(
+    (sum, l) => sum + lineTotalPence(l) * l.item.quantity,
+    0,
+  );
 
   // Bundle discount — content-derived percent that EQUALS the Stripe charge,
   // and the absolute £ saving it produces. Computed PER STRIPE LINE ITEM (print
@@ -231,8 +235,13 @@ export const Basket = () => {
   // equal the pence figures (convert is identity-rounding for GBP). The single
   // per-line sub-amounts already convert once each, so they sum to these totals
   // to the penny.
+  // Stripe multiplies unit_amount × quantity per line item, THEN applies the
+  // percent_off coupon and rounds the discount per line item. Mirror that: the
+  // per-unit minor amount converts once (whole-major-unit rounding), × quantity
+  // gives the line-item amount, and the discount rounds on (amount × qty).
   const lineMinorTotal = (line: ResolvedLine): number =>
-    stripeLineItemsFor(line).reduce((sum, a) => sum + convert(a), 0);
+    stripeLineItemsFor(line).reduce((sum, a) => sum + convert(a), 0) *
+    line.item.quantity;
   const subtotalMinor = lines.reduce((sum, l) => sum + lineMinorTotal(l), 0);
   const bundleDiscountMinor =
     bundleDiscountPercent <= 0
@@ -241,7 +250,11 @@ export const Basket = () => {
           (sum, l) =>
             sum +
             stripeLineItemsFor(l).reduce(
-              (s, a) => s + Math.round((convert(a) * bundleDiscountPercent) / 100),
+              (s, a) =>
+                s +
+                Math.round(
+                  (convert(a) * l.item.quantity * bundleDiscountPercent) / 100,
+                ),
               0,
             ),
           0,
@@ -297,6 +310,7 @@ export const Basket = () => {
               framing: l.item.framing === true,
               embellished: l.item.embellished === true,
               canvas: l.item.canvas === true,
+              quantity: l.item.quantity,
               // Framing finishes (no price impact) — forwarded so the Stripe
               // line item names the frame the estate should order from Point 101.
               ...(l.item.framing === true && l.item.frameStyle
@@ -485,7 +499,43 @@ export const Basket = () => {
                           <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
                             {line.colourwayName}
                           </p>
-                          <div className="mt-2 flex items-center gap-5">
+                          <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
+                            {/* Quantity stepper */}
+                            <div className="inline-flex items-center rounded-full ring-1 ring-line">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setItemQuantity(
+                                    line.item.addedAt,
+                                    line.item.quantity - 1,
+                                  )
+                                }
+                                disabled={line.item.quantity <= 1}
+                                aria-label={`Decrease quantity of ${line.title}`}
+                                className="flex h-9 w-9 items-center justify-center text-ink text-[17px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+                              >
+                                −
+                              </button>
+                              <span
+                                aria-live="polite"
+                                className="min-w-[2.5ch] text-center font-sans text-[14px] text-ink [font-variant-numeric:tabular-nums]"
+                              >
+                                {line.item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setItemQuantity(
+                                    line.item.addedAt,
+                                    line.item.quantity + 1,
+                                  )
+                                }
+                                aria-label={`Increase quantity of ${line.title}`}
+                                className="flex h-9 w-9 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
                             <Link
                               to={`/collections/${line.paintingId}?c=${encodeURIComponent(line.colourwayName)}`}
                               className="inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors"
@@ -514,7 +564,7 @@ export const Basket = () => {
                           own per-size price, then a line subtotal. Rendered
                           only when at least one add-on is selected; the plain
                           print line above is already complete on its own. */}
-                      {hasAddOns && (
+                      {(hasAddOns || line.item.quantity > 1) && (
                         <div className="mt-3 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
@@ -524,6 +574,16 @@ export const Basket = () => {
                               {fmt(line.tier.pricePence)}
                             </span>
                           </div>
+                          {line.item.quantity > 1 && (
+                            <div className="flex items-baseline justify-between gap-4">
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
+                                Quantity
+                              </span>
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                                × {line.item.quantity}
+                              </span>
+                            </div>
+                          )}
                           {framingPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
@@ -872,6 +932,13 @@ export const Basket = () => {
             </Reveal>
           </div>
         )}
+
+        {/* YOUR ACCOUNT — the basket page IS the account page now (Hugo's
+            "two-in-one"): sign in, order history, certificates and profile all
+            live here. Separated by air, not a rule. */}
+        <section className="mt-16 md:mt-24">
+          <AccountPanel />
+        </section>
       </main>
       {/* Exit-intent toast — mounts globally on the basket page, fires
           only on top-edge mouse exit and only once per session. */}

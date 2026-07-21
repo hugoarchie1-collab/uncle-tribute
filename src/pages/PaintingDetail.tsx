@@ -1111,6 +1111,8 @@ const BuyBox = ({
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [enquireOpen, setEnquireOpen] = useState(false);
+  // How many of this exact configuration to add / buy. Whole units, 1–99.
+  const [quantity, setQuantity] = useState(1);
   // The confirmation pill records *which* selection was last added + when.
   // Switching painting/colourway/tier silently invalidates a stale one.
   const [addedFor, setAddedFor] = useState<{
@@ -1219,12 +1221,13 @@ const BuyBox = ({
       framingActive ? frameStyle : undefined,
       framingActive ? glazing : undefined,
       canvasActive,
+      quantity,
     );
     // Marketing analytics (consent-gated no-op otherwise) — AddToCart /
-    // add_to_cart at the SELECTED tier's print price.
+    // add_to_cart at the SELECTED tier's print price × quantity.
     trackAddToCart(
       { id: painting.id, title: painting.title },
-      selectedTier.pricePence,
+      selectedTier.pricePence * quantity,
     );
     const stamp = Date.now();
     setAddedFor({
@@ -1280,6 +1283,7 @@ const BuyBox = ({
           framing: framingActive,
           embellished: embellishActive,
           canvas: canvasActive,
+          quantity,
           ...(framingActive ? { frameStyle, glazing } : {}),
           currency: currencyCode,
           ...(utm ? { utm } : {}),
@@ -1811,10 +1815,40 @@ const BuyBox = ({
           </fieldset>
         )}
 
+        {/* 6b · QUANTITY — whole units, 1–99. Separated by air, not a rule. */}
+        <div className="flex items-center justify-between mt-6">
+          <span className={cn(EYEBROW_TIGHT)}>Quantity</span>
+          <div className="inline-flex items-center rounded-full ring-1 ring-line">
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              disabled={quantity <= 1}
+              aria-label="Decrease quantity"
+              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+            >
+              −
+            </button>
+            <span
+              aria-live="polite"
+              className="min-w-[2.75ch] text-center font-display text-[17px] text-ink [font-variant-numeric:tabular-nums]"
+            >
+              {quantity}
+            </span>
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.min(99, q + 1))}
+              aria-label="Increase quantity"
+              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
         {/* 7 · CTAs — one dominant action with a quiet ghost beneath (the Aesop
             "single confident action" pattern), full-width so they never wrap
             awkwardly in the narrow column. */}
-        <div className="flex flex-col gap-3 mt-6">
+        <div className="flex flex-col gap-3 mt-4">
           <button
             type="button"
             onClick={onAdd}

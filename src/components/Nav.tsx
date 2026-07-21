@@ -8,8 +8,7 @@ import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
-import { useBasketLines } from "../lib/basket";
-import { openCartDrawer } from "../lib/cartDrawer";
+import { useBasketTotalQuantity } from "../lib/basket";
 import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
 
 /**
@@ -56,7 +55,7 @@ const NAV_LINKS: NavItem[] = [
  *  into the Shop group (Hugo: it belongs in the shop menu). Basket has its own
  *  top-bar icon so it's intentionally absent. */
 const SECONDARY_LINKS = [
-  { to: "/account", label: "Your account" },
+  { to: "/basket", label: "Basket & account" },
   { to: "/orders", label: "Orders & returns" },
   { to: "/faq", label: "FAQ" },
   { to: "/privacy", label: "Privacy" },
@@ -113,10 +112,9 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   // (that re-samples the full-width strip every scroll frame — the "2005-lag").
   const [hidden, setHidden] = useState(false);
   const lastYRef = useRef(0);
-  // Count ALL basket lines — prints AND gift cards — so the badge reflects a
-  // gift-only basket too.
-  const basket = useBasketLines();
-  const basketCount = basket.length;
+  // Total physical items — sum of print quantities + gift lines — so the badge
+  // reflects quantity, not just distinct lines.
+  const basketCount = useBasketTotalQuantity();
   const location = useLocation();
   const reduceMotion = useReducedMotion();
   // Menu open/closed lives in a tiny module-level store (lib/menuStore) — NOT a
@@ -127,32 +125,6 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const menuOpen = useMenuOpen();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // User avatar (set on /account → localStorage "tasm.avatar") shown beside the
-  // profile icon. Re-read on navigation (the upload-then-return flow) + on a
-  // cross-tab storage change.
-  const [avatar, setAvatar] = useState<string | null>(() => {
-    try {
-      return typeof localStorage !== "undefined" ? localStorage.getItem("tasm.avatar") : null;
-    } catch {
-      return null;
-    }
-  });
-  useEffect(() => {
-    try {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setAvatar(localStorage.getItem("tasm.avatar"));
-    } catch {
-      /* storage unavailable */
-    }
-  }, [location.pathname]);
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === "tasm.avatar") setAvatar(e.newValue);
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
 
   // Track the prior basket count so we pulse only on increments, exposing a
   // `pulseKey` that bumps every time a pulse should retrigger. Route changes
@@ -382,52 +354,17 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               currency at checkout (advertised == charged). */}
           <CurrencySelect variant="header" className="hidden lg:inline-block shrink-0" />
 
-          {/* Account — Amazon "Account & Lists" entry. Reachable on md+; on
-              small screens it lives in the drawer's links. */}
+          {/* Basket — links straight to the full basket + account page (the
+              "two-in-one"). Adds are confirmed by the centered AddedConfirmation
+              modal, so there is no competing slide-in drawer. */}
           <NavLink
-            to="/account"
-            aria-label="Your account"
-            className={({ isActive }) =>
-              cn(
-                "press hidden md:inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300",
-                isActive ? "text-ink" : "text-ink/55 hover:text-accent",
-              )
-            }
-          >
-            {avatar ? (
-              <img
-                src={avatar}
-                alt=""
-                className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px] rounded-full object-cover ring-1 ring-line"
-              />
-            ) : (
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-3.4 3.6-6 8-6s8 2.6 8 6" />
-              </svg>
-            )}
-          </NavLink>
-
-          {/* Basket — opens the slide-in cart drawer (mini-cart), the way the
-              best shops do; the drawer's CTA then goes through to /basket. */}
-          <button
-            type="button"
-            onClick={() => openCartDrawer()}
+            to="/basket"
             aria-label={
               basketCount > 0
                 ? `Basket, ${basketCount} item${basketCount === 1 ? "" : "s"}`
                 : "Basket, empty"
             }
-            className="press relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300 text-ink/55 hover:text-accent bg-transparent border-0 cursor-pointer"
+            className="press relative inline-flex items-center justify-center min-w-[44px] min-h-[44px] transition-colors duration-300 text-ink/55 hover:text-accent"
           >
             <BasketIcon className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
             {basketCount > 0 && (
@@ -461,7 +398,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 {basketCount}
               </motion.span>
             )}
-          </button>
+          </NavLink>
 
           {/* Hamburger — below `lg`. Toggles the accessible menu. */}
           <button

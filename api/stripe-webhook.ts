@@ -283,7 +283,15 @@ interface EmailLine {
   embellishPrice?: string;
   // The base TIER price (formatted GBP) — the print itself, before add-ons.
   price: string;
+  // How many of this line were ordered (≥ 1). Each is separately hand-numbered.
+  quantity: number;
 }
+
+/** Parse a metadata quantity string → whole units, 1–99. */
+const metaQty = (raw: string | undefined): number => {
+  const n = Number.parseInt((raw || "").trim(), 10);
+  return Number.isFinite(n) && n >= 1 ? Math.min(99, n) : 1;
+};
 
 // Per-tier price lookup (mirror of api/checkout.ts TIERS — keep in sync,
 // gotcha #9). Used to render per-line prices in the confirmation email
@@ -383,11 +391,13 @@ const linesFromMetadata = (
             ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
             : undefined,
         price: formatGBP(TIER_PRICE_PENCE[tierId] ?? amountSubtotal ?? null),
+        quantity: metaQty(m.quantity),
       },
     ];
   }
   // Multi-item shape
   const titles = (m.painting_titles || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const quantities = (m.quantities || "").split(",").map((s) => s.trim());
   const colourways = (m.colourway_names || "").split(",").map((s) => s.trim()).filter(Boolean);
   const paintingIds = (m.painting_ids || "").split(",").map((s) => s.trim());
   const tierIds = (m.tier_ids || "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -416,6 +426,7 @@ const linesFromMetadata = (
           ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
           : undefined,
       price: formatGBP(TIER_PRICE_PENCE[tierId] ?? null),
+      quantity: metaQty(quantities[idx]),
     };
   });
 };
@@ -755,6 +766,9 @@ const renderOrderConfirmationHtml = (p: {
             : "")
         + (line.embellished && line.embellishPrice
             ? priceRow("Hand-finished by Polly Wedge", line.embellishPrice, EMBELLISH)
+            : "")
+        + (line.quantity > 1
+            ? priceRow("Quantity", `× ${line.quantity}`, "Each print is individually hand-numbered.")
             : "")
         + `</div>`;
     })
@@ -1227,26 +1241,43 @@ const ledgerLinesFromMetadata = (
   m: Stripe.Metadata | null,
 ): Array<{ paintingId: string; tierId: string; colourway: string; title: string }> => {
   if (!m) return [];
+  // Quantity: each unit is a SEPARATELY hand-numbered print, so a line of qty N
+  // expands into N ledger units → N sequential certificate numbers. Expansion is
+  // deterministic (fixed session metadata), so a Stripe redelivery re-expands
+  // identically and each unit's idempotency key (…:<idx>) still lines up.
+  const qtyOf = (raw: string | undefined): number => {
+    const n = Number.parseInt((raw || "").trim(), 10);
+    return Number.isFinite(n) && n >= 1 ? Math.min(99, n) : 1;
+  };
+  const repeat = <T,>(line: T, n: number): T[] =>
+    Array.from({ length: n }, () => ({ ...line }));
   if (m.painting_id && !m.painting_ids) {
-    return [
+    return repeat(
       {
         paintingId: m.painting_id,
         tierId: m.tier_id || "collector",
         colourway: m.colourway_name || "Original",
         title: m.painting_title || m.painting_id,
       },
-    ];
+      qtyOf(m.quantity),
+    );
   }
   const ids = (m.painting_ids || "").split(",").map((s) => s.trim()).filter(Boolean);
   const tiers = (m.tier_ids || "").split(",").map((s) => s.trim());
   const cols = (m.colourway_names || "").split(",").map((s) => s.trim());
   const titles = (m.painting_titles || "").split(",").map((s) => s.trim());
-  return ids.map((paintingId, i) => ({
-    paintingId,
-    tierId: tiers[i] || "collector",
-    colourway: cols[i] || "Original",
-    title: titles[i] || paintingId,
-  }));
+  const qtys = (m.quantities || "").split(",").map((s) => s.trim());
+  return ids.flatMap((paintingId, i) =>
+    repeat(
+      {
+        paintingId,
+        tierId: tiers[i] || "collector",
+        colourway: cols[i] || "Original",
+        title: titles[i] || paintingId,
+      },
+      qtyOf(qtys[i]),
+    ),
+  );
 };
 
 // Issue (or, on a retry, re-read) a ledger entry for every print line in the

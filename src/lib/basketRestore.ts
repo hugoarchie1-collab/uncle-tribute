@@ -77,6 +77,12 @@ const validateLine = (raw: unknown): RestoredLine | null => {
   const embellished =
     o.embellished === true && typeof tier.embellishmentPricePence === "number";
 
+  // Quantity rides along in the payload; absent / malformed → 1.
+  const quantity =
+    typeof o.quantity === "number" && Number.isFinite(o.quantity) && o.quantity >= 1
+      ? Math.floor(o.quantity)
+      : 1;
+
   return {
     kind: "print",
     paintingId: painting.id,
@@ -85,6 +91,7 @@ const validateLine = (raw: unknown): RestoredLine | null => {
     ...(canvas ? { canvas: true } : {}),
     ...(framing ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
+    quantity,
   };
 };
 

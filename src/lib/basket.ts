@@ -61,6 +61,14 @@ export interface BasketItem {
    */
   frameStyle?: string;
   glazing?: string;
+  /**
+   * How many of THIS exact configuration (painting · colourway · tier · add-ons)
+   * the buyer wants. Always ≥ 1. Absent on entries written before quantity
+   * existed → read as 1, so no storage-version bump is needed. Each unit is a
+   * separately hand-numbered print, so the checkout charges quantity × price and
+   * the estate ledger issues quantity certificates for the line.
+   */
+  quantity: number;
   addedAt: number;
 }
 
@@ -180,6 +188,11 @@ const readFromStorage = (): BasketLine[] => {
           framing && typeof o.frameStyle === "string" ? o.frameStyle : undefined;
         const glazing =
           framing && typeof o.glazing === "string" ? o.glazing : undefined;
+        // Absent / malformed quantity reconciles to 1 (back-compat, no version bump).
+        const quantity =
+          typeof o.quantity === "number" && Number.isFinite(o.quantity) && o.quantity >= 1
+            ? Math.floor(o.quantity)
+            : 1;
         return {
           kind: "print",
           paintingId: o.paintingId,
@@ -190,6 +203,7 @@ const readFromStorage = (): BasketLine[] => {
           ...(canvas ? { canvas } : {}),
           ...(frameStyle ? { frameStyle } : {}),
           ...(glazing ? { glazing } : {}),
+          quantity,
           addedAt: o.addedAt,
         };
       })
@@ -338,6 +352,19 @@ export const getGiftCards = (): GiftBasketItem[] =>
  * and producing sensible baskets. `framing` and `embellished` default to
  * false.
  */
+/** Two print lines share a configuration when everything but quantity/addedAt
+ *  matches — such adds MERGE into one line (quantity += n) rather than stacking
+ *  duplicate rows, so the basket reads like every best-in-class shop. */
+const sameConfig = (a: BasketItem, b: BasketItem): boolean =>
+  a.paintingId === b.paintingId &&
+  a.colourwayName === b.colourwayName &&
+  a.tierId === b.tierId &&
+  !!a.framing === !!b.framing &&
+  !!a.embellished === !!b.embellished &&
+  !!a.canvas === !!b.canvas &&
+  (a.frameStyle ?? "") === (b.frameStyle ?? "") &&
+  (a.glazing ?? "") === (b.glazing ?? "");
+
 export const addItem = (
   paintingId: string,
   colourwayName: string,
@@ -347,6 +374,7 @@ export const addItem = (
   frameStyle?: string,
   glazing?: string,
   canvas?: boolean,
+  quantity?: number,
 ): void => {
   const current = ensureCache();
   let resolvedTierId: PrintTier["id"] = tierId ?? "collector";
@@ -357,6 +385,7 @@ export const addItem = (
     const painting = getPaintingById(paintingId);
     if (painting) resolvedTierId = getAnchorTier(painting).id;
   }
+  const qty = quantity && Number.isFinite(quantity) && quantity >= 1 ? Math.floor(quantity) : 1;
   const added: BasketItem = {
     kind: "print",
     paintingId,
@@ -368,18 +397,57 @@ export const addItem = (
     ...(embellished ? { embellished: true } : {}),
     ...(framing && !canvas && frameStyle ? { frameStyle } : {}),
     ...(framing && !canvas && glazing ? { glazing } : {}),
+    quantity: qty,
     addedAt: Date.now(),
   };
-  setCache([...current, added]);
+  // Merge into an existing identical line if present (quantity += qty), keeping
+  // its addedAt/position; otherwise append. Either way we notify with the
+  // resulting merged line so the confirmation shows the true basket quantity.
+  const idx = current.findIndex(
+    (l) => isPrintItem(l) && sameConfig(l as BasketItem, added),
+  );
+  let notify: BasketItem;
+  if (idx >= 0) {
+    const existing = current[idx] as BasketItem;
+    notify = { ...existing, quantity: existing.quantity + qty };
+    const next = current.slice();
+    next[idx] = notify;
+    setCache(next);
+  } else {
+    notify = added;
+    setCache([...current, added]);
+  }
   // Fire the UI add-notification AFTER the store has settled + persisted, so
   // a toast consumer reading the basket sees the new line. Wrapped so a
   // misbehaving subscriber can never break the add itself.
   try {
-    emitAdd(added);
+    emitAdd(notify);
   } catch {
     /* notification is best-effort — never let it disrupt the basket */
   }
 };
+
+/**
+ * Set a print line's quantity (basket-page stepper). Clamps to ≥ 1 whole units;
+ * to remove a line entirely use `removeItem`. No-ops if the line isn't found.
+ */
+export const setItemQuantity = (addedAt: number, quantity: number): void => {
+  const current = ensureCache();
+  const qty = Number.isFinite(quantity) && quantity >= 1 ? Math.floor(quantity) : 1;
+  const idx = current.findIndex((l) => l.addedAt === addedAt && isPrintItem(l));
+  if (idx < 0) return;
+  const next = current.slice();
+  next[idx] = { ...(current[idx] as BasketItem), quantity: qty };
+  setCache(next);
+};
+
+/** Total number of physical prints in the basket (sum of print quantities).
+ *  Gift-card lines count as one each. Drives the nav badge + confirmation. */
+export const getBasketTotalQuantity = (): number =>
+  ensureCache().reduce(
+    (sum, l) => sum + (isPrintItem(l) ? (l as BasketItem).quantity : 1),
+    0,
+  );
 
 /**
  * Add a GIFT-CARD line. `amountPence` is the face value (must be a whole-pound
@@ -511,3 +579,9 @@ export const useBasketLines = (): BasketLine[] =>
 /** Reactive hook — gift-card lines only. */
 export const useGiftCards = (): GiftBasketItem[] =>
   useSyncExternalStore(subscribe, getGiftSnapshot, () => EMPTY_GIFTS);
+
+/** Reactive hook — total physical items (sum of print quantities + gift lines),
+ *  for the nav basket badge + the "added" confirmation. Returns a primitive so
+ *  it's snapshot-stable. */
+export const useBasketTotalQuantity = (): number =>
+  useSyncExternalStore(subscribe, getBasketTotalQuantity, () => 0);

@@ -396,6 +396,8 @@ interface NormalisedItem {
   framing: boolean;     // true only if framing is offered AND requested
   embellished: boolean; // true only if hand-finishing is offered AND requested
   canvas: boolean;      // true only if canvas is offered AND requested (excludes framing)
+  // How many of this exact line to charge for (Stripe line_items.quantity). ≥ 1.
+  quantity: number;
   // Framing finishes (display labels) — only set when framing === true. These
   // ride into the Stripe line item so the estate knows which frame to order;
   // they carry NO price (every finish is included in framingPricePence).
@@ -412,6 +414,7 @@ const normaliseItem = (
   frameStyleRaw?: unknown,
   glazingRaw?: unknown,
   canvasRaw?: unknown,
+  quantityRaw?: unknown,
 ): NormalisedItem | { error: string } => {
   if (!paintingId || !VALID_PAINTING_IDS.has(paintingId)) {
     return { error: `Unknown painting "${paintingId ?? ""}".` };
@@ -441,6 +444,12 @@ const normaliseItem = (
   const glazing = framing
     ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["art-acrylic"])
     : undefined;
+  // Quantity — whole units, clamped to a sane 1–99 so a malformed / hostile
+  // client can never mint an absurd Stripe line quantity.
+  const quantity =
+    typeof quantityRaw === "number" && Number.isFinite(quantityRaw)
+      ? Math.min(99, Math.max(1, Math.floor(quantityRaw)))
+      : 1;
   return {
     paintingId,
     colourway,
@@ -449,6 +458,7 @@ const normaliseItem = (
     framing,
     embellished,
     canvas,
+    quantity,
     frameStyle,
     glazing,
   };
@@ -668,6 +678,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     canvas?: unknown;
     frameStyle?: unknown;
     glazing?: unknown;
+    quantity?: unknown;
     items?: Array<{
       kind?: unknown;
       paintingId?: string;
@@ -678,6 +689,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       canvas?: unknown;
       frameStyle?: unknown;
       glazing?: unknown;
+      quantity?: unknown;
       // Gift-card line fields (kind === "gift"):
       amountPence?: unknown;
       label?: unknown;
@@ -715,6 +727,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           canvas: body.canvas,
           frameStyle: body.frameStyle,
           glazing: body.glazing,
+          quantity: body.quantity,
         },
       ];
 
@@ -756,6 +769,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       raw?.frameStyle,
       raw?.glazing,
       raw?.canvas,
+      raw?.quantity,
     );
     if ("error" in result) return send(400, result);
     normalised.push(result);
@@ -781,7 +795,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const lineItems: LineItem[] = [];
   for (const item of normalised) {
     lineItems.push({
-      quantity: 1,
+      quantity: item.quantity,
       price_data: {
         currency: currencyCode,
         unit_amount: toMinor(item.tier.pricePence),
@@ -804,7 +818,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           ? `${item.frameStyle} frame · ${item.glazing}`
           : "Bespoke frame";
       lineItems.push({
-        quantity: 1,
+        quantity: item.quantity,
         price_data: {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.framingPricePence),
@@ -820,7 +834,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       typeof item.tier.embellishmentPricePence === "number"
     ) {
       lineItems.push({
-        quantity: 1,
+        quantity: item.quantity,
         price_data: {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.embellishmentPricePence),
@@ -838,7 +852,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }
     if (item.canvas && typeof item.tier.canvasPricePence === "number") {
       lineItems.push({
-        quantity: 1,
+        quantity: item.quantity,
         price_data: {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.canvasPricePence),
@@ -901,6 +915,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       size: sizeFor(normalised[0].paintingId, normalised[0].tier),
       framing: normalised[0].framing ? "yes" : "no",
       embellished: normalised[0].embellished ? "yes" : "no",
+      quantity: String(normalised[0].quantity),
       item_count: "1",
     };
   } else {
@@ -917,6 +932,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       embellished_flags: truncateMetadata(
         normalised.map((i) => (i.embellished ? "y" : "n")),
       ),
+      quantities: truncateMetadata(normalised.map((i) => String(i.quantity))),
       size: sizeFor(normalised[0].paintingId, normalised[0].tier),
     };
   }
