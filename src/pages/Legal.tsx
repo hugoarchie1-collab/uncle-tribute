@@ -30,7 +30,7 @@ import { cn } from "../lib/cn";
  * standard catalogue print where the buyer only picks size/colourway from
  * fixed options, so the statutory right probably applies to the A3 regardless
  * and claiming the exemption would risk an unenforceable term; (b) a returned
- * A3 costs the estate ~£12–20 (buyer pays return postage) against £245, so
+ * A3 costs the estate ~£12–20 (buyer pays return postage) against £275, so
  * the generous policy is a cheap conversion asset on the entry tier. The
  * exemption stance on A2/A1/A0 (strong for framed/hand-finished/hand-painted,
  * weaker for plain made-to-order prints) should still go to the solicitor

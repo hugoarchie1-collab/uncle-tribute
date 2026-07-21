@@ -109,11 +109,11 @@ const TIERS: Record<TierId, EmailTier> = {
     canvasPricePence: 26500,
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was
-    // silently downgraded to the A2 anchor in the email (£450 vs £1,750).
+    // silently downgraded to the A2 anchor in the email (£495 vs £1,895).
     available: true,
   },
   studio: {
-    // £2,450 unique hand-painted one-off by Polly Wedge — no add-ons.
+    // £2,650 unique hand-painted one-off by Polly Wedge — no add-ons.
     label: "Original — One of One",
     size: "A1 (59.5 × 59.5 cm)",
     editionLabel: "Unique — one of one",

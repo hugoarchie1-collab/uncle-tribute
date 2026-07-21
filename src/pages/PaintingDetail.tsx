@@ -112,7 +112,7 @@ const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
 // (e.g. peacock-persian-indigo-a2.jpg + .webp — see scripts/truesize-compose.mjs).
 // The "True size" toggle is gated to this allowlist so a painting whose assets
 // aren't generated yet stays on the artwork view rather than offering a "To
-// scale · coming soon" dead-end on a £245–£1,750 page (audit fix). ⚠️HUGO: add a
+// scale · coming soon" dead-end on a £275–£1,895 page (audit fix). ⚠️HUGO: add a
 // painting id here the moment its room composites land, and the toggle self-enables.
 // True-size tab DISABLED for now (Hugo 2026-06-30): he's remaking the room
 // mockups on canvy.com — until then no painting offers the "True size" view, so
@@ -1935,7 +1935,7 @@ const BuyBox = ({
           )}
         </p>
 
-        {/* A quiet path to ask before committing to a £245–£1,750 piece —
+        {/* A quiet path to ask before committing to a £275–£1,895 piece —
             opens the existing estate enquiry modal, painting-specific. */}
         <button
           type="button"
@@ -2450,7 +2450,7 @@ export const PaintingDetail = () => {
     [painting],
   );
   // Split the ladder: standard size tiers feed the radio grid; a one-off tier
-  // (the optional `isOneOff: true` £2,450 piece) is rendered separately.
+  // (the optional `isOneOff: true` £2,650 piece) is rendered separately.
   // Defensive — if no one-off tier exists, oneOffTier is undefined and the
   // feature card never mounts.
   const sizeTiers = useMemo(
@@ -3046,7 +3046,7 @@ export const PaintingDetail = () => {
         {/* Exhibited & commissioned — Stephen's real, documented provenance
             (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).
             For a cold-start estate with no reviews yet, this is the legitimate
-            trust signal that underwrites a £245–£1,750 purchase; it was built
+            trust signal that underwrites a £275–£1,895 purchase; it was built
             but mounted nowhere (audit fix). Quiet, reverent, text-only. */}
         <CredentialsStrip />
         <FooterCatalogue />

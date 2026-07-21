@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -186,6 +187,109 @@ const BODY_CLASS =
   "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink [overflow-wrap:anywhere] m-0";
 
 // ---------------------------------------------------------------------------
+// PhotoLightbox — the X.com-style photo viewer. Tapping any attached photo in
+// the feed lifts it out of the card onto a dimmed, blurred backdrop as a large
+// centered "island" that springs up (Hugo 2026-07-21: "click expansion on the
+// image and it looks all neat with an island coming up like X would"). Dark
+// scrim + backdrop-blur behind; the photo is shown WHOLE (object-contain, up to
+// 90vh × 92vw) so a face is never sliced even at full size; a round close
+// button top-right; click-outside / Escape / the close button all dismiss it;
+// body scroll is locked while open and focus returns to the opener. Sits at
+// z-[210], ABOVE the z-[200] share modal. Reduced-motion → instant fade, no
+// spring. Self-contained: each PostCard owns one, opened from its own media.
+// ---------------------------------------------------------------------------
+const PhotoLightbox = ({
+  src,
+  alt,
+  open,
+  onClose,
+}: {
+  src: string;
+  alt: string;
+  open: boolean;
+  onClose: () => void;
+}) => {
+  const reduce = useReducedMotion();
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCloseRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      if (opener && document.contains(opener)) opener.focus?.();
+    };
+  }, [open]);
+
+  // Rendered through a PORTAL to <body> — the card ancestors run framer-motion
+  // transforms, and a `position: fixed` element nested under a transformed
+  // ancestor re-bases to that ancestor (not the viewport), which dropped the
+  // island below the fold. Portalling to body guarantees it centres on the
+  // viewport. (SSR/prerender guard: no document → render nothing.)
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    <AnimatePresence>
+      {open ? (
+        <motion.div
+          className="fixed inset-0 z-[210] flex items-center justify-center p-4 sm:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photograph"
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : 0.22 }}
+        >
+          {/* Dimmed, blurred backdrop — the feed recedes behind the island. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-black/85 backdrop-blur-md"
+          />
+          {/* Round close control, top-right (X idiom). */}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close photo"
+            className="absolute right-4 top-4 z-[2] inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-ink ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white/20"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+          {/* The photo island — springs up, shown whole (never cropped). */}
+          <motion.img
+            src={src}
+            alt={alt}
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-[1] block h-auto max-h-[90vh] w-auto max-w-[92vw] rounded-[10px] object-contain shadow-[0_40px_120px_rgba(0,0,0,0.7)] ring-1 ring-white/10"
+            initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 8 }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 260, damping: 26 }
+            }
+          />
+        </motion.div>
+      ) : null}
+    </AnimatePresence>,
+    document.body,
+  );
+};
+
+// ---------------------------------------------------------------------------
 // PostCard — the ONE self-contained social POST of the feed (Instagram/Threads/
 // X idiom). Replaces the old flat CommentRow. `pinned` makes it the artist's
 // founding post (a warm ring + a "Pinned" chip + top position — never enlarged,
@@ -216,13 +320,15 @@ const PostCard = ({
   pinned?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const [zoom, setZoom] = useState(false);
   const paragraphs = splitParagraphs(memory.message);
   const meta = [memory.relationship, memory.location].filter(Boolean).join(" · ");
-  // The letter is ONE ~1632-char paragraph (zero newlines) so paragraph-count
-  // folding never fires. Use line-clamp on the collapsed body for a true ~4-line
-  // fold that reflows at every width.
-  const plain = pinned ? memory.message.replace(/\s+/g, " ").trim() : "";
-  const needsFold = pinned && plain.length > 280;
+  // EVERY long post folds now (Hugo 2026-07-21: "add a see more to see more or
+  // less of text"), not just the pinned artist letter. The collapsed view is a
+  // true ~4-line line-clamp of the whitespace-normalised text that reflows at
+  // every width; expanding restores the real paragraph breaks.
+  const plain = memory.message.replace(/\s+/g, " ").trim();
+  const needsFold = plain.length > 280;
   return (
     <article
       className={cn(
@@ -283,25 +389,61 @@ const PostCard = ({
             aria-expanded={expanded}
             className="mt-1.5 inline-flex items-center min-h-[44px] font-sans text-[clamp(14.5px,1.5vw,16px)] font-semibold text-ink-muted hover:text-accent transition-colors"
           >
-            {expanded ? "Show less" : "Read more"}
+            {expanded ? "See less" : "See more"}
           </button>
         ) : null}
       </div>
 
-      {/* ATTACHED MEDIA — full-bleed to the card's rounded edges (via the card's
-          overflow-hidden), welded to the body by a hairline seam. object-contain
-          on a dark matte + a height cap: whole photo shown (faces never sliced),
-          never page-dominating. */}
+      {/* ATTACHED MEDIA — reads as a real social upload (Hugo 2026-07-21: "the
+          layering of the images is terrible, they don't look like uploads").
+          The whole photo is shown (object-contain — a face is NEVER sliced) but
+          a BLURRED copy of itself fills the frame behind it, so there are no
+          dead dark letterbox bars: the media block always fills the card width
+          cleanly, exactly like an in-feed X / Instagram photo. The whole photo
+          is a button — tapping it opens the PhotoLightbox island. A round expand
+          glyph fades in on hover to signal it. */}
       {memory.imageUrl ? (
-        <figure className="m-0 border-t border-line/60 bg-bg">
-          <img
+        <>
+          <figure className="m-0 border-t border-line/60">
+            <button
+              type="button"
+              onClick={() => setZoom(true)}
+              aria-label={`Expand the photograph shared by ${memory.name}`}
+              className="group/media relative block w-full cursor-zoom-in overflow-hidden bg-bg"
+            >
+              {/* Blurred self-fill — kills the letterbox bars behind any aspect. */}
+              <img
+                src={memory.imageUrl}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 h-full w-full scale-125 object-cover opacity-45 blur-2xl"
+              />
+              {/* The real photo, whole + centered, gently zooming on hover. */}
+              <img
+                src={memory.imageUrl}
+                alt={`A photograph shared by ${memory.name}`}
+                loading="lazy"
+                decoding="async"
+                className="relative mx-auto block h-auto max-h-[560px] w-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover/media:scale-[1.015] motion-reduce:transform-none"
+              />
+              {/* Expand affordance (X idiom) — rises in on hover. */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute right-3 top-3 inline-flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-black/45 text-white opacity-0 ring-1 ring-white/20 backdrop-blur transition-all duration-300 group-hover/media:translate-y-0 group-hover/media:opacity-100"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
+              </span>
+            </button>
+          </figure>
+          <PhotoLightbox
             src={memory.imageUrl}
             alt={`A photograph shared by ${memory.name}`}
-            loading="lazy"
-            decoding="async"
-            className="block w-full h-auto max-h-[380px] object-contain object-center mx-auto transition-transform duration-500 ease-out group-hover:scale-[1.01] motion-reduce:transform-none"
+            open={zoom}
+            onClose={() => setZoom(false)}
           />
-        </figure>
+        </>
       ) : null}
     </article>
   );

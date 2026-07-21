@@ -156,7 +156,7 @@ export const EMBELLISHMENT_NOTE =
   "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (Stephen's sister). Made by hand and to order — please allow up to two weeks.";
 
 /**
- * Copy for the Studio one-off tier (the £2,450 hand-painted unique piece).
+ * Copy for the Studio one-off tier (the £2,650 hand-painted unique piece).
  * Distinct from EMBELLISHMENT_NOTE: that's an add-on finishing of a print;
  * this is a singular work in its own right. Surfaced by Orla on the PDP
  * as a full-width card (tiers with `isOneOff: true`).
@@ -327,7 +327,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  * Pricing is in PENCE (Stripe's smallest unit for GBP) so all maths stays
  * in integers and there are no rounding bugs at checkout.
  *
- * Points at the ANCHOR tier (A2 Collector, £450, edition of 200) for
+ * Points at the ANCHOR tier (A2 Collector, £495, edition of 200) for
  * backwards compatibility with `getPrintPricePence` / `getPrintSize`
  * (still consumed by PaintingDetail + api/checkout.ts until the size-aware
  * wire-up lands in the synthesis round). Keep the api/checkout.ts
@@ -390,8 +390,8 @@ export const getTierById = (
 /**
  * Returns the lowest visible tier price (in pence) for a painting. Used by
  * the browse surfaces (Collections tiles, Welcome Featured Works chip) to
- * advertise the entry price — "from £245" — which lowers the click barrier.
- * The £450 anchor still does its conversion work on the product page itself.
+ * advertise the entry price — "from £275" — which lowers the click barrier.
+ * The £495 anchor still does its conversion work on the product page itself.
  * Falls back to the anchor price if (defensively) no tiers are visible.
  */
 export const getLowestTierPricePence = (painting: Painting): number => {
@@ -491,7 +491,7 @@ export const COST_FLOOR_PENCE: Record<PrintTier["id"], { printFloor: number }> =
   // Its real cost = A1 print (£43) + frame-if-any + Polly painting it by hand
   // for many hours (4–10+ hrs at £30–45/hr = £120–£450 labour alone). £160 here
   // is a LOWER-BOUND placeholder (£43 print + ~£117 labour at a 4hr minimum).
-  // Set this to Polly's REAL time × rate + print + any frame. At £2,450 retail it
+  // Set this to Polly's REAL time × rate + print + any frame. At £2,650 retail it
   // is never at risk, but record the real number for honesty / insurance.
   studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder
 };

@@ -48,7 +48,7 @@ import { cn } from "../lib/cn";
 
 // The size-pegged denominations: every AVAILABLE, non-one-off tier on the
 // canonical ladder. Each is labelled by its size short-name + edition label +
-// price, e.g. "A2 · Collector's Edition — £450". Derived from PRINT_TIERS so a
+// price, e.g. "A2 · Collector's Edition — £495". Derived from PRINT_TIERS so a
 // catalogue price change flows here automatically (advertised == charged).
 interface Denomination {
   /** Stable key — the tier id it's pegged to. */

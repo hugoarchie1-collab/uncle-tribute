@@ -85,7 +85,7 @@ export interface GiftBasketItem {
   /** Face value in integer pence (== advertised == Stripe charge). */
   amountPence: number;
   /**
-   * Short human label for the denomination, e.g. "A2 Collector — £450" or
+   * Short human label for the denomination, e.g. "A2 Collector — £495" or
    * "Custom amount". Display + Stripe product name only — never a price source
    * (amountPence is the single source of the charge).
    */
