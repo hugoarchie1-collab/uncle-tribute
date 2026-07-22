@@ -344,7 +344,7 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[57svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[64svh] justify-end pt-[max(9rem,44svh)] sm:pt-[max(7rem,13svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -372,7 +372,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden max-h-[40svh] sm:max-h-[46svh] md:max-h-[56svh]"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
