@@ -330,7 +330,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             the space fully collapses, and when shown it only appears at a width
             that fits a min-[320px] long field without crowding the logo. */}
         <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden xl:block w-full min-w-[200px] max-w-[380px]" />
+          <SearchBar variant="header" className="hidden lg:block w-full min-w-[180px] max-w-[340px]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
