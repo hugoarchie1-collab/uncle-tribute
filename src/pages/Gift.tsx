@@ -310,7 +310,7 @@ export const Gift = () => {
                         "group text-left rounded-2xl px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
-                          ? "bg-ink/[0.06] ring-accent ring-2"
+                          ? "bg-[rgba(10,9,8,0.62)] backdrop-blur-sm ring-accent ring-2"
                           : "bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-line hover:ring-ink/40",
                       )}
                     >

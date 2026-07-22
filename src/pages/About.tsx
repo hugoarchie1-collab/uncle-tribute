@@ -659,7 +659,7 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
   return (
     <Reveal as="div" className="py-4 md:py-5">
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-2 md:mb-3 leading-[1.9]")}>{item.q}</p>
+      <p className="m-0 mb-2 md:mb-3 font-display italic font-normal text-[clamp(16px,1.2vw,20px)] leading-[1.45] text-ink-muted">{item.q}</p>
       {isBeat ? (
         <p className={cn(SUBHEAD, "m-0 max-w-[34ch]")} style={SUBHEAD_STYLE}>
           &ldquo;{item.a}&rdquo;
@@ -1527,10 +1527,10 @@ export const About = () => {
               May you have a <em className="italic font-normal">wonderful</em> journey.
             </h2>
           </Reveal>
-          <Reveal as="div" delay={0.06} className="mx-auto max-w-[74ch] text-center">
-            <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>{ABOUT.studentsIntro}</p>
+          <Reveal as="div" delay={0.06} className="mx-auto max-w-[68ch] text-left">
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>{ABOUT.studentsIntro}</p>
             <blockquote className="m-0">
-              <Prose text={ABOUT.studentsLetter} className={cn(SUBTITLE, "italic")} />
+              <Prose text={ABOUT.studentsLetter} className={cn(SUBTITLE)} />
             </blockquote>
           </Reveal>
         </section>

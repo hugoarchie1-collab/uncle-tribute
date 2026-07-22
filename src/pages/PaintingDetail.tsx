@@ -2008,7 +2008,7 @@ const CompanionWorks = ({
       className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
-        More from {collectionTitle ?? "the estate"}
+        More from {collectionTitle ? collectionTitle.split(" — ")[0] : "the estate"}
       </p>
       <ul className="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-8">
         {companions.map((p) => {

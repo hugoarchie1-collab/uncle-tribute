@@ -334,7 +334,7 @@ export const FindAPrint = () => {
                   aria-checked={sel}
                   onClick={() => setBrowseTier(t)}
                   className={cn(
-                    "inline-flex min-h-[40px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                     sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
                   )}
                 >

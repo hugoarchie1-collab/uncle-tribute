@@ -290,11 +290,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-label="The Mandala Company — home"
           className="press inline-flex items-center min-w-0"
         >
-          {/* Seal + READABLE Fraunces wordmark text (Hugo 2026-07-22: "I can't
-              even read the text around our logo — make sure the text bar is
-              there"). The engraved ring-text on the seal isn't legible at nav
-              scale, so the wordmark beside it carries the brand name clearly. */}
-          <Logo size={46} wordmark />
+          {/* Seal ONLY, sized WAY UP (Hugo 2026-07-22: "I don't want the 'The Art
+              of Stephen Meakin' text next to the top/footer logo — make the logo
+              way bigger, I still can't read it"). No wordmark text; the seal is
+              enlarged so its engraved ring-text reads as clearly as a nav allows. */}
+          <Logo size={72} wordmark={false} />
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the

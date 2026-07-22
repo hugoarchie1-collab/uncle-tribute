@@ -282,7 +282,7 @@ const FaqMasthead = () => (
     className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}
     style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
   >
-    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px] text-center">
+    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px]">
       <Reveal as="div">
         <h1
           className="font-display text-ink m-0"
@@ -300,7 +300,7 @@ const FaqMasthead = () => (
         </Reveal>
         <Reveal as="div" delay={0.06} className="mt-2 md:mt-2.5">
           <p
-            className="font-display font-normal tracking-[-0.01em] text-ink m-0 mx-auto max-w-[72ch] 3xl:max-w-[80ch]"
+            className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[72ch] 3xl:max-w-[80ch]"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 430',
               fontSize: "clamp(22px, 2.2vw, 38px)",

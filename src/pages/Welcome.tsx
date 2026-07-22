@@ -1000,13 +1000,13 @@ export const Welcome = () => {
               sequins) on the left; a clear "what you get + from-price + CTA" on
               the right. Frosted panel matches the craft register. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-4 sm:p-5 md:p-6 lg:p-7">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-line shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-4 sm:p-5 md:p-6 lg:p-7">
               <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
                 {/* Craft FILM — the hand-finishing in motion (dots of paint +
                     sequins placed by hand). Muted autoplay loop; the still is the
                     poster (and the reduced-motion fallback). Capped height so it's
                     never a full-screen wall. */}
-                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-white/10">
+                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1091,7 +1091,7 @@ export const Welcome = () => {
               through, a hairline luminous border, and a soft ambient shadow
               that lifts it off the page (Apple/Stripe register). */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-white/10 shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-line shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
@@ -1276,7 +1276,7 @@ export const Welcome = () => {
                 plate keeps it crisp). Well separated from the film above by the
                 prose. Never cropped; ring frame kept. */}
             <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[400px] md:max-w-[500px]">
-              <div className="overflow-hidden rounded-[3px] ring-1 ring-ink/70 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+              <div className="overflow-hidden rounded-[3px] ring-1 ring-line shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"

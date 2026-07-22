@@ -184,7 +184,7 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 // ---------------------------------------------------------------------------
 // PhotoLightbox — the X.com-style photo viewer. Tapping any attached photo in
