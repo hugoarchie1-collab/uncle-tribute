@@ -22,7 +22,6 @@ import {
   DEATH_DATE,
   INTERVIEW,
   LIFE_DATES,
-  TRIBUTE,
 } from "../data/content";
 import { Seo } from "../components/Seo";
 import { PavoBackdrop } from "../components/PavoBackdrop";
@@ -1536,22 +1535,10 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* IN LOVING MEMORY — Polly Wedge's funeral tribute, VERBATIM
-            (untouchable). Centered, no rules/boxes. */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <Reveal as="div" className="text-center mb-5 md:mb-7">
-            <p className={cn(EYEBROW, "m-0 mb-3")}>{TRIBUTE.eyebrow}</p>
-            <h2 className={cn(TITLE, "my-0 mx-auto max-w-[1000px] hero-text-shadow")}>
-              Steve, we will love you <em className="italic font-normal">forever</em>.
-            </h2>
-          </Reveal>
-          <Reveal as="div" delay={0.06} className="mx-auto max-w-[74ch] text-center flex flex-col gap-4 md:gap-5">
-            {TRIBUTE.paragraphs.map((para, i) => (
-              <p key={i} className={cn(SUBTITLE, "m-0")}>{para}</p>
-            ))}
-            <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>{TRIBUTE.attribution}</p>
-          </Reveal>
-        </section>
+        {/* Polly Wedge's funeral tribute lives ONLY on /memories now (Hugo,
+            2026-07-22: "the thing written for Stephen's funeral to be only kept
+            on the memories page, not About"). The About page closes on Stephen's
+            own words to his students (above) → the CTA. */}
 
         <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
           <Reveal as="div" className={cn(BLOCK_GAP, "text-center")}>
