@@ -1310,13 +1310,18 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                filter: "brightness(0.92) saturate(0.6) contrast(1.02)",
+                // DIMMED like the Earth's dark limb + a cool rim-glow that traces
+                // the moon's arc edge (the moon's equivalent of the Earth's bright
+                // atmosphere rim), so it reads as the same lit-limb, not a bright
+                // detailed dome.
+                filter:
+                  "brightness(0.86) saturate(0.5) contrast(1.03) drop-shadow(0 -2px 12px rgba(206,220,245,0.5)) drop-shadow(0 -1px 26px rgba(206,220,245,0.22))",
                 // Feather the far surface into the peacock backdrop; the arc's own
                 // transparent sky is already keyed, so this only softens the edges.
                 WebkitMaskImage:
-                  "radial-gradient(120% 150% at 50% 100%, #000 78%, transparent 100%)",
+                  "radial-gradient(120% 150% at 50% 100%, #000 74%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(120% 150% at 50% 100%, #000 78%, transparent 100%)",
+                  "radial-gradient(120% 150% at 50% 100%, #000 74%, transparent 100%)",
               }}
             />
           </section>
