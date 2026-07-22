@@ -1285,38 +1285,36 @@ export const Welcome = () => {
             aria-hidden="true"
             className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
           >
-            {/* Warm rim glow along the very foot — atmosphere, matching the
-                Earth open's halo (not the cold silver moon glow). */}
+            {/* Soft silver rim glow along the very foot — moonlight atmosphere. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
               style={{
                 background:
-                  "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
+                  "radial-gradient(110% 80% at 50% 100%, rgba(206,216,236,0.13) 0%, rgba(206,216,236,0) 70%)",
               }}
             />
-            {/* The rising EARTH limb — the SAME earth-cutout-v2 asset + treatment
-                as the top open, just NOT flipped, so it curves UP from the foot
-                ("as above, so below"). Identical quality, dimensions and
-                curvature to the top Earth (Hugo 2026-07-22: the grainy moon
-                looked terrible — I want the same quality/curvature as the Earth). */}
+            {/* The rising MOON — a real, HIGH-QUALITY full-moon disc (NASA/Galileo,
+                public domain), curving UP from the foot to mirror the Earth limb
+                curving DOWN at the top ("as above, so below"). Its top ~half shows,
+                the body bleeding below the fold; dimmed + radially feathered so it
+                dissolves into the peacock backdrop like the Earth. (Hugo 2026-07-22:
+                the old mosaic moon was low-quality/tiled — this is a clean HD disc,
+                same round shape as the Earth's globe, reversed to face up.) */}
             <img
-              src={asset("/img/scenes/earth-cutout-v2.webp")}
+              src={asset("/img/scenes/moon-rise-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="absolute inset-x-0 bottom-0 z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              className="absolute left-1/2 z-[1] block select-none w-[min(560px,86vw)] max-w-none"
               style={{
-                display: "block",
-                maxWidth: "none",
-                height: "auto",
-                // Natural orientation (no scaleY flip): the limb sits at the foot
-                // and curves UP — the mirror of the top open. Mask solid at the
-                // bottom pinned edge, dissolving up into the peacock backdrop.
+                bottom: "0",
+                transform: "translate(-50%, 45%)",
+                filter: "brightness(0.8) saturate(0.72) contrast(1.02)",
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(68% 68% at 50% 50%, #000 60%, rgba(0,0,0,0.35) 82%, transparent 95%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(68% 68% at 50% 50%, #000 60%, rgba(0,0,0,0.35) 82%, transparent 95%)",
               }}
             />
           </section>
