@@ -14,7 +14,7 @@ import { cn } from "../lib/cn";
 import { asset } from "../lib/asset";
 import { useAuth } from "../lib/auth";
 import { MEMORIES, type Memory } from "../data/memories";
-import { ABOUT, LIFE_DATES, TRIBUTE } from "../data/content";
+import { ABOUT, TRIBUTE } from "../data/content";
 
 /**
  * /memories — the Book of Memories. A refined masthead (a meta rule, then the
@@ -1077,101 +1077,50 @@ export const Memories = () => {
             floated a sub-scale h1 in dead horizontal space. */}
         <MemoriesMasthead onShare={() => setModalOpen(true)} />
 
-        {/* 2 · THE FEED — a single vertical column of self-contained social
-            POST cards (Instagram/Threads/X idiom), flanked on desktop by
-            populated sticky rails so a wide screen fills edge-to-edge while the
-            feed still reads as a feed. Masonry was rejected: the visitor seed is
-            usually empty, so a multi-column wall of 2 cards + an empty state
-            reads as broken air — the exact stranded-empty-space failure. One
-            honest column is the true IG/Threads atom, and the rails carry REAL,
-            verbatim furniture (invitation + composer), never decorative filler.
-            Rails collapse below xl → a pure single-column mobile feed. */}
+        {/* 2 · THE FEED — ONE narrow, centred column, the true Instagram /
+            Threads / X atom (Hugo, 2026-07-22: "the images are so wide even at
+            default view, it doesn't look like instagram threads or x.com").
+            NO side rails, NO masonry, NO wide multi-column grid — just the
+            composer at the top (like X's compose box) then the posts stacked, all
+            capped to a social ~600px measure so a shared photo never sprawls the
+            width of the screen. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[720px] xl:max-w-[1180px] 2xl:max-w-[1440px] 3xl:max-w-[1600px] 4xl:max-w-[1840px] px-[clamp(1rem,5vw,3rem)] pb-[clamp(2rem,4vw,3.5rem)]"
+          className="mx-auto w-full max-w-[600px] px-[clamp(1rem,5vw,1.5rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
         >
-          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,300px)_minmax(0,640px)] 2xl:grid-cols-[minmax(0,320px)_minmax(0,700px)_minmax(0,360px)] xl:justify-center gap-[clamp(1.5rem,3vw,2.75rem)]">
+          <div className="flex flex-col gap-[clamp(0.85rem,1.8vw,1.2rem)]">
+            {/* Composer at the TOP of the feed — the "leave a memory" box. */}
+            <ComposerCard onShare={() => setModalOpen(true)} />
 
-            {/* LEFT RAIL (xl+) — the sticky "about the wall" panel: the invitation
-                (verbatim from the masthead) + a persistent Share button, so the
-                wall's purpose stays in view as the masthead scrolls away. At xl
-                (no right rail) it also carries the composer. */}
-            <aside className="hidden xl:block">
-              <div className="sticky top-[clamp(5rem,9vw,7rem)] flex flex-col gap-5">
-                <div className="rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,1.6vw,1.5rem)]">
-                  <div className="border-b border-line pb-3">
-                    <span className={cn(EYEBROW, "block")}>The Pin Board</span>
-                    <span className={cn(EYEBROW_MUTED, "block mt-1.5 tracking-[0.02em]")}>{LIFE_DATES}</span>
-                  </div>
-                  <p className="mt-4 font-sans text-[clamp(14.5px,0.9vw,16px)] leading-[1.6] text-ink/85 m-0">
-                    Stephen to some, SEM to the art world, Steve to his family. If
-                    he touched your life, add a memory below — the family reads
-                    every one.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(true)}
-                    className={cn(BTN_PRIMARY, "mt-5 w-full")}
-                  >
-                    Share a memory <span aria-hidden="true" className="ml-2">→</span>
-                  </button>
-                </div>
-                {/* composer lives here ONLY at xl (the right rail carries it 2xl+) */}
-                <div className="2xl:hidden">
-                  <ComposerCard onShare={() => setModalOpen(true)} />
-                </div>
-              </div>
-            </aside>
+            {/* PINNED — Stephen's own words to his students (its long letter
+                folds). Rank = position + warm ring + chip only. */}
+            <Reveal as="div" delay={0}>
+              <PostCard memory={ARTIST_MEMORY} pinned />
+            </Reveal>
 
-            {/* CENTER — THE FEED. Pinned artist post leads; family tribute next;
-                then, under a quiet label, the visitor posts (or the empty state).
-                Below xl the composer is the first item so mobile opens on it. */}
-            <div className="flex flex-col gap-[clamp(0.85rem,1.8vw,1.2rem)]">
-              <div className="xl:hidden">
-                <ComposerCard onShare={() => setModalOpen(true)} />
-              </div>
+            {/* FAMILY — Polly Wedge's funeral tribute lives HERE, on the memories
+                wall (Hugo: keep it on memories only, not About). Shown in full. */}
+            <Reveal as="div" delay={0.05}>
+              <PostCard memory={FAMILY_TRIBUTE} />
+            </Reveal>
 
-              {/* PINNED — Stephen's own words to his students (its long letter
-                  folds). Rank = position + warm ring + chip only. */}
-              <Reveal as="div" delay={0}>
-                <PostCard memory={ARTIST_MEMORY} pinned />
+            {hasVisitorMemories ? (
+              <Reveal as="div" className="pt-[clamp(0.5rem,1.2vw,0.9rem)]">
+                <p className={cn(EYEBROW_MUTED, "m-0")}>From those who knew him</p>
               </Reveal>
+            ) : null}
 
-              {/* FAMILY — Polly Wedge's funeral tribute; shown in full, plain
-                  card. Weight comes from position + the tribute itself. */}
-              <Reveal as="div" delay={0.05}>
-                <PostCard memory={FAMILY_TRIBUTE} />
+            {hasVisitorMemories ? (
+              visitorMemories.map((memory, i) => (
+                <Reveal key={memory.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
+                  <PostCard memory={memory} />
+                </Reveal>
+              ))
+            ) : (
+              <Reveal as="div" delay={0.08}>
+                <EmptyStateCard />
               </Reveal>
-
-              {hasVisitorMemories ? (
-                <Reveal as="div" className="pt-[clamp(0.5rem,1.2vw,0.9rem)]">
-                  <p className={cn(EYEBROW_MUTED, "m-0")}>From those who knew him</p>
-                </Reveal>
-              ) : null}
-
-              {hasVisitorMemories ? (
-                visitorMemories.map((memory, i) => (
-                  <Reveal key={memory.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
-                    <PostCard memory={memory} />
-                  </Reveal>
-                ))
-              ) : (
-                <Reveal as="div" delay={0.08}>
-                  <EmptyStateCard />
-                </Reveal>
-              )}
-            </div>
-
-            {/* RIGHT RAIL (2xl+) — the sticky composer + a quiet standing note
-                (verbatim from the share modal). */}
-            <aside className="hidden 2xl:block">
-              <div className="sticky top-[clamp(5rem,9vw,7rem)] flex flex-col gap-4">
-                <ComposerCard onShare={() => setModalOpen(true)} />
-                <p className="font-sans text-[clamp(13.5px,0.85vw,15px)] leading-[1.6] text-ink-muted m-0 px-1">
-                  We read each one with care before it joins the wall.
-                </p>
-              </div>
-            </aside>
+            )}
           </div>
         </section>
 
