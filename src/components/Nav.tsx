@@ -590,12 +590,12 @@ const NavMenu = ({
                 end
                 className={({ isActive }) =>
                   cn(
-                    "block py-2 mb-4 font-display font-semibold tracking-[-0.015em] leading-[1.08] text-[clamp(28px,7vw,38px)] outline-none transition-colors duration-200",
+                    "block py-2 mb-4 font-display font-bold tracking-[-0.03em] leading-[1.02] text-[clamp(30px,7.4vw,42px)] outline-none transition-colors duration-200",
                     isActive ? "text-accent" : "text-ink hover:text-accent",
                     "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
                   )
                 }
-                style={{ fontVariationSettings: '"opsz" 32' }}
+                style={{ fontVariationSettings: '"opsz" 40, "wght" 700' }}
               >
                 Home
               </NavLink>
@@ -619,12 +619,12 @@ const NavMenu = ({
                         to={l.to}
                         className={({ isActive }) =>
                           cn(
-                            "block py-2 font-display font-semibold tracking-[-0.015em] leading-[1.08] text-[clamp(28px,7vw,38px)] outline-none transition-colors duration-200",
+                            "block py-2 font-display font-bold tracking-[-0.03em] leading-[1.02] text-[clamp(30px,7.4vw,42px)] outline-none transition-colors duration-200",
                             isActive ? "text-accent" : "text-ink hover:text-accent",
                             "[&:focus-visible]:[outline:2px_solid_rgba(201,120,68,0.5)] [&:focus-visible]:[outline-offset:3px]",
                           )
                         }
-                        style={{ fontVariationSettings: '"opsz" 32' }}
+                        style={{ fontVariationSettings: '"opsz" 40, "wght" 700' }}
                       >
                         {l.label}
                       </NavLink>

@@ -597,7 +597,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="m-0 mt-6 md:mt-7 mx-auto w-full max-w-[1180px] 3xl:max-w-[1300px]">
+              <Reveal as="figure" className="m-0 mt-6 md:mt-7 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
                 {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
                     (Hugo 2026-07-08: "no image should take up the full screen") —
                     at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
@@ -1151,7 +1151,10 @@ export const Welcome = () => {
               muted/looping/lazy, feathered into the backdrop; reduced-motion
               holds the poster still. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="figure" className="m-0">
+            {/* Capped so this cinematic plate stays LARGE but never fills the
+                whole screen (Hugo 2026-07-22: "no image should take up the full
+                screen — check across the site"). */}
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1000px] 3xl:max-w-[1140px]">
               <LoopFilm
                 src="/video/studio-mandala-v1.mp4"
                 poster="/video/poster-studio-mandala-v1.jpg"
@@ -1251,7 +1254,7 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[1100px]">
+            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[960px]">
               <LoopFilm
                 src="/video/arista-timelapse-v1.mp4"
                 poster="/video/poster-arista-timelapse-v1.jpg"
