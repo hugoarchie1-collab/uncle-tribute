@@ -22,13 +22,13 @@ export const Logo = ({
   wordmarkText = "The Art of Stephen Meakin",
   className,
 }: LogoProps) => {
-  // The clean wax-rose SYMBOL — NO "THE MANDALA COMPANY" ring text (Hugo,
-  // 2026-07-21: "I don't want the mandala company text, I want just that logo").
-  // logo-seal-v9 is the Tudor-rose seal keyed to full transparency with its own
-  // engraved white relief; paired with the cream rim-light below it reads as a
-  // clean, high-contrast symbol on any dark ground — Nike-style. The old
-  // text-ring disc (mandala-company-seal-disc-v*) is retired.
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
+  // The ROUND "THE MANDALA COMPANY" wax seal (Hugo, 2026-07-22, sent the exact
+  // art: "this is the round new updated logo for top left bar… i want this
+  // transparent, no checkered background, a visible aesthetic and clear enough").
+  // v2 = the seal keyed to FULL transparency (the cream ground is gone); paired
+  // with the cream rim-light below it stays visible + crisp on the dark-red nav.
+  // Shown symbol-only in the nav (its own ring text IS the wordmark).
+  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v2.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*

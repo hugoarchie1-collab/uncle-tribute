@@ -290,10 +290,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-label="The Mandala Company — home"
           className="press inline-flex items-center min-w-0"
         >
-          {/* Symbol ONLY — the clean wax rose, no wordmark text (Hugo,
-              2026-07-21: "I want just that logo", Nike-style). The Link's
+          {/* The round "THE MANDALA COMPANY" wax seal ONLY — its own ring text
+              is the wordmark, so no separate label (Hugo, 2026-07-22). Sized up
+              so the ring text reads as clearly as a nav allows; the Link's
               aria-label carries the accessible name. */}
-          <Logo size={48} wordmark={false} />
+          <Logo size={56} wordmark={false} />
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the
