@@ -547,7 +547,10 @@ const NavMenu = ({
           >
             {/* Top row — quiet label + close. */}
             <div className="flex items-center justify-between px-7 sm:px-8 py-5 border-b border-ink/60">
-              <span className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.08em] text-ink-muted">
+              <span
+                className="font-display font-bold text-[clamp(21px,3.6vw,27px)] tracking-[-0.015em] text-ink leading-none"
+                style={{ fontVariationSettings: '"opsz" 40, "wght" 700' }}
+              >
                 Menu
               </span>
               <button
@@ -601,7 +604,7 @@ const NavMenu = ({
               </NavLink>
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-6" : ""}>
-                  <p className="mb-2 font-sans text-[13px] md:text-[14px] font-bold tracking-[0.08em] text-ink-muted">
+                  <p className="mb-2 font-display italic font-normal text-[clamp(15px,1.5vw,18px)] tracking-[0.005em] text-ink-muted">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (
