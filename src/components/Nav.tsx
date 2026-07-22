@@ -299,14 +299,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               src={`${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`}
               alt=""
               aria-hidden="true"
-              width={40}
-              height={40}
-              className="h-[34px] w-[34px] sm:h-[38px] sm:w-[38px] shrink-0 object-contain"
+              width={44}
+              height={44}
+              className="h-[40px] w-[40px] sm:h-[44px] sm:w-[44px] shrink-0 object-contain"
               style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
             />
             <span
-              className="font-display font-semibold text-ink tracking-[-0.015em] leading-none whitespace-nowrap text-[clamp(15px,1.25vw,20px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
-              style={{ fontVariationSettings: '"opsz" 28, "wght" 600' }}
+              className="font-display font-bold text-ink tracking-[-0.015em] leading-[0.98] whitespace-nowrap text-[clamp(18px,1.55vw,24px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+              style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}
             >
               The Art of Stephen Meakin
             </span>

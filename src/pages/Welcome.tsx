@@ -344,7 +344,7 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[64svh] justify-end pt-[max(9rem,44svh)] sm:pt-[max(7rem,13svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[54svh] justify-end pt-[max(9rem,44svh)] sm:pt-[max(6.5rem,10svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -1283,38 +1283,40 @@ export const Welcome = () => {
               peacock backdrop like the Earth. Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
+            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(200px,24vw,380px)]"
           >
-            {/* Soft silver rim glow along the very foot — moonlight atmosphere. */}
+            {/* Cool-silver rim halo at the very foot — the moon's equivalent of
+                the Earth open's warm halo (same effect, mirrored to the foot). */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[60%]"
               style={{
                 background:
-                  "radial-gradient(110% 80% at 50% 100%, rgba(206,216,236,0.13) 0%, rgba(206,216,236,0) 70%)",
+                  "radial-gradient(120% 90% at 50% 100%, rgba(206,216,236,0.15) 0%, rgba(206,216,236,0) 72%)",
               }}
             />
-            {/* The rising MOON — a real, HIGH-QUALITY full-moon disc (NASA/Galileo,
-                public domain), curving UP from the foot to mirror the Earth limb
-                curving DOWN at the top ("as above, so below"). Its top ~half shows,
-                the body bleeding below the fold; dimmed + radially feathered so it
-                dissolves into the peacock backdrop like the Earth. (Hugo 2026-07-22:
-                the old mosaic moon was low-quality/tiled — this is a clean HD disc,
-                same round shape as the Earth's globe, reversed to face up.) */}
+            {/* The rising MOON limb — a CLONE of the top Earth limb: the SAME wide
+                shallow arc + width proportions + feather, a real (NASA/Galileo,
+                public domain) moon surface instead of Earth, reversed to curve UP
+                from the foot ("as above, so below"). Same img sizing + mask family
+                as the top Earth (Hugo 2026-07-22: clone the Earth, moon instead). */}
             <img
-              src={asset("/img/scenes/moon-rise-v2.webp")}
+              src={asset("/img/scenes/moon-limb-v1.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="absolute left-1/2 z-[1] block select-none w-[min(560px,86vw)] max-w-none"
+              className="absolute inset-x-0 bottom-0 z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
               style={{
-                bottom: "0",
-                transform: "translate(-50%, 45%)",
-                filter: "brightness(0.8) saturate(0.72) contrast(1.02)",
+                display: "block",
+                maxWidth: "none",
+                height: "auto",
+                filter: "brightness(0.92) saturate(0.6) contrast(1.02)",
+                // Feather the far surface into the peacock backdrop; the arc's own
+                // transparent sky is already keyed, so this only softens the edges.
                 WebkitMaskImage:
-                  "radial-gradient(68% 68% at 50% 50%, #000 60%, rgba(0,0,0,0.35) 82%, transparent 95%)",
+                  "radial-gradient(120% 150% at 50% 100%, #000 78%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(68% 68% at 50% 50%, #000 60%, rgba(0,0,0,0.35) 82%, transparent 95%)",
+                  "radial-gradient(120% 150% at 50% 100%, #000 78%, transparent 100%)",
               }}
             />
           </section>
