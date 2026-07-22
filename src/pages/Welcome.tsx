@@ -653,7 +653,7 @@ export const Welcome = () => {
                 hard dark card. */}
             {/* Left-aligned to establish the RAIL the pull-quote below breaks
                 against (the section's one off-axis spine). */}
-            <Reveal as="header" className="mb-3 md:mb-4 text-left">
+            <Reveal as="header" className="mb-3 md:mb-4 text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>A reminder</p>
               {/* Illuminated opening CLAUSE — reminderLong[0]'s first sentence as
                   a large flush-left display lede (the rust drop-cap now
@@ -662,7 +662,7 @@ export const Welcome = () => {
                   recipe (global.css, @supports initial-letter:2) scales for free.
                   Words untouched; the full paragraph still appears once, in order. */}
               <p
-                className="drop-cap font-display font-semibold tracking-[-0.03em] text-ink m-0 max-w-[26ch] text-balance"
+                className="font-display font-semibold tracking-[-0.03em] text-ink m-0 mx-auto max-w-[30ch] text-balance"
                 style={{
                   fontVariationSettings: '"opsz" 48, "wght" 600',
                   fontSize: "clamp(32px, 5.2vw, 64px)",
@@ -674,7 +674,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 max-w-[72ch] text-pretty"
+                  className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[72ch] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -826,7 +826,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-center"
+              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
             >
               <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] md:max-h-[64svh] overflow-hidden rounded-[4px] ring-1 ring-line">
                 <ImageReveal

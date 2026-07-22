@@ -73,13 +73,12 @@ export const Logo = ({
         style={{
           width: size,
           height: size,
-          // NO cream/white glow (2026-07-22, Hugo: "logo's got this white light I
-          // never asked for — I can't read it"). The cream rim-light read as an
-          // unwanted white halo. Replaced with a soft DARK depth shadow only, so
-          // the deep-red wax seal keeps a little separation on the dark-red nav /
-          // near-black footer WITHOUT any white light on it.
+          // A soft, WARM (not white) depth halo — enough for the deep-red seal
+          // to read on the dark-red nav / near-black footer, without the harsh
+          // white rim-light Hugo rejected. The readable brand TEXT now sits
+          // beside it (wordmark on), so the seal itself only needs gentle lift.
           filter:
-            "drop-shadow(0 1px 4px rgba(0,0,0,0.7)) drop-shadow(0 0 7px rgba(0,0,0,0.4))",
+            "drop-shadow(0 0 2px rgba(228,222,206,0.3)) drop-shadow(0 1px 3px rgba(0,0,0,0.6))",
         }}
       />
       {wordmark && (

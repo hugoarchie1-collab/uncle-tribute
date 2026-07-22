@@ -290,11 +290,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           aria-label="The Mandala Company — home"
           className="press inline-flex items-center min-w-0"
         >
-          {/* The round "THE MANDALA COMPANY" wax seal ONLY — its own ring text
-              is the wordmark, so no separate label (Hugo, 2026-07-22). Sized up
-              so the ring text reads as clearly as a nav allows; the Link's
-              aria-label carries the accessible name. */}
-          <Logo size={56} wordmark={false} />
+          {/* Seal + READABLE Fraunces wordmark text (Hugo 2026-07-22: "I can't
+              even read the text around our logo — make sure the text bar is
+              there"). The engraved ring-text on the seal isn't legible at nav
+              scale, so the wordmark beside it carries the brand name clearly. */}
+          <Logo size={46} wordmark />
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the
@@ -314,7 +314,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             the space fully collapses, and when shown it only appears at a width
             that fits a min-[320px] long field without crowding the logo. */}
         <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden 2xl:block w-full min-w-[320px] max-w-[460px]" />
+          <SearchBar variant="header" className="hidden xl:block w-full min-w-[200px] max-w-[380px]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">

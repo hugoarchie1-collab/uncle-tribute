@@ -159,16 +159,17 @@ const LinkPill = ({ row }: { row: LinkRow }) => {
 
 export const Links = () => (
   <div className="relative min-h-[100dvh] flex flex-col overflow-x-clip">
-    <SceneBackdrop src="/img/scenes/links-studio-scene-v2.webp" />
-    {/* Soft centred scrim — the studio reads clearly at the margins, the text
-        stays legible down the middle column (Hugo: make the background clearer,
-        but I still need to read the text easily). */}
+    <SceneBackdrop src="/img/scenes/links-studio-scene-v3.webp" />
+    {/* LIGHT centred scrim — the studio now reads clearly (Hugo: "the background
+        is so dark you don't know what's happening"). Only a gentle darkening
+        down the middle column so the cream text still holds via its shadows,
+        while the studio stays bright and legible at the margins. */}
     <div
       aria-hidden="true"
       className="fixed inset-0 z-[1] pointer-events-none"
       style={{
         background:
-          "radial-gradient(115% 80% at 50% 42%, rgba(8,7,6,0.52) 0%, rgba(8,7,6,0.30) 55%, rgba(8,7,6,0.08) 100%)",
+          "radial-gradient(120% 82% at 50% 40%, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.2) 58%, rgba(8,7,6,0) 100%)",
       }}
     />
     <Seo

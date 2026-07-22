@@ -1079,7 +1079,7 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 gap-8 lg:gap-10 justify-items-center max-w-[860px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
           >
             {/* Compact 2×2 index (natural spacing — NOT spread thin down the
@@ -1216,7 +1216,7 @@ export const About = () => {
             className={cn(
               ONE_WIDTH,
               BLOCK_GAP,
-              "grid grid-cols-1 gap-8 lg:gap-10 justify-items-center max-w-[860px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
           >
             <div className="min-w-0">
