@@ -1301,7 +1301,7 @@ export const Welcome = () => {
                 from the foot ("as above, so below"). Same img sizing + mask family
                 as the top Earth (Hugo 2026-07-22: clone the Earth, moon instead). */}
             <img
-              src={asset("/img/scenes/moon-limb-v1.webp")}
+              src={asset("/img/scenes/moon-limb-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1310,18 +1310,16 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // DIMMED like the Earth's dark limb + a cool rim-glow that traces
-                // the moon's arc edge (the moon's equivalent of the Earth's bright
-                // atmosphere rim), so it reads as the same lit-limb, not a bright
-                // detailed dome.
+                // The moon-limb-v2 asset is already graded like the Earth (lit arc
+                // edge, surface darkening below). A cool rim-glow traces the arc =
+                // the moon's equivalent of the Earth's bright atmosphere. Verified
+                // side-by-side: this mirrors the top Earth limb.
                 filter:
-                  "brightness(0.86) saturate(0.5) contrast(1.03) drop-shadow(0 -2px 12px rgba(206,220,245,0.5)) drop-shadow(0 -1px 26px rgba(206,220,245,0.22))",
-                // Feather the far surface into the peacock backdrop; the arc's own
-                // transparent sky is already keyed, so this only softens the edges.
+                  "drop-shadow(0 -2px 13px rgba(206,220,245,0.6)) drop-shadow(0 -1px 30px rgba(206,220,245,0.28))",
                 WebkitMaskImage:
-                  "radial-gradient(120% 150% at 50% 100%, #000 74%, transparent 100%)",
+                  "radial-gradient(160% 240% at 50% 100%, #000 92%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(120% 150% at 50% 100%, #000 74%, transparent 100%)",
+                  "radial-gradient(160% 240% at 50% 100%, #000 92%, transparent 100%)",
               }}
             />
           </section>
