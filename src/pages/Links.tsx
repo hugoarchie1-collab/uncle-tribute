@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Logo } from "../components/Logo";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -160,7 +159,7 @@ const LinkPill = ({ row }: { row: LinkRow }) => {
 
 export const Links = () => (
   <div className="relative min-h-[100dvh] flex flex-col overflow-x-clip">
-    <SceneBackdrop src="/img/scenes/contact-scene-v3.webp" />
+    <SceneBackdrop src="/img/scenes/links-studio-scene-v1.webp" />
     <Seo
       title="Links — The Mandala Company"
       description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
@@ -169,28 +168,28 @@ export const Links = () => (
 
     <main className="relative z-10 flex-1 flex flex-col items-center px-5 sm:px-6 pt-14 pb-16 sm:pt-20">
       <Reveal className="w-full max-w-[452px] flex flex-col items-center">
-        {/* Rose → home. The one way back into the full site from the top. */}
-        <Link
-          to="/"
-          aria-label="The Mandala Company — enter the site"
-          className="press inline-flex"
-        >
-          <Logo size={76} wordmark={false} />
-        </Link>
-
-        {/* Name + descriptor */}
-        <h1
-          className="mt-5 text-center font-display font-semibold tracking-[-0.015em] text-ink leading-[1.05] text-[clamp(26px,7vw,34px)]"
-          style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
-        >
-          The Mandala Company
+        {/* Official lockup — the wax-seal rose + "The Art of Stephen Meakin"
+            (Hugo's official logo; NOT the flat circular disc). Tapping it is the
+            one way back into the full site. Wrapped in the page h1 so the mark
+            carries the accessible heading. */}
+        <h1 className="m-0">
+          <Link
+            to="/"
+            aria-label="The Art of Stephen Meakin — enter the site"
+            className="press inline-flex"
+          >
+            <img
+              src="/logo/logo-lockup-art-light-v1.png"
+              alt="The Art of Stephen Meakin"
+              width={640}
+              height={81}
+              className="w-[min(340px,82vw)] h-auto"
+            />
+          </Link>
         </h1>
-        <p className="mt-1.5 font-sans text-[13.5px] font-bold uppercase tracking-[0.22em] text-accent">
-          The Art of Stephen Meakin
-        </p>
 
         {/* One-line bio */}
-        <p className="mt-4 text-center font-sans text-[14.5px] leading-[1.6] text-ink-muted max-w-[34ch]">
+        <p className="mt-6 text-center font-sans text-[14.5px] leading-[1.6] text-ink-muted max-w-[34ch]">
           Signed giclée editions of his mandala paintings — direct from his
           family, shipped worldwide.
         </p>
