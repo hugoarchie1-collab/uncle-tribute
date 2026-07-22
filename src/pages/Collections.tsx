@@ -246,7 +246,7 @@ const SetSizeSelector = ({
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
               active
                 ? "bg-ink text-bg ring-ink font-semibold"
-                : "bg-[rgba(10,9,8,0.5)] text-ink-muted ring-line hover:text-ink",
+                : "bg-transparent text-ink-muted ring-line hover:text-ink hover:ring-accent/70",
             )}
           >
             <span className="font-semibold tracking-[0.04em]">{sizeCode(tier)}</span>

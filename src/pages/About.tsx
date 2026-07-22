@@ -393,7 +393,7 @@ const Plate = ({
       // padding + card-shadow on every tile), so contain-letterboxed photos of
       // mixed orientation read as matched museum mats, not ragged floating photos.
       // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
-      <div className={cn("relative w-full max-h-[62svh] overflow-hidden", aspect)}>
+      <div className={cn("relative w-full max-h-[62svh] overflow-hidden md:bg-ink/[0.04] md:ring-1 md:ring-line md:rounded-[3px] md:p-2", aspect)}>
         <AssetImage
           src={src}
           alt={alt}

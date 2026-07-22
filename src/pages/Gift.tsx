@@ -311,7 +311,7 @@ export const Gift = () => {
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
                           ? "bg-ink/[0.06] ring-accent ring-2"
-                          : "bg-bg-soft ring-line hover:ring-ink/40",
+                          : "bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-line hover:ring-ink/40",
                       )}
                     >
                       <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
@@ -339,7 +339,7 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-2xl px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft col-span-2 3xl:col-span-4",
+                    "text-left rounded-2xl px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-[rgba(10,9,8,0.5)] backdrop-blur-sm col-span-2 3xl:col-span-4",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"
@@ -380,7 +380,7 @@ export const Gift = () => {
                         setCustomAmount(e.target.value);
                         setError("");
                       }}
-                      className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={String(minPounds)}
                     />
                   </div>
@@ -408,7 +408,7 @@ export const Gift = () => {
                     autoComplete="name"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="Their name"
                   />
                 </label>
@@ -422,7 +422,7 @@ export const Gift = () => {
                     autoComplete="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
                     placeholder="them@example.com"
                   />
                 </label>
@@ -437,7 +437,7 @@ export const Gift = () => {
                   value={giftMessage}
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={400}
-                  className="w-full bg-bg-soft ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                  className="w-full bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                   placeholder="A few words to go with the gift."
                 />
               </label>
@@ -452,7 +452,7 @@ export const Gift = () => {
                 right rail so the figure + the add button travel with the
                 reader as they move down the long left column. */}
             <Reveal as="div" className="lg:col-span-5 lg:col-start-8">
-              <div className="lg:sticky lg:top-28 rounded-2xl bg-bg-soft ring-1 ring-line p-6 md:p-8">
+              <div className="lg:sticky lg:top-28 rounded-2xl bg-[rgba(10,9,8,0.5)] backdrop-blur-sm ring-1 ring-line p-6 md:p-8">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
                 <p className="font-display font-bold tracking-[-0.035em] text-[clamp(48px,7vw,116px)] text-ink m-0 leading-[0.85]"
                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}>
