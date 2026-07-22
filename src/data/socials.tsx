@@ -31,6 +31,24 @@ export const SOCIAL_PROFILES: SocialProfile[] = [
     ),
   },
   {
+    label: "TikTok",
+    href: "https://www.tiktok.com/@themandalacompany",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="currentColor" aria-hidden="true">
+        <path d="M16.6 5.82a4.28 4.28 0 0 1-1.06-2.82h-3.2v12.93a2.58 2.58 0 0 1-2.58 2.5 2.58 2.58 0 1 1 .76-5.05V9.9a5.9 5.9 0 0 0-.76-.05 5.83 5.83 0 1 0 5.83 5.83V9.02a7.44 7.44 0 0 0 4.35 1.4V7.2a4.28 4.28 0 0 1-3.34-1.38z" />
+      </svg>
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@TheMandalaCompany",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="currentColor" aria-hidden="true">
+        <path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.6 15.57V8.43L15.8 12l-6.2 3.57z" />
+      </svg>
+    ),
+  },
+  {
     label: "Facebook",
     href: "https://www.facebook.com/profile.php?id=61590902138021",
     icon: (

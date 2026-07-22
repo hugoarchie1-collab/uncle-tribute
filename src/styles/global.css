@@ -838,7 +838,22 @@ video[autoplay]::-webkit-media-controls {
    `.nav-bg-scrolled` (was a dark scrim fading to transparent), so the bar reads
    red from pixel 0 on every page — including over the home hero/intro film. No
    backdrop-filter (banned on the always-mounted fixed bar). */
-.nav-bg-top,
+/* OVERLAY pages (the home hero over the open Earth): a SOFT scrim that fades
+   to transparent (2026-07-22, Hugo: "the earth is cut by the top banner — it
+   lost its semi-transparency"). A near-solid red bar sliced a hard line across
+   the Earth's glow; this restores a gentle red-tinted scrim at the very top
+   that keeps the logo + links legible and then melts away so the Earth reads
+   continuously — no hard cut. */
+.nav-bg-top {
+  background-image: linear-gradient(
+    180deg,
+    rgba(34, 6, 7, 0.62) 0%,
+    rgba(34, 6, 7, 0.32) 46%,
+    rgba(34, 6, 7, 0) 100%
+  );
+}
+/* Non-overlay content pages (no hero image behind the bar) keep the solid
+   wax-seal-red fill so the top panel is cleanly separated from the content. */
 .nav-bg-top-plain {
   background-image: linear-gradient(
     180deg,

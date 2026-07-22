@@ -159,7 +159,18 @@ const LinkPill = ({ row }: { row: LinkRow }) => {
 
 export const Links = () => (
   <div className="relative min-h-[100dvh] flex flex-col overflow-x-clip">
-    <SceneBackdrop src="/img/scenes/links-studio-scene-v1.webp" />
+    <SceneBackdrop src="/img/scenes/links-studio-scene-v2.webp" />
+    {/* Soft centred scrim — the studio reads clearly at the margins, the text
+        stays legible down the middle column (Hugo: make the background clearer,
+        but I still need to read the text easily). */}
+    <div
+      aria-hidden="true"
+      className="fixed inset-0 z-[1] pointer-events-none"
+      style={{
+        background:
+          "radial-gradient(115% 80% at 50% 42%, rgba(8,7,6,0.52) 0%, rgba(8,7,6,0.30) 55%, rgba(8,7,6,0.08) 100%)",
+      }}
+    />
     <Seo
       title="Links — The Mandala Company"
       description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
@@ -176,15 +187,31 @@ export const Links = () => (
           <Link
             to="/"
             aria-label="The Art of Stephen Meakin — enter the site"
-            className="press inline-flex"
+            className="press inline-flex items-center justify-center gap-3 text-center"
           >
+            {/* Wax-seal rose (keyed transparent, no black box) + the wordmark as
+                CRISP cream Fraunces text — razor-sharp + readable at any DPI, no
+                baked PNG, no white halo. Matches the home masthead lockup. */}
             <img
-              src="/logo/logo-lockup-art-light-v1.png"
-              alt="The Art of Stephen Meakin"
-              width={640}
-              height={81}
-              className="w-[min(340px,82vw)] h-auto"
+              src="/logo/logo-seal-v9-w256.png"
+              alt=""
+              aria-hidden="true"
+              className="h-[46px] w-[46px] shrink-0 object-contain"
+              style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.6))" }}
             />
+            <span
+              className="font-display text-ink font-semibold"
+              style={{
+                fontFamily: '"Fraunces", serif',
+                fontVariationSettings: '"opsz" 36, "wght" 600',
+                fontSize: "clamp(23px, 6.2vw, 31px)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.08,
+                textShadow: "0 1px 10px rgba(8,6,12,0.85), 0 1px 2px rgba(8,6,12,0.9)",
+              }}
+            >
+              The Art of Stephen Meakin
+            </span>
           </Link>
         </h1>
 

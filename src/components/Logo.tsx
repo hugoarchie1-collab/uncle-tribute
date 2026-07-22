@@ -73,15 +73,13 @@ export const Logo = ({
         style={{
           width: size,
           height: size,
-          // CREAM RIM-LIGHT (2026-07-21): the transparent deep-red seal was
-          // near-invisible on the dark-red nav / near-black footer (no box to
-          // lift it — Hugo killed the cream disc). A tight cream rim traced from
-          // the mark's own alpha edge + a soft cream halo make it read as a LIT
-          // wax seal that pops on any dark ground — the "stand out like a Nike
-          // symbol" ask — WITHOUT any opaque box (see feedback_transparent_brand_marks).
-          // Plus the existing depth shadow.
+          // NO cream/white glow (2026-07-22, Hugo: "logo's got this white light I
+          // never asked for — I can't read it"). The cream rim-light read as an
+          // unwanted white halo. Replaced with a soft DARK depth shadow only, so
+          // the deep-red wax seal keeps a little separation on the dark-red nav /
+          // near-black footer WITHOUT any white light on it.
           filter:
-            "drop-shadow(0 0 1px rgba(240,233,217,0.92)) drop-shadow(0 0 2.5px rgba(240,233,217,0.45)) drop-shadow(0 1px 3px rgba(0,0,0,0.5))",
+            "drop-shadow(0 1px 4px rgba(0,0,0,0.7)) drop-shadow(0 0 7px rgba(0,0,0,0.4))",
         }}
       />
       {wordmark && (
