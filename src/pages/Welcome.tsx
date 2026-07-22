@@ -1291,52 +1291,46 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* ── EARTH CLOSE · "as above, so below" ─────────────────────────
-              A true MIRROR of the top masthead's Earth, closing the page.
-              Hugo 2026-07-21: "see the earth high quality upside down at the
-              top — do the same at the bottom but turned the other way facing
-              up, a mirror in size and style, just as high quality." So this is
-              the SAME asset the masthead uses (earth-cutout-v2.webp) — there,
-              spun (scaleY -1) so the limb curves DOWN from the top; here, its
-              NATURAL orientation (no flip) so the identical limb curves UP from
-              the foot of the page. Reusing the exact masthead asset guarantees
-              the quality + style match to the pixel (an internet stand-in would
-              never mirror it). The radial mask keeps it solid along the bottom
-              edge and dissolves upward into the peacock backdrop; a warm rim
-              halo glows along the very foot, mirroring the top's halo.
-              Decorative only (aria-hidden). Sacred Geometry finale stays
-              removed (2026-06-30) — this Earth is the new quiet close. */}
-          <section aria-hidden="true" className="relative z-20 isolate w-full overflow-hidden mt-[clamp(2.5rem,6vh,5rem)]">
-            {/* Warm rim halo along the very foot — atmosphere, mirroring the
-                masthead's top halo. */}
+          {/* ── MOON CLOSE · "as above, so below" ──────────────────────────
+              The page opens on the EARTH (masthead, top) and closes on the MOON
+              (here, foot) — Hugo 2026-07-22: "a moon at the bottom instead of
+              earth, earth kept at top." A real, high-quality NASA moon (the LRO
+              full-moon mosaic, public domain, smoothed to a soft luminous disc)
+              RISES from the foot: its top cap curves UP into the page, the body
+              bleeding below the fold, mirroring the Earth's limb curving DOWN at
+              the top. Dimmed + radially feathered so it dissolves into the
+              peacock backdrop like the Earth. Decorative only (aria-hidden). */}
+          <section
+            aria-hidden="true"
+            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
+          >
+            {/* Cool silver moon-glow along the very foot — atmosphere. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[45%]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
               style={{
                 background:
-                  "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
+                  "radial-gradient(90% 90% at 50% 100%, rgba(200,214,240,0.14) 0%, rgba(200,214,240,0) 68%)",
               }}
             />
-            {/* The natural Earth limb, curving UP — identical asset + width
-                classes to the masthead so the size mirrors exactly; NO scaleY
-                flip. maxWidth:none lifts the global img clamp (gotcha). */}
+            {/* The rising moon — a clear round disc rising from the foot (its top
+                ~58% shows, the rest bleeds below), curving UP to mirror the
+                Earth's limb curving DOWN at the top. maxWidth:none lifts the
+                global img clamp (gotcha); the radial mask feathers it into bg. */}
             <img
-              src={asset("/img/scenes/earth-cutout-v2.webp")}
+              src={asset("/img/scenes/moon-rise-v1.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="relative z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              className="absolute left-1/2 z-[1] block select-none w-[min(720px,74vw)] max-w-none"
               style={{
-                display: "block",
-                maxWidth: "none",
-                height: "auto",
-                // Same radial dissolve as the masthead Earth — unflipped here so
-                // it is solid at the pinned BOTTOM edge and melts UP into the
-                // peacock backdrop.
+                bottom: "0",
+                transform: "translate(-50%, 42%)",
+                filter: "brightness(0.95) saturate(0.9)",
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(72% 72% at 50% 50%, #000 60%, rgba(0,0,0,0.4) 80%, transparent 94%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(72% 72% at 50% 50%, #000 60%, rgba(0,0,0,0.4) 80%, transparent 94%)",
               }}
             />
           </section>
