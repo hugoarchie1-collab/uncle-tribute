@@ -1311,7 +1311,7 @@ export const Welcome = () => {
                 from the foot ("as above, so below"). Same img sizing + mask family
                 as the top Earth (Hugo 2026-07-22: clone the Earth, moon instead). */}
             <img
-              src={asset("/img/scenes/moon-limb-v2.webp")}
+              src={asset("/img/scenes/moon-limb-v3.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1320,16 +1320,18 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // The moon-limb-v2 asset is already graded like the Earth (lit arc
-                // edge, surface darkening below). A cool rim-glow traces the arc =
-                // the moon's equivalent of the Earth's bright atmosphere. Verified
-                // side-by-side: this mirrors the top Earth limb.
+                // moon-limb-v3: the moon brightened to a luminous silver with a lit
+                // rim baked along the arc — the moon's answer to the Earth's bright
+                // atmosphere. A strong cool bloom (drop-shadow) traces the arc so
+                // the limb GLOWS off the dark backdrop instead of dying grey into
+                // it (Hugo: "same glow as the Earth"). Mask mirrors the top Earth's
+                // radial feather so the arc dissolves identically into the peacock.
                 filter:
-                  "drop-shadow(0 -2px 13px rgba(206,220,245,0.6)) drop-shadow(0 -1px 30px rgba(206,220,245,0.28))",
+                  "drop-shadow(0 -3px 18px rgba(200,220,255,0.8)) drop-shadow(0 -2px 48px rgba(190,212,255,0.42)) brightness(1.06)",
                 WebkitMaskImage:
-                  "radial-gradient(160% 240% at 50% 100%, #000 92%, transparent 100%)",
+                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "radial-gradient(160% 240% at 50% 100%, #000 92%, transparent 100%)",
+                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>
