@@ -1285,33 +1285,38 @@ export const Welcome = () => {
             aria-hidden="true"
             className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
           >
-            {/* Cool silver moon-glow along the very foot — atmosphere. */}
+            {/* Warm rim glow along the very foot — atmosphere, matching the
+                Earth open's halo (not the cold silver moon glow). */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
               style={{
                 background:
-                  "radial-gradient(90% 90% at 50% 100%, rgba(200,214,240,0.14) 0%, rgba(200,214,240,0) 68%)",
+                  "radial-gradient(120% 80% at 50% 100%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
               }}
             />
-            {/* The rising moon — a clear round disc rising from the foot (its top
-                ~58% shows, the rest bleeds below), curving UP to mirror the
-                Earth's limb curving DOWN at the top. maxWidth:none lifts the
-                global img clamp (gotcha); the radial mask feathers it into bg. */}
+            {/* The rising EARTH limb — the SAME earth-cutout-v2 asset + treatment
+                as the top open, just NOT flipped, so it curves UP from the foot
+                ("as above, so below"). Identical quality, dimensions and
+                curvature to the top Earth (Hugo 2026-07-22: the grainy moon
+                looked terrible — I want the same quality/curvature as the Earth). */}
             <img
-              src={asset("/img/scenes/moon-rise-v1.webp")}
+              src={asset("/img/scenes/earth-cutout-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="absolute left-1/2 z-[1] block select-none w-[min(720px,74vw)] max-w-none"
+              className="absolute inset-x-0 bottom-0 z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
               style={{
-                bottom: "0",
-                transform: "translate(-50%, 42%)",
-                filter: "brightness(0.95) saturate(0.9)",
+                display: "block",
+                maxWidth: "none",
+                height: "auto",
+                // Natural orientation (no scaleY flip): the limb sits at the foot
+                // and curves UP — the mirror of the top open. Mask solid at the
+                // bottom pinned edge, dissolving up into the peacock backdrop.
                 WebkitMaskImage:
-                  "radial-gradient(72% 72% at 50% 50%, #000 60%, rgba(0,0,0,0.4) 80%, transparent 94%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "radial-gradient(72% 72% at 50% 50%, #000 60%, rgba(0,0,0,0.4) 80%, transparent 94%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>
