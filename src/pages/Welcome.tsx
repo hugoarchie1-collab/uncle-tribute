@@ -344,7 +344,17 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[54svh] justify-end pt-[max(9rem,44svh)] sm:pt-[max(6.5rem,10svh)] pb-[clamp(14px,2svh,30px)]"
+        // ⚠️ DURABLE (2026-07-22, Hugo: "text is way too high up on mobile, looks
+        // nothing like desktop"): on PORTRAIT the section hugs its content
+        // (min-h-0) so the wordmark's top is set purely by the top padding. The
+        // Earth limb is an ABSOLUTE top-pinned band whose height tracks viewport
+        // WIDTH (w-178%→150%→104% × the 541/2000 ratio ≈ 0.48–0.28·vw), so a
+        // fixed svh padding let the wordmark sit ON the Earth. Portrait padding
+        // is therefore vw-driven — clamp(12rem,58vw,21rem) clears the limb at
+        // every phone/tablet width (≈37–44px gap on phones), mirroring desktop's
+        // Earth-above-then-text-below. LANDSCAPE keeps the small pt (the
+        // min-h-66svh + justify-end does the spacing there).
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[66svh] justify-end landscape:pt-[max(6rem,8svh)] portrait:pt-[clamp(12rem,58vw,21rem)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -372,7 +382,7 @@ export const Welcome = () => {
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden max-h-[40svh] sm:max-h-[46svh] md:max-h-[56svh]"
+          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden"
         >
           {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
           <div
