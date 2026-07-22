@@ -97,7 +97,7 @@ export const Footer = () => (
           size={28}
           wordmark
           wordmarkWrap
-          wordmarkText="The Mandala Company"
+          wordmarkText="The Art of Stephen Meakin"
           className="max-w-[280px] mb-5"
         />
         <p className={cn(FOOTER_TEXT, "max-w-[280px] text-ink-muted m-0")}>

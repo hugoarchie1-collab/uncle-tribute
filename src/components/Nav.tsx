@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Logo } from "./Logo";
 import { SearchBar } from "./SearchBar";
 import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
@@ -287,14 +286,31 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
         <Link
           to="/"
-          aria-label="The Mandala Company — home"
+          aria-label="The Art of Stephen Meakin — home"
           className="press inline-flex items-center min-w-0"
         >
-          {/* Seal ONLY, sized WAY UP (Hugo 2026-07-22: "I don't want the 'The Art
-              of Stephen Meakin' text next to the top/footer logo — make the logo
-              way bigger, I still can't read it"). No wordmark text; the seal is
-              enlarged so its engraved ring-text reads as clearly as a nav allows. */}
-          <Logo size={72} wordmark={false} />
+          {/* The "The Art of Stephen Meakin" LOCKUP — wax-seal rose + Fraunces
+              wordmark (Hugo 2026-07-22: "replace [the nav seal] with the longer
+              one that was underneath the SEM Experience — I want it on the top
+              [nav] + footer, not underneath the masthead"). This is the same
+              rose+text lockup that used to sit under "THE SEM EXPERIENCE". */}
+          <span className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <img
+              src={`${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`}
+              alt=""
+              aria-hidden="true"
+              width={40}
+              height={40}
+              className="h-[32px] w-[32px] sm:h-[38px] sm:w-[38px] shrink-0 object-contain"
+              style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
+            />
+            <span
+              className="font-display font-bold text-ink tracking-[-0.015em] leading-none whitespace-nowrap text-[clamp(15px,1.35vw,22px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+              style={{ fontVariationSettings: '"opsz" 32, "wght" 700' }}
+            >
+              The Art of Stephen Meakin
+            </span>
+          </span>
         </Link>
 
         {/* Deliver-to — Amazon-pattern location control sitting left of the
