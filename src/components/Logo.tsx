@@ -22,7 +22,13 @@ export const Logo = ({
   wordmarkText = "The Art of Stephen Meakin",
   className,
 }: LogoProps) => {
-  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v2.png`;
+  // The clean wax-rose SYMBOL — NO "THE MANDALA COMPANY" ring text (Hugo,
+  // 2026-07-21: "I don't want the mandala company text, I want just that logo").
+  // logo-seal-v9 is the Tudor-rose seal keyed to full transparency with its own
+  // engraved white relief; paired with the cream rim-light below it reads as a
+  // clean, high-contrast symbol on any dark ground — Nike-style. The old
+  // text-ring disc (mandala-company-seal-disc-v*) is retired.
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*
@@ -67,10 +73,15 @@ export const Logo = ({
         style={{
           width: size,
           height: size,
-          // A single soft depth-shadow lifts the mark; the baked-in white
-          // linework now does the "stand out" + "reads as a rose" work, so the
-          // old red glow (which would muddy the crisp white lines) is dropped.
-          filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.45))",
+          // CREAM RIM-LIGHT (2026-07-21): the transparent deep-red seal was
+          // near-invisible on the dark-red nav / near-black footer (no box to
+          // lift it — Hugo killed the cream disc). A tight cream rim traced from
+          // the mark's own alpha edge + a soft cream halo make it read as a LIT
+          // wax seal that pops on any dark ground — the "stand out like a Nike
+          // symbol" ask — WITHOUT any opaque box (see feedback_transparent_brand_marks).
+          // Plus the existing depth shadow.
+          filter:
+            "drop-shadow(0 0 1px rgba(240,233,217,0.92)) drop-shadow(0 0 2.5px rgba(240,233,217,0.45)) drop-shadow(0 1px 3px rgba(0,0,0,0.5))",
         }}
       />
       {wordmark && (
