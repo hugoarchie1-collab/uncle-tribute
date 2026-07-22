@@ -845,16 +845,14 @@ video[autoplay]::-webkit-media-controls {
    that keeps the logo + links legible and then melts away so the Earth reads
    continuously — no hard cut. */
 .nav-bg-top {
-  /* SEMI-transparent red (2026-07-22, Hugo: "I asked for semi-transparent top
-     banner, not full — I still liked the red glow"). Keeps the wax-seal-red
-     glow present at the top for the logo/links to sit on, but stays translucent
-     and fades down so the open Earth still reads through — a soft red wash, NOT
-     the solid bar that cut the Earth. */
+  /* UNIFORM ~25%-transparent red (2026-07-22, Hugo: "have the old full 25%
+     transparent red background like before"). One flat translucent wax-seal-red
+     wash across the whole bar (no gradient fade) — the Earth still reads through
+     the translucency, but the red is consistent top-to-bottom. */
   background-image: linear-gradient(
     180deg,
-    rgba(72, 14, 14, 0.68) 0%,
-    rgba(58, 11, 12, 0.44) 52%,
-    rgba(40, 8, 8, 0.16) 100%
+    rgba(72, 14, 14, 0.72) 0%,
+    rgba(72, 14, 14, 0.72) 100%
   );
 }
 /* Non-overlay content pages (no hero image behind the bar) keep the solid
