@@ -354,7 +354,7 @@ export const Welcome = () => {
         // every phone/tablet width (≈37–44px gap on phones), mirroring desktop's
         // Earth-above-then-text-below. LANDSCAPE keeps the small pt (the
         // min-h-66svh + justify-end does the spacing there).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[66svh] justify-end landscape:pt-[max(6rem,8svh)] portrait:pt-[clamp(12rem,58vw,21rem)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center min-h-[100svh] pt-[max(5rem,10svh)] landscape:pb-[clamp(20px,6svh,90px)] portrait:pb-[34svh]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -469,9 +469,9 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
+                    fontSize: "min(clamp(42px, 13.5vw, 360px), 30svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.92,
+                    lineHeight: 0.84,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
@@ -488,9 +488,9 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
+                    fontSize: "min(clamp(42px, 13.5vw, 360px), 30svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.92,
+                    lineHeight: 0.84,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
@@ -505,9 +505,9 @@ export const Welcome = () => {
                   {["The", "SEM", "Experience"].map((word, i) => (
                     <motion.span
                       key={word}
-                      style={{ display: "inline-block", whiteSpace: "nowrap" }}
-                      variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-                      transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                      style={{ display: "block", whiteSpace: "nowrap", letterSpacing: word === "Experience" ? "-0.045em" : word === "SEM" ? "0.05em" : "0.12em" }}
+                      variants={{ hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0 } }}
+                      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
                     >
                       {word}
                       {i < 2 ? " " : ""}
