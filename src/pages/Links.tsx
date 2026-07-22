@@ -1,43 +1,34 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Nav } from "../components/Nav";
-import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
+import { Logo } from "../components/Logo";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
-import { PageMasthead } from "../components/PageMasthead";
-import { NewsletterSignup } from "../components/NewsletterSignup";
 import { SOCIAL_PROFILES } from "../data/socials";
-import { EYEBROW, EYEBROW_MUTED } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
  * /links — the estate "link in bio" hub.
  *
- * The single tidy destination every social bio points at (Instagram, Facebook,
- * Pinterest, Etsy…). Built on the shared page shell — SAME masthead, backdrop,
- * fonts and tokens as /gift, /trade, /contact — so it reads as the estate's own
- * front door, never a rented third-party page (no Linktree branding, no ads,
- * lives on themandalacompany.com, and every tap lands in OUR shop).
- *
- * Layout: a mobile-first single column (the way a phone-bio visitor arrives)
- * that opens on lg into an editorial two-up — the primary link stack on the
- * left, a "Follow / Friends & Family" aside on the right — so desktop fills the
- * width instead of stranding a thin phone column in a void.
+ * Rebuilt 2026-07-22 to the CLEAN, CENTRED "Linktree register" (Hugo: a lot of
+ * brands do the super-clean single-column bio page — make ours look like that,
+ * but on our own domain, in our own type + the wax-seal rose, so it never reads
+ * as a rented third-party page). Deliberately NO site nav / footer / catalogue
+ * strip: a phone-bio visitor arrives here, taps ONE link, and is gone — the
+ * page is just the rose, the name, and a single stack of tappable buttons.
  *
  * The link list is a plain data array; add/remove a row in one place.
  */
 
 // ── Etsy ────────────────────────────────────────────────────────────────────
 // Paste the live Etsy shop URL here (e.g. "https://www.etsy.com/shop/…") and the
-// Etsy card lights up automatically. Left empty = the card is simply not shown,
-// so nothing broken ever ships. This is the ONLY thing gating the Etsy row.
+// Etsy button lights up automatically. Left empty = the button is simply not
+// shown, so nothing broken ever ships. This is the ONLY thing gating the Etsy row.
 const ETSY_URL = "";
 
 // ── Inline line-icons (stroke 1.5, currentColor) — one visual family, matched
-//    to the footer's hairline lock glyph. Kept local: they exist only here.
-const iconClass = "h-[19px] w-[19px]";
+//    to the footer's hairline register. Kept local: they exist only here.
+const iconClass = "h-[18px] w-[18px]";
 const stroke = {
   fill: "none" as const,
   stroke: "currentColor",
@@ -98,7 +89,6 @@ const IconStore = (
 
 interface LinkRow {
   label: string;
-  sub: string;
   icon: ReactNode;
   /** Internal route (SPA) — OR `href` for an external destination. */
   to?: string;
@@ -108,83 +98,45 @@ interface LinkRow {
 }
 
 const LINKS: LinkRow[] = [
-  {
-    label: "Shop the prints",
-    sub: "Signed, editioned giclée reproductions",
-    icon: IconFrame,
-    to: "/collections",
-    featured: true,
-  },
+  { label: "Shop the prints", icon: IconFrame, to: "/collections", featured: true },
   ...(ETSY_URL
-    ? [
-        {
-          label: "Etsy shop",
-          sub: "Also available on Etsy",
-          icon: IconStore,
-          href: ETSY_URL,
-        } satisfies LinkRow,
-      ]
+    ? [{ label: "Etsy shop", icon: IconStore, href: ETSY_URL } satisfies LinkRow]
     : []),
-  { label: "Find a print", sub: "A short guided chooser", icon: IconCompass, to: "/for-you" },
-  { label: "Gift an edition", sub: "Digital gift cards, any amount", icon: IconGift, to: "/gift" },
-  { label: "About Stephen", sub: "His life, work & sacred geometry", icon: IconPerson, to: "/about" },
-  { label: "Book of Memories", sub: "Read or leave a memory", icon: IconBook, to: "/memories" },
-  { label: "News & editions", sub: "What's next from the estate", icon: IconBell, to: "/news" },
-  { label: "Contact", sub: "Get in touch with the estate", icon: IconMail, to: "/contact" },
+  { label: "Find a print", icon: IconCompass, to: "/for-you" },
+  { label: "Gift an edition", icon: IconGift, to: "/gift" },
+  { label: "About Stephen", icon: IconPerson, to: "/about" },
+  { label: "Book of Memories", icon: IconBook, to: "/memories" },
+  { label: "News & editions", icon: IconBell, to: "/news" },
+  { label: "Contact", icon: IconMail, to: "/contact" },
 ];
 
-// Card recipe — one big, tappable, hairline-ringed row. Featured = filled ink.
+// One big, centred, tappable pill. Featured = filled ink; the rest = a hairline
+// outline that warms to the accent on hover. Full-width, evenly stacked.
 const CARD_BASE =
-  "group relative flex items-center gap-4 rounded-2xl px-5 py-4 md:px-6 md:py-5 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-out hover:-translate-y-0.5 active:scale-[0.99] active:duration-100 motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "press group relative flex items-center justify-center gap-2.5 w-full rounded-full px-6 py-[15px] text-center transition-[transform,box-shadow,background-color,border-color,color] duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 const CARD_QUIET =
-  "ring-1 ring-line bg-bg-soft/40 hover:ring-accent/70 hover:bg-bg-soft/70";
-const CARD_FEATURED = "bg-ink text-bg ring-1 ring-ink hover:bg-accent hover:ring-accent";
+  "ring-1 ring-ink/25 bg-bg/35 text-ink hover:ring-accent hover:text-accent hover:bg-bg/55 backdrop-blur-[2px]";
+const CARD_FEATURED =
+  "bg-ink text-bg ring-1 ring-ink hover:bg-accent hover:ring-accent";
 
-const LinkCardBody = ({ row }: { row: LinkRow }) => (
+const CardBody = ({ row }: { row: LinkRow }) => (
   <>
+    <span className="shrink-0 opacity-90">{row.icon}</span>
     <span
-      className={cn(
-        "flex h-11 w-11 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300",
-        row.featured
-          ? "bg-bg/15 text-bg group-hover:bg-ink/15 group-hover:text-ink"
-          : "ring-1 ring-line text-ink/75 group-hover:text-accent group-hover:ring-accent/70",
-      )}
+      className="font-display font-semibold tracking-[-0.01em] text-[clamp(16px,4.4vw,18px)] leading-none"
+      style={{ fontVariationSettings: '"opsz" 28, "wght" 600' }}
     >
-      {row.icon}
+      {row.label}
     </span>
-    <span className="min-w-0 flex-1">
-      <span
-        className={cn(
-          "block font-display font-semibold tracking-[-0.01em] leading-tight",
-          "text-[clamp(17px,1.5vw,20px)]",
-          row.featured ? "text-bg" : "text-ink",
-        )}
-        style={{ fontVariationSettings: '"opsz" 32, "wght" 600' }}
-      >
-        {row.label}
+    {row.href && (
+      <span aria-hidden="true" className="absolute right-6 text-[15px] opacity-60">
+        ↗
       </span>
-      <span
-        className={cn(
-          "mt-0.5 block font-sans text-[13.5px] leading-snug",
-          row.featured ? "text-bg/70" : "text-ink-muted",
-        )}
-      >
-        {row.sub}
-      </span>
-    </span>
-    <span
-      aria-hidden="true"
-      className={cn(
-        "ml-auto shrink-0 text-[19px] leading-none transition-transform duration-300 group-hover:translate-x-1",
-        row.featured ? "text-bg/80" : "text-ink/45 group-hover:text-accent",
-      )}
-    >
-      {row.href ? "↗" : "→"}
-    </span>
+    )}
   </>
 );
 
-const LinkCard = ({ row }: { row: LinkRow }) => {
+const LinkPill = ({ row }: { row: LinkRow }) => {
   const cls = cn(CARD_BASE, row.featured ? CARD_FEATURED : CARD_QUIET);
   if (row.href) {
     return (
@@ -195,92 +147,97 @@ const LinkCard = ({ row }: { row: LinkRow }) => {
         aria-label={`${row.label} — opens in a new tab`}
         className={cls}
       >
-        <LinkCardBody row={row} />
+        <CardBody row={row} />
       </a>
     );
   }
   return (
     <Link to={row.to!} className={cls}>
-      <LinkCardBody row={row} />
+      <CardBody row={row} />
     </Link>
   );
 };
 
 export const Links = () => (
-  <div className="relative min-h-screen flex flex-col overflow-x-clip">
+  <div className="relative min-h-[100dvh] flex flex-col overflow-x-clip">
     <SceneBackdrop src="/img/scenes/contact-scene-v3.webp" />
     <Seo
       title="Links — The Mandala Company"
-      description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow along on Instagram, Facebook and Pinterest."
+      description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
       url="/links"
     />
-    <Nav />
 
-    <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
-      <Reveal className="mb-8 md:mb-12">
-        <PageMasthead
-          eyebrow="The Mandala Company"
-          meta="Links & shop"
-          title={
-            <>
-              Everything, in <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>one</em> place.
-            </>
-          }
+    <main className="relative z-10 flex-1 flex flex-col items-center px-5 sm:px-6 pt-14 pb-16 sm:pt-20">
+      <Reveal className="w-full max-w-[452px] flex flex-col items-center">
+        {/* Rose → home. The one way back into the full site from the top. */}
+        <Link
+          to="/"
+          aria-label="The Mandala Company — enter the site"
+          className="press inline-flex"
         >
-          <p className="mt-5 md:mt-6 border-t border-line pt-5 font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-muted max-w-[62ch]">
-            The estate of <span className="text-ink">Stephen Meakin</span> — signed
-            giclée editions of his mandala paintings, direct from his family. Shop
-            the prints, read his story, or follow along below.
-          </p>
-        </PageMasthead>
-      </Reveal>
+          <Logo size={76} wordmark={false} />
+        </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* ── Primary link stack ─────────────────────────────────────────── */}
-        <Reveal as="section" className="lg:col-span-7 3xl:col-span-8">
-          <h2 className={cn(EYEBROW_MUTED, "mb-4")}>Explore</h2>
-          <ul className="flex flex-col gap-3 md:gap-3.5 m-0 p-0 list-none">
-            {LINKS.map((row) => (
-              <li key={row.label} className="m-0">
-                <LinkCard row={row} />
+        {/* Name + descriptor */}
+        <h1
+          className="mt-5 text-center font-display font-semibold tracking-[-0.015em] text-ink leading-[1.05] text-[clamp(26px,7vw,34px)]"
+          style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+        >
+          The Mandala Company
+        </h1>
+        <p className="mt-1.5 font-sans text-[13.5px] font-bold uppercase tracking-[0.22em] text-accent">
+          The Art of Stephen Meakin
+        </p>
+
+        {/* One-line bio */}
+        <p className="mt-4 text-center font-sans text-[14.5px] leading-[1.6] text-ink-muted max-w-[34ch]">
+          Signed giclée editions of his mandala paintings — direct from his
+          family, shipped worldwide.
+        </p>
+
+        {/* Socials — a quiet centred row */}
+        {SOCIAL_PROFILES.length > 0 && (
+          <ul className="mt-6 flex items-center justify-center gap-3 m-0 p-0 list-none">
+            {SOCIAL_PROFILES.map((s) => (
+              <li key={s.label} className="m-0">
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${s.label} — The Mandala Company`}
+                  className="press inline-flex h-11 w-11 items-center justify-center rounded-full ring-1 ring-ink/25 text-ink-muted transition-[color,transform,box-shadow] duration-300 hover:text-accent hover:ring-accent hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  {s.icon}
+                </a>
               </li>
             ))}
           </ul>
-        </Reveal>
+        )}
 
-        {/* ── Follow + Friends & Family aside ────────────────────────────── */}
-        <Reveal as="section" className="lg:col-span-5 3xl:col-span-4 lg:sticky lg:top-24">
-          <div className="rounded-2xl ring-1 ring-line bg-bg-soft/40 p-6 md:p-7">
-            <h2 className={cn(EYEBROW, "m-0 mb-4")}>Follow the estate</h2>
-            <ul className="flex items-center gap-3 m-0 p-0 list-none">
-              {SOCIAL_PROFILES.map((s) => (
-                <li key={s.label} className="m-0">
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${s.label} — The Mandala Company`}
-                    className="inline-flex h-12 w-12 items-center justify-center rounded-full ring-1 ring-line text-ink-muted transition-[color,transform,box-shadow] duration-300 hover:text-accent hover:ring-accent/70 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  >
-                    {s.icon}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 font-sans text-[13.5px] leading-[1.65] text-ink-muted m-0">
-              New work, exhibitions and the occasional glimpse of the studio.
-            </p>
-          </div>
+        {/* The link stack — the whole point of the page */}
+        <ul className="mt-8 w-full flex flex-col gap-3 m-0 p-0 list-none">
+          {LINKS.map((row) => (
+            <li key={row.label} className="m-0">
+              <LinkPill row={row} />
+            </li>
+          ))}
+        </ul>
 
-          <div className="mt-6">
-            <NewsletterSignup variant="panel" />
-          </div>
-        </Reveal>
-      </div>
+        {/* Quiet foot — a way into the full site + the estate address */}
+        <Link
+          to="/"
+          className="mt-10 font-sans text-[13.5px] tracking-[0.02em] text-ink-muted hover:text-ink transition-colors"
+        >
+          Enter the full site →
+        </Link>
+        <a
+          href="mailto:info@themandalacompany.com"
+          className="mt-2 font-sans text-[13px] text-ink-fade hover:text-ink transition-colors [overflow-wrap:anywhere]"
+        >
+          info@themandalacompany.com
+        </a>
+      </Reveal>
     </main>
-
-    <FooterCatalogue />
-    <Footer />
   </div>
 );
 
