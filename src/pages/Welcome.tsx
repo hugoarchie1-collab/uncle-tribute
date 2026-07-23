@@ -360,7 +360,7 @@ export const Welcome = () => {
           className="absolute inset-0 z-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(9,7,13,0.34) 0%, rgba(9,7,13,0.12) 45%, rgba(9,7,13,0) 100%)",
+              "linear-gradient(180deg, rgba(9,7,13,0.70) 0%, rgba(9,7,13,0.64) 45%, rgba(9,7,13,0.5) 100%)",
           }}
         />
         {/* Earth limb pinned to the TOP — the natural Earth SPUN AROUND (scaleY -1)
