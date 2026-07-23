@@ -162,19 +162,12 @@ const LinkPill = ({ row }: { row: LinkRow }) => {
 
 export const Links = () => (
   <div className="relative min-h-screen flex flex-col overflow-x-clip">
-    <SceneBackdrop src="/img/scenes/links-studio-scene-v3.webp" />
-    {/* LIGHT centred scrim — the studio now reads clearly (Hugo: "the background
-        is so dark you don't know what's happening"). Only a gentle darkening
-        down the middle column so the cream text still holds via its shadows,
-        while the studio stays bright and legible at the margins. */}
-    <div
-      aria-hidden="true"
-      className="fixed inset-0 z-[1] pointer-events-none"
-      style={{
-        background:
-          "radial-gradient(120% 82% at 50% 40%, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.2) 58%, rgba(8,7,6,0) 100%)",
-      }}
-    />
+    {/* Same backdrop treatment as every other page (Hugo 2026-07-23: "/links is
+        the WORST example — I want the Memories-level dark, faded background +
+        cursor-reveal on every page"). The extra LIGHT radial scrim that used to
+        brighten this page (making it the odd one out) is REMOVED — the shared
+        SceneBackdrop scrim + cursor-reveal now governs it exactly like the rest. */}
+    <SceneBackdrop src="/img/scenes/links-studio-scene-v4.webp" />
     <Seo
       title="Links — The Mandala Company"
       description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
