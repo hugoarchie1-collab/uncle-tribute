@@ -1483,7 +1483,7 @@ const BuyBox = ({
             <button
               type="button"
               onClick={onAddColourwaySet}
-              className={BTN_PRIMARY}
+              className={BTN_SECONDARY}
             >
               Add the complete set
               <span aria-hidden="true" className="ml-2">→</span>
@@ -2023,14 +2023,14 @@ const CompanionWorks = ({
                 className="group block"
                 aria-label={`${p.title} — from ${fmtP(fromPence)}`}
               >
-                <div className="relative aspect-square overflow-hidden bg-ink/[0.04] ring-1 ring-line transition-all duration-500 group-hover:ring-ink/40">
+                <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-ink/40">
                   <AssetImage
                     src={cover.image}
                     alt={`${p.title} — ${cover.name}`}
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 768px) 360px, 30vw"
-                    className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.05]"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                   />
                 </div>
                 <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-ink transition-colors duration-300">
