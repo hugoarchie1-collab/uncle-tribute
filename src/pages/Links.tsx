@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
+import { Nav } from "../components/Nav";
+import { Footer } from "../components/Footer";
+import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SOCIAL_PROFILES } from "../data/socials";
 import { cn } from "../lib/cn";
 
@@ -158,7 +161,7 @@ const LinkPill = ({ row }: { row: LinkRow }) => {
 };
 
 export const Links = () => (
-  <div className="relative min-h-[100dvh] flex flex-col overflow-x-clip">
+  <div className="relative min-h-screen flex flex-col overflow-x-clip">
     <SceneBackdrop src="/img/scenes/links-studio-scene-v3.webp" />
     {/* LIGHT centred scrim — the studio now reads clearly (Hugo: "the background
         is so dark you don't know what's happening"). Only a gentle darkening
@@ -178,41 +181,36 @@ export const Links = () => (
       url="/links"
     />
 
-    <main className="relative z-10 flex-1 flex flex-col items-center px-5 sm:px-6 pt-14 pb-16 sm:pt-20">
+    {/* Standard site top banner — Hugo 2026-07-23: "/links looks out of place,
+        functions nothing like the other pages, no top banner". Wired into the
+        same chrome every content page uses (Nav + FooterCatalogue + Footer) so
+        it reads and behaves as part of the site, not a rented Linktree. */}
+    <Nav />
+
+    <main className="relative z-10 flex-1 flex flex-col items-center px-5 sm:px-6 pt-10 pb-16 sm:pt-14">
       <Reveal className="w-full max-w-[452px] flex flex-col items-center">
         {/* Official lockup — the wax-seal rose + "The Art of Stephen Meakin"
             (Hugo's official logo; NOT the flat circular disc). Tapping it is the
             one way back into the full site. Wrapped in the page h1 so the mark
             carries the accessible heading. */}
+        {/* Profile avatar — the wax-seal rose, larger + centred. The estate name
+            now lives in the nav banner above, so it is NOT repeated here (it read
+            as a duplicated title, esp. on mobile); kept for SEO/screen-readers as
+            sr-only. This is the classic link-in-bio "avatar + bio" header. */}
         <h1 className="m-0">
           <Link
             to="/"
             aria-label="The Art of Stephen Meakin — enter the site"
-            className="press inline-flex items-center justify-center gap-3 text-center"
+            className="press inline-flex flex-col items-center justify-center text-center"
           >
-            {/* Wax-seal rose (keyed transparent, no black box) + the wordmark as
-                CRISP cream Fraunces text — razor-sharp + readable at any DPI, no
-                baked PNG, no white halo. Matches the home masthead lockup. */}
             <img
               src="/logo/logo-seal-v9-w256.png"
               alt=""
               aria-hidden="true"
-              className="h-[46px] w-[46px] shrink-0 object-contain"
-              style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.6))" }}
+              className="h-[78px] w-[78px] sm:h-[88px] sm:w-[88px] shrink-0 object-contain"
+              style={{ filter: "drop-shadow(0 3px 14px rgba(0,0,0,0.6))" }}
             />
-            <span
-              className="font-display text-ink font-semibold"
-              style={{
-                fontFamily: '"Fraunces", serif',
-                fontVariationSettings: '"opsz" 36, "wght" 600',
-                fontSize: "clamp(23px, 6.2vw, 31px)",
-                letterSpacing: "-0.01em",
-                lineHeight: 1.08,
-                textShadow: "0 1px 10px rgba(8,6,12,0.85), 0 1px 2px rgba(8,6,12,0.9)",
-              }}
-            >
-              The Art of Stephen Meakin
-            </span>
+            <span className="sr-only">The Art of Stephen Meakin</span>
           </Link>
         </h1>
 
@@ -250,21 +248,11 @@ export const Links = () => (
           ))}
         </ul>
 
-        {/* Quiet foot — a way into the full site + the estate address */}
-        <Link
-          to="/"
-          className="mt-10 font-sans text-[13.5px] tracking-[0.02em] text-ink-muted hover:text-ink transition-colors"
-        >
-          Enter the full site →
-        </Link>
-        <a
-          href="mailto:info@themandalacompany.com"
-          className="mt-2 font-sans text-[13px] text-ink-fade hover:text-ink transition-colors [overflow-wrap:anywhere]"
-        >
-          info@themandalacompany.com
-        </a>
       </Reveal>
     </main>
+
+    <FooterCatalogue />
+    <Footer />
   </div>
 );
 
