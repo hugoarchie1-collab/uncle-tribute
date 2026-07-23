@@ -167,7 +167,7 @@ export const Links = () => (
         cursor-reveal on every page"). The extra LIGHT radial scrim that used to
         brighten this page (making it the odd one out) is REMOVED — the shared
         SceneBackdrop scrim + cursor-reveal now governs it exactly like the rest. */}
-    <SceneBackdrop src="/img/scenes/links-studio-scene-v4.webp" />
+    <SceneBackdrop src="/img/scenes/links-studio-scene-v5.webp" />
     <Seo
       title="Links — The Mandala Company"
       description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
