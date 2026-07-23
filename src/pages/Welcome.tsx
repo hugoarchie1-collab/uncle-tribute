@@ -344,7 +344,7 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[68svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[68svh] justify-end landscape:pt-[max(6rem,8svh)] portrait:pt-[clamp(12rem,58vw,21rem)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
