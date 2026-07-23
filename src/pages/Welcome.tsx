@@ -469,7 +469,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(42px, 13.5vw, 360px), 30svh)",
+                    fontSize: "min(clamp(38px, 13.5vw, 128px), 22svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.84,
                     textTransform: "uppercase",
@@ -488,7 +488,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(42px, 13.5vw, 360px), 30svh)",
+                    fontSize: "min(clamp(38px, 13.5vw, 128px), 22svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.84,
                     textTransform: "uppercase",
@@ -1302,7 +1302,7 @@ export const Welcome = () => {
               className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[60%]"
               style={{
                 background:
-                  "radial-gradient(120% 90% at 50% 100%, rgba(206,216,236,0.15) 0%, rgba(206,216,236,0) 72%)",
+                  "radial-gradient(120% 90% at 50% 100%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 72%)",
               }}
             />
             {/* The rising MOON limb — a CLONE of the top Earth limb: the SAME wide
@@ -1310,8 +1310,14 @@ export const Welcome = () => {
                 public domain) moon surface instead of Earth, reversed to curve UP
                 from the foot ("as above, so below"). Same img sizing + mask family
                 as the top Earth (Hugo 2026-07-22: clone the Earth, moon instead). */}
+            {/* MIRRORED EARTH — the SAME earth-cutout-v2 asset as the top open,
+                natural orientation (no scaleY flip) so the identical limb curves
+                UP from the foot: a pixel-perfect mirror of the top Earth ("as
+                above, so below") — guaranteed coherent because it IS the top
+                Earth. Reverted here 2026-07-23: every bespoke moon read wrong to
+                Hugo; awaiting his moon reference before rebuilding a moon. */}
             <img
-              src={asset("/img/scenes/moon-limb-v3.webp")}
+              src={asset("/img/scenes/earth-cutout-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1320,18 +1326,14 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // moon-limb-v3: the moon brightened to a luminous silver with a lit
-                // rim baked along the arc — the moon's answer to the Earth's bright
-                // atmosphere. A strong cool bloom (drop-shadow) traces the arc so
-                // the limb GLOWS off the dark backdrop instead of dying grey into
-                // it (Hugo: "same glow as the Earth"). Mask mirrors the top Earth's
-                // radial feather so the arc dissolves identically into the peacock.
-                filter:
-                  "drop-shadow(0 -3px 18px rgba(200,220,255,0.8)) drop-shadow(0 -2px 48px rgba(190,212,255,0.42)) brightness(1.06)",
+                // Same radial feather as the top Earth, centred at the FOOT (50%
+                // 100%): solid at the bottom, dissolving up into the peacock as
+                // the limb rises. No CSS glow — the atmosphere is baked into the
+                // asset, exactly like the top open.
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>
