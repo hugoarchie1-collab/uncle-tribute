@@ -1518,22 +1518,11 @@ export const About = () => {
             and reads as a composed, intentional close. Portrait object-CONTAIN
             (never cropped) + soft-edge feather + capped height (never a
             screen-filling wall). Verbatim-only: the CTA carries the farewell. */}
-        {/* THE STUDENTS' LETTER — the words he left every student. Verbatim
-            from ABOUT.studentsIntro + studentsLetter; centered, no rules/boxes. */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <Reveal as="div" className="text-center mb-5 md:mb-7">
-            <p className={cn(EYEBROW, "m-0 mb-3")}>To his students</p>
-            <h2 className={cn(TITLE, "my-0 mx-auto max-w-[1000px] hero-text-shadow")}>
-              May you have a <em className="italic font-normal">wonderful</em> journey.
-            </h2>
-          </Reveal>
-          <Reveal as="div" delay={0.06} className="mx-auto max-w-[68ch] text-left">
-            <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>{ABOUT.studentsIntro}</p>
-            <blockquote className="m-0">
-              <Prose text={ABOUT.studentsLetter} className={cn(SUBTITLE)} />
-            </blockquote>
-          </Reveal>
-        </section>
+        {/* THE STUDENTS' LETTER was REMOVED from About (Hugo 2026-07-23: "you
+            added a repeated quote from Steve to his students already on the
+            memories page"). Stephen's letter to his students (ABOUT.studentsLetter)
+            is now shown in ONE place only — pinned as his own voice on /memories
+            (ARTIST_MEMORY). The About page closes on the academy photos → CTA. */}
 
         {/* Polly Wedge's funeral tribute lives ONLY on /memories now (Hugo,
             2026-07-22: "the thing written for Stephen's funeral to be only kept
