@@ -344,17 +344,7 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        // ⚠️ DURABLE (2026-07-22, Hugo: "text is way too high up on mobile, looks
-        // nothing like desktop"): on PORTRAIT the section hugs its content
-        // (min-h-0) so the wordmark's top is set purely by the top padding. The
-        // Earth limb is an ABSOLUTE top-pinned band whose height tracks viewport
-        // WIDTH (w-178%→150%→104% × the 541/2000 ratio ≈ 0.48–0.28·vw), so a
-        // fixed svh padding let the wordmark sit ON the Earth. Portrait padding
-        // is therefore vw-driven — clamp(12rem,58vw,21rem) clears the limb at
-        // every phone/tablet width (≈37–44px gap on phones), mirroring desktop's
-        // Earth-above-then-text-below. LANDSCAPE keeps the small pt (the
-        // min-h-66svh + justify-end does the spacing there).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center landscape:justify-end portrait:min-h-0 landscape:min-h-[100svh] pt-[max(5rem,10svh)] portrait:pt-[clamp(12rem,58vw,21rem)] landscape:pb-[clamp(20px,6svh,90px)] portrait:pb-[clamp(24px,6svh,64px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[68svh] justify-end pt-[max(6rem,9svh)] sm:pt-[max(6rem,8svh)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -469,9 +459,9 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(38px, 13.5vw, 128px), 22svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.84,
+                    lineHeight: 0.92,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
@@ -488,9 +478,9 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(38px, 13.5vw, 128px), 22svh)",
+                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.84,
+                    lineHeight: 0.92,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
@@ -505,9 +495,9 @@ export const Welcome = () => {
                   {["The", "SEM", "Experience"].map((word, i) => (
                     <motion.span
                       key={word}
-                      style={{ display: "block", whiteSpace: "nowrap", letterSpacing: word === "Experience" ? "-0.045em" : word === "SEM" ? "0.05em" : "0.12em" }}
-                      variants={{ hidden: { opacity: 0, y: 26 }, show: { opacity: 1, y: 0 } }}
-                      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ display: "inline-block", whiteSpace: "nowrap" }}
+                      variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+                      transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
                     >
                       {word}
                       {i < 2 ? " " : ""}
@@ -1293,29 +1283,23 @@ export const Welcome = () => {
               peacock backdrop like the Earth. Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden h-[clamp(200px,24vw,380px)]"
+            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
           >
-            {/* Cool-silver rim halo at the very foot — the moon's equivalent of
-                the Earth open's warm halo (same effect, mirrored to the foot). */}
+            {/* Warm halo along the very foot — matches the top Earth's rim. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[60%]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
               style={{
                 background:
-                  "radial-gradient(120% 90% at 50% 100%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 72%)",
+                  "radial-gradient(90% 90% at 50% 100%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 68%)",
               }}
             />
-            {/* The rising MOON limb — a CLONE of the top Earth limb: the SAME wide
-                shallow arc + width proportions + feather, a real (NASA/Galileo,
-                public domain) moon surface instead of Earth, reversed to curve UP
-                from the foot ("as above, so below"). Same img sizing + mask family
-                as the top Earth (Hugo 2026-07-22: clone the Earth, moon instead). */}
             {/* MIRRORED EARTH — the SAME earth-cutout-v2 asset as the top open,
-                natural orientation (no scaleY flip) so the identical limb curves
-                UP from the foot: a pixel-perfect mirror of the top Earth ("as
-                above, so below") — guaranteed coherent because it IS the top
-                Earth. Reverted here 2026-07-23: every bespoke moon read wrong to
-                Hugo; awaiting his moon reference before rebuilding a moon. */}
+                natural orientation (no flip) so the identical limb curves UP from
+                the foot: a pixel-perfect mirror of the top Earth ("as above, so
+                below"). Guaranteed coherent because it IS the top Earth. Same
+                width proportions + radial feather as the masthead limb, mask
+                centred at the foot so it dissolves up into the peacock. */}
             <img
               src={asset("/img/scenes/earth-cutout-v2.webp")}
               alt=""
@@ -1326,10 +1310,6 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // Same radial feather as the top Earth, centred at the FOOT (50%
-                // 100%): solid at the bottom, dissolving up into the peacock as
-                // the limb rises. No CSS glow — the atmosphere is baked into the
-                // asset, exactly like the top open.
                 WebkitMaskImage:
                   "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
