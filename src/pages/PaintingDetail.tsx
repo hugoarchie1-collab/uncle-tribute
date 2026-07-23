@@ -1857,27 +1857,28 @@ const BuyBox = ({
         {/* 7 · CTAs — one dominant action with a quiet ghost beneath (the Aesop
             "single confident action" pattern), full-width so they never wrap
             awkwardly in the narrow column. */}
+        {/* 7 · CTAs — BUY NOW is the dominant one-click action (Hugo 2026-07-23:
+            "buying is stupidly complicated, I need the easiest possible click-to-
+            buy"). The size is pre-selected (Collector A2 by default), so one tap
+            on Buy now goes straight to Stripe checkout — no basket detour needed.
+            "Add to basket" is the quiet secondary for multi-item shoppers. */}
         <div className="flex flex-col gap-3 mt-4">
-          <button
-            type="button"
-            onClick={onAdd}
-            disabled={status === "loading"}
-            className={cn(BTN_PRIMARY, "w-full")}
-          >
-            Add to basket
-          </button>
           <button
             type="button"
             onClick={onBuyNow}
             disabled={status === "loading"}
-            // Quiet alternate, NOT a co-primary. SAME height as "Add to basket"
-            // so the two stacked full-width buttons read as a balanced pair —
-            // the hierarchy is carried by FILL (filled ink vs. hairline outline),
-            // not by an uneven height (the old !py-3 made them look lopsided).
-            className={cn(BTN_SECONDARY, "group w-full disabled:opacity-60")}
+            className={cn(BTN_PRIMARY, "group w-full disabled:opacity-60")}
           >
-            {status === "loading" ? "Opening checkout…" : "Buy now"}
+            {status === "loading" ? "Opening checkout…" : "Buy it now"}
             <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">→</span>
+          </button>
+          <button
+            type="button"
+            onClick={onAdd}
+            disabled={status === "loading"}
+            className={cn(BTN_SECONDARY, "w-full")}
+          >
+            Add to basket
           </button>
         </div>
         {/* Microcopy confirmation — fades after 2.5s. Reserve space + opacity
