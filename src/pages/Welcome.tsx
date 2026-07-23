@@ -799,12 +799,12 @@ export const Welcome = () => {
               as="div"
               className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
             >
-              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] md:max-h-[64svh] overflow-hidden rounded-[4px] ring-1 ring-line">
+              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] md:max-h-[64svh] overflow-hidden">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   fill
-                  edges="none"
+                  edges="all"
                   parallax={0.06}
                   objectPosition="center 28%"
                   shadow=""
@@ -1247,13 +1247,13 @@ export const Welcome = () => {
                 plate keeps it crisp). Well separated from the film above by the
                 prose. Never cropped; ring frame kept. */}
             <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[400px] md:max-w-[500px]">
-              <div className="overflow-hidden rounded-[3px] ring-1 ring-line shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+              <div className="overflow-hidden">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"
                   alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"
                   loading="lazy"
                   decoding="async"
-                  className="block w-full h-auto"
+                  className="soft-edge-img block w-full h-auto"
                 />
               </div>
               <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.04em] text-ink/65 mt-4 text-center">
