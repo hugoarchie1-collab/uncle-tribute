@@ -305,7 +305,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
             />
             <span
-              className="font-display font-bold text-ink tracking-[-0.015em] leading-[0.98] whitespace-nowrap text-[clamp(18px,1.55vw,24px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+              className="font-display font-bold text-ink tracking-[-0.015em] leading-[1.02] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(15px,1.55vw,24px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
               style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}
             >
               The Art of Stephen Meakin

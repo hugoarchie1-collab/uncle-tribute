@@ -28,7 +28,13 @@ export const Logo = ({
   // v2 = the seal keyed to FULL transparency (the cream ground is gone); paired
   // with the cream rim-light below it stays visible + crisp on the dark-red nav.
   // Shown symbol-only in the nav (its own ring text IS the wordmark).
-  const url = `${import.meta.env.BASE_URL}logo/mandala-company-seal-disc-v2.png`;
+  // 2026-07-23 COHERENCE FIX (Hugo: "the logos aren't coherent"): the footer was
+  // the LONE surface using the round disc seal (with "THE MANDALA COMPANY" baked
+  // in its ring) while the nav + favicons + entrance + /links all use the clean
+  // wax-rose `logo-seal-v9`. Unified the footer onto the same clean rose so every
+  // seal on the site matches AND the footer no longer shows a second brand name
+  // (Mandala Company) beside the "The Art of Stephen Meakin" wordmark.
+  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
   return (
     <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
       {/*

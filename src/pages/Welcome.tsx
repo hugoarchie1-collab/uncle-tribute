@@ -354,7 +354,7 @@ export const Welcome = () => {
         // every phone/tablet width (≈37–44px gap on phones), mirroring desktop's
         // Earth-above-then-text-below. LANDSCAPE keeps the small pt (the
         // min-h-66svh + justify-end does the spacing there).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center min-h-[100svh] pt-[max(5rem,10svh)] landscape:pb-[clamp(20px,6svh,90px)] portrait:pb-[34svh]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center justify-center landscape:justify-end portrait:min-h-0 landscape:min-h-[100svh] pt-[max(5rem,10svh)] portrait:pt-[clamp(12rem,58vw,21rem)] landscape:pb-[clamp(20px,6svh,90px)] portrait:pb-[clamp(24px,6svh,64px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -1293,7 +1293,7 @@ export const Welcome = () => {
               peacock backdrop like the Earth. Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(200px,24vw,380px)]"
+            className="relative z-20 isolate w-full overflow-hidden h-[clamp(200px,24vw,380px)]"
           >
             {/* Cool-silver rim halo at the very foot — the moon's equivalent of
                 the Earth open's warm halo (same effect, mirrored to the foot). */}
