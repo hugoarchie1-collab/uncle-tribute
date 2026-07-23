@@ -305,7 +305,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
             />
             <span
-              className="font-display font-bold text-ink tracking-[-0.015em] leading-[1.02] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(15px,1.55vw,24px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+              className="font-display font-bold text-ink tracking-[-0.015em] leading-[1.02] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(17px,2vw,29px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
               style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}
             >
               The Art of Stephen Meakin
@@ -330,7 +330,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             the space fully collapses, and when shown it only appears at a width
             that fits a min-[320px] long field without crowding the logo. */}
         <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden lg:block w-full min-w-[180px] max-w-[340px]" />
+          <SearchBar variant="header" className="hidden md:block w-full min-w-[180px] max-w-[340px]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">

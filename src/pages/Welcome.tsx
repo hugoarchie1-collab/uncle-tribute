@@ -360,7 +360,7 @@ export const Welcome = () => {
           className="absolute inset-0 z-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(9,7,13,0.70) 0%, rgba(9,7,13,0.64) 45%, rgba(9,7,13,0.5) 100%)",
+              "linear-gradient(180deg, rgba(9,7,13,0.5) 0%, rgba(9,7,13,0.46) 50%, rgba(9,7,13,0.4) 100%)",
           }}
         />
         {/* Earth limb pinned to the TOP — the natural Earth SPUN AROUND (scaleY -1)
@@ -419,18 +419,11 @@ export const Welcome = () => {
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-          {/* Soft local legibility halo behind the lockup (2026-07-16): raising
-              the wordmark into the brighter middle of the backdrop cost contrast,
-              so a gentle radial backs ONLY the text and fades to transparent well
-              before any edge — reads as depth, never a black box (Hugo's rule). */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 -z-10 h-[150%]"
-            style={{
-              background:
-                "radial-gradient(58% 62% at 50% 50%, rgba(9,7,13,0.52) 0%, rgba(9,7,13,0.30) 46%, rgba(9,7,13,0) 78%)",
-            }}
-          />
+          {/* NO local halo behind the wordmark — Hugo 2026-07-23: "a weird black
+              text box behind that i never asked for and advised clearly against".
+              The soft radial that used to back the text read as a dark box; it is
+              removed. Legibility comes ONLY from the wordmark's own multi-layer
+              text-shadow + the soft, EVEN, edge-to-edge scrim above (never a box). */}
           <Reveal delay={0}>
             {/* Decorative brand wordmark — a <div>, NOT a heading, so the page's
                 real <h1> (the hero quote below) is the first heading a screen
@@ -680,12 +673,12 @@ export const Welcome = () => {
                 never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
                 Hermès / Avant Arte asymmetric editorial scale — the missing
                 "wow", and the antidote to the centred-stack monotony.) */}
-            <Reveal delay={0.05} className="my-5 md:my-7 text-left">
+            <Reveal delay={0.05} className="my-5 md:my-7 text-center">
               <blockquote className="m-0 hero-text-shadow">
-                {/* Dominant tier — breaks LEFT, oversized, stacks 3-4 commanding
-                    lines against the rail. opsz held at 48 (finale invariant). */}
+                {/* Dominant tier — CENTRED (Hugo, repeatedly: the reminder must be
+                    centred, not broken to one side). opsz held at 48 (finale). */}
                 <span
-                  className="block font-display font-semibold text-ink max-w-[18ch]"
+                  className="block mx-auto font-display font-semibold text-ink max-w-[20ch]"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
@@ -696,10 +689,10 @@ export const Welcome = () => {
                 >
                   {WELCOME.reminderLong[3].split(". ")[0] + "."}
                 </span>
-                {/* Subordinate — "Quite literally." answers on the RIGHT axis,
-                    its closing period the one rust note. */}
+                {/* Subordinate — "Quite literally." centred beneath, its closing
+                    period the one rust note. */}
                 <span
-                  className="block w-fit ml-auto text-right font-display font-normal italic text-ink/90"
+                  className="block mx-auto font-display font-normal italic text-ink/90"
                   style={{
                     fontVariationSettings: '"opsz" 40, "wght" 400',
                     fontWeight: 400,
@@ -725,7 +718,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1560px] 4xl:max-w-[1740px] columns-1 md:columns-2 gap-x-10 lg:gap-x-16 2xl:gap-x-20 [column-fill:_balance]">
+            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[840px] text-center">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -741,7 +734,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-3 md:mb-4 last:mb-0 break-inside-avoid text-pretty hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
