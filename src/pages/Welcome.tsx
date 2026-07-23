@@ -355,14 +355,12 @@ export const Welcome = () => {
             film is a BRIGHT daylit garden scene, so as the open's sky it
             out-shouted the cream wordmark and buried the Earth limb, breaking
             Hugo's brightness rule + his defended open composition.) */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 z-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(9,7,13,0.5) 0%, rgba(9,7,13,0.46) 50%, rgba(9,7,13,0.4) 100%)",
-          }}
-        />
+        {/* NO masthead scrim — Hugo 2026-07-23, emphatic: the rectangular dark
+            panel over the masthead section read as the "black box behind THE SEM
+            EXPERIENCE" he has repeatedly banned. Legibility comes ONLY from the
+            wordmark's own multi-layer text-shadow; if the backdrop needs calming
+            it's darkened UNIFORMLY page-wide on the PavoBackdrop (no rectangle),
+            never a panel over just this section. */}
         {/* Earth limb pinned to the TOP — the natural Earth SPUN AROUND (scaleY -1)
             so the limb sits up top and curves DOWN into the page (the exact mirror
             of the SUN that now closes the page at the finale). Its black space is

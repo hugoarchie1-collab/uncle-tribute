@@ -406,7 +406,7 @@ export const PavoBackdrop = ({
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(10,9,8,0.30) 0%, rgba(10,9,8,0.05) 22%, rgba(10,9,8,0.05) 68%, rgba(10,9,8,0.38) 100%)",
+            "linear-gradient(to bottom, rgba(10,9,8,0.74) 0%, rgba(10,9,8,0.66) 40%, rgba(10,9,8,0.66) 70%, rgba(10,9,8,0.72) 100%)",
         }}
       />
     </div>
