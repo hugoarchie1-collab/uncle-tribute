@@ -508,10 +508,6 @@ export const Welcome = () => {
         </div>
       </section>
 
-      {/* COSMIC INTERLUDE — the garden→galaxy boomerang film in a museum-framed
-          expanded plate right under the wordmark. Lazy + reduced-motion safe. */}
-      <CosmicInterlude />
-
       <div id="welcome-anchor" className="relative">
         {/* PAVO TAPESTRY BACKDROP — all five colourways, each shown WHOLE and
             zoomed out, crossfading on page-scroll. Shared with About. Fade
@@ -597,6 +593,12 @@ export const Welcome = () => {
               </Reveal>
             </div>
           </section>
+
+          {/* COSMIC INTERLUDE — the garden→galaxy film, moved BELOW the hero
+              photo of Stephen (Hugo 2026-07-23: "swap the first photo of Steve
+              with the video"). The real photo of the artist now opens the page;
+              the film follows it. Lazy + reduced-motion safe. */}
+          <CosmicInterlude />
 
           {/* 2 · A REMINDER — the hero carries only a tight lead; here Hugo's
               full five-paragraph passage runs VERBATIM as a bold editorial
