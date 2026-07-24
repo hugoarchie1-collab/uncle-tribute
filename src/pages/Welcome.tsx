@@ -532,8 +532,11 @@ export const Welcome = () => {
               blank space around it"). No side column, no text-over-image overlap:
               the headline sits ABOVE the photo; the photo owns the full width. */}
           <section className="relative isolate w-full overflow-hidden pt-4 md:pt-6">
-            <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-              <Reveal as="div" className="text-center">
+            <div className="mx-auto flex flex-col w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+              {/* Order (Hugo 2026-07-24): PHOTO first (order-1), THEN the "So here
+                  we are" text + His story (order-2), THEN the video below — so the
+                  photo and video are separated by the text, never touching. */}
+              <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
                 <h1 className="font-display tracking-[-0.045em] text-ink m-0 mx-auto text-balance hero-text-shadow">
                   <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[1.02]">
                     So here we are on Earth
@@ -562,7 +565,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="m-0 mt-6 md:mt-7 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
+              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
                 {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
                     (Hugo 2026-07-08: "no image should take up the full screen") —
                     at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
