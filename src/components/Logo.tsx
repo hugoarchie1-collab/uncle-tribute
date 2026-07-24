@@ -95,8 +95,8 @@ export const Logo = ({
         // original tidy 16px/normal so it still wraps cleanly to two lines inside
         // the narrow brand column — only the header logo gets the big treatment.
         <span
-          className={`inline font-display text-ink [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[16px] font-normal tracking-tight min-w-0 whitespace-normal leading-[1.2]" : "text-[clamp(19px,5vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.08] min-w-0 max-w-full sm:max-w-none"}`}
-          style={wordmarkWrap ? undefined : { fontVariationSettings: '"opsz" 28' }}
+          className={`inline font-display text-ink [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[clamp(19px,4.8vw,26px)] font-bold tracking-[-0.015em] min-w-0 whitespace-normal leading-[1.1]" : "text-[clamp(19px,5vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.08] min-w-0 max-w-full sm:max-w-none"}`}
+          style={{ fontVariationSettings: '"opsz" 28' }}
         >
           {wordmarkText}
         </span>

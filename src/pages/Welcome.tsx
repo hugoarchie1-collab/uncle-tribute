@@ -1275,7 +1275,7 @@ export const Welcome = () => {
               filename (immutable /img cache). Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
+            className="relative z-20 isolate w-full overflow-hidden mt-[clamp(0.75rem,2vh,2rem)] h-[clamp(150px,18vw,300px)]"
           >
             {/* Warm halo along the very foot — matches the top Earth's rim. */}
             <div
@@ -1292,7 +1292,7 @@ export const Welcome = () => {
                 UP into the peacock exactly like the masthead Earth — just a
                 different world closing the page. */}
             <img
-              src={asset("/img/scenes/jupiter-limb-v2.webp")}
+              src={asset("/img/scenes/jupiter-limb-v3.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1301,18 +1301,15 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // Warm bloom around the glowing limb (echoes the top Earth's rim).
-                filter:
-                  "drop-shadow(0 -3px 20px rgba(255,201,140,0.45)) drop-shadow(0 -1px 6px rgba(255,228,192,0.4))",
-                // Near-solid mask so the baked atmospheric RIM GLOW at the crest is
-                // NOT dimmed away (v1's aggressive fade killed the glow); the space
-                // above the limb is already transparent in the asset's own alpha, so
-                // a solid mask never boxes it — it only lets the planet body bleed off
-                // the very bottom into the peacock.
+                // v3 (2026-07-24, Hugo: "the white ring looks terrible"): the SOFT
+                // warm atmospheric glow is baked INTO the asset (no hard rim, no CSS
+                // drop-shadow doubling it) — a gentle Earth-like limb, shallow +
+                // centred. Near-solid mask so the glow at the crest isn't dimmed;
+                // the sky above is already transparent in the asset's own alpha.
                 WebkitMaskImage:
-                  "radial-gradient(110% 170% at 50% 100%, #000 70%, rgba(0,0,0,0.55) 88%, transparent 100%)",
+                  "radial-gradient(120% 175% at 50% 100%, #000 74%, rgba(0,0,0,0.5) 90%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(110% 170% at 50% 100%, #000 70%, rgba(0,0,0,0.55) 88%, transparent 100%)",
+                  "radial-gradient(120% 175% at 50% 100%, #000 74%, rgba(0,0,0,0.5) 90%, transparent 100%)",
               }}
             />
           </section>

@@ -28,10 +28,14 @@ const subscribeViewport = (cb: () => void) => {
   return () => window.removeEventListener("resize", cb);
 };
 const heavyViewportSnapshot = () => {
-  const physicalWidth = window.innerWidth * (window.devicePixelRatio || 1);
   const cores = navigator.hardwareConcurrency ?? 8;
   const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
-  return physicalWidth >= 2600 || cores <= 4 || mem <= 4;
+  // 2026-07-24 (Hugo: "the spotlight vanished — I want it back"): the physical-
+  // width gate (≥2600px) was shedding the cursor-reveal on his large Retina
+  // screen, which is exactly where he expects it. Re-enabled on desktop; still
+  // shed ONLY on genuinely low-power hardware (≤4 cores / ≤4GB) where it truly
+  // janks. If fullscreen scroll lags again, lighten the reveal (fewer layers).
+  return cores <= 4 || mem <= 4;
 };
 const useHeavyViewport = () =>
   useSyncExternalStore(subscribeViewport, heavyViewportSnapshot, () => false);
@@ -406,7 +410,7 @@ export const PavoBackdrop = ({
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(10,9,8,0.74) 0%, rgba(10,9,8,0.66) 40%, rgba(10,9,8,0.66) 70%, rgba(10,9,8,0.72) 100%)",
+            "linear-gradient(to bottom, rgba(10,9,8,0.56) 0%, rgba(10,9,8,0.44) 40%, rgba(10,9,8,0.44) 70%, rgba(10,9,8,0.54) 100%)",
         }}
       />
     </div>

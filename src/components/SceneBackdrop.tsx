@@ -58,13 +58,12 @@ export const SCENE_SCRIM =
  *  dark) photos read CLEARLY — like the home backdrop — under the lighter scrim.
  *  Reversible CSS, no asset re-bake. Cream copy stays legible because SCENE_SCRIM
  *  still carries a floor of shading, heaviest at the foot where body copy sits. */
-// 2026-07-23 (Hugo: "Memories is the perfect dark/faded level — I need this EXACT
-// level on every page; the cursor should draw more light + detail"): dropped the
-// base lift 1.28 → 0.6 so every scene page sits at the Memories dark level (~0.10
-// composited), and the cursor-reveal (SCENE_REVEAL_FILTER 1.68) now POPS hard
-// against that dark base — the "cursor brings the image to life" affordance he
-// wants, consistent across the whole site.
-const SCENE_IMAGE_FILTER = "brightness(0.6) saturate(0.94)";
+// 2026-07-24 (Hugo: "you darkened everything — it looks like you REMOVED my
+// backgrounds on every page"): the 0.6 base (~0.10 composited) read as no
+// background at all. Restored to the legible-VISIBLE level 1.18 so every scene
+// clearly SHOWS through the scrim again, while the cursor-reveal (1.68) still
+// draws extra light + detail where the pointer is (the spotlight he wants).
+const SCENE_IMAGE_FILTER = "brightness(1.18) saturate(1.0)";
 
 /** The livelier grade shown inside the cursor spotlight — the "clear" reveal:
  *  brighter + more saturated + a touch more contrast so the scene POPS where the

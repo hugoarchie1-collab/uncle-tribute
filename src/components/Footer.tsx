@@ -76,15 +76,14 @@ const LinkColumn = ({
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="relative border-t border-line bg-bg text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
+    className="nav-bg-scrolled relative border-t border-[rgba(120,30,30,0.5)] text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
   >
-    {/* FEATHERED SEAM — same dissolve as FooterCatalogue's, for the pages
-        (and the <md widths) where the footer itself is the first opaque band
-        the fixed scene backdrop meets. Overlays the already-opaque catalogue
-        band harmlessly when both render. */}
+    {/* FEATHERED SEAM — dissolves the top edge of the RED footer band up into
+        the section above (Hugo 2026-07-24: "bottom bar the same red as the top
+        panel"). Fades from the footer's own deep wax-seal red → transparent. */}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-bg via-bg/55 to-transparent"
+      className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-[rgba(34,6,7,0.98)] via-[rgba(40,8,9,0.5)] to-transparent"
     />
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
