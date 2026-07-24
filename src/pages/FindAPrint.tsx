@@ -151,6 +151,11 @@ export const FindAPrint = () => {
             // portrait center-crop on mobile — on desktop the bar is wide
             // enough that this still shows the wave too. Cross-platform parity.
             backgroundPosition: "28% center",
+            // 2026-07-24 (Hugo: "where's my background gone on /for-you"): this
+            // page renders its OWN backdrop (not SceneBackdrop), so it MISSED the
+            // site-wide brightening — the dark asset under the heavy scrim read as
+            // no background. Match SceneBackdrop's lift so it SHOWS like the rest.
+            filter: "brightness(1.4) saturate(1.05)",
             willChange: "auto",
           }}
           className="absolute inset-0 bg-cover"
@@ -164,7 +169,7 @@ export const FindAPrint = () => {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.22) 0%, rgba(8,7,6,0.32) 45%, rgba(8,7,6,0.5) 100%)",
           }}
         />
       </div>
