@@ -463,8 +463,19 @@ export const Basket = () => {
                   const framingPence = lineFramingPence(line);
                   const embellishPence = lineEmbellishPence(line);
                   const canvasPence = lineCanvasPence(line);
-                  const hasAddOns =
-                    framingPence > 0 || embellishPence > 0 || canvasPence > 0;
+                  // Canvas is a SUBSTRATE, not an add-on bolted onto a paper
+                  // print — the canvas IS the product. So a canvas line reads as
+                  // ONE priced object (base + edge folded together), never
+                  // "print £X + canvas £Y" (which looked like a double charge).
+                  const isCanvas = line.item.canvas === true && canvasPence > 0;
+                  const canvasUnitPence = line.tier.pricePence + canvasPence;
+                  // Itemised breakdown is for genuine add-ons (framing / hand-
+                  // finishing) or a multi-unit line. A plain canvas line needs
+                  // none — its one honest price is already the headline figure.
+                  const showBreakdown =
+                    framingPence > 0 ||
+                    embellishPence > 0 ||
+                    line.item.quantity > 1;
                   return (
                     <li
                       key={line.item.addedAt}
@@ -510,6 +521,12 @@ export const Basket = () => {
                           </p>
                           <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
                             {line.colourwayName}
+                            {isCanvas && (
+                              <>
+                                {" · "}On stretched canvas ·{" "}
+                                {canvasEdgeLabel(line.item.canvasEdge)} edge · ready to hang
+                              </>
+                            )}
                           </p>
                           <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
                             {/* Quantity stepper */}
@@ -563,12 +580,13 @@ export const Basket = () => {
                             </button>
                           </div>
                         </div>
-                        {/* Print price for this size. When add-ons are present
-                            this is the PRINT-ONLY figure and the line subtotal
-                            is shown below — so nothing is hidden (DMCC #13:
-                            no drip-pricing). */}
+                        {/* Headline price for this line. For a canvas line this
+                            is the ALL-IN canvas price (substrate folded in). For
+                            framed / hand-finished lines it's the print-only
+                            figure with the add-ons + subtotal itemised below —
+                            so nothing is hidden (DMCC #13: no drip-pricing). */}
                         <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
-                          {fmt(line.tier.pricePence)}
+                          {fmt(isCanvas ? canvasUnitPence : line.tier.pricePence)}
                         </p>
                       </div>
 
@@ -576,14 +594,16 @@ export const Basket = () => {
                           own per-size price, then a line subtotal. Rendered
                           only when at least one add-on is selected; the plain
                           print line above is already complete on its own. */}
-                      {(hasAddOns || line.item.quantity > 1) && (
+                      {showBreakdown && (
                         <div className="mt-3 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                              {line.tier.label} print ({line.tier.size})
+                              {isCanvas
+                                ? `Stretched canvas print · ${canvasEdgeLabel(line.item.canvasEdge)} (${line.tier.size})`
+                                : `${line.tier.label} print (${line.tier.size})`}
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                              {fmt(line.tier.pricePence)}
+                              {fmt(isCanvas ? canvasUnitPence : line.tier.pricePence)}
                             </span>
                           </div>
                           {line.item.quantity > 1 && (
@@ -623,16 +643,6 @@ export const Basket = () => {
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {fmt(embellishPence)}
-                              </span>
-                            </div>
-                          )}
-                          {canvasPence > 0 && (
-                            <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Stretched canvas ({canvasEdgeLabel(line.item.canvasEdge)})
-                              </span>
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                + {fmt(canvasPence)}
                               </span>
                             </div>
                           )}
