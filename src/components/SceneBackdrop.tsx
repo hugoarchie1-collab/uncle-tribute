@@ -52,7 +52,7 @@ const usePointerFine = () =>
 // Darkened the whole ramp back toward the legible-dark family (composited luma
 // ≈28) while still letting the scene read. Text legibility beats vividness.
 export const SCENE_SCRIM =
-  "linear-gradient(180deg, rgba(8,7,6,0.36) 0%, rgba(8,7,6,0.50) 42%, rgba(8,7,6,0.68) 100%)";
+  "linear-gradient(180deg, rgba(8,7,6,0.22) 0%, rgba(8,7,6,0.32) 42%, rgba(8,7,6,0.5) 100%)";
 
 /** Brightness/saturation lift applied to the scene image layer so the (baked-
  *  dark) photos read CLEARLY — like the home backdrop — under the lighter scrim.
@@ -63,12 +63,12 @@ export const SCENE_SCRIM =
 // background at all. Restored to the legible-VISIBLE level 1.18 so every scene
 // clearly SHOWS through the scrim again, while the cursor-reveal (1.68) still
 // draws extra light + detail where the pointer is (the spotlight he wants).
-const SCENE_IMAGE_FILTER = "brightness(1.18) saturate(1.0)";
+const SCENE_IMAGE_FILTER = "brightness(1.4) saturate(1.05)";
 
 /** The livelier grade shown inside the cursor spotlight — the "clear" reveal:
  *  brighter + more saturated + a touch more contrast so the scene POPS where the
  *  pointer is, over the softer scrimmed base. */
-const SCENE_REVEAL_FILTER = "brightness(1.68) saturate(1.28) contrast(1.1)";
+const SCENE_REVEAL_FILTER = "brightness(1.95) saturate(1.4) contrast(1.14)";
 
 export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
   // STATIC backdrop — no parallax, no overscan, no crossfade (see history above).
