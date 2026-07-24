@@ -31,12 +31,16 @@ import {
   EMBELLISHMENT_NOTE,
   ESTATE_AUTHENTICATION,
   FRAME_STYLES,
+  FRAME_STYLE_GROUPS,
+  FRAME_TIERS,
   GLAZING_OPTIONS,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
+  getFrameSurchargePence,
+  getFrameTier,
   getCanvasPricePence,
   getLowestTierPricePence,
   getPaintingById,
@@ -1166,9 +1170,23 @@ const BuyBox = ({
   const framingPricePence = getFramingPricePence(selectedTier);
   const embellishPricePence = getEmbellishmentPricePence(selectedTier);
   const canvasPricePence = getCanvasPricePence(selectedTier);
+  // Premium-frame surcharge (Signature / Ornate) added on top of the base
+  // framing price for the SELECTED frame. Classic frames → 0. MONEY: mirrored
+  // server-side in api/checkout.ts (gotcha #9).
+  const frameSurchargePence = getFrameSurchargePence(frameStyle);
+  const frameTier = getFrameTier(frameStyle);
+  // The base framing price shown on the "Framed" material button is the CLASSIC
+  // (from) price; the surcharge only shows in the running total once a premium
+  // frame is picked, presented as one clean framed total (never a "+£50" line).
   const framingPriceLabel =
     framingPricePence !== null
       ? fmtP(framingPricePence)
+      : null;
+  // The framed subtotal for the CHOSEN frame (base + surcharge) — the single
+  // clean number the buyer commits to.
+  const framedTotalLabel =
+    framingPricePence !== null
+      ? fmtP(framingPricePence + frameSurchargePence)
       : null;
   const embellishPriceLabel =
     embellishPricePence !== null
@@ -1183,7 +1201,7 @@ const BuyBox = ({
   // from the data-layer helpers, so the figure can never drift from the ladder.
   const lineTotalPence =
     selectedTier.pricePence +
-    (framingActive ? framingPricePence ?? 0 : 0) +
+    (framingActive ? (framingPricePence ?? 0) + frameSurchargePence : 0) +
     (embellishActive ? embellishPricePence ?? 0 : 0) +
     (canvasActive ? canvasPricePence ?? 0 : 0);
   const hasAddOnSelected = framingActive || embellishActive || canvasActive;
@@ -1631,40 +1649,61 @@ const BuyBox = ({
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
                   <p className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
-                    Choose your finish — every option is included, no extra
-                    charge.
+                    Choose your frame — Point 101's full range. Classic frames
+                    are included; Signature and Ornate mouldings step the framed
+                    price up.
                   </p>
-                  <div className="flex flex-col gap-1.5">
-                    <span className={EYEBROW_TIGHT}>Frame</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {FRAME_STYLES.map((f) => (
-                        <button
-                          key={f.id}
-                          type="button"
-                          onClick={() => onFrameStyleChange(f.id)}
-                          aria-pressed={frameStyle === f.id}
-                          title={f.note}
-                          className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
-                            frameStyle === f.id
-                              ? "ring-ink text-ink"
-                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                          )}
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
-                            style={{ backgroundColor: f.swatch }}
-                          />
-                          {f.label}
-                        </button>
-                      ))}
-                    </div>
-                    {/* Visible detail of the CHOSEN frame — the note was only in
-                        a hover title before (Hugo: no info without hovering). */}
+                  {/* Grouped Point-101-style: one labelled row per category so
+                      the full range never reads as a flat wall of swatches. A
+                      premium frame shows its tier's surcharge inline; the running
+                      total below still resolves to one clean framed price. */}
+                  <div className="flex flex-col gap-3">
+                    {FRAME_STYLE_GROUPS.map((group) => (
+                      <div key={group.category} className="flex flex-col gap-1.5">
+                        <span className={EYEBROW_TIGHT}>{group.category}</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {group.frames.map((f) => {
+                            const surcharge = FRAME_TIERS[f.tier].surchargePence;
+                            return (
+                              <button
+                                key={f.id}
+                                type="button"
+                                onClick={() => onFrameStyleChange(f.id)}
+                                aria-pressed={frameStyle === f.id}
+                                title={f.note}
+                                className={cn(
+                                  "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                                  frameStyle === f.id
+                                    ? "ring-ink text-ink"
+                                    : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                                )}
+                              >
+                                <span
+                                  aria-hidden="true"
+                                  className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
+                                  style={{ backgroundColor: f.swatch }}
+                                />
+                                {f.label}
+                                {surcharge > 0 && (
+                                  <span className="text-[12px] text-ink/45 tabular-nums">
+                                    +{fmtP(surcharge)}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                    {/* Visible detail of the CHOSEN frame — note + tier + the
+                        clean framed total it resolves to (Hugo: one clear
+                        number, and no info hidden behind a hover). */}
                     <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
                       {FRAME_STYLES.find((f) => f.id === frameStyle)?.note}
-                      {" — solid-wood moulding, hand-finished."}
+                      {frameTier !== "classic"
+                        ? ` — ${FRAME_TIERS[frameTier].label} frame`
+                        : " — included in the framed price"}
+                      {framedTotalLabel ? `. Framed: ${framedTotalLabel}.` : "."}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -2198,9 +2237,11 @@ const StickyAddBar = ({
   // number while an add-on is selected.
   const barCanvas = canvasOffered && canvas;
   const barFramed = framingOffered && framing && !barCanvas;
+  // Premium-frame surcharge on the floating bar mirrors the buy box (gotcha #9).
+  const barFrameSurchargePence = barFramed ? getFrameSurchargePence(frameStyle) : 0;
   const barTotalPence =
     selectedTier.pricePence +
-    (barFramed ? selectedTier.framingPricePence ?? 0 : 0) +
+    (barFramed ? (selectedTier.framingPricePence ?? 0) + barFrameSurchargePence : 0) +
     (embellishOffered && embellished && !barCanvas ? selectedTier.embellishmentPricePence ?? 0 : 0) +
     (barCanvas ? selectedTier.canvasPricePence ?? 0 : 0);
   const onAdd = useCallback(() => {
@@ -2457,13 +2498,15 @@ export const PaintingDetail = () => {
     if (!t) return;
     const framingAvail = getFramingPricePence(t) !== null;
     const canvasAvail = getCanvasPricePence(t) !== null;
-    if (framingAvail) {
-      setFraming(true);
-      setCanvas(false);
-      setEmbellished(false);
-    } else if (canvasAvail) {
+    // CANVAS is the default presentation (Hugo 2026-07-24) wherever the size
+    // offers it (A2/A1/A0); Framed is the fallback where canvas isn't offered.
+    if (canvasAvail) {
       setCanvas(true);
       setFraming(false);
+      setEmbellished(false);
+    } else if (framingAvail) {
+      setFraming(true);
+      setCanvas(false);
       setEmbellished(false);
     } else {
       setFraming(false);
@@ -2479,14 +2522,14 @@ export const PaintingDetail = () => {
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setSelectedTierId(anchorTier?.id);
-    // Default the two-product presentation for the anchor size: FRAMED museum
-    // print where it can be framed (A2/A1), else Canvas (A0) — never unframed
-    // (Hugo 2026-07-24). Replaces the old "no add-ons" reset.
+    // Default the two-product presentation for the anchor size: CANVAS where the
+    // size offers it (A2/A1/A0), else Framed — never unframed (Hugo 2026-07-24,
+    // canvas-default). Replaces the old framed-default reset.
     {
       const framingAvail = anchorTier ? getFramingPricePence(anchorTier) !== null : false;
       const canvasAvail = anchorTier ? getCanvasPricePence(anchorTier) !== null : false;
-      setFraming(framingAvail);
-      setCanvas(!framingAvail && canvasAvail);
+      setCanvas(canvasAvail);
+      setFraming(!canvasAvail && framingAvail);
     }
     setEmbellished(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);

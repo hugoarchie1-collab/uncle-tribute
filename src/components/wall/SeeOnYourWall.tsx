@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Painting } from "../../data/paintings";
-import { FRAME_STYLES } from "../../data/paintings";
+import { AR_FRAME_STYLES } from "../../data/paintings";
 import {
   ARTWORK_SIZES,
   getArtworkSize,
@@ -32,11 +32,13 @@ import { ModelViewerAR } from "./ModelViewerAR";
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
 
-// Frame options for the panel: "No frame" + the canonical website frame styles.
-// (WallCamera derives the identical list from FRAME_STYLES — same ids/labels.)
+// Frame options for the AR panel: "No frame" + ONLY the frames that have a
+// baked 3D wall model (AR_FRAME_STYLES). The wider PDP frame range has no wall
+// models, so offering them here would silently fall back to a frameless
+// preview — the AR picker deliberately shows only what it can render truthfully.
 const FRAME_OPTIONS: { id: string; label: string; swatch: string | null }[] = [
   { id: "none", label: "No frame", swatch: null },
-  ...FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, swatch: f.swatch })),
+  ...AR_FRAME_STYLES.map((f) => ({ id: f.id, label: f.label, swatch: f.swatch })),
 ];
 
 // Master switch for the live AR wall preview. Set to `false` while the AR is

@@ -420,20 +420,76 @@ export const CANVAS_NOTE =
   "Printed onto fine-art canvas, stretched over a solid subframe and finished ready to hang — no glass, no separate frame. Made to order.";
 
 // ── Point 101 framing finishes ───────────────────────────────────────────────
-// The Bespoke framing add-on offers Point 101's full range of museum-grade
-// finishes: a choice of solid-wood / tray mouldings AND a choice of glazing
-// (their best is a museum-grade anti-reflective glazing). EVERY finish
-// is INCLUDED in the single framing price — there is NO per-style upcharge (the
-// estate absorbs the small cost difference into margin, exactly as it does for
-// delivery), so advertised == charged is completely untouched. The buyer's
-// choice rides to checkout as a Stripe line-item note so the estate orders the
-// right frame from Point 101. Labels are mirrored (without prices) in
-// api/checkout.ts — keep the two in sync (gotcha #9, labels only / no money).
+// The Framed product offers Point 101's full range of museum-grade mouldings,
+// grouped by category the way Point 101 present them, PLUS a choice of glazing.
+//
+// PRICING (2026-07-24, Hugo — "price the good frames higher"): frames sit in
+// THREE tiers. `classic` is included in the base framing price (£345 A2 / £445
+// A1, from the print tier). `signature` and `ornate` add a FLAT, size-
+// independent surcharge on top (Recommended ladder: +£50 / +£120), shown to the
+// buyer as ONE clean total per tier — never an additive "+£50" line. The cost
+// gap to the estate between a classic and an ornate moulding is only ~£15–26, so
+// the surcharge is almost all margin (the point of the exercise).
+//
+// ⚠️ The surcharge is MONEY, so it now falls under gotcha #9: FRAME_TIERS'
+// surcharge pence is mirrored in api/checkout.ts (the charge), and the framing
+// line in the confirmation / saved-basket emails must reflect it too. Frame
+// LABELS are mirrored (as before) in api/checkout.ts. Keep them in sync.
+//
+// `ar: true` marks the four frames that have baked 3D wall models
+// (src/lib/wallModels.ts) — only those are offered in the "See it on your wall"
+// AR picker, so a frame without a model can never silently fall back to a
+// frameless preview. The rest render in the flat PDP frame preview only.
+export const FRAME_TIERS = {
+  classic: { label: "Classic", surchargePence: 0 },
+  signature: { label: "Signature", surchargePence: 5000 },
+  ornate: { label: "Ornate", surchargePence: 12000 },
+} as const;
+export type FrameTier = keyof typeof FRAME_TIERS;
+
+// Display groups, in the order Point 101 present them — the picker renders one
+// labelled group per category, premium categories last.
+export const FRAME_CATEGORY_ORDER = [
+  "Black",
+  "Dark Wood",
+  "Light Wood",
+  "White",
+  "Metallic",
+  "Box Frames",
+  "Ornate",
+] as const;
+export type FrameCategory = (typeof FRAME_CATEGORY_ORDER)[number];
+
+// Every DISTINCT Point 101 finish (colour/material/style). Millimetre-only
+// width variants of the same finish are deliberately folded into one entry —
+// they render identically in the preview and price the same within a tier, so
+// separate rows would be pure noise (Hugo, 2026-07-24). `ar` is present on the
+// four finishes with baked wall models.
 export const FRAME_STYLES = [
-  { id: "natural-oak", label: "Natural oak", note: "Warm, light solid oak", swatch: "#c9a368" },
-  { id: "stained-black", label: "Stained black", note: "Deep matt-black solid wood", swatch: "#1c1a18" },
-  { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2" },
-  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030" },
+  // Black
+  { id: "black-lacquer", label: "Black lacquer", note: "Gloss black lacquer", swatch: "#17161a", category: "Black", tier: "classic", ar: false },
+  { id: "stained-black", label: "Black stained", note: "Deep matt-black solid wood", swatch: "#1c1a18", category: "Black", tier: "classic", ar: true },
+  // Dark Wood
+  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030", category: "Dark Wood", tier: "classic", ar: true },
+  { id: "walnut-grain", label: "Walnut grain", note: "Figured walnut grain", swatch: "#6b4a30", category: "Dark Wood", tier: "classic", ar: false },
+  { id: "wenge", label: "Wenge", note: "Near-black wenge hardwood", swatch: "#2e211a", category: "Dark Wood", tier: "classic", ar: false },
+  // Light Wood
+  { id: "natural-oak", label: "Oak", note: "Warm, light solid oak", swatch: "#c9a368", category: "Light Wood", tier: "classic", ar: true },
+  { id: "ash", label: "Ash", note: "Pale, open-grained ash", swatch: "#d9c9a8", category: "Light Wood", tier: "classic", ar: false },
+  // White
+  { id: "white", label: "White lacquer", note: "Clean painted white", swatch: "#ede9e2", category: "White", tier: "classic", ar: true },
+  { id: "white-stained", label: "White stained", note: "Soft limed-white grain", swatch: "#e4ddcf", category: "White", tier: "classic", ar: false },
+  // Metallic
+  { id: "silver", label: "Silver", note: "Warm brushed silver", swatch: "#b9bcc0", category: "Metallic", tier: "classic", ar: false },
+  { id: "gold", label: "Gold", note: "Flat brushed gold", swatch: "#c9a24a", category: "Metallic", tier: "classic", ar: false },
+  { id: "silver-aluminium", label: "Brushed aluminium", note: "Contemporary brushed-aluminium profile", swatch: "#a8abb0", category: "Metallic", tier: "signature", ar: false },
+  { id: "black-aluminium", label: "Black aluminium", note: "Matt anodised black aluminium", swatch: "#26262a", category: "Metallic", tier: "signature", ar: false },
+  // Box Frames
+  { id: "box-black", label: "Black box", note: "Deep black box-frame with a float rebate", swatch: "#131217", category: "Box Frames", tier: "signature", ar: false },
+  { id: "box-oak", label: "Oak box", note: "Deep oak box-frame with a float rebate", swatch: "#c3a473", category: "Box Frames", tier: "signature", ar: false },
+  // Ornate (the statement tier)
+  { id: "ayous-gold", label: "Ayous, gold edge", note: "Stained ayous with a hand-gilt gold highlight", swatch: "#b98f4e", category: "Ornate", tier: "ornate", ar: false },
+  { id: "ornate-gold", label: "Ornate gold", note: "Broad, swept gold ornament — the statement frame", swatch: "#b8862f", category: "Ornate", tier: "ornate", ar: false },
 ] as const;
 
 export const GLAZING_OPTIONS = [
@@ -451,6 +507,31 @@ export const frameStyleLabel = (id: string | undefined): string =>
   FRAME_STYLES.find((f) => f.id === id)?.label ?? FRAME_STYLES[0].label;
 export const glazingLabel = (id: string | undefined): string =>
   GLAZING_OPTIONS.find((g) => g.id === id)?.label ?? GLAZING_OPTIONS[0].label;
+
+/**
+ * The premium surcharge (pence) for a frame's tier, added on top of the base
+ * per-print framing price. `classic` (and any unknown / default id) → 0.
+ * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts frameSurchargePence().
+ */
+export const getFrameSurchargePence = (id: string | undefined): number => {
+  const f = FRAME_STYLES.find((s) => s.id === id);
+  return f ? FRAME_TIERS[f.tier].surchargePence : 0;
+};
+
+/** The frame's tier ("classic" | "signature" | "ornate"); "classic" if unknown. */
+export const getFrameTier = (id: string | undefined): FrameTier => {
+  const f = FRAME_STYLES.find((s) => s.id === id);
+  return f ? f.tier : "classic";
+};
+
+/** Only the frames with a baked AR wall model — the AR picker's allowed set. */
+export const AR_FRAME_STYLES = FRAME_STYLES.filter((f) => f.ar);
+
+/** Frames grouped by category, in FRAME_CATEGORY_ORDER — for the grouped picker. */
+export const FRAME_STYLE_GROUPS = FRAME_CATEGORY_ORDER.map((category) => ({
+  category,
+  frames: FRAME_STYLES.filter((f) => f.category === category),
+})).filter((g) => g.frames.length > 0);
 
 /**
  * Returns the hand-embellishment surcharge for a tier, or null if Polly

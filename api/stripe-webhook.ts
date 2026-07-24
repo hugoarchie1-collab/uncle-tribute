@@ -370,6 +370,9 @@ const linesFromMetadata = (
     const tierId = m.tier_id || "collector";
     const framing = m.framing === "yes";
     const embellished = m.embellished === "yes";
+    // Premium-frame surcharge (pence) folded into the framing sub-line so it
+    // matches the amount charged (mirror of api/checkout.ts, gotcha #9).
+    const frameSurcharge = Number(m.frame_surcharge_pence) || 0;
     return [
       {
         title: m.painting_title,
@@ -384,7 +387,7 @@ const linesFromMetadata = (
         // embellishPrice stay absent and no sub-line renders).
         framingPrice:
           framing && tierId in TIER_FRAMING_PENCE
-            ? formatGBP(TIER_FRAMING_PENCE[tierId])
+            ? formatGBP(TIER_FRAMING_PENCE[tierId] + frameSurcharge)
             : undefined,
         embellishPrice:
           embellished && tierId in TIER_EMBELLISH_PENCE
@@ -402,12 +405,14 @@ const linesFromMetadata = (
   const paintingIds = (m.painting_ids || "").split(",").map((s) => s.trim());
   const tierIds = (m.tier_ids || "").split(",").map((s) => s.trim()).filter(Boolean);
   const framingFlags = (m.framing_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const frameSurcharges = (m.frame_surcharges || "").split(",").map((s) => s.trim());
   const embellishedFlags = (m.embellished_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
   if (titles.length === 0) return [];
   return titles.map((title, idx) => {
     const tierId = tierIds[idx] || "collector";
     const framing = framingFlags[idx] === "y";
     const embellished = embellishedFlags[idx] === "y";
+    const frameSurcharge = Number(frameSurcharges[idx]) || 0;
     return {
       title,
       colourway: colourways[idx] || "Original",
@@ -419,7 +424,7 @@ const linesFromMetadata = (
       // Itemise the add-on only when it applies on this tier AND was bought.
       framingPrice:
         framing && tierId in TIER_FRAMING_PENCE
-          ? formatGBP(TIER_FRAMING_PENCE[tierId])
+          ? formatGBP(TIER_FRAMING_PENCE[tierId] + frameSurcharge)
           : undefined,
       embellishPrice:
         embellished && tierId in TIER_EMBELLISH_PENCE

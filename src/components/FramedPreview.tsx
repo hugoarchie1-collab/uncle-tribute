@@ -23,11 +23,29 @@ import { asset } from "../lib/asset";
 
 // Keyed to FRAME_STYLES ids in paintings.ts. Each is a 1200×1200 PNG with a
 // transparent centre window, sliced at 170px.
+// PHOTOREAL (v2, 2026-07-24): each source is Point 101's OWN moulding
+// photography — their four real rail images per frame, mitred into a 9-slice
+// border-image (scripts/frame-mouldings.sh's pipeline, real photo rails instead
+// of colour recipes). So every product's frame preview matches Point 101
+// exactly. Bump the -vN suffix on any re-bake (/img is immutable-cached).
 const FRAME_ASSET: Record<string, string> = {
-  "natural-oak": "/img/frames/natural-oak-frame-v1.webp",
-  "stained-black": "/img/frames/stained-black-frame-v1.webp",
-  white: "/img/frames/white-frame-v1.webp",
-  "walnut-tray": "/img/frames/walnut-tray-frame-v1.webp",
+  "natural-oak": "/img/frames/natural-oak-frame-v2.webp",
+  "stained-black": "/img/frames/stained-black-frame-v2.webp",
+  white: "/img/frames/white-frame-v2.webp",
+  "walnut-tray": "/img/frames/walnut-tray-frame-v2.webp",
+  "black-lacquer": "/img/frames/black-lacquer-frame-v2.webp",
+  "walnut-grain": "/img/frames/walnut-grain-frame-v2.webp",
+  wenge: "/img/frames/wenge-frame-v2.webp",
+  ash: "/img/frames/ash-frame-v2.webp",
+  "white-stained": "/img/frames/white-stained-frame-v2.webp",
+  silver: "/img/frames/silver-frame-v2.webp",
+  gold: "/img/frames/gold-frame-v2.webp",
+  "silver-aluminium": "/img/frames/silver-aluminium-frame-v2.webp",
+  "black-aluminium": "/img/frames/black-aluminium-frame-v2.webp",
+  "box-black": "/img/frames/box-black-frame-v2.webp",
+  "box-oak": "/img/frames/box-oak-frame-v2.webp",
+  "ayous-gold": "/img/frames/ayous-gold-frame-v2.webp",
+  "ornate-gold": "/img/frames/ornate-gold-frame-v2.webp",
 };
 const FRAME_SLICE = 170; // px slice in the 1200px source (matches the script's M)
 

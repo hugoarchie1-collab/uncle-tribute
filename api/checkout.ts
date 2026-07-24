@@ -373,15 +373,40 @@ const isTierId = (v: unknown): v is TierId =>
   v === "heirloom" ||
   v === "studio";
 
-// Point 101 framing-finish labels — a LABELS-ONLY mirror of FRAME_STYLES /
-// GLAZING_OPTIONS in src/data/paintings.ts (gotcha #9, but NO money: there is
-// no per-finish charge, so a label drift is cosmetic, never a pricing bug).
-// An unknown / missing id falls back to the first (default) finish.
+// Point 101 framing-finish labels — a mirror of FRAME_STYLES in
+// src/data/paintings.ts (gotcha #9). An unknown / missing id falls back to the
+// default finish (natural-oak).
 const FRAME_STYLE_LABELS: Record<string, string> = {
-  "natural-oak": "Natural oak",
-  "stained-black": "Stained black",
-  white: "White",
+  "black-lacquer": "Black lacquer",
+  "stained-black": "Black stained",
   "walnut-tray": "Walnut",
+  "walnut-grain": "Walnut grain",
+  wenge: "Wenge",
+  "natural-oak": "Oak",
+  ash: "Ash",
+  white: "White lacquer",
+  "white-stained": "White stained",
+  silver: "Silver",
+  gold: "Gold",
+  "silver-aluminium": "Brushed aluminium",
+  "black-aluminium": "Black aluminium",
+  "box-black": "Black box",
+  "box-oak": "Oak box",
+  "ayous-gold": "Ayous, gold edge",
+  "ornate-gold": "Ornate gold",
+};
+// ⚠️ MONEY (gotcha #9): the premium-frame surcharge, in pence, added on top of
+// the base framingPricePence. Mirror of FRAME_TIERS' surchargePence + each
+// frame's tier in src/data/paintings.ts. Classic frames (and any unknown id)
+// → 0. Signature +£50, Ornate +£120. advertised == charged depends on this
+// matching the PDP's getFrameSurchargePence exactly.
+const FRAME_SURCHARGE_PENCE: Record<string, number> = {
+  "silver-aluminium": 5000,
+  "black-aluminium": 5000,
+  "box-black": 5000,
+  "box-oak": 5000,
+  "ayous-gold": 12000,
+  "ornate-gold": 12000,
 };
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Clear acrylic",
@@ -399,10 +424,12 @@ interface NormalisedItem {
   // How many of this exact line to charge for (Stripe line_items.quantity). ≥ 1.
   quantity: number;
   // Framing finishes (display labels) — only set when framing === true. These
-  // ride into the Stripe line item so the estate knows which frame to order;
-  // they carry NO price (every finish is included in framingPricePence).
+  // ride into the Stripe line item so the estate knows which frame to order.
   frameStyle?: string;
   glazing?: string;
+  // Premium-frame surcharge (pence) for the chosen frame — 0 for classic frames
+  // and whenever framing is off. Added to framingPricePence on the framing line.
+  frameSurchargePence: number;
 }
 
 const normaliseItem = (
@@ -444,6 +471,11 @@ const normaliseItem = (
   const glazing = framing
     ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["art-acrylic"])
     : undefined;
+  // Premium-frame surcharge keyed off the RAW frame id (before it became a
+  // label). 0 when framing is off or the frame is classic / unknown.
+  const frameSurchargePence = framing
+    ? (FRAME_SURCHARGE_PENCE[String(frameStyleRaw)] ?? 0)
+    : 0;
   // Quantity — whole units, clamped to a sane 1–99 so a malformed / hostile
   // client can never mint an absurd Stripe line quantity.
   const quantity =
@@ -461,6 +493,7 @@ const normaliseItem = (
     quantity,
     frameStyle,
     glazing,
+    frameSurchargePence,
   };
 };
 
@@ -811,8 +844,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if (item.framing && typeof item.tier.framingPricePence === "number") {
       // The buyer's chosen finish (frame style + glazing) is named on the line
       // so it appears on Stripe checkout, the receipt AND the dashboard order
-      // the estate works from when placing the Point 101 frame order. No price
-      // impact — every finish is included in framingPricePence.
+      // the estate works from when placing the Point 101 frame order. Premium
+      // frames (Signature / Ornate) add a surcharge on top of the base framing
+      // price — folded into this SAME line so the buyer sees one framed figure.
       const finish =
         item.frameStyle && item.glazing
           ? `${item.frameStyle} frame · ${item.glazing}`
@@ -821,7 +855,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: toMinor(item.tier.framingPricePence),
+          unit_amount: toMinor(
+            item.tier.framingPricePence + item.frameSurchargePence,
+          ),
           product_data: {
             name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
             description: `${finish}, conservation-mounted and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
@@ -915,6 +951,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       size: sizeFor(normalised[0].paintingId, normalised[0].tier),
       framing: normalised[0].framing ? "yes" : "no",
       embellished: normalised[0].embellished ? "yes" : "no",
+      // Premium-frame surcharge (pence) so the confirmation email itemises the
+      // framing sub-line at the amount actually charged (gotcha #9).
+      frame_surcharge_pence: String(normalised[0].frameSurchargePence),
       quantity: String(normalised[0].quantity),
       item_count: "1",
     };
@@ -928,6 +967,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       tier_labels: truncateMetadata(normalised.map((i) => i.tier.label)),
       framing_flags: truncateMetadata(
         normalised.map((i) => (i.framing ? "y" : "n")),
+      ),
+      frame_surcharges: truncateMetadata(
+        normalised.map((i) => String(i.frameSurchargePence)),
       ),
       embellished_flags: truncateMetadata(
         normalised.map((i) => (i.embellished ? "y" : "n")),

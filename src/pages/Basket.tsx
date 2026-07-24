@@ -19,6 +19,7 @@ import {
   getPrintTiers,
   frameStyleLabel,
   glazingLabel,
+  getFrameSurchargePence,
   COLLECTIONS,
   PAINTINGS,
   type PrintTier,
@@ -86,10 +87,12 @@ const resolveLines = (items: BasketItem[]): ResolvedLine[] => {
 // real Stripe charge, so the basket never under- or over-states what is paid.
 // -----------------------------------------------------------------------------
 
-/** Whether an add-on is actually billable for a line (offered AND selected). */
+/** Whether an add-on is actually billable for a line (offered AND selected).
+ *  Framing = the tier's base framing price + the chosen frame's premium-tier
+ *  surcharge (Signature / Ornate) — mirrors api/checkout.ts (gotcha #9). */
 const lineFramingPence = (line: ResolvedLine): number =>
   line.item.framing === true && typeof line.tier.framingPricePence === "number"
-    ? line.tier.framingPricePence
+    ? line.tier.framingPricePence + getFrameSurchargePence(line.item.frameStyle)
     : 0;
 
 const lineEmbellishPence = (line: ResolvedLine): number =>
