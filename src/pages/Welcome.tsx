@@ -1032,7 +1032,7 @@ export const Welcome = () => {
                         (£350) in paintings.ts; the real per-size price shows on the
                         product page. */}
                     <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
-                      From £350 · on A2 &amp; A1 prints · allow 2 weeks
+                      From £350 · on the Collector &amp; Atelier prints · allow 2 weeks
                     </span>
                   </div>
                 </div>

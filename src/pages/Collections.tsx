@@ -184,8 +184,9 @@ const BUNDLE_TIERS: PrintTier[] = BUNDLE_TIER_IDS
 const DEFAULT_BUNDLE_TIER: PrintTier =
   BUNDLE_TIERS.find((t) => t.id === "collector") ?? BUNDLE_TIERS[0];
 
-// "A2 (42 × 42 cm)" → "A2" for the compact toggle chip.
-const sizeCode = (tier: PrintTier): string => tier.size.split(" ")[0];
+// The size shown in the toggle / set copy = the actual square dimensions
+// (Hugo 2026-07-24: A-labels scrapped — square works, not rectangular A-sheets).
+const sizeCode = (tier: PrintTier): string => tier.size;
 // "Collector Edition" → "Collector" for the compact toggle chip.
 const editionWord = (tier: PrintTier): string =>
   tier.label.replace(/['’]s Edition$/, "").replace(/ (Edition|Drop)$/, "");

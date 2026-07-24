@@ -131,19 +131,19 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition A3 at £275 (issued within each edition, no fixed allocation). Collector Edition A2 at £495 (200 allocated per edition). Atelier Edition A1 at £925 (75 per edition). Heirloom Edition A0 at £1,895 (18 per edition). Every price includes free delivery.",
+      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £275 (issued within each edition, no fixed allocation). Collector Edition at £495 (200 allocated per edition). Atelier Edition at £925 (75 per edition). Heirloom Edition at £1,895 (18 per edition). Every price includes free delivery.",
   },
   {
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Yes — framing is offered on the A2 and A1 tiers. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £345 on A2 and £445 on A1. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
+      "Yes — framing is offered on the Collector and Atelier tiers. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £345 on the Collector tier and £445 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
   },
   {
     eyebrow: "Hand-finishing",
     question: 'What is "hand-finished by Polly"?',
     answer:
-      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the A2 and A1 tiers only, by request, and adds £350 (A2) or £495 (A1). Allow two weeks maximum from order to dispatch.",
+      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the Collector and Atelier tiers only, by request, and adds £350 (Collector) or £495 (Atelier). Allow two weeks maximum from order to dispatch.",
   },
   {
     eyebrow: "Shipping",

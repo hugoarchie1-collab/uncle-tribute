@@ -4,8 +4,10 @@ import { cn } from "../lib/cn";
 
 /**
  * DimensionChip — instant size reassurance under the price/size strip. A tiny
- * to-proportion rectangle + the print's real cm (and derived inches), plus a
- * note that the tier is a standard A-size frame. All derived from the tier's
+ * to-proportion rectangle + the artwork's real cm (and derived inches). The
+ * figure is the IMAGE size (Hugo 2026-07-24: the old "A2 — fits a standard A2
+ * frame" note was wrong — the works are square, A-sizes are rectangular, and it
+ * implied the print size WAS the framed size). All derived from the tier's
  * catalogued `size` — no new data. Static, updates with the selected tier.
  */
 export const DimensionChip = ({ tier }: { tier: PrintTier }) => {
@@ -13,8 +15,6 @@ export const DimensionChip = ({ tier }: { tier: PrintTier }) => {
   if (!dims) return null;
   const inW = (dims.w / 2.54).toFixed(1);
   const inH = (dims.h / 2.54).toFixed(1);
-  const aLabel = tier.size.split(" ")[0]; // "A2", "A1", …
-  const isAStd = /^A\d$/.test(aLabel);
 
   // Proportional preview rectangle, capped at 52px on the long edge.
   const cap = 52;
@@ -38,11 +38,9 @@ export const DimensionChip = ({ tier }: { tier: PrintTier }) => {
           {dims.w} cm × {dims.h} cm
           <span className="text-ink-muted"> · {inW} × {inH} in</span>
         </span>
-        {isAStd && (
-          <span className={cn(EYEBROW_TIGHT, "mt-1")}>
-            {aLabel} — fits a standard {aLabel} frame
-          </span>
-        )}
+        <span className={cn(EYEBROW_TIGHT, "mt-1 text-ink-muted")}>
+          Image size — framed pieces measure larger
+        </span>
       </span>
     </div>
   );

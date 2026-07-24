@@ -311,11 +311,11 @@ const TIER_LABEL: Record<string, string> = {
   studio: "Original — One of One",
 };
 const TIER_SIZE: Record<string, string> = {
-  atelier: "A3 (29.5 × 29.5 cm)",
-  collector: "A2 (42 × 42 cm)",
-  "atelier-grande": "A1 (59.5 × 59.5 cm)",
-  heirloom: "A0 (84 × 84 cm)",
-  studio: "A1 (59.5 × 59.5 cm)",
+  atelier: "29.5 × 29.5 cm",
+  collector: "42 × 42 cm",
+  "atelier-grande": "59.5 × 59.5 cm",
+  heirloom: "84 × 84 cm",
+  studio: "59.5 × 59.5 cm",
 };
 // Per-painting LANDSCAPE size overrides (mirror of OPHIUCHUS_TIER_SIZE in
 // src/data/paintings.ts + api/checkout.ts + api/email-basket.ts — gotcha #9).
@@ -324,11 +324,11 @@ const TIER_SIZE: Record<string, string> = {
 // show the real dimensions rather than a square default. Same ids / prices.
 const PAINTING_TIER_SIZE: Record<string, Record<string, string>> = {
   ophiuchus: {
-    atelier: "A3 (36.4 × 29.5 cm)",
-    collector: "A2 (51.8 × 42 cm)",
-    "atelier-grande": "A1 (73.4 × 59.5 cm)",
-    heirloom: "A0 (103.6 × 84 cm)",
-    studio: "A1 (73.4 × 59.5 cm)",
+    atelier: "36.4 × 29.5 cm",
+    collector: "51.8 × 42 cm",
+    "atelier-grande": "73.4 × 59.5 cm",
+    heirloom: "103.6 × 84 cm",
+    studio: "73.4 × 59.5 cm",
   },
 };
 /** The printed size for a line — a per-painting override (Ophiuchus landscape)

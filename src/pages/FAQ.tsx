@@ -120,11 +120,10 @@ const FAQS: QA[] = [
     answer: (
       <>
         Four tiers, each estate-stamped and issued within the estate's release
-        cycle, every price including free UK delivery. <strong>Open Edition
-        A3</strong> at £275 (issued within each edition, no fixed allocation).{" "}
-        <strong>Collector Edition A2</strong> at £495 (edition of 200).{" "}
-        <strong>Atelier Edition A1</strong> at £925 (edition of 75).{" "}
-        <strong>Heirloom Edition A0</strong> at £1,895 (edition of 18).
+        cycle, every price including free UK delivery. <strong>Open Edition</strong> at £275 (issued within each edition, no fixed allocation).{" "}
+        <strong>Collector Edition</strong> at £495 (edition of 200).{" "}
+        <strong>Atelier Edition</strong> at £925 (edition of 75).{" "}
+        <strong>Heirloom Edition</strong> at £1,895 (edition of 18).
       </>
     ),
   },
@@ -133,12 +132,12 @@ const FAQS: QA[] = [
     question: "Can I have my print framed?",
     answer: (
       <>
-        Yes — framing is offered on the A2 and A1 tiers. Choose your{" "}
+        Yes — framing is offered on the Collector and Atelier tiers. Choose your{" "}
         <strong>finish</strong> — a solid-wood or contemporary tray frame
         (natural oak, stained black, white or walnut tray), with UV-filtering,
         shatter-safe acrylic glazing as standard or an anti-reflective glass
-        upgrade, every finish included in the framing price. Add £345 on A2 and £445
-        on A1. Delivery is free, framed or unframed — there is no
+        upgrade, every finish included in the framing price. Add £345 on the Collector tier and £445
+        on Atelier. Delivery is free, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
       </>
@@ -152,8 +151,8 @@ const FAQS: QA[] = [
         Polly (Stephen's sister) hand-paints additional geometric
         detail onto selected prints in Stephen's own tradition. Each
         hand-finished piece is therefore unique. The add-on is available on
-        the A2 and A1 tiers only, by request, and adds £350 (A2) or £495
-        (A1). Allow two weeks maximum from order to dispatch.
+        the Collector and Atelier tiers only, by request, and adds £350 (Collector) or £495
+        (Atelier). Allow two weeks maximum from order to dispatch.
       </>
     ),
   },

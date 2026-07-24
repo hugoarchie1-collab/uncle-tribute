@@ -86,7 +86,7 @@ const TIERS: Record<TierId, TierDef> = {
   atelier: {
     id: "atelier",
     label: "Open Edition",
-    size: "A3 (29.5 × 29.5 cm)",
+    size: "29.5 × 29.5 cm",
     pricePence: 27500,
     editionLabel: "Open Edition — unnumbered, issued to order",
     // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
@@ -98,7 +98,7 @@ const TIERS: Record<TierId, TierDef> = {
   collector: {
     id: "collector",
     label: "Collector Edition",
-    size: "A2 (42 × 42 cm)",
+    size: "42 × 42 cm",
     pricePence: 49500,
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     framingPricePence: 34500,
@@ -109,7 +109,7 @@ const TIERS: Record<TierId, TierDef> = {
   "atelier-grande": {
     id: "atelier-grande",
     label: "Atelier Edition",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     pricePence: 92500,
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     framingPricePence: 44500,
@@ -120,7 +120,7 @@ const TIERS: Record<TierId, TierDef> = {
   heirloom: {
     id: "heirloom",
     label: "Heirloom Edition",
-    size: "A0 (84 × 84 cm)",
+    size: "84 × 84 cm",
     pricePence: 189500,
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
@@ -137,7 +137,7 @@ const TIERS: Record<TierId, TierDef> = {
     // "studio" tierId produces a single £2,650 line item with no add-ons.
     id: "studio",
     label: "Original — One of One",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     pricePence: 265000,
     editionLabel: "Unique — one of one",
     isOneOff: true,
@@ -153,11 +153,11 @@ const TIERS: Record<TierId, TierDef> = {
 // the buyer sees and Point 101 is asked to print match the product page.
 const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
   ophiuchus: {
-    atelier: "A3 (36.4 × 29.5 cm)",
-    collector: "A2 (51.8 × 42 cm)",
-    "atelier-grande": "A1 (73.4 × 59.5 cm)",
-    heirloom: "A0 (103.6 × 84 cm)",
-    studio: "A1 (73.4 × 59.5 cm)",
+    atelier: "36.4 × 29.5 cm",
+    collector: "51.8 × 42 cm",
+    "atelier-grande": "73.4 × 59.5 cm",
+    heirloom: "103.6 × 84 cm",
+    studio: "73.4 × 59.5 cm",
   },
 };
 

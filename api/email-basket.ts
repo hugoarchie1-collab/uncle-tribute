@@ -75,7 +75,7 @@ interface EmailTier {
 const TIERS: Record<TierId, EmailTier> = {
   atelier: {
     label: "Open Edition",
-    size: "A3 (29.5 × 29.5 cm)",
+    size: "29.5 × 29.5 cm",
     editionLabel: "Open Edition — unnumbered, issued to order",
     pricePence: 27500,
     framingPricePence: 24500, // £245 (A3) — ⚠️ PLACEHOLDER, mirror of paintings.ts (gotcha #9)
@@ -84,7 +84,7 @@ const TIERS: Record<TierId, EmailTier> = {
   },
   collector: {
     label: "Collector Edition",
-    size: "A2 (42 × 42 cm)",
+    size: "42 × 42 cm",
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     pricePence: 49500,
     framingPricePence: 34500,
@@ -94,7 +94,7 @@ const TIERS: Record<TierId, EmailTier> = {
   },
   "atelier-grande": {
     label: "Atelier Edition",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     pricePence: 92500,
     framingPricePence: 44500,
@@ -104,7 +104,7 @@ const TIERS: Record<TierId, EmailTier> = {
   },
   heirloom: {
     label: "Heirloom Edition",
-    size: "A0 (84 × 84 cm)",
+    size: "84 × 84 cm",
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     pricePence: 189500,
     embellishmentPricePence: 79500,
@@ -117,7 +117,7 @@ const TIERS: Record<TierId, EmailTier> = {
   studio: {
     // £2,650 unique hand-painted one-off by Polly Wedge — no add-ons.
     label: "Original — One of One",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     editionLabel: "Unique — one of one",
     pricePence: 265000,
     isOneOff: true,
@@ -130,11 +130,11 @@ const TIERS: Record<TierId, EmailTier> = {
 // real landscape dimensions, not a square default. Same ids / prices / editions.
 const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
   ophiuchus: {
-    atelier: "A3 (36.4 × 29.5 cm)",
-    collector: "A2 (51.8 × 42 cm)",
-    "atelier-grande": "A1 (73.4 × 59.5 cm)",
-    heirloom: "A0 (103.6 × 84 cm)",
-    studio: "A1 (73.4 × 59.5 cm)",
+    atelier: "36.4 × 29.5 cm",
+    collector: "51.8 × 42 cm",
+    "atelier-grande": "73.4 × 59.5 cm",
+    heirloom: "103.6 × 84 cm",
+    studio: "73.4 × 59.5 cm",
   },
 };
 const sizeFor = (paintingId: string, tierId: TierId): string =>

@@ -12,13 +12,19 @@ import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
   PRINT_TIERS,
+  parseSizeCm,
   type PrintTier,
 } from "../data/paintings";
 
 // The editioned print sizes (A3–A0), newest→largest — the same ladder the
 // Collections size selector uses. Drives the browse-price "show me this size".
 const BROWSE_TIERS: PrintTier[] = PRINT_TIERS.filter((t) => t.available && !t.isOneOff);
-const sizeCode = (t: PrintTier): string => t.size.split(" ")[0]; // "A2 (42 × 42 cm)" → "A2"
+// Compact size chip = the square edge in cm (Hugo 2026-07-24: A-labels scrapped
+// — the works are square, not rectangular A-sheets). e.g. "42 cm".
+const sizeCode = (t: PrintTier): string => {
+  const d = parseSizeCm(t.size);
+  return d ? `${d.w} cm` : t.size;
+};
 import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 

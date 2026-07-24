@@ -727,7 +727,7 @@ function FinishesPage() {
           <div style={{ borderTop: "2px solid rgb(var(--accent))", paddingTop: "5mm" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
               <h3 className="font-display text-ink" style={{ fontSize: 30, margin: 0 }}>Bespoke framing</h3>
-              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(frA2)} A2 · +{gbp(frA1)} A1</span>
+              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(frA2)} Collector · +{gbp(frA1)} Atelier</span>
             </div>
             <p className="font-sans text-ink-muted" style={{ fontSize: 14.5, lineHeight: 1.5, margin: "8px 0 0" }}>
               Bespoke solid-wood framing. Every finish is included in the one price — choose a moulding and a glazing:
@@ -753,7 +753,7 @@ function FinishesPage() {
           <div style={{ borderTop: "2px solid rgb(var(--accent))", paddingTop: "5mm" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
               <h3 className="font-display text-ink" style={{ fontSize: 30, margin: 0 }}>Hand-finishing</h3>
-              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(emA2)} A2 · +{gbp(emA1)} A1 · +{gbp(emA0)} A0</span>
+              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(emA2)} Collector · +{gbp(emA1)} Atelier · +{gbp(emA0)} Heirloom</span>
             </div>
             <p className="font-sans text-ink" style={{ fontSize: 15, lineHeight: 1.55, margin: "10px 0 0", opacity: 0.92 }}>
               {EMBELLISHMENT_NOTE}
@@ -764,7 +764,7 @@ function FinishesPage() {
           </div>
         </div>
         <p className="font-sans text-ink-muted" style={{ fontSize: 13.5, letterSpacing: "0.02em", margin: 0 }}>
-          Framing is offered on A2 &amp; A1 · hand-finishing on A2, A1 &amp; A0 · both made to order, allow up to two weeks · free delivery.
+          Framing is offered on the Collector &amp; Atelier tiers · hand-finishing on Collector, Atelier &amp; Heirloom · both made to order, allow up to two weeks · free delivery.
         </p>
       </div>
     </section>
@@ -783,12 +783,11 @@ function EditionsPage() {
     [ESTATE_AUTHENTICATION.printerLabel, ESTATE_AUTHENTICATION.printer],
   ];
 
-  // Short size token — "A3", "A2"… + the bracketed dimensions.
-  const sheet = (size: string) => size.split(" ")[0];
-  const dims = (size: string) => {
-    const m = size.match(/\(([^)]+)\)/);
-    return m ? m[1] : "";
-  };
+  // Compact size tag ("42 cm", the square edge) + the full dimensions
+  // (Hugo 2026-07-24: A-labels scrapped — the works are square, not rectangular
+  // A-sheets, so "A2" made no sense).
+  const sheet = (size: string) => `${size.split(" ")[0]} cm`;
+  const dims = (size: string) => size;
 
   return (
     <section className="cat-page">
@@ -807,7 +806,7 @@ function EditionsPage() {
           </h2>
           <p className="ed-lead font-sans text-ink">
             Each mandala is issued in four archival giclée editions — from an
-            open A3 to the A0 Heirloom — every one estate-stamped, numbered and
+            open edition to the Heirloom — every one estate-stamped, numbered and
             certified. Free delivery, from {gbp(lowest)}.
           </p>
         </header>

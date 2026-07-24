@@ -36,7 +36,7 @@ export interface Colourway {
 export interface PrintTier {
   id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
   label: string;                // "Open Edition", "Collector Edition", "Atelier Edition", "Heirloom Edition", "Original — One of One"
-  size: string;                 // "A3 (29.5 × 29.5 cm)"
+  size: string;                 // "29.5 × 29.5 cm"
   pricePence: number;           // integer pence
   editionTotal: number | null;  // per-edition allocation cap; null = Open Edition (no cap, not numbered)
   editionLabel: string;         // neutral edition language, e.g. "Collector Edition — edition of 200, hand-numbered"
@@ -206,7 +206,7 @@ export const PRINT_TIERS: PrintTier[] = [
   {
     id: "atelier",
     label: "Open Edition",
-    size: "A3 (29.5 × 29.5 cm)",
+    size: "29.5 × 29.5 cm",
     pricePence: 27500, // £275 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: null, // Open Edition — no allocation cap, not numbered
     editionLabel: "Open Edition — unnumbered, issued to order",
@@ -225,7 +225,7 @@ export const PRINT_TIERS: PrintTier[] = [
   {
     id: "collector",
     label: "Collector Edition",
-    size: "A2 (42 × 42 cm)",
+    size: "42 × 42 cm",
     pricePence: 49500, // £495 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 200, // per-edition allocation
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
@@ -241,7 +241,7 @@ export const PRINT_TIERS: PrintTier[] = [
   {
     id: "atelier-grande",
     label: "Atelier Edition",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     pricePence: 92500, // £925 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 75, // per-edition allocation
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
@@ -256,7 +256,7 @@ export const PRINT_TIERS: PrintTier[] = [
   {
     id: "heirloom",
     label: "Heirloom Edition",
-    size: "A0 (84 × 84 cm)",
+    size: "84 × 84 cm",
     pricePence: 189500, // £1,895 (marked up 2026-07-13 to fund free UK delivery + margin)
     editionTotal: 18, // per-edition allocation
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
@@ -281,7 +281,7 @@ export const PRINT_TIERS: PrintTier[] = [
     // until the estate chooses to sell unique originals.
     id: "studio",
     label: "Original — One of One",
-    size: "A1 (59.5 × 59.5 cm)",
+    size: "59.5 × 59.5 cm",
     pricePence: 265000, // £2,650 (marked up 2026-07-13, hidden tier — kept above A0)
     editionTotal: 1,
     editionLabel: "Unique — one of one",
@@ -313,11 +313,11 @@ export const PRINT_TIERS: PrintTier[] = [
  * 101 is asked to print match this product page. Change all four together.
  */
 const OPHIUCHUS_TIER_SIZE: Record<PrintTier["id"], string> = {
-  atelier: "A3 (36.4 × 29.5 cm)",
-  collector: "A2 (51.8 × 42 cm)",
-  "atelier-grande": "A1 (73.4 × 59.5 cm)",
-  heirloom: "A0 (103.6 × 84 cm)",
-  studio: "A1 (73.4 × 59.5 cm)",
+  atelier: "36.4 × 29.5 cm",
+  collector: "51.8 × 42 cm",
+  "atelier-grande": "73.4 × 59.5 cm",
+  heirloom: "103.6 × 84 cm",
+  studio: "73.4 × 59.5 cm",
 };
 
 export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
@@ -342,7 +342,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  */
 export const DEFAULT_PRINT = {
   pricePence: 49500, // £495 — anchor tier (A2 Collector Edition)
-  size: "Giclée print, A2 (42 × 42 cm), Collector Edition, estate-stamped",
+  size: "Giclée print, 42 × 42 cm, Collector Edition, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
 
@@ -728,12 +728,12 @@ export const formatGBP = (pence: number): string =>
 
 /**
  * Parse the cm dimensions out of a tier `size` string, e.g.
- * "A2 (42 × 42 cm)" → { w: 42, h: 42 }. Returns null if absent.
+ * "42 × 42 cm" → { w: 42, h: 42 }. Returns null if absent.
  * Lets the scale viewer + dimension chip draw the print honestly from its
  * catalogued size with zero new data entry.
  */
 export const parseSizeCm = (size: string): { w: number; h: number } | null => {
-  const m = size.match(/\(([\d.]+)\s*[×x]\s*([\d.]+)\s*cm\)/);
+  const m = size.match(/([\d.]+)\s*[×x]\s*([\d.]+)\s*cm/);
   if (!m) return null;
   return { w: Number.parseFloat(m[1]), h: Number.parseFloat(m[2]) };
 };

@@ -52,7 +52,6 @@ import {
   getTierAdvertisedPricePence,
   paintingImageAlt,
   ORIGINAL_PRINT_SPEC,
-  ORIGINAL_PROVENANCE,
   COLOURWAY_NOTE,
   formatGBP,
   getColourwaySetBundle,
@@ -102,7 +101,7 @@ const cmToIn = (cm: number) => Math.round((cm / 2.54) * 10) / 10;
 const sizeWithInches = (size: string): string => {
   const d = parseSizeCm(size);
   if (!d) return size;
-  return size.replace(/\)\s*$/, ` · ${cmToIn(d.w)} × ${cmToIn(d.h)} in)`);
+  return `${size} · ${cmToIn(d.w)} × ${cmToIn(d.h)} in`;
 };
 
 // Rolling ~12-month price-validity horizon for the Product Offer JSON-LD
@@ -435,109 +434,6 @@ const OneOffCard = ({
  * render a static swatch so the section keeps its shape.
  */
 /**
- * RegisterOriginalInterest — the hushed waitlist for the privately-held
- * original (Avant Arte's register mechanic, without the hype). The original
- * canvas is "held privately by the estate — not currently for sale"
- * (ORIGINAL_PROVENANCE); this is the one quiet line that lets a serious
- * collector raise a hand. Expands inline (no modal) to a single email field
- * and posts to the EXISTING /api/newsletter-subscribe endpoint
- * ({ email, source }) tagged "original-interest:<paintingId>", so the
- * interest list lives with the Friends & Family list and surfaces in the
- * estate's inbox/CRM with the painting attached. Mirrors NewsletterSignup's
- * friendly-success contract: only a network failure shows an error — an
- * infra non-200 still reads as success to the collector (the operator sees
- * the truth in the Vercel function logs).
- */
-const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
-  const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
-    "idle",
-  );
-
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const trimmed = email.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setStatus("error");
-      return;
-    }
-    setStatus("sending");
-    try {
-      await fetch("/api/newsletter-subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: trimmed,
-          source: `original-interest:${paintingId}`,
-        }),
-      });
-      setStatus("done");
-    } catch {
-      setStatus("error");
-    }
-  };
-
-  if (status === "done") {
-    return (
-      <p className={cn(META, "m-0 mb-5")} role="status" aria-live="polite">
-        Noted, with thanks — we&rsquo;ll write to you first.
-      </p>
-    );
-  }
-
-  return (
-    <div className="mb-5">
-      {!open ? (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className={cn(
-            META,
-            // Tap target: the bare text line measured 22px tall — py-3 grows
-            // the hit area to ≥44px (WCAG 2.5.8 comfort size) while -my-3
-            // cancels it visually, so the hairline-link look is unchanged.
-            "inline-flex items-center bg-transparent border-0 px-0 py-3 -my-3 min-h-[44px] cursor-pointer underline underline-offset-4 hover:text-ink transition-colors",
-          )}
-        >
-          Register interest in the original →
-        </button>
-      ) : (
-        <form onSubmit={submit} noValidate className="max-w-[420px]">
-          <label htmlFor={`original-interest-${paintingId}`} className="sr-only">
-            Email address
-          </label>
-          <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-ink/40 transition-shadow">
-            <input
-              id={`original-interest-${paintingId}`}
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-faint focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={status === "sending"}
-              className="shrink-0 bg-transparent border-0 border-l border-line px-4 font-sans text-[13px] font-bold tracking-[0.04em] text-ink cursor-pointer hover:bg-ink/5 transition-colors disabled:opacity-50"
-            >
-              {status === "sending" ? "Sending…" : "Send"}
-            </button>
-          </div>
-          <p className={cn(META, "m-0 mt-2")} aria-live="polite">
-            {status === "error"
-              ? "That didn't take — check the address, or write to info@themandalacompany.com."
-              : "Should the estate ever part with the original, you'll hear first."}
-          </p>
-        </form>
-      )}
-    </div>
-  );
-};
-
-/**
  * CustomSizeRequest — the BESPOKE option above the standard A3–A0 editions
  * (Hugo: "add custom size order request as the highest pricing option that auto
  * pings to my email"). Not a purchasable tier — there is no fixed price — so it
@@ -546,8 +442,8 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
  * /api/newsletter-subscribe with kind:"custom-size" — the handler is FOLDED INTO
  * that function (NOT its own file) to stay within Vercel's Hobby 12-Serverless-
  * Function cap; it emails the estate inbox so the request pings Hugo directly and
- * he can reply with a quotation. Friendly-success contract mirrors
- * RegisterOriginalInterest: only a network failure shows an error.
+ * he can reply with a quotation. Friendly-success contract: only a network
+ * failure shows an error.
  */
 const CustomSizeRequest = ({
   paintingId,
@@ -871,11 +767,10 @@ const Colourways = ({
  * confirm each painting's true sheet orientation against the printed file.
  * ========================================================================== */
 
-/** Lowercased A-size slug from a tier's size string ("A2 (…)" → "a2"). */
-const trueSizeSlug = (tier: PrintTier): string | null => {
-  const token = tier.size.split(" ")[0]; // "A2", "A1", …
-  return /^A\d$/.test(token) ? token.toLowerCase() : null;
-};
+/** Internal size slug for the true-size room photos, keyed off the tier id
+ *  (atelier→a3 … heirloom→a0). Independent of any user-facing size label. */
+const trueSizeSlug = (tier: PrintTier): string | null =>
+  artworkSizeForTierId(tier.id)?.id ?? null;
 
 const TrueSizeViewer = ({
   painting,
@@ -916,7 +811,7 @@ const TrueSizeViewer = ({
       >
         {scaleTiers.map((t, i) => {
           const isActive = t.id === activeTier.id;
-          const token = t.size.split(" ")[0];
+          const token = t.size;
           return (
             <button
               key={t.id}
@@ -1418,13 +1313,7 @@ const BuyBox = ({
             <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>{painting.pigmentNote}</dd>
           </>
         )}
-        <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Original</dt>
-        <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>{ORIGINAL_PROVENANCE}</dd>
       </dl>
-
-      {/* Hushed register for the privately-held original — sits directly
-          under the provenance fact it relates to. */}
-      <RegisterOriginalInterest paintingId={painting.id} />
 
       <Separator className="bg-line mb-5" />
 
@@ -1439,7 +1328,7 @@ const BuyBox = ({
             tabular-lining numerals so stacked prices align. Monochrome (#7):
             size/weight carries the hierarchy, never colour. */}
         <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
-          {selectedTier.label} · {selectedTier.size.split(" ")[0]}
+          {selectedTier.label} · {selectedTier.size}
         </p>
         {/* The price figure stands ALONE on its baseline — size is already
             stated by the eyebrow above and the DimensionChip below, so the old
@@ -1460,9 +1349,9 @@ const BuyBox = ({
             api/checkout.ts charges in every region (mirror invariant #9). */}
         <p className={cn(META, "m-0 mb-4")}>
           {canvasActive
-            ? "Canvas · ready to hang · free delivery"
+            ? "Ready to hang · free delivery"
             : framingActive
-              ? "Framed · ready to hang · free delivery"
+              ? "Ready to hang · free delivery"
               : "Free delivery"}
         </p>
 
@@ -1525,7 +1414,7 @@ const BuyBox = ({
             <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
               Every one of Stephen's {colourwaySet.colourwayNames.length} colourways
               for this work — {colourwaySetNames} — each an estate-stamped{" "}
-              {selectedTier.label} {selectedTier.size.split(" ")[0]} print, the
+              {selectedTier.label} print, the
               colours exactly as he left them.
             </p>
             <p className={cn(META, "text-ink m-0 mb-1.5")}>
@@ -1889,7 +1778,7 @@ const BuyBox = ({
               <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-3">
                 <span className="flex flex-col gap-0.5">
                   <span className={cn(EYEBROW_TIGHT)}>
-                    Your piece · {selectedTier.size.split(" ")[0]}
+                    Your piece · {selectedTier.size}
                   </span>
                   <span className={cn(META)}>
                     Made to order · allow {leadWeeks} weeks
