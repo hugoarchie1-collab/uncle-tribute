@@ -89,6 +89,10 @@ const TIERS: Record<TierId, TierDef> = {
     size: "A3 (29.5 × 29.5 cm)",
     pricePence: 27500,
     editionLabel: "Open Edition — unnumbered, issued to order",
+    // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
+    // ⚠️ PLACEHOLDER: framing £245, canvas £115.
+    framingPricePence: 24500,
+    canvasPricePence: 11500,
     available: true,
   },
   collector: {

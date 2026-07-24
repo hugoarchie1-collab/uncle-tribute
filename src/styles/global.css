@@ -602,11 +602,17 @@ video[autoplay]::-webkit-media-controls {
   );
 }
 .pd-halo {
-  position: absolute;
-  top: -6%;
+  /* FIXED so the picture-light glow stays in view through the WHOLE page (Hugo
+     2026-07-24: "I need it throughout and dynamic with scroll" — it used to be
+     absolute + recede/exit at the top). The glow now lives in the viewport and
+     is drifted + gently breathed by framer as the reader scrolls (see
+     PaintingDetail haloY / haloOpacity), so the page stays lit top to bottom. */
+  position: fixed;
+  top: -22%;
   left: -18%;
   width: 92%;
-  height: 120vh;
+  height: 132vh;
+  will-change: transform, opacity;
   background: radial-gradient(
     60% 46% at 50% 40%,
     color-mix(in srgb, var(--pd-halo) 64%, transparent),

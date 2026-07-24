@@ -347,11 +347,12 @@ const TIER_EDITION: Record<string, string> = {
 // Per-tier ADD-ON price lookups (mirror of framingPricePence /
 // embellishmentPricePence in src/data/paintings.ts PRINT_TIERS +
 // api/checkout.ts TIERS + api/email-basket.ts TIERS — gotcha #9; keep all
-// four in sync). Only A2 (collector) + A1 (atelier-grande) carry add-ons;
-// A3 / A0 / studio one-off have none. Used to itemise the framing /
+// four in sync). A3 (atelier) + A2 (collector) + A1 (atelier-grande) carry
+// framing; A0 / studio one-off have none. Used to itemise the framing /
 // hand-finishing charge as its own email sub-line so the per-line
 // breakdown sums to the grand Total (session.amount_total).
 const TIER_FRAMING_PENCE: Record<string, number> = {
+  atelier: 24500, // £245 (A3) — ⚠️ PLACEHOLDER, mirror of paintings.ts (gotcha #9)
   collector: 34500, // £345 (A2) — mirror of paintings.ts (gotcha #9; was stale £295)
   "atelier-grande": 44500, // £445 (A1) — mirror of paintings.ts (was stale £395)
 };

@@ -33,7 +33,6 @@ import {
   FRAME_STYLES,
   FRAME_STYLE_GROUPS,
   FRAME_TIERS,
-  GLAZING_OPTIONS,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
   getAnchorTier,
@@ -272,6 +271,14 @@ const SizePicker = ({
   <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-0 border-b border-line">
     {tiers.map((tier, i) => {
       const isSelected = tier.id === selectedTier.id;
+      // Every buyable size is a FRAMED product (Hugo 2026-07-24), so the size
+      // rung advertises the FRAMED price — the real, buyable figure that matches
+      // the headline. No bare-print number that the buyer "then has to pay more"
+      // than. Falls back to canvas, then bare, for any finish-less size.
+      const rungPricePence =
+        tier.pricePence +
+        (tier.framingPricePence ?? tier.canvasPricePence ?? 0);
+      const rungIsFramed = tier.framingPricePence != null;
       return (
         <button
           key={tier.id}
@@ -302,14 +309,21 @@ const SizePicker = ({
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
-          <span
-            className={cn(
-              "font-display font-semibold tracking-[-0.01em] text-ink justify-self-end",
-              isSelected ? "text-[22px]" : "text-[19px]",
+          <span className="flex flex-col items-end justify-self-end leading-none">
+            <span
+              className={cn(
+                "font-display font-semibold tracking-[-0.01em] text-ink",
+                isSelected ? "text-[22px]" : "text-[19px]",
+              )}
+              style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+            >
+              {fmtP(rungPricePence)}
+            </span>
+            {rungIsFramed && (
+              <span className={cn(EYEBROW_TIGHT, "mt-1 text-[11px] text-ink-muted")}>
+                framed
+              </span>
             )}
-            style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
-          >
-            {fmtP(tier.pricePence)}
           </span>
           {/* Selected summary — the card's own editionLabel line already sits
               two lines above, so it is NOT repeated here (mobile made the
@@ -612,12 +626,13 @@ const CustomSizeRequest = ({
               </span>
             </span>
             <span className={cn(SPEC_VALUE, "block font-semibold leading-[1.3] mb-1")}>
-              Custom size
+              A0 &amp; larger — framed to order
             </span>
             <span className={cn(META, "block mb-3")}>
-              Larger than A0, or a bespoke format for a particular wall. Tell the
-              estate the size you have in mind and we&rsquo;ll write back with a
-              quotation.
+              Want it at A0 (our largest, 84&nbsp;×&nbsp;84&nbsp;cm) or a bespoke
+              format for a particular wall? The largest pieces are framed to
+              order — tell the estate the size you have in mind and we&rsquo;ll
+              write back with a quotation.
             </span>
             <span
               className={cn(
@@ -1091,7 +1106,6 @@ const BuyBox = ({
   onEmbellishedChange,
   onCanvasChange,
   onFrameStyleChange,
-  onGlazingChange,
   orderSentinelRef,
   orderEndSentinelRef,
 }: {
@@ -1113,7 +1127,6 @@ const BuyBox = ({
   onEmbellishedChange: (next: boolean) => void;
   onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
-  onGlazingChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
    * control so the floating bar stays suppressed for the WHOLE time any buy
@@ -1175,25 +1188,39 @@ const BuyBox = ({
   // server-side in api/checkout.ts (gotcha #9).
   const frameSurchargePence = getFrameSurchargePence(frameStyle);
   const frameTier = getFrameTier(frameStyle);
-  // The base framing price shown on the "Framed" material button is the CLASSIC
-  // (from) price; the surcharge only shows in the running total once a premium
-  // frame is picked, presented as one clean framed total (never a "+£50" line).
-  const framingPriceLabel =
-    framingPricePence !== null
-      ? fmtP(framingPricePence)
-      : null;
-  // The framed subtotal for the CHOSEN frame (base + surcharge) — the single
-  // clean number the buyer commits to.
+  // The FULL framed price for the CHOSEN frame — print + frame + any premium
+  // surcharge — the single clean number the buyer commits to (Hugo: no bare
+  // "+£345" framing-only figures anywhere).
   const framedTotalLabel =
     framingPricePence !== null
-      ? fmtP(framingPricePence + frameSurchargePence)
+      ? fmtP(selectedTier.pricePence + framingPricePence + frameSurchargePence)
       : null;
   const embellishPriceLabel =
     embellishPricePence !== null
       ? fmtP(embellishPricePence)
       : null;
-  const canvasPriceLabel =
-    canvasPricePence !== null ? fmtP(canvasPricePence) : null;
+
+  // BAKED FINISH PRICES (Hugo 2026-07-24) — every piece is a Framed OR Canvas
+  // product, never a bare sheet, so the buyer sees ONE confident price per
+  // finish (no scary "+£345" surcharge). Framed "from" = print + the CLASSIC
+  // frame (the chosen frame's premium surcharge, if any, is added in the
+  // headline below); Canvas = print + canvas.
+  const framedFromTotalPence =
+    framingPricePence !== null ? selectedTier.pricePence + framingPricePence : null;
+  const canvasTotalPence =
+    canvasPricePence !== null ? selectedTier.pricePence + canvasPricePence : null;
+  const framedFromTotalLabel =
+    framedFromTotalPence !== null ? fmtP(framedFromTotalPence) : null;
+  const canvasTotalLabel =
+    canvasTotalPence !== null ? fmtP(canvasTotalPence) : null;
+  // The single headline price = the price of the ACTIVE finish (framed incl. the
+  // chosen frame's surcharge, or canvas). Falls back to the bare print only for
+  // the one-off original / any size with no finish.
+  const finishTotalPence = canvasActive
+    ? selectedTier.pricePence + (canvasPricePence ?? 0)
+    : framingActive
+      ? selectedTier.pricePence + (framingPricePence ?? 0) + frameSurchargePence
+      : selectedTier.pricePence;
 
   // Running line total = print + (frame if active) + (hand-finish if active).
   // Updates live as the buyer ticks add-ons (DMCC: the running total must
@@ -1204,7 +1231,6 @@ const BuyBox = ({
     (framingActive ? (framingPricePence ?? 0) + frameSurchargePence : 0) +
     (embellishActive ? embellishPricePence ?? 0 : 0) +
     (canvasActive ? canvasPricePence ?? 0 : 0);
-  const hasAddOnSelected = framingActive || embellishActive || canvasActive;
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
   // hand-finishing 2 wks. Nothing selected → the standard print lead time.
@@ -1416,14 +1442,21 @@ const BuyBox = ({
             className="font-display font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
-            {fmtP(selectedTier.pricePence)}
+            {fmtP(finishTotalPence)}
           </p>
         </div>
 
-        {/* Free delivery — quiet sentence-case reassurance beside the price (was
-            a third stacked all-caps eyebrow). Mirrors the £0 rate api/checkout.ts
-            charges in every region; framed or unframed (mirror invariant #9). */}
-        <p className={cn(META, "m-0 mb-4")}>Free delivery.</p>
+        {/* Finish + free delivery — states what the ONE headline price includes
+            (framing/canvas is baked in, never a surcharge) so the figure above is
+            always a real, buyable price. Mirrors the £0 delivery rate
+            api/checkout.ts charges in every region (mirror invariant #9). */}
+        <p className={cn(META, "m-0 mb-4")}>
+          {canvasActive
+            ? "Canvas · ready to hang · free delivery"
+            : framingActive
+              ? "Framed · ready to hang · free delivery"
+              : "Free delivery"}
+        </p>
 
         {/* Dimension chip — instant size reassurance, updates with the tier. */}
         <div className="mb-5">
@@ -1595,9 +1628,9 @@ const BuyBox = ({
                       <strong className="font-sans text-[14px] text-ink">
                         Framed museum print
                       </strong>
-                      {framingPriceLabel && (
+                      {framedFromTotalLabel && (
                         <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
-                          +{framingPriceLabel}
+                          {framedFromTotalLabel}
                         </span>
                       )}
                     </span>
@@ -1621,9 +1654,9 @@ const BuyBox = ({
                       <strong className="font-sans text-[14px] text-ink">
                         Canvas print
                       </strong>
-                      {canvasPriceLabel && (
+                      {canvasTotalLabel && (
                         <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
-                          +{canvasPriceLabel}
+                          {canvasTotalLabel}
                         </span>
                       )}
                     </span>
@@ -1706,44 +1739,31 @@ const BuyBox = ({
                       {framedTotalLabel ? `. Framed: ${framedTotalLabel}.` : "."}
                     </p>
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <span className={EYEBROW_TIGHT}>
-                      Glazing
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {GLAZING_OPTIONS.map((g) => (
-                        <button
-                          key={g.id}
-                          type="button"
-                          onClick={() => onGlazingChange(g.id)}
-                          aria-pressed={glazing === g.id}
-                          title={g.note}
-                          className={cn(
-                            "font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
-                            glazing === g.id
-                              ? "ring-ink text-ink"
-                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                          )}
-                        >
-                          {g.label}
-                        </button>
-                      ))}
-                    </div>
-                    {/* Visible detail of the CHOSEN glazing (was hover-only). */}
-                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
-                      {GLAZING_OPTIONS.find((g) => g.id === glazing)?.note}
-                    </p>
-                  </div>
+                  {/* Glazing is a single INCLUDED standard (anti-glare,
+                      anti-reflective museum glass) — the glass-vs-acrylic picker
+                      was removed 2026-07-24 (Hugo: it read as a confusing extra
+                      cost when it never added one). `glazing` stays at
+                      DEFAULT_GLAZING and still rides to checkout so the estate
+                      orders the right glass. */}
+                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                    Glazed with anti-reflective, near-invisible museum glass —
+                    included.
+                  </p>
                 </div>
               )}
 
-              {/* HAND-FINISHING by Polly Wedge — paper prints only (hidden on
-                  canvas, which follows a clean ready-to-hang path). */}
+              {/* HAND-FINISHING by Polly Wedge — a STOOD-OUT "island" upsell
+                  (Hugo 2026-07-24: box it so it reads as clickable + enticing).
+                  Paper prints only (hidden on canvas). Monochrome (#7): stands
+                  out via a tint + a stronger selected ring + an explicit add
+                  affordance, never accent colour. */}
               {embellishOffered && !canvasActive && (
                 <label
                   className={cn(
-                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
-                    embellishActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                    "group relative mt-1 flex items-start gap-3.5 ring-1 px-4 py-4 cursor-pointer transition-all duration-300 bg-ink/[0.04]",
+                    embellishActive
+                      ? "ring-2 ring-ink bg-ink/[0.07]"
+                      : "ring-line hover:ring-ink/55 hover:bg-ink/[0.06]",
                   )}
                 >
                   <input
@@ -1752,19 +1772,30 @@ const BuyBox = ({
                     onChange={(e) => onEmbellishedChange(e.target.checked)}
                     className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
                   />
-                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
+                  <span className="flex flex-col gap-1.5 font-sans min-w-0">
+                    <span className={cn(EYEBROW_TIGHT, "text-ink-muted")}>
+                      The hand-finished edition
+                    </span>
                     <span className="flex items-baseline justify-between gap-3">
-                      <strong className="text-ink">
+                      <strong className="text-ink text-[15px] leading-[1.3]">
                         Hand-finished by Polly (Stephen's sister)
                       </strong>
                       {embellishPriceLabel && (
-                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                        <span className="font-sans text-[15px] font-semibold text-ink whitespace-nowrap">
                           +{embellishPriceLabel}
                         </span>
                       )}
                     </span>
-                    <span className="text-ink-muted">{EMBELLISHMENT_NOTE}</span>
-                    <span>Allow {FINISH_LEAD_WEEKS} weeks.</span>
+                    <span className="text-ink-muted text-[13.5px] leading-[1.55]">
+                      {EMBELLISHMENT_NOTE}
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 mt-0.5 text-[13px] font-semibold text-ink underline underline-offset-4 decoration-ink/30 group-hover:decoration-ink transition-colors">
+                      {embellishActive ? "Added — one of a kind" : "Add hand-finishing"}
+                      <span aria-hidden="true">→</span>
+                    </span>
+                    <span className="text-ink-muted text-[12.5px]">
+                      Allow {FINISH_LEAD_WEEKS} weeks.
+                    </span>
                   </span>
                 </label>
               )}
@@ -1774,11 +1805,12 @@ const BuyBox = ({
                   add-on and confused the base-substrate story). */}
             </div>
 
-            {/* RUNNING TOTAL + LEAD TIME — updates live as finishes are ticked.
-                DMCC: the buyer sees the full configured price (and the longest
-                add-on lead time) before committing. Only shown once a finish is
-                selected, so the bare-print case stays clean. */}
-            {hasAddOnSelected && (
+            {/* RUNNING TOTAL — the framed/canvas price is already the headline
+                figure above, so this grand-total line only surfaces when
+                hand-finishing adds cost ON TOP of the chosen finish (the one
+                extra the headline doesn't carry). DMCC: the full configured
+                price + lead time stay visible before committing. */}
+            {embellishActive && (
               <div className="mt-4 flex items-baseline justify-between gap-3 border-t border-line pt-3">
                 <span className="flex flex-col gap-0.5">
                   <span className={cn(EYEBROW_TIGHT)}>
@@ -1880,8 +1912,9 @@ const BuyBox = ({
         {/* Made-to-order reassurance — surfaces the REAL 24-hour goodwill
             cancellation window (Legal.tsx "Your right to cancel") so the
             no-returns rule on custom sizes doesn't scare a first-time buyer.
-            mt-7 keeps clear air below the CTA pair (was mt-4 — read as cramped). */}
-        <p className={cn(META, "mt-7 m-0")}>
+            Generous top margin + a hairline rule keep clear air below the CTA
+            pair (Hugo: mt-7 still read as cramped against Add to basket). */}
+        <p className={cn(META, "mt-8 pt-6 border-t border-line/60 m-0")}>
           {framingActive || embellishActive ? (
             <>
               Changed your mind? A framed or hand-finished piece is made to
@@ -2424,8 +2457,14 @@ export const PaintingDetail = () => {
   // "every print is a Framed museum print OR a Canvas print — no unframed"): A3
   // has neither a frame nor a canvas price, so it can't be either product. The
   // range starts at A2 Collector.
+  // Buy grid = A3 · A2 · A1, all framed (Hugo 2026-07-24). A0 (heirloom) is
+  // pulled OUT of add-to-cart — it can't ship glazed-framed (84cm > Point 101's
+  // cap), so it breaks the "everything framed" rule; it's offered "framed to
+  // order, by enquiry" via the CustomSizeRequest card instead. A0 stays
+  // available:true in the data so browse "from" pricing / feeds / bundles keep
+  // working — it's just not a one-click size on the PDP.
   const visibleTiers = useMemo(
-    () => (painting ? getPrintTiers(painting).filter((t) => t.id !== "atelier") : []),
+    () => (painting ? getPrintTiers(painting).filter((t) => t.id !== "heirloom") : []),
     [painting],
   );
   // Split the ladder: standard size tiers feed the radio grid; a one-off tier
@@ -2498,15 +2537,16 @@ export const PaintingDetail = () => {
     if (!t) return;
     const framingAvail = getFramingPricePence(t) !== null;
     const canvasAvail = getCanvasPricePence(t) !== null;
-    // CANVAS is the default presentation (Hugo 2026-07-24) wherever the size
-    // offers it (A2/A1/A0); Framed is the fallback where canvas isn't offered.
-    if (canvasAvail) {
-      setCanvas(true);
-      setFraming(false);
-      setEmbellished(false);
-    } else if (framingAvail) {
+    // FRAMED is the default presentation (Hugo 2026-07-24): every buyable size
+    // is a framed piece first, canvas is the alternative. Canvas is only the
+    // fallback default where a size somehow can't be framed.
+    if (framingAvail) {
       setFraming(true);
       setCanvas(false);
+      setEmbellished(false);
+    } else if (canvasAvail) {
+      setCanvas(true);
+      setFraming(false);
       setEmbellished(false);
     } else {
       setFraming(false);
@@ -2522,14 +2562,14 @@ export const PaintingDetail = () => {
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setSelectedTierId(anchorTier?.id);
-    // Default the two-product presentation for the anchor size: CANVAS where the
-    // size offers it (A2/A1/A0), else Framed — never unframed (Hugo 2026-07-24,
-    // canvas-default). Replaces the old framed-default reset.
+    // Default the two-product presentation for the anchor size: FRAMED where the
+    // size can be framed (A3/A2/A1), else Canvas — never unframed (Hugo
+    // 2026-07-24, framed-default).
     {
       const framingAvail = anchorTier ? getFramingPricePence(anchorTier) !== null : false;
       const canvasAvail = anchorTier ? getCanvasPricePence(anchorTier) !== null : false;
-      setCanvas(canvasAvail);
-      setFraming(!canvasAvail && framingAvail);
+      setFraming(framingAvail);
+      setCanvas(!framingAvail && canvasAvail);
     }
     setEmbellished(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);
@@ -2573,13 +2613,17 @@ export const PaintingDetail = () => {
   const orderSentinelRef = useRef<HTMLDivElement>(null);
   const orderEndSentinelRef = useRef<HTMLDivElement>(null);
 
-  // "PAINTED WALL, LIT" — the picture-light halo recedes as the reader
-  // scrolls into the story (opacity 1 → 0.55 over the first 35% of the page);
-  // reduced-motion holds it steady at full.
+  // "PAINTED WALL, LIT" — the picture-light halo now stays lit through the WHOLE
+  // page and moves WITH the scroll (Hugo 2026-07-24: "throughout and dynamic
+  // with scroll" — it used to fade out near the top). The .pd-halo layer is
+  // position:fixed (always in view); here we drift it vertically and gently
+  // breathe its opacity across the full scroll so the glow feels alive from top
+  // to bottom without ever disappearing. Reduced-motion holds it steady & full.
   // HOOKS, so they live here ABOVE the early returns (rules-of-hooks).
   const atmosphereReduceMotion = useReducedMotion();
   const { scrollYProgress: pageScroll } = useScroll();
-  const haloOpacityRaw = useTransform(pageScroll, [0, 0.35], [1, 0.55]);
+  const haloOpacityRaw = useTransform(pageScroll, [0, 0.5, 1], [0.95, 0.78, 0.9]);
+  const haloYRaw = useTransform(pageScroll, [0, 1], ["-8%", "42%"]);
 
   if (!painting) return <Navigate to="/collections" replace />;
   const selected =
@@ -2614,7 +2658,11 @@ export const PaintingDetail = () => {
       : wallSize.id;
 
   // Price strip always reflects the anchor — size picker drives the buttons.
-  const pricePence = anchorTier.pricePence;
+  // The mobile "jump to order" strip mirrors the headline: the FRAMED anchor
+  // price (every buyable piece is framed), never the bare print figure.
+  const pricePence =
+    anchorTier.pricePence +
+    (anchorTier.framingPricePence ?? anchorTier.canvasPricePence ?? 0);
 
   // Hero intrinsic aspect — derived from the painting's known cm size so the
   // browser reserves the image slot's ratio BEFORE the file decodes (#23: kills
@@ -2812,7 +2860,10 @@ export const PaintingDetail = () => {
         <div className="pd-wall" />
         <motion.div
           className="pd-halo"
-          style={{ opacity: atmosphereReduceMotion ? 1 : haloOpacityRaw }}
+          style={{
+            opacity: atmosphereReduceMotion ? 1 : haloOpacityRaw,
+            y: atmosphereReduceMotion ? 0 : haloYRaw,
+          }}
         />
         <div className="pd-reprise" />
       </div>
@@ -2947,16 +2998,16 @@ export const PaintingDetail = () => {
                 </div>
               </Reveal>
               {/* Plate caption — the gallery wall-label idiom directly under the
-                  artwork: a hairline rule, the work · year · original size on the
-                  left, and the "closer look" affordance pulled inline-right (it
-                  opens the same deep-zoom viewer the artwork itself opens). */}
+                  artwork: a hairline rule, the work · year · SELECTED PRINT size
+                  on the left (mirrors the size chosen in the buy panel so the two
+                  never disagree — Hugo 2026-07-24), and the "closer look"
+                  affordance pulled inline-right (it opens the same deep-zoom
+                  viewer the artwork itself opens). */}
               <div className="mt-4 pt-4 border-t border-line flex items-center justify-between gap-4">
                 <p className="m-0 font-sans text-[14px] md:text-[14px] leading-[1.5] text-ink-muted min-w-0">
                   <span className="text-ink">{painting.title}</span>
                   {painting.year !== "[ DATE ]" && <>, {painting.year}</>}
-                  {painting.size && (
-                    <span className="hidden sm:inline"> · {painting.size}</span>
-                  )}
+                  <span className="hidden sm:inline"> · {sizeWithInches(selectedTier.size)}</span>
                 </p>
                 <button
                   type="button"
@@ -3035,7 +3086,6 @@ export const PaintingDetail = () => {
                 onEmbellishedChange={setEmbellished}
                 onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
-                onGlazingChange={setGlazing}
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}
               />

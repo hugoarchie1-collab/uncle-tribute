@@ -10,7 +10,7 @@ import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
 import { WELCOME } from "../data/content";
-import { PAINTINGS, COLLECTIONS, getLowestTierPricePence, paintingImageAlt, EMBELLISHMENT_NOTE } from "../data/paintings";
+import { PAINTINGS, getLowestTierPricePence, paintingImageAlt, EMBELLISHMENT_NOTE } from "../data/paintings";
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
@@ -862,7 +862,12 @@ export const Welcome = () => {
                 desktop (3×2). min-w-0 stops a long title token widening a column. */}
             <Reveal as="div" className="grid grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7 mb-5 md:mb-6">
               {featured.map(({ painting, cover }) => {
-                const collectionTitle = COLLECTIONS.find((c) => c.id === painting.collection)?.title.split(" — ")[0] ?? "";
+                // Subtitle = the YEAR only, consistently (Hugo 2026-07-24: the
+                // grid was "messy — some have dates, some don't"). Previously a
+                // painting with no year on file fell back to its COLLECTION name,
+                // which made that one card the odd one out. Now a missing year
+                // simply shows no subtitle. ⚠️ enneagon-swans still has a
+                // "[ DATE ]" placeholder — needs Polly's real year to match.
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
                 return (
@@ -904,9 +909,11 @@ export const Welcome = () => {
                         <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                           {painting.title}
                         </h3>
-                        <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] mt-1.5 m-0")}>
-                          {hasYear ? painting.year : collectionTitle}
-                        </p>
+                        {hasYear && (
+                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] mt-1.5 m-0")}>
+                            {painting.year}
+                          </p>
+                        )}
                       </div>
                       <span className="shrink-0 font-sans text-[14px] md:text-[15px] 2xl:text-[16px] 3xl:text-[18px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
                         From {fmtPrice(fromPrice)}

@@ -78,6 +78,8 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "A3 (29.5 × 29.5 cm)",
     editionLabel: "Open Edition — unnumbered, issued to order",
     pricePence: 27500,
+    framingPricePence: 24500, // £245 (A3) — ⚠️ PLACEHOLDER, mirror of paintings.ts (gotcha #9)
+    canvasPricePence: 11500, // £115 (A3) — ⚠️ PLACEHOLDER
     available: true,
   },
   collector: {

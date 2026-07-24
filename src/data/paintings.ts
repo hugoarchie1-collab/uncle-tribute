@@ -211,6 +211,13 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: null, // Open Edition — no allocation cap, not numbered
     editionLabel: "Open Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
+    // A3 is now a FRAMED product like every other size (Hugo 2026-07-24: "every
+    // product has to be framed including A3"). ⚠️ PLACEHOLDER prices pending the
+    // real Point 101 A3 costs — framed £520 total (£275 + £245), canvas £390
+    // (£275 + £115). MONEY: mirrored in api/checkout.ts + stripe-webhook.ts +
+    // email-basket.ts (gotcha #9).
+    framingPricePence: 24500, // £245 framing (A3) — ⚠️ PLACEHOLDER, confirm with Point 101
+    canvasPricePence: 11500, // £115 — print on stretched canvas (A3) — ⚠️ PLACEHOLDER
     description:
       "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
     available: true,
