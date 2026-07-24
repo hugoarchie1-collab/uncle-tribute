@@ -1218,14 +1218,6 @@ const BuyBox = ({
   // finish (no scary "+£345" surcharge). Framed "from" = print + the CLASSIC
   // frame (the chosen frame's premium surcharge, if any, is added in the
   // headline below); Canvas = print + canvas.
-  const framedFromTotalPence =
-    framingPricePence !== null ? selectedTier.pricePence + framingPricePence : null;
-  const canvasTotalPence =
-    canvasPricePence !== null ? selectedTier.pricePence + canvasPricePence : null;
-  const framedFromTotalLabel =
-    framedFromTotalPence !== null ? fmtP(framedFromTotalPence) : null;
-  const canvasTotalLabel =
-    canvasTotalPence !== null ? fmtP(canvasTotalPence) : null;
   // The single headline price = the price of the ACTIVE finish (framed incl. the
   // chosen frame's surcharge, or canvas). Falls back to the bare print only for
   // the one-off original / any size with no finish.
@@ -1642,13 +1634,8 @@ const BuyBox = ({
                   >
                     <span className="flex w-full items-baseline justify-between gap-2">
                       <strong className="font-sans text-[14px] text-ink">
-                        Framed museum print
+                        Framed print
                       </strong>
-                      {framedFromTotalLabel && (
-                        <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
-                          {framedFromTotalLabel}
-                        </span>
-                      )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
                       Museum giclée on archival Hahnemühle fine-art paper, set within a
@@ -1671,11 +1658,6 @@ const BuyBox = ({
                       <strong className="font-sans text-[14px] text-ink">
                         Canvas print
                       </strong>
-                      {canvasTotalLabel && (
-                        <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
-                          {canvasTotalLabel}
-                        </span>
-                      )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
                       Printed on bright 350gsm textured fine-art canvas, hand-stretched
