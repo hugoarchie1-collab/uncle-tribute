@@ -86,7 +86,7 @@ const OFFERINGS: Offering[] = [
       <>
         For a defining piece, the estate undertakes bespoke commissions —
         scaled, coloured and composed for the room. Each is hand-painted by{" "}
-        <strong>Polly Wedge</strong>, Stephen's sister, working in his own
+        <strong>Polly (Stephen's sister)</strong>, working in his own
         sacred-geometry tradition. Palette, dimensions and timeline are agreed
         with you from the outset, and lead times are confirmed before any
         commitment.
@@ -105,7 +105,7 @@ export const Trade = () => {
       <SceneBackdrop src="/img/scenes/trade-scene-v3.webp" />
       <Seo
         title="Trade & Interior Design"
-        description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
+        description="For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly (Stephen's sister) — the hand behind the 3.6-metre Arista SunStar at Farmacy, Notting Hill. Project pricing on request."
         url="/trade"
       />
       <Nav />

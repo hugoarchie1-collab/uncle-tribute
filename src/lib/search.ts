@@ -125,7 +125,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Lead time",
     question: "How long until my print arrives?",
     answer:
-      "Unframed prints are dispatched within 7–10 working days of your order; with tracked courier transit on top, most orders arrive within roughly two to three weeks. Delivery is free to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints hand-finished by Polly Wedge dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
+      "Unframed prints are dispatched within 7–10 working days of your order; with tracked courier transit on top, most orders arrive within roughly two to three weeks. Delivery is free to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints hand-finished by Polly (Stephen's sister) dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
   },
   {
     eyebrow: "Sizes & editions",
@@ -143,7 +143,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Hand-finishing",
     question: 'What is "hand-finished by Polly"?',
     answer:
-      "Polly Wedge, Stephen's sister, hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the A2 and A1 tiers only, by request, and adds £350 (A2) or £495 (A1). Allow two weeks maximum from order to dispatch.",
+      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the A2 and A1 tiers only, by request, and adds £350 (A2) or £495 (A1). Allow two weeks maximum from order to dispatch.",
   },
   {
     eyebrow: "Shipping",

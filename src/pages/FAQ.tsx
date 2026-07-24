@@ -109,7 +109,7 @@ const FAQS: QA[] = [
         of your order; with tracked courier transit on top, most orders arrive
         within <strong>roughly two to three weeks</strong>. Delivery is free
         to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints
-        hand-finished by Polly Wedge dispatch within two weeks maximum. You'll
+        hand-finished by Polly (Stephen's sister) dispatch within two weeks maximum. You'll
         receive an email with tracking the moment your print leaves the studio.
       </>
     ),
@@ -149,7 +149,7 @@ const FAQS: QA[] = [
     question: 'What is "hand-finished by Polly"?',
     answer: (
       <>
-        Polly Wedge, Stephen's sister, hand-paints additional geometric
+        Polly (Stephen's sister) hand-paints additional geometric
         detail onto selected prints in Stephen's own tradition. Each
         hand-finished piece is therefore unique. The add-on is available on
         the A2 and A1 tiers only, by request, and adds £350 (A2) or £495

@@ -985,7 +985,7 @@ export const Welcome = () => {
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
-                    label="Hands finishing a mandala print by hand — dots of paint and sequins placed one by one"
+                    label="Hands finishing a mandala print by hand — dots of paint and Swarovski crystals placed one by one"
                     aspect="aspect-[4/5]"
                     edges="none"
                   />
@@ -1002,7 +1002,7 @@ export const Welcome = () => {
                   <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
                     {[
                       "Dots of paint, applied by hand",
-                      "Sequins placed one by one, symmetrically",
+                      "Swarovski crystals placed one by one, symmetrically",
                       "In Stephen's geometric tradition",
                       "One of one — no two alike",
                     ].map((f) => (

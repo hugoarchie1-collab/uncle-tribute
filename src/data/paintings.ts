@@ -153,7 +153,7 @@ export const ORIGINAL_PROVENANCE =
  * plumbing) rather than as its own tier.
  */
 export const EMBELLISHMENT_NOTE =
-  "Each print is hand-finished in Stephen's geometric tradition by Polly Wedge (Stephen's sister). Made by hand and to order — please allow up to two weeks.";
+  "Each print is hand-finished in Stephen's geometric tradition by Polly (Stephen's sister). Made by hand and to order — please allow up to two weeks.";
 
 /**
  * Copy for the Studio one-off tier (the £2,650 hand-painted unique piece).
@@ -162,7 +162,7 @@ export const EMBELLISHMENT_NOTE =
  * as a full-width card (tiers with `isOneOff: true`).
  */
 export const STUDIO_ONE_OFF_NOTE =
-  "A singular work: Polly Wedge hand-paints geometric detail in Stephen's tradition onto a large archival print, making each one unique. One of one. Allow 6 weeks.";
+  "A singular work: Polly (Stephen's sister) hand-paints geometric detail in Stephen's tradition onto a large archival print, making each one unique. One of one. Allow 6 weeks.";
 
 /**
  * Single source of truth for the estate-stamp / COA / numbering language.
@@ -278,7 +278,7 @@ export const PRINT_TIERS: PrintTier[] = [
     pricePence: 265000, // £2,650 (marked up 2026-07-13, hidden tier — kept above A0)
     editionTotal: 1,
     editionLabel: "Unique — one of one",
-    description: "Hand-painted by Polly Wedge, one of one",
+    description: "Hand-painted by Polly (Stephen's sister), one of one",
     isOneOff: true,
     // Hidden (Hugo): not selling unique originals until their value has risen.
     // api/checkout.ts keeps its `studio` pricing row so a stale client can't
