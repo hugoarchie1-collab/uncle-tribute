@@ -21,6 +21,7 @@ import {
   glazingLabel,
   paperFinishLabel,
   canvasEdgeLabel,
+  getCanvasEdgeSurchargePence,
   getFrameSurchargePence,
   COLLECTIONS,
   PAINTINGS,
@@ -105,7 +106,7 @@ const lineEmbellishPence = (line: ResolvedLine): number =>
 
 const lineCanvasPence = (line: ResolvedLine): number =>
   line.item.canvas === true && typeof line.tier.canvasPricePence === "number"
-    ? line.tier.canvasPricePence
+    ? line.tier.canvasPricePence + getCanvasEdgeSurchargePence(line.item.canvasEdge)
     : 0;
 
 /** Full pre-discount price of a line = print + framing + hand-finishing + canvas. */

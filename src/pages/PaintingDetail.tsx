@@ -39,6 +39,7 @@ import {
   DEFAULT_GLAZING,
   DEFAULT_PAPER_FINISH,
   DEFAULT_CANVAS_EDGE,
+  getCanvasEdgeSurchargePence,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
@@ -1116,8 +1117,14 @@ const BuyBox = ({
   // The single headline price = the price of the ACTIVE finish (framed incl. the
   // chosen frame's surcharge, or canvas). Falls back to the bare print only for
   // the one-off original / any size with no finish.
+  // Canvas float-frame surcharge (0 for a plain mirror wrap) — a float frame is
+  // a real added tray frame at Point 101, so it adds cost. MONEY: mirrored in
+  // api/checkout.ts CANVAS_EDGE_SURCHARGE_PENCE (gotcha #9).
+  const canvasEdgeSurchargePence = canvasActive
+    ? getCanvasEdgeSurchargePence(canvasEdge)
+    : 0;
   const finishTotalPence = canvasActive
-    ? selectedTier.pricePence + (canvasPricePence ?? 0)
+    ? selectedTier.pricePence + (canvasPricePence ?? 0) + canvasEdgeSurchargePence
     : framingActive
       ? selectedTier.pricePence + (framingPricePence ?? 0) + frameSurchargePence
       : selectedTier.pricePence;
@@ -1130,7 +1137,7 @@ const BuyBox = ({
     selectedTier.pricePence +
     (framingActive ? (framingPricePence ?? 0) + frameSurchargePence : 0) +
     (embellishActive ? embellishPricePence ?? 0 : 0) +
-    (canvasActive ? canvasPricePence ?? 0 : 0);
+    (canvasActive ? (canvasPricePence ?? 0) + canvasEdgeSurchargePence : 0);
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
   // hand-finishing 2 wks. Nothing selected → the standard print lead time.
@@ -1558,35 +1565,59 @@ const BuyBox = ({
               </div>
 
               {/* CANVAS EDGE PICKER — how the sides of the stretched canvas are
-                  finished. Shown once Canvas is selected. A curated, no-surcharge
-                  preference (Hugo 2026-07-24): Mirror wrap by default, or a slim
-                  float (tray) frame. The choice rides to checkout so the estate
-                  orders the right wrap. Monochrome (#7). */}
+                  finished (mirror-wrap default, or a slim float/tray frame),
+                  mirroring Point 101's canvas options. Mirror wrap is included;
+                  a float frame is a real added tray frame at Point 101, so it
+                  carries a surcharge (Hugo 2026-07-24). A colour swatch previews
+                  each float. The choice rides to checkout. Monochrome (#7). */}
               {canvasActive && (
                 <div className="flex flex-col gap-2 ring-1 ring-line px-4 py-3.5">
                   <span className={EYEBROW_TIGHT}>Edge finish</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {CANVAS_EDGES.map((e) => (
-                      <button
-                        key={e.id}
-                        type="button"
-                        onClick={() => onCanvasEdgeChange(e.id)}
-                        aria-pressed={canvasEdge === e.id}
-                        className={cn(
-                          "inline-flex items-center font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
-                          canvasEdge === e.id
-                            ? "ring-ink text-ink"
-                            : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                        )}
-                      >
-                        {e.label}
-                      </button>
-                    ))}
+                    {CANVAS_EDGES.map((e) => {
+                      const sur = getCanvasEdgeSurchargePence(e.id);
+                      const swatch = ({
+                        "float-black": "#17161a",
+                        "float-white": "#ede9e2",
+                        "float-wenge": "#2e211a",
+                        "float-oak": "#c9a368",
+                      } as Record<string, string>)[e.id];
+                      return (
+                        <button
+                          key={e.id}
+                          type="button"
+                          onClick={() => onCanvasEdgeChange(e.id)}
+                          aria-pressed={canvasEdge === e.id}
+                          title={e.note}
+                          className={cn(
+                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            canvasEdge === e.id
+                              ? "ring-ink text-ink"
+                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                          )}
+                        >
+                          {swatch && (
+                            <span
+                              aria-hidden="true"
+                              className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
+                              style={{ backgroundColor: swatch }}
+                            />
+                          )}
+                          {e.label}
+                          {sur > 0 && (
+                            <span className="text-[12px] text-ink/45 tabular-nums">
+                              +{fmtP(sur)}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                  {/* Chosen edge — the plain-language note, no price (always
-                      included). Mirrors the paper-detail line. */}
+                  {/* Chosen edge — plain-language note + the clean canvas total it
+                      resolves to (one clear number, mirroring the framed detail). */}
                   <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
                     {(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).note}
+                    {` Canvas: ${fmtP(finishTotalPence)}.`}
                   </p>
                 </div>
               )}
@@ -2238,13 +2269,15 @@ const StickyAddBar = ({
   // number while an add-on is selected.
   const barCanvas = canvasOffered && canvas;
   const barFramed = framingOffered && framing && !barCanvas;
-  // Premium-frame surcharge on the floating bar mirrors the buy box (gotcha #9).
+  // Premium-frame + canvas-edge surcharges on the floating bar mirror the buy
+  // box (gotcha #9) so the bar total == the charged total.
   const barFrameSurchargePence = barFramed ? getFrameSurchargePence(frameStyle) : 0;
+  const barCanvasEdgeSurchargePence = barCanvas ? getCanvasEdgeSurchargePence(canvasEdge) : 0;
   const barTotalPence =
     selectedTier.pricePence +
     (barFramed ? (selectedTier.framingPricePence ?? 0) + barFrameSurchargePence : 0) +
     (embellishOffered && embellished && !barCanvas ? selectedTier.embellishmentPricePence ?? 0 : 0) +
-    (barCanvas ? selectedTier.canvasPricePence ?? 0 : 0);
+    (barCanvas ? (selectedTier.canvasPricePence ?? 0) + barCanvasEdgeSurchargePence : 0);
   const onAdd = useCallback(() => {
     // Canvas is ready-to-hang (no frame) — it wins over framing, mirroring the
     // buy box. Without this the floating bar would drop the canvas add-on and

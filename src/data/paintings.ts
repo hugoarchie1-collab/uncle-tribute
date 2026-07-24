@@ -440,35 +440,42 @@ export const CANVAS_NOTE =
   "Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame. Made to order.";
 
 // CANVAS EDGE — how the sides of the stretched canvas are finished. Like the
-// paper finish, this is a CURATED, no-surcharge preference (Hugo 2026-07-24):
-// Mirror wrap is the clean default; the four float (tray) frames set the canvas
-// inside a slim shadow-gap frame for a gallery look. Every option is included
-// in the one canvas price — no money-mirror — and the choice rides to checkout
-// so the estate orders the right wrap. `note` is the plain-language sell.
+// paper finish. Mirror wrap is the clean default (included); the four float
+// (tray) frames set the canvas inside a slim shadow-gap frame for a gallery
+// look. ⚠️ MONEY (Hugo 2026-07-24, reversing the earlier no-surcharge call): a
+// float frame is a real added tray frame at Point 101, so it adds cost — each
+// carries a `surchargePence` on TOP of the base canvas price. PLACEHOLDER +£45
+// pending Point 101's real float-frame cost. Mirrored in api/checkout.ts
+// (CANVAS_EDGE_SURCHARGE_PENCE) — gotcha #9. `note` is the plain-language sell.
 export const CANVAS_EDGES = [
   {
     id: "mirror",
     label: "Mirror wrap",
-    note: "The image continues around all four sides, mirrored at each edge — a clean, contemporary wrap with the artwork uninterrupted from the front.",
+    surchargePence: 0,
+    note: "The image continues around all four sides, mirrored at each edge — a clean, contemporary wrap with the artwork uninterrupted from the front. Included.",
   },
   {
     id: "float-black",
     label: "Black float frame",
+    surchargePence: 4500,
     note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
   },
   {
     id: "float-white",
     label: "White float frame",
+    surchargePence: 4500,
     note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
   },
   {
     id: "float-wenge",
     label: "Wenge float frame",
+    surchargePence: 4500,
     note: "Set inside a slim dark wenge-veneer tray frame with a fine shadow-gap reveal — warm and understated. Comes ready to hang.",
   },
   {
     id: "float-oak",
     label: "Oak float frame",
+    surchargePence: 4500,
     note: "Set inside a slim oak-veneer tray frame with a fine shadow-gap reveal — natural and warm. Comes ready to hang.",
   },
 ] as const;
@@ -476,6 +483,13 @@ export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
 export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "mirror";
 export const canvasEdgeLabel = (id: string | undefined): string =>
   CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
+/**
+ * Surcharge (pence) for a canvas edge finish — a float frame adds a real tray
+ * frame at Point 101, so it costs more than a plain mirror wrap. Mirror = 0.
+ * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts CANVAS_EDGE_SURCHARGE_PENCE.
+ */
+export const getCanvasEdgeSurchargePence = (id: string | undefined): number =>
+  CANVAS_EDGES.find((e) => e.id === id)?.surchargePence ?? 0;
 
 // ── Point 101 framing finishes ───────────────────────────────────────────────
 // The Framed product offers Point 101's full range of museum-grade mouldings,

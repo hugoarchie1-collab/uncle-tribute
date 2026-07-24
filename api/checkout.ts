@@ -236,7 +236,7 @@ const lineRetailPence = (item: NormalisedItem): number => {
     total += item.tier.embellishmentPricePence;
   }
   if (item.canvas && typeof item.tier.canvasPricePence === "number") {
-    total += item.tier.canvasPricePence;
+    total += item.tier.canvasPricePence + item.canvasEdgeSurchargePence;
   }
   return total;
 };
@@ -438,6 +438,16 @@ const CANVAS_EDGE_LABELS: Record<string, string> = {
   "float-wenge": "Wenge float frame",
   "float-oak": "Oak float frame",
 };
+// MONEY MIRROR (gotcha #9) of CANVAS_EDGES[].surchargePence in
+// src/data/paintings.ts — a float frame adds a real tray frame at Point 101, so
+// it adds cost on top of the base canvas price. Mirror wrap = 0. ⚠️ PLACEHOLDER
+// +£45 pending Point 101's real cost. Keyed off the RAW edge id.
+const CANVAS_EDGE_SURCHARGE_PENCE: Record<string, number> = {
+  "float-black": 4500,
+  "float-white": 4500,
+  "float-wenge": 4500,
+  "float-oak": 4500,
+};
 
 interface NormalisedItem {
   paintingId: string;
@@ -457,12 +467,15 @@ interface NormalisedItem {
   // framed print's paper base). No price impact; named on the print line so the
   // estate orders the right stock.
   paperFinish?: string;
-  // Curated canvas edge (display label) — only set when canvas === true. No
-  // price impact; named on the canvas line so the estate orders the right wrap.
+  // Curated canvas edge (display label) — only set when canvas === true. Named
+  // on the canvas line so the estate orders the right wrap.
   canvasEdge?: string;
   // Premium-frame surcharge (pence) for the chosen frame — 0 for classic frames
   // and whenever framing is off. Added to framingPricePence on the framing line.
   frameSurchargePence: number;
+  // Canvas float-frame surcharge (pence) — 0 for a plain mirror wrap / non-canvas.
+  // Added to canvasPricePence on the canvas line.
+  canvasEdgeSurchargePence: number;
 }
 
 const normaliseItem = (
@@ -521,6 +534,11 @@ const normaliseItem = (
   const frameSurchargePence = framing
     ? (FRAME_SURCHARGE_PENCE[String(frameStyleRaw)] ?? 0)
     : 0;
+  // Canvas float-frame surcharge keyed off the RAW edge id. 0 when not canvas
+  // or a plain mirror wrap.
+  const canvasEdgeSurchargePence = canvas
+    ? (CANVAS_EDGE_SURCHARGE_PENCE[String(canvasEdgeRaw)] ?? 0)
+    : 0;
   // Quantity — whole units, clamped to a sane 1–99 so a malformed / hostile
   // client can never mint an absurd Stripe line quantity.
   const quantity =
@@ -541,6 +559,7 @@ const normaliseItem = (
     paperFinish,
     canvasEdge,
     frameSurchargePence,
+    canvasEdgeSurchargePence,
   };
 };
 
@@ -888,7 +907,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         currency: currencyCode,
         unit_amount: toMinor(item.tier.pricePence),
         product_data: {
-          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
+          name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
           // The chosen paper finish (framed prints only) is named on the print
           // line so it lands in the estate's Stripe order — that's how the
           // estate knows which stock to order from the print house.
@@ -917,7 +936,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             item.tier.framingPricePence + item.frameSurchargePence,
           ),
           product_data: {
-            name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size})`,
             description: `${finish}, conservation-mounted and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
           },
         },
@@ -933,7 +952,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.embellishmentPricePence),
           product_data: {
-            name: `Hand-finished by Polly Wedge — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            name: `Hand-finished by Polly Wedge — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 —
             // the add-on label + wording lives in several places). Lead time is
             // "up to two weeks" (reduced from 4 weeks 2026-06-04); keep this in
@@ -949,9 +968,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: toMinor(item.tier.canvasPricePence),
+          unit_amount: toMinor(
+            item.tier.canvasPricePence + item.canvasEdgeSurchargePence,
+          ),
           product_data: {
-            name: `Stretched canvas${item.canvasEdge ? ` — ${item.canvasEdge}` : ""} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            name: `Stretched canvas${item.canvasEdge ? ` — ${item.canvasEdge}` : ""} — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of CANVAS_NOTE in src/data/paintings.ts (gotcha #9). The
             // chosen edge finish is named so the estate orders the right wrap.
             description: `Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame.${item.canvasEdge ? ` Edge: ${item.canvasEdge}.` : ""} Made to order.`,
