@@ -258,7 +258,7 @@ const FeaturedGallery = ({
 
   return (
     <div className="w-full">
-      <div className="relative w-full overflow-hidden rounded-xl ring-1 ring-line bg-bg">
+      <div className="relative w-full overflow-hidden rounded-[4px] ring-1 ring-line bg-bg">
         <div
           ref={trackRef}
           onScroll={onScroll}

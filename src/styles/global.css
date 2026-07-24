@@ -160,45 +160,6 @@
       0 2px 8px rgba(0, 0, 0, 0.55);
   }
 
-  /* Film-grain texture overlay — fixed-position SVG noise applied across
-     the whole site at very low opacity. Adds the printed/painted feel
-     that the editorial Awwwards-tier sites use. The pattern itself is
-     a fractal-noise SVG embedded as a data-URI to avoid any extra
-     network request. */
-  .film-grain {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    pointer-events: none;
-    /* PERF (#6): the grain used `mix-blend-mode: overlay`, which is a
-       NON-isolated blend — the compositor had to read back the entire
-       composited backdrop (every parallax image / crossfade beneath it) and
-       re-run the overlay blend over the WHOLE viewport on EVERY scroll frame
-       the backdrop changed. That is the dominant cause of the scroll jank.
-       `translateZ(0)` does NOT help a blend mode. Fix: drop the blend entirely
-       and render the grain as a cheap plain overlay — a static, GPU-promoted
-       fixed layer the compositor never has to re-read the page to draw. Pushed
-       the opacity up a touch (0.045 → 0.06) so the texture still reads now that
-       it's no longer multiplying against the backdrop. */
-    opacity: 0.06;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    background-size: 240px 240px;
-    /* Isolate so this layer is composited on its own and never blends with /
-       reads back the page behind it. Promote to its own GPU layer so it's
-       rasterised once and simply composited over the scrolling page. */
-    isolation: isolate;
-    /* translateZ(0) already rasterises this fixed overlay into its own layer
-       once; it never animates after mount, so will-change would just reserve a
-       layer permanently for no imminent change (perf). */
-    transform: translateZ(0);
-  }
-  /* On touch / small viewports (lowest-power devices) drop the grain entirely —
-     it's a subtle texture, not load-bearing, and one fewer full-viewport
-     promoted layer on phones is a clean smoothness win. */
-  @media (hover: none), (max-width: 640px) {
-    .film-grain { display: none; }
-  }
-
   /* Soft-edge image utility — feathers every edge to transparent so
      editorial photos dissolve into the page instead of ending on a hard
      rectangle (Hugo's brief: ALL home images should feather, none hard-edged).
@@ -691,11 +652,9 @@ video[autoplay]::-webkit-media-controls {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  /* Static, calm fallbacks for users who asked for reduced motion: drop the
-     film grain entirely and release the GPU-layer promotions that only exist
-     to make MOTION cheap (no motion → no need to keep extra compositor
-     layers alive). The static visuals remain. */
-  .film-grain { display: none !important; }
+  /* Static, calm fallbacks for users who asked for reduced motion: release the
+     GPU-layer promotions that only exist to make MOTION cheap (no motion → no
+     need to keep extra compositor layers alive). The static visuals remain. */
   .video-intro__stage,
   .collection-backdrop { will-change: auto !important; }
   /* Reduced motion: the wall re-tint snaps instead of easing. */
@@ -767,32 +726,6 @@ video[autoplay]::-webkit-media-controls {
 }
 .cc-flower.cc--gone {
   opacity: 0 !important;
-}
-
-/* CLICK FLASH — on mousedown the WHITE rose flushes fully RED (the rust accent)
-   for a beat, then reverts on release / after ~250ms (the revert timer lives in
-   CustomCursor.tsx). The mark is a white-on-transparent PNG painted via
-   background-image, so the only way to recolour it is a `filter`. The recipe:
-   sepia() lays a warm brown base over the white glyph, then saturate()+hue-rotate
-   push it to the rust/red accent (#c97844) and brightness() seats the tone — a
-   far cleaner, more saturated red than a flat tint, and it keeps the rose's own
-   line detail. We KEEP a drop-shadow so the red mark still lifts off the pale
-   peacock / Mary-Pink washes. The colour transition eases (180ms) so the flush
-   reads as a deliberate pulse, not a snap; the width/height transition is
-   inherited from .cc-flower. GPU-composited filter change — no layout, no paint
-   of the page beneath. */
-.cc-flower.cc--pressed {
-  filter:
-    drop-shadow(0 1px 2.5px rgba(10, 9, 8, 0.85))
-    brightness(0.5) sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.05);
-  transition:
-    width 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
-    height 0.28s cubic-bezier(0.22, 0.61, 0.36, 1),
-    opacity 0.25s ease,
-    filter 0.18s ease;
-}
-@media (prefers-reduced-motion: reduce) {
-  .cc-flower.cc--pressed { transition: filter 0.001ms; }
 }
 
 /* ── Nav backdrops ──────────────────────────────────────────────────────────
@@ -871,7 +804,6 @@ video[autoplay]::-webkit-media-controls {
 body.cap-bare nav,
 body.cap-bare header,
 body.cap-bare .cc-flower,
-body.cap-bare .film-grain,
 body.cap-bare [class*="z-[110]"],
 body.cap-bare [class*="z-[115]"],
 body.cap-bare [class*="z-[120]"] { display: none !important; }

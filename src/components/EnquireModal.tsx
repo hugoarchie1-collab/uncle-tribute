@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../lib/cn";
-import { EYEBROW } from "./ui/tokens";
+import { EYEBROW, BTN_PRIMARY } from "./ui/tokens";
 
 interface EnquireModalProps {
   open: boolean;
@@ -208,7 +208,7 @@ export const EnquireModal = ({
           {/* Modal panel */}
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[560px] bg-bg-soft ring-1 ring-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[560px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -257,7 +257,7 @@ export const EnquireModal = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="mt-7 inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                    className={cn(BTN_PRIMARY, "mt-7")}
                   >
                     Close
                   </button>
@@ -294,7 +294,7 @@ export const EnquireModal = ({
                         name="name"
                         required
                         autoComplete="name"
-                        className="w-full bg-bg ring-1 ring-white/10 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="Jane Smith"
                       />
                     </label>
@@ -307,7 +307,7 @@ export const EnquireModal = ({
                         type="email"
                         required
                         autoComplete="email"
-                        className="w-full bg-bg ring-1 ring-white/10 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="jane@example.com"
                       />
                     </label>
@@ -321,7 +321,7 @@ export const EnquireModal = ({
                       name="message"
                       required
                       rows={5}
-                      className="w-full bg-bg ring-1 ring-white/10 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                       placeholder="A few lines about what you're after."
                     />
                   </label>
@@ -334,7 +334,7 @@ export const EnquireModal = ({
                     <button
                       type="submit"
                       disabled={status === "submitting"}
-                      className="inline-flex items-center justify-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                      className={BTN_PRIMARY}
                     >
                       {status === "submitting" ? "Sending…" : "Send your message"}{" "}
                       <span aria-hidden="true" className="ml-2">→</span>

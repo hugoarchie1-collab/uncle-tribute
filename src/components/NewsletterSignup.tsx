@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED } from "./ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "./ui/tokens";
 
 /**
  * Newsletter signup ("Friends & Family" list).
@@ -181,7 +181,7 @@ export const NewsletterSignup = ({
   // -----------------------------------------------------------------------
   if (variant === "inline") {
     return (
-      <div className="border-t border-white/10 pt-8 mt-8">
+      <div className="border-t border-line pt-8 mt-8">
         <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
           {eyebrow}
         </p>
@@ -226,7 +226,7 @@ export const NewsletterSignup = ({
                 autoComplete="name"
                 aria-label="Your name"
                 placeholder="Your name"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -235,12 +235,12 @@ export const NewsletterSignup = ({
                 autoComplete="email"
                 aria-label="Email address"
                 placeholder="you@example.com"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <button
                 type="submit"
                 disabled={status === "submitting"}
-                className="inline-flex items-center justify-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                className={BTN_PRIMARY}
               >
                 {status === "submitting" ? "Sending…" : "Subscribe"}
               </button>
@@ -265,7 +265,7 @@ export const NewsletterSignup = ({
   // PANEL variant — default, for Welcome page Estate section / About page.
   // -----------------------------------------------------------------------
   return (
-    <div className="border border-white/10 bg-bg-soft/30 p-7 sm:p-9 md:p-10 max-w-[640px]">
+    <div className="border border-line bg-bg-soft/30 p-7 sm:p-9 md:p-10 max-w-[640px]">
       <p className={cn(EYEBROW, "m-0 mb-4")}>
         {eyebrow}
       </p>
@@ -319,7 +319,7 @@ export const NewsletterSignup = ({
                 type="text"
                 autoComplete="name"
                 placeholder="Jane Smith"
-                className="w-full bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
             <label className="group block">
@@ -332,7 +332,7 @@ export const NewsletterSignup = ({
                 required
                 autoComplete="email"
                 placeholder="jane@example.com"
-                className="w-full bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
           </div>
@@ -345,7 +345,7 @@ export const NewsletterSignup = ({
             <button
               type="submit"
               disabled={status === "submitting"}
-              className="group inline-flex items-center bg-ink text-bg px-7 py-3.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className={cn(BTN_PRIMARY, "group")}
             >
               {status === "submitting" ? "Subscribing…" : "Subscribe"}
               <span

@@ -275,7 +275,7 @@ export const Contact = () => {
                       name="name"
                       required
                       autoComplete="name"
-                      className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-[rgba(237,230,214,0.16)] focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
+                      className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
                       placeholder="Jane Smith"
                     />
                   </label>
@@ -294,7 +294,7 @@ export const Contact = () => {
                       type="email"
                       required
                       autoComplete="email"
-                      className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-[rgba(237,230,214,0.16)] focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
+                      className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink-faint transition-shadow"
                       placeholder="jane@example.com"
                     />
                   </label>
@@ -314,7 +314,7 @@ export const Contact = () => {
                     name="message"
                     required
                     rows={5}
-                    className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-[rgba(237,230,214,0.16)] focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                    className="w-full bg-[rgba(8,7,6,0.55)] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-5 py-4 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
                     placeholder="A few lines about the work, or your enquiry."
                   />
                 </label>

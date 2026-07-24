@@ -13,6 +13,8 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { useCurrency } from "../lib/currency";
+import { cn } from "../lib/cn";
+import { BTN_PRIMARY } from "./ui/tokens";
 
 /**
  * AddedConfirmation — the single, centered "Added to basket" confirmation shown
@@ -152,7 +154,7 @@ export const AddedConfirmation = () => {
             animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 6 }}
             transition={{ type: "tween", duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-            className="relative w-full max-w-[400px] bg-bg border border-line rounded-[14px] shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 pt-6 pb-6"
+            className="relative w-full max-w-[400px] bg-bg border border-line rounded-[12px] shadow-lift px-6 pt-6 pb-6"
           >
             {/* Close */}
             <button
@@ -214,7 +216,7 @@ export const AddedConfirmation = () => {
               <Link
                 to="/basket"
                 onClick={close}
-                className="flex items-center justify-center w-full bg-ink text-bg px-6 py-3.5 font-sans text-[13px] font-bold tracking-[0.08em] uppercase rounded-full hover:bg-accent hover:text-ink transition-colors"
+                className={cn(BTN_PRIMARY, "w-full")}
               >
                 Go to basket
                 {basketCount > 0 && (

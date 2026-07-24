@@ -706,7 +706,7 @@ export const Welcome = () => {
                   }}
                 >
                   {WELCOME.reminderLong[3].split(". ")[1]}
-                  <span className="text-accent not-italic">.</span>
+                  <span className="not-italic">.</span>
                 </span>
               </blockquote>
             </Reveal>
@@ -880,20 +880,17 @@ export const Welcome = () => {
                     // (Hugo wants even rows, not a scaled salon hang).
                     className="group block min-w-0"
                   >
-                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
-                      {/* Gentle zoom on hover only — a small scale-up of the
-                          cover. Hugo: hover should zoom in a little, never flick
-                          to another colourway. */}
-                      <div className="absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-[1.03]">
-                        <AssetImage
-                          src={cover.image}
-                          alt={paintingImageAlt(painting.title, cover.name)}
-                          loading="lazy"
-                          decoding="async"
-                          sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                      </div>
+                    {/* Quiet gallery frame — only the ring warms to accent on
+                        hover; no lift-shadow, no zoom (restraint pass). */}
+                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-[box-shadow] duration-500 group-hover:ring-accent/50">
+                      <AssetImage
+                        src={cover.image}
+                        alt={paintingImageAlt(painting.title, cover.name)}
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
                     </div>
                     {/* Museum WALL-LABEL (2026-06-28 bold redesign) — the price
                         comes OFF the image (the floating rounded pill was the one
@@ -921,12 +918,14 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal as="div" className="text-center">
+              {/* Quiet text link — the hero pill is the page's single filled
+                  CTA; this repeat is demoted to an underlined-on-hover link. */}
               <MagneticLink
                 to="/collections"
-                className="press group inline-flex items-center gap-2 ring-1 ring-ink/40 px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full text-ink transition-all duration-300 hover:ring-accent hover:text-accent"
+                className="press group inline-flex items-center gap-2 font-sans text-[14px] font-bold tracking-[0.04em] text-ink transition-colors duration-300 hover:text-accent"
                 ariaLabel="See the collection"
               >
-                See the collection <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+                See the collection <span aria-hidden="true" className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5">→</span>
               </MagneticLink>
             </Reveal>
           </section>
@@ -972,15 +971,17 @@ export const Welcome = () => {
               given its own commercial moment right after the buyable grid. Real
               footage of the hand-finishing (dots of paint + individually-placed
               sequins) on the left; a clear "what you get + from-price + CTA" on
-              the right. Frosted panel matches the craft register. */}
+              the right. Sits FLAT on the backdrop like every other section (the
+              frosted-glass panel was removed — restraint pass); a plain hairline
+              divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-line shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-4 sm:p-5 md:p-6 lg:p-7">
+            <div className="border-t border-line pt-9 md:pt-12">
               <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
                 {/* Craft FILM — the hand-finishing in motion (dots of paint +
                     sequins placed by hand). Muted autoplay loop; the still is the
                     poster (and the reduced-motion fallback). Capped height so it's
                     never a full-screen wall. */}
-                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[16px] ring-1 ring-line">
+                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[4px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1006,7 +1007,7 @@ export const Welcome = () => {
                       "One of one — no two alike",
                     ].map((f) => (
                       <li key={f} className="flex items-start gap-2.5 font-sans text-[clamp(14px,0.9vw,17px)] leading-[1.5] text-ink-muted">
-                        <span aria-hidden className="mt-2 h-1.5 w-1.5 rotate-45 bg-accent/70 shrink-0" />
+                        <span aria-hidden className="shrink-0 text-ink-muted">·</span>
                         {f}
                       </li>
                     ))}
@@ -1054,18 +1055,13 @@ export const Welcome = () => {
           </section>
 
           {/* 6 · CRAFT — Each painting is a ritual.
-              REFINED CONTAINER (Hugo 2026-06-03): this dense section (heading +
-              intro + image + two paragraphs + a 6-item materials grid) needs a
-              container or the text reads "all over the place" over the busy
-              backdrop. The original hard, sharp, near-opaque black rectangle
-              (`bg-[rgba(10,9,8,0.88)]` + square corners) was the "isn't smooth"
-              problem — removing it entirely was an over-correction. This is the
-              right answer: a premium frosted-glass panel — generous rounding,
-              a translucent dark fill that lets the blurred mandala glow
-              through, a hairline luminous border, and a soft ambient shadow
-              that lifts it off the page (Apple/Stripe register). */}
+              Sits FLAT on the peacock backdrop like every other section
+              (restraint pass): the frosted-glass panel — generous rounding,
+              translucent dark fill, luminous border and lift-shadow — was
+              removed; a plain hairline divider gives the dense section (heading +
+              intro + two paragraphs + a 6-row spec ledger) its separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-line shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] px-6 sm:px-8 md:px-10 lg:px-14 py-5 md:py-6 lg:py-7">
+            <div className="border-t border-line pt-9 md:pt-12">
               <Reveal as="div" className="text-center mb-4 md:mb-6">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
@@ -1108,7 +1104,7 @@ export const Welcome = () => {
                   ].map(([label, value]) => (
                     <li
                       key={label}
-                      className="m-0 flex items-baseline justify-between gap-6 py-3.5 border-t border-[rgba(237,230,214,0.16)]"
+                      className="m-0 flex items-baseline justify-between gap-6 py-3.5 border-t border-line"
                     >
                       <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
                       <span className="text-right font-sans font-normal text-[16px] md:text-[17px] leading-[1.4] text-ink">{value}</span>
@@ -1154,9 +1150,9 @@ export const Welcome = () => {
                 chips: each is a hairline-ruled column in the page's own ledger
                 language (the materials list below uses the same border-t rule),
                 so the section fills the width as a confident canon rather than
-                four generic grey cards. The Roman numeral is demoted to a small
-                accent index; the name is promoted into the Fraunces display
-                register; both name + rule warm to accent on hover. */}
+                four generic grey cards. The oversized ghost Roman numeral was
+                removed (restraint pass) — the name carries the canon; name + rule
+                warm to accent on hover. */}
             <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 mb-4 md:mb-6">
               {[
                 { tag: "I", name: "Insular Island Arts", note: "Celtic interlace, illuminated manuscript" },
@@ -1166,20 +1162,10 @@ export const Welcome = () => {
               ].map((item) => (
                 <li
                   key={item.tag}
-                  className="group m-0 border-t border-[rgba(237,230,214,0.22)] pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
+                  className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
                 >
-                  {/* Oversized GHOST numeral — the architectural anchor of each
-                      column (Cartier/Pentagram index-numeral system): a whisper at
-                      rest (ink/15), warming to accent on hover. opsz held at 48. */}
-                  <span
-                    aria-hidden="true"
-                    className="block font-display text-[clamp(44px,5vw,88px)] leading-[0.85] tracking-[-0.02em] text-ink/15 group-hover:text-accent/40 transition-colors duration-500 select-none"
-                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
-                  >
-                    {item.tag}
-                  </span>
                   <p
-                    className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 mt-1 mb-2 transition-colors duration-300 group-hover:text-accent"
+                    className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 mb-2 transition-colors duration-300 group-hover:text-accent"
                     style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
                   >
                     {item.name}

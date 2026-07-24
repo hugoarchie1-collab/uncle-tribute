@@ -261,7 +261,7 @@ const PhotoLightbox = ({
             type="button"
             onClick={onClose}
             aria-label="Close photo"
-            className="absolute right-4 top-4 z-[2] inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-ink ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-white/20"
+            className="absolute right-4 top-4 z-[2] inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-ink ring-1 ring-line backdrop-blur transition-colors hover:bg-white/20"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
@@ -272,7 +272,7 @@ const PhotoLightbox = ({
             src={src}
             alt={alt}
             onClick={(e) => e.stopPropagation()}
-            className="relative z-[1] block h-auto max-h-[90vh] w-auto max-w-[92vw] rounded-[10px] object-contain shadow-[0_40px_120px_rgba(0,0,0,0.7)] ring-1 ring-white/10"
+            className="relative z-[1] block h-auto max-h-[90vh] w-auto max-w-[92vw] rounded-[4px] object-contain shadow-liftLg ring-1 ring-line"
             initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 8 }}
@@ -332,7 +332,7 @@ const PostCard = ({
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-[20px] bg-bg-soft/92 backdrop-blur-[3px] ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
+        "group relative overflow-hidden rounded-[12px] bg-bg-soft/92 ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
         pinned && "ring-accent/40 hover:ring-accent/55",
       )}
     >
@@ -429,7 +429,7 @@ const PostCard = ({
               {/* Expand affordance (X idiom) — rises in on hover. */}
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute right-3 top-3 inline-flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-black/45 text-white opacity-0 ring-1 ring-white/20 backdrop-blur transition-all duration-300 group-hover/media:translate-y-0 group-hover/media:opacity-100"
+                className="pointer-events-none absolute right-3 top-3 inline-flex h-9 w-9 translate-y-1 items-center justify-center rounded-full bg-black/45 text-white opacity-0 ring-1 ring-line backdrop-blur transition-all duration-300 group-hover/media:translate-y-0 group-hover/media:opacity-100"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
@@ -459,7 +459,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
   <button
     type="button"
     onClick={onShare}
-    className="group w-full flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] text-left rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1rem,2.4vw,1.35rem)] transition-colors hover:ring-line-strong"
+    className="group w-full flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] text-left rounded-[12px] bg-bg-soft/92 ring-1 ring-line p-[clamp(1rem,2.4vw,1.35rem)] transition-colors hover:ring-line-strong"
   >
     <span
       aria-hidden="true"
@@ -488,7 +488,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
 // a sans invitation (NO italic). Composed, not broken.
 // ---------------------------------------------------------------------------
 const EmptyStateCard = () => (
-  <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-[20px] bg-bg-soft/92 backdrop-blur-[2px] ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.6rem)]">
+  <article className="flex items-center w-full gap-[clamp(0.75rem,2vw,1.1rem)] rounded-[12px] bg-bg-soft/92 ring-1 ring-line p-[clamp(1.1rem,2.6vw,1.6rem)]">
     <span
       aria-hidden="true"
       className="shrink-0 inline-flex items-center justify-center rounded-full h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)] border border-dashed border-line bg-bg-elevated"
@@ -716,7 +716,7 @@ const ShareMemoryModal = ({
 
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[680px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[680px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}

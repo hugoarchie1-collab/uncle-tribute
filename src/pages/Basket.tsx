@@ -724,14 +724,14 @@ export const Basket = () => {
                 The hairline ring frames it as an authored panel rather than a
                 bare stacked block, and keeps the right column from reading as
                 empty space. */}
-            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-2xl px-5 py-6 md:px-7 md:py-8">
+            <Reveal as="div" className="mt-2 lg:mt-0 lg:sticky lg:top-[88px] ring-1 ring-line rounded-[12px] px-5 py-6 md:px-7 md:py-8">
               <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Order summary</p>
 
               {/* INCLUDED FREE — the estate's complimentary inclusions surfaced
                   at the money moment (perceived-value incentive Hugo asked for).
                   Print orders only. Purely reassurance — nothing priced here. */}
               {lines.length > 0 && (
-                <div className="mb-5 rounded-xl bg-ink/[0.04] ring-1 ring-line px-4 py-3.5">
+                <div className="mb-5 rounded-[12px] bg-ink/[0.04] ring-1 ring-line px-4 py-3.5">
                   <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>
                     Included free with every order
                   </p>
@@ -826,7 +826,7 @@ export const Basket = () => {
                   basket has nothing to ship, so this would contradict itself). */}
               {lines.length > 0 && (
                 <>
-                  <div className="ring-1 ring-line rounded-2xl p-4 mb-3">
+                  <div className="ring-1 ring-line rounded-[12px] p-4 mb-3">
                     <p className={cn(EYEBROW_TIGHT, "m-0 mb-2")}>
                       Delivery — free
                     </p>

@@ -274,7 +274,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         // No backdrop-filter (the banned per-frame "2005-lag"); the fill keeps the
         // cream logo + links legible and the shadow softens the seam.
         scrolled
-          ? "py-3 nav-bg-scrolled border-b border-ink/25 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.95)]"
+          ? "py-3 nav-bg-scrolled border-b border-ink/25 shadow-lift"
           // At the very top: a soft top-down scrim (real CSS) so the deep-red seal
           // + cream links never get swallowed by the busy peacock/photo backdrops,
           // while the hero/film still reads through. Overlay pages get a touch more.
