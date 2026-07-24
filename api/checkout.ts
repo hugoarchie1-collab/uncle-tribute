@@ -517,7 +517,7 @@ const normaliseItem = (
     ? (FRAME_STYLE_LABELS[String(frameStyleRaw)] ?? FRAME_STYLE_LABELS["natural-oak"])
     : undefined;
   const glazing = framing
-    ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["art-acrylic"])
+    ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["museum-glass"])
     : undefined;
   // Paper finish — only when framed; unknown / missing falls back to the house
   // default so a stale client can never break the line. No price impact.
@@ -1181,11 +1181,17 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     for (const item of normalised) {
       const parts = [toMinor(item.tier.pricePence)];
       if (item.framing && typeof item.tier.framingPricePence === "number")
-        parts.push(toMinor(item.tier.framingPricePence));
+        // Include the premium-frame surcharge — the framing LINE ITEM (line ~936)
+        // charges framingPricePence + frameSurchargePence, so the discount base
+        // must too, or a discounted basket with a Signature/Ornate frame is
+        // charged more than /basket shows (advertised==charged, gotcha #9).
+        parts.push(toMinor(item.tier.framingPricePence + item.frameSurchargePence));
       if (item.embellished && typeof item.tier.embellishmentPricePence === "number")
         parts.push(toMinor(item.tier.embellishmentPricePence));
       if (item.canvas && typeof item.tier.canvasPricePence === "number")
-        parts.push(toMinor(item.tier.canvasPricePence));
+        // Include the canvas float-edge surcharge — the canvas line item (line
+        // ~972) charges canvasPricePence + canvasEdgeSurchargePence.
+        parts.push(toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence));
       // × item.quantity: the Stripe line item is unit_amount × quantity, so the
       // discount must scale with quantity too — and rounds PER LINE ITEM on
       // (unit × qty), byte-identical to Basket.tsx's bundleDiscountMinor. Without

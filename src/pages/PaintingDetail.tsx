@@ -276,13 +276,10 @@ const SizePicker = ({
     {tiers.map((tier, i) => {
       const isSelected = tier.id === selectedTier.id;
       // Every buyable size is a FRAMED product (Hugo 2026-07-24), so the size
-      // rung advertises the FRAMED price — the real, buyable figure that matches
-      // the headline. No bare-print number that the buyer "then has to pay more"
-      // than. Falls back to canvas, then bare, for any finish-less size.
-      const rungPricePence =
-        tier.pricePence +
-        (tier.framingPricePence ?? tier.canvasPricePence ?? 0);
-      const rungIsFramed = tier.framingPricePence != null;
+      // rung shows the BASE print price — the "from £275" ladder that increases
+      // by size (Hugo 2026-07-24, 2nd call). The framed/canvas finish is a
+      // clearly-priced choice below; the size rung is the print price per size.
+      const rungPricePence = tier.pricePence;
       return (
         <button
           key={tier.id}
@@ -313,21 +310,14 @@ const SizePicker = ({
             </span>
             <span className={cn(META, "block mt-0.5")}>{tier.editionLabel}</span>
           </span>
-          <span className="flex flex-col items-end justify-self-end leading-none">
-            <span
-              className={cn(
-                "font-display font-semibold tracking-[-0.01em] text-ink",
-                isSelected ? "text-[22px]" : "text-[19px]",
-              )}
-              style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
-            >
-              {fmtP(rungPricePence)}
-            </span>
-            {rungIsFramed && (
-              <span className={cn(EYEBROW_TIGHT, "mt-1 text-[11px] text-ink-muted")}>
-                framed
-              </span>
+          <span
+            className={cn(
+              "font-display font-semibold tracking-[-0.01em] text-ink justify-self-end",
+              isSelected ? "text-[22px]" : "text-[19px]",
             )}
+            style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+          >
+            {fmtP(rungPricePence)}
           </span>
           {/* Selected summary — the card's own editionLabel line already sits
               two lines above, so it is NOT repeated here (mobile made the
@@ -2634,11 +2624,9 @@ export const PaintingDetail = () => {
       : wallSize.id;
 
   // Price strip always reflects the anchor — size picker drives the buttons.
-  // The mobile "jump to order" strip mirrors the headline: the FRAMED anchor
-  // price (every buyable piece is framed), never the bare print figure.
-  const pricePence =
-    anchorTier.pricePence +
-    (anchorTier.framingPricePence ?? anchorTier.canvasPricePence ?? 0);
+  // The mobile "jump to order" strip shows the base "from" print price — the
+  // accessible £275 entry (Hugo 2026-07-24, 2nd call), matching the size ladder.
+  const pricePence = anchorTier.pricePence;
 
   // Hero intrinsic aspect — derived from the painting's known cm size so the
   // browser reserves the image slot's ratio BEFORE the file decodes (#23: kills

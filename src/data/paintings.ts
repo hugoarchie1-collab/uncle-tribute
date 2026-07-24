@@ -418,7 +418,11 @@ export const getLowestTierPricePence = (painting: Painting): number => {
  * tiles / meta / feed / JSON-LD all routed through this (advertised == charged).
  */
 export const getTierAdvertisedPricePence = (tier: PrintTier): number =>
-  tier.pricePence + (tier.framingPricePence ?? tier.canvasPricePence ?? 0);
+  // Hugo 2026-07-24 (2nd call): advertise the BASE print price — the accessible
+  // "from £275" ladder that increases by size — NOT the framed total. The framed
+  // /canvas finish is a clearly-priced CHOICE on the product page; the browse
+  // "from", the feed and the size ladder all quote the base print price.
+  tier.pricePence;
 
 /**
  * Returns the framing surcharge for a tier, or null if framing isn't

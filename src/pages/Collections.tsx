@@ -170,7 +170,9 @@ const ScrollBackdrop = ({
 // canonical PRINT_TIERS ladder — honouring each tier's own `available` flag —
 // then explicitly allowlist the permitted ids so an unrelated `available:true`
 // flip (e.g. studio) can NEVER leak a tier into this selector.
-const BUNDLE_TIER_IDS: PrintTier["id"][] = ["atelier", "collector", "atelier-grande", "heirloom"];
+// Heirloom (A0) is NOT offered as a direct-buy bundle size (Hugo 2026-07-24:
+// "we don't offer heirloom size") — it's enquiry-only. Bundle sizes = A3/A2/A1.
+const BUNDLE_TIER_IDS: PrintTier["id"][] = ["atelier", "collector", "atelier-grande"];
 
 // Short, dignified size labels for the toggle (e.g. "Gallery · A3"). Built from
 // the live ladder so the size string + price always come from the same source

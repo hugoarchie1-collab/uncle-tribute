@@ -748,7 +748,7 @@ const renderOrderConfirmationHtml = (p: {
   };
   const lineHtml = p.lines
     .map((line, idx) => {
-      const tierBits = [line.tierLabel, line.size.split(" ")[0], line.editionLabel]
+      const tierBits = [line.tierLabel, line.size, line.editionLabel]
         .filter(Boolean)
         .join(" · ");
       // Per-line breakdown: the print (base tier price) on its own row, then

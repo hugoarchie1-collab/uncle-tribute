@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import {
   PAINTINGS,
   PRINT_TIERS,
-  ORIGINAL_PROVENANCE,
   ESTATE_AUTHENTICATION,
   COLLECTIONS,
   FRAME_STYLES,
@@ -663,8 +662,6 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
                 {painting.location && (
                   <><dt className={SPEC_LABEL}>Painted in</dt><dd className={SPEC_VALUE}>{painting.location}</dd></>
                 )}
-                <dt className={SPEC_LABEL}>Original</dt>
-                <dd className={`${SPEC_VALUE} text-ink-muted`}>{ORIGINAL_PROVENANCE}</dd>
               </dl>
               <p className={EYEBROW_MUTED} style={{ margin: "16px 0 8px" }}>Prints — sizes &amp; editions</p>
               <div>

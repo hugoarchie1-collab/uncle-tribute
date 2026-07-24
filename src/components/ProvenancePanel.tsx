@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import {
   ESTATE_AUTHENTICATION,
-  ORIGINAL_PROVENANCE,
   ORIGINAL_PRINT_SPEC,
 } from "../data/paintings";
 import { EYEBROW_MUTED, META } from "./ui/tokens";
@@ -24,7 +23,6 @@ export const ProvenancePanel = () => (
         <li className={META}>{ESTATE_AUTHENTICATION.numbering}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.coa}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.printer}</li>
-        <li className={cn(META, "text-ink/55")}>Original · {ORIGINAL_PROVENANCE}</li>
         <li className={META}>
           <Link to="/auth" className="underline underline-offset-4 hover:text-ink transition-colors">
             Authenticate a print →

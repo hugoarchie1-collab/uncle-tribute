@@ -63,7 +63,7 @@ interface Denomination {
 
 const tierToDenomination = (tier: PrintTier): Denomination => ({
   id: tier.id,
-  sizeShort: tier.size.split(" ")[0],
+  sizeShort: tier.size,
   label: tier.label,
   amountPence: tier.pricePence,
 });

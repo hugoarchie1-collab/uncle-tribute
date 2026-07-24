@@ -505,7 +505,7 @@ export const Basket = () => {
                           {/* Tier label — quiet muted-ink spec line.
                               Surfaces label · size · edition. */}
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-2")}>
-                            {line.tier.label} · {line.tier.size.split(" ")[0]}
+                            {line.tier.label} · {line.tier.size}
                             <span className="hidden sm:inline"> · {line.tier.editionLabel}</span>
                           </p>
                           <p className="font-sans font-normal text-[clamp(13px,0.78vw,16px)] leading-[1.6] text-ink-muted m-0 mt-1.5">
@@ -580,7 +580,7 @@ export const Basket = () => {
                         <div className="mt-3 ml-0 sm:ml-[132px] 2xl:ml-[156px] flex flex-col gap-1.5">
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                              {line.tier.label} print ({line.tier.size.split(" ")[0]})
+                              {line.tier.label} print ({line.tier.size})
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                               {fmt(line.tier.pricePence)}

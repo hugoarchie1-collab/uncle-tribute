@@ -92,7 +92,7 @@ export const GlazingOverlay = ({ glazing }: { glazing: string }) => {
  */
 const CANVAS_FLOAT_COLOR: Record<string, string> = {
   "float-black": "#17161a",
-  "float-white": "#e9e4da",
+  "float-white": "#ede9e2",
   "float-wenge": "#2e211a",
   "float-oak": "#c9a368",
 };

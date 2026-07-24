@@ -203,7 +203,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
         <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink">
           {fmtP(anchor.pricePence)}
         </span>
-        <span className={cn(EYEBROW_TIGHT)}>{anchor.size.split(" ")[0]}</span>
+        <span className={cn(EYEBROW_TIGHT)}>{anchor.size}</span>
       </div>
       <button
         type="button"
