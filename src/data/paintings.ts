@@ -751,7 +751,7 @@ export const PAINTINGS: Painting[] = [
         // lost the painting's lavender cloud border entirely. v4 RESTORES the
         // full frame from the print-ready original (square center-crop, no
         // distortion) so Stephen's lilac sky border shows as painted.
-        image: "/img/paintings/english-bluebells-v4.jpg",
+        image: "/img/paintings/english-bluebells-v5.jpg",
         hex: "#a9b9d6",
         isOriginal: true,
         available: true,
@@ -863,7 +863,7 @@ export const PAINTINGS: Painting[] = [
     colourways: [
       {
         name: "Persian Indigo",
-        image: "/img/paintings/peacock-persian-indigo.jpg",
+        image: "/img/paintings/peacock-persian-indigo-v2.jpg",
         hex: "#2a3c7d",
         isOriginal: true,
         available: true,
@@ -877,21 +877,21 @@ export const PAINTINGS: Painting[] = [
       },
       {
         name: "Sahara Sand Yellow",
-        image: "/img/paintings/peacock-sahara-sand-yellow.jpg",
+        image: "/img/paintings/peacock-sahara-sand-yellow-v2.jpg",
         hex: "#d2b07a",
         isOriginal: false,
         available: true,
       },
       {
         name: "Moroccan Purple",
-        image: "/img/paintings/peacock-moroccan-purple.jpg",
+        image: "/img/paintings/peacock-moroccan-purple-v2.jpg",
         hex: "#3d1e5e",
         isOriginal: false,
         available: true,
       },
       {
         name: "Mary Pink",
-        image: "/img/paintings/peacock-mary-pink.jpg",
+        image: "/img/paintings/peacock-mary-pink-v2.jpg",
         hex: "#e8a4be",
         isOriginal: false,
         available: true,
@@ -950,14 +950,14 @@ export const PAINTINGS: Painting[] = [
       },
       {
         name: "Supernova Violet",
-        image: "/img/paintings/tridecagon-supernova-violet.jpg",
+        image: "/img/paintings/tridecagon-supernova-violet-v2.jpg",
         hex: "#8a7fd2",
         isOriginal: false,
         available: true,
       },
       {
         name: "Coral Reef",
-        image: "/img/paintings/tridecagon-coral-reef.jpg",
+        image: "/img/paintings/tridecagon-coral-reef-v2.jpg",
         hex: "#dcb39e",
         isOriginal: false,
         available: true,
@@ -1023,7 +1023,7 @@ export const PAINTINGS: Painting[] = [
       },
       {
         name: "Velvet Purple",
-        image: "/img/paintings/enneagon-velvet-purple.jpg",
+        image: "/img/paintings/enneagon-velvet-purple-v2.jpg",
         hex: "#5e3d6e",
         isOriginal: false,
         available: true,
