@@ -14,7 +14,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
-import { FrameWrap } from "../components/FramedPreview";
+import { FrameWrap, CanvasWrap } from "../components/FramedPreview";
 import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
@@ -2968,6 +2968,7 @@ export const PaintingDetail = () => {
                         shows INSIDE the selected moulding (no mat), updating per
                         frame style. Plain print otherwise. */}
                     <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h}>
+                    <CanvasWrap active={canvas} edge={canvasEdge} aspectRatio={heroDims.w / heroDims.h}>
                     <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}
@@ -2975,7 +2976,7 @@ export const PaintingDetail = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
-                        className={framing ? "absolute inset-0 block w-full h-full" : "block w-full"}
+                        className={framing || canvas ? "absolute inset-0 block w-full h-full" : "block w-full"}
                       >
                         {/* Responsive variants (#perf): webpSrcSet advertises the
                             -w480/-w800/-w1200/-w1600 siblings + the ~2000w full
@@ -3006,11 +3007,14 @@ export const PaintingDetail = () => {
                           className={
                             framing
                               ? "block w-full h-full object-contain"
-                              : "block mx-auto h-auto w-auto max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]"
+                              : canvas
+                                ? "block w-full h-full object-cover"
+                                : "block mx-auto h-auto w-auto max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]"
                           }
                         />
                       </motion.picture>
                     </AnimatePresence>
+                    </CanvasWrap>
                     </FrameWrap>
                   </button>
                 </div>

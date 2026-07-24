@@ -80,6 +80,94 @@ export const GlazingOverlay = ({ glazing }: { glazing: string }) => {
   );
 };
 
+/**
+ * CanvasWrap — the live canvas-edge preview for the hero (Hugo 2026-07-24: "the
+ * canvas options … give you the exact way it'll look — clone it for options").
+ * Built from Stephen's OWN artwork + CSS (NOT Point 101's example images):
+ *   • Mirror wrap  → the image edge-to-edge with a gallery-wrap stand-off depth.
+ *   • Float frame  → the canvas set inside a slim tray frame (black/white/wenge/
+ *                    oak) with a fine dark shadow-gap reveal, floating off the
+ *                    wall — mirroring Point 101's "Floater Frame + Stretched
+ *                    Canvas". SAME footprint envelope as the framed/plain preview.
+ */
+const CANVAS_FLOAT_COLOR: Record<string, string> = {
+  "float-black": "#17161a",
+  "float-white": "#e9e4da",
+  "float-wenge": "#2e211a",
+  "float-oak": "#c9a368",
+};
+const CANVAS_DEPTH_SHADOW =
+  "drop-shadow(0 2px 3px rgba(0,0,0,0.42)) drop-shadow(0 24px 42px rgba(0,0,0,0.48))";
+const CANVAS_SIZER =
+  "mx-auto block max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]";
+
+export const CanvasWrap = ({
+  active,
+  edge,
+  aspectRatio,
+  children,
+}: {
+  active: boolean;
+  edge: string;
+  aspectRatio: number;
+  children: ReactNode;
+}) => {
+  if (!active) return <>{children}</>;
+  const floatColor = CANVAS_FLOAT_COLOR[edge];
+
+  // MIRROR WRAP — edge-to-edge, a gallery-wrapped stretcher standing off the wall.
+  if (!floatColor) {
+    return (
+      <div
+        className={CANVAS_SIZER}
+        style={{
+          aspectRatio: String(aspectRatio || 1),
+          filter: CANVAS_DEPTH_SHADOW,
+          borderRadius: "1px",
+        }}
+      >
+        <div
+          className="relative w-full h-full overflow-hidden"
+          style={{
+            // A thin right/bottom edge-face suggests the wrapped canvas depth.
+            boxShadow:
+              "inset -3px 0 5px -2px rgba(0,0,0,0.5), inset 0 -3px 5px -2px rgba(0,0,0,0.5)",
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  // FLOAT FRAME — canvas set inside a slim tray frame with a shadow-gap reveal.
+  const tray = "clamp(9px, 1.7vw, 26px)";
+  const gap = "clamp(4px, 0.6vw, 9px)";
+  return (
+    <div
+      className={CANVAS_SIZER}
+      style={{
+        aspectRatio: String(aspectRatio || 1),
+        boxSizing: "border-box",
+        background: floatColor,
+        padding: tray,
+        filter: CANVAS_DEPTH_SHADOW,
+        borderRadius: "1px",
+      }}
+    >
+      {/* the dark shadow-gap reveal between the tray frame and the canvas */}
+      <div className="w-full h-full" style={{ background: "#0a0908", padding: gap }}>
+        <div
+          className="relative w-full h-full overflow-hidden"
+          style={{ boxShadow: "0 1px 5px rgba(0,0,0,0.6)" }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const FrameWrap = ({
   active,
   frameStyle,
