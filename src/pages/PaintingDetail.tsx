@@ -1635,8 +1635,9 @@ const BuyBox = ({
                       )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                      Museum giclée on 350gsm Hahnemühle archival paper, hand-framed
-                      in solid wood, glazed and ready to hang. Always framed.
+                      Museum giclée on 350gsm Hahnemühle archival paper, set within a
+                      hand-cut conservation mount, hand-framed in solid wood, glazed and
+                      ready to hang. Always framed.
                     </span>
                   </button>
                 )}
@@ -1745,6 +1746,9 @@ const BuyBox = ({
                       cost when it never added one). `glazing` stays at
                       DEFAULT_GLAZING and still rides to checkout so the estate
                       orders the right glass. */}
+                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                    Set within a hand-cut, acid-free conservation mount — included.
+                  </p>
                   <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
                     Glazed with anti-reflective, near-invisible museum glass —
                     included.
