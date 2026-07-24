@@ -1254,15 +1254,22 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* ── MOON CLOSE · "as above, so below" ──────────────────────────
-              The page opens on the EARTH (masthead, top) and closes on the MOON
-              (here, foot) — Hugo 2026-07-22: "a moon at the bottom instead of
-              earth, earth kept at top." A real, high-quality NASA moon (the LRO
-              full-moon mosaic, public domain, smoothed to a soft luminous disc)
-              RISES from the foot: its top cap curves UP into the page, the body
-              bleeding below the fold, mirroring the Earth's limb curving DOWN at
-              the top. Dimmed + radially feathered so it dissolves into the
-              peacock backdrop like the Earth. Decorative only (aria-hidden). */}
+          {/* ── GAS-GIANT CLOSE · "as above, so below" ─────────────────────
+              The page OPENS on the EARTH (masthead, top) and CLOSES on JUPITER
+              (here, foot) — Hugo 2026-07-24: "replace the bottom earth with
+              another planet … that matches the earth's glow and hardness and
+              shape." Earth stays at the top. The moon/sun were both rejected
+              (dull / too bright); the coherent answer is a REAL photographed
+              gas-giant limb (NASA Juno PIA22946, public domain — the full Jupiter
+              globe on black). Its warm cream/orange TOP CAP is cut to the SAME
+              wide-shallow limb proportions + transparent-space RGBA + radial
+              feather as the Earth cutout, so it behaves identically: the limb
+              curves UP from the foot, the body bleeding below the fold, mirroring
+              the Earth's limb curving DOWN at the top. The warm bands echo the
+              rust accent; the Great Red Spot crests the right edge. Processed by
+              scripts (crop → transparent black → alpha-feather → warm modulate);
+              regenerate under a new -vN filename (immutable /img cache). Decorative
+              only (aria-hidden). */}
           <section
             aria-hidden="true"
             className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
@@ -1276,14 +1283,13 @@ export const Welcome = () => {
                   "radial-gradient(90% 90% at 50% 100%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 68%)",
               }}
             />
-            {/* MIRRORED EARTH — the SAME earth-cutout-v2 asset as the top open,
-                natural orientation (no flip) so the identical limb curves UP from
-                the foot: a pixel-perfect mirror of the top Earth ("as above, so
-                below"). Guaranteed coherent because it IS the top Earth. Same
-                width proportions + radial feather as the masthead limb, mask
-                centred at the foot so it dissolves up into the peacock. */}
+            {/* JUPITER LIMB — the gas-giant cap rising from the foot, cut to the
+                SAME wide-shallow proportions + transparent-space RGBA + radial
+                feather as the top Earth limb ("as above, so below"), so it dissolves
+                UP into the peacock exactly like the masthead Earth — just a
+                different world closing the page. */}
             <img
-              src={asset("/img/scenes/earth-cutout-v2.webp")}
+              src={asset("/img/scenes/jupiter-limb-v1.webp")}
               alt=""
               loading="lazy"
               decoding="async"
