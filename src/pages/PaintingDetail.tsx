@@ -36,6 +36,7 @@ import {
   CANVAS_EDGES,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
+  includedGlazingId,
   DEFAULT_PAPER_FINISH,
   DEFAULT_CANVAS_EDGE,
   getCanvasEdgeSurchargePence,
@@ -1690,19 +1691,30 @@ const BuyBox = ({
                     Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival
                     fine-art paper, the house stock for every framed print.
                   </p>
-                  {/* Glazing is a single INCLUDED standard (anti-glare,
-                      anti-reflective museum glass) — the glass-vs-acrylic picker
-                      was removed 2026-07-24 (Hugo: it read as a confusing extra
-                      cost when it never added one). `glazing` stays at
-                      DEFAULT_GLAZING and still rides to checkout so the estate
-                      orders the right glass. */}
+                  {/* Glazing is INCLUDED, but SIZE-DEPENDENT (Hugo 2026-07-24):
+                      anti-reflective art glass only ships up to the 610mm
+                      delivery cap, so the largest framed size (A1, 841mm) is
+                      glazed with ultra-clear shatter-safe acrylic — the only
+                      glazing deliverable at that size. `glazing` tracks the
+                      selected size (includedGlazingId) and rides to checkout so
+                      the estate orders the right glazing. Copy matches the print
+                      house's own spec. */}
                   <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
                     Set within a hand-cut, acid-free conservation mount — included.
                   </p>
-                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
-                    Glazed with anti-reflective, near-invisible museum glass —
-                    included.
-                  </p>
+                  {selectedTier.id === "atelier-grande" ? (
+                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                      Glazed with ultra-clear acrylic — the clarity of glass,
+                      UV-filtering, shatter-safe and lightweight so it ships
+                      safely at this size. Included.
+                    </p>
+                  ) : (
+                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                      Glazed with anti-reflective art glass — reflections reduced
+                      to under 1%, revealing the artwork's true colour with no
+                      green tint. Included.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -2502,6 +2514,9 @@ export const PaintingDetail = () => {
     // so it must sync whenever the size changes (see the sibling reset effect).
     const t = visibleTiers.find((x) => x.id === selectedTierId);
     if (!t) return;
+    // Glazing is size-dependent: art glass caps at 610mm delivery, so A1 is
+    // glazed with acrylic. Keep it in sync whenever the size changes.
+    setGlazing(includedGlazingId(t.id));
     const framingAvail = getFramingPricePence(t) !== null;
     const canvasAvail = getCanvasPricePence(t) !== null;
     // FRAMED is the default presentation (Hugo 2026-07-24): every buyable size
@@ -2540,7 +2555,7 @@ export const PaintingDetail = () => {
     }
     setEmbellished(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);
-    setGlazing(DEFAULT_GLAZING);
+    setGlazing(includedGlazingId(anchorTier?.id));
     setPaperFinish(DEFAULT_PAPER_FINISH);
     setCanvasEdge(DEFAULT_CANVAS_EDGE);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -2952,8 +2967,8 @@ export const PaintingDetail = () => {
                           ref={heroImgRef}
                           src={asset(selected.image)}
                           alt={paintingImageAlt(painting.title, selected.name)}
-                          width={heroDims.w}
-                          height={heroDims.h}
+                          width={Math.round(heroDims.w)}
+                          height={Math.round(heroDims.h)}
                           className={
                             framing
                               ? "block w-full h-full object-contain"

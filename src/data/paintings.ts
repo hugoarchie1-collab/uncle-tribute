@@ -568,9 +568,22 @@ export const FRAME_STYLES = [
   { id: "ornate-gold", label: "Ornate gold", note: "Broad, swept gold ornament — the statement frame", swatch: "#b8862f", category: "Ornate", tier: "ornate", ar: false },
 ] as const;
 
+// GLAZING — TWO real finishes, described to match the print house's own spec.
+// Which one a framed piece receives is decided by SIZE, not a buyer picker
+// (`includedGlazingId` below): anti-reflective art glass only ships up to the
+// 610mm glazed-delivery cap, so the largest framed size is glazed with
+// shatter-safe acrylic instead — the only glazing deliverable at that size.
 export const GLAZING_OPTIONS = [
-  { id: "museum-glass", label: "Anti-glare glass", note: "Anti-reflective glass — near-invisible, with virtually no glare thanks to an anti-reflective coating" },
-  { id: "art-acrylic", label: "Clear acrylic", note: "Ultra-clear acrylic glazing — UV-filtering and shatter-safe" },
+  {
+    id: "museum-glass",
+    label: "Anti-reflective glass",
+    note: "Anti-reflective art glass (Artglass AR 70) — an anti-reflective coating reduces reflections to under 1%, revealing the artwork's true colour and texture with no green tint or optical distortion, and filters UV. Used on framed prints up to 610mm.",
+  },
+  {
+    id: "art-acrylic",
+    label: "Clear acrylic",
+    note: "Ultra-clear PMMA acrylic safety glazing — the same clarity and appearance as glass, filtering 99% of UV light. Shatter-resistant and lightweight, so larger frames ship safely at any size.",
+  },
 ] as const;
 
 // PAPER FINISH — a deliberately CURATED short list, not Point 101's full trade
@@ -615,6 +628,16 @@ export const frameStyleLabel = (id: string | undefined): string =>
   FRAME_STYLES.find((f) => f.id === id)?.label ?? FRAME_STYLES[0].label;
 export const glazingLabel = (id: string | undefined): string =>
   GLAZING_OPTIONS.find((g) => g.id === id)?.label ?? GLAZING_OPTIONS[0].label;
+
+/**
+ * The glazing INCLUDED at a given size. Anti-reflective art glass only ships up
+ * to the 610mm glazed-delivery cap (A3/A2), so the largest framed size — A1
+ * (841mm) — is glazed with ultra-clear, shatter-safe acrylic instead, the only
+ * glazing deliverable at that size. Rides to checkout so the estate orders the
+ * right glazing per size. A0 isn't framed at all (canvas only).
+ */
+export const includedGlazingId = (tierId: string | undefined): GlazingId =>
+  tierId === "atelier-grande" ? "art-acrylic" : "museum-glass";
 export const paperFinishLabel = (id: string | undefined): string =>
   PAPER_FINISHES.find((p) => p.id === id)?.label ?? PAPER_FINISHES[0].label;
 
