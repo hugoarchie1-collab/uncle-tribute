@@ -33,8 +33,12 @@ import {
   FRAME_STYLES,
   FRAME_STYLE_GROUPS,
   FRAME_TIERS,
+  PAPER_FINISHES,
+  CANVAS_EDGES,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
+  DEFAULT_PAPER_FINISH,
+  DEFAULT_CANVAS_EDGE,
   getAnchorTier,
   getEmbellishmentPricePence,
   getFramingPricePence,
@@ -45,6 +49,7 @@ import {
   getPaintingById,
   getPaintingsByCollection,
   getPrintTiers,
+  getTierAdvertisedPricePence,
   paintingImageAlt,
   ORIGINAL_PRINT_SPEC,
   ORIGINAL_PROVENANCE,
@@ -1102,10 +1107,14 @@ const BuyBox = ({
   canvas,
   frameStyle,
   glazing,
+  paperFinish,
+  canvasEdge,
   onFramingChange,
   onEmbellishedChange,
   onCanvasChange,
   onFrameStyleChange,
+  onPaperFinishChange,
+  onCanvasEdgeChange,
   orderSentinelRef,
   orderEndSentinelRef,
 }: {
@@ -1123,10 +1132,14 @@ const BuyBox = ({
   canvas: boolean;
   frameStyle: string;
   glazing: string;
+  paperFinish: string;
+  canvasEdge: string;
   onFramingChange: (next: boolean) => void;
   onEmbellishedChange: (next: boolean) => void;
   onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
+  onPaperFinishChange: (next: string) => void;
+  onCanvasEdgeChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
    * control so the floating bar stays suppressed for the WHOLE time any buy
@@ -1275,6 +1288,8 @@ const BuyBox = ({
       framingActive ? glazing : undefined,
       canvasActive,
       quantity,
+      framingActive ? paperFinish : undefined,
+      canvasActive ? canvasEdge : undefined,
     );
     // Marketing analytics (consent-gated no-op otherwise) — AddToCart /
     // add_to_cart at the SELECTED tier's print price × quantity.
@@ -1337,7 +1352,8 @@ const BuyBox = ({
           embellished: embellishActive,
           canvas: canvasActive,
           quantity,
-          ...(framingActive ? { frameStyle, glazing } : {}),
+          ...(framingActive ? { frameStyle, glazing, paperFinish } : {}),
+          ...(canvasActive ? { canvasEdge } : {}),
           currency: currencyCode,
           ...(utm ? { utm } : {}),
         }),
@@ -1635,9 +1651,9 @@ const BuyBox = ({
                       )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                      Museum giclée on 350gsm Hahnemühle archival paper, set within a
+                      Museum giclée on archival Hahnemühle fine-art paper, set within a
                       hand-cut conservation mount, hand-framed in solid wood, glazed and
-                      ready to hang. Always framed.
+                      ready to hang. Choose your paper below.
                     </span>
                   </button>
                 )}
@@ -1662,12 +1678,47 @@ const BuyBox = ({
                       )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                      Gallery-wrapped over a solid wooden stretcher — ready to hang,
-                      no frame needed. Delivered free.
+                      Printed on bright 350gsm textured fine-art canvas, hand-stretched
+                      over a deep, solid gallery-depth wooden frame — ready to hang, no
+                      glass. Choose your edge finish below.
                     </span>
                   </button>
                 )}
               </div>
+
+              {/* CANVAS EDGE PICKER — how the sides of the stretched canvas are
+                  finished. Shown once Canvas is selected. A curated, no-surcharge
+                  preference (Hugo 2026-07-24): Mirror wrap by default, or a slim
+                  float (tray) frame. The choice rides to checkout so the estate
+                  orders the right wrap. Monochrome (#7). */}
+              {canvasActive && (
+                <div className="flex flex-col gap-2 ring-1 ring-line px-4 py-3.5">
+                  <span className={EYEBROW_TIGHT}>Edge finish</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {CANVAS_EDGES.map((e) => (
+                      <button
+                        key={e.id}
+                        type="button"
+                        onClick={() => onCanvasEdgeChange(e.id)}
+                        aria-pressed={canvasEdge === e.id}
+                        className={cn(
+                          "inline-flex items-center font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                          canvasEdge === e.id
+                            ? "ring-ink text-ink"
+                            : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                        )}
+                      >
+                        {e.label}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Chosen edge — the plain-language note, no price (always
+                      included). Mirrors the paper-detail line. */}
+                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                    {(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).note}
+                  </p>
+                </div>
+              )}
 
               {/* (The old opt-in "Bespoke framing" checkbox was removed 2026-07-24:
                   framing is no longer an add-on — it's baked into the Framed
@@ -1738,6 +1789,44 @@ const BuyBox = ({
                         ? ` — ${FRAME_TIERS[frameTier].label} frame`
                         : " — included in the framed price"}
                       {framedTotalLabel ? `. Framed: ${framedTotalLabel}.` : "."}
+                    </p>
+                  </div>
+                  {/* PAPER FINISH — a curated three, not the printer's full
+                      trade range (Hugo 2026-07-24: "curate, don't replicate").
+                      Every finish is INCLUDED in the framed price (no surcharge),
+                      so this reads as a taste choice, not an up-sell. The chosen
+                      paper rides to checkout so the estate orders the right
+                      stock. Monochrome (#7): selected = solid ink ring. */}
+                  <div className="flex flex-col gap-2">
+                    <span className={EYEBROW_TIGHT}>Paper</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {PAPER_FINISHES.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => onPaperFinishChange(p.id)}
+                          aria-pressed={paperFinish === p.id}
+                          title={p.spec}
+                          className={cn(
+                            "inline-flex items-center font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            paperFinish === p.id
+                              ? "ring-ink text-ink"
+                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                          )}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Chosen paper — the archival spec + why, no price (it's
+                        always included). Mirrors the frame-detail line above. */}
+                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                      {(() => {
+                        const p =
+                          PAPER_FINISHES.find((x) => x.id === paperFinish) ??
+                          PAPER_FINISHES[0];
+                        return `${p.spec} — ${p.note}`;
+                      })()}
                     </p>
                   </div>
                   {/* Glazing is a single INCLUDED standard (anti-glare,
@@ -2171,6 +2260,8 @@ const StickyAddBar = ({
   canvas,
   frameStyle,
   glazing,
+  paperFinish,
+  canvasEdge,
   heroSentinelRef,
   orderSentinelRef,
   orderEndSentinelRef,
@@ -2183,6 +2274,8 @@ const StickyAddBar = ({
   canvas: boolean;
   frameStyle: string;
   glazing: string;
+  paperFinish: string;
+  canvasEdge: string;
   heroSentinelRef: React.RefObject<HTMLDivElement | null>;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   orderEndSentinelRef: React.RefObject<HTMLDivElement | null>;
@@ -2296,6 +2389,9 @@ const StickyAddBar = ({
       framed ? frameStyle : undefined,
       framed ? glazing : undefined,
       useCanvas,
+      undefined, // quantity — the floating bar always adds one
+      framed ? paperFinish : undefined,
+      useCanvas ? canvasEdge : undefined,
     );
     // Same consent-gated AddToCart as the buy box — this bar is just the
     // floating twin of that handler.
@@ -2315,6 +2411,8 @@ const StickyAddBar = ({
     framing,
     frameStyle,
     glazing,
+    paperFinish,
+    canvasEdge,
     embellishOffered,
     embellished,
     canvasOffered,
@@ -2512,6 +2610,8 @@ export const PaintingDetail = () => {
   const [canvas, setCanvas] = useState(false);
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
+  const [paperFinish, setPaperFinish] = useState<string>(DEFAULT_PAPER_FINISH);
+  const [canvasEdge, setCanvasEdge] = useState<string>(DEFAULT_CANVAS_EDGE);
   // Canvas + framing are mutually exclusive (a canvas isn't glazed-framed):
   // ticking one clears the other. Canvas ALSO clears hand-finishing — its
   // checkbox is hidden on canvas, so a stranded `embellished` flag would
@@ -2578,6 +2678,8 @@ export const PaintingDetail = () => {
     setEmbellished(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);
     setGlazing(DEFAULT_GLAZING);
+    setPaperFinish(DEFAULT_PAPER_FINISH);
+    setCanvasEdge(DEFAULT_CANVAS_EDGE);
     /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [painting?.id]);
@@ -2720,8 +2822,8 @@ export const PaintingDetail = () => {
   // (gotcha #9: advertised price == charged price, here too).
   const tierPricesPence =
     visibleTiers.length > 0
-      ? visibleTiers.map((t) => t.pricePence)
-      : [anchorTier.pricePence]; // defensive — never emit Infinity
+      ? visibleTiers.map(getTierAdvertisedPricePence)
+      : [getTierAdvertisedPricePence(anchorTier)]; // defensive — never emit Infinity
   const lowPricePence = Math.min(...tierPricesPence);
   const highPricePence = Math.max(...tierPricesPence);
 
@@ -3086,10 +3188,14 @@ export const PaintingDetail = () => {
                 canvas={canvas}
                 frameStyle={frameStyle}
                 glazing={glazing}
+                paperFinish={paperFinish}
+                canvasEdge={canvasEdge}
                 onFramingChange={selectFraming}
                 onEmbellishedChange={setEmbellished}
                 onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
+                onPaperFinishChange={setPaperFinish}
+                onCanvasEdgeChange={setCanvasEdge}
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}
               />
@@ -3135,6 +3241,8 @@ export const PaintingDetail = () => {
         canvas={canvas}
         frameStyle={frameStyle}
         glazing={glazing}
+        paperFinish={paperFinish}
+        canvasEdge={canvasEdge}
         heroSentinelRef={heroSentinelRef}
         orderSentinelRef={orderSentinelRef}
         orderEndSentinelRef={orderEndSentinelRef}

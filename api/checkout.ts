@@ -416,6 +416,28 @@ const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Clear acrylic",
   "museum-glass": "Anti-glare glass",
 };
+// Curated paper-finish labels — a mirror of PAPER_FINISHES in
+// src/data/paintings.ts. NO price impact (every finish is included in the
+// framed price), so this is a label mirror, NOT a money mirror. Named on the
+// framed print line so the estate orders the right stock. Unknown / missing id
+// falls back to the default finish (smooth-matt).
+const PAPER_FINISH_LABELS: Record<string, string> = {
+  "smooth-matt": "Smooth Matt (Hahnemühle Photo Rag 308gsm)",
+  textured: "Textured (Hahnemühle German Etching 310gsm)",
+  "smooth-gloss": "Smooth Gloss (Ilford Galerie 310gsm)",
+};
+// Curated canvas-edge labels — a mirror of CANVAS_EDGES in
+// src/data/paintings.ts. NO price impact (every edge is included in the one
+// canvas price), so this is a label mirror, NOT a money mirror. Named on the
+// canvas line so the estate orders the right wrap. Unknown / missing id falls
+// back to the default (mirror wrap).
+const CANVAS_EDGE_LABELS: Record<string, string> = {
+  mirror: "Mirror wrap",
+  "float-black": "Black float frame",
+  "float-white": "White float frame",
+  "float-wenge": "Wenge float frame",
+  "float-oak": "Oak float frame",
+};
 
 interface NormalisedItem {
   paintingId: string;
@@ -431,6 +453,13 @@ interface NormalisedItem {
   // ride into the Stripe line item so the estate knows which frame to order.
   frameStyle?: string;
   glazing?: string;
+  // Curated paper finish (display label) — only set when framing === true (the
+  // framed print's paper base). No price impact; named on the print line so the
+  // estate orders the right stock.
+  paperFinish?: string;
+  // Curated canvas edge (display label) — only set when canvas === true. No
+  // price impact; named on the canvas line so the estate orders the right wrap.
+  canvasEdge?: string;
   // Premium-frame surcharge (pence) for the chosen frame — 0 for classic frames
   // and whenever framing is off. Added to framingPricePence on the framing line.
   frameSurchargePence: number;
@@ -446,6 +475,8 @@ const normaliseItem = (
   glazingRaw?: unknown,
   canvasRaw?: unknown,
   quantityRaw?: unknown,
+  paperFinishRaw?: unknown,
+  canvasEdgeRaw?: unknown,
 ): NormalisedItem | { error: string } => {
   if (!paintingId || !VALID_PAINTING_IDS.has(paintingId)) {
     return { error: `Unknown painting "${paintingId ?? ""}".` };
@@ -475,6 +506,16 @@ const normaliseItem = (
   const glazing = framing
     ? (GLAZING_LABELS[String(glazingRaw)] ?? GLAZING_LABELS["art-acrylic"])
     : undefined;
+  // Paper finish — only when framed; unknown / missing falls back to the house
+  // default so a stale client can never break the line. No price impact.
+  const paperFinish = framing
+    ? (PAPER_FINISH_LABELS[String(paperFinishRaw)] ?? PAPER_FINISH_LABELS["smooth-matt"])
+    : undefined;
+  // Canvas edge — only when canvas; unknown / missing falls back to the default
+  // wrap so a stale client can never break the line. No price impact.
+  const canvasEdge = canvas
+    ? (CANVAS_EDGE_LABELS[String(canvasEdgeRaw)] ?? CANVAS_EDGE_LABELS["mirror"])
+    : undefined;
   // Premium-frame surcharge keyed off the RAW frame id (before it became a
   // label). 0 when framing is off or the frame is classic / unknown.
   const frameSurchargePence = framing
@@ -497,6 +538,8 @@ const normaliseItem = (
     quantity,
     frameStyle,
     glazing,
+    paperFinish,
+    canvasEdge,
     frameSurchargePence,
   };
 };
@@ -715,6 +758,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     canvas?: unknown;
     frameStyle?: unknown;
     glazing?: unknown;
+    paperFinish?: unknown;
+    canvasEdge?: unknown;
     quantity?: unknown;
     items?: Array<{
       kind?: unknown;
@@ -726,6 +771,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       canvas?: unknown;
       frameStyle?: unknown;
       glazing?: unknown;
+      paperFinish?: unknown;
+      canvasEdge?: unknown;
       quantity?: unknown;
       // Gift-card line fields (kind === "gift"):
       amountPence?: unknown;
@@ -764,6 +811,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           canvas: body.canvas,
           frameStyle: body.frameStyle,
           glazing: body.glazing,
+          paperFinish: body.paperFinish,
+          canvasEdge: body.canvasEdge,
           quantity: body.quantity,
         },
       ];
@@ -807,6 +856,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       raw?.glazing,
       raw?.canvas,
       raw?.quantity,
+      raw?.paperFinish,
+      raw?.canvasEdge,
     );
     if ("error" in result) return send(400, result);
     normalised.push(result);
@@ -838,7 +889,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         unit_amount: toMinor(item.tier.pricePence),
         product_data: {
           name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size.split(" ")[0]}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
-          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`} ${PRINT_SPEC}`,
+          // The chosen paper finish (framed prints only) is named on the print
+          // line so it lands in the estate's Stripe order — that's how the
+          // estate knows which stock to order from the print house.
+          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`}${item.paperFinish ? ` Paper: ${item.paperFinish}.` : ""} ${PRINT_SPEC}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).
@@ -897,10 +951,10 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           currency: currencyCode,
           unit_amount: toMinor(item.tier.canvasPricePence),
           product_data: {
-            name: `Stretched canvas — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
-            // Mirror of CANVAS_NOTE in src/data/paintings.ts (gotcha #9).
-            description:
-              "Printed onto fine-art canvas, stretched over a solid subframe and finished ready to hang — no glass, no separate frame. Made to order.",
+            name: `Stretched canvas${item.canvasEdge ? ` — ${item.canvasEdge}` : ""} — ${item.title} (${item.tier.label} ${item.tier.size.split(" ")[0]})`,
+            // Mirror of CANVAS_NOTE in src/data/paintings.ts (gotcha #9). The
+            // chosen edge finish is named so the estate orders the right wrap.
+            description: `Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame.${item.canvasEdge ? ` Edge: ${item.canvasEdge}.` : ""} Made to order.`,
           },
         },
       });

@@ -54,6 +54,13 @@ export interface BasketItem {
    */
   canvas?: boolean;
   /**
+   * Optional CURATED canvas edge finish id (see CANVAS_EDGES). Only meaningful
+   * when `canvas === true`. NO price impact — every edge is included in the one
+   * canvas price — so older entries without this field reconcile cleanly with no
+   * storage-version bump. Rides to checkout so the estate orders the right wrap.
+   */
+  canvasEdge?: string;
+  /**
    * Optional Point 101 framing finishes (frame-style + glazing ids). Only
    * meaningful when `framing === true`; absent on bare-print lines. NO price
    * impact — every finish is included in the framing price, so older entries
@@ -61,6 +68,14 @@ export interface BasketItem {
    */
   frameStyle?: string;
   glazing?: string;
+  /**
+   * Optional CURATED paper finish id (see PAPER_FINISHES). Only meaningful when
+   * `framing === true` (the framed print's paper base). NO price impact — every
+   * finish is included in the framed price — so older entries without this field
+   * reconcile cleanly with no storage-version bump. Rides to checkout so the
+   * estate orders the right stock.
+   */
+  paperFinish?: string;
   /**
    * How many of THIS exact configuration (painting · colourway · tier · add-ons)
    * the buyer wants. Always ≥ 1. Absent on entries written before quantity
@@ -188,6 +203,10 @@ const readFromStorage = (): BasketLine[] => {
           framing && typeof o.frameStyle === "string" ? o.frameStyle : undefined;
         const glazing =
           framing && typeof o.glazing === "string" ? o.glazing : undefined;
+        const paperFinish =
+          framing && typeof o.paperFinish === "string" ? o.paperFinish : undefined;
+        const canvasEdge =
+          canvas && typeof o.canvasEdge === "string" ? o.canvasEdge : undefined;
         // Absent / malformed quantity reconciles to 1 (back-compat, no version bump).
         const quantity =
           typeof o.quantity === "number" && Number.isFinite(o.quantity) && o.quantity >= 1
@@ -201,8 +220,10 @@ const readFromStorage = (): BasketLine[] => {
           framing,
           embellished,
           ...(canvas ? { canvas } : {}),
+          ...(canvasEdge ? { canvasEdge } : {}),
           ...(frameStyle ? { frameStyle } : {}),
           ...(glazing ? { glazing } : {}),
+          ...(paperFinish ? { paperFinish } : {}),
           quantity,
           addedAt: o.addedAt,
         };
@@ -362,8 +383,10 @@ const sameConfig = (a: BasketItem, b: BasketItem): boolean =>
   !!a.framing === !!b.framing &&
   !!a.embellished === !!b.embellished &&
   !!a.canvas === !!b.canvas &&
+  (a.canvasEdge ?? "") === (b.canvasEdge ?? "") &&
   (a.frameStyle ?? "") === (b.frameStyle ?? "") &&
-  (a.glazing ?? "") === (b.glazing ?? "");
+  (a.glazing ?? "") === (b.glazing ?? "") &&
+  (a.paperFinish ?? "") === (b.paperFinish ?? "");
 
 export const addItem = (
   paintingId: string,
@@ -375,6 +398,8 @@ export const addItem = (
   glazing?: string,
   canvas?: boolean,
   quantity?: number,
+  paperFinish?: string,
+  canvasEdge?: string,
 ): void => {
   const current = ensureCache();
   let resolvedTierId: PrintTier["id"] = tierId ?? "collector";
@@ -393,10 +418,12 @@ export const addItem = (
     tierId: resolvedTierId,
     // Canvas + framing are mutually exclusive — canvas wins.
     ...(canvas ? { canvas: true } : {}),
+    ...(canvas && canvasEdge ? { canvasEdge } : {}),
     ...(framing && !canvas ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
     ...(framing && !canvas && frameStyle ? { frameStyle } : {}),
     ...(framing && !canvas && glazing ? { glazing } : {}),
+    ...(framing && !canvas && paperFinish ? { paperFinish } : {}),
     quantity: qty,
     addedAt: Date.now(),
   };

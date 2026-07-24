@@ -437,7 +437,45 @@ export const getCanvasPricePence = (tier: PrintTier): number | null =>
 
 /** Copy for the canvas add-on, mirrored into api/checkout.ts (gotcha #9, label only). */
 export const CANVAS_NOTE =
-  "Printed onto fine-art canvas, stretched over a solid subframe and finished ready to hang — no glass, no separate frame. Made to order.";
+  "Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame. Made to order.";
+
+// CANVAS EDGE — how the sides of the stretched canvas are finished. Like the
+// paper finish, this is a CURATED, no-surcharge preference (Hugo 2026-07-24):
+// Mirror wrap is the clean default; the four float (tray) frames set the canvas
+// inside a slim shadow-gap frame for a gallery look. Every option is included
+// in the one canvas price — no money-mirror — and the choice rides to checkout
+// so the estate orders the right wrap. `note` is the plain-language sell.
+export const CANVAS_EDGES = [
+  {
+    id: "mirror",
+    label: "Mirror wrap",
+    note: "The image continues around all four sides, mirrored at each edge — a clean, contemporary wrap with the artwork uninterrupted from the front.",
+  },
+  {
+    id: "float-black",
+    label: "Black float frame",
+    note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
+  },
+  {
+    id: "float-white",
+    label: "White float frame",
+    note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
+  },
+  {
+    id: "float-wenge",
+    label: "Wenge float frame",
+    note: "Set inside a slim dark wenge-veneer tray frame with a fine shadow-gap reveal — warm and understated. Comes ready to hang.",
+  },
+  {
+    id: "float-oak",
+    label: "Oak float frame",
+    note: "Set inside a slim oak-veneer tray frame with a fine shadow-gap reveal — natural and warm. Comes ready to hang.",
+  },
+] as const;
+export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
+export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "mirror";
+export const canvasEdgeLabel = (id: string | undefined): string =>
+  CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
 
 // ── Point 101 framing finishes ───────────────────────────────────────────────
 // The Framed product offers Point 101's full range of museum-grade mouldings,
@@ -517,16 +555,50 @@ export const GLAZING_OPTIONS = [
   { id: "art-acrylic", label: "Clear acrylic", note: "Ultra-clear acrylic glazing — UV-filtering and shatter-safe" },
 ] as const;
 
+// PAPER FINISH — a deliberately CURATED short list, not Point 101's full trade
+// range (Hugo 2026-07-24: "curate, don't replicate"). Three plain-language
+// finishes, each mapped to ONE real archival paper; the paper BRAND is a
+// prestige signal so it's named (Hahnemühle / Ilford), but the print house is
+// never named to the buyer. NO surcharge — every finish is included in the
+// framed price (the real Point 101 deltas are ±£3 on ~90% margins, not worth a
+// money-mirror or a "which is dearer?" decision on a memorial buy). The choice
+// rides to checkout as a preference so the estate orders the right stock.
+// `spec` is the weight/material one-liner; `note` is the sell.
+export const PAPER_FINISHES = [
+  {
+    id: "smooth-matt",
+    label: "Smooth Matt",
+    spec: "Hahnemühle Photo Rag · 308gsm · 100% cotton",
+    note: "The house paper — 100% cotton rag with a natural white tone and a subtle fibrous surface. Understated, organic and painterly; archival for generations.",
+  },
+  {
+    id: "textured",
+    label: "Textured",
+    spec: "Hahnemühle German Etching · 310gsm",
+    note: "A heavier, velvety matt with a warm white hue and a fine tooth — the traditional artist-board surface, lending painterly depth to Stephen's mandalas.",
+  },
+  {
+    id: "smooth-gloss",
+    label: "Smooth Gloss",
+    spec: "Ilford Galerie Smooth Gloss · 310gsm",
+    note: "A bright-white gloss for vivid colour and deep blacks — the most saturated, luminous read of the colourways, with superb clarity and detail.",
+  },
+] as const;
+
 export type FrameStyleId = (typeof FRAME_STYLES)[number]["id"];
 export type GlazingId = (typeof GLAZING_OPTIONS)[number]["id"];
+export type PaperFinishId = (typeof PAPER_FINISHES)[number]["id"];
 
 export const DEFAULT_FRAME_STYLE: FrameStyleId = "natural-oak";
 export const DEFAULT_GLAZING: GlazingId = "museum-glass";
+export const DEFAULT_PAPER_FINISH: PaperFinishId = "smooth-matt";
 
 export const frameStyleLabel = (id: string | undefined): string =>
   FRAME_STYLES.find((f) => f.id === id)?.label ?? FRAME_STYLES[0].label;
 export const glazingLabel = (id: string | undefined): string =>
   GLAZING_OPTIONS.find((g) => g.id === id)?.label ?? GLAZING_OPTIONS[0].label;
+export const paperFinishLabel = (id: string | undefined): string =>
+  PAPER_FINISHES.find((p) => p.id === id)?.label ?? PAPER_FINISHES[0].label;
 
 /**
  * The premium surcharge (pence) for a frame's tier, added on top of the base
@@ -959,9 +1031,10 @@ export const PAINTINGS: Painting[] = [
         image: "/img/paintings/tridecagon-moonstone-blue.jpg",
         hex: "#b8c7d1",
         isOriginal: false,
-        // Hidden 2026-07-24: exported from a tighter crop (spandrel corners cut) +
-        // washed-out; its signature can't be placed cleanly. Re-enable once the
-        // uncropped master is re-exported to match its Tridecagon siblings.
+        // Hidden 2026-07-24: this colourway was exported from a tighter crop
+        // (spandrel corners cut) + washed-out, and its signature can't be placed
+        // cleanly. Re-enable once the uncropped master is re-exported to match
+        // its Tridecagon siblings.
         available: false,
       },
       {

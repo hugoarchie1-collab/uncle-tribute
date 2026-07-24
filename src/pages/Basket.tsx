@@ -19,6 +19,8 @@ import {
   getPrintTiers,
   frameStyleLabel,
   glazingLabel,
+  paperFinishLabel,
+  canvasEdgeLabel,
   getFrameSurchargePence,
   COLLECTIONS,
   PAINTINGS,
@@ -322,6 +324,12 @@ export const Basket = () => {
               ...(l.item.framing === true && l.item.glazing
                 ? { glazing: l.item.glazing }
                 : {}),
+              ...(l.item.framing === true && l.item.paperFinish
+                ? { paperFinish: l.item.paperFinish }
+                : {}),
+              ...(l.item.canvas === true && l.item.canvasEdge
+                ? { canvasEdge: l.item.canvasEdge }
+                : {}),
             })),
             ...giftCards.map((g) => ({
               kind: "gift" as const,
@@ -597,6 +605,16 @@ export const Basket = () => {
                               </span>
                             </div>
                           )}
+                          {line.item.framing === true && (
+                            <div className="flex items-baseline justify-between gap-4">
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
+                                Paper ({paperFinishLabel(line.item.paperFinish)})
+                              </span>
+                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
+                                Included
+                              </span>
+                            </div>
+                          )}
                           {embellishPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
@@ -610,7 +628,7 @@ export const Basket = () => {
                           {canvasPence > 0 && (
                             <div className="flex items-baseline justify-between gap-4">
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Stretched canvas (ready to hang)
+                                Stretched canvas ({canvasEdgeLabel(line.item.canvasEdge)})
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 + {fmt(canvasPence)}
