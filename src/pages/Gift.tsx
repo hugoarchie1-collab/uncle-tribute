@@ -307,11 +307,11 @@ export const Gift = () => {
                       }}
                       aria-pressed={isSelected}
                       className={cn(
-                        "group text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300",
+                        "group text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft/85",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
-                          ? "bg-bg-soft/85 ring-accent ring-2"
-                          : "bg-bg-soft/85 ring-line hover:ring-ink/40",
+                          ? "ring-accent ring-2"
+                          : "ring-line hover:ring-ink/40",
                       )}
                     >
                       <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>

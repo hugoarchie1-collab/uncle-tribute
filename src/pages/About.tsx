@@ -558,7 +558,7 @@ const ContainImage = ({
 const AboutMasthead = () => (
   <section className={cn(SECTION, "relative pt-6 md:pt-10")}>
     {/* Centered home-style header — eyebrow + big Fraunces name, no rules. */}
-    <Reveal as="div" className="text-center mb-6 md:mb-8">
+    <Reveal as="div" className={cn("text-center", BLOCK_GAP_B)}>
       <p className={cn(EYEBROW, "m-0 mb-3")}>In memoriam · {LIFE_DATES}</p>
       <h1 className={cn(TITLE, "my-0 mx-auto hero-text-shadow")}>Stephen Meakin</h1>
       <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>
@@ -568,7 +568,7 @@ const AboutMasthead = () => (
     {/* Contained, centered, true-colour portrait — never full-bleed, framed
         with the single hairline ring like home's figures (no card, no box). */}
     <Reveal as="figure" delay={0.06} className="m-0 mx-auto w-full max-w-[420px] md:max-w-[460px]">
-      <div className="overflow-hidden rounded-[4px] ring-1 ring-line">
+      <div className="overflow-hidden rounded-[3px] ring-1 ring-line">
         <ImageReveal
           src="/img/about/12-stephen-portrait.jpg"
           alt="Stephen Meakin"
@@ -579,7 +579,7 @@ const AboutMasthead = () => (
         />
       </div>
     </Reveal>
-    <Reveal as="div" delay={0.1} className="mx-auto max-w-[70ch] text-center mt-6 md:mt-8">
+    <Reveal as="div" delay={0.1} className={cn("mx-auto max-w-[70ch] text-center", BLOCK_GAP)}>
       <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "m-0")} />
     </Reveal>
   </section>
@@ -598,7 +598,7 @@ const AnegadaPoster = () => (
       <Reveal as="div" className="text-center">
         <p className={cn(EYEBROW, "m-0 mb-3")}>Anegada · 1995</p>
         <h3
-          className="font-display font-bold tracking-[-0.03em] text-[clamp(48px,8vw,140px)] leading-[0.92] text-ink m-0"
+          className="font-display font-bold tracking-[-0.03em] text-[clamp(48px,8vw,140px)] leading-[0.92] text-ink m-0 hero-text-shadow"
           style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
         >
           <span className="block">
@@ -1405,7 +1405,7 @@ export const About = () => {
             as="div"
             className={cn(BLOCK_GAP, "mx-auto w-full max-w-[900px]")}
           >
-            <figure className="m-0 overflow-hidden rounded-[4px]">
+            <figure className="m-0 overflow-hidden rounded-[3px]">
               <AssetImage
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
@@ -1415,7 +1415,7 @@ export const About = () => {
                 className="block w-full h-auto max-h-[62svh] object-cover object-center"
               />
             </figure>
-            <div className="mt-6 md:mt-8 mx-auto max-w-[70ch] text-center">
+            <div className={cn(BLOCK_GAP, "mx-auto max-w-[70ch] text-center")}>
               <blockquote className="m-0">
                 <Prose text={ABOUT.academyQuote} className={BODY} />
                 <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>

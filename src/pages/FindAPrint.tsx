@@ -360,7 +360,7 @@ export const FindAPrint = () => {
               className="m-0 min-w-0"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
-                <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)]">
+                <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
                   {/* Gentle zoom on hover only — a small scale-up of the cover.
                       Hugo: hover should zoom in a little, never flick to another
                       colourway. */}
@@ -376,7 +376,7 @@ export const FindAPrint = () => {
                 </div>
                 <figcaption className="pt-3 md:pt-4">
                   <h2
-                    className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
+                    className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 min-h-[2.5em] group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                   >
                     {painting.title}

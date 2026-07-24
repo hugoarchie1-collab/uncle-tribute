@@ -457,7 +457,7 @@ const RegisterOriginalInterest = ({ paintingId }: { paintingId: string }) => {
 
   if (status === "done") {
     return (
-      <p className={cn(META, "m-0 mb-8")} role="status" aria-live="polite">
+      <p className={cn(META, "m-0 mb-5")} role="status" aria-live="polite">
         Noted, with thanks — we&rsquo;ll write to you first.
       </p>
     );
@@ -1345,29 +1345,29 @@ const BuyBox = ({
         {painting.year !== "[ DATE ]" && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Date</dt>
-            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.year}</dd>
+            <dd className={cn(SPEC_VALUE, "m-0")}>{painting.year}</dd>
           </>
         )}
         {painting.size && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Size</dt>
-            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.size}</dd>
+            <dd className={cn(SPEC_VALUE, "m-0")}>{painting.size}</dd>
           </>
         )}
         {painting.location && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Painted in</dt>
-            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink">{painting.location}</dd>
+            <dd className={cn(SPEC_VALUE, "m-0")}>{painting.location}</dd>
           </>
         )}
         {painting.pigmentNote && (
           <>
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Pigment</dt>
-            <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink-muted">{painting.pigmentNote}</dd>
+            <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>{painting.pigmentNote}</dd>
           </>
         )}
         <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Original</dt>
-        <dd className="m-0 font-sans text-[17px] leading-[1.55] text-ink-muted">{ORIGINAL_PROVENANCE}</dd>
+        <dd className={cn(SPEC_VALUE, "m-0 text-ink-muted")}>{ORIGINAL_PROVENANCE}</dd>
       </dl>
 
       {/* Hushed register for the privately-held original — sits directly
@@ -2450,6 +2450,9 @@ export const PaintingDetail = () => {
   // where the size can be framed (A2/A1), Canvas where it can't (A0). Re-runs when
   // the selected size changes; a manual Framed/Canvas pick persists (same size).
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
+    // Intentional: the framed/canvas default is DERIVED from the selected tier,
+    // so it must sync whenever the size changes (see the sibling reset effect).
     const t = visibleTiers.find((x) => x.id === selectedTierId);
     if (!t) return;
     const framingAvail = getFramingPricePence(t) !== null;
@@ -2466,7 +2469,7 @@ export const PaintingDetail = () => {
       setFraming(false);
       setCanvas(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [selectedTierId, visibleTiers]);
 
   // Re-sync the SIZE + add-ons when the painting changes (SPA nav between works

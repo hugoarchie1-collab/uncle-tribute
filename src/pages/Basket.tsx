@@ -858,7 +858,7 @@ export const Basket = () => {
                     </p>
                   </div>
 
-                  <p className="font-sans font-normal text-[clamp(14px,0.68vw,14px)] leading-[1.5] text-ink-muted m-0 mb-5">
+                  <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mb-5">
                     International buyers may be charged local import duties on
                     delivery.
                   </p>

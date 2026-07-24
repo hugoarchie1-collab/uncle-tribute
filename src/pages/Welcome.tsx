@@ -993,7 +993,7 @@ export const Welcome = () => {
                 <div className="min-w-0">
                   <p className={cn(EYEBROW, "m-0 mb-3")}>The hand-finished edition</p>
                   <h2
-                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.08] text-ink text-balance m-0 mb-4"
+                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance m-0 mb-4 md:mb-5"
                     style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                   >
                     Take a print further — finished by hand.
@@ -1015,7 +1015,7 @@ export const Welcome = () => {
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                     <MagneticLink
                       to="/collections"
-                      className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] transition-all duration-300 hover:bg-accent"
+                      className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] transition-colors duration-300 hover:bg-accent hover:text-ink"
                       ariaLabel="Choose a print to hand-finish"
                     >
                       Choose a print to finish

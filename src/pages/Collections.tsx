@@ -506,7 +506,7 @@ const CatalogueSetCard = () => {
       className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-14"
     >
       <div
-        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 3xl:py-9 text-center"
+        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 text-center"
         style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>The full collection</p>
@@ -892,7 +892,7 @@ export const Collections = () => {
                           className="group block"
                           aria-label={`View ${painting.title}`}
                         >
-                          <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-[0_30px_72px_rgba(0,0,0,0.6)]">
+                          <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-liftLg">
                             {/* Gentle zoom on hover only — a small scale-up of the
                                 cover. Hugo: hover should zoom in a little, never
                                 flick to another colourway. */}

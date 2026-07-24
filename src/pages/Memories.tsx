@@ -973,7 +973,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             A pin board, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.1} className="mx-auto max-w-[920px] 3xl:max-w-[1040px]">
+        <Reveal as="div" delay={0.06} className="mx-auto max-w-[920px] 3xl:max-w-[1040px]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
@@ -987,7 +987,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             touched your life, add a memory below — the family reads every one.
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-4 md:mt-5">
+        <Reveal as="div" delay={0.12} className="mt-4 md:mt-5">
           <button type="button" onClick={onShare} className={cn(BTN_PRIMARY, "w-fit")}>
             Share a memory <span aria-hidden="true" className="ml-2">→</span>
           </button>
