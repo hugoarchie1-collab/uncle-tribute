@@ -946,7 +946,10 @@ export const PAINTINGS: Painting[] = [
         image: "/img/paintings/tridecagon-moonstone-blue.jpg",
         hex: "#b8c7d1",
         isOriginal: false,
-        available: true,
+        // Hidden 2026-07-24: exported from a tighter crop (spandrel corners cut) +
+        // washed-out; its signature can't be placed cleanly. Re-enable once the
+        // uncropped master is re-exported to match its Tridecagon siblings.
+        available: false,
       },
       {
         name: "Supernova Violet",
