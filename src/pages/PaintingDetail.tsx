@@ -2680,7 +2680,15 @@ export const PaintingDetail = () => {
   // collapsing during the colourway crossfade). Only the ratio matters here;
   // the rendered size is still governed by the h-auto/max-h classes. Falls back
   // to a square slot when the size string isn't in cm.
-  const heroDims = parseSizeCm(painting.size ?? "") ?? { w: 1, h: 1 };
+  // ⚠️ Use the SELECTED PRINT TIER's dims (which match the printed image's
+  // aspect), NOT painting.size (the original artwork). For the one LANDSCAPE
+  // work (Ophiuchus) the original is 80×60 (1.33) but the print/image is
+  // 51.8×42 (1.23) — feeding painting.size made the framed preview box the wrong
+  // shape, so the artwork didn't fill it and the frame rails read uneven/awful
+  // (Hugo 2026-07-24). Square works are unaffected (both ratios are 1:1).
+  const heroDims =
+    parseSizeCm(selectedTier.size) ??
+    parseSizeCm(painting.size ?? "") ?? { w: 1, h: 1 };
 
   const scrollToOrder = () => {
     const el = document.getElementById("order-print");
