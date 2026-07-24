@@ -57,6 +57,19 @@
         "--strictPort"
       ],
       "port": 4487
+    },
+    {
+      "name": "paper-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "preview",
+        "--",
+        "--port",
+        "4611",
+        "--strictPort"
+      ],
+      "port": 4611
     }
   ]
 }

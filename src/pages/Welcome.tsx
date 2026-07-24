@@ -1308,15 +1308,17 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // v3 (2026-07-24, Hugo: "the white ring looks terrible"): the SOFT
-                // warm atmospheric glow is baked INTO the asset (no hard rim, no CSS
-                // drop-shadow doubling it) — a gentle Earth-like limb, shallow +
-                // centred. Near-solid mask so the glow at the crest isn't dimmed;
-                // the sky above is already transparent in the asset's own alpha.
+                // v4 (2026-07-24, Hugo: "stretch it FULL-WIDTH across the bottom,
+                // SAME size + proportions as the Earth"): the limb is cropped to the
+                // Earth cutout's EXACT 2000×541 dims with the planet filling the full
+                // width (sky only in the top corners), and rendered with the Earth's
+                // EXACT width classes + mask below — so it is a pixel-for-pixel mirror
+                // of the top Earth limb, just a different world. Soft warm glow baked
+                // in (no white ring). "as above, so below".
                 WebkitMaskImage:
-                  "radial-gradient(120% 175% at 50% 100%, #000 74%, rgba(0,0,0,0.5) 90%, transparent 100%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "radial-gradient(120% 175% at 50% 100%, #000 74%, rgba(0,0,0,0.5) 90%, transparent 100%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>

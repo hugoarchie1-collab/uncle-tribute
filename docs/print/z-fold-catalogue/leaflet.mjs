@@ -115,7 +115,7 @@ const backCover = `
   <div>
     <div class="eyebrow muted">The Mandala Company</div>
     <div class="serif" style="font-size:13.5pt;font-weight:600;line-height:1.1;letter-spacing:-0.02em;margin-top:3mm">How each order is made</div>
-    <div style="font-size:7pt;line-height:1.48;color:${INK_MUTED};margin-top:2.4mm">Every print is made to order at <b style="color:${INK};font-weight:600">Point 101, London</b> — one of the UK's leading giclée print ateliers — on 350gsm Hahnemühle archival paper with pigment inks. Lifespan under normal display conditions is in excess of 200 years.</div>
+    <div style="font-size:7pt;line-height:1.48;color:${INK_MUTED};margin-top:2.4mm">Every print is made to order at <b style="color:${INK};font-weight:600">a leading giclée atelier in London</b> — on 350gsm Hahnemühle archival paper with pigment inks. Lifespan under normal display conditions is in excess of 200 years.</div>
     <ul style="list-style:none;margin:3mm 0 0;display:grid;grid-template-columns:1fr 1fr;gap:2mm 3mm">
       ${["Estate-stamped by The Mandala Company","Hand-numbered within its edition","Certificate of Authenticity + Certificate ID","Sealed with the estate's wax rose","Enclosed with this printed catalogue","Dispatched within 7–10 working days"].map(x=>`<li style="font-size:6.5pt;line-height:1.32;color:${INK};display:flex;gap:1.4mm"><span class="rust" style="font-size:6pt;line-height:1.4">✦</span><span>${x}</span></li>`).join("")}
     </ul>
@@ -171,7 +171,7 @@ const editionsPanel = `
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.4mm 3mm;margin-top:2mm">
     ${FRAME_STYLES.map(([n,hex])=>`<div style="font-size:6.7pt;color:${INK};display:flex;align-items:center;gap:1.6mm"><span style="width:2.6mm;height:2.6mm;border-radius:50%;background:${hex};box-shadow:0 0 0 0.4pt rgba(237,230,214,0.45)"></span>${n}</div>`).join("")}
   </div>
-  <div style="font-size:6.3pt;color:${INK_MUTED};margin-top:1.8mm;line-height:1.4">Bespoke Point 101 frames on A2 &amp; A1 — any style, one price: <b style="color:${INK}">+£295 / +£395</b>. Glazing: art acrylic or anti-reflective museum glass, included.</div>
+  <div style="font-size:6.3pt;color:${INK_MUTED};margin-top:1.8mm;line-height:1.4">Bespoke frames on A2 &amp; A1 — any style, one price: <b style="color:${INK}">+£295 / +£395</b>. Glazing: art acrylic or anti-reflective museum glass, included.</div>
   <div style="font-size:6.3pt;color:${INK_MUTED};margin-top:1.8mm;line-height:1.4"><b style="color:${INK}">Hand-finished by Polly Wedge</b> in Stephen's geometric tradition, A2 &amp; A1 — <b style="color:${INK}">+£350 / +£495</b>.</div>
 </div>`;
 
