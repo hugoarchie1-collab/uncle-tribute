@@ -562,6 +562,26 @@ video[autoplay]::-webkit-media-controls {
     --pd-wall 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
     --pd-halo 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
+.pd-art {
+  /* THE PAINTING, DIMMED — a heavily-blurred, darkened wash of the SELECTED
+     artwork behind the whole page (2026-07-24, replaces the coloured orb halo).
+     Same recipe as the site's approved SceneBackdrop: heavy blur + strong
+     darken so it reads as atmosphere, never detail, and never fights the crisp
+     artwork or the cream text on top. STATIC (no scroll transform) so the big
+     blur rasterises ONCE — a blurred+animated fixed layer is the classic scroll-
+     jank trap. Scaled up so the blurred edges never show; image set inline from
+     the selected colourway, so switching re-tints the page with its own art. */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center 20%;
+  background-repeat: no-repeat;
+  filter: blur(32px) brightness(0.38) saturate(1.2);
+  transform: scale(1.22);
+  opacity: 0.96;
+}
 .pd-wash {
   position: fixed;
   inset: 0;
@@ -576,19 +596,21 @@ video[autoplay]::-webkit-media-controls {
      stays legible. */
   background: radial-gradient(
     120% 100% at 50% -10%,
-    color-mix(in srgb, var(--pd-wall) 22%, transparent),
+    color-mix(in srgb, var(--pd-wall) 13%, transparent),
     transparent 72%
   );
 }
 .pd-wall {
+  /* A gentle top vignette for title legibility — kept light now that pd-art
+     carries the colour, so the darkened painting reads through underneath. */
   position: absolute;
   inset: 0 0 auto;
   height: min(175vh, 100%);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--pd-wall) 86%, transparent),
-    color-mix(in srgb, var(--pd-wall) 54%, transparent) 44%,
-    transparent
+    color-mix(in srgb, var(--pd-wall) 74%, transparent),
+    color-mix(in srgb, var(--pd-wall) 40%, transparent) 40%,
+    transparent 72%
   );
 }
 .pd-reprise {
@@ -597,7 +619,7 @@ video[autoplay]::-webkit-media-controls {
   height: 70vh;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--pd-wall) 62%, transparent),
+    color-mix(in srgb, var(--pd-wall) 44%, transparent),
     transparent
   );
 }

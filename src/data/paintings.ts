@@ -108,7 +108,7 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on 350gsm Hahnemühle archival paper using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at our London atelier.";
+  "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at our London atelier.";
 
 /**
  * The edition the catalogue is CURRENTLY issuing under. Every artwork is
@@ -437,7 +437,7 @@ export const getCanvasPricePence = (tier: PrintTier): number | null =>
 
 /** Copy for the canvas add-on, mirrored into api/checkout.ts (gotcha #9, label only). */
 export const CANVAS_NOTE =
-  "Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame. Made to order.";
+  "Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a 39mm-deep solid wooden gallery frame and finished ready to hang — no glass, no separate frame. Made to order.";
 
 // CANVAS EDGE — how the sides of the stretched canvas are finished. Like the
 // paper finish. Mirror wrap is the clean default (included); the four float

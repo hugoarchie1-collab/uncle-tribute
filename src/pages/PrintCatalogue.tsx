@@ -868,7 +868,7 @@ function EditionsPage() {
               <Seal w={52} />
               <div>
                 <p className="font-display text-ink ed-prov-foot-name">
-                  350gsm Hahnemühle archival paper
+                  Hahnemühle Photo Rag · 308gsm cotton
                 </p>
                 <p className="font-sans text-ink-muted ed-prov-foot-sub">
                   Dispatched in 7–10 working days · priced in £ · $ · € · A$ · C$

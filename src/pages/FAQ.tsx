@@ -79,8 +79,8 @@ const FAQS: QA[] = [
     question: "What are the prints made on — and can I have canvas?",
     answer: (
       <>
-        As standard, every print is made on <strong>350gsm Hahnemühle archival
-        cotton-rag paper</strong>, printed with pigment inks on a 12-colour
+        As standard, every print is made on <strong>Hahnemühle Photo Rag —
+        308gsm, 100% cotton archival paper</strong>, printed with pigment inks on a 12-colour
         large-format giclée press. Each is made to order in London, at
         a Hahnemühle Certified Studio used by museums and contemporary artists
         alike. Under normal display conditions it carries archival,

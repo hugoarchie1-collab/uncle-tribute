@@ -9,7 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -33,7 +33,6 @@ import {
   FRAME_STYLES,
   FRAME_STYLE_GROUPS,
   FRAME_TIERS,
-  PAPER_FINISHES,
   CANVAS_EDGES,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
@@ -1009,7 +1008,6 @@ const BuyBox = ({
   onEmbellishedChange,
   onCanvasChange,
   onFrameStyleChange,
-  onPaperFinishChange,
   onCanvasEdgeChange,
   orderSentinelRef,
   orderEndSentinelRef,
@@ -1034,7 +1032,6 @@ const BuyBox = ({
   onEmbellishedChange: (next: boolean) => void;
   onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
-  onPaperFinishChange: (next: string) => void;
   onCanvasEdgeChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
@@ -1534,9 +1531,9 @@ const BuyBox = ({
                       </strong>
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                      Museum giclée on archival Hahnemühle fine-art paper, set within a
-                      hand-cut conservation mount, hand-framed in solid wood, glazed and
-                      ready to hang. Choose your paper below.
+                      Museum giclée on Hahnemühle Photo Rag — 308gsm, 100% cotton
+                      archival paper — set within a hand-cut conservation mount,
+                      hand-framed in solid wood, glazed and ready to hang.
                     </span>
                   </button>
                 )}
@@ -1557,7 +1554,7 @@ const BuyBox = ({
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
                       Printed on bright 350gsm textured fine-art canvas, hand-stretched
-                      over a deep, solid gallery-depth wooden frame — ready to hang, no
+                      over a 39mm-deep solid wooden gallery frame — ready to hang, no
                       glass. Choose your edge finish below.
                     </span>
                   </button>
@@ -1693,44 +1690,16 @@ const BuyBox = ({
                       {framedTotalLabel ? `. Framed: ${framedTotalLabel}.` : "."}
                     </p>
                   </div>
-                  {/* PAPER FINISH — a curated three, not the printer's full
-                      trade range (Hugo 2026-07-24: "curate, don't replicate").
-                      Every finish is INCLUDED in the framed price (no surcharge),
-                      so this reads as a taste choice, not an up-sell. The chosen
-                      paper rides to checkout so the estate orders the right
-                      stock. Monochrome (#7): selected = solid ink ring. */}
-                  <div className="flex flex-col gap-2">
-                    <span className={EYEBROW_TIGHT}>Paper</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {PAPER_FINISHES.map((p) => (
-                        <button
-                          key={p.id}
-                          type="button"
-                          onClick={() => onPaperFinishChange(p.id)}
-                          aria-pressed={paperFinish === p.id}
-                          title={p.spec}
-                          className={cn(
-                            "inline-flex items-center font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
-                            paperFinish === p.id
-                              ? "ring-ink text-ink"
-                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                          )}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
-                    </div>
-                    {/* Chosen paper — the archival spec + why, no price (it's
-                        always included). Mirrors the frame-detail line above. */}
-                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
-                      {(() => {
-                        const p =
-                          PAPER_FINISHES.find((x) => x.id === paperFinish) ??
-                          PAPER_FINISHES[0];
-                        return `${p.spec} — ${p.note}`;
-                      })()}
-                    </p>
-                  </div>
+                  {/* PAPER — the estate prints on ONE house paper (Hahnemühle
+                      Photo Rag). The multi-paper picker was removed 2026-07-24
+                      (Hugo: the three curated options looked identical on-page and
+                      never changed the price, so the "choice" only confused).
+                      Stated now as a fixed spec; `paperFinish` stays at
+                      DEFAULT_PAPER_FINISH (Photo Rag) and still rides to checkout. */}
+                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                    Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival
+                    fine-art paper, the house stock for every framed print.
+                  </p>
                   {/* Glazing is a single INCLUDED standard (anti-glare,
                       anti-reflective museum glass) — the glass-vs-acrylic picker
                       was removed 2026-07-24 (Hugo: it read as a confusing extra
@@ -2623,17 +2592,14 @@ export const PaintingDetail = () => {
   const orderSentinelRef = useRef<HTMLDivElement>(null);
   const orderEndSentinelRef = useRef<HTMLDivElement>(null);
 
-  // "PAINTED WALL, LIT" — the picture-light halo now stays lit through the WHOLE
-  // page and moves WITH the scroll (Hugo 2026-07-24: "throughout and dynamic
-  // with scroll" — it used to fade out near the top). The .pd-halo layer is
-  // position:fixed (always in view); here we drift it vertically and gently
-  // breathe its opacity across the full scroll so the glow feels alive from top
-  // to bottom without ever disappearing. Reduced-motion holds it steady & full.
-  // HOOKS, so they live here ABOVE the early returns (rules-of-hooks).
-  const atmosphereReduceMotion = useReducedMotion();
-  const { scrollYProgress: pageScroll } = useScroll();
-  const haloOpacityRaw = useTransform(pageScroll, [0, 0.5, 1], [0.95, 0.78, 0.9]);
-  const haloYRaw = useTransform(pageScroll, [0, 1], ["-8%", "42%"]);
+  // "THE PAINTING, DIMMED" — the page background is now a heavily-blurred,
+  // darkened wash of the SELECTED artwork itself (2026-07-24, Hugo: replace the
+  // coloured "orb ball of light" halo with a background that reflects the
+  // painting — "a darkened painting behind"). It's the site's proven scene-
+  // backdrop recipe (heavy blur + strong darken + scrim) applied to the hero
+  // image, so switching colourway re-tints the whole page with that colour's own
+  // artwork. STATIC (no scroll-driven transform) so the big blur rasterises once
+  // and never janks the scroll — see .pd-art in global.css.
 
   if (!painting) return <Navigate to="/collections" replace />;
   const selected =
@@ -2866,23 +2832,19 @@ export const PaintingDetail = () => {
         type="product"
         jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
-      {/* "PAINTED WALL, LIT" — the authored colour atmosphere (2026-07-03,
-          replacing the blurred image echo Hugo rejected). Flat painted-wall
-          gradient at the top, picture-light halo over the hero zone (receding
-          on scroll), a quiet reprise at the foot, and a fixed whisper wash so
-          the deep page still belongs to the colourway. All colour comes from
-          the registered --pd-* vars set on the page root — switching colourway
-          re-tints every layer in one 0.9s ease, no image fetch, no blur. */}
+      {/* THE PAINTING, DIMMED (2026-07-24) — the background is a heavily-blurred,
+          darkened wash of the SELECTED artwork (`pd-art`), so the page genuinely
+          reflects the painting on it and re-tints when the colourway changes. The
+          coloured "orb ball of light" halo Hugo disliked is gone. The wall / wash
+          / reprise tint layers stay ON TOP as a legibility scrim (still driven by
+          the --pd-* colourway vars), keeping cream text readable over the art. */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden>
+        <div
+          className="pd-art"
+          style={{ backgroundImage: `url(${asset(webp(selected.image))})` }}
+        />
         <div className="pd-wash" />
         <div className="pd-wall" />
-        <motion.div
-          className="pd-halo"
-          style={{
-            opacity: atmosphereReduceMotion ? 1 : haloOpacityRaw,
-            y: atmosphereReduceMotion ? 0 : haloYRaw,
-          }}
-        />
         <div className="pd-reprise" />
       </div>
 
@@ -3110,7 +3072,6 @@ export const PaintingDetail = () => {
                 onEmbellishedChange={setEmbellished}
                 onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
-                onPaperFinishChange={setPaperFinish}
                 onCanvasEdgeChange={setCanvasEdge}
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}

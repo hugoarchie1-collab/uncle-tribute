@@ -119,7 +119,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "The print itself",
     question: "What are the prints made on?",
     answer:
-      "350gsm Hahnemühle archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer.",
+      "Hahnemühle Photo Rag — 308gsm, 100% cotton archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer.",
   },
   {
     eyebrow: "Lead time",
