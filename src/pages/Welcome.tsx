@@ -1266,10 +1266,13 @@ export const Welcome = () => {
               feather as the Earth cutout, so it behaves identically: the limb
               curves UP from the foot, the body bleeding below the fold, mirroring
               the Earth's limb curving DOWN at the top. The warm bands echo the
-              rust accent; the Great Red Spot crests the right edge. Processed by
-              scripts (crop → transparent black → alpha-feather → warm modulate);
-              regenerate under a new -vN filename (immutable /img cache). Decorative
-              only (aria-hidden). */}
+              rust accent. v2 (2026-07-24, Hugo: "too big + no glow like earth"):
+              re-cut SHALLOWER/gentler (thin limb, not a dome) to match the Earth's
+              proportion, and a bright warm ATMOSPHERIC RIM GLOW baked along the limb
+              (outer bloom + inner rim) so it glows like the top Earth. Processed by
+              ImageMagick (shallow crop → transparent black → alpha-feather → baked
+              wide+edge warm glow → warm modulate); regenerate under a new -vN
+              filename (immutable /img cache). Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
             className="relative z-20 isolate w-full overflow-hidden mt-[clamp(3rem,7vh,6rem)] h-[clamp(240px,30vw,440px)]"
@@ -1289,7 +1292,7 @@ export const Welcome = () => {
                 UP into the peacock exactly like the masthead Earth — just a
                 different world closing the page. */}
             <img
-              src={asset("/img/scenes/jupiter-limb-v1.webp")}
+              src={asset("/img/scenes/jupiter-limb-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1298,10 +1301,18 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
+                // Warm bloom around the glowing limb (echoes the top Earth's rim).
+                filter:
+                  "drop-shadow(0 -3px 20px rgba(255,201,140,0.45)) drop-shadow(0 -1px 6px rgba(255,228,192,0.4))",
+                // Near-solid mask so the baked atmospheric RIM GLOW at the crest is
+                // NOT dimmed away (v1's aggressive fade killed the glow); the space
+                // above the limb is already transparent in the asset's own alpha, so
+                // a solid mask never boxes it — it only lets the planet body bleed off
+                // the very bottom into the peacock.
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(110% 170% at 50% 100%, #000 70%, rgba(0,0,0,0.55) 88%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(110% 170% at 50% 100%, #000 70%, rgba(0,0,0,0.55) 88%, transparent 100%)",
               }}
             />
           </section>
