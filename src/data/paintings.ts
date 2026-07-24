@@ -403,9 +403,22 @@ export const getTierById = (
  */
 export const getLowestTierPricePence = (painting: Painting): number => {
   const tiers = getPrintTiers(painting);
-  if (tiers.length === 0) return getAnchorTier(painting).pricePence;
-  return Math.min(...tiers.map((t) => t.pricePence));
+  if (tiers.length === 0)
+    return getTierAdvertisedPricePence(getAnchorTier(painting));
+  return Math.min(...tiers.map(getTierAdvertisedPricePence));
 };
+
+/**
+ * The ADVERTISED / buyable price of a tier (pence) — every piece is now a
+ * FRAMED product (Hugo 2026-07-24, [[project_framed_default_model]]), so the
+ * honest "from £…" figure, the Google Merchant SKU price and the Product
+ * JSON-LD offers are all the FRAMED price (print + classic frame), falling back
+ * to canvas, then bare, for any finish-less size. This is what a buyer actually
+ * pays on landing — no unframed number that isn't purchasable. Keep browse
+ * tiles / meta / feed / JSON-LD all routed through this (advertised == charged).
+ */
+export const getTierAdvertisedPricePence = (tier: PrintTier): number =>
+  tier.pricePence + (tier.framingPricePence ?? tier.canvasPricePence ?? 0);
 
 /**
  * Returns the framing surcharge for a tier, or null if framing isn't

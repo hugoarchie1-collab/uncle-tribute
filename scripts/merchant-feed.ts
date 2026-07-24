@@ -21,7 +21,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
-import { PAINTINGS, getPrintTiers } from "../src/data/paintings";
+import { PAINTINGS, getPrintTiers, getTierAdvertisedPricePence } from "../src/data/paintings";
 
 const SITE = "https://themandalacompany.com";
 
@@ -105,7 +105,10 @@ export function buildMerchantFeed(): MerchantFeed {
 
   for (const painting of PAINTINGS) {
     const colourways = painting.colourways.filter((c) => c.available);
-    const tiers = getPrintTiers(painting); // honours available: false
+    // A0 (heirloom) is enquiry-only (framed to order, not one-click buyable),
+    // so it must NOT appear as a purchasable Google Shopping SKU. Every fed SKU
+    // is a size a buyer can actually check out.
+    const tiers = getPrintTiers(painting).filter((t) => t.id !== "heirloom");
     const description = feedDescription(painting.description);
     let skus = 0;
 
@@ -127,7 +130,7 @@ export function buildMerchantFeed(): MerchantFeed {
             `      <description>${escapeXml(description)}</description>`,
             `      <link>${escapeXml(link)}</link>`,
             `      <g:image_link>${escapeXml(imageLink)}</g:image_link>`,
-            `      <g:price>${escapeXml(feedPrice(tier.pricePence))}</g:price>`,
+            `      <g:price>${escapeXml(feedPrice(getTierAdvertisedPricePence(tier)))}</g:price>`,
             "      <g:availability>in_stock</g:availability>",
             "      <g:condition>new</g:condition>",
             "      <g:brand>Stephen Meakin</g:brand>",
