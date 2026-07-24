@@ -1546,9 +1546,9 @@ const BuyBox = ({
               </span>
             </legend>
             <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
-              First choose your material — museum fine-art paper or ready-to-hang
-              stretched canvas — then take it further with framing or
-              hand-finishing by the estate. All optional and made to order.
+              Every piece arrives ready to hang — choose it hand-framed in solid
+              wood, or gallery-wrapped on canvas. Made to order by the estate,
+              delivered free.
             </p>
 
             <div className="flex flex-col gap-2.5">
@@ -1558,137 +1558,70 @@ const BuyBox = ({
                   ready-to-hang alternative. Maps to the existing `canvas`
                   boolean (paper = off). Canvas can't be glazed-framed, so
                   choosing it hides the framing + hand-finishing options. */}
-              {canvasOffered && (
-                <div className="flex flex-col gap-2">
-                  <span className={EYEBROW_TIGHT}>Material</span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onCanvasChange(false)}
-                      aria-pressed={!canvasActive}
-                      className={cn(
-                        "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
-                        !canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
-                      )}
-                    >
-                      <span className="flex w-full items-baseline justify-between gap-2">
-                        <strong className="font-sans text-[14px] text-ink">
-                          Fine-art paper
-                        </strong>
-                        <span className="font-sans text-[13px] font-semibold text-ink-muted whitespace-nowrap">
-                          Included
-                        </span>
-                      </span>
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                        Museum giclée — pigment inks on 350gsm Hahnemühle
-                        archival paper. Frame it below, or leave it bare.
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onCanvasChange(true)}
-                      aria-pressed={canvasActive}
-                      className={cn(
-                        "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
-                        canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
-                      )}
-                    >
-                      <span className="flex w-full items-baseline justify-between gap-2">
-                        <strong className="font-sans text-[14px] text-ink">
-                          Stretched canvas
-                        </strong>
-                        {canvasPriceLabel && (
-                          <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
-                            +{canvasPriceLabel}
-                          </span>
-                        )}
-                      </span>
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                        Gallery-wrapped over a wooden stretcher — ready to hang,
-                        no frame needed.
-                      </span>
-                    </button>
-                  </div>
-                  {canvasActive && (
-                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted ring-1 ring-ink/70 px-2.5 py-1.5">
-                      Ready to hang — no framing or glazing needed. Delivered
-                      free.
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Quiet lead to the eye for the paper path — guidance toward the
-                  recommended presentation, NOT a default selection (DMCC: the
-                  frame charge is never pre-ticked). Hidden on canvas. */}
-              {framingOffered && !canvasActive && (
-                <p
-                  className={cn(EYEBROW_TIGHT, "m-0 flex items-center gap-2")}
-                >
-                  <span aria-hidden="true" className="text-ink/40">—</span>
-                  Most collectors choose it hand-framed, ready to hang
-                </p>
-              )}
-
-              {/* FRAME — the recommended presentation. Given a gently stronger
-                  resting outline + a "Recommended" tag so it draws the eye (the
-                  ready-to-hang framed piece is the highest-AOV, highest-
-                  satisfaction option), but the CHARGE stays opt-in — never
-                  pre-ticked (DMCC drip-pricing rule). */}
-              {framingOffered && !canvasActive && (
-                <label
-                  className={cn(
-                    "flex items-start gap-3 ring-1 px-4 py-3.5 cursor-pointer transition-all duration-300",
-                    framingActive
-                      ? "ring-ink"
-                      : "ring-ink/35 hover:ring-ink/60",
-                  )}
-                >
-                  <input
-                    type="checkbox"
-                    checked={framingActive}
-                    onChange={(e) => onFramingChange(e.target.checked)}
-                    className="mt-1 h-4 w-4 accent-ink shrink-0 cursor-pointer"
-                  />
-                  <span className="flex flex-col gap-1 font-sans text-[13.5px] leading-[1.55] text-ink-muted min-w-0">
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="flex items-center gap-2 flex-wrap">
-                        <strong className="text-ink">Bespoke framing</strong>
-                        <span className="font-sans text-[13px] font-semibold uppercase tracking-[0.16em] text-ink-muted ring-1 ring-line px-1.5 py-0.5">
-                          Recommended
-                        </span>
-                      </span>
+              {/* TWO PRODUCTS — every piece is a Framed museum print (paper +
+                  frame, mandatory) OR a Canvas print. Framing is NOT an add-on.
+                  A0 has no Framed option (can't ship glazed) → canvas only. */}
+              <span className={EYEBROW_TIGHT}>Presentation</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {framingOffered && (
+                  <button
+                    type="button"
+                    onClick={() => onFramingChange(true)}
+                    aria-pressed={framingActive}
+                    className={cn(
+                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                      framingActive ? "ring-ink" : "ring-line hover:ring-ink/40",
+                    )}
+                  >
+                    <span className="flex w-full items-baseline justify-between gap-2">
+                      <strong className="font-sans text-[14px] text-ink">
+                        Framed museum print
+                      </strong>
                       {framingPriceLabel && (
-                        <span className="font-sans text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                        <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
                           +{framingPriceLabel}
                         </span>
                       )}
                     </span>
-                    <span>
-                      Your giclée print — pigment inks on 350gsm Hahnemühle
-                      archival paper (not canvas) — hand-framed to order in a
-                      real solid-wood moulding of your choice: natural oak,
-                      stained black, painted white, or warm walnut. Glazed
-                      behind ultra-clear shatter-safe acrylic or an
-                      anti-reflective glass upgrade, with the image running
-                      right to the frame — no
-                      mount border. Fitted with hanging cord and arrives ready
-                      to hang. Every finish is included. Allow{" "}
-                      {FRAME_LEAD_WEEKS} weeks.
+                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                      Museum giclée on 350gsm Hahnemühle archival paper, hand-framed
+                      in solid wood, glazed and ready to hang. Always framed.
                     </span>
-                    {/* Free delivery applies to framed prints too — reassurance
-                        shown the moment a frame is ticked. There is no framed-
-                        shipping surcharge (the estate absorbs delivery), so this
-                        is a positive note, not a DMCC drip-pricing disclosure. */}
-                    {framingActive && (
-                      <span className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-0.5 ring-1 ring-ink/70 px-2.5 py-1.5">
-                        Framed and delivered free — UK, Europe, North America, Australia & NZ.
-                        No delivery charge is added at checkout.
-                      </span>
+                  </button>
+                )}
+                {canvasOffered && (
+                  <button
+                    type="button"
+                    onClick={() => onCanvasChange(true)}
+                    aria-pressed={canvasActive}
+                    className={cn(
+                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                      canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
                     )}
-                  </span>
-                </label>
-              )}
+                  >
+                    <span className="flex w-full items-baseline justify-between gap-2">
+                      <strong className="font-sans text-[14px] text-ink">
+                        Canvas print
+                      </strong>
+                      {canvasPriceLabel && (
+                        <span className="font-sans text-[13px] font-semibold text-ink whitespace-nowrap">
+                          +{canvasPriceLabel}
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                      Gallery-wrapped over a solid wooden stretcher — ready to hang,
+                      no frame needed. Delivered free.
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* (The old opt-in "Bespoke framing" checkbox was removed 2026-07-24:
+                  framing is no longer an add-on — it's baked into the Framed
+                  museum print product above. The frame-style + glazing pickers
+                  below are the INCLUDED finish choice, shown when Framed is
+                  selected.) */}
 
               {/* FRAMING FINISH PICKERS — frame style + glazing, shown once
                   framing is ticked. Included-in-price preferences (NO upcharge):
@@ -2446,8 +2379,12 @@ export const PaintingDetail = () => {
   }, [painting?.id, colourwayParam]);
 
   // Tier ladder + size picker selection. Always preselect the anchor.
+  // A3 "atelier" (Open Edition) is DROPPED from the buy options (Hugo 2026-07-24:
+  // "every print is a Framed museum print OR a Canvas print — no unframed"): A3
+  // has neither a frame nor a canvas price, so it can't be either product. The
+  // range starts at A2 Collector.
   const visibleTiers = useMemo(
-    () => (painting ? getPrintTiers(painting) : []),
+    () => (painting ? getPrintTiers(painting).filter((t) => t.id !== "atelier") : []),
     [painting],
   );
   // Split the ladder: standard size tiers feed the radio grid; a one-off tier
@@ -2507,6 +2444,31 @@ export const PaintingDetail = () => {
     if (next) setCanvas(false);
   };
 
+  // Two-product model (Hugo 2026-07-24): every piece is a FRAMED MUSEUM PRINT or a
+  // CANVAS PRINT — framing is never an add-on. On each size, pre-select the right
+  // default so the price is correct on landing and buying is effortless: Framed
+  // where the size can be framed (A2/A1), Canvas where it can't (A0). Re-runs when
+  // the selected size changes; a manual Framed/Canvas pick persists (same size).
+  useEffect(() => {
+    const t = visibleTiers.find((x) => x.id === selectedTierId);
+    if (!t) return;
+    const framingAvail = getFramingPricePence(t) !== null;
+    const canvasAvail = getCanvasPricePence(t) !== null;
+    if (framingAvail) {
+      setFraming(true);
+      setCanvas(false);
+      setEmbellished(false);
+    } else if (canvasAvail) {
+      setCanvas(true);
+      setFraming(false);
+      setEmbellished(false);
+    } else {
+      setFraming(false);
+      setCanvas(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTierId, visibleTiers]);
+
   // Re-sync the SIZE + add-ons when the painting changes (SPA nav between works
   // keeps this component mounted). The colourway already re-syncs above; without
   // this the selected size and add-on ticks silently carried onto the next
@@ -2514,9 +2476,16 @@ export const PaintingDetail = () => {
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setSelectedTierId(anchorTier?.id);
-    setFraming(false);
+    // Default the two-product presentation for the anchor size: FRAMED museum
+    // print where it can be framed (A2/A1), else Canvas (A0) — never unframed
+    // (Hugo 2026-07-24). Replaces the old "no add-ons" reset.
+    {
+      const framingAvail = anchorTier ? getFramingPricePence(anchorTier) !== null : false;
+      const canvasAvail = anchorTier ? getCanvasPricePence(anchorTier) !== null : false;
+      setFraming(framingAvail);
+      setCanvas(!framingAvail && canvasAvail);
+    }
     setEmbellished(false);
-    setCanvas(false);
     setFrameStyle(DEFAULT_FRAME_STYLE);
     setGlazing(DEFAULT_GLAZING);
     /* eslint-enable react-hooks/set-state-in-effect */
