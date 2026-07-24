@@ -726,40 +726,12 @@ export const Collections = () => {
               </div>
             </div>
 
-            {/* THE FIRST EDITION — founding-collector launch band (honest
-                urgency). The edition has just opened, so the lowest hand-numbers
-                are genuinely unallocated — being early is the reward. Only REAL
-                scarcity (the edition caps); never a countdown or fabricated
-                "N left". Commerce framing, not Stephen's verbatim words. */}
-            <div className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
-              <p
-                className={cn(EYEBROW, "m-0 mb-2")}
-                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
-              >
-                The First Edition — now open
-              </p>
-              <p
-                className="font-display font-normal tracking-[-0.012em] text-ink m-0 max-w-[920px]"
-                style={{
-                  fontVariationSettings: '"opsz" 40, "wght" 400',
-                  fontSize: "clamp(19px, 2.1vw, 34px)",
-                  lineHeight: 1.36,
-                  textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
-                }}
-              >
-                Stephen's work has just been opened as hand-numbered editions.
-                Founding collectors receive the lowest numbers — issued with a
-                Certificate of Authenticity and recorded in the estate register.
-              </p>
-              <p
-                className={cn(META, "m-0 mt-3 text-ink-muted")}
-                style={{ textShadow: "0 1px 10px rgba(0,0,0,0.8)" }}
-              >
-                Collector Edition of 200 · Atelier Edition of 75 · Heirloom
-                Edition of only 18 — each print numbered within its edition.
-                When an edition's numbers are taken, it closes.
-              </p>
-            </div>
+            {/* (Removed 2026-07-24: the "First Edition — now open" launch band.
+                On a memorial site its "just opened / founding collectors / when
+                the numbers are taken it closes" urgency read as a sales pitch, and
+                it duplicated the calm, factual edition sizes already presented in
+                "The editions" band directly below. The provenance facts survive
+                there without the pressure.) */}
 
             {/* THE EDITIONS — the named sizes presented by what each INCLUDES
                 (size · numbering · Certificate of Authenticity), the TASCHEN

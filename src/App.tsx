@@ -283,8 +283,6 @@ export default function App() {
       <BrowserRouter basename={basename}>
         <CurrencyProvider>
         <RouteHeadDefaults />
-          {/* Sitewide film-grain texture — sits above content at z-100,
-              opacity tuned low so it textures without obscuring. */}
           {/* PERSISTENT atmospheric ground (2026-07-07, Hugo: "background
               glitches when you click a page" + "reveal it clearer like home").
               Every page's OWN backdrop sits INSIDE the route crossfade, so
@@ -295,7 +293,6 @@ export default function App() {
               covers it in normal viewing; it only shows in the transition gap
               (and behind any page that lacks its own). */}
           <AmbientBackdrop opacity={0.9} />
-          <div aria-hidden="true" className="film-grain" />
           {/* Premium custom cursor — fine-pointer + motion-allowed only;
               renders nothing (native cursor) on touch / reduced-motion. */}
           <CustomCursor />
