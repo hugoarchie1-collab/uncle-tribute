@@ -1282,7 +1282,7 @@ export const Welcome = () => {
               filename (immutable /img cache). Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-2rem] md:mb-[-2.5rem] h-[28vw] min-h-[190px] max-h-[560px]"
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-2rem] md:mb-[-2.5rem] h-[15vw] min-h-[130px] max-h-[300px]"
           >
             {/* Warm halo along the very foot — matches the top Earth's rim. */}
             <div
@@ -1299,7 +1299,7 @@ export const Welcome = () => {
                 UP into the peacock exactly like the masthead Earth — just a
                 different world closing the page. */}
             <img
-              src={asset("/img/scenes/jupiter-limb-v6.webp")}
+              src={asset("/img/scenes/jupiter-limb-v7.webp")}
               alt=""
               loading="lazy"
               decoding="async"
