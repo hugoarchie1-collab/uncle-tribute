@@ -2960,7 +2960,7 @@ export const PaintingDetail = () => {
                         shows INSIDE the selected moulding (no mat), updating per
                         frame style. Plain print otherwise. */}
                     <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h}>
-                    <CanvasWrap active={canvas} edge={canvasEdge} aspectRatio={heroDims.w / heroDims.h}>
+                    <CanvasWrap active={canvas} edge={canvasEdge} src={selected.image} aspectRatio={heroDims.w / heroDims.h}>
                     <AnimatePresence mode="popLayout">
                       <motion.picture
                         key={selected.image}

@@ -113,69 +113,141 @@ const CANVAS_WRAP_EDGE =
   "inset 0 -16px 20px -12px rgba(0,0,0,0.62), " +
   "inset 13px 13px 20px -16px rgba(255,255,255,0.24)";
 
+// The visible stretcher-bar DEPTH of the wrapped canvas (a real gallery canvas
+// is ~38mm deep). Rendered as true 3D right/bottom faces so the canvas reads as
+// a solid object with thickness — Point 101's stretched-canvas look, on
+// Stephen's OWN artwork (no copyrighted example images).
+const CANVAS_DEPTH = "clamp(11px, 1.5vw, 24px)";
+// A subtle gallery angle so the depth on the right + bottom edges is visible
+// (like Point 101's canvas mockup) without reading as a gimmicky spin.
+const CANVAS_TILT = "perspective(2200px) rotateX(3.2deg) rotateY(-6.5deg)";
+
 export const CanvasWrap = ({
   active,
   edge,
   aspectRatio,
+  src,
   children,
 }: {
   active: boolean;
   edge: string;
   aspectRatio: number;
+  /** The artwork source — used to wrap the image around the 3D side faces so
+   *  the canvas visibly continues around its own depth (mirror wrap). */
+  src?: string;
   children: ReactNode;
 }) => {
   if (!active) return <>{children}</>;
   const floatColor = CANVAS_FLOAT_COLOR[edge];
+  const artUrl = src ? asset(src) : undefined;
 
-  // MIRROR WRAP — edge-to-edge, a gallery-wrapped stretcher standing off the wall.
+  // The two receding side faces (right + bottom) — the stretcher-bar thickness.
+  // Mirror wrap → the artwork continues around the edge (a darkened slice of the
+  // art). Float frame → the frame colour turns the corner. Both catch less light
+  // than the front face, so they're shaded to read as sides in shadow.
+  const rightFace = (
+    <div
+      aria-hidden
+      className="absolute top-0 right-0 h-full"
+      style={{
+        width: CANVAS_DEPTH,
+        transformOrigin: "right center",
+        transform: "rotateY(90deg)",
+        background: floatColor
+          ? `linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.15)), ${floatColor}`
+          : artUrl
+            ? `linear-gradient(90deg, rgba(0,0,0,0.5), rgba(0,0,0,0.22)), url(${artUrl})`
+            : "linear-gradient(90deg, rgba(0,0,0,0.5), rgba(0,0,0,0.22)), #d9d1bf",
+        backgroundSize: floatColor ? undefined : "cover",
+        backgroundPosition: "right center",
+      }}
+    />
+  );
+  const bottomFace = (
+    <div
+      aria-hidden
+      className="absolute bottom-0 left-0 w-full"
+      style={{
+        height: CANVAS_DEPTH,
+        transformOrigin: "center bottom",
+        transform: "rotateX(-90deg)",
+        background: floatColor
+          ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.5)), ${floatColor}`
+          : artUrl
+            ? `linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.55)), url(${artUrl})`
+            : "linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.55)), #d9d1bf",
+        backgroundSize: floatColor ? undefined : "cover",
+        backgroundPosition: "center bottom",
+      }}
+    />
+  );
+
+  // MIRROR WRAP — a gallery-wrapped stretcher, image edge-to-edge, standing off
+  // the wall with a visible ~38mm depth (true 3D side faces + a subtle tilt).
   if (!floatColor) {
     return (
-      <div
-        className={CANVAS_SIZER}
-        style={{
-          aspectRatio: String(aspectRatio || 1),
-          filter: CANVAS_DEPTH_SHADOW,
-          borderRadius: "1px",
-        }}
-      >
+      <div className={CANVAS_SIZER} style={{ aspectRatio: String(aspectRatio || 1) }}>
         <div
-          className="relative w-full h-full overflow-hidden"
+          className="relative w-full h-full"
           style={{
-            // The wrapped canvas depth — the image turns the corner down the
-            // right + bottom (darkened band = the stretcher bar thickness) with a
-            // light catch on the top-left face, so it reads as a solid ~39mm
-            // gallery-wrapped canvas, not a flat sheet.
-            boxShadow: CANVAS_WRAP_EDGE,
+            transformStyle: "preserve-3d",
+            transform: CANVAS_TILT,
+            filter: CANVAS_DEPTH_SHADOW,
           }}
         >
-          {children}
+          {rightFace}
+          {bottomFace}
+          <div
+            className="relative w-full h-full overflow-hidden"
+            style={{
+              transform: `translateZ(${CANVAS_DEPTH})`,
+              // A faint light catch on the top-left front face — the canvas edge
+              // catching gallery light — so the front reads as a lit surface.
+              boxShadow: CANVAS_WRAP_EDGE,
+            }}
+          >
+            {children}
+          </div>
         </div>
       </div>
     );
   }
 
-  // FLOAT FRAME — canvas set inside a slim tray frame with a shadow-gap reveal.
+  // FLOAT FRAME — the canvas set inside a slim tray frame with a shadow-gap
+  // reveal, the whole piece carrying the same real 3D depth + gallery tilt.
   const tray = "clamp(9px, 1.7vw, 26px)";
   const gap = "clamp(4px, 0.6vw, 9px)";
   return (
-    <div
-      className={CANVAS_SIZER}
-      style={{
-        aspectRatio: String(aspectRatio || 1),
-        boxSizing: "border-box",
-        background: floatColor,
-        padding: tray,
-        filter: CANVAS_DEPTH_SHADOW,
-        borderRadius: "1px",
-      }}
-    >
-      {/* the dark shadow-gap reveal between the tray frame and the canvas */}
-      <div className="w-full h-full" style={{ background: "#0a0908", padding: gap }}>
+    <div className={CANVAS_SIZER} style={{ aspectRatio: String(aspectRatio || 1) }}>
+      <div
+        className="relative w-full h-full"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: CANVAS_TILT,
+          filter: CANVAS_DEPTH_SHADOW,
+        }}
+      >
+        {rightFace}
+        {bottomFace}
         <div
-          className="relative w-full h-full overflow-hidden"
-          style={{ boxShadow: "0 1px 5px rgba(0,0,0,0.6)" }}
+          className="w-full h-full"
+          style={{
+            boxSizing: "border-box",
+            background: floatColor,
+            padding: tray,
+            transform: `translateZ(${CANVAS_DEPTH})`,
+            borderRadius: "1px",
+          }}
         >
-          {children}
+          {/* the dark shadow-gap reveal between the tray frame and the canvas */}
+          <div className="w-full h-full" style={{ background: "#0a0908", padding: gap }}>
+            <div
+              className="relative w-full h-full overflow-hidden"
+              style={{ boxShadow: "0 1px 5px rgba(0,0,0,0.6)" }}
+            >
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </div>
