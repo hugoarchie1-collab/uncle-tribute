@@ -19,7 +19,6 @@ import {
   getPrintTiers,
   frameStyleLabel,
   glazingLabel,
-  paperFinishLabel,
   canvasEdgeLabel,
   getCanvasEdgeSurchargePence,
   getFrameSurchargePence,
@@ -463,19 +462,31 @@ export const Basket = () => {
                   const framingPence = lineFramingPence(line);
                   const embellishPence = lineEmbellishPence(line);
                   const canvasPence = lineCanvasPence(line);
-                  // Canvas is a SUBSTRATE, not an add-on bolted onto a paper
-                  // print — the canvas IS the product. So a canvas line reads as
-                  // ONE priced object (base + edge folded together), never
-                  // "print £X + canvas £Y" (which looked like a double charge).
+                  // TWO-PRODUCT MODEL (Hugo 2026-07-24): a piece is a FRAMED or a
+                  // CANVAS object, never a bare sheet — so BOTH read as ONE
+                  // confident BAKED price (framing / canvas folded into the
+                  // headline figure), with the frame / glazing / edge stated as
+                  // SPEC, not money. This kills the mis-read where a framed line
+                  // showed the bare print price (£495) as the headline with a
+                  // scary "+£345 framing" below — which looked like framing was
+                  // never added. The order total was always correct; this aligns
+                  // the per-line HEADLINE with the framed price the buyer chose.
                   const isCanvas = line.item.canvas === true && canvasPence > 0;
+                  const isFramed = line.item.framing === true && framingPence > 0;
                   const canvasUnitPence = line.tier.pricePence + canvasPence;
-                  // Itemised breakdown is for genuine add-ons (framing / hand-
-                  // finishing) or a multi-unit line. A plain canvas line needs
-                  // none — its one honest price is already the headline figure.
+                  const framedUnitPence = line.tier.pricePence + framingPence;
+                  // The all-in unit price for this line's presentation — framed,
+                  // canvas, or (fallback) bare print. This is the headline figure.
+                  const baseUnitPence = isCanvas
+                    ? canvasUnitPence
+                    : isFramed
+                      ? framedUnitPence
+                      : line.tier.pricePence;
+                  // Itemised breakdown is now ONLY for a GENUINE optional add-on
+                  // (hand-finishing) or a multi-unit line — framing/canvas are the
+                  // baked product, never itemised as a surcharge.
                   const showBreakdown =
-                    framingPence > 0 ||
-                    embellishPence > 0 ||
-                    line.item.quantity > 1;
+                    embellishPence > 0 || line.item.quantity > 1;
                   return (
                     <li
                       key={line.item.addedAt}
@@ -525,6 +536,12 @@ export const Basket = () => {
                               <>
                                 {" · "}On stretched canvas ·{" "}
                                 {canvasEdgeLabel(line.item.canvasEdge)} edge · ready to hang
+                              </>
+                            )}
+                            {isFramed && (
+                              <>
+                                {" · "}Framed in {frameStyleLabel(line.item.frameStyle)} ·{" "}
+                                {glazingLabel(line.item.glazing)} · ready to hang
                               </>
                             )}
                           </p>
@@ -586,7 +603,7 @@ export const Basket = () => {
                             figure with the add-ons + subtotal itemised below —
                             so nothing is hidden (DMCC #13: no drip-pricing). */}
                         <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
-                          {fmt(isCanvas ? canvasUnitPence : line.tier.pricePence)}
+                          {fmt(baseUnitPence)}
                         </p>
                       </div>
 
@@ -600,10 +617,12 @@ export const Basket = () => {
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                               {isCanvas
                                 ? `Stretched canvas print · ${canvasEdgeLabel(line.item.canvasEdge)} (${line.tier.size})`
-                                : `${line.tier.label} print (${line.tier.size})`}
+                                : isFramed
+                                  ? `Framed ${line.tier.label} print (${line.tier.size})`
+                                  : `${line.tier.label} print (${line.tier.size})`}
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                              {fmt(isCanvas ? canvasUnitPence : line.tier.pricePence)}
+                              {fmt(baseUnitPence)}
                             </span>
                           </div>
                           {line.item.quantity > 1 && (
@@ -613,26 +632,6 @@ export const Basket = () => {
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
                                 × {line.item.quantity}
-                              </span>
-                            </div>
-                          )}
-                          {framingPence > 0 && (
-                            <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Framing ({frameStyleLabel(line.item.frameStyle)} · {glazingLabel(line.item.glazing)})
-                              </span>
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                + {fmt(framingPence)}
-                              </span>
-                            </div>
-                          )}
-                          {line.item.framing === true && (
-                            <div className="flex items-baseline justify-between gap-4">
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
-                                Paper ({paperFinishLabel(line.item.paperFinish)})
-                              </span>
-                              <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                Included
                               </span>
                             </div>
                           )}

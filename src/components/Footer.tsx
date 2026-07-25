@@ -93,7 +93,7 @@ export const Footer = () => (
           used to live here belongs on /about, not on every page's footer. */}
       <div className="col-span-2 md:col-span-1">
         <Logo
-          size={28}
+          size={44}
           wordmark
           wordmarkWrap
           wordmarkText="The Art of Stephen Meakin"

@@ -361,14 +361,16 @@ export const FindAPrint = () => {
             floating centred with dead gutters. auto-fill + minmax keeps the old
             ≈1/2/3-up cadence; a partial last row left-aligns under the title
             rather than orphaning to the centre. */}
-        <div
-          className="grid gap-x-5 md:gap-x-6 gap-y-6 md:gap-y-8"
-          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, clamp(260px, 20vw, 340px)), 1fr))" }}
-        >
+        {/* Flex-wrap so a partial last row sits CENTRED (Hugo: the odd tile must
+            never orphan to the left). Items still GROW to fill full rows (no dead
+            gutters — feedback_fill_screen), but a per-breakpoint max-width caps the
+            column count (2-up ≥sm, 3-up ≥lg) so a lone tile centres at tile size
+            instead of stretching across the whole row. */}
+        <div className="flex flex-wrap justify-center gap-x-5 md:gap-x-6 gap-y-6 md:gap-y-8">
           {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0"
+              className="m-0 min-w-0 grow basis-[clamp(260px,20vw,340px)] max-w-full sm:max-w-[calc(50%-0.625rem)] lg:max-w-[calc(33.333%-1rem)]"
             >
               <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">

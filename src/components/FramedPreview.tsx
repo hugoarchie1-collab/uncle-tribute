@@ -96,10 +96,22 @@ const CANVAS_FLOAT_COLOR: Record<string, string> = {
   "float-wenge": "#2e211a",
   "float-oak": "#c9a368",
 };
+// A strong, physical stand-off shadow so the canvas reads as a chunky object
+// floating off the wall (a tight contact shadow + a deep ambient drop) — plus a
+// second lower ambient so the depth is unmistakable even on the dark PDP wall.
 const CANVAS_DEPTH_SHADOW =
-  "drop-shadow(0 2px 3px rgba(0,0,0,0.42)) drop-shadow(0 24px 42px rgba(0,0,0,0.48))";
+  "drop-shadow(0 3px 4px rgba(0,0,0,0.5)) drop-shadow(0 22px 30px rgba(0,0,0,0.5)) drop-shadow(0 40px 60px rgba(0,0,0,0.45))";
 const CANVAS_SIZER =
   "mx-auto block max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]";
+// The mirror-wrap depth cue: the image visibly TURNS THE CORNER down the right
+// edge and along the bottom (a darkened wrapped band = the stretcher thickness),
+// with a soft light catch on the top-left face — so a plain print vs a
+// gallery-wrapped canvas are obviously different objects (Hugo: "it doesn't show
+// any change"). Point 101's stretched-canvas look, in Stephen's own artwork.
+const CANVAS_WRAP_EDGE =
+  "inset -16px 0 20px -12px rgba(0,0,0,0.62), " +
+  "inset 0 -16px 20px -12px rgba(0,0,0,0.62), " +
+  "inset 13px 13px 20px -16px rgba(255,255,255,0.24)";
 
 export const CanvasWrap = ({
   active,
@@ -129,9 +141,11 @@ export const CanvasWrap = ({
         <div
           className="relative w-full h-full overflow-hidden"
           style={{
-            // A thin right/bottom edge-face suggests the wrapped canvas depth.
-            boxShadow:
-              "inset -3px 0 5px -2px rgba(0,0,0,0.5), inset 0 -3px 5px -2px rgba(0,0,0,0.5)",
+            // The wrapped canvas depth — the image turns the corner down the
+            // right + bottom (darkened band = the stretcher bar thickness) with a
+            // light catch on the top-left face, so it reads as a solid ~39mm
+            // gallery-wrapped canvas, not a flat sheet.
+            boxShadow: CANVAS_WRAP_EDGE,
           }}
         >
           {children}

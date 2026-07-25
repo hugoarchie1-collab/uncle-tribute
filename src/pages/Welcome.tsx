@@ -802,7 +802,7 @@ export const Welcome = () => {
               as="div"
               className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
             >
-              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full min-h-[380px] md:max-h-[64svh] overflow-hidden">
+              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-[5/6] md:h-full min-h-[340px] md:max-h-[52svh] overflow-hidden">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
@@ -1282,7 +1282,7 @@ export const Welcome = () => {
               filename (immutable /img cache). Decorative only (aria-hidden). */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-2rem] md:mb-[-2.5rem] h-[15vw] min-h-[130px] max-h-[300px]"
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-2rem] md:mb-[-2.5rem]"
           >
             {/* Warm halo along the very foot — matches the top Earth's rim. */}
             <div
@@ -1299,26 +1299,26 @@ export const Welcome = () => {
                 UP into the peacock exactly like the masthead Earth — just a
                 different world closing the page. */}
             <img
-              src={asset("/img/scenes/jupiter-limb-v7.webp")}
+              src={asset("/img/scenes/jupiter-limb-v8.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="absolute inset-x-0 bottom-0 z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              className="relative z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
               style={{
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // v4 (2026-07-24, Hugo: "stretch it FULL-WIDTH across the bottom,
-                // SAME size + proportions as the Earth"): the limb is cropped to the
-                // Earth cutout's EXACT 2000×541 dims with the planet filling the full
-                // width (sky only in the top corners), and rendered with the Earth's
-                // EXACT width classes + mask below — so it is a pixel-for-pixel mirror
-                // of the top Earth limb, just a different world. Soft warm glow baked
-                // in (no white ring). "as above, so below".
+                // v8 (2026-07-24): the limb is RIGHT-SIDE-UP (warm glow arc at the
+                // TOP, planet rising) — v7's flip read upside-down. Rendered IN-FLOW
+                // (not bottom-pinned) so the WHOLE thin limb shows: glow arc at top
+                // dissolving up into the peacock, and the OPAQUE FULL-WIDTH body at
+                // the bottom sits flush on the red catalogue (no black bar). Thin
+                // (2000×300) so it's the Earth limb's visible size, not an oversized
+                // dome. Only the very top sky edge is feathered.
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%)",
               }}
             />
           </section>
