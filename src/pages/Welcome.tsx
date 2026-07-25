@@ -1238,11 +1238,11 @@ export const Welcome = () => {
               </p>
             </Reveal>
 
-            {/* Archive photo — now SMALL (Hugo 2026-07-04: "a lot smaller … since
-                quality is poor"; the source is only 641×353, so a restrained
-                plate keeps it crisp). Well separated from the film above by the
-                prose. Never cropped; ring frame kept. */}
-            <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[400px] md:max-w-[500px]">
+            {/* Archive photo — enlarged (Hugo 2026-07-24: "ridiculously small,
+                fix"). The source is only 641×353 so we cap the upscale ~1.3× and
+                lean on the soft-edge feather to keep it from reading as pixelated;
+                bigger so it fills the section. Never cropped; ring frame kept. */}
+            <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[620px] md:max-w-[840px] 2xl:max-w-[920px]">
               <div className="overflow-hidden">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"

@@ -84,7 +84,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
  *  verbatim invocation, which uppercasing would mangle. This is the canonical
  *  home value. */
 export const EYEBROW =
-  "font-sans text-[15px] md:text-[16px] font-bold tracking-[0.14em] text-accent";
+  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.14em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -95,7 +95,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(38px,4.8vw,80px)] leading-[1.04] md:leading-[1.0] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(44px,5.6vw,96px)] leading-[1.03] md:leading-[0.98] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -111,19 +111,19 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-normal text-[clamp(21px,0.7vw_+_17px,34px)] leading-[1.55] text-ink-muted";
+  "font-sans font-medium text-[clamp(24px,0.85vw_+_19px,40px)] leading-[1.5] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[15px] md:text-[16px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[15px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[16px] font-bold tracking-[0.04em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[17px] leading-[1.6] text-ink-muted";
+export const META = "font-sans text-[19px] leading-[1.55] text-ink-muted";
 
 // =============================================================================
 // ABOUT MONOGRAPH TYPE SCALE — the seven-role scale the About rebuild composes
@@ -145,28 +145,28 @@ export const META = "font-sans text-[17px] leading-[1.6] text-ink-muted";
  *  20px (was a 25px runaway). Leading eases to 1.6 on desktop. Mobile floors
  *  (18px / 1.58) + the md: step (19px / 1.7) are frozen. */
 export const ABOUT_BODY =
-  "font-sans font-normal text-[20px] md:text-[21px] 2xl:text-[23px] 3xl:text-[24px] " +
+  "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[26px] 3xl:text-[28px] " +
   "leading-[1.6] md:leading-[1.68] 2xl:leading-[1.62] tracking-normal text-ink-soft text-pretty m-0";
 
 /** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
  *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
  *  floors + the md: step are frozen. */
 export const ABOUT_LEAD =
-  "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[27px] 3xl:text-[28px] " +
+  "font-sans font-normal text-[25px] md:text-[27px] 2xl:text-[30px] 3xl:text-[32px] " +
   "leading-[1.55] md:leading-[1.66] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0";
 
 /** ROLE 2 — PULL-LINE / STANDOUT (Fraunces). The ONE interior display-serif
  *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired
  *  STYLE below. */
 export const ABOUT_STANDOUT =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,50px)] leading-[1.14] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(32px,2.7vw,56px)] leading-[1.14] text-ink";
 export const ABOUT_STANDOUT_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
 
 /** ROLE 3 — SUBHEAD / interview question (Fraunces, roman). Ceiling 34px. */
 export const ABOUT_SUBHEAD =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(25px,1.9vw,40px)] leading-[1.18] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.1vw,45px)] leading-[1.18] text-ink";
 export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -175,7 +175,7 @@ export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
  *  the page — ceiling 58px (the hero h1 + the sole Anegada poster are the only
  *  sanctioned larger moments). */
 export const ABOUT_TITLE =
-  "font-display font-semibold tracking-[-0.03em] text-[clamp(32px,3.8vw,66px)] leading-[1.05] text-ink";
+  "font-display font-semibold tracking-[-0.03em] text-[clamp(38px,4.2vw,74px)] leading-[1.05] text-ink";
 export const ABOUT_TITLE_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
