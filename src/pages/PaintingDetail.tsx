@@ -2503,6 +2503,38 @@ export const PaintingDetail = () => {
     if (next) setCanvas(false);
   };
 
+  // Reset every buy-box choice back to its default (Hugo 2026-07-24: a "reset to
+  // default options" control so a fiddled colourway / frame / finish snaps back).
+  // Restores: original colourway, anchor size, the FRAMED-default presentation for
+  // that size, the size-correct included glazing, and the house frame/paper/canvas
+  // finishes — with no hand-finishing add-on. Purely UI selection state, so it
+  // can never desync advertised==charged (checkout reads whatever is selected).
+  const resetOptions = () => {
+    setSelectedName(
+      (availableColourways.find((c) => c.isOriginal) ?? availableColourways[0])?.name,
+    );
+    setSelectedTierId(anchorTier?.id);
+    setFrameStyle(DEFAULT_FRAME_STYLE);
+    setPaperFinish(DEFAULT_PAPER_FINISH);
+    setCanvasEdge(DEFAULT_CANVAS_EDGE);
+    setEmbellished(false);
+    if (anchorTier) {
+      setGlazing(includedGlazingId(anchorTier.id));
+      const framingAvail = getFramingPricePence(anchorTier) !== null;
+      const canvasAvail = getCanvasPricePence(anchorTier) !== null;
+      if (framingAvail) {
+        setFraming(true);
+        setCanvas(false);
+      } else if (canvasAvail) {
+        setCanvas(true);
+        setFraming(false);
+      } else {
+        setFraming(false);
+        setCanvas(false);
+      }
+    }
+  };
+
   // Two-product model (Hugo 2026-07-24): every piece is a FRAMED MUSEUM PRINT or a
   // CANVAS PRINT — framing is never an add-on. On each size, pre-select the right
   // default so the price is correct on landing and buying is effortless: Framed
@@ -3079,6 +3111,17 @@ export const PaintingDetail = () => {
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}
               />
+              {/* Reset options — snaps every choice (colourway, size, frame,
+                  glazing, finish) back to the defaults (Hugo 2026-07-24). */}
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={resetOptions}
+                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                >
+                  <span aria-hidden="true">↺</span> Reset options
+                </button>
+              </div>
             </Reveal>
           </div>
 
