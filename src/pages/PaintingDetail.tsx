@@ -2503,34 +2503,29 @@ export const PaintingDetail = () => {
     if (next) setCanvas(false);
   };
 
-  // Reset every buy-box choice back to its default (Hugo 2026-07-24: a "reset to
-  // default options" control so a fiddled colourway / frame / finish snaps back).
-  // Restores: original colourway, anchor size, the FRAMED-default presentation for
-  // that size, the size-correct included glazing, and the house frame/paper/canvas
-  // finishes — with no hand-finishing add-on. Purely UI selection state, so it
-  // can never desync advertised==charged (checkout reads whatever is selected).
+  // Reset the FRAMING / CANVAS finish options back to their defaults (Hugo
+  // 2026-07-24: "not the colourway too — just the selected framing options or
+  // canvas options"). Deliberately KEEPS the chosen colourway AND size; only the
+  // presentation + finishes snap back: framed-default for the current size, the
+  // size-correct included glazing, the house frame/paper/canvas finishes, and no
+  // hand-finishing. Purely UI selection state — can never desync
+  // advertised==charged (checkout reads whatever is selected).
   const resetOptions = () => {
-    setSelectedName(
-      (availableColourways.find((c) => c.isOriginal) ?? availableColourways[0])?.name,
-    );
-    setSelectedTierId(anchorTier?.id);
     setFrameStyle(DEFAULT_FRAME_STYLE);
     setPaperFinish(DEFAULT_PAPER_FINISH);
     setCanvasEdge(DEFAULT_CANVAS_EDGE);
     setEmbellished(false);
-    if (anchorTier) {
-      setGlazing(includedGlazingId(anchorTier.id));
-      const framingAvail = getFramingPricePence(anchorTier) !== null;
-      const canvasAvail = getCanvasPricePence(anchorTier) !== null;
+    const t = visibleTiers.find((x) => x.id === selectedTierId) ?? anchorTier;
+    if (t) {
+      setGlazing(includedGlazingId(t.id));
+      const framingAvail = getFramingPricePence(t) !== null;
+      const canvasAvail = getCanvasPricePence(t) !== null;
       if (framingAvail) {
         setFraming(true);
         setCanvas(false);
       } else if (canvasAvail) {
         setCanvas(true);
         setFraming(false);
-      } else {
-        setFraming(false);
-        setCanvas(false);
       }
     }
   };
