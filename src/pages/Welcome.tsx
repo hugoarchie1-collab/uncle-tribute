@@ -1299,7 +1299,7 @@ export const Welcome = () => {
                 UP into the peacock exactly like the masthead Earth — just a
                 different world closing the page. */}
             <img
-              src={asset("/img/scenes/jupiter-limb-v8.webp")}
+              src={asset("/img/scenes/jupiter-limb-v9.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1308,17 +1308,21 @@ export const Welcome = () => {
                 display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // v8 (2026-07-24): the limb is RIGHT-SIDE-UP (warm glow arc at the
-                // TOP, planet rising) — v7's flip read upside-down. Rendered IN-FLOW
-                // (not bottom-pinned) so the WHOLE thin limb shows: glow arc at top
-                // dissolving up into the peacock, and the OPAQUE FULL-WIDTH body at
-                // the bottom sits flush on the red catalogue (no black bar). Thin
-                // (2000×300) so it's the Earth limb's visible size, not an oversized
-                // dome. Only the very top sky edge is feathered.
+                // v9 (2026-07-25, Hugo: "same glow level and size as earth"): the
+                // limb is now the EXACT proportion of the masthead Earth
+                // (earth-cutout-v2, 2000×541) rendered at the IDENTICAL width
+                // classes — so at the foot it's the same visible size + gentle arc,
+                // a true mirror. Its warm atmospheric rim was brightened to Earth's
+                // glow level (peak luma ~229, matching Earth's luminous halo) while
+                // staying soft + warm (never the hard white ring Hugo rejected).
+                // RIGHT-SIDE-UP (glow arc at the TOP, planet rising); rendered
+                // IN-FLOW so the whole limb shows — the top sky feathers up into the
+                // peacock, the opaque full-width body sits flush on the red
+                // catalogue (no black bar). Only the very top sky edge is masked.
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 9%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)",
               }}
             />
           </section>
