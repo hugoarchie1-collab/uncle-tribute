@@ -78,8 +78,8 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "29.5 × 29.5 cm",
     editionLabel: "Open Edition — unnumbered, issued to order",
     pricePence: 27500,
-    framingPricePence: 24500, // £245 (A3) — ⚠️ PLACEHOLDER, mirror of paintings.ts (gotcha #9)
-    canvasPricePence: 11500, // £115 (A3) — ⚠️ PLACEHOLDER
+    framingPricePence: 24500, // £245 (A3) — mirror of paintings.ts (gotcha #9)
+    canvasPricePence: 15000, // £150 (A3) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   collector: {
@@ -89,7 +89,7 @@ const TIERS: Record<TierId, EmailTier> = {
     pricePence: 49500,
     framingPricePence: 34500,
     embellishmentPricePence: 35000,
-    canvasPricePence: 14500,
+    canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   "atelier-grande": {
@@ -99,7 +99,7 @@ const TIERS: Record<TierId, EmailTier> = {
     pricePence: 92500,
     framingPricePence: 44500,
     embellishmentPricePence: 49500,
-    canvasPricePence: 18500,
+    canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   heirloom: {
@@ -108,7 +108,7 @@ const TIERS: Record<TierId, EmailTier> = {
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     pricePence: 189500,
     embellishmentPricePence: 79500,
-    canvasPricePence: 26500,
+    canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was
     // silently downgraded to the A2 anchor in the email (£495 vs £1,895).

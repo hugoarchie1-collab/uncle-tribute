@@ -211,13 +211,13 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: null, // Open Edition — no allocation cap, not numbered
     editionLabel: "Open Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
-    // A3 is now a FRAMED product like every other size (Hugo 2026-07-24: "every
-    // product has to be framed including A3"). ⚠️ PLACEHOLDER prices pending the
-    // real Point 101 A3 costs — framed £520 total (£275 + £245), canvas £390
-    // (£275 + £115). MONEY: mirrored in api/checkout.ts + stripe-webhook.ts +
-    // email-basket.ts (gotcha #9).
-    framingPricePence: 24500, // £245 framing (A3) — ⚠️ PLACEHOLDER, confirm with Point 101
-    canvasPricePence: 11500, // £115 — print on stretched canvas (A3) — ⚠️ PLACEHOLDER
+    // A3 is a FRAMED product like every other size (Hugo 2026-07-24: "every
+    // product has to be framed including A3"). Prices CONFIRMED 2026-07-24
+    // against Point 101 costs (framed ~£82 / canvas ~£50 to us): framed £520
+    // total (£275 + £245), canvas £425 (£275 + £150). MONEY: mirrored in
+    // api/checkout.ts + email-basket.ts (gotcha #9).
+    framingPricePence: 24500, // £245 framing (A3)
+    canvasPricePence: 15000, // £150 — print on stretched canvas (A3)
     description:
       "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
     available: true,
@@ -232,7 +232,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     framingPricePence: 34500, // £345 framing add-on
     embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
-    canvasPricePence: 14500, // £145 — print on stretched canvas, ready to hang
+    canvasPricePence: 22500, // £225 — canvas total £720, a clean £120 under framed £840 (Hugo 2026-07-24)
     description:
       "Collector Edition of 200, estate-stamped, hand-numbered, COA",
     available: true,
@@ -248,7 +248,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionPromise: "allocated within the current edition",
     framingPricePence: 44500, // £445 framing add-on
     embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
-    canvasPricePence: 18500, // £185 — print on stretched canvas, ready to hang
+    canvasPricePence: 32500, // £325 — canvas total £1,250, a clean £120 under framed £1,370 (Hugo 2026-07-24)
     description:
       "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
     available: true,
@@ -270,7 +270,7 @@ export const PRINT_TIERS: PrintTier[] = [
     // with a free-worldwide-delivery promise we can't honour. If a buyer wants
     // A0 framed, it's a bespoke enquiry (like custom sizes), arranged per-order.
     embellishmentPricePence: 79500, // £795 hand-finishing by Polly Wedge (A0)
-    canvasPricePence: 26500, // £265 — print on stretched canvas, ready to hang
+    canvasPricePence: 42500, // £425 — canvas total £2,320; A0's only ready-to-hang option (no framed A0), so it carries the biggest lift (Hugo 2026-07-24)
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,

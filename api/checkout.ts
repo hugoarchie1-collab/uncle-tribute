@@ -90,9 +90,9 @@ const TIERS: Record<TierId, TierDef> = {
     pricePence: 27500,
     editionLabel: "Open Edition — unnumbered, issued to order",
     // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
-    // ⚠️ PLACEHOLDER: framing £245, canvas £115.
+    // A3 prices confirmed 2026-07-24: framing £245, canvas £150.
     framingPricePence: 24500,
-    canvasPricePence: 11500,
+    canvasPricePence: 15000,
     available: true,
   },
   collector: {
@@ -103,7 +103,7 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     framingPricePence: 34500,
     embellishmentPricePence: 35000,
-    canvasPricePence: 14500,
+    canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   "atelier-grande": {
@@ -114,7 +114,7 @@ const TIERS: Record<TierId, TierDef> = {
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     framingPricePence: 44500,
     embellishmentPricePence: 49500,
-    canvasPricePence: 18500,
+    canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   heirloom: {
@@ -128,7 +128,7 @@ const TIERS: Record<TierId, TierDef> = {
     // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
     // (glazed A0 exceeds Point 101's 610mm delivery cap — see paintings.ts).
     embellishmentPricePence: 79500,
-    canvasPricePence: 26500,
+    canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
   studio: {

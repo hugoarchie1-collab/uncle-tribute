@@ -352,7 +352,7 @@ const TIER_EDITION: Record<string, string> = {
 // hand-finishing charge as its own email sub-line so the per-line
 // breakdown sums to the grand Total (session.amount_total).
 const TIER_FRAMING_PENCE: Record<string, number> = {
-  atelier: 24500, // £245 (A3) — ⚠️ PLACEHOLDER, mirror of paintings.ts (gotcha #9)
+  atelier: 24500, // £245 (A3) — mirror of paintings.ts (gotcha #9)
   collector: 34500, // £345 (A2) — mirror of paintings.ts (gotcha #9; was stale £295)
   "atelier-grande": 44500, // £445 (A1) — mirror of paintings.ts (was stale £395)
 };
