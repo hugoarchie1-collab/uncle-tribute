@@ -131,7 +131,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £275 (issued within each edition, no fixed allocation). Collector Edition at £495 (200 allocated per edition). Atelier Edition at £925 (75 per edition). Heirloom Edition at £1,895 (18 per edition). Every price includes free delivery.",
+      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £295 (issued within each edition, no fixed allocation). Collector Edition at £525 (200 allocated per edition). Atelier Edition at £975 (75 per edition). Heirloom Edition at £1,995 (18 per edition). Every price includes free delivery.",
   },
   {
     eyebrow: "Framing",

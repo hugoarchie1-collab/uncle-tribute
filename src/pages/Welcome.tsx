@@ -1029,7 +1029,7 @@ export const Welcome = () => {
                       <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
                     </MagneticLink>
                     {/* Marketing anchor — mirrors the A2 embellishmentPricePence
-                        (£350) in paintings.ts; the real per-size price shows on the
+                        (£595) in paintings.ts; the real per-size price shows on the
                         product page. */}
                     <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
                       From £595 · on the Collector, Atelier &amp; Heirloom prints · allow 2 weeks

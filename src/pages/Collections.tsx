@@ -928,8 +928,8 @@ export const Collections = () => {
                             {/* Price floor — sits under every tile so a
                                 browsing buyer never needs to click into a
                                 painting to learn there is a price. Advertises
-                                the LOWEST visible tier (A3 Gallery £275) to
-                                lower the click barrier — the £495 anchor still
+                                the LOWEST visible tier (A3 Gallery £295) to
+                                lower the click barrier — the £525 anchor still
                                 does its conversion work on the product page. */}
                             <p
                               className={cn(META, "mt-2 m-0")}

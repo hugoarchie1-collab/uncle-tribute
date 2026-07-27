@@ -3140,7 +3140,7 @@ export const PaintingDetail = () => {
         {/* Exhibited & commissioned — Stephen's real, documented provenance
             (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).
             For a cold-start estate with no reviews yet, this is the legitimate
-            trust signal that underwrites a £275–£1,895 purchase; it was built
+            trust signal that underwrites a £295–£1,995 purchase; it was built
             but mounted nowhere (audit fix). Quiet, reverent, text-only. */}
         <CredentialsStrip />
         <FooterCatalogue />
