@@ -108,7 +108,7 @@ const FAQS: QA[] = [
         Unframed prints are <strong>dispatched within 7–10 working days</strong>{" "}
         of your order; with tracked courier transit on top, most orders arrive
         within <strong>roughly two to three weeks</strong>. Delivery is free
-        to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints
+        worldwide. Framed orders add roughly two weeks to that. Prints
         hand-finished by Polly (Stephen's sister) dispatch within two weeks maximum. You'll
         receive an email with tracking the moment your print leaves the studio.
       </>
@@ -120,7 +120,7 @@ const FAQS: QA[] = [
     answer: (
       <>
         Four tiers, each estate-stamped and issued within the estate's release
-        cycle, every price including free UK delivery. <strong>Open Edition</strong> at £295 (issued within each edition, no fixed allocation).{" "}
+        cycle, every price including free delivery worldwide. <strong>Open Edition</strong> at £295 (issued within each edition, no fixed allocation).{" "}
         <strong>Collector Edition</strong> at £525 (edition of 200).{" "}
         <strong>Atelier Edition</strong> at £975 (edition of 75).{" "}
         <strong>Heirloom Edition</strong> at £1,995 (edition of 18).
@@ -134,9 +134,10 @@ const FAQS: QA[] = [
       <>
         Yes — framing is offered on the Open, Collector and Atelier editions. Choose your{" "}
         <strong>finish</strong> — a solid-wood or contemporary tray frame
-        (natural oak, stained black, white or walnut tray), with UV-filtering,
-        shatter-safe acrylic glazing as standard or an anti-reflective glass
-        upgrade, every finish included in the framing price. Add £295 on the Open edition, £425 on
+        (natural oak, stained black, white or walnut tray). Glazing is matched to
+        the size: anti-reflective art glass up to the Collector size, and ultra-clear,
+        UV-filtering, shatter-safe acrylic on the largest framed size — included in the
+        framing price. Add £295 on the Open edition, £425 on
         Collector and £575 on Atelier. Delivery is free, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
@@ -161,7 +162,7 @@ const FAQS: QA[] = [
     question: "Do you ship internationally?",
     answer: (
       <>
-        Yes — we ship to the UK, Europe, North America, Australia and New Zealand. Delivery is free on every order, framed or
+        Yes — we ship worldwide. Delivery is free on every order, framed or
         unframed, with nothing added at checkout. International buyers may be charged local
         import duties or VAT on delivery by their courier — these are set by
         your country's customs authority, not by us.

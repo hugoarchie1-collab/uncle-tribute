@@ -60,9 +60,15 @@ const readCookie = (req: VercelReq, name: string): string | null => {
   return null;
 };
 
-const formatGBP = (pence: number | null | undefined): string =>
+const formatGBP = (
+  pence: number | null | undefined,
+  currency: string | null | undefined = "GBP",
+): string =>
   typeof pence === "number"
-    ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(pence / 100)
+    ? new Intl.NumberFormat("en-GB", {
+        style: "currency",
+        currency: (currency || "GBP").toUpperCase(),
+      }).format(pence / 100)
     : "—";
 
 const itemSummary = (m: Stripe.Metadata | null): string[] => {
@@ -142,7 +148,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         .map((s) => ({
           ref: s.id,
           date: s.created ? new Date(s.created * 1000).toISOString() : null,
-          total: formatGBP(s.amount_total),
+          total: formatGBP(s.amount_total, s.currency),
           status: "Paid — in production (made to order)",
           items: itemSummary(s.metadata ?? null),
         }));

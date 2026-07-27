@@ -265,7 +265,7 @@ export const AccountPanel = () => {
               </button>
             </div>
           )}
-          <h2
+          <h1
             className="font-display text-ink m-0 text-balance"
             style={{
               fontVariationSettings: '"opsz" 40, "wght" 560',
@@ -274,7 +274,7 @@ export const AccountPanel = () => {
             }}
           >
             {signedIn ? "Your orders" : "Your account"}
-          </h2>
+          </h1>
         </Reveal>
 
         <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-10 items-start border-t border-line pt-8 md:pt-10">

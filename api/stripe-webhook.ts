@@ -253,11 +253,18 @@ const FALLBACK_CODE = "FRIENDS";
 // Helpers
 // ---------------------------------------------------------------------------
 
-const formatGBP = (pence: number | null | undefined): string => {
+// Formats a minor-unit amount. Defaults to GBP (catalogue currency, used for
+// the per-line breakdown), but the GRAND TOTAL passes the session's actual
+// presentment currency so an international buyer who paid in USD/EUR/etc. sees
+// the real currency + amount they were charged, not a £-mislabelled figure.
+const formatGBP = (
+  pence: number | null | undefined,
+  currency: string | null | undefined = "GBP",
+): string => {
   if (typeof pence !== "number") return "—";
   return new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "GBP",
+    currency: (currency || "GBP").toUpperCase(),
   }).format(pence / 100);
 };
 
@@ -1890,7 +1897,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           buyerName,
           orderRef: session.id.slice(0, 18) + "…",
           lines,
-          total: formatGBP(session.amount_total),
+          total: formatGBP(session.amount_total, session.currency),
           thankYouCode: thankYou.code,
           thankYouValue: thankYou.valueLabel,
           thankYouExpiry: thankYou.expiresLabel,

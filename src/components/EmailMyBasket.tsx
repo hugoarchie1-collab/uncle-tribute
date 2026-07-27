@@ -72,6 +72,14 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
             tierId: item.tierId,
             framing: item.framing,
             embellished: item.embellished,
+            // Full config so the cross-device restore link rebuilds the exact
+            // product the buyer configured (canvas vs paper, frame + finish).
+            canvas: item.canvas,
+            frameStyle: item.frameStyle,
+            glazing: item.glazing,
+            paperFinish: item.paperFinish,
+            canvasEdge: item.canvasEdge,
+            quantity: item.quantity,
           })),
         }),
       });
@@ -128,6 +136,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 name="name"
                 type="text"
                 autoComplete="name"
+                aria-label="Your name (optional)"
                 defaultValue={savedName}
                 placeholder="Your name (optional)"
                 className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
@@ -137,6 +146,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 type="email"
                 required
                 autoComplete="email"
+                aria-label="Your email"
                 placeholder="you@example.com"
                 className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
               />

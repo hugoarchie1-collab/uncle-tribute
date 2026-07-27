@@ -142,17 +142,20 @@ const CATALOGUE_PAINTING_COUNT = PAINTINGS.length;
  * mirror of api/checkout.ts `bundlePercentOff` (gotcha #9). This REPLACES the
  * old count-only preview (which displayed 5/10% while Stripe charged 12/15% —
  * a DMCC misleading-action risk). The previewed % now equals the charged %:
- *   • one line of EVERY painting (complete catalogue)  → 15%
- *   • all lines a single painting (complete colourway set) → 12%
- *   • 3+ mixed paintings → 10%; exactly 2 lines → 5%; fewer → 0%.
+ *   • one line of EVERY painting (complete catalogue)  → 12%
+ *   • all lines a single painting (complete colourway set) → 10%
+ *   • 3+ mixed paintings → 8%; exactly 2 lines → 5%; fewer → 0%.
+ * ⚠️ MONEY (gotcha #9): these MUST equal api/checkout.ts `bundlePercentOff` +
+ * the paintings.ts constants (COMPLETE_CATALOGUE 12 / COLOURWAY_SET 10 /
+ * count-ladder 8·5). Advertised == charged — do not let these drift again.
  */
 const bundlePercentOff = (lines: ResolvedLine[]): number => {
   const count = lines.length;
   if (count < 2) return 0;
   const distinct = new Set(lines.map((l) => l.paintingId)).size;
-  if (distinct >= CATALOGUE_PAINTING_COUNT) return 15; // complete catalogue
-  if (distinct === 1) return 12; // complete colourway set
-  return count >= 3 ? 10 : 5; // general / collection bundle
+  if (distinct >= CATALOGUE_PAINTING_COUNT) return 12; // complete catalogue (2026-07-25 squeeze)
+  if (distinct === 1) return 10; // complete colourway set
+  return count >= 3 ? 8 : 5; // general / collection bundle
 };
 
 /**
@@ -834,8 +837,8 @@ export const Basket = () => {
               {lines.length >= 1 && bundleDiscountPercent < 10 && (
                 <p className="m-0 -mt-1 mb-3 font-sans text-[clamp(13px,0.78vw,15.5px)] leading-[1.5] text-ink-muted">
                   {lines.length === 1
-                    ? "Add one more print and your order saves 5% — and 10% on three or more."
-                    : "One more print lifts your bundle saving to 10%."}
+                    ? "Add one more print and your order saves 5% — and 8% on three or more."
+                    : "One more print lifts your bundle saving to 8%."}
                 </p>
               )}
 

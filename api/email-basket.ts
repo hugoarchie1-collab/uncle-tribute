@@ -462,6 +462,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       framing?: unknown;
       embellished?: unknown;
       canvas?: unknown;
+      frameStyle?: unknown;
+      glazing?: unknown;
+      paperFinish?: unknown;
+      canvasEdge?: unknown;
+      quantity?: unknown;
     }>;
   };
   try {
@@ -506,6 +511,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     framing?: boolean;
     embellished?: boolean;
     canvas?: boolean;
+    frameStyle?: string;
+    glazing?: string;
+    paperFinish?: string;
+    canvasEdge?: string;
+    quantity?: number;
   }> = [];
   let subtotalPence = 0;
   for (const raw of rawItems) {
@@ -555,6 +565,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if (typeof raw?.framing === "boolean") restoreItem.framing = raw.framing;
     if (typeof raw?.embellished === "boolean") restoreItem.embellished = raw.embellished;
     if (typeof raw?.canvas === "boolean") restoreItem.canvas = raw.canvas;
+    // Carry the finish selections so the restore link rebuilds the exact product
+    // (canvas edge, frame style + glazing + paper) — not a downgraded default.
+    if (typeof raw?.frameStyle === "string") restoreItem.frameStyle = raw.frameStyle;
+    if (typeof raw?.glazing === "string") restoreItem.glazing = raw.glazing;
+    if (typeof raw?.paperFinish === "string") restoreItem.paperFinish = raw.paperFinish;
+    if (typeof raw?.canvasEdge === "string") restoreItem.canvasEdge = raw.canvasEdge;
+    if (typeof raw?.quantity === "number") restoreItem.quantity = raw.quantity;
     restoreItems.push(restoreItem);
   }
 

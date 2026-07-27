@@ -291,7 +291,7 @@ export const Welcome = () => {
           suffix). ⚠️ "estate-stamped", never "signed" — Stephen is deceased. */}
       <Seo
         title="Mandala & Sacred Geometry Art Prints — The Art of Stephen Meakin"
-        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in Lewes — free delivery."
+        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in London — free delivery worldwide."
       />
       {/* Nav overlays the intro video (fixed) so the logo + links stay pinned
           to the top of the screen from the very first frame — and remain there

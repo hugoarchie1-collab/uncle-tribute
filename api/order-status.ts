@@ -52,11 +52,15 @@ const param = (req: VercelReq, key: string): string | undefined => {
   return v?.trim() || undefined;
 };
 
-const formatGBP = (pence: number | null | undefined): string => {
+const formatGBP = (
+  pence: number | null | undefined,
+  currency: string | null | undefined = "GBP",
+): string => {
   if (typeof pence !== "number") return "—";
-  return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(
-    pence / 100,
-  );
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: (currency || "GBP").toUpperCase(),
+  }).format(pence / 100);
 };
 
 // A human, NON-leaky status from the Stripe session fields.
@@ -132,7 +136,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         ref: session.id,
         date: session.created ? new Date(session.created * 1000).toISOString() : null,
         status: humanStatus(session),
-        total: formatGBP(session.amount_total),
+        total: formatGBP(session.amount_total, session.currency),
         items: itemSummary(session.metadata ?? null),
       },
     });

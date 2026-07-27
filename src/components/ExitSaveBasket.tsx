@@ -170,6 +170,7 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
               type="email"
               required
               autoComplete="email"
+              aria-label="Your email"
               placeholder="you@example.com"
               className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-3 py-2 font-sans text-[13px] text-ink placeholder:text-ink/30 transition-shadow"
             />

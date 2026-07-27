@@ -77,6 +77,18 @@ const validateLine = (raw: unknown): RestoredLine | null => {
   const embellished =
     o.embellished === true && typeof tier.embellishmentPricePence === "number";
 
+  // Finish selections survive on the relevant path: frame style + glazing +
+  // paper only when framed; canvas edge only when canvas. Preserves the exact
+  // product the buyer configured (a Signature frame or a float-frame canvas is
+  // money-bearing — dropping it would fulfil the wrong item).
+  const frameStyle =
+    framing && typeof o.frameStyle === "string" ? o.frameStyle : undefined;
+  const glazing = framing && typeof o.glazing === "string" ? o.glazing : undefined;
+  const paperFinish =
+    framing && typeof o.paperFinish === "string" ? o.paperFinish : undefined;
+  const canvasEdge =
+    canvas && typeof o.canvasEdge === "string" ? o.canvasEdge : undefined;
+
   // Quantity rides along in the payload; absent / malformed → 1.
   const quantity =
     typeof o.quantity === "number" && Number.isFinite(o.quantity) && o.quantity >= 1
@@ -91,6 +103,10 @@ const validateLine = (raw: unknown): RestoredLine | null => {
     ...(canvas ? { canvas: true } : {}),
     ...(framing ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
+    ...(frameStyle ? { frameStyle } : {}),
+    ...(glazing ? { glazing } : {}),
+    ...(paperFinish ? { paperFinish } : {}),
+    ...(canvasEdge ? { canvasEdge } : {}),
     quantity,
   };
 };
@@ -102,6 +118,9 @@ const signature = (line: {
   tierId: string;
   framing?: boolean;
   embellished?: boolean;
+  canvas?: boolean;
+  frameStyle?: string;
+  canvasEdge?: string;
 }): string =>
   [
     line.paintingId,
@@ -109,6 +128,11 @@ const signature = (line: {
     line.tierId,
     line.framing === true ? "f" : "",
     line.embellished === true ? "e" : "",
+    // Canvas (+edge) and the frame style are distinct physical products, so a
+    // canvas line and an otherwise-identical paper/framed line must NOT collapse.
+    line.canvas === true ? "c" : "",
+    line.canvasEdge ?? "",
+    line.frameStyle ?? "",
   ].join("|");
 
 /**
