@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { FooterCatalogue } from "../components/FooterCatalogue";
@@ -464,7 +464,7 @@ export const Welcome = () => {
                   The SEM Experience
                 </span>
               ) : (
-                <motion.span
+                <span
                   className="block text-balance"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
@@ -479,22 +479,18 @@ export const Welcome = () => {
                     textShadow:
                       "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
                   }}
-                  initial="hidden"
-                  animate="show"
-                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
                 >
                   {["The", "SEM", "Experience"].map((word, i) => (
-                    <motion.span
+                    <span
                       key={word}
-                      style={{ display: "inline-block", whiteSpace: "nowrap" }}
-                      variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-                      transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+                      className="masthead-word"
+                      style={{ animationDelay: `${0.15 + i * 0.1}s` }}
                     >
                       {word}
                       {i < 2 ? " " : ""}
-                    </motion.span>
+                    </span>
                   ))}
-                </motion.span>
+                </span>
               )}
               {/* The "The Art of Stephen Meakin" wax-seal + wordmark lockup that
                   used to sit under "THE SEM EXPERIENCE" was REMOVED (Hugo

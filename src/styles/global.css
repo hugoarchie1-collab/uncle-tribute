@@ -13,6 +13,26 @@
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* Home masthead word-rise — a CSS entrance so the LCP hero text ("THE SEM
+   EXPERIENCE") paints on the CSS timeline, NOT gated behind framer-motion's
+   ~141KB JS parse (which used to keep the words at opacity:0 until it hydrated).
+   Matches the old framer stagger: 0.7s, per-word delay set inline. */
+@keyframes mastheadWordRise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.masthead-word {
+  display: inline-block;
+  white-space: nowrap;
+  /* NO base opacity:0 — the fade lives ONLY in the keyframe `from`, so if the
+     animation is ever disabled (reduced-motion, a global `animation:none`, an
+     unsupported/throttled context) the word falls back to its default opacity 1
+     and the hero is NEVER invisible. */
+  animation: mastheadWordRise 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .masthead-word { animation: none; }
+}
 
 /* =============================================================================
    Base layer — global defaults
