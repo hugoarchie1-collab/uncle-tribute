@@ -446,40 +446,42 @@ export const CANVAS_NOTE =
 // CANVAS EDGE — how the sides of the stretched canvas are finished. Like the
 // paper finish. Mirror wrap is the clean default (included); the four float
 // (tray) frames set the canvas inside a slim shadow-gap frame for a gallery
-// look. ⚠️ MONEY (Hugo 2026-07-24, reversing the earlier no-surcharge call): a
-// float frame is a real added tray frame at Point 101, so it adds cost — each
-// carries a `surchargePence` on TOP of the base canvas price. PLACEHOLDER +£45
-// pending Point 101's real float-frame cost. Mirrored in api/checkout.ts
-// (CANVAS_EDGE_SURCHARGE_PENCE) — gotcha #9. `note` is the plain-language sell.
+// look. ⚠️ MONEY: a float frame is a real hand-built tray frame at Point 101
+// (32mm canvas set inside a 10mm-wide, 33mm-deep wood tray) — a genuine premium
+// that costs materially more, and MORE at larger sizes. So the surcharge is now
+// SIZE-SCALED (per tier) in FLOAT_EDGE_SURCHARGE_PENCE below, not a flat fee
+// (Hugo 2026-07-25, replacing the old flat +£45 placeholder after checking the
+// Point 101 wizard). `isFloat` marks a tray-framed edge; the money comes from
+// FLOAT_EDGE_SURCHARGE_PENCE × tier. Mirrored in api/checkout.ts — gotcha #9.
 export const CANVAS_EDGES = [
   {
     id: "mirror",
     label: "Mirror wrap",
-    surchargePence: 0,
+    isFloat: false,
     note: "The image continues around all four sides, mirrored at each edge — a clean, contemporary wrap with the artwork uninterrupted from the front. Included.",
   },
   {
     id: "float-black",
     label: "Black float frame",
-    surchargePence: 4500,
+    isFloat: true,
     note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
   },
   {
     id: "float-white",
     label: "White float frame",
-    surchargePence: 4500,
+    isFloat: true,
     note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
   },
   {
     id: "float-wenge",
     label: "Wenge float frame",
-    surchargePence: 4500,
+    isFloat: true,
     note: "Set inside a slim dark wenge-veneer tray frame with a fine shadow-gap reveal — warm and understated. Comes ready to hang.",
   },
   {
     id: "float-oak",
     label: "Oak float frame",
-    surchargePence: 4500,
+    isFloat: true,
     note: "Set inside a slim oak-veneer tray frame with a fine shadow-gap reveal — natural and warm. Comes ready to hang.",
   },
 ] as const;
@@ -487,13 +489,38 @@ export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
 export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "mirror";
 export const canvasEdgeLabel = (id: string | undefined): string =>
   CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
+
 /**
- * Surcharge (pence) for a canvas edge finish — a float frame adds a real tray
- * frame at Point 101, so it costs more than a plain mirror wrap. Mirror = 0.
- * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts CANVAS_EDGE_SURCHARGE_PENCE.
+ * SIZE-SCALED float-frame edge surcharge (pence), per tier. A float (tray)
+ * frame is a real hand-built surround that costs more the bigger the canvas —
+ * so the premium climbs with size. Applies to any float edge; mirror wrap = 0.
+ * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts FLOAT_EDGE_SURCHARGE_PENCE.
  */
-export const getCanvasEdgeSurchargePence = (id: string | undefined): number =>
-  CANVAS_EDGES.find((e) => e.id === id)?.surchargePence ?? 0;
+export const FLOAT_EDGE_SURCHARGE_PENCE: Record<PrintTier["id"], number> = {
+  atelier: 7500, //          A3 float frame — +£75
+  collector: 9500, //        A2 float frame — +£95
+  "atelier-grande": 14500, // A1 float frame — +£145
+  heirloom: 19500, //        A0 float frame — +£195
+  studio: 14500, //          one-off (A1-size) — +£145
+};
+
+/**
+ * Surcharge (pence) for a canvas edge finish at a given tier — a float frame
+ * adds a real tray frame at Point 101 that scales with size, so pass the tier
+ * id to get the right premium. Mirror wrap (or unknown) = 0.
+ * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts.
+ */
+export const getCanvasEdgeSurchargePence = (
+  id: string | undefined,
+  tierId?: string,
+): number => {
+  const edge = CANVAS_EDGES.find((e) => e.id === id);
+  if (!edge || !edge.isFloat) return 0;
+  return (
+    FLOAT_EDGE_SURCHARGE_PENCE[tierId as PrintTier["id"]] ??
+    FLOAT_EDGE_SURCHARGE_PENCE.collector
+  );
+};
 
 // ── Point 101 framing finishes ───────────────────────────────────────────────
 // The Framed product offers Point 101's full range of museum-grade mouldings,

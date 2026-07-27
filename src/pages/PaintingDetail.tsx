@@ -1109,7 +1109,7 @@ const BuyBox = ({
   // a real added tray frame at Point 101, so it adds cost. MONEY: mirrored in
   // api/checkout.ts CANVAS_EDGE_SURCHARGE_PENCE (gotcha #9).
   const canvasEdgeSurchargePence = canvasActive
-    ? getCanvasEdgeSurchargePence(canvasEdge)
+    ? getCanvasEdgeSurchargePence(canvasEdge, selectedTier.id)
     : 0;
   const finishTotalPence = canvasActive
     ? selectedTier.pricePence + (canvasPricePence ?? 0) + canvasEdgeSurchargePence
@@ -1563,7 +1563,7 @@ const BuyBox = ({
                   <span className={EYEBROW_TIGHT}>Edge finish</span>
                   <div className="flex flex-wrap gap-1.5">
                     {CANVAS_EDGES.map((e) => {
-                      const sur = getCanvasEdgeSurchargePence(e.id);
+                      const sur = getCanvasEdgeSurchargePence(e.id, selectedTier.id);
                       const swatch = ({
                         "float-black": "#17161a",
                         "float-white": "#ede9e2",

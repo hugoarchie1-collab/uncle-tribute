@@ -105,7 +105,7 @@ const lineEmbellishPence = (line: ResolvedLine): number =>
 
 const lineCanvasPence = (line: ResolvedLine): number =>
   line.item.canvas === true && typeof line.tier.canvasPricePence === "number"
-    ? line.tier.canvasPricePence + getCanvasEdgeSurchargePence(line.item.canvasEdge)
+    ? line.tier.canvasPricePence + getCanvasEdgeSurchargePence(line.item.canvasEdge, line.tier.id)
     : 0;
 
 /** Full pre-discount price of a line = print + framing + hand-finishing + canvas. */

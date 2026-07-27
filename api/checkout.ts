@@ -438,15 +438,17 @@ const CANVAS_EDGE_LABELS: Record<string, string> = {
   "float-wenge": "Wenge float frame",
   "float-oak": "Oak float frame",
 };
-// MONEY MIRROR (gotcha #9) of CANVAS_EDGES[].surchargePence in
-// src/data/paintings.ts — a float frame adds a real tray frame at Point 101, so
-// it adds cost on top of the base canvas price. Mirror wrap = 0. ⚠️ PLACEHOLDER
-// +£45 pending Point 101's real cost. Keyed off the RAW edge id.
-const CANVAS_EDGE_SURCHARGE_PENCE: Record<string, number> = {
-  "float-black": 4500,
-  "float-white": 4500,
-  "float-wenge": 4500,
-  "float-oak": 4500,
+// MONEY MIRROR (gotcha #9) of FLOAT_EDGE_SURCHARGE_PENCE in
+// src/data/paintings.ts — a float (tray) frame is a real hand-built surround at
+// Point 101 that costs MORE the bigger the canvas, so the surcharge is
+// SIZE-SCALED per tier (Hugo 2026-07-25, replacing the old flat +£45). Any
+// float-* edge id gets the tier's premium; mirror wrap = 0.
+const FLOAT_EDGE_SURCHARGE_PENCE: Record<string, number> = {
+  atelier: 7500, //          A3 float frame — +£75
+  collector: 9500, //        A2 float frame — +£95
+  "atelier-grande": 14500, // A1 float frame — +£145
+  heirloom: 19500, //        A0 float frame — +£195
+  studio: 14500, //          one-off (A1-size) — +£145
 };
 
 interface NormalisedItem {
@@ -534,10 +536,13 @@ const normaliseItem = (
   const frameSurchargePence = framing
     ? (FRAME_SURCHARGE_PENCE[String(frameStyleRaw)] ?? 0)
     : 0;
-  // Canvas float-frame surcharge keyed off the RAW edge id. 0 when not canvas
-  // or a plain mirror wrap.
-  const canvasEdgeSurchargePence = canvas
-    ? (CANVAS_EDGE_SURCHARGE_PENCE[String(canvasEdgeRaw)] ?? 0)
+  // Canvas float-frame surcharge — SIZE-SCALED by tier (a float tray frame
+  // costs more the bigger the canvas). Any float-* edge gets the tier's
+  // premium; a plain mirror wrap (or non-canvas line) = 0.
+  const isFloatEdge =
+    canvas && typeof canvasEdgeRaw === "string" && canvasEdgeRaw.startsWith("float");
+  const canvasEdgeSurchargePence = isFloatEdge
+    ? (FLOAT_EDGE_SURCHARGE_PENCE[tier.id] ?? FLOAT_EDGE_SURCHARGE_PENCE.collector)
     : 0;
   // Quantity — whole units, clamped to a sane 1–99 so a malformed / hostile
   // client can never mint an absurd Stripe line quantity.
