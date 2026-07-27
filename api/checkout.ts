@@ -1040,6 +1040,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       // Premium-frame surcharge (pence) so the confirmation email itemises the
       // framing sub-line at the amount actually charged (gotcha #9).
       frame_surcharge_pence: String(normalised[0].frameSurchargePence),
+      // Canvas substrate so the confirmation email itemises it AND the estate's
+      // fulfilment payload flags stretched-canvas (not paper) + the edge finish.
+      canvas: normalised[0].canvas ? "yes" : "no",
+      canvas_edge: normalised[0].canvasEdge ?? "",
+      canvas_edge_surcharge_pence: String(normalised[0].canvasEdgeSurchargePence),
       quantity: String(normalised[0].quantity),
       item_count: "1",
     };
@@ -1056,6 +1061,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       ),
       frame_surcharges: truncateMetadata(
         normalised.map((i) => String(i.frameSurchargePence)),
+      ),
+      canvas_flags: truncateMetadata(
+        normalised.map((i) => (i.canvas ? "y" : "n")),
+      ),
+      canvas_edges: truncateMetadata(normalised.map((i) => i.canvasEdge ?? "")),
+      canvas_edge_surcharges: truncateMetadata(
+        normalised.map((i) => String(i.canvasEdgeSurchargePence)),
       ),
       embellished_flags: truncateMetadata(
         normalised.map((i) => (i.embellished ? "y" : "n")),

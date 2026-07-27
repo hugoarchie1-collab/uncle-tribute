@@ -288,6 +288,9 @@ interface EmailLine {
   // breakdown sums to the grand Total.
   framingPrice?: string;
   embellishPrice?: string;
+  // Canvas add-on (formatted GBP; canvas price + any float-frame edge surcharge)
+  // — present only on a stretched-canvas line so the email itemises it.
+  canvasPrice?: string;
   // The base TIER price (formatted GBP) — the print itself, before add-ons.
   price: string;
   // How many of this line were ordered (≥ 1). Each is separately hand-numbered.
@@ -368,6 +371,16 @@ const TIER_EMBELLISH_PENCE: Record<string, number> = {
   "atelier-grande": 89500, // £895 (A1)
   heirloom: 129500, // £1,295 (A0) — was MISSING; A0 hand-finish now itemises correctly in the email
 };
+// Canvas add-on price per tier (mirror of canvasPricePence in
+// src/data/paintings.ts + api/checkout.ts — gotcha #9). The float-frame edge
+// surcharge (from metadata) is added on top so the canvas sub-line matches the
+// amount charged.
+const TIER_CANVAS_PENCE: Record<string, number> = {
+  atelier: 15000, // £150 (A3)
+  collector: 22500, // £225 (A2)
+  "atelier-grande": 32500, // £325 (A1)
+  heirloom: 42500, // £425 (A0)
+};
 
 const linesFromMetadata = (
   m: Stripe.Metadata | null,
@@ -402,6 +415,13 @@ const linesFromMetadata = (
           embellished && tierId in TIER_EMBELLISH_PENCE
             ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
             : undefined,
+        canvasPrice:
+          m.canvas === "yes" && tierId in TIER_CANVAS_PENCE
+            ? formatGBP(
+                TIER_CANVAS_PENCE[tierId] +
+                  (Number(m.canvas_edge_surcharge_pence) || 0),
+              )
+            : undefined,
         price: formatGBP(TIER_PRICE_PENCE[tierId] ?? amountSubtotal ?? null),
         quantity: metaQty(m.quantity),
       },
@@ -416,6 +436,8 @@ const linesFromMetadata = (
   const framingFlags = (m.framing_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
   const frameSurcharges = (m.frame_surcharges || "").split(",").map((s) => s.trim());
   const embellishedFlags = (m.embellished_flags || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const canvasFlags = (m.canvas_flags || "").split(",").map((s) => s.trim());
+  const canvasEdgeSurcharges = (m.canvas_edge_surcharges || "").split(",").map((s) => s.trim());
   if (titles.length === 0) return [];
   return titles.map((title, idx) => {
     const tierId = tierIds[idx] || "collector";
@@ -438,6 +460,12 @@ const linesFromMetadata = (
       embellishPrice:
         embellished && tierId in TIER_EMBELLISH_PENCE
           ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
+          : undefined,
+      canvasPrice:
+        canvasFlags[idx] === "y" && tierId in TIER_CANVAS_PENCE
+          ? formatGBP(
+              TIER_CANVAS_PENCE[tierId] + (Number(canvasEdgeSurcharges[idx]) || 0),
+            )
           : undefined,
       price: formatGBP(TIER_PRICE_PENCE[tierId] ?? null),
       quantity: metaQty(quantities[idx]),
@@ -777,6 +805,9 @@ const renderOrderConfirmationHtml = (p: {
         + priceRow("Print", line.price)
         + (line.framing && line.framingPrice
             ? priceRow("Hand-finished frame", line.framingPrice)
+            : "")
+        + (line.canvasPrice
+            ? priceRow("Stretched canvas", line.canvasPrice)
             : "")
         + (line.embellished && line.embellishPrice
             ? priceRow("Hand-finished by Polly Wedge", line.embellishPrice, EMBELLISH)
