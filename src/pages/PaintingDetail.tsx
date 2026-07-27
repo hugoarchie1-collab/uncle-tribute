@@ -998,7 +998,6 @@ const BuyBox = ({
   onFramingChange,
   onEmbellishedChange,
   onCanvasChange,
-  onPrintChange,
   onFrameStyleChange,
   onCanvasEdgeChange,
   orderSentinelRef,
@@ -1023,7 +1022,6 @@ const BuyBox = ({
   onFramingChange: (next: boolean) => void;
   onEmbellishedChange: (next: boolean) => void;
   onCanvasChange: (next: boolean) => void;
-  onPrintChange: () => void;
   onFrameStyleChange: (next: string) => void;
   onCanvasEdgeChange: (next: string) => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
@@ -1075,10 +1073,6 @@ const BuyBox = ({
   const canvasActive = canvasOffered && canvas;
   const framingActive = framingOffered && framing && !canvasActive;
   const embellishActive = embellishOffered && embellished && !canvasActive;
-  // Plain UNFRAMED print — active when neither framing nor canvas is selected
-  // (the restored £275 base print, Hugo 2026-07-27). Both the card and the
-  // headline fall back to the bare tier price, which checkout charges.
-  const printActive = !framingActive && !canvasActive;
 
   // Add-on prices read from the data layer's helpers so they can never drift
   // from the source ladder (gotcha #9 — pricing must not be hand-typed). The
@@ -1086,15 +1080,6 @@ const BuyBox = ({
   const framingPricePence = getFramingPricePence(selectedTier);
   const embellishPricePence = getEmbellishmentPricePence(selectedTier);
   const canvasPricePence = getCanvasPricePence(selectedTier);
-  // Per-presentation price labels for the choice cards (Hugo 2026-07-27 — "see
-  // £275 lowest, then £425"): Print = bare tier price; Canvas "from" = print +
-  // canvas (mirror wrap, edge surcharge added in the headline). Framed label is
-  // framedTotalLabel below. All from the data-layer helpers (advertised==charged).
-  const printPriceLabel = fmtP(selectedTier.pricePence);
-  const canvasFromLabel =
-    canvasPricePence !== null
-      ? fmtP(selectedTier.pricePence + canvasPricePence)
-      : null;
   // Premium-frame surcharge (Signature / Ornate) added on top of the base
   // framing price for the SELECTED frame. Classic frames → 0. MONEY: mirrored
   // server-side in api/checkout.ts (gotcha #9).
@@ -1520,31 +1505,7 @@ const BuyBox = ({
                   frame, mandatory) OR a Canvas print. Framing is NOT an add-on.
                   A0 has no Framed option (can't ship glazed) → canvas only. */}
               <span className={EYEBROW_TIGHT}>Presentation</span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {(framingOffered || canvasOffered) && (
-                  <button
-                    type="button"
-                    onClick={onPrintChange}
-                    aria-pressed={printActive}
-                    className={cn(
-                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
-                      printActive ? "ring-ink" : "ring-line hover:ring-ink/40",
-                    )}
-                  >
-                    <span className="flex w-full items-baseline justify-between gap-2">
-                      <strong className="font-sans text-[14px] text-ink">
-                        Print
-                      </strong>
-                      <span className="font-sans text-[13px] text-ink-muted tabular-nums">
-                        {printPriceLabel}
-                      </span>
-                    </span>
-                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
-                      Museum giclée on Hahnemühle Photo Rag — 308gsm, 100% cotton
-                      archival paper. Sent flat, ready to frame yourself.
-                    </span>
-                  </button>
-                )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {framingOffered && (
                   <button
                     type="button"
@@ -1559,11 +1520,6 @@ const BuyBox = ({
                       <strong className="font-sans text-[14px] text-ink">
                         Framed print
                       </strong>
-                      {framedTotalLabel && (
-                        <span className="font-sans text-[13px] text-ink-muted tabular-nums">
-                          {framedTotalLabel}
-                        </span>
-                      )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
                       Museum giclée on Hahnemühle Photo Rag — 308gsm, 100% cotton
@@ -1586,11 +1542,6 @@ const BuyBox = ({
                       <strong className="font-sans text-[14px] text-ink">
                         Canvas print
                       </strong>
-                      {canvasFromLabel && (
-                        <span className="font-sans text-[13px] text-ink-muted tabular-nums">
-                          {canvasFromLabel}
-                        </span>
-                      )}
                     </span>
                     <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
                       Printed on bright 350gsm textured fine-art canvas, hand-stretched
@@ -2551,17 +2502,6 @@ export const PaintingDetail = () => {
     setFraming(next);
     if (next) setCanvas(false);
   };
-  // Plain UNFRAMED print (Hugo 2026-07-27: "the A3 is £275 — you removed it").
-  // The framed-default model made framing/canvas mandatory, which quietly removed
-  // the buyable base print, pushing the real floor up to £425 (A3 canvas). This
-  // restores the £275 print as a selectable presentation (Framed stays the
-  // default/recommended). Clears both framing + canvas + hand-finishing → a bare
-  // print line (tier.pricePence), which checkout already charges correctly.
-  const selectPrint = () => {
-    setFraming(false);
-    setCanvas(false);
-    setEmbellished(false);
-  };
 
   // Reset the FRAMING / CANVAS finish options back to their defaults (Hugo
   // 2026-07-24: "not the colourway too — just the selected framing options or
@@ -3161,7 +3101,6 @@ export const PaintingDetail = () => {
                 onFramingChange={selectFraming}
                 onEmbellishedChange={setEmbellished}
                 onCanvasChange={selectCanvas}
-                onPrintChange={selectPrint}
                 onFrameStyleChange={setFrameStyle}
                 onCanvasEdgeChange={setCanvasEdge}
                 orderSentinelRef={orderSentinelRef}
