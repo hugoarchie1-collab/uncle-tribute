@@ -2600,10 +2600,6 @@ export const PaintingDetail = () => {
   // the already-decoded source's natural pixel size).
   const [viewerOpen, setViewerOpen] = useState(false);
   const closeViewer = useCallback(() => setViewerOpen(false), []);
-  // Once the viewer has been opened, keep it mounted so its open/close
-  // animations are preserved; the lazy chunk still loads only on first open.
-  const viewerEverOpened = useRef(false);
-  if (viewerOpen) viewerEverOpened.current = true;
   const heroImgRef = useRef<HTMLImageElement>(null);
   // Left-column view: the artwork itself, or the True Size room view (#11) —
   // the painting shown at its real printed size on a wall in a room.
@@ -3185,7 +3181,9 @@ export const PaintingDetail = () => {
           shows the SELECTED colourway's full-resolution source. When the
           colourway picker changes while it's open, `selected.image` updates and
           the viewer re-fits the new colourway. */}
-      {viewerEverOpened.current && (
+      {/* Gated on viewerOpen (mirrors the SeeOnYourWall pattern): the lazy
+          CloserLook chunk loads only when the buyer first opens the zoom. */}
+      {viewerOpen && (
         <Suspense fallback={null}>
           <CloserLook
             open={viewerOpen}
