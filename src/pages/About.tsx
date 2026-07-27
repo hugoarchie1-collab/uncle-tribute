@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Children, isValidElement, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useScroll,
@@ -185,32 +185,56 @@ const ProseColumns = ({
   </Reveal>
 );
 
-// ─── P3 · PhotoRow — even tiles, 2–3 up (the ONLY way to place 2–3 photos) ────
-// Every tile shares ONE aspect → heights identical → no jigsaw. People tiles
-// use <Plate fill> (object-contain — face never cut); art/room/doc tiles use
-// <ImageReveal> (cover-safe). NEVER mix aspects in one row; never a 4-up. The
-// caller passes the correct tile children; `items-stretch` levels the row.
-// `width` is accepted (call-sites still pass it) but IGNORED — every photo row
-// uses the ONE canonical width so its edges line up with the prose above/below.
+// ─── P3 · PhotoRow — a JUSTIFIED gallery row (reads each photo's real size) ────
+// REBUILT 2026-07-27 (Hugo: "you're not reading image sizes properly — if it's
+// landscape don't put a horizontal image right next to it… jaggered images that
+// aren't the same shape with this stupid transparent background behind"). The old
+// row was an EQUAL-column grid that forced every photo into ONE arbitrary aspect
+// via object-contain — so a 1600×1200 LANDSCAPE jammed into a 4/5 PORTRAIT slot
+// got letterboxed into ragged warm-mount bars beside a real portrait. Now the row
+// is a proper justified gallery (à la a photo book): each photo keeps its NATURAL
+// aspect ratio (read from its width/height props) and its column GROWS in
+// proportion to that aspect, so every photo in the row lands at the SAME HEIGHT —
+// a landscape gets a wide column, a portrait a narrow one, and they align cleanly
+// with NO crop, NO letterbox, NO mount. Stacks to one column on phones.
+const readAspect = (node: ReactNode): number => {
+  if (!isValidElement(node)) return 1;
+  const props = node.props as { width?: number; height?: number; children?: ReactNode };
+  if (typeof props.width === "number" && typeof props.height === "number" && props.height > 0) {
+    return props.width / props.height;
+  }
+  // Photos are wrapped in <Reveal><Plate …/></Reveal>; look one level in.
+  for (const child of Children.toArray(props.children)) {
+    const a = readAspect(child);
+    if (a !== 1) return a;
+  }
+  return 1;
+};
 const PhotoRow = ({
-  cols = 2,
   children,
 }: {
   cols?: 2 | 3;
   width?: "tight" | "wide";
   children: ReactNode;
-}) => (
-  <Reveal
-    as="div"
-    className={cn(
-      ONE_WIDTH,
-      "grid grid-cols-2 gap-4 md:gap-6 items-stretch",
-      cols === 3 && "md:grid-cols-3",
-    )}
-  >
-    {children}
-  </Reveal>
-);
+}) => {
+  const kids = Children.toArray(children);
+  return (
+    <Reveal
+      as="div"
+      className={cn(ONE_WIDTH, "flex flex-col sm:flex-row gap-3 md:gap-5 items-start")}
+    >
+      {kids.map((child, i) => (
+        <div
+          key={i}
+          className="min-w-0 w-full sm:w-auto"
+          style={{ flexGrow: readAspect(child), flexBasis: 0 }}
+        >
+          {child}
+        </div>
+      ))}
+    </Reveal>
+  );
+};
 
 // ─── P4 · TextThenArt — Home's stacked module: full-width text, then a
 //     full-width contained captioned figure BELOW (NO narrow side column) ──────
@@ -371,54 +395,35 @@ const Plate = ({
   width,
   height,
   sizes,
-  fill = false,
-  aspect = "aspect-[4/3]",
 }: {
   src: string;
   alt: string;
   width: number;
   height: number;
   sizes?: string;
+  /** Kept for call-site back-compat (both now ignored — the photo shows at its
+   *  natural aspect and its column in a justified PhotoRow is sized from it). */
   fill?: boolean;
   aspect?: string;
 }) => (
-  <figure className="m-0 flex h-full flex-col">
-    {fill ? (
-      // object-CONTAIN, ALWAYS — these are family photographs and NOBODY may be
-      // cropped out (Hugo, 2026-07-11: "why are the images cut off on about page
-      // with family"). The whole snapshot shows inside its aspect slot. NEVER
-      // object-cover here — an even-tile crop that beheads a family member is the
-      // worse sin. SYMMETRY FIX (Hugo, "jigsaw ... symmetry across all desktop"):
-      // at md+ the slot is a uniform warm-paper MATTE MOUNT (identical bg + ring +
-      // padding + card-shadow on every tile), so contain-letterboxed photos of
-      // mixed orientation read as matched museum mats, not ragged floating photos.
-      // Mount is md:-gated → mobile (single-column, frozen) is byte-identical.
-      <div className={cn("relative w-full max-h-[62svh] overflow-hidden md:bg-ink/[0.04] md:ring-1 md:ring-line md:rounded-[3px] md:p-2", aspect)}>
-        <AssetImage
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          loading="lazy"
-          decoding="async"
-          sizes={sizes}
-          style={{ filter: PHOTO_GRADE_SHADOW }}
-          className="absolute inset-0 h-full w-full object-contain"
-        />
-      </div>
-    ) : (
-      <AssetImage
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        loading="lazy"
-        decoding="async"
-        sizes={sizes}
-        style={{ filter: PHOTO_GRADE_SHADOW }}
-        className="block w-full h-auto"
-      />
-    )}
+  <figure className="m-0">
+    {/* NATURAL ASPECT, no mount, no crop (Hugo 2026-07-27). The photo shows at its
+        own true shape — inside a justified PhotoRow its column width is set in
+        proportion to this aspect, so it lands at the row's shared height with NO
+        letterbox and NO crop. `aspect` prop is now ignored (kept for call-site
+        back-compat). A gentle rounded corner + the shared soft film-shadow read it
+        as a photograph, not a floating cut-out. */}
+    <AssetImage
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      sizes={sizes}
+      style={{ filter: PHOTO_GRADE_SHADOW }}
+      className="block w-full h-auto rounded-[3px]"
+    />
   </figure>
 );
 
