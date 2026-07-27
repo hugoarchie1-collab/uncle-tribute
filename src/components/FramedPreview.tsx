@@ -100,7 +100,7 @@ const CANVAS_FLOAT_COLOR: Record<string, string> = {
 // floating off the wall (a tight contact shadow + a deep ambient drop) — plus a
 // second lower ambient so the depth is unmistakable even on the dark PDP wall.
 const CANVAS_DEPTH_SHADOW =
-  "drop-shadow(0 3px 4px rgba(0,0,0,0.5)) drop-shadow(0 22px 30px rgba(0,0,0,0.5)) drop-shadow(0 40px 60px rgba(0,0,0,0.45))";
+  "drop-shadow(0 2px 3px rgba(0,0,0,0.45)) drop-shadow(0 26px 42px rgba(0,0,0,0.5))";
 const CANVAS_SIZER =
   "mx-auto block max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]";
 // The mirror-wrap depth cue: the image visibly TURNS THE CORNER down the right
@@ -109,18 +109,19 @@ const CANVAS_SIZER =
 // gallery-wrapped canvas are obviously different objects (Hugo: "it doesn't show
 // any change"). Point 101's stretched-canvas look, in Stephen's own artwork.
 const CANVAS_WRAP_EDGE =
-  "inset -16px 0 20px -12px rgba(0,0,0,0.62), " +
-  "inset 0 -16px 20px -12px rgba(0,0,0,0.62), " +
-  "inset 13px 13px 20px -16px rgba(255,255,255,0.24)";
+  "inset 14px 14px 26px -20px rgba(255,255,255,0.32), " +
+  "inset -2px -2px 30px -18px rgba(0,0,0,0.35)";
 
 // The visible stretcher-bar DEPTH of the wrapped canvas (a real gallery canvas
 // is ~38mm deep). Rendered as true 3D right/bottom faces so the canvas reads as
 // a solid object with thickness — Point 101's stretched-canvas look, on
 // Stephen's OWN artwork (no copyrighted example images).
-const CANVAS_DEPTH = "clamp(11px, 1.5vw, 24px)";
-// A subtle gallery angle so the depth on the right + bottom edges is visible
-// (like Point 101's canvas mockup) without reading as a gimmicky spin.
-const CANVAS_TILT = "perspective(2200px) rotateX(3.2deg) rotateY(-6.5deg)";
+const CANVAS_DEPTH = "clamp(16px, 2.1vw, 34px)";
+// A gallery angle that clearly reveals the wrapped right + bottom edges (so it
+// reads as a chunky stretched canvas, not a flat print) while keeping the art
+// readable — tuned against Stephen's own work (Hugo 2026-07-27: the old wrap
+// "looks terrible / nothing like it'll look"). perspective on the transform.
+const CANVAS_TILT = "perspective(2600px) rotateX(2.5deg) rotateY(-8deg)";
 
 export const CanvasWrap = ({
   active,
@@ -156,8 +157,8 @@ export const CanvasWrap = ({
         background: floatColor
           ? `linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.15)), ${floatColor}`
           : artUrl
-            ? `linear-gradient(90deg, rgba(0,0,0,0.5), rgba(0,0,0,0.22)), url(${artUrl})`
-            : "linear-gradient(90deg, rgba(0,0,0,0.5), rgba(0,0,0,0.22)), #d9d1bf",
+            ? `linear-gradient(90deg, rgba(20,14,8,0.15), rgba(0,0,0,0.42)), url(${artUrl})`
+            : "linear-gradient(90deg, rgba(20,14,8,0.15), rgba(0,0,0,0.42)), #d9d1bf",
         backgroundSize: floatColor ? undefined : "cover",
         backgroundPosition: "right center",
       }}
@@ -174,8 +175,8 @@ export const CanvasWrap = ({
         background: floatColor
           ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.5)), ${floatColor}`
           : artUrl
-            ? `linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.55)), url(${artUrl})`
-            : "linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.55)), #d9d1bf",
+            ? `linear-gradient(180deg, rgba(20,14,8,0.12), rgba(0,0,0,0.5)), url(${artUrl})`
+            : "linear-gradient(180deg, rgba(20,14,8,0.12), rgba(0,0,0,0.5)), #d9d1bf",
         backgroundSize: floatColor ? undefined : "cover",
         backgroundPosition: "center bottom",
       }}
