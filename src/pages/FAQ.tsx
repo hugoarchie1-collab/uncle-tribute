@@ -119,11 +119,12 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four tiers, each estate-stamped and issued within the estate's release
-        cycle, every price including free delivery worldwide. <strong>Open Edition</strong> at £295 (issued within each edition, no fixed allocation).{" "}
-        <strong>Collector Edition</strong> at £525 (edition of 200).{" "}
-        <strong>Atelier Edition</strong> at £975 (edition of 75).{" "}
-        <strong>Heirloom Edition</strong> at £1,995 (edition of 18).
+        Four tiers, each estate-stamped and ready to hang — framed in solid wood
+        or gallery-wrapped on canvas, with the frame or canvas included in the
+        price and free delivery worldwide. <strong>Open Edition</strong> at £445 (issued within each edition, no fixed allocation).{" "}
+        <strong>Collector Edition</strong> at £750 (edition of 200).{" "}
+        <strong>Atelier Edition</strong> at £1,300 (edition of 75).{" "}
+        <strong>Heirloom Edition</strong>, on canvas, at £2,420 (edition of 18).
       </>
     ),
   },
@@ -132,15 +133,17 @@ const FAQS: QA[] = [
     question: "Can I have my print framed?",
     answer: (
       <>
-        Yes — framing is offered on the Open, Collector and Atelier editions. Choose your{" "}
-        <strong>finish</strong> — a solid-wood or contemporary tray frame
-        (natural oak, stained black, white or walnut tray). Glazing is matched to
-        the size: anti-reflective art glass up to the Collector size, and ultra-clear,
-        UV-filtering, shatter-safe acrylic on the largest framed size — included in the
-        framing price. Add £150 on the Open edition, £225 on
-        Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no
-        framing surcharge at checkout. Framed orders add roughly two weeks to
-        the lead time.
+        Every piece arrives framed and ready to hang — the edition price already
+        includes a hand-cut mount, a solid-wood or tray frame and glazing, so
+        there is no unframed option and no separate framing charge. Choose your{" "}
+        <strong>finish</strong> on the product page — a solid-wood or contemporary
+        tray frame (natural oak, stained black, white or walnut tray), with
+        Signature and Ornate mouldings available for a small supplement. Glazing is
+        matched to the size: anti-reflective art glass up to the Collector size,
+        and ultra-clear, UV-filtering, shatter-safe acrylic on the largest framed
+        size. Prefer canvas? Every piece is also offered gallery-wrapped, ready to
+        hang, at the same price. Framed and canvas orders are made to order — allow
+        roughly two weeks; delivery is free worldwide.
       </>
     ),
   },
