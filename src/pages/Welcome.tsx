@@ -1280,51 +1280,47 @@ export const Welcome = () => {
               ImageMagick (shallow crop → transparent black → alpha-feather → baked
               wide+edge warm glow → warm modulate); regenerate under a new -vN
               filename (immutable /img cache). Decorative only (aria-hidden). */}
-          {/* ⚠️ Jupiter foot — the recurring "too big / dome / black bar" bug had
-              ONE root cause: the top Earth is an ABSOLUTE background that the 78svh
-              masthead CLIPS to a thin limb, whereas this foot rendered the WHOLE
-              2000×541 dome IN-FLOW → the full fat dome + a gap below it. Fix: give
-              the section a FIXED THIN HEIGHT and pin the SAME asset top-0 absolute,
-              so overflow-hidden clips it to a thin gentle limb the same visible size
-              as the masthead Earth — a true "as above, so below" mirror. The bright
-              warm rim sits up near the peacock; the warm body meets the red
-              catalogue flush (no black bar). Height is a clamp so the band stays a
-              thin limb from phone to 4K. */}
+          {/* ⚠️ Jupiter foot (v12, 2026-07-27) — Hugo: "we wanna SEE the spot to
+              know it's even Jupiter". The Great Red Spot sits LOW on the globe, so a
+              thin top-cap limb (like the Earth) can never show it — the limb has to
+              be taller to include it. v12 is the final limb shape: cropped rim →
+              just past the Great Red Spot, its flat-black space keyed to TRANSPARENCY
+              (so the peacock shows through above the limb — no black bar, the v9 bug)
+              + a warm ATMOSPHERIC RIM GLOW baked along the limb edge (matching the
+              masthead Earth's luminous limb). Rendered IN-FLOW full-bleed so it
+              scales consistently at every width and the spot is always visible.
+              Verified via peacock composite (rim glow + bands + Great Red Spot +
+              peacock above + flush catalogue, no black bar). It is deliberately
+              taller than the top Earth limb — that is the cost of showing the spot. */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] h-[clamp(70px,9.5vw,180px)] mb-[-1px]"
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-1px]"
           >
-            {/* Warm halo along the very foot — matches the top Earth's rim. */}
+            {/* Warm halo along the foot — matches the top Earth's rim. */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-full"
               style={{
                 background:
-                  "radial-gradient(120% 95% at 50% 0%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
+                  "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 66%)",
               }}
             />
             <img
-              src={asset("/img/scenes/jupiter-limb-v10.webp")}
+              src={asset("/img/scenes/jupiter-limb-v12.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="absolute inset-x-0 top-0 z-[1] block select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              className="relative z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
               style={{
                 maxWidth: "none",
                 height: "auto",
-                // v10 (2026-07-27): v9's opaque BLACK space corners were the real
-                // "black bar / not a thin limb" cause — the top Earth cutout has
-                // TRANSPARENT space so the peacock shows through above its arc; v9
-                // did not, so above the limb was a hard black band. v10 keys that
-                // flat black to transparency (corner floodfill, feathered alpha),
-                // preserving the warm rim glow — so the peacock backdrop shows
-                // through above the limb exactly like the masthead Earth. A whisper
-                // top-fade only softens the very edge; the band HEIGHT keeps it a
-                // thin gentle limb. Verified via peacock composite (REALSIM).
+                // Whisper top-fade only — the transparent space + baked rim glow do
+                // the blend into the peacock; the body stays opaque + flush on the
+                // catalogue (no black bar).
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 5%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 6%, #000 100%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 5%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 6%, #000 100%)",
               }}
             />
           </section>
