@@ -10,6 +10,7 @@ import {
   PAINTINGS,
   PRINT_TIERS,
   getLowestTierPricePence,
+  getTierAdvertisedPricePence,
   getCollectionBundle,
   getCompleteCatalogueBundle,
   bundleDiscountPercentForCount,
@@ -287,7 +288,9 @@ const CollectionSetCard = ({
         p.colourways.find((c) => c.isOriginal && c.available) ??
         p.colourways.find((c) => c.available) ??
         p.colourways[0];
-      if (original) addItem(p.id, original.name, tier.id);
+      // FRAMED bundle line (Hugo 2026-07-27: no unframed prints) — matches the
+      // framed set price the panel advertises (advertised == charged).
+      if (original) addItem(p.id, original.name, tier.id, true);
     });
   };
   // Per-line-converted set figures so advertised == charged in every currency (#7).
@@ -379,7 +382,9 @@ const ComposeSetCard = () => {
         p.colourways.find((c) => c.isOriginal && c.available) ??
         p.colourways.find((c) => c.available) ??
         p.colourways[0];
-      if (original) addItem(p.id, original.name, tier.id);
+      // FRAMED bundle line (Hugo 2026-07-27: no unframed prints) — matches the
+      // framed set price the panel advertises (advertised == charged).
+      if (original) addItem(p.id, original.name, tier.id, true);
     });
   };
 
@@ -500,7 +505,7 @@ const CatalogueSetCard = () => {
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
   const acquireCatalogue = () => {
     catalogue.items.forEach((it) =>
-      addItem(it.paintingId, it.colourwayName, tier.id),
+      addItem(it.paintingId, it.colourwayName, tier.id, true),
     );
   };
   return (
@@ -757,7 +762,7 @@ export const Collections = () => {
                 >
                   Every painting, from{" "}
                   <span className="font-semibold text-ink">
-                    {fmtP(SET_TIERS_ASCENDING[0].pricePence)}
+                    {fmtP(getTierAdvertisedPricePence(SET_TIERS_ASCENDING[0]))}
                   </span>{" "}
                   · each with a Certificate of Authenticity
                 </p>

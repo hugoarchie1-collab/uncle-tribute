@@ -1196,7 +1196,9 @@ const BuyBox = ({
   const onAddColourwaySet = () => {
     if (!colourwaySet) return;
     colourwaySet.colourwayNames.forEach((name) =>
-      addItem(painting.id, name, selectedTier.id),
+      // FRAMED lines (Hugo 2026-07-27: no unframed prints) — matches the framed
+      // colourway-set price the card advertises (advertised == charged).
+      addItem(painting.id, name, selectedTier.id, true),
     );
     // One AddToCart for the set (at its bundle price) — parity with onAdd, which
     // fires it for a single print; the set path previously fired none.

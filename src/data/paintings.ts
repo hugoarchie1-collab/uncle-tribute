@@ -1289,7 +1289,7 @@ export const getCollectionBundle = (
   if (!collection || paintings.length === 0) return undefined;
 
   const fullPricePence = paintings.reduce(
-    (sum, p) => sum + getTierById(p, tierId).pricePence,
+    (sum, p) => sum + getTierAdvertisedPricePence(getTierById(p, tierId)),
     0,
   );
   // Derive the percent from the painting count so the advertised figure
@@ -1365,7 +1365,12 @@ export const getColourwaySetBundle = (
   if (available.length < 2) return undefined;
 
   const tier = getTierById(painting, tierId);
-  const fullPricePence = tier.pricePence * available.length;
+  // FRAMED set price (Hugo 2026-07-27: no unframed prints + "make it honest").
+  // The set is FRAMED prints, so it must advertise + charge the framed price
+  // (base + framing = getTierAdvertisedPricePence). The add-to-basket action
+  // pushes framed lines to match (advertised == charged; 12%/15% off these
+  // round-number prices is exact per Stripe per-line percent_off).
+  const fullPricePence = getTierAdvertisedPricePence(tier) * available.length;
   const discountPercent = COLOURWAY_SET_DISCOUNT_PERCENT;
   // A single round on the uniform total agrees with Stripe's per-line
   // percent_off summing for a clean 12% on equal-priced lines (same reasoning
@@ -1441,7 +1446,7 @@ export const getCompleteCatalogueBundle = (
     return { paintingId: p.id, colourwayName: colourway.name };
   });
   const fullPricePence = paintings.reduce(
-    (sum, p) => sum + getTierById(p, tierId).pricePence,
+    (sum, p) => sum + getTierAdvertisedPricePence(getTierById(p, tierId)),
     0,
   );
   const discountPercent = COMPLETE_CATALOGUE_DISCOUNT_PERCENT;
