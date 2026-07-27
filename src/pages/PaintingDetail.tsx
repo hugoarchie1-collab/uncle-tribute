@@ -21,7 +21,11 @@ import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
 import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
-import { CloserLook } from "../components/CloserLook";
+// Code-split: the 912-line deep-zoom viewer (+ its framer-motion) only loads
+// when the buyer actually opens it, trimming it out of the eager PDP chunk.
+const CloserLook = lazy(() =>
+  import("../components/CloserLook").then((m) => ({ default: m.CloserLook })),
+);
 import { EnquireModal } from "../components/EnquireModal";
 import { Reviews } from "../components/Reviews";
 import { AssetImage } from "../components/AssetImage";
@@ -2596,6 +2600,10 @@ export const PaintingDetail = () => {
   // the already-decoded source's natural pixel size).
   const [viewerOpen, setViewerOpen] = useState(false);
   const closeViewer = useCallback(() => setViewerOpen(false), []);
+  // Once the viewer has been opened, keep it mounted so its open/close
+  // animations are preserved; the lazy chunk still loads only on first open.
+  const viewerEverOpened = useRef(false);
+  if (viewerOpen) viewerEverOpened.current = true;
   const heroImgRef = useRef<HTMLImageElement>(null);
   // Left-column view: the artwork itself, or the True Size room view (#11) —
   // the painting shown at its real printed size on a wall in a room.
@@ -3177,15 +3185,19 @@ export const PaintingDetail = () => {
           shows the SELECTED colourway's full-resolution source. When the
           colourway picker changes while it's open, `selected.image` updates and
           the viewer re-fits the new colourway. */}
-      <CloserLook
-        open={viewerOpen}
-        onClose={closeViewer}
-        imageSrc={selected.image}
-        alt={`${painting.title} — ${selected.name}, full-resolution detail`}
-        paintingTitle={painting.title}
-        colourwayName={selected.name}
-        sourceImgRef={heroImgRef}
-      />
+      {viewerEverOpened.current && (
+        <Suspense fallback={null}>
+          <CloserLook
+            open={viewerOpen}
+            onClose={closeViewer}
+            imageSrc={selected.image}
+            alt={`${painting.title} — ${selected.name}, full-resolution detail`}
+            paintingTitle={painting.title}
+            colourwayName={selected.name}
+            sourceImgRef={heroImgRef}
+          />
+        </Suspense>
+      )}
 
       {wallOpen && (
         <Suspense fallback={<WallLoading />}>
