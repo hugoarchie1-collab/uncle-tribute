@@ -137,8 +137,8 @@ const FAQS: QA[] = [
         (natural oak, stained black, white or walnut tray). Glazing is matched to
         the size: anti-reflective art glass up to the Collector size, and ultra-clear,
         UV-filtering, shatter-safe acrylic on the largest framed size — included in the
-        framing price. Add £295 on the Open edition, £425 on
-        Collector and £575 on Atelier. Delivery is free, framed or unframed — there is no
+        framing price. Add £150 on the Open edition, £225 on
+        Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no
         framing surcharge at checkout. Framed orders add roughly two weeks to
         the lead time.
       </>

@@ -137,7 +137,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Yes — framing is offered on the Open, Collector and Atelier editions. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £295 on the Open edition, £425 on Collector and £575 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
+      "Yes — framing is offered on the Open, Collector and Atelier editions. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £150 on the Open edition, £225 on Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
   },
   {
     eyebrow: "Hand-finishing",

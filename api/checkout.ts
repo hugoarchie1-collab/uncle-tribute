@@ -732,21 +732,21 @@ const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) 
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "United Kingdom — free delivery (made to order · ~2–3 weeks)",
+      display_name: "United Kingdom — free delivery (made to order · ships in 7–10 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "Europe — free delivery (made to order · ~3 weeks)",
+      display_name: "Europe — free delivery (made to order · ships in 7–10 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "International — free delivery (made to order · ~3–4 weeks)",
+      display_name: "International — free delivery (made to order · ships in 7–10 working days)",
     },
   },
 ];
@@ -1242,11 +1242,31 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const shippingParams: Partial<Stripe.Checkout.SessionCreateParams> = giftOnly
     ? {}
     : {
+        // Worldwide (2026-07-27): every page promises free worldwide delivery and
+        // the "Deliver to → Rest of world" picker offers it, so checkout must NOT
+        // dead-end a non-listed country at the payment step. Delivery is a flat £0
+        // rate for every region (buildShippingOptions), so widening this list adds
+        // zero cost and cannot affect advertised==charged. Stephen's collector base
+        // is Gulf/Dubai — those were previously blocked. This is the broad set of
+        // Stripe-supported destinations (sanctioned countries are rejected by
+        // Stripe automatically and are intentionally omitted).
         shipping_address_collection: {
           allowed_countries: [
-            "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU",
-            "AT", "PT", "DK", "SE", "NO", "FI", "CH", "PL",
-            "US", "CA", "AU", "NZ",
+            // Europe
+            "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU", "AT", "PT",
+            "DK", "SE", "NO", "FI", "IS", "CH", "PL", "CZ", "SK", "HU", "SI",
+            "HR", "RO", "BG", "GR", "EE", "LV", "LT", "CY", "MT", "LI", "MC",
+            // North America
+            "US", "CA", "MX",
+            // Middle East / Gulf
+            "AE", "SA", "QA", "KW", "BH", "OM", "JO", "IL", "TR",
+            // Asia-Pacific
+            "JP", "SG", "HK", "KR", "TW", "CN", "IN", "MY", "TH", "ID", "PH",
+            "VN", "AU", "NZ",
+            // Latin America
+            "BR", "AR", "CL", "CO", "PE", "UY", "CR",
+            // Africa
+            "ZA", "MU",
           ],
         },
         shipping_options: buildShippingOptions(normalised, currencyCode),
