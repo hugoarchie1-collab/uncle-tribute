@@ -143,7 +143,7 @@ export const Gift = () => {
     if (!resolved) {
       setError(
         selection.kind === "custom"
-          ? `Please enter a whole-pound amount between ${fmtP(GIFT_MIN_PENCE)} and ${fmtP(GIFT_MAX_PENCE)}.`
+          ? `Please enter a whole-pound amount between £${(GIFT_MIN_PENCE / 100).toLocaleString("en-GB")} and £${(GIFT_MAX_PENCE / 100).toLocaleString("en-GB")}.`
           : "Please choose an amount.",
       );
       return;
@@ -350,8 +350,7 @@ export const Gift = () => {
                     Custom amount
                   </span>
                   <span className={cn(META, "block")}>
-                    Any whole-pound value from {fmtP(GIFT_MIN_PENCE)} to{" "}
-                    {fmtP(GIFT_MAX_PENCE)}.
+                    Any whole-pound value from £{(GIFT_MIN_PENCE / 100).toLocaleString("en-GB")} to £{(GIFT_MAX_PENCE / 100).toLocaleString("en-GB")} (GBP; charged in your currency).
                   </span>
                 </button>
               </div>
