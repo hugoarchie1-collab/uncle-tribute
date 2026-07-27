@@ -932,10 +932,10 @@ export const Collections = () => {
                             )}
                             {/* Price floor — sits under every tile so a
                                 browsing buyer never needs to click into a
-                                painting to learn there is a price. Advertises
-                                the LOWEST visible tier (A3 Gallery £295) to
-                                lower the click barrier — the £525 anchor still
-                                does its conversion work on the product page. */}
+                                painting to learn there is a price. Advertises the
+                                BUYABLE FLOOR (getLowestTierPricePence = A3 framed
+                                £445), NOT the bare base — no unframed prints, so
+                                the base isn't checkoutable (Hugo 2026-07-27). */}
                             <p
                               className={cn(META, "mt-2 m-0")}
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
