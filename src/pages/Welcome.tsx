@@ -796,16 +796,20 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
+              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-center"
             >
-              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-[5/6] md:h-full min-h-[340px] md:max-h-[52svh] overflow-hidden">
+              {/* Portrait shown WHOLE — the photo is 2:3, so a 2:3 box + object
+                  center cover-fills with no crop (Hugo 2026-07-28: "the image of
+                  Steve is still cut off"). Crisp edge (no feather — the blurred
+                  outer edge Hugo dislikes), single hairline ring like home's figures. */}
+              <figure className="relative m-0 w-full aspect-[2/3] overflow-hidden rounded-[3px] ring-1 ring-line">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   fill
-                  edges="all"
-                  parallax={0.06}
-                  objectPosition="center 28%"
+                  edges="none"
+                  parallax={0}
+                  objectPosition="center"
                   shadow=""
                 />
               </figure>
@@ -1069,8 +1073,8 @@ export const Welcome = () => {
               removed; a plain hairline divider gives the dense section (heading +
               intro + two paragraphs + a 6-row spec ledger) its separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="border-t border-line pt-9 md:pt-12">
-              <Reveal as="div" className="text-center mb-4 md:mb-6">
+            <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-white/12 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
+              <Reveal as="div" className="text-center mb-8 md:mb-10">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
@@ -1078,47 +1082,49 @@ export const Welcome = () => {
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
-              {/* No feature photo here: 02-painting-table lives in the About
-                  monograph (Chapter "Return"), and Hugo 2026-07-08 asked that the
-                  same painting photos not repeat across Home + About. The ritual
-                  panel now leads straight from the lead into the process dossier —
-                  which also trims home scroll. */}
-              {/* DOSSIER spread (2026-06-28 bold redesign, agent cherry-pick:
-                  Hermès craftsmanship register) — the process PROSE runs as a
-                  left text well; the six material facts become a RIGHT vertical
-                  SPEC LEDGER (label · value rows on hairlines) instead of a flat
-                  full-width strip. Asymmetric 7/5. Every sentence is verbatim +
-                  intact (nothing deleted); the frosted panel chrome is Hugo's
-                  standing choice, unchanged. */}
-              <Reveal as="div" className="grid lg:grid-cols-12 gap-x-10 xl:gap-x-16 gap-y-8 lg:gap-y-0 items-start">
-                <div className="lg:col-span-7 flex flex-col gap-y-4 md:gap-y-5">
-                  <p className={cn(SUBTITLE, "m-0 max-w-[68ch]")}>
+              {/* The ritual itself — Stephen painting a mandala at the easel —
+                  beside the process prose + the material spec ledger, all held in
+                  the island card (Hugo 2026-07-28: restore "the cool island with
+                  the image of him painting + the details"). NO backdrop-blur on the
+                  panel (scroll-lag gotcha) — the translucent fill + ring + shadow
+                  give the island lift on their own. */}
+              <Reveal as="div" className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
+                <figure className="m-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
+                  <AssetImage
+                    src="/img/welcome/stephen-painting-denim-v1.jpg"
+                    alt="Stephen Meakin drawing a mandala at his easel, a large finished mandala on the wall behind him"
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 1024px) 620px, 100vw"
+                    className="block w-full h-auto"
+                  />
+                </figure>
+                <div className="flex flex-col gap-y-4 md:gap-y-5">
+                  <p className={cn(SUBTITLE, "m-0")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className={cn(SUBTITLE, "m-0 max-w-[68ch]")}>
+                  <p className={cn(SUBTITLE, "m-0")}>
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
+                  <ul className="list-none p-0 m-0 mt-1">
+                    {[
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                    ].map(([label, value]) => (
+                      <li
+                        key={label}
+                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line"
+                      >
+                        <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
+                        <span className="text-right font-sans font-normal text-[15px] md:text-[16px] leading-[1.4] text-ink">{value}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                {/* Vertical spec ledger — one even register, label left / value
-                    right on a hairline, the gutter the prose well doesn't fill. */}
-                <ul className="lg:col-span-5 list-none p-0 m-0">
-                  {[
-                    ["Time", "Hundreds of hours per canvas"],
-                    ["Edition", "Individually made to order"],
-                    ["Surface", "350gsm archival canvas"],
-                    ["Frame", "Hand-stretched, deep wooden"],
-                    ["Tools", "Compass · rule · brush"],
-                    ["Pigment", "Hand-pressed oils + pigment inks"],
-                  ].map(([label, value]) => (
-                    <li
-                      key={label}
-                      className="m-0 flex items-baseline justify-between gap-6 py-3.5 border-t border-line"
-                    >
-                      <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
-                      <span className="text-right font-sans font-normal text-[16px] md:text-[17px] leading-[1.4] text-ink">{value}</span>
-                    </li>
-                  ))}
-                </ul>
               </Reveal>
             </div>
           </section>
@@ -1310,7 +1316,7 @@ export const Welcome = () => {
               }}
             />
             <img
-              src={asset("/img/scenes/jupiter-limb-v12.webp")}
+              src={asset("/img/scenes/jupiter-limb-v4.webp")}
               alt=""
               loading="lazy"
               decoding="async"

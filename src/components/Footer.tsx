@@ -88,8 +88,12 @@ export const Footer = () => (
     // feathered seam below fades its top red into the page there.
     className="relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
     style={{
+      // Same FLAT 25%-transparent wax-seal red as the top nav bar (.nav-bg-top,
+      // rgba(72,14,14,0.72)) — Hugo 2026-07-28: footer must match the top bar's
+      // colour AND transparency. Continuous with the catalogue strip above (same
+      // flat wash → no seam).
       backgroundImage:
-        "linear-gradient(180deg, rgba(48,9,10,0.975) 0%, rgba(41,7,8,0.978) 50%, rgba(34,6,7,0.98) 100%)",
+        "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
     }}
   >
     {/* FEATHERED SEAM — fades the footer's top red up into whatever sits above
@@ -99,7 +103,7 @@ export const Footer = () => (
         /for-you) it softly dissolves the red into the page. */}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(48,9,10,0.975)] via-[rgba(48,9,10,0.45)] to-transparent"
+      className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(72,14,14,0.72)] via-[rgba(72,14,14,0.3)] to-transparent"
     />
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE

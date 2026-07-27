@@ -62,8 +62,12 @@ export const FooterCatalogue = () => {
       // caused a re-brightening seam); no internal divider between the bands.
       className="relative hidden md:block border-t border-[rgba(120,30,30,0.5)] px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
       style={{
+        // Same FLAT 25%-transparent wax-seal red as the top nav bar (.nav-bg-top,
+        // rgba(72,14,14,0.72)) — Hugo 2026-07-28: "footer must be the SAME
+        // transparency as the top bar". One flat wash, so the backdrop reads
+        // through it exactly as the Earth reads through the top bar.
         backgroundImage:
-          "linear-gradient(180deg, rgba(64,13,13,0.97) 0%, rgba(56,11,12,0.972) 55%, rgba(48,9,10,0.975) 100%)",
+          "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
       }}
     >
       {/* FEATHERED SEAM — dissolves the top edge of the RED footer block up
@@ -73,7 +77,7 @@ export const FooterCatalogue = () => {
           the red directly beneath it. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(64,13,13,0.97)] via-[rgba(64,13,13,0.4)] to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(72,14,14,0.72)] via-[rgba(72,14,14,0.32)] to-transparent"
       />
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] 4xl:max-w-[2100px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
