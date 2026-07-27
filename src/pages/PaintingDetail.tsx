@@ -1630,7 +1630,7 @@ const BuyBox = ({
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
                   <p className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
-                    Choose your frame — Point 101's full range. Classic frames
+                    Choose your frame — the full atelier range. Classic frames
                     are included; Signature and Ornate mouldings step the framed
                     price up.
                   </p>

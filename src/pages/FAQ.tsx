@@ -87,16 +87,17 @@ const FAQS: QA[] = [
         museum-grade lightfastness rated by the paper manufacturer.
         <br />
         <br />
-        Prefer a different finish? Our atelier also prints across a range of
-        fine-art papers and gallery <strong>canvas</strong>. As a guide: choose{" "}
-        <strong>paper</strong> if you plan to glass-frame the piece in the
-        traditional way; choose <strong>canvas</strong> for a bold, tactile,
-        frameless surface that reads like an original painting. For canvas or an
-        alternative paper, just{" "}
+        Every piece is offered two ways, and you choose on the product page:{" "}
+        <strong>framed</strong> — the giclée on fine-art paper, hand-mounted and
+        framed in solid wood behind glazing, ready to hang; or{" "}
+        <strong>canvas</strong> — the same image hand-stretched over a gallery
+        frame, a bold, tactile, glass-free surface that reads like an original
+        painting. Both are made to order at the same price — pick whichever suits
+        your wall, or{" "}
         <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
-          tell us
+          ask us
         </Link>{" "}
-        when you order and we'll arrange it with the atelier.
+        if you'd like a hand.
       </>
     ),
   },
