@@ -207,7 +207,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier",
     label: "Open Edition",
     size: "29.5 × 29.5 cm",
-    pricePence: 27500, // £275 (marked up 2026-07-13 to fund free UK delivery + margin)
+    pricePence: 29500, // £295 (2026-07-25 squeeze pass)
     editionTotal: null, // Open Edition — no allocation cap, not numbered
     editionLabel: "Open Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
@@ -216,7 +216,7 @@ export const PRINT_TIERS: PrintTier[] = [
     // against Point 101 costs (framed ~£82 / canvas ~£50 to us): framed £520
     // total (£275 + £245), canvas £425 (£275 + £150). MONEY: mirrored in
     // api/checkout.ts + email-basket.ts (gotcha #9).
-    framingPricePence: 24500, // £245 framing (A3)
+    framingPricePence: 29500, // £295 framing (A3) — 2026-07-25 squeeze pass
     canvasPricePence: 15000, // £150 — print on stretched canvas (A3)
     description:
       "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
@@ -226,13 +226,13 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "collector",
     label: "Collector Edition",
     size: "42 × 42 cm",
-    pricePence: 49500, // £495 (marked up 2026-07-13 to fund free UK delivery + margin)
+    pricePence: 52500, // £525 (2026-07-25 squeeze pass)
     editionTotal: 200, // per-edition allocation
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 34500, // £345 framing add-on
-    embellishmentPricePence: 35000, // £350 hand-finishing by Polly Wedge
-    canvasPricePence: 22500, // £225 — canvas total £720, a clean £120 under framed £840 (Hugo 2026-07-24)
+    framingPricePence: 42500, // £425 framing add-on (2026-07-25 squeeze pass)
+    embellishmentPricePence: 59500, // £595 hand-finishing by Polly Wedge (2026-07-25 squeeze pass — near-100% margin, artist's own hand)
+    canvasPricePence: 22500, // £225 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
       "Collector Edition of 200, estate-stamped, hand-numbered, COA",
     available: true,
@@ -242,13 +242,13 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "59.5 × 59.5 cm",
-    pricePence: 92500, // £925 (marked up 2026-07-13 to fund free UK delivery + margin)
+    pricePence: 97500, // £975 (2026-07-25 squeeze pass)
     editionTotal: 75, // per-edition allocation
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 44500, // £445 framing add-on
-    embellishmentPricePence: 49500, // £495 hand-finishing by Polly Wedge
-    canvasPricePence: 32500, // £325 — canvas total £1,250, a clean £120 under framed £1,370 (Hugo 2026-07-24)
+    framingPricePence: 57500, // £575 framing add-on (2026-07-25 squeeze pass)
+    embellishmentPricePence: 89500, // £895 hand-finishing by Polly Wedge (2026-07-25 squeeze pass)
+    canvasPricePence: 32500, // £325 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
       "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
     available: true,
@@ -257,7 +257,7 @@ export const PRINT_TIERS: PrintTier[] = [
     id: "heirloom",
     label: "Heirloom Edition",
     size: "84 × 84 cm",
-    pricePence: 189500, // £1,895 (marked up 2026-07-13 to fund free UK delivery + margin)
+    pricePence: 199500, // £1,995 (2026-07-25 squeeze pass — cleaner premium figure than £1,895)
     editionTotal: 18, // per-edition allocation
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     editionPromise: "allocated within the current edition",
@@ -269,8 +269,8 @@ export const PRINT_TIERS: PrintTier[] = [
     // 101's 610mm glazed-delivery cap, so we must not sell a framed+glazed A0
     // with a free-worldwide-delivery promise we can't honour. If a buyer wants
     // A0 framed, it's a bespoke enquiry (like custom sizes), arranged per-order.
-    embellishmentPricePence: 79500, // £795 hand-finishing by Polly Wedge (A0)
-    canvasPricePence: 42500, // £425 — canvas total £2,320; A0's only ready-to-hang option (no framed A0), so it carries the biggest lift (Hugo 2026-07-24)
+    embellishmentPricePence: 129500, // £1,295 hand-finishing by Polly Wedge (A0) (2026-07-25 squeeze pass)
+    canvasPricePence: 42500, // £425 — canvas add-on; A0's only ready-to-hang option (no framed A0)
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
     available: true,
@@ -341,7 +341,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  * DEFAULT_PRICE_PENCE / DEFAULT_SIZE constants in sync with these values.
  */
 export const DEFAULT_PRINT = {
-  pricePence: 49500, // £495 — anchor tier (A2 Collector Edition)
+  pricePence: 52500, // £525 — anchor tier (A2 Collector Edition) (2026-07-25 squeeze pass)
   size: "Giclée print, 42 × 42 cm, Collector Edition, estate-stamped",
   spec: ORIGINAL_PRINT_SPEC,
 };
@@ -545,8 +545,8 @@ export const getCanvasEdgeSurchargePence = (
 // frameless preview. The rest render in the flat PDP frame preview only.
 export const FRAME_TIERS = {
   classic: { label: "Classic", surchargePence: 0 },
-  signature: { label: "Signature", surchargePence: 5000 },
-  ornate: { label: "Ornate", surchargePence: 12000 },
+  signature: { label: "Signature", surchargePence: 9500 },
+  ornate: { label: "Ornate", surchargePence: 24500 },
 } as const;
 export type FrameTier = keyof typeof FRAME_TIERS;
 
@@ -1238,7 +1238,7 @@ export const paintingImageAlt = (title: string, colourwayName?: string): string 
  * so the card's save / net figure equals the Stripe charge (gotcha #9).
  */
 export const bundleDiscountPercentForCount = (count: number): number =>
-  count >= 3 ? 10 : 5;
+  count >= 3 ? 8 : 5; // (2026-07-25 squeeze pass — trimmed the deep end from 10%)
 
 /**
  * Deeper, FLAGGED bundle discounts the checkout derives from the basket
@@ -1253,8 +1253,8 @@ export const bundleDiscountPercentForCount = (count: number): number =>
  * sync (gotcha #9). The count-based ladder above (5% / 10%) still governs
  * ordinary multi-painting baskets and the per-collection bundles.
  */
-export const COLOURWAY_SET_DISCOUNT_PERCENT = 12;
-export const COMPLETE_CATALOGUE_DISCOUNT_PERCENT = 15;
+export const COLOURWAY_SET_DISCOUNT_PERCENT = 10; // (2026-07-25 squeeze pass — was 12)
+export const COMPLETE_CATALOGUE_DISCOUNT_PERCENT = 12; // (2026-07-25 squeeze pass — was 15; keeps ~£252+ on a full-catalogue order)
 
 export interface CollectionBundle {
   collectionId: Collection["id"];

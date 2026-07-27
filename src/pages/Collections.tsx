@@ -161,7 +161,7 @@ const ScrollBackdrop = ({
 // HARD GUARD (money code, brief rule #3): only EDITIONED sizes are selectable —
 // A3 Gallery (atelier) / A2 Collector (collector) / A1 Atelier (atelier-grande) /
 // A0 Heirloom (heirloom). A0 is now an offered bundle size (Hugo, 2026-06-23):
-// heirloom is `available:true` AND charged at its real £1,750 in
+// heirloom is `available:true` AND charged at its real £1,995 in
 // api/checkout.ts TIERS["heirloom"], so getTierById returns the true A0 price
 // (no silent A2 anchor fall-back) and advertised == charged holds for A0 sets
 // too (the 15%/12%/10%/5% bundle coupon is a percent, far above the A0 margin

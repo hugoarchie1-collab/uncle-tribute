@@ -77,8 +77,8 @@ const TIERS: Record<TierId, EmailTier> = {
     label: "Open Edition",
     size: "29.5 × 29.5 cm",
     editionLabel: "Open Edition — unnumbered, issued to order",
-    pricePence: 27500,
-    framingPricePence: 24500, // £245 (A3) — mirror of paintings.ts (gotcha #9)
+    pricePence: 29500,
+    framingPricePence: 29500, // £295 (A3) — mirror of paintings.ts (gotcha #9)
     canvasPricePence: 15000, // £150 (A3) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -86,9 +86,9 @@ const TIERS: Record<TierId, EmailTier> = {
     label: "Collector Edition",
     size: "42 × 42 cm",
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
-    pricePence: 49500,
-    framingPricePence: 34500,
-    embellishmentPricePence: 35000,
+    pricePence: 52500,
+    framingPricePence: 42500,
+    embellishmentPricePence: 59500,
     canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -96,9 +96,9 @@ const TIERS: Record<TierId, EmailTier> = {
     label: "Atelier Edition",
     size: "59.5 × 59.5 cm",
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
-    pricePence: 92500,
-    framingPricePence: 44500,
-    embellishmentPricePence: 49500,
+    pricePence: 97500,
+    framingPricePence: 57500,
+    embellishmentPricePence: 89500,
     canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -106,8 +106,8 @@ const TIERS: Record<TierId, EmailTier> = {
     label: "Heirloom Edition",
     size: "84 × 84 cm",
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
-    pricePence: 189500,
-    embellishmentPricePence: 79500,
+    pricePence: 199500,
+    embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was

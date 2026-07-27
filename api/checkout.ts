@@ -87,11 +87,11 @@ const TIERS: Record<TierId, TierDef> = {
     id: "atelier",
     label: "Open Edition",
     size: "29.5 × 29.5 cm",
-    pricePence: 27500,
+    pricePence: 29500,
     editionLabel: "Open Edition — unnumbered, issued to order",
     // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
-    // A3 prices confirmed 2026-07-24: framing £245, canvas £150.
-    framingPricePence: 24500,
+    // 2026-07-25 squeeze pass: base £295, framing £295, canvas £150.
+    framingPricePence: 29500,
     canvasPricePence: 15000,
     available: true,
   },
@@ -99,10 +99,10 @@ const TIERS: Record<TierId, TierDef> = {
     id: "collector",
     label: "Collector Edition",
     size: "42 × 42 cm",
-    pricePence: 49500,
+    pricePence: 52500,
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
-    framingPricePence: 34500,
-    embellishmentPricePence: 35000,
+    framingPricePence: 42500,
+    embellishmentPricePence: 59500,
     canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -110,10 +110,10 @@ const TIERS: Record<TierId, TierDef> = {
     id: "atelier-grande",
     label: "Atelier Edition",
     size: "59.5 × 59.5 cm",
-    pricePence: 92500,
+    pricePence: 97500,
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
-    framingPricePence: 44500,
-    embellishmentPricePence: 49500,
+    framingPricePence: 57500,
+    embellishmentPricePence: 89500,
     canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -121,13 +121,13 @@ const TIERS: Record<TierId, TierDef> = {
     id: "heirloom",
     label: "Heirloom Edition",
     size: "84 × 84 cm",
-    pricePence: 189500,
+    pricePence: 199500,
     editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
     // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
     // (glazed A0 exceeds Point 101's 610mm delivery cap — see paintings.ts).
-    embellishmentPricePence: 79500,
+    embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -266,14 +266,14 @@ const MAX_ITEMS = 20;
 // in the same commit or the displayed price and the charged price drift.
 // ⚠️HUGO: these are ESTATE-SET fixed rates, not a live feed — see the note in
 // src/lib/currency.tsx. All supported currencies are 2-decimal.
-const CURRENCY_FX_VERSION = "2026-06-17.1";
+const CURRENCY_FX_VERSION = "2026-07-25.1";
 type CurrencyCode = "gbp" | "usd" | "eur" | "aud" | "cad";
 const CURRENCY_RATES: Record<CurrencyCode, number> = {
   gbp: 1,
-  usd: 1.27,
-  eur: 1.17,
-  aud: 1.94,
-  cad: 1.74,
+  usd: 1.32,
+  eur: 1.22,
+  aud: 2.0,
+  cad: 1.82,
 };
 const isCurrencyCode = (v: unknown): v is CurrencyCode =>
   typeof v === "string" &&
@@ -288,7 +288,7 @@ const isCurrencyCode = (v: unknown): v is CurrencyCode =>
 const convertFromGbpMinor = (gbpPence: number, code: CurrencyCode): number => {
   if (code === "gbp") return Math.round(gbpPence);
   const raw = gbpPence * CURRENCY_RATES[code];
-  return Math.round(raw / 100) * 100;
+  return Math.ceil(raw / 100) * 100; // → round UP to a clean whole major unit (2026-07-25 squeeze)
 };
 
 // ---- Gift-card bounds (mirror of src/lib/basket.ts) -----------------------
@@ -404,13 +404,15 @@ const FRAME_STYLE_LABELS: Record<string, string> = {
 // frame's tier in src/data/paintings.ts. Classic frames (and any unknown id)
 // → 0. Signature +£50, Ornate +£120. advertised == charged depends on this
 // matching the PDP's getFrameSurchargePence exactly.
+// 2026-07-25 squeeze pass: Signature 5000→9500, Ornate 12000→24500 (mirror of
+// FRAME_TIERS in src/data/paintings.ts).
 const FRAME_SURCHARGE_PENCE: Record<string, number> = {
-  "silver-aluminium": 5000,
-  "black-aluminium": 5000,
-  "box-black": 5000,
-  "box-oak": 5000,
-  "ayous-gold": 12000,
-  "ornate-gold": 12000,
+  "silver-aluminium": 9500,
+  "black-aluminium": 9500,
+  "box-black": 9500,
+  "box-oak": 9500,
+  "ayous-gold": 24500,
+  "ornate-gold": 24500,
 };
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Clear acrylic",
@@ -694,9 +696,9 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
   const count = items.length;
   if (count < 2) return 0;
   const distinct = new Set(items.map((i) => i.paintingId)).size;
-  if (distinct >= CATALOGUE_PAINTING_COUNT) return 15; // complete catalogue
-  if (distinct === 1) return 12;                       // complete colourway set
-  return count >= 3 ? 10 : 5;                           // general / collection bundle
+  if (distinct >= CATALOGUE_PAINTING_COUNT) return 12; // complete catalogue (2026-07-25 squeeze: was 15)
+  if (distinct === 1) return 10;                       // complete colourway set (was 12)
+  return count >= 3 ? 8 : 5;                            // general / collection bundle (3+ was 10)
 };
 
 /**

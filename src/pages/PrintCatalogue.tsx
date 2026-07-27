@@ -968,7 +968,7 @@ function BackCover() {
         <div style={{ textAlign: "center" }}>
           <h2 className={DISPLAY} style={{ fontSize: 40, margin: 0 }}>Bring one home</h2>
           <p className="font-sans text-ink-muted" style={{ fontSize: 13, margin: "10px 0 0" }}>
-            Every print, from £245 · free delivery · priced in £ · $ · € · A$ · C$.
+            Every print, from £295 · free delivery · priced in £ · $ · € · A$ · C$.
           </p>
           <p className="font-sans" style={{ fontSize: 14, margin: "16px 0 0" }}>
             <b className="text-ink">themandalacompany.com</b>

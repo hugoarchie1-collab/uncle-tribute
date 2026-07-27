@@ -35,7 +35,7 @@ import {
 
 // Bump in BOTH files whenever the rates or rounding change, so a stale cached
 // client and the server can be reconciled in logs if a mismatch is ever seen.
-export const CURRENCY_FX_VERSION = "2026-06-17.1";
+export const CURRENCY_FX_VERSION = "2026-07-25.1";
 
 export type CurrencyCode = "GBP" | "USD" | "EUR" | "AUD" | "CAD";
 
@@ -61,10 +61,10 @@ export interface CurrencyMeta {
  */
 export const CURRENCIES: Record<CurrencyCode, CurrencyMeta> = {
   GBP: { code: "GBP", symbol: "£", label: "British Pound", locale: "en-GB", rate: 1 },
-  USD: { code: "USD", symbol: "$", label: "US Dollar", locale: "en-US", rate: 1.27 },
-  EUR: { code: "EUR", symbol: "€", label: "Euro", locale: "en-IE", rate: 1.17 },
-  AUD: { code: "AUD", symbol: "A$", label: "Australian Dollar", locale: "en-AU", rate: 1.94 },
-  CAD: { code: "CAD", symbol: "C$", label: "Canadian Dollar", locale: "en-CA", rate: 1.74 },
+  USD: { code: "USD", symbol: "$", label: "US Dollar", locale: "en-US", rate: 1.32 },
+  EUR: { code: "EUR", symbol: "€", label: "Euro", locale: "en-IE", rate: 1.22 },
+  AUD: { code: "AUD", symbol: "A$", label: "Australian Dollar", locale: "en-AU", rate: 2.0 },
+  CAD: { code: "CAD", symbol: "C$", label: "Canadian Dollar", locale: "en-CA", rate: 1.82 },
 };
 
 export const CURRENCY_ORDER: CurrencyCode[] = ["GBP", "USD", "EUR", "AUD", "CAD"];
@@ -89,7 +89,7 @@ export const isCurrencyCode = (v: unknown): v is CurrencyCode =>
 export const convertFromGbpPence = (gbpPence: number, code: CurrencyCode): number => {
   if (code === "GBP") return Math.round(gbpPence);
   const raw = gbpPence * CURRENCIES[code].rate; // minor units of target
-  return Math.round(raw / 100) * 100; // → nearest whole major unit
+  return Math.ceil(raw / 100) * 100; // → round UP to a clean whole major unit (2026-07-25 squeeze)
 };
 
 // One Intl.NumberFormat instance per currency, reused across every price render.

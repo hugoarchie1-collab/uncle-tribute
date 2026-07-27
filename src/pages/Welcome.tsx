@@ -1032,7 +1032,7 @@ export const Welcome = () => {
                         (£350) in paintings.ts; the real per-size price shows on the
                         product page. */}
                     <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
-                      From £350 · on the Collector &amp; Atelier prints · allow 2 weeks
+                      From £595 · on the Collector, Atelier &amp; Heirloom prints · allow 2 weeks
                     </span>
                   </div>
                 </div>
@@ -1280,49 +1280,46 @@ export const Welcome = () => {
               ImageMagick (shallow crop → transparent black → alpha-feather → baked
               wide+edge warm glow → warm modulate); regenerate under a new -vN
               filename (immutable /img cache). Decorative only (aria-hidden). */}
+          {/* ⚠️ Jupiter foot — the recurring "too big / dome / black bar" bug had
+              ONE root cause: the top Earth is an ABSOLUTE background that the 78svh
+              masthead CLIPS to a thin limb, whereas this foot rendered the WHOLE
+              2000×541 dome IN-FLOW → the full fat dome + a gap below it. Fix: give
+              the section a FIXED THIN HEIGHT and pin the SAME asset top-0 absolute,
+              so overflow-hidden clips it to a thin gentle limb the same visible size
+              as the masthead Earth — a true "as above, so below" mirror. The bright
+              warm rim sits up near the peacock; the warm body meets the red
+              catalogue flush (no black bar). Height is a clamp so the band stays a
+              thin limb from phone to 4K. */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-2rem] md:mb-[-2.5rem]"
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] h-[clamp(70px,9.5vw,180px)] mb-[-1px]"
           >
             {/* Warm halo along the very foot — matches the top Earth's rim. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[80%]"
+              className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-full"
               style={{
                 background:
-                  "radial-gradient(90% 90% at 50% 100%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 68%)",
+                  "radial-gradient(120% 95% at 50% 0%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
               }}
             />
-            {/* JUPITER LIMB — the gas-giant cap rising from the foot, cut to the
-                SAME wide-shallow proportions + transparent-space RGBA + radial
-                feather as the top Earth limb ("as above, so below"), so it dissolves
-                UP into the peacock exactly like the masthead Earth — just a
-                different world closing the page. */}
             <img
               src={asset("/img/scenes/jupiter-limb-v9.webp")}
               alt=""
               loading="lazy"
               decoding="async"
-              className="relative z-[1] block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+              className="absolute inset-x-0 top-0 z-[1] block select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
               style={{
-                display: "block",
                 maxWidth: "none",
                 height: "auto",
-                // v9 (2026-07-25, Hugo: "same glow level and size as earth"): the
-                // limb is now the EXACT proportion of the masthead Earth
-                // (earth-cutout-v2, 2000×541) rendered at the IDENTICAL width
-                // classes — so at the foot it's the same visible size + gentle arc,
-                // a true mirror. Its warm atmospheric rim was brightened to Earth's
-                // glow level (peak luma ~229, matching Earth's luminous halo) while
-                // staying soft + warm (never the hard white ring Hugo rejected).
-                // RIGHT-SIDE-UP (glow arc at the TOP, planet rising); rendered
-                // IN-FLOW so the whole limb shows — the top sky feathers up into the
-                // peacock, the opaque full-width body sits flush on the red
-                // catalogue (no black bar). Only the very top sky edge is masked.
+                // Feather ONLY the very top edge so the rim emerges softly from the
+                // peacock; the rest stays opaque so the body meets the catalogue
+                // flush (no black bar). The band height (not the mask) is what keeps
+                // it a THIN limb.
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 12%, #000 100%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 12%, #000 100%)",
               }}
             />
           </section>

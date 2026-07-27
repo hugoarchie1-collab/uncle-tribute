@@ -297,10 +297,10 @@ const metaQty = (raw: string | undefined): number => {
 // gotcha #9). Used to render per-line prices in the confirmation email
 // without trusting Stripe to split a total across lines.
 const TIER_PRICE_PENCE: Record<string, number> = {
-  atelier: 27500,
-  collector: 49500,
-  "atelier-grande": 92500,
-  heirloom: 189500,
+  atelier: 29500,
+  collector: 52500,
+  "atelier-grande": 97500,
+  heirloom: 199500,
   studio: 265000,
 };
 const TIER_LABEL: Record<string, string> = {
@@ -352,13 +352,14 @@ const TIER_EDITION: Record<string, string> = {
 // hand-finishing charge as its own email sub-line so the per-line
 // breakdown sums to the grand Total (session.amount_total).
 const TIER_FRAMING_PENCE: Record<string, number> = {
-  atelier: 24500, // £245 (A3) — mirror of paintings.ts (gotcha #9)
-  collector: 34500, // £345 (A2) — mirror of paintings.ts (gotcha #9; was stale £295)
-  "atelier-grande": 44500, // £445 (A1) — mirror of paintings.ts (was stale £395)
+  atelier: 29500, // £295 (A3) — mirror of paintings.ts (gotcha #9; 2026-07-25 squeeze)
+  collector: 42500, // £425 (A2) — mirror of paintings.ts (gotcha #9)
+  "atelier-grande": 57500, // £575 (A1) — mirror of paintings.ts
 };
 const TIER_EMBELLISH_PENCE: Record<string, number> = {
-  collector: 35000,
-  "atelier-grande": 49500,
+  collector: 59500, // £595 (A2)
+  "atelier-grande": 89500, // £895 (A1)
+  heirloom: 129500, // £1,295 (A0) — was MISSING; A0 hand-finish now itemises correctly in the email
 };
 
 const linesFromMetadata = (
