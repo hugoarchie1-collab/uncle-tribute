@@ -1048,7 +1048,7 @@ export function PrintCatalogue() {
         <QuotePage quote="Ten mandalas. Every colourway he left." eyebrow="The collections" />
 
         {/* Habundia */}
-        <CollectionDivider n="I" title="Habundia" sub="Seven wild flowers, painted with the oil of the flower itself." img="img/scenes/habundia-blur-v4.webp" />
+        <CollectionDivider n="I" title="Habundia" sub="Seven wild flowers, painted with the oil of the flower itself." img="img/scenes/habundia-blur-v5.webp" />
         {byCollection("habundia").map((p) => <PaintingPage key={p.id} painting={p} />)}
 
         {/* Genesis */}

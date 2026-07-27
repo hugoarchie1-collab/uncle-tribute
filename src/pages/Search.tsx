@@ -215,7 +215,7 @@ export const Search = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip">
-      <SceneBackdrop src="/img/scenes/search-path-scene-v3.webp" />
+      <SceneBackdrop src="/img/scenes/search-path-scene-v4.webp" />
       <Nav overlay />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-14 md:pb-20">

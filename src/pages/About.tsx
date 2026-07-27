@@ -282,7 +282,7 @@ const ImageBand = ({
       src={src}
       alt={alt}
       aspect={aspect}
-      edges="all"
+      edges="none"
       objectPosition="center"
       parallax={parallax}
       sizes={sizes}
@@ -997,7 +997,7 @@ export const About = () => {
               loading="lazy"
               decoding="async"
               sizes="(min-width: 768px) 880px, 100vw"
-              className="soft-edge-img block w-full h-auto max-h-[58svh] object-cover object-center"
+              className="block w-full h-auto"
             />
           </Reveal>
 
@@ -1011,7 +1011,7 @@ export const About = () => {
                   src="/img/about/stephen-painting-colour-v1.jpg"
                   alt="Stephen Meakin painting a large colour mandala at his board, a finished mandala on the wall behind"
                   aspect="aspect-[3/2]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 640px) 48vw, 100vw"
                 />
@@ -1021,7 +1021,7 @@ export const About = () => {
                   src="/img/about/stephen-painting-compass-v1.jpg"
                   alt="Stephen Meakin laying gold knotwork into a mandala with compass and rule"
                   aspect="aspect-[3/2]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 640px) 48vw, 100vw"
                 />
@@ -1046,7 +1046,7 @@ export const About = () => {
                   src="/img/about/25-harmonic-frequencies.jpg"
                   alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
                   aspect="aspect-[6/5]"
-                  edges="all"
+                  edges="none"
                   objectPosition="center"
                   parallax={0.06}
                   sizes="(min-width: 768px) 640px, 100vw"
@@ -1067,14 +1067,14 @@ export const About = () => {
               poster="/video/poster-studio-paint-a-v1.jpg"
               label="Stephen Meakin painting a mandala, filmed from above"
               aspect="aspect-[16/9]"
-              edges="all"
+              edges="none"
             />
             <LoopFilm
               src="/video/studio-paint-b-v1.mp4"
               poster="/video/poster-studio-paint-b-v1.jpg"
               label="Stephen Meakin laying colour into a mandala, filmed from above"
               aspect="aspect-[16/9]"
-              edges="all"
+              edges="none"
             />
           </Reveal>
         </section>
@@ -1111,7 +1111,7 @@ export const About = () => {
             </ul>
             <Reveal
               as="figure"
-              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[300px] lg:min-h-0 overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+              className="relative m-0 w-full aspect-[3/4] min-h-[300px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
             >
               <AssetImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1132,7 +1132,7 @@ export const About = () => {
                   src="/img/about/26-persian-geometry.jpg"
                   alt="The blue-tiled, honeycomb-vaulted entrance portal of a mosque, an example of the Persian geometric tradition Stephen studied."
                   aspect="aspect-[16/9]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1142,7 +1142,7 @@ export const About = () => {
                   src="/img/about/27-sainte-chapelle.jpg"
                   alt="The upper chapel of Sainte-Chapelle in Paris, its walls of stained glass rising to a rose window, the medieval tradition behind Stephen's rose-window studies."
                   aspect="aspect-[16/9]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1259,6 +1259,7 @@ export const About = () => {
             <ImageBand
               src="/img/about/30-painting-in-progress.jpg"
               alt="Stephen Meakin painting a circular rose-window-patterned mandala in the studio"
+              aspect="aspect-[3/2]"
               parallax={0.1}
             />
           </div>
@@ -1274,7 +1275,7 @@ export const About = () => {
                   src="/img/about/31-studio-wall.jpg"
                   alt="A studio wall hung edge to edge with finished framed mandala paintings"
                   aspect="aspect-[16/9]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1284,7 +1285,7 @@ export const About = () => {
                   src="/img/about/32-paintings-at-home.jpg"
                   alt="A sitting room hung with mandala paintings and panels"
                   aspect="aspect-[16/9]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1301,8 +1302,8 @@ export const About = () => {
                 <ImageReveal
                   src="/img/about/33-painting-on-easel.jpg"
                   alt="A deep blue, violet and gold geometric painting standing on the studio easel"
-                  aspect="aspect-[4/3]"
-                  edges="all"
+                  aspect="aspect-square"
+                  edges="none"
                   parallax={0.06}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1312,7 +1313,7 @@ export const About = () => {
                   src="/img/about/34-white-flowers-in-progress.jpg"
                   alt="Stephen Meakin, palette in hand, painting clusters of white blossoms onto a large round work"
                   aspect="aspect-[4/3]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   sizes="(min-width: 768px) 50vw, 100vw"
                 />
@@ -1346,6 +1347,7 @@ export const About = () => {
             <ImageBand
               src="/img/about/36-mystic-rose-exhibition.jpg"
               alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
+              aspect="aspect-[4/3]"
               parallax={0.08}
             />
           </div>
@@ -1381,7 +1383,7 @@ export const About = () => {
                 src="/img/about/05-force-india-layout.jpg"
                 alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
                 aspect="aspect-[3/2]"
-                edges="all"
+                edges="none"
                 parallax={0.06}
                 sizes="(min-width: 768px) 48vw, 100vw"
               />
@@ -1391,7 +1393,7 @@ export const About = () => {
                 src="/img/about/06-force-india-final.jpg"
                 alt="Stephen's mandala design for the Sahara Force India Formula One car"
                 aspect="aspect-[3/2]"
-                edges="all"
+                edges="none"
                 parallax={0.06}
                 sizes="(min-width: 768px) 48vw, 100vw"
               />
@@ -1424,7 +1426,7 @@ export const About = () => {
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-auto max-h-[62svh] object-cover object-center"
+                className="block w-full h-auto"
               />
             </figure>
             <div className={cn(BLOCK_GAP, "mx-auto max-w-[70ch] text-center")}>
@@ -1445,8 +1447,8 @@ export const About = () => {
                 <ImageReveal
                   src="/img/about/students-working-v1.jpg"
                   alt="Students at the Academy's tables, working on their own geometry in colour"
-                  aspect="aspect-[3/2]"
-                  edges="all"
+                  aspect="aspect-[4/3]"
+                  edges="none"
                   parallax={0.08}
                   objectPosition="center 35%"
                   sizes="(min-width: 640px) 48vw, 100vw"
@@ -1457,7 +1459,7 @@ export const About = () => {
                   src="/img/about/finishing-large-mandala-v1.jpg"
                   alt="Stephen absorbed in finishing a large mandala by hand at the studio table"
                   aspect="aspect-[3/2]"
-                  edges="all"
+                  edges="none"
                   parallax={0.08}
                   objectPosition="center 35%"
                   sizes="(min-width: 640px) 48vw, 100vw"

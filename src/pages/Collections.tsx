@@ -628,7 +628,7 @@ export const Collections = () => {
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url("${asset("/img/scenes/habundia-blur-v4.webp")}")`,
+            backgroundImage: `url("${asset("/img/scenes/habundia-blur-v5.webp")}")`,
           }}
         />
         {COLLECTIONS.map((coll, i) =>
