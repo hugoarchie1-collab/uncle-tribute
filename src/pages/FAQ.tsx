@@ -166,7 +166,7 @@ const FAQS: QA[] = [
     answer: (
       <>
         Yes — we ship worldwide. Delivery is free on every order, framed or
-        unframed, with nothing added at checkout. International buyers may be charged local
+        on canvas, with nothing added at checkout. International buyers may be charged local
         import duties or VAT on delivery by their courier — these are set by
         your country's customs authority, not by us.
       </>

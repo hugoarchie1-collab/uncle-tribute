@@ -397,7 +397,7 @@ export const SeeOnYourWall = ({
             </div>
             <p className="mt-2.5 m-0 font-sans text-[13px] leading-[1.6] text-ink-muted">
               {frame.id === "none"
-                ? "Shown unframed. Framing (oak · black · white · walnut) can be added to your order."
+                ? "Shown without a frame. Every piece is sold framed (or on canvas) — choose a frame to preview it on your wall at true size."
                 : `${frame.label} framing — shown on your wall at true size, and added to your order.`}
             </p>
           </section>

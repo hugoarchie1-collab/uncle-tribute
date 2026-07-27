@@ -886,8 +886,8 @@ export const Basket = () => {
                       ))}
                     </ul>
                     <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
-                      Free delivery on every order — framed or unframed — with
-                      nothing added at checkout. Each print ships within 7–10
+                      Free delivery on every order — framed or on canvas — with
+                      nothing added at checkout. Each piece ships within 7–10
                       working days.
                     </p>
                   </div>

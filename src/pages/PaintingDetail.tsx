@@ -1901,7 +1901,7 @@ const BuyBox = ({
             </>
           ) : (
             <>
-              Changed your mind? An unframed print carries the full{" "}
+              Changed your mind? A canvas print carries the full{" "}
               <Link
                 to="/returns"
                 className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"

@@ -23,20 +23,23 @@ import { cn } from "../lib/cn";
  * Edition granted the standard 14-day right, a complaints/ADR statement, and
  * standard consumer-sale boilerplate. NB: trader postal address still pending.
  *
- * DECIDED 2026-06-12 (Hugo): the A3 Open Edition KEEPS the full 14-day
- * change-of-mind right — it is an Open Edition issued in editions, made to
- * order (PRINT_TIERS). Rationale: (a) the
- * reg 28(1)(b) "consumer's specifications" exemption is unlikely to cover a
- * standard catalogue print where the buyer only picks size/colourway from
- * fixed options, so the statutory right probably applies to the A3 regardless
- * and claiming the exemption would risk an unenforceable term; (b) a returned
- * A3 costs the estate ~£12–20 (buyer pays return postage) against £275, so
- * the generous policy is a cheap conversion asset on the entry tier. The
- * exemption stance on A2/A1/A0 (strong for framed/hand-finished/hand-painted,
- * weaker for plain made-to-order prints) should still go to the solicitor
- * review flagged above. PaintingDetail's Product JSON-LD
+ * DECIDED 2026-06-12 (Hugo), UPDATED 2026-07-27 (no unframed prints — every
+ * piece is FRAMED or CANVAS): cancellation rights now split by PRESENTATION,
+ * not size. CANVAS prints KEEP the full 14-day change-of-mind right; FRAMED,
+ * hand-finished and the one-of-one are bespoke and EXEMPT (reg 28(1)(b)), with
+ * a 24-hour goodwill window before production. Rationale (Hugo's original, still
+ * holds): (a) the reg 28(1)(b) "consumer's specifications" exemption is UNLIKELY
+ * to cover a plain catalogue print where the buyer only picks size/colourway
+ * from fixed options — a canvas is exactly that (a catalogue image printed +
+ * stretched), so the statutory right probably applies and claiming the exemption
+ * would risk an unenforceable term; framing / hand-work IS a genuine made-to-
+ * order step, so its exemption is strong. (b) a returned canvas costs the estate
+ * only its COGS against £445+, so the generous policy is a cheap conversion
+ * asset. With the unframed option gone, canvas is now the least-bespoke product
+ * and inherits the old A3 stance. ⚠️ Still go to the solicitor review flagged
+ * above before heavy promotion. PaintingDetail's Product JSON-LD
  * hasMerchantReturnPolicy stays MerchantReturnNotPermitted — one policy per
- * Product can't express per-tier detail; /returns carries it.
+ * Product can't express the canvas-vs-framed split; /returns carries it.
  */
 
 const UPDATED = "31 May 2026";
@@ -370,7 +373,7 @@ const TERMS: Section[] = [
       },
       {
         kind: "p",
-        text: "Delivery is free to every destination we serve — framed or unframed — with no shipping charge added at checkout. We post via Royal Mail, DHL or FedEx depending on the destination and the size of the print. You'll receive a shipping notification with tracking once it leaves the studio.",
+        text: "Delivery is free to every destination we serve — framed or on canvas — with no shipping charge added at checkout. We post via Royal Mail, DHL or FedEx depending on the destination and the size of the piece. You'll receive a shipping notification with tracking once it leaves the studio.",
       },
     ],
   },
@@ -379,7 +382,7 @@ const TERMS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "We ship worldwide. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. For any unframed print you keep your 14-day right to cancel (you would bear the cost of returning it); but simply refusing delivery of a bespoke, cancellation-exempt order to avoid duties does not entitle you to a refund.",
+        text: "We ship worldwide. International buyers may be charged local import duties, customs handling fees, or local VAT on delivery by their courier — these are set by your country's customs authority and are your responsibility, not ours. Canvas prints keep the 14-day right to cancel and return; refusing delivery of a framed or hand-finished piece (cancellation-exempt once in production) purely to avoid duties is treated as a change of mind and does not entitle you to a refund.",
       },
     ],
   },
@@ -390,8 +393,9 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            Your cancellation rights depend on which print you order. We set
-            them out plainly below so you know exactly where you stand.
+            Every piece is made to order, and your cancellation rights depend on
+            whether you chose a canvas print or a framed / hand-finished piece. We
+            set them out plainly below so you know exactly where you stand.
           </>
         ),
       },
@@ -399,26 +403,35 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Unframed prints — every size (A3, A2, A1 and A0).</strong>{" "}
-            Whether it's the A3 Open Edition or a larger numbered edition, an
-            unframed print in a colourway and size chosen from our catalogue
-            carries the full statutory <strong>14-day cancellation right</strong>{" "}
-            under the{" "}
+            <strong>Every piece is made to order.</strong>{" "}
+            Each work is produced by our atelier only after you order it —
+            printed in the colourway and size you choose, then either hand-framed
+            in solid wood behind glazing or hand-stretched onto a gallery canvas.
+            Nothing is held in stock, and there is no plain, unframed option: the
+            frame or canvas is an integral part of the finished piece, made
+            specifically for your order.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>Canvas prints — the full 14-day right.</strong>{" "}
+            A gallery-wrapped canvas is printed to a colourway and size you choose
+            from our catalogue. Because that is a catalogue selection rather than a
+            bespoke commission, it carries the full statutory{" "}
+            <strong>14-day right to cancel</strong> under the{" "}
             <strong>Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013</strong>.
-            You may cancel for any reason, without giving a reason, from the
-            moment you order until 14 days after the day you receive the print.
-            To cancel, email{" "}
+            Cancel for any reason, from the moment you order until 14 days after
+            the day it arrives — email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
-            {" "}— a clear statement that you wish to cancel is enough. Return
-            the print to us (you pay the return postage) and, once we have it
-            back or you show proof of return, we will refund the full price you
-            paid — delivery is free, so there is no separate delivery charge to
-            add back — with{" "}
-            <strong>no deduction for payment-processing fees</strong>. We make
-            the refund within 14 days using the same payment method you used to
-            pay.
+            , return it to us (you pay the return postage) and we refund the full
+            price you paid — delivery is free, so there is no delivery charge to
+            add back — with <strong>no deduction for payment-processing fees</strong>,
+            within 14 days to the same payment method.
           </>
         ),
       },
@@ -426,34 +439,21 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
-            <strong>Bespoke orders (framed prints, hand-finished prints, and
-            the hand-painted Studio one-of-one).</strong>{" "}
-            A frame is cut and mounted to your chosen piece, a hand-finished
+            <strong>Framed prints, hand-finished prints and the one-of-one —
+            bespoke, with a goodwill window.</strong>{" "}
+            A frame is cut and mounted to your specific piece, a hand-finished
             print is worked over individually by hand, and the Studio piece is
             hand-painted uniquely for you — each is genuinely made to your
-            specification or personalised. Under the same Regulations,{" "}
-            <em>regulation 28(1)(b)</em>, goods "made to the consumer's
-            specifications or clearly personalised" are exempt from the 14-day
-            distance-selling cancellation right, so the statutory cooling-off
-            period does not apply to these bespoke orders.
-          </>
-        ),
-      },
-      {
-        kind: "p",
-        text: (
-          <>
-            <strong>Goodwill window on bespoke orders.</strong> Even
-            though the bespoke orders above are exempt, as a goodwill
-            measure the estate will accept a full cancellation request within{" "}
-            <strong>24 hours</strong> of order, provided the piece has not
-            yet been sent to the atelier. Email{" "}
+            specification or personalised, so under <em>regulation 28(1)(b)</em>{" "}
+            it is exempt from the 14-day change-of-mind right. As a goodwill
+            measure we still accept a full cancellation within{" "}
+            <strong>24 hours</strong> of order, provided it hasn't gone to the
+            atelier yet — email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
-            {" "}within that window and we'll refund the order in full. After
-            those 24 hours a made-to-order print is in production and the
-            goodwill window closes.
+            {" "}within that window and we'll refund in full. After those 24 hours
+            it is in production and the goodwill window closes.
           </>
         ),
       },
@@ -569,57 +569,40 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Your cancellation rights depend on what you bought, so we've split it out clearly below. The short version: any unframed print — every size, A3 through A0 — carries the full 14-day right to change your mind; the genuinely bespoke orders (a framed print, a hand-finished print, or the hand-painted one-of-one) are made specifically for you and are exempt from that right — though we still offer a goodwill window before production starts. Faulty or damaged goods are always covered by your statutory rights, whatever you bought.",
+        text: "Every piece is made to order. A canvas print is a catalogue selection, so it keeps the full 14-day 'change of mind' right — return it within 14 days for a full refund. Framed, hand-finished and one-of-one pieces are genuinely made to your order and are exempt from that right, but we give you a 24-hour goodwill window to cancel before production starts. Faulty, damaged, mis-described or undelivered orders are always covered by your statutory rights, whatever you bought.",
       },
     ],
   },
   {
-    heading: "Cancelling an unframed print (any size, A3–A0)",
+    heading: "Cancelling a canvas print (the 14-day right)",
     blocks: [
       {
         kind: "p",
         text: (
           <>
-            With any unframed print — every size, from the A3 Open Edition to
-            the A0 Heirloom — you have the full statutory{" "}
-            <strong>14-day cancellation right</strong> under
-            the Consumer Contracts Regulations 2013. You can cancel for any
-            reason from when you order until 14 days after the day it arrives —
-            just email{" "}
+            A canvas print is printed to a colourway and size you choose from our
+            catalogue, so it carries the full statutory{" "}
+            <strong>14-day right to cancel</strong> under the Consumer Contracts
+            Regulations 2013. Cancel for any reason, from ordering until 14 days
+            after it arrives — email{" "}
             <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
               info@themandalacompany.com
             </a>
-            .
+            , send it back (you cover the return postage), and once we've received
+            it or you've shown proof of return we refund the full price you paid —
+            with no deduction for payment-processing fees — within 14 days, to the
+            card you paid with.
           </>
         ),
-      },
-      {
-        kind: "p",
-        text: "Send the print back to us (you cover the return postage) and, once we've received it or you've shown proof of return, we'll refund the full price you paid — with no deduction for payment-processing fees — within 14 days, to the card you paid with. Delivery is free, so there is no separate delivery charge to refund.",
       },
     ],
   },
   {
-    heading: "Cancelling a bespoke order (framed, hand-finished, or the one-of-one)",
+    heading: "Framed, hand-finished & the one-of-one (bespoke — 24-hour goodwill)",
     blocks: [
       {
         kind: "p",
-        text: "A framed print (cut and mounted to your chosen piece), a hand-finished print (worked over individually by hand), and the hand-painted Studio one-of-one are made specifically for you or personalised to your order. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these bespoke items are exempt from the 14-day cancellation right. Plain unframed prints of any size are not affected — they keep the full 14-day right (see above).",
-      },
-      {
-        kind: "p",
-        text: (
-          <>
-            <strong>Goodwill window — within 24 hours of ordering</strong> —
-            email{" "}
-            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
-              info@themandalacompany.com
-            </a>
-            {" "}and, provided the print run hasn't gone to the atelier yet,
-            we'll cancel and refund in full. After those 24 hours the order is
-            in production and can't be cancelled.
-          </>
-        ),
+        text: "A framed print (a frame cut and mounted to your piece), a hand-finished print (worked over individually by hand) and the hand-painted Studio one-of-one are genuinely made to your specification or personalised. Under the Consumer Contracts Regulations 2013 (reg 28(1)(b)) these are exempt from the 14-day change-of-mind right. As a goodwill measure, email us within 24 hours of ordering and — provided your piece hasn't gone to the atelier yet — we'll cancel and refund in full; after that it's in production. Your rights for faulty, damaged, mis-described or undelivered goods are entirely unaffected — see below.",
       },
     ],
   },
@@ -656,7 +639,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "For any unframed print — every size, A3 through A0 — you can change your mind within 14 days of receiving it, as set out above. For the bespoke orders — a framed print, a hand-finished print, or the hand-painted one-of-one, all made specifically for you — we can't accept a return once production has started simply because you've changed your mind. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
+        text: "Canvas prints carry the full 14-day change-of-mind right (see above). Framed, hand-finished and one-of-one pieces are made specifically for you, so once they're in production we can't accept a change-of-mind return — but there's a 24-hour goodwill window to cancel before they go to the atelier. Either way, we'd much rather you ask before ordering than be unhappy after — drop us a line at any time and we'll send you a higher-resolution preview or talk colour with you.",
       },
     ],
   },
@@ -665,7 +648,7 @@ const RETURNS: Section[] = [
     blocks: [
       {
         kind: "p",
-        text: "Local import duties or VAT applied by your country's customs are your responsibility. For an unframed print you keep your 14-day right to cancel and return it; but refusing delivery of a bespoke, cancellation-exempt order purely to avoid duties is treated as a change of mind and is not refundable in that case.",
+        text: "Local import duties or VAT applied by your country's customs are your responsibility. Canvas prints keep the 14-day right to cancel and return; but refusing delivery of a framed or hand-finished piece (which is cancellation-exempt once in production) purely to avoid duties is treated as a change of mind and is not refundable in that case.",
       },
     ],
   },
