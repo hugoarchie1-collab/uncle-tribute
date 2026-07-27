@@ -2245,7 +2245,7 @@ const StickyAddBar = ({
   // Premium-frame + canvas-edge surcharges on the floating bar mirror the buy
   // box (gotcha #9) so the bar total == the charged total.
   const barFrameSurchargePence = barFramed ? getFrameSurchargePence(frameStyle) : 0;
-  const barCanvasEdgeSurchargePence = barCanvas ? getCanvasEdgeSurchargePence(canvasEdge) : 0;
+  const barCanvasEdgeSurchargePence = barCanvas ? getCanvasEdgeSurchargePence(canvasEdge, selectedTier.id) : 0;
   const barTotalPence =
     selectedTier.pricePence +
     (barFramed ? (selectedTier.framingPricePence ?? 0) + barFrameSurchargePence : 0) +
