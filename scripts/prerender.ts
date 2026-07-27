@@ -41,6 +41,7 @@ import {
   COLLECTIONS,
   getPrintTiers,
   getLowestTierPricePence,
+  getTierAdvertisedPricePence,
   parseSizeCm,
   formatGBP,
 } from "../src/data/paintings";
@@ -225,9 +226,12 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
   const productDescription = `${metaDescription} ${firstSentence(p.description)}`;
 
   const visibleTiers = getPrintTiers(p);
+  // Advertise the BUYABLE floor (base + cheapest finish), NOT the bare base —
+  // no unframed prints are sold, so the base isn't checkoutable (Hugo 2026-07-27
+  // "make it honest"). Mirrors the runtime PaintingDetail JSON-LD + the feed.
   const tierPricesPence =
     visibleTiers.length > 0
-      ? visibleTiers.map((t) => t.pricePence)
+      ? visibleTiers.map(getTierAdvertisedPricePence)
       : [getLowestTierPricePence(p)];
   const lowPricePence = Math.min(...tierPricesPence);
   const highPricePence = Math.max(...tierPricesPence);
@@ -391,7 +395,7 @@ const paintingBody = (p: (typeof PAINTINGS)[number]): string => {
     `<ul>${getPrintTiers(p)
       .map(
         (t) =>
-          `<li>${escHtml(t.label)} — ${escHtml(t.size)} — ${escHtml(formatGBP(t.pricePence))} (${escHtml(t.editionLabel)})</li>`,
+          `<li>${escHtml(t.label)} — ${escHtml(t.size)} — from ${escHtml(formatGBP(getTierAdvertisedPricePence(t)))} (${escHtml(t.editionLabel)})</li>`,
       )
       .join("")}</ul>`,
     `<p><a href="/collections">Browse all collections</a></p>`,

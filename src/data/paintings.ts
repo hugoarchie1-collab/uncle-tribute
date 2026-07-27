@@ -409,20 +409,22 @@ export const getLowestTierPricePence = (painting: Painting): number => {
 };
 
 /**
- * The ADVERTISED / buyable price of a tier (pence) — every piece is now a
- * FRAMED product (Hugo 2026-07-24, [[project_framed_default_model]]), so the
- * honest "from £…" figure, the Google Merchant SKU price and the Product
- * JSON-LD offers are all the FRAMED price (print + classic frame), falling back
- * to canvas, then bare, for any finish-less size. This is what a buyer actually
- * pays on landing — no unframed number that isn't purchasable. Keep browse
- * tiles / meta / feed / JSON-LD all routed through this (advertised == charged).
+ * The ADVERTISED / buyable "from" price of a tier (pence). Hugo 2026-07-27:
+ * "make it honest." There are NO unframed prints, so the cheapest a buyer can
+ * actually complete is base + the cheaper finish (framing or canvas). Since
+ * framing == canvas price, that floor = base + framing = the framed price
+ * (A3 £445 / A2 £750 / A1 £1,300 / A0 canvas £2,420). Advertising the bare base
+ * (£295…) was a GHOST price — no one could check out at it. Every "from" figure
+ * — browse tiles, the size ladder, the Google Merchant SKU, the Product JSON-LD
+ * offer — routes through this, so advertised == the lowest achievable charge.
  */
-export const getTierAdvertisedPricePence = (tier: PrintTier): number =>
-  // Hugo 2026-07-24 (2nd call): advertise the BASE print price — the accessible
-  // "from £275" ladder that increases by size — NOT the framed total. The framed
-  // /canvas finish is a clearly-priced CHOICE on the product page; the browse
-  // "from", the feed and the size ladder all quote the base print price.
-  tier.pricePence;
+export const getTierAdvertisedPricePence = (tier: PrintTier): number => {
+  const adds: number[] = [];
+  if (typeof tier.framingPricePence === "number") adds.push(tier.framingPricePence);
+  if (typeof tier.canvasPricePence === "number") adds.push(tier.canvasPricePence);
+  const cheapestFinish = adds.length > 0 ? Math.min(...adds) : 0;
+  return tier.pricePence + cheapestFinish;
+};
 
 /**
  * Returns the framing surcharge for a tier, or null if framing isn't

@@ -276,11 +276,11 @@ const SizePicker = ({
   <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-0 border-b border-line">
     {tiers.map((tier, i) => {
       const isSelected = tier.id === selectedTier.id;
-      // Every buyable size is a FRAMED product (Hugo 2026-07-24), so the size
-      // rung shows the BASE print price — the "from £275" ladder that increases
-      // by size (Hugo 2026-07-24, 2nd call). The framed/canvas finish is a
-      // clearly-priced choice below; the size rung is the print price per size.
-      const rungPricePence = tier.pricePence;
+      // No unframed prints, so the size rung shows the BUYABLE FLOOR for that
+      // size (base + cheapest finish = the framed/canvas price) — NOT the bare
+      // base, which no one can check out at (Hugo 2026-07-27: "make it honest").
+      // This matches the browse "from", the feed and the JSON-LD offer exactly.
+      const rungPricePence = getTierAdvertisedPricePence(tier);
       return (
         <button
           key={tier.id}
