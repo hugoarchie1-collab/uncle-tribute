@@ -1294,7 +1294,10 @@ export const Welcome = () => {
               taller than the top Earth limb — that is the cost of showing the spot. */}
           <section
             aria-hidden="true"
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] mb-[-1px]"
+            /* mb cancels <main>'s pb-8/md:pb-10 (+1px) so the Jupiter limb butts
+               FLUSH against the red footer — no near-black page-bg band showing
+               between the globe and the footer (Hugo 2026-07-27). */
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] !-mb-8 md:!-mb-10"
           >
             {/* Warm halo along the foot — matches the top Earth's rim. */}
             <div
