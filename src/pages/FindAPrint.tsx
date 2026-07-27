@@ -13,6 +13,7 @@ import {
   PAINTINGS,
   PRINT_TIERS,
   parseSizeCm,
+  getTierAdvertisedPricePence,
   type PrintTier,
 } from "../data/paintings";
 
@@ -350,7 +351,7 @@ export const FindAPrint = () => {
                   )}
                 >
                   {sizeCode(t)}
-                  <span className={cn("font-semibold", sel ? "text-bg/70" : "text-ink/55")}>{fmtP(t.pricePence)}</span>
+                  <span className={cn("font-semibold", sel ? "text-bg/70" : "text-ink/55")}>{fmtP(getTierAdvertisedPricePence(t))}</span>
                 </button>
               );
             })}
@@ -398,7 +399,7 @@ export const FindAPrint = () => {
                     className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.04em] text-ink-muted m-0"
                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                   >
-                    Estate-stamped giclée · {sizeCode(browseTier)} {fmtP(browseTier.pricePence)}
+                    Estate-stamped giclée · {sizeCode(browseTier)} from {fmtP(getTierAdvertisedPricePence(browseTier))}
                   </p>
                 </figcaption>
               </Link>

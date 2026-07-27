@@ -797,7 +797,7 @@ export const Collections = () => {
                       style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                     >
                       <span className="text-ink-muted">from </span>
-                      <span className="font-semibold">{fmtP(tier.pricePence)}</span>
+                      <span className="font-semibold">{fmtP(getTierAdvertisedPricePence(tier))}</span>
                     </p>
                   </li>
                 ))}

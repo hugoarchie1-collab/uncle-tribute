@@ -21,6 +21,7 @@ import {
   getPaintingById,
   getPaintingsByCollection,
   getAnchorTier,
+  getTierAdvertisedPricePence,
   type Painting,
 } from "../data/paintings";
 
@@ -201,7 +202,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
       <p className={cn(META, "mt-2 mb-3")}>{note}</p>
       <div className="mt-auto flex items-baseline justify-between gap-3">
         <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink">
-          {fmtP(anchor.pricePence)}
+          from {fmtP(getTierAdvertisedPricePence(anchor))}
         </span>
         <span className={cn(EYEBROW_TIGHT)}>{anchor.size}</span>
       </div>
