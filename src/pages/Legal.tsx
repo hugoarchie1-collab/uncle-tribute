@@ -42,7 +42,7 @@ import { cn } from "../lib/cn";
  * Product can't express the canvas-vs-framed split; /returns carries it.
  */
 
-const UPDATED = "31 May 2026";
+const UPDATED = "27 July 2026";
 
 /**
  * Trader's full geographic postal address — LEGALLY REQUIRED before promotion.
@@ -366,8 +366,8 @@ const TERMS: Section[] = [
       {
         kind: "ul",
         items: [
-          <><strong>Unframed, estate-stamped</strong> — 7 to 10 working days to dispatch.</>,
-          <><strong>Framed</strong> — approximately two weeks to dispatch (choice of frame finish, with shatter-safe or anti-reflective glazing).</>,
+          <><strong>Framed, estate-stamped</strong> — approximately two weeks to dispatch (choice of frame finish, with shatter-safe or anti-reflective glazing).</>,
+          <><strong>Gallery-wrapped canvas</strong> — approximately two weeks to dispatch, ready to hang.</>,
           <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],
       },
@@ -747,7 +747,7 @@ const LegalMasthead = ({
     <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-4 md:pt-5">
       <Reveal as="div" className="lg:col-span-8">
         <p
-          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[34ch] 3xl:max-w-[40ch]"
+          className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[52ch] 3xl:max-w-[60ch]"
           style={{
             fontVariationSettings: '"opsz" 32, "wght" 400',
             fontSize: "clamp(21px, 2.4vw, 40px)",

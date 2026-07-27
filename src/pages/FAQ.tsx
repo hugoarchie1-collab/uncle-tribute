@@ -106,12 +106,13 @@ const FAQS: QA[] = [
     question: "How long until my print arrives?",
     answer: (
       <>
-        Unframed prints are <strong>dispatched within 7–10 working days</strong>{" "}
-        of your order; with tracked courier transit on top, most orders arrive
-        within <strong>roughly two to three weeks</strong>. Delivery is free
-        worldwide. Framed orders add roughly two weeks to that. Prints
-        hand-finished by Polly (Stephen's sister) dispatch within two weeks maximum. You'll
-        receive an email with tracking the moment your print leaves the studio.
+        Every piece is made to order — framed in solid wood or gallery-wrapped
+        on canvas — and <strong>dispatched within roughly two weeks</strong> of
+        your order; with tracked courier transit on top, most orders arrive
+        within <strong>two to three weeks</strong>. Delivery is free
+        worldwide. Prints hand-finished by Polly (Stephen's sister) dispatch
+        within two weeks maximum. You'll receive an email with tracking the
+        moment your print leaves the studio.
       </>
     ),
   },
@@ -120,12 +121,11 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Four tiers, each estate-stamped and ready to hang — framed in solid wood
+        Three tiers, each estate-stamped and ready to hang — framed in solid wood
         or gallery-wrapped on canvas, with the frame or canvas included in the
         price and free delivery worldwide. <strong>Open Edition</strong> at £445 (issued within each edition, no fixed allocation).{" "}
         <strong>Collector Edition</strong> at £750 (edition of 200).{" "}
-        <strong>Atelier Edition</strong> at £1,300 (edition of 75).{" "}
-        <strong>Heirloom Edition</strong>, on canvas, at £2,420 (edition of 18).
+        <strong>Atelier Edition</strong> at £1,300 (edition of 75).
       </>
     ),
   },
@@ -156,8 +156,8 @@ const FAQS: QA[] = [
         Polly (Stephen's sister) hand-paints additional geometric
         detail onto selected prints in Stephen's own tradition. Each
         hand-finished piece is therefore unique. The add-on is available on
-        the Collector, Atelier and Heirloom editions, by request, and adds £595 (Collector), £895
-        (Atelier) or £1,295 (Heirloom). Allow two weeks maximum from order to dispatch.
+        the Collector and Atelier editions, by request, and adds £595 (Collector)
+        or £895 (Atelier). Allow two weeks maximum from order to dispatch.
       </>
     ),
   },
@@ -277,20 +277,22 @@ const QaItem = ({ qa, i }: { qa: QA; i: number }) => (
 // "title of a work" signal), then the supporting passage packed immediately
 // beneath under a border-t.
 const FaqMasthead = () => (
-  // Legibility shadow inherited by every text node (text-shadow cascades) so the
-  // cream copy stays readable over the faq-palm-sunset photo — matching the
-  // sister Contact page, which shadows all its nodes (the brightness rule: the
-  // backdrop must never out-shout the text). Whole-element, not per-glyph, so
-  // gotcha #2 (no SplitReveal blockiness) is not triggered.
-  <section
-    className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}
-    style={{ textShadow: "0 2px 18px rgba(0,0,0,0.82), 0 1px 4px rgba(0,0,0,0.6)" }}
-  >
+  // Legibility shadow is scoped to the H1 ONLY (not the whole section) so it no
+  // longer cascades a heavy dark halo onto the eyebrow/lead body copy — which
+  // reads over the page's own SceneBackdrop scrim. A single tight pass keeps the
+  // headline crisp over the faq scene without the "black box behind text" the
+  // brightness rule forbids. Whole-element, not per-glyph, so gotcha #2 (no
+  // SplitReveal blockiness) is not triggered.
+  <section className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}>
     <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px]">
       <Reveal as="div">
         <h1
           className="font-display text-ink m-0"
-          style={{ ...MASTHEAD_TITLE_STYLE, fontSynthesis: "none" }}
+          style={{
+            ...MASTHEAD_TITLE_STYLE,
+            fontSynthesis: "none",
+            textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
+          }}
         >
           What people <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>ask</em>.
         </h1>
@@ -361,10 +363,7 @@ export const FAQ = () => {
             multi-columns that flow and pack independently with no row coupling,
             divided by hairlines so they read as dense blocks, not an endless
             scroll. */}
-        <section
-          className={cn(SECTION, "pb-6 md:pb-9")}
-          style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
-        >
+        <section className={cn(SECTION, "pb-6 md:pb-9")}>
           {/* TWO INDEPENDENT NEWSPAPER COLUMNS — CSS multi-column so each item
               packs tightly against the one above it with NO shared row height.
               The old single CSS grid coupled both cells in a row to the taller

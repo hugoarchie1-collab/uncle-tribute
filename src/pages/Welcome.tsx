@@ -344,7 +344,7 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[62svh] justify-end landscape:pt-[max(6rem,8svh)] portrait:pt-[clamp(12rem,58vw,21rem)] pb-[clamp(14px,2svh,30px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[52svh] justify-end landscape:pt-[max(6rem,8svh)] portrait:pt-[clamp(12rem,58vw,21rem)] pb-[clamp(14px,2svh,30px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -458,7 +458,7 @@ export const Welcome = () => {
                     wordBreak: "keep-all",
                     color: "#ede6d6",
                     textShadow:
-                      "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
+                      "0 1px 2px rgba(8,6,12,0.55), 0 2px 10px rgba(8,6,12,0.42)",
                   }}
                 >
                   The SEM Experience
@@ -477,7 +477,7 @@ export const Welcome = () => {
                     wordBreak: "keep-all",
                     color: "#ede6d6",
                     textShadow:
-                      "0 2px 42px rgba(8,6,12,0.9), 0 1px 4px rgba(8,6,12,0.85), 0 0 60px rgba(8,6,12,0.5)",
+                      "0 1px 2px rgba(8,6,12,0.55), 0 2px 10px rgba(8,6,12,0.42)",
                   }}
                 >
                   {["The", "SEM", "Experience"].map((word, i) => (
@@ -900,20 +900,25 @@ export const Welcome = () => {
                         the existing "From £…" as a tabular figure on the right,
                         across a hairline rule. The Link's aria-label still spells
                         the price, so a11y is unchanged. */}
-                    <div className="flex items-start justify-between gap-4 pt-4 border-t border-line">
-                      <div className="min-w-0">
-                        <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
-                          {painting.title}
-                        </h3>
-                        {hasYear && (
-                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] mt-1.5 m-0")}>
+                    <div className="pt-4 border-t border-line">
+                      <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
+                        {painting.title}
+                      </h3>
+                      {/* One baseline row: year left, price right — always aligned
+                          across tiles regardless of how many lines the title wraps
+                          to (no ragged gap on two-line titles). */}
+                      <div className="flex items-baseline justify-between gap-4 mt-2">
+                        {hasYear ? (
+                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] m-0")}>
                             {painting.year}
                           </p>
+                        ) : (
+                          <span aria-hidden="true" />
                         )}
+                        <span className="shrink-0 font-sans text-[14px] md:text-[15px] 2xl:text-[16px] 3xl:text-[18px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
+                          From {fmtPrice(fromPrice)}
+                        </span>
                       </div>
-                      <span className="shrink-0 font-sans text-[14px] md:text-[15px] 2xl:text-[16px] 3xl:text-[18px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
-                        From {fmtPrice(fromPrice)}
-                      </span>
                     </div>
                   </Link>
                 );
@@ -1028,7 +1033,7 @@ export const Welcome = () => {
                         (£595) in paintings.ts; the real per-size price shows on the
                         product page. */}
                     <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
-                      From £595 · on the Collector, Atelier &amp; Heirloom prints · allow 2 weeks
+                      From £595 · on the Collector &amp; Atelier prints · allow 2 weeks
                     </span>
                   </div>
                 </div>
@@ -1317,9 +1322,9 @@ export const Welcome = () => {
                 // the blend into the peacock; the body stays opaque + flush on the
                 // catalogue (no black bar).
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 6%, #000 100%)",
+                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 6%, #000 100%)",
+                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>

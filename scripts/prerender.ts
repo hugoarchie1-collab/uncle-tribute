@@ -225,7 +225,7 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
   const metaDescription = `Estate-stamped giclée print of ${p.title} by British mandala artist Stephen Meakin — sacred geometry, made to order, from ${fromPriceLabel}. Free worldwide delivery.`;
   const productDescription = `${metaDescription} ${firstSentence(p.description)}`;
 
-  const visibleTiers = getPrintTiers(p);
+  const visibleTiers = getPrintTiers(p).filter((t) => t.id !== "heirloom");
   // Advertise the BUYABLE floor (base + cheapest finish), NOT the bare base —
   // no unframed prints are sold, so the base isn't checkoutable (Hugo 2026-07-27
   // "make it honest"). Mirrors the runtime PaintingDetail JSON-LD + the feed.

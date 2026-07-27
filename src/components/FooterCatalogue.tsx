@@ -51,15 +51,29 @@ export const FooterCatalogue = () => {
   return (
     <section
       aria-label="All paintings"
-      className="nav-bg-scrolled relative hidden md:block border-t border-[rgba(120,30,30,0.5)] px-4 sm:px-6 md:px-8 lg:px-12 py-5 md:py-6"
+      // CONTINUOUS FOOTER — the catalogue strip is the TOP slice of one red
+      // block it shares with <Footer/> below. It carries the TOP half of the
+      // nav bar's exact wax-seal gradient (`.nav-bg-scrolled`:
+      // rgba(64,13,13,0.97) → rgba(46,9,10,0.97) → rgba(34,6,7,0.98)), running
+      // from the nav's top stop down to the shared mid colour rgba(48,9,10)
+      // where the Footer picks it up — so the two elements form one seamless
+      // top-bright→bottom-dark wash that matches the top bar's red AND alpha.
+      // No `nav-bg-scrolled` class here (that restarts the full gradient and
+      // caused a re-brightening seam); no internal divider between the bands.
+      className="relative hidden md:block border-t border-[rgba(120,30,30,0.5)] px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
+      style={{
+        backgroundImage:
+          "linear-gradient(180deg, rgba(64,13,13,0.97) 0%, rgba(56,11,12,0.972) 55%, rgba(48,9,10,0.975) 100%)",
+      }}
     >
-      {/* FEATHERED SEAM — dissolves the top edge of the RED catalogue band up
-          into the section above (Hugo 2026-07-24: the bottom now mirrors the
-          top nav's red). SHORT fade (h-16, was h-28 — the tall version read as
-          a "high black box above the catalogue") from the band's own deep red. */}
+      {/* FEATHERED SEAM — dissolves the top edge of the RED footer block up
+          into the section above (Hugo 2026-07-24: the bottom mirrors the top
+          nav's red). SHORT fade (h-16) from the block's OWN top colour
+          (rgba(64,13,13) — the nav gradient's top stop) so the entry matches
+          the red directly beneath it. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(34,6,7,0.98)] via-[rgba(40,8,9,0.45)] to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(64,13,13,0.97)] via-[rgba(64,13,13,0.4)] to-transparent"
       />
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] 4xl:max-w-[2100px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>

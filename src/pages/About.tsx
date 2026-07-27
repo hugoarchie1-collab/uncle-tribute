@@ -13,7 +13,6 @@ import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
-import { MagneticLink } from "../components/MagneticLink";
 import { EnquireModal } from "../components/EnquireModal";
 import {
   ABOUT,
@@ -570,23 +569,33 @@ const AboutMasthead = () => (
         Mandala artist &amp; sacred geometer
       </p>
     </Reveal>
-    {/* Contained, centered, true-colour portrait — never full-bleed, framed
-        with the single hairline ring like home's figures (no card, no box). */}
-    <Reveal as="figure" delay={0.06} className="m-0 mx-auto w-full max-w-[420px] md:max-w-[460px]">
-      <div className="overflow-hidden rounded-[3px] ring-1 ring-line">
-        <ImageReveal
-          src="/img/about/12-stephen-portrait.jpg"
-          alt="Stephen Meakin"
-          aspect="aspect-[1337/1600]"
-          edges="none"
-          parallax={0}
-          sizes="(min-width: 768px) 460px, 90vw"
-        />
-      </div>
-    </Reveal>
-    <Reveal as="div" delay={0.1} className={cn("mx-auto max-w-[70ch] text-center", BLOCK_GAP)}>
-      <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "m-0")} />
-    </Reveal>
+    {/* Opening spread — the portrait sits BESIDE the opening passage so the row
+        fills the full measure with NO dead side space (Hugo 2026-07-27: the lone
+        centred portrait "has a huge gap either side … totally rethink"). A
+        contained bounded column, never a full-bleed wall; stacks portrait-then-
+        text on mobile, true-colour, single hairline ring like home's figures. */}
+    <div
+      className={cn(
+        BLOCK_GAP,
+        "grid grid-cols-1 items-center gap-7 md:gap-10 lg:gap-14 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)]",
+      )}
+    >
+      <Reveal as="figure" delay={0.06} className="m-0 w-full">
+        <div className="overflow-hidden rounded-[3px] ring-1 ring-line">
+          <ImageReveal
+            src="/img/about/12-stephen-portrait.jpg"
+            alt="Stephen Meakin"
+            aspect="aspect-[1337/1600]"
+            edges="none"
+            parallax={0}
+            sizes="(min-width: 768px) 44vw, 90vw"
+          />
+        </div>
+      </Reveal>
+      <Reveal as="div" delay={0.1} className="text-center md:text-left">
+        <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "m-0")} />
+      </Reveal>
+    </div>
   </section>
 );
 
@@ -792,7 +801,7 @@ export const About = () => {
               </div>
             </Reveal>
             <Reveal as="div" delay={0.1} className={BLOCK_GAP}>
-              <dl className="flex flex-wrap justify-between items-start gap-x-10 gap-y-4 py-4 md:py-5">
+              <dl className="flex flex-wrap justify-start items-start gap-x-16 md:gap-x-20 gap-y-4 py-4 md:py-5">
                 <div>
                   <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
                   <dd className={cn(CAPTION, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
@@ -1082,7 +1091,6 @@ export const About = () => {
               pillarboxed the portrait with huge empty sides — Hugo's #1 rule). */}
           <div
             className={cn(
-              ONE_WIDTH,
               BLOCK_GAP,
               "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
@@ -1103,7 +1111,7 @@ export const About = () => {
             </ul>
             <Reveal
               as="figure"
-              className="relative m-0 w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[300px] lg:min-h-0 overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[300px] lg:min-h-0 overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
             >
               <AssetImage
                 src="/img/about/03-stephen-on-cairn.jpg"
@@ -1112,7 +1120,7 @@ export const About = () => {
                 decoding="async"
                 sizes="(min-width: 1024px) 420px, 100vw"
                 style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
+                className="absolute inset-0 h-full w-full object-cover object-center"
               />
             </Reveal>
           </div>
@@ -1219,7 +1227,6 @@ export const About = () => {
               keeps the whole figure; no face crop. */}
           <div
             className={cn(
-              ONE_WIDTH,
               BLOCK_GAP,
               "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
@@ -1489,66 +1496,10 @@ export const About = () => {
             </Reveal>
           </PhotoRow>
         </section>
-
-        {/* 15 · THE BODY OF WORK — coda. P6 band (≤64svh) + a factual caption. */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP_B)}>
-            <p className={cn(EYEBROW, "m-0")}>The collection so far</p>
-          </Reveal>
-          <ImageBand
-            src="/img/welcome/04-paintings-collection.jpg"
-            alt="Stephen Meakin's mandala paintings gathered together against the timber walls of the studio"
-            parallax={0.1}
-            caption="Ten paintings across three collections — Habundia, Genesis and Born in the Sky. More of Stephen's work will follow."
-          />
-        </section>
-
-        {/* 15b + 16 · THE FAREWELL — a DELIBERATELY COMPOSED closing beat
-            (2026-07-16, owner: the doorway portrait "looks so out of place …
-            deserves home-page effort"). The portrait was a lone ~440px ring-boxed
-            rectangle centred in the full section width, floating in a big pool of
-            dead peacock backdrop to its left + right. Now it's an intentional
-            asymmetric editorial spread: the portrait sits on the LEFT, its hard
-            rectangular edge dissolved into the backdrop with the shared
-            .soft-edge-img four-side feather + a warm gallery mount (no stark ring
-            box), and the family's farewell CTA fills the RIGHT — so the two share
-            one spine and the row fills the measure with NO dead space. CONTAINED,
-            never a full-bleed wall (owner's standing rule): the portrait column is
-            capped and the section keeps ONE_WIDTH. Stacks to portrait-then-CTA
-            below lg (mobile frozen). */}
-        {/* The farewell close — a single CENTRED island card (same register as
-            the TAGA card) holding the portrait above the CTA. The old 46%/1fr
-            grid stranded the small CTA in a huge empty right column ("so much
-            black space"); a bounded centred panel has no lonely column to strand
-            and reads as a composed, intentional close. Portrait object-CONTAIN
-            (never cropped) + soft-edge feather + capped height (never a
-            screen-filling wall). Verbatim-only: the CTA carries the farewell. */}
-        {/* THE STUDENTS' LETTER was REMOVED from About (Hugo 2026-07-23: "you
-            added a repeated quote from Steve to his students already on the
-            memories page"). Stephen's letter to his students (ABOUT.studentsLetter)
-            is now shown in ONE place only — pinned as his own voice on /memories
-            (ARTIST_MEMORY). The About page closes on the academy photos → CTA. */}
-
-        {/* Polly Wedge's funeral tribute lives ONLY on /memories now (Hugo,
-            2026-07-22: "the thing written for Stephen's funeral to be only kept
-            on the memories page, not About"). The About page closes on Stephen's
-            own words to his students (above) → the CTA. */}
-
-        <section className={cn(SECTION, "pt-2 md:pt-3 pb-8 md:pb-10 2xl:pb-12")}>
-          <Reveal as="div" className={cn(BLOCK_GAP, "text-center")}>
-            <p className={cn(EYEBROW, "m-0 mb-6")}>The Art of Stephen Meakin</p>
-            <div className="flex justify-center">
-              <MagneticLink
-                to="/collections"
-                className="press group inline-flex items-center gap-2 bg-ink text-bg px-8 py-4 font-sans text-[15px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink"
-                ariaLabel="View the prints"
-              >
-                View the prints{" "}
-                <span aria-hidden="true" className="ml-1 inline-block transition-transform duration-300 group-hover:translate-x-0.5">→</span>
-              </MagneticLink>
-            </div>
-          </Reveal>
-        </section>
+        {/* The About page closes on the academy-close photos above (Hugo
+            2026-07-27: "delete 'The collection so far' and everything below").
+            The old "body of work" band + farewell CTA were removed. Stephen's
+            students' letter + Polly's funeral tribute live ONLY on /memories. */}
       </main>
 
       <EnquireModal

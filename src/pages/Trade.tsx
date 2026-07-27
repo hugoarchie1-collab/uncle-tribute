@@ -135,7 +135,7 @@ export const Trade = () => {
                   fontVariationSettings: '"opsz" 32, "wght" 400',
                   fontSize: "clamp(21px, 2.5vw, 34px)",
                   lineHeight: 1.26,
-                  textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+                  textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
                 }}
               >
                 The estate works directly with interior designers, art

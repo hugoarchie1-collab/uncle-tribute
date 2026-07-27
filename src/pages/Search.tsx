@@ -132,7 +132,7 @@ const ArtworkTile = ({ doc }: { doc: SearchDoc }) => (
         </div>
       </div>
       <figcaption className="pt-3">
-        <h3 className="m-0 font-display font-semibold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink transition-colors duration-300 group-hover:text-accent">
+        <h3 className="m-0 min-h-[2.5em] font-display font-semibold text-[16px] md:text-[18px] leading-[1.25] tracking-[-0.015em] text-ink transition-colors duration-300 group-hover:text-accent">
           {doc.title}
         </h3>
         {doc.subtitle && (

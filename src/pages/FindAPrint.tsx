@@ -156,7 +156,7 @@ export const FindAPrint = () => {
             // page renders its OWN backdrop (not SceneBackdrop), so it MISSED the
             // site-wide brightening — the dark asset under the heavy scrim read as
             // no background. Match SceneBackdrop's lift so it SHOWS like the rest.
-            filter: "brightness(1.4) saturate(1.05)",
+            filter: "brightness(1.15) saturate(1.02)",
             willChange: "auto",
           }}
           className="absolute inset-0 bg-cover"
@@ -170,7 +170,7 @@ export const FindAPrint = () => {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.22) 0%, rgba(8,7,6,0.32) 45%, rgba(8,7,6,0.5) 100%)",
+              "linear-gradient(180deg, rgba(8,7,6,0.32) 0%, rgba(8,7,6,0.42) 45%, rgba(8,7,6,0.6) 100%)",
           }}
         />
       </div>
@@ -202,7 +202,7 @@ export const FindAPrint = () => {
             <Reveal as="div">
               <p
                 className={cn(SUBTITLE, "mx-auto max-w-[88ch] text-pretty m-0")}
-                style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
                 created by Stephen himself and discovered on his computer in his
@@ -226,7 +226,7 @@ export const FindAPrint = () => {
               centred below (no off-axis justify-between row, no big gap before
               the grid). */}
           <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
-            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}>
               The colour lens
             </p>
             <div
@@ -267,7 +267,7 @@ export const FindAPrint = () => {
               lens. Each chip maps to the paintings whose own documented meaning
               carries that intention (INTENTIONS, above). */}
           <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
-            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}>
+            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}>
               The intention lens
             </p>
             <div
@@ -302,7 +302,7 @@ export const FindAPrint = () => {
               role="status"
               aria-live="polite"
               className={cn(EYEBROW_TIGHT, "m-0")}
-              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+              style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
             >
               Showing {filtered.length} of {PAINTINGS.length}
             </p>
@@ -391,13 +391,13 @@ export const FindAPrint = () => {
                 <figcaption className="pt-3 md:pt-4">
                   <h2
                     className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 min-h-[2.5em] group-hover:text-accent transition-colors duration-300"
-                    style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
+                    style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
                   >
                     {painting.title}
                   </h2>
                   <p
                     className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.04em] text-ink-muted m-0"
-                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                    style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
                   >
                     Estate-stamped giclée · {sizeCode(browseTier)} from {fmtP(getTierAdvertisedPricePence(browseTier))}
                   </p>

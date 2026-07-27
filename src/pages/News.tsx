@@ -55,6 +55,7 @@ import {
   isRelease,
   type NewsEntry,
   type NewsType,
+  type NewsStatus,
 } from "../data/news";
 
 /**
@@ -95,8 +96,12 @@ const TypePill = ({ entry }: { entry: NewsEntry }) => (
 // fills the right — so each row reads as packed editorial across the measure
 // rather than a thin centred stack floating in air. Release rows inset a small
 // square cover for album-cover rhythm; text-led announcements / exhibitions /
-// workshops / events stay lean (varied, not a uniform card grid).
-const EntryRow = ({ entry }: { entry: NewsEntry }) => {
+// workshops stay lean (varied, not a uniform card grid).
+// `hideDate` drops the left date-rail when the entry's status line would just
+// repeat its section heading (e.g. every "Coming soon" row sitting under the one
+// "Coming soon" heading) — so the group reads as one tidy list, not each row
+// re-announcing the same status. The body then spans the full measure.
+const EntryRow = ({ entry, hideDate = false }: { entry: NewsEntry; hideDate?: boolean }) => {
   const ctaClass = cn(
     EYEBROW_TIGHT,
     "mt-2.5 inline-flex items-center gap-1.5 rounded-sm transition-colors duration-300 outline-none hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
@@ -120,17 +125,26 @@ const EntryRow = ({ entry }: { entry: NewsEntry }) => {
 
   return (
     <article className="group grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-8 items-start py-3.5 md:py-4">
-      {/* DATE — human state line as a quiet left rail (top line on mobile). */}
-      <p className={cn(EYEBROW_TIGHT, "m-0 md:col-span-3 md:pt-1")}>
-        {entry.isoDate ? (
-          <time dateTime={entry.isoDate}>{entry.displayDate}</time>
-        ) : (
-          entry.displayDate
-        )}
-      </p>
+      {/* DATE — human state line as a quiet left rail (top line on mobile).
+          Suppressed when it would just echo the section heading (hideDate). */}
+      {!hideDate && (
+        <p className={cn(EYEBROW_TIGHT, "m-0 md:col-span-3 md:pt-1")}>
+          {entry.isoDate ? (
+            <time dateTime={entry.isoDate}>{entry.displayDate}</time>
+          ) : (
+            entry.displayDate
+          )}
+        </p>
+      )}
 
-      {/* RELEASE COVER — a left-set square, album energy. Releases only. */}
-      <div className="md:col-span-9 flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
+      {/* RELEASE COVER — a left-set square, album energy. Releases only. When the
+          date rail is suppressed the body spans the full 12 columns. */}
+      <div
+        className={cn(
+          "flex flex-col sm:flex-row gap-4 md:gap-6 items-start",
+          hideDate ? "md:col-span-12" : "md:col-span-9",
+        )}
+      >
         {isRelease(entry) && entry.cover ? (
           <div className="shrink-0 w-full sm:w-[220px] md:w-[260px] 3xl:w-[300px] 4xl:w-[340px] overflow-hidden rounded-lg ring-1 ring-line bg-bg">
             <AssetImage
@@ -194,7 +208,7 @@ const NewsMasthead = () => (
             className={cn(EYEBROW_MUTED, "m-0 leading-[1.8]")}
             style={{ textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}
           >
-            Collections &amp; singles · exhibitions · workshops · pop-up events
+            Collections &amp; singles · exhibitions · workshops
           </p>
         </Reveal>
         <Reveal as="div" delay={0.06} className="mt-4 md:mt-5 mx-auto max-w-[68ch] 3xl:max-w-[76ch]">
@@ -344,7 +358,7 @@ export const News = () => {
   // The hero only belongs on views where the featured (release) entry actually
   // fits the active filter — otherwise a release hero floats above an empty
   // "nothing under this filter" feed (audit). "All" + "Releases" show it; the
-  // other tabs (exhibitions / workshops / events) correctly hide it.
+  // other tabs (exhibitions / workshops) correctly hide it.
   const heroVisible = !!(
     featured &&
     isRelease(featured) &&
@@ -392,16 +406,28 @@ export const News = () => {
       .filter((g) => g.status === "next" || g.status === "soon")
       .flatMap((g) => g.entries);
     const recent = raw.find((g) => g.status === "recent");
-    const merged: ReturnType<typeof groupByStatus> = [];
+    // `suppressDate` hides each row's left-rail status label where it would only
+    // repeat the section heading — the merged "Coming soon" group (every row is
+    // "Coming soon") reads as one tidy list; "Recently" keeps its real dates.
+    type FeedGroup = {
+      status: NewsStatus;
+      heading: string;
+      note: string;
+      entries: NewsEntry[];
+      suppressDate: boolean;
+    };
+    const merged: FeedGroup[] = [];
     if (coming.length) {
       merged.push({
         status: "next",
         heading: "Coming soon",
         note: "New editions in preparation",
         entries: coming,
+        suppressDate: true,
       });
     }
-    if (recent && recent.entries.length) merged.push(recent);
+    if (recent && recent.entries.length)
+      merged.push({ ...recent, suppressDate: false });
     return merged;
   }, [filtered]);
   // Until the family adds real entries to src/data/news.ts, the page shows a
@@ -477,7 +503,6 @@ export const News = () => {
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
                     ["Workshops", "The return of Steve's classes"],
-                    ["Pop-up events", "Gatherings hosted by the estate"],
                   ].map(([label, note]) => (
                     <li key={label} className="border-b border-line py-2.5">
                       <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>{label}</p>
@@ -576,14 +601,21 @@ export const News = () => {
         {hasNews && (
           <>
             {/* TYPE-FILTER TABS — Beeper's tabs restyled as quiet eyebrow pills,
-                left-aligned to the masthead; rust marks only the active tab. */}
+                left-aligned to the masthead; rust marks only the active tab.
+                Only shown when there's MORE THAN ONE entry type to switch between
+                — otherwise every tab is either identical to "All" or empty, which
+                reads as "the buttons don't work" (Hugo 2026-07-27). The row also
+                drops any type-tab that has no entries. */}
+            {new Set(NEWS.map((e) => e.type)).size > 1 && (
             <Reveal
               as="div"
               delay={0.08}
               className="mb-6 md:mb-8 flex flex-wrap items-center gap-2.5 border-b border-line pb-3.5"
             >
               <div role="group" aria-label="Filter news by type" className="flex flex-wrap gap-2.5">
-                {NEWS_FILTERS.map((f) => {
+                {NEWS_FILTERS.filter(
+                  (f) => f.id === "all" || NEWS.some((e) => e.type === f.id),
+                ).map((f) => {
                   const on = active === f.id;
                   return (
                     <button
@@ -609,6 +641,7 @@ export const News = () => {
                 })()}
               </span>
             </Reveal>
+            )}
 
             {/* THE FEED — one calm reading column (no left timeline spine). Status
                 groups carry a hairline rule above a left-aligned Fraunces heading
@@ -634,7 +667,7 @@ export const News = () => {
                   <div className="mt-3.5 md:mt-4 divide-y divide-line">
                     {group.entries.map((entry, i) => (
                       <Reveal key={entry.id} as="div" delay={Math.min(i * 0.04, 0.2)}>
-                        <EntryRow entry={entry} />
+                        <EntryRow entry={entry} hideDate={group.suppressDate} />
                       </Reveal>
                     ))}
                   </div>

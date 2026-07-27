@@ -36,8 +36,7 @@ export type NewsType =
   | "release"
   | "announcement"
   | "exhibition"
-  | "workshop"
-  | "event";
+  | "workshop";
 
 /** Release sub-kind — a Collection releases like an album, a Single like a single. */
 export type ReleaseKind = "collection" | "single";
@@ -95,7 +94,6 @@ export const TYPE_LABEL: Record<NewsType, string> = {
   announcement: "Announcement",
   exhibition: "Exhibition",
   workshop: "Workshop",
-  event: "Pop-up events",
 };
 
 /** The label shown on a pill: Collection / Single for releases, else the type. */
@@ -113,7 +111,6 @@ export const NEWS_FILTERS: { id: NewsType | "all"; label: string }[] = [
   { id: "release", label: "Releases" },
   { id: "exhibition", label: "Exhibitions" },
   { id: "workshop", label: "Workshops" },
-  { id: "event", label: "Pop-up events" },
 ];
 
 export const isRelease = (e: NewsEntry): boolean => e.type === "release";
@@ -148,7 +145,7 @@ export const groupByStatus = (
 // Template (copy + fill in a real announcement):
 //   {
 //     id: "unique-id",
-//     type: "release",            // release | announcement | exhibition | workshop | event
+//     type: "release",            // release | announcement | exhibition | workshop
 //     kind: "collection",         // releases only: collection | single
 //     status: "next",             // next | soon | recent
 //     title: "…",

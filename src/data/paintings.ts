@@ -273,7 +273,15 @@ export const PRINT_TIERS: PrintTier[] = [
     canvasPricePence: 42500, // £425 — canvas add-on; A0's only ready-to-hang option (no framed A0)
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. Charged price
     // mirrored in api/checkout.ts TIERS["heirloom"].
-    available: true,
+    // 2026-07-27 (Hugo: "we removed the heirloom / the a0 — it's still everywhere"):
+    // HIDDEN from every buyer surface. Flipping available:false is the reversible,
+    // checkout-safe lever (same pattern as the `studio` one-off below): it auto-drops
+    // A0 from Gift denominations, getPrintTiers(), the PDP size grid, and the
+    // prerendered Product JSON-LD. The api/checkout.ts + stripe-webhook.ts +
+    // email-basket.ts `heirloom` rows are KEPT intact so a stale client / in-flight
+    // A0 order can't crash checkout or render a broken confirmation email. Flip back
+    // to true to re-list A0.
+    available: false,
   },
   {
     // Studio — a singular, hand-painted one-off. OUTSIDE the edition model:

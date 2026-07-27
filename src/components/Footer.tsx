@@ -76,14 +76,30 @@ const LinkColumn = ({
 export const Footer = () => (
   <footer
     role="contentinfo"
-    className="nav-bg-scrolled relative border-t border-[rgba(120,30,30,0.5)] text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
+    // CONTINUOUS FOOTER — the link columns are the BOTTOM slice of one red
+    // block shared with <FooterCatalogue/> above. This carries the BOTTOM half
+    // of the nav bar's exact wax-seal gradient (`.nav-bg-scrolled`), starting
+    // at the SAME mid colour rgba(48,9,10) the catalogue strip ends on and
+    // running down to the nav's final stop rgba(34,6,7,0.98) — so the strip +
+    // columns read as one seamless red band whose top/bottom red AND alpha
+    // match the top nav bar. No `nav-bg-scrolled` class (it would restart the
+    // full gradient → a re-brightening seam) and no `border-t` divider between
+    // the two bands. On /collections + /for-you the Footer stands alone; the
+    // feathered seam below fades its top red into the page there.
+    className="relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
+    style={{
+      backgroundImage:
+        "linear-gradient(180deg, rgba(48,9,10,0.975) 0%, rgba(41,7,8,0.978) 50%, rgba(34,6,7,0.98) 100%)",
+    }}
   >
-    {/* FEATHERED SEAM — dissolves the top edge of the RED footer band up into
-        the section above (Hugo 2026-07-24: "bottom bar the same red as the top
-        panel"). Fades from the footer's own deep wax-seal red → transparent. */}
+    {/* FEATHERED SEAM — fades the footer's top red up into whatever sits above
+        it. From the footer's OWN top colour (rgba(48,9,10)): when the catalogue
+        strip is directly above (same colour at the join) this is invisible —
+        one continuous block; when the Footer stands alone (/collections,
+        /for-you) it softly dissolves the red into the page. */}
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-28 -translate-y-full bg-gradient-to-t from-[rgba(34,6,7,0.98)] via-[rgba(40,8,9,0.5)] to-transparent"
+      className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(48,9,10,0.975)] via-[rgba(48,9,10,0.45)] to-transparent"
     />
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE

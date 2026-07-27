@@ -171,7 +171,7 @@ export const Contact = () => {
               style={{
                 ...MASTHEAD_TITLE_STYLE,
                 fontSynthesis: "none",
-                textShadow: "0 3px 28px rgba(0,0,0,0.7)",
+                textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
               }}
             >
               Write to the <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>family</em>

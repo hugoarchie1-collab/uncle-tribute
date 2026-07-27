@@ -131,7 +131,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Four tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £295 (issued within each edition, no fixed allocation). Collector Edition at £525 (200 allocated per edition). Atelier Edition at £975 (75 per edition). Heirloom Edition at £1,995 (18 per edition). Every price includes free delivery.",
+      "Three tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £445 (issued within each edition, no fixed allocation). Collector Edition at £750 (200 allocated per edition). Atelier Edition at £1,300 (75 per edition). Every price includes free delivery.",
   },
   {
     eyebrow: "Framing",
@@ -143,7 +143,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Hand-finishing",
     question: 'What is "hand-finished by Polly"?',
     answer:
-      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the Collector, Atelier and Heirloom editions, by request, and adds £595 (Collector), £895 (Atelier) or £1,295 (Heirloom). Allow two weeks maximum from order to dispatch.",
+      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the Collector and Atelier editions, by request, and adds £595 (Collector) or £895 (Atelier). Allow two weeks maximum from order to dispatch.",
   },
   {
     eyebrow: "Shipping",

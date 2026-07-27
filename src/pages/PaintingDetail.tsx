@@ -19,7 +19,6 @@ import { Separator } from "../components/ui/separator";
 import { AuthenticationCard } from "../components/AuthenticationCard";
 import { ReassuranceRow } from "../components/ReassuranceRow";
 import { ProvenancePanel } from "../components/ProvenancePanel";
-import { CredentialsStrip } from "../components/CredentialsStrip";
 import { DimensionChip } from "../components/DimensionChip";
 // Code-split: the 912-line deep-zoom viewer (+ its framer-motion) only loads
 // when the buyer actually opens it, trimming it out of the eager PDP chunk.
@@ -2672,9 +2671,11 @@ export const PaintingDetail = () => {
       : wallSize.id;
 
   // Price strip always reflects the anchor — size picker drives the buttons.
-  // The mobile "jump to order" strip shows the base "from" print price — the
-  // accessible £275 entry (Hugo 2026-07-24, 2nd call), matching the size ladder.
-  const pricePence = anchorTier.pricePence;
+  // The mobile "jump to order" strip shows the honest FLOOR — the cheapest
+  // actually-purchasable configuration (base + cheapest finish), matching the
+  // "From £…" on browse tiles + PDP meta. Using the bare base price here (£525)
+  // advertised a figure no size rung sells and the buy box never shows.
+  const pricePence = getLowestTierPricePence(painting);
 
   // Hero intrinsic aspect — derived from the painting's known cm size so the
   // browser reserves the image slot's ratio BEFORE the file decodes (#23: kills
@@ -3148,12 +3149,6 @@ export const PaintingDetail = () => {
             story so it never disturbs the monochrome buy box or pricing. */}
         <Reviews paintingId={painting.id} paintingTitle={painting.title} />
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
-        {/* Exhibited & commissioned — Stephen's real, documented provenance
-            (Majlis Gallery · Farmacy/Fayed · Force India · 1,200 hospices).
-            For a cold-start estate with no reviews yet, this is the legitimate
-            trust signal that underwrites a £295–£1,995 purchase; it was built
-            but mounted nowhere (audit fix). Quiet, reverent, text-only. */}
-        <CredentialsStrip />
         <FooterCatalogue />
         <Footer />
       </div>

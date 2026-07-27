@@ -738,7 +738,7 @@ export const Basket = () => {
                               className="w-full h-full object-cover object-center block transition-transform duration-500 group-hover:scale-[1.04]"
                             />
                           </div>
-                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] text-ink leading-tight mt-2.5 group-hover:text-accent transition-colors">
+                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] text-ink leading-tight mt-2.5 min-h-[2.5em] group-hover:text-accent transition-colors">
                             {p.title}
                           </p>
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>

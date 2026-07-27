@@ -7,6 +7,8 @@ import {
   FRAME_STYLES,
   GLAZING_OPTIONS,
   EMBELLISHMENT_NOTE,
+  getLowestTierPricePence,
+  getTierAdvertisedPricePence,
 } from "../data/paintings";
 import {
   ABOUT,
@@ -601,7 +603,7 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
               <p className={EYEBROW} style={{ margin: 0 }}>{collectionTitle(painting.collection)}</p>
               <h1 className="font-display italic font-semibold text-ink" style={{ fontSize: 56, lineHeight: 1.0, letterSpacing: "-0.02em", margin: "8px 0 0" }}>{painting.title}</h1>
               <p className="font-sans text-ink-muted" style={{ fontSize: 15, margin: "10px 0 0" }}>
-                Stephen Meakin · 1966–2021{painting.year && !painting.year.includes("[") ? ` · ${painting.year}` : ""} · From {gbp(tiers[0].pricePence)}
+                Stephen Meakin · 1966–2021{painting.year && !painting.year.includes("[") ? ` · ${painting.year}` : ""} · From {gbp(getLowestTierPricePence(painting))}
               </p>
             </div>
           </>
@@ -626,7 +628,7 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
                 <p className="font-sans text-ink-muted" style={{ fontSize: 14, margin: "4px 0 0" }}>{painting.year}{painting.location ? ` · ${painting.location}` : ""}</p>
               )}
               <p className="font-sans text-ink" style={{ fontSize: 14.5, margin: "16px 0 0", opacity: 0.9 }}>
-                From {gbp(tiers[0].pricePence)}<br />{painting.colourways.length} colourway{painting.colourways.length > 1 ? "s" : ""}
+                From {gbp(getLowestTierPricePence(painting))}<br />{painting.colourways.length} colourway{painting.colourways.length > 1 ? "s" : ""}
               </p>
             </div>
           </>
@@ -705,7 +707,6 @@ function FinishesPage() {
   const frA1 = gp("atelier-grande")?.framingPricePence ?? 0;
   const emA2 = gp("collector")?.embellishmentPricePence ?? 0;
   const emA1 = gp("atelier-grande")?.embellishmentPricePence ?? 0;
-  const emA0 = gp("heirloom")?.embellishmentPricePence ?? 0;
   return (
     <section className="cat-page">
       <PavoGround dim={0.3} />
@@ -750,7 +751,7 @@ function FinishesPage() {
           <div style={{ borderTop: "2px solid rgb(var(--accent))", paddingTop: "5mm" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
               <h3 className="font-display text-ink" style={{ fontSize: 30, margin: 0 }}>Hand-finishing</h3>
-              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(emA2)} Collector · +{gbp(emA1)} Atelier · +{gbp(emA0)} Heirloom</span>
+              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(emA2)} Collector · +{gbp(emA1)} Atelier</span>
             </div>
             <p className="font-sans text-ink" style={{ fontSize: 15, lineHeight: 1.55, margin: "10px 0 0", opacity: 0.92 }}>
               {EMBELLISHMENT_NOTE}
@@ -761,7 +762,7 @@ function FinishesPage() {
           </div>
         </div>
         <p className="font-sans text-ink-muted" style={{ fontSize: 13.5, letterSpacing: "0.02em", margin: 0 }}>
-          Framing is offered on the Collector &amp; Atelier tiers · hand-finishing on Collector, Atelier &amp; Heirloom · both made to order, allow up to two weeks · free delivery.
+          Framing is offered on the Collector &amp; Atelier tiers · hand-finishing on Collector &amp; Atelier · both made to order, allow up to two weeks · free delivery.
         </p>
       </div>
     </section>
@@ -770,7 +771,7 @@ function FinishesPage() {
 
 function EditionsPage() {
   const tiers = PRINT_TIERS.filter((t) => t.available && !t.isOneOff);
-  const lowest = Math.min(...tiers.map((t) => t.pricePence));
+  const lowest = Math.min(...tiers.map(getTierAdvertisedPricePence));
 
   // Verbatim provenance — every line drawn from ESTATE_AUTHENTICATION (no invented words).
   const provenance: [string, string][] = [
@@ -799,11 +800,11 @@ function EditionsPage() {
           <h2 className="ed-title font-display text-ink">
             Every painting.
             <br />
-            <span className="ed-title-em">Four sizes.</span>
+            <span className="ed-title-em">Three sizes.</span>
           </h2>
           <p className="ed-lead font-sans text-ink">
-            Each mandala is issued in four archival giclée editions — from an
-            open edition to the Heirloom — every one estate-stamped, numbered and
+            Each mandala is issued in three archival giclée editions — from an
+            open edition to the Atelier — every one estate-stamped, numbered and
             certified. Free delivery, from {gbp(lowest)}.
           </p>
         </header>
@@ -868,7 +869,7 @@ function EditionsPage() {
                   Hahnemühle Photo Rag · 308gsm cotton
                 </p>
                 <p className="font-sans text-ink-muted ed-prov-foot-sub">
-                  Dispatched in 7–10 working days · priced in £ · $ · € · A$ · C$
+                  Made to order — dispatched in roughly two weeks · priced in £ · $ · € · A$ · C$
                 </p>
               </div>
             </div>
@@ -968,7 +969,7 @@ function BackCover() {
         <div style={{ textAlign: "center" }}>
           <h2 className={DISPLAY} style={{ fontSize: 40, margin: 0 }}>Bring one home</h2>
           <p className="font-sans text-ink-muted" style={{ fontSize: 13, margin: "10px 0 0" }}>
-            Every print, from £295 · free delivery · priced in £ · $ · € · A$ · C$.
+            Every print, from £445 · free delivery · priced in £ · $ · € · A$ · C$.
           </p>
           <p className="font-sans" style={{ fontSize: 14, margin: "16px 0 0" }}>
             <b className="text-ink">themandalacompany.com</b>

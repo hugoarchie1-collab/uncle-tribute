@@ -957,7 +957,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
           className="font-display text-ink m-0 text-balance"
           style={{
             ...MASTHEAD_TITLE_STYLE,
-            textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
+            textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
           }}
         >
           Memories of <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>Steve</em>
