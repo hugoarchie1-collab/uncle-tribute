@@ -2963,7 +2963,10 @@ export const PaintingDetail = () => {
                         frame style. Plain print otherwise. */}
                     <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h}>
                     <CanvasWrap active={canvas} edge={canvasEdge} src={selected.image} aspectRatio={heroDims.w / heroDims.h}>
-                    <AnimatePresence mode="popLayout">
+                    {/* initial={false}: the FIRST hero render paints at opacity 1
+                        (no LCP-delaying fade-in) — the crossfade still runs on
+                        every subsequent colourway swap. */}
+                    <AnimatePresence mode="popLayout" initial={false}>
                       <motion.picture
                         key={selected.image}
                         initial={{ opacity: 0 }}
@@ -2996,6 +2999,8 @@ export const PaintingDetail = () => {
                           ref={heroImgRef}
                           src={asset(selected.image)}
                           alt={paintingImageAlt(painting.title, selected.name)}
+                          fetchPriority="high"
+                          decoding="async"
                           width={Math.round(heroDims.w)}
                           height={Math.round(heroDims.h)}
                           className={
