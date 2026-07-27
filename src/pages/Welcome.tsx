@@ -1304,7 +1304,7 @@ export const Welcome = () => {
               }}
             />
             <img
-              src={asset("/img/scenes/jupiter-limb-v9.webp")}
+              src={asset("/img/scenes/jupiter-limb-v10.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1312,14 +1312,19 @@ export const Welcome = () => {
               style={{
                 maxWidth: "none",
                 height: "auto",
-                // Feather ONLY the very top edge so the rim emerges softly from the
-                // peacock; the rest stays opaque so the body meets the catalogue
-                // flush (no black bar). The band height (not the mask) is what keeps
-                // it a THIN limb.
+                // v10 (2026-07-27): v9's opaque BLACK space corners were the real
+                // "black bar / not a thin limb" cause — the top Earth cutout has
+                // TRANSPARENT space so the peacock shows through above its arc; v9
+                // did not, so above the limb was a hard black band. v10 keys that
+                // flat black to transparency (corner floodfill, feathered alpha),
+                // preserving the warm rim glow — so the peacock backdrop shows
+                // through above the limb exactly like the masthead Earth. A whisper
+                // top-fade only softens the very edge; the band HEIGHT keeps it a
+                // thin gentle limb. Verified via peacock composite (REALSIM).
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 12%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 5%, #000 100%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 12%, #000 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 5%, #000 100%)",
               }}
             />
           </section>
