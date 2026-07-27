@@ -359,9 +359,9 @@ const TIER_EDITION: Record<string, string> = {
 // hand-finishing charge as its own email sub-line so the per-line
 // breakdown sums to the grand Total (session.amount_total).
 const TIER_FRAMING_PENCE: Record<string, number> = {
-  atelier: 29500, // £295 (A3) — mirror of paintings.ts (gotcha #9; 2026-07-25 squeeze)
-  collector: 42500, // £425 (A2) — mirror of paintings.ts (gotcha #9)
-  "atelier-grande": 57500, // £575 (A1) — mirror of paintings.ts
+  atelier: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price (mirror of paintings.ts, gotcha #9)
+  collector: 22500, // £225 (A2) — Hugo 2026-07-27: framed == canvas price
+  "atelier-grande": 32500, // £325 (A1) — Hugo 2026-07-27: framed == canvas price
 };
 const TIER_EMBELLISH_PENCE: Record<string, number> = {
   collector: 59500, // £595 (A2)

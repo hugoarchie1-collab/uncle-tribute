@@ -78,7 +78,7 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "29.5 × 29.5 cm",
     editionLabel: "Open Edition — unnumbered, issued to order",
     pricePence: 29500,
-    framingPricePence: 29500, // £295 (A3) — mirror of paintings.ts (gotcha #9)
+    framingPricePence: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price (mirror, gotcha #9)
     canvasPricePence: 15000, // £150 (A3) — mirror of paintings.ts (gotcha #9)
     available: true,
   },
@@ -87,7 +87,7 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "42 × 42 cm",
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     pricePence: 52500,
-    framingPricePence: 42500,
+    framingPricePence: 22500, // £225 (A2) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 59500,
     canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
     available: true,
@@ -97,7 +97,7 @@ const TIERS: Record<TierId, EmailTier> = {
     size: "59.5 × 59.5 cm",
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     pricePence: 97500,
-    framingPricePence: 57500,
+    framingPricePence: 32500, // £325 (A1) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 89500,
     canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
     available: true,

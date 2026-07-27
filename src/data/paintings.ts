@@ -216,7 +216,7 @@ export const PRINT_TIERS: PrintTier[] = [
     // against Point 101 costs (framed ~£82 / canvas ~£50 to us): framed £520
     // total (£275 + £245), canvas £425 (£275 + £150). MONEY: mirrored in
     // api/checkout.ts + email-basket.ts (gotcha #9).
-    framingPricePence: 29500, // £295 framing (A3) — 2026-07-25 squeeze pass
+    framingPricePence: 15000, // £150 framing (A3) — Hugo 2026-07-27: framed priced == canvas (framed A3 = £445), so the framed ENTRY isn't a scary £590
     canvasPricePence: 15000, // £150 — print on stretched canvas (A3)
     description:
       "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
@@ -230,7 +230,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: 200, // per-edition allocation
     editionLabel: "Collector Edition — edition of 200, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 42500, // £425 framing add-on (2026-07-25 squeeze pass)
+    framingPricePence: 22500, // £225 framing (A2) — Hugo 2026-07-27: framed priced == canvas (framed A2 = £750)
     embellishmentPricePence: 59500, // £595 hand-finishing by Polly Wedge (2026-07-25 squeeze pass — near-100% margin, artist's own hand)
     canvasPricePence: 22500, // £225 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
@@ -246,7 +246,7 @@ export const PRINT_TIERS: PrintTier[] = [
     editionTotal: 75, // per-edition allocation
     editionLabel: "Atelier Edition — edition of 75, hand-numbered",
     editionPromise: "allocated within the current edition",
-    framingPricePence: 57500, // £575 framing add-on (2026-07-25 squeeze pass)
+    framingPricePence: 32500, // £325 framing (A1) — Hugo 2026-07-27: framed priced == canvas (framed A1 = £1,300)
     embellishmentPricePence: 89500, // £895 hand-finishing by Polly Wedge (2026-07-25 squeeze pass)
     canvasPricePence: 32500, // £325 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
