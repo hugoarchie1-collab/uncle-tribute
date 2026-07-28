@@ -1093,25 +1093,35 @@ export const Welcome = () => {
                   image is a flush full-bleed panel down the card's left half, level
                   with the prose. Mobile keeps its natural 4:3 (aspect-[4/3], no crop,
                   stacked). object-center keeps the two of them + the mandala. */}
-              <Reveal as="div" className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-stretch">
-                <figure className="relative m-0 overflow-hidden rounded-[14px] ring-1 ring-white/10 aspect-[4/3] lg:aspect-auto lg:h-full min-h-[240px]">
+              {/* REDESIGN (Hugo 2026-07-28: "gaps above and below … totally
+                  redesign"). The photo is landscape (4:3); forcing it beside the
+                  tall spec column cropped a narrow vertical strip that sliced both
+                  of them out. Instead it now leads as a FULL-WIDTH banner at its own
+                  ~3:2 proportion (object-center trims only a sliver of garden/table
+                  — both of them + the mandala stay whole), with the prose + the
+                  material ledger in two columns below. No side space, no floating
+                  gaps, no one cropped out. */}
+              <Reveal as="div" className="flex flex-col gap-8 lg:gap-10">
+                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-white/10 aspect-[16/10] sm:aspect-[3/2]">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
-                    sizes="(min-width: 1024px) 620px, 100vw"
+                    sizes="(min-width: 1024px) 1140px, 100vw"
                     className="absolute inset-0 block w-full h-full object-cover object-center"
                   />
                 </figure>
-                <div className="flex flex-col gap-y-4 md:gap-y-5">
-                  <p className={cn(SUBTITLE, "m-0")}>
-                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                  </p>
-                  <p className={cn(SUBTITLE, "m-0")}>
-                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                  </p>
-                  <ul className="list-none p-0 m-0 mt-1">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-start">
+                  <div className="flex flex-col gap-y-4 md:gap-y-5">
+                    <p className={cn(SUBTITLE, "m-0")}>
+                      Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                    </p>
+                    <p className={cn(SUBTITLE, "m-0")}>
+                      When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                    </p>
+                  </div>
+                  <ul className="list-none p-0 m-0">
                     {[
                       ["Time", "Hundreds of hours per canvas"],
                       ["Edition", "Individually made to order"],
@@ -1122,7 +1132,7 @@ export const Welcome = () => {
                     ].map(([label, value]) => (
                       <li
                         key={label}
-                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line"
+                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line first:border-t-0 lg:first:border-t"
                       >
                         <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
                         <span className="text-right font-sans font-normal text-[15px] md:text-[16px] leading-[1.4] text-ink">{value}</span>
