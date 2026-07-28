@@ -334,6 +334,34 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
 }));
 
 /**
+ * ROYAL KNOT — the second landscape work (Ancient Canons). Its source is
+ * 2048 × 1069 px (≈ 1.916 : 1) — WIDER than the √2 ≈ 1.414 A-series paper
+ * ratio, so (unlike Ophiuchus, 1.233) it cannot keep height = the square tier's
+ * short side without overrunning the sheet. Instead each tier fills the A
+ * sheet's LONG side as the print WIDTH and derives height = width ÷ 1.916, so
+ * the landscape print sits within the SAME A sheet as the square tier (price /
+ * edition / add-ons all unchanged — only `size` differs). This keeps the buy
+ * page, framed/canvas preview and the dimensions Point 101 prints faithful to
+ * the artwork's true proportions instead of a square crop.
+ *
+ * ⚠️ Mirror obligation (gotcha #9): the SAME per-tier sizes are hand-mirrored in
+ * api/checkout.ts, api/stripe-webhook.ts and api/email-basket.ts
+ * (PAINTING_TIER_SIZE["royal-knot"]). Change all four together.
+ */
+const ROYAL_KNOT_TIER_SIZE: Record<PrintTier["id"], string> = {
+  atelier: "42 × 21.9 cm",
+  collector: "59.4 × 31 cm",
+  "atelier-grande": "84.1 × 43.9 cm",
+  heirloom: "118.9 × 62.1 cm",
+  studio: "84.1 × 43.9 cm",
+};
+
+export const ROYAL_KNOT_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
+  ...t,
+  size: ROYAL_KNOT_TIER_SIZE[t.id],
+}));
+
+/**
  * Default print spec used when a painting doesn't override. Edit these two
  * values to change every print across the catalogue at once. Add a
  * `printPricePence` / `printSize` override on individual Painting entries
@@ -869,9 +897,12 @@ export const COLLECTIONS: Collection[] = [
     // about Stephen invented here.
     description:
       "Ancient Canons takes its name from a phrase of Stephen's own — \"the ancient canons of the Geometer's Craft.\"\n\nThese are the works that express that craft most directly: the Celtic, Pythagorean, Islamic and Flower of Life traditions he studied for years, each drawn in its own language of line and number.",
-    // No backdropImage yet → Collections.tsx renders the hand-drawn SVG scene
-    // fallback (works fine). Add "/img/scenes/ancient-canons-blur-vN.webp" later
-    // to give it a photographic hero like the other three.
+    // Hero backdrop = the collection's own deepest work (Aurora Green Celtic
+    // Shield) heavily blurred + darkened to the dark scene family (luma ≈33, on
+    // par with the born-in-the-sky nebula ≈36) so it reads as an abstract field
+    // of dissolved geometry, never a competing picture. Gives Ancient Canons a
+    // photographic-register hero at parity with the other three collections.
+    backdropImage: "/img/scenes/ancient-canons-blur-v1.webp",
   },
 ];
 
@@ -1329,6 +1360,11 @@ export const PAINTINGS: Painting[] = [
     collection: "ancient-canons",
     description:
       "Stephen described his practice as built on four key components. The first: \"The spirit of ancient Insular (Island) Arts.\"\n\nThis is that spirit, unrestrained.\n\nIt began for Stephen in a library in Bournemouth in 1990. He found \"a dusty old hardback full of ancient illuminated manuscripts from all over the world. This book contained the loose-leaf illustrations of geometric pattern construction methods for both Arabic and Celtic pattern.\" He described finding something \"true\" in the patterns — and from that moment, his passion for geometry was born.\n\nThe illuminated manuscript tradition he discovered was created between the 6th and 9th centuries in the island monasteries of Scotland and Ireland — Iona, Lindisfarne, Durrow. Its greatest expression is the Book of Kells, produced around 800 CE, which Giraldus Cambrensis wrote in 1185 was \"the work of angels, not of men.\" The monks who made it worked by candlelight on single pages for years. At its heart: the endless knot — a strand that passes over and under itself continuously, with no beginning and no end. The endless knot is also one of the Eight Auspicious Symbols of Tibetan Buddhism. Stephen knew both traditions.\n\nHere he takes the Celtic strand and fills it with full contemporary colour — purples, greens, oranges, blues — the knotwork large and fluid, bold forms interlocking across the canvas. Nothing breaks. Every strand continues. Every colour flows into the next. It has a joy in it that the candlelit manuscript tradition never permitted.\n\nThe knot keeps going beyond any individual claim on it. It always has.",
+    // Royal Knot is a LANDSCAPE work (2048×1069, ≈1.916:1) — override the square
+    // ladder so the framed/canvas/true-size previews AND the printed Point 101
+    // dimensions use its real landscape aspect, not a square crop. See
+    // ROYAL_KNOT_PRINT_TIERS above.
+    printTiers: ROYAL_KNOT_PRINT_TIERS,
     colourways: [
       // ⚠️ Hugo did not list colourways for Royal Knot — this single "Original"
       // is a placeholder so the page renders. Add the real colourway suite.

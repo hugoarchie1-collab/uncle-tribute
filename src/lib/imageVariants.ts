@@ -3,6 +3,14 @@
 // sibling exists on disk (e.g. /img/paintings/wild-rose-sussex-pink-w800.webp).
 // Regenerate with the sharp script if new paintings are added — do not hand-edit.
 export const IMAGE_VARIANT_WIDTHS: Record<string, readonly number[]> = {
+  // Ancient Canons (2026-07-28) — smaller sources only get the widths they can fill.
+  "/img/paintings/celtic-shield-aurora-green.jpg": [480, 800, 1200, 1600],
+  "/img/paintings/celtic-shield-tyrian-purple.jpg": [480, 800],
+  "/img/paintings/twelve-around-three-tanzanite-purple.jpg": [480, 800, 1200, 1600],
+  "/img/paintings/twelve-around-three-terracotta-brown.jpg": [480, 800],
+  "/img/paintings/persian-flower-of-life-original.jpg": [480, 800, 1200, 1600],
+  "/img/paintings/persian-flower-of-life-blue.jpg": [480, 800, 1200, 1600],
+  "/img/paintings/royal-knot-original.jpg": [480, 800, 1200, 1600],
   "/img/paintings/english-bluebells-v5.jpg": [480, 800, 1200, 1600],
   "/img/paintings/enneagon-antique-pink.jpg": [480, 800, 1200, 1600],
   "/img/paintings/enneagon-cygnus-gold.jpg": [480, 800, 1200, 1600],

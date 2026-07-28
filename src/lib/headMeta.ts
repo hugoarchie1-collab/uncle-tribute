@@ -34,7 +34,7 @@ import { absoluteUrl } from "./seo";
  */
 export const HEAD_DEFAULTS = {
   description:
-    "A tribute and catalogue of the life's work of Stephen Meakin (SEM) — mandala artist and Sacred Geometer. Habundia, Genesis and Born in the Sky: three collections, ten paintings, a lifetime devoted to the geometry of light, pattern and the ever-true.",
+    "A tribute and catalogue of the life's work of Stephen Meakin (SEM) — mandala artist and Sacred Geometer. Habundia, Genesis, Born in the Sky and Ancient Canons: a lifetime devoted to the geometry of light, pattern and the ever-true.",
   ogType: "website",
   ogTitle: "The Art of Stephen Meakin",
   ogDescription:

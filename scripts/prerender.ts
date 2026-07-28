@@ -51,7 +51,7 @@ import { SITE_URL, absoluteUrl, pageTitle, firstSentence } from "../src/lib/seo"
 // Mirror of lib/headMeta.ts HEAD_DEFAULTS.description — the site-default meta
 // description used for routes that set none (e.g. the Legal pages).
 const DEFAULT_DESCRIPTION =
-  "A tribute and catalogue of the life's work of Stephen Meakin (SEM) — mandala artist and Sacred Geometer. Habundia, Genesis and Born in the Sky: three collections, ten paintings, a lifetime devoted to the geometry of light, pattern and the ever-true.";
+  "A tribute and catalogue of the life's work of Stephen Meakin (SEM) — mandala artist and Sacred Geometer. Habundia, Genesis, Born in the Sky and Ancient Canons: a lifetime devoted to the geometry of light, pattern and the ever-true.";
 
 const DEFAULT_OG_IMAGE = "https://themandalacompany.com/og-image.jpg";
 
@@ -146,7 +146,7 @@ const STATIC_ROUTES: RouteHead[] = [
     routePath: "/collections",
     title: "Mandala & Sacred Geometry Art Prints — The Collection",
     description:
-      "Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free worldwide delivery.",
+      "Browse mandala and sacred-geometry art prints by Stephen Meakin across the estate's collections — Habundia, Genesis, Born in the Sky and Ancient Canons. Estate-stamped giclée prints, made to order, free worldwide delivery.",
     // CollectionPage + ItemList — the catalogue as a crawl-legible product
     // listing (every painting a positioned ListItem → its PDP). Mirrors the
     // runtime Collections.tsx <Seo jsonLd> exactly, so headMeta re-asserts the

@@ -575,12 +575,27 @@ export const Collections = () => {
   // source of truth; only the presentation converts — advertised == charged.
   const { formatPretty: fmtP } = useCurrency();
 
-  // One ref per collection section so each backdrop can track its own visibility
+  // One ref per collection section so each backdrop can track its own
+  // visibility. ⚠️ Keep this list length === COLLECTIONS.length — a short list
+  // leaves a trailing collection with an undefined ref (its backdrop stops
+  // tracking) and breaks the isLast hold-to-footer below. Add a ref here
+  // whenever a collection is added. (Explicit calls, not a .map, to satisfy
+  // rules-of-hooks.)
   const sectionRefs = [
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
     useRef<HTMLElement>(null),
+    useRef<HTMLElement>(null),
   ];
+
+  // The last collection that actually has a photographic backdrop — that
+  // ScrollBackdrop is the one held at full opacity through the catalogue panel +
+  // footer (isLast). Derived (not COLLECTIONS.length-1) so a trailing collection
+  // WITHOUT a backdrop can never leave the page foot reverting to the base wash
+  // (Hugo 2026-07-03: "the opening image returning at the foot").
+  const lastPhotoIdx = COLLECTIONS.map((c) => !!c.backdropImage).lastIndexOf(
+    true,
+  );
 
   // Bundle SIZE is now PER-CARD: each <CollectionSetCard> + the <CatalogueSetCard>
   // holds its own size + scroll-across selector (Hugo's "scroll across on each
@@ -620,7 +635,7 @@ export const Collections = () => {
           H1 ("The complete works.") is unchanged. */}
       <Seo
         title="Mandala & Sacred Geometry Art Prints — The Collection"
-        description="Browse mandala and sacred-geometry art prints by Stephen Meakin across three collections — Habundia, Genesis and Born in the Sky. Estate-stamped giclée prints, made to order, free delivery."
+        description="Browse mandala and sacred-geometry art prints by Stephen Meakin across the estate's collections — Habundia, Genesis, Born in the Sky and Ancient Canons. Estate-stamped giclée prints, made to order, free delivery."
         url="/collections"
         jsonLd={collectionJsonLd}
       />
@@ -653,7 +668,7 @@ export const Collections = () => {
               photoUrl={asset(coll.backdropImage)}
               sectionRef={sectionRefs[i]}
               isFirst={i === 0}
-              isLast={i === COLLECTIONS.length - 1}
+              isLast={i === lastPhotoIdx}
             />
           ) : null,
         )}

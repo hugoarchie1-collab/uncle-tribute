@@ -136,6 +136,14 @@ const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
     heirloom: "103.6 × 84 cm",
     studio: "73.4 × 59.5 cm",
   },
+  // Royal Knot — landscape 1.916:1 (fills the A long side, height derived).
+  "royal-knot": {
+    atelier: "42 × 21.9 cm",
+    collector: "59.4 × 31 cm",
+    "atelier-grande": "84.1 × 43.9 cm",
+    heirloom: "118.9 × 62.1 cm",
+    studio: "84.1 × 43.9 cm",
+  },
 };
 const sizeFor = (paintingId: string, tierId: TierId): string =>
   PAINTING_TIER_SIZE[paintingId]?.[tierId] ?? TIERS[tierId].size;

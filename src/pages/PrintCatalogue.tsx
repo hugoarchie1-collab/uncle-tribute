@@ -1045,7 +1045,7 @@ export function PrintCatalogue() {
         />
         <CreditsPage />
 
-        <QuotePage quote="Ten mandalas. Every colourway he left." eyebrow="The collections" />
+        <QuotePage quote="Fourteen mandalas. Every colourway he left." eyebrow="The collections" />
 
         {/* Habundia */}
         <CollectionDivider n="I" title="Habundia" sub="Seven wild flowers, painted with the oil of the flower itself." img="img/scenes/habundia-blur-v5.webp" />
@@ -1058,6 +1058,10 @@ export function PrintCatalogue() {
         {/* Born in the Sky */}
         <CollectionDivider n="III" title="Born in the Sky" sub="Works of the night — a comet, a constellation, nine stars in the shape of a swan." img="img/scenes/born-in-the-sky-blur-v2.webp" />
         {byCollection("born-in-the-sky").map((p) => <PaintingPage key={p.id} painting={p} />)}
+
+        {/* Ancient Canons */}
+        <CollectionDivider n="IV" title="Ancient Canons" sub="The geometer's craft, most direct — Celtic, Pythagorean, Islamic and Flower of Life." img="img/scenes/ancient-canons-blur-v1.webp" />
+        {byCollection("ancient-canons").map((p) => <PaintingPage key={p.id} painting={p} />)}
 
         <EditionsPage />
         <FinishesPage />

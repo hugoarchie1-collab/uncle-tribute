@@ -340,6 +340,14 @@ const PAINTING_TIER_SIZE: Record<string, Record<string, string>> = {
     heirloom: "103.6 × 84 cm",
     studio: "73.4 × 59.5 cm",
   },
+  // Royal Knot — landscape 1.916:1 (fills the A long side, height derived).
+  "royal-knot": {
+    atelier: "42 × 21.9 cm",
+    collector: "59.4 × 31 cm",
+    "atelier-grande": "84.1 × 43.9 cm",
+    heirloom: "118.9 × 62.1 cm",
+    studio: "84.1 × 43.9 cm",
+  },
 };
 /** The printed size for a line — a per-painting override (Ophiuchus landscape)
  *  if known, else the square ladder default, else a safe generic label. */
