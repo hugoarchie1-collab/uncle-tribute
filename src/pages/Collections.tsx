@@ -774,7 +774,7 @@ export const Collections = () => {
                   cream grout block — only thin border-line hairlines dividing the
                   rows, sitting on the panel's own scrim. Each <p> keeps its own
                   text-shadow for legibility now that the fill is gone. */}
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-line">
+              <ul className="grid grid-cols-1 sm:grid-cols-3 border-t border-l border-line">
                 {SET_TIERS_ASCENDING.map((tier) => (
                   <li
                     key={tier.id}

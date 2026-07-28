@@ -61,7 +61,7 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   // on the plain dark bg (dark-on-dark); pages that pass their own titleStyle
   // textShadow (e.g. Collections) still override it via the {...base,...override}
   // spread in PageMasthead.
-  textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+  textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.45)",
 };
 
 /** A smaller companion cut for secondary mastheads / large section heads. */
@@ -71,7 +71,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontSize: "clamp(42px, 7.6vw, 132px)",
   lineHeight: 0.96,
   letterSpacing: "-0.028em",
-  textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
+  textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.45)",
 };
 
 /** Section / chapter label — accent tone (Welcome's section eyebrow).
@@ -95,7 +95,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(44px,5.6vw,96px)] leading-[1.03] md:leading-[0.98] text-ink text-balance";
+  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(44px,5.6vw,96px)] leading-[1.03] md:leading-[1.0] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -146,14 +146,14 @@ export const META = "font-sans text-[19px] leading-[1.55] text-ink-muted";
  *  (18px / 1.58) + the md: step (19px / 1.7) are frozen. */
 export const ABOUT_BODY =
   "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[26px] 3xl:text-[28px] " +
-  "leading-[1.6] md:leading-[1.68] 2xl:leading-[1.62] tracking-normal text-ink-soft text-pretty m-0";
+  "leading-[1.6] md:leading-[1.68] 2xl:leading-[1.62] tracking-normal text-ink-soft text-pretty m-0 reading-shadow";
 
 /** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
  *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
  *  floors + the md: step are frozen. */
 export const ABOUT_LEAD =
   "font-sans font-normal text-[25px] md:text-[27px] 2xl:text-[30px] 3xl:text-[32px] " +
-  "leading-[1.55] md:leading-[1.66] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0";
+  "leading-[1.55] md:leading-[1.66] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0 reading-shadow";
 
 /** ROLE 2 — PULL-LINE / STANDOUT (Fraunces). The ONE interior display-serif
  *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired

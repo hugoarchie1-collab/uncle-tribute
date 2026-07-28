@@ -592,7 +592,7 @@ const AboutMasthead = () => (
         </div>
       </Reveal>
       <Reveal as="div" delay={0.1} className="text-center md:text-left">
-        <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "m-0")} />
+        <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "reading-shadow m-0")} />
       </Reveal>
     </div>
   </section>
