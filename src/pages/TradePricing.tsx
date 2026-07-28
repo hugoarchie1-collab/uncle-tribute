@@ -308,11 +308,18 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
     // laid on the wall, rather than floating on the atmospheric scene. Print CSS
     // flips it to white (see PRINT_CSS).
     <div className="trade-sheet relative bg-[#0b0a09]/92 ring-1 ring-line rounded-sm px-5 py-8 sm:px-8 md:px-12 md:py-12 shadow-liftLg">
-      {/* Header */}
+      {/* Letterhead — estate mark → eyebrow → title, with the Save button
+          (screen only) floated right. */}
       <Reveal as="header" className="pt-1 md:pt-2">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className={cn(EYEBROW, "m-0 mb-3")}>The estate of Stephen Meakin · Trade</p>
+            <img
+              src="/logo/logo-emblem.svg"
+              alt=""
+              aria-hidden="true"
+              className="trade-mark h-10 md:h-11 w-auto mb-4 opacity-90 select-none"
+            />
+            <p className={cn(EYEBROW, "m-0 mb-2.5")}>The estate of Stephen Meakin · Trade</p>
             <h1 ref={headingRef} tabIndex={-1} className={cn(TITLE, "m-0 max-w-none outline-none")}>Trade price sheet.</h1>
           </div>
           <button
@@ -324,7 +331,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
             <span aria-hidden="true" className="ml-2">↧</span>
           </button>
         </div>
-        <p className={cn(SUBTITLE, "max-w-[68ch] mt-4")}>
+        <p className={cn(SUBTITLE, "max-w-[68ch] mt-5")}>
           Trade pricing is available on account. The figures below are the trade
           price for each size and finish — every piece is estate-stamped,
           numbered within its edition, and made to order. Held in confidence for
@@ -417,15 +424,26 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
         </div>
       </Reveal>
 
-      <Reveal as="div" className="mt-10 border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4 no-print">
-        <p className={cn(EYEBROW_MUTED, "m-0")}>
-          The Mandala Company · info@themandalacompany.com
+      {/* Estate footer — prints, so a designer can act on the PDF. */}
+      <Reveal as="div" className="mt-12 border-t border-line pt-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+          <p className={cn(EYEBROW_MUTED, "m-0")}>
+            The Mandala Company — the estate of Stephen Meakin
+          </p>
+          <p className={cn(EYEBROW_MUTED, "m-0")}>
+            info@themandalacompany.com · themandalacompany.com
+          </p>
+        </div>
+        <p className={cn(META, "m-0 mt-3 text-[14px]")}>
+          To place an order, send us the pieces, sizes and finishes — the estate
+          confirms the trade price and issues a secure payment link. Pricing held
+          in confidence for your studio.
         </p>
         <Link
           to="/trade"
-          className={cn(META, "hover:text-accent transition-colors")}
+          className={cn(META, "no-print inline-block mt-4 hover:text-accent transition-colors")}
         >
-          Back to trade →
+          ← Back to trade
         </Link>
       </Reveal>
     </div>
@@ -480,8 +498,11 @@ const PRINT_CSS = `
   body * { visibility: hidden !important; }
   .trade-sheet-main, .trade-sheet-main * { visibility: visible !important; }
   /* Defeat the on-scroll Reveal fade so EVERY section prints (not just what was
-     scrolled into view) — force full opacity, no transform/filter. */
-  .trade-sheet-main, .trade-sheet-main * { opacity: 1 !important; transform: none !important; filter: none !important; }
+     scrolled into view) — force full opacity, no transform. */
+  .trade-sheet-main, .trade-sheet-main * { opacity: 1 !important; transform: none !important; }
+  /* The estate mark is a cream SVG (for the dark web page) — flip it to crisp
+     black ink for paper. */
+  .trade-mark { filter: brightness(0) !important; opacity: 0.9 !important; }
   /* Drop the non-sheet flow siblings entirely so the sheet starts at the page
      top with no blank pages (nav / footer / scene backdrop). */
   .trade-sheet-root > *:not(.trade-sheet-main) { display: none !important; }
