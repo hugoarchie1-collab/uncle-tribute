@@ -1249,7 +1249,14 @@ export const About = () => {
                 decoding="async"
                 sizes="(min-width: 1024px) 480px, 100vw"
                 style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-cover object-[50%_22%]"
+                // Beside the LONG Q3 answer the figure stretches to lg:h-full, so
+                // this landscape-ish portrait (800×1200 shown ~71% wide) crops ~29%
+                // horizontally. Centred (was 50%) that sliced BOTH edges — cutting
+                // his brush HAND mid-stroke on the left (the heart of the frame).
+                // Bias the window LEFT (14%) so the crop drops only the expendable
+                // right-edge books/table, keeping hand + brush + face + the wall
+                // mandala. Row still fills completely — no dangling space.
+                className="absolute inset-0 h-full w-full object-cover object-[14%_50%]"
               />
             </Reveal>
           </div>
