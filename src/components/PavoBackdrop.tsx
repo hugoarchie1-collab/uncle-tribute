@@ -198,6 +198,10 @@ const PavoLayer = ({
         // a translateZ(0) here was a redundant SECOND promotion hint (dropped
         // 2026-07-16 as part of the fullscreen scroll-jank fix).
         willChange: "opacity",
+        // Brighten the peacock so the backdrop reads as a rich, VISIBLE painting
+        // — NOT the near-black mush Hugo flagged 2026-07-28 ("black background
+        // everywhere / above jupiter"). Paired with the lightened scrims below.
+        filter: "brightness(1.34) saturate(1.06)",
       }}
     >
       {/* Ambient fill — the same painting, heavy-blurred, covers the surround.
@@ -400,7 +404,7 @@ export const PavoBackdrop = ({
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(120% 105% at 50% 40%, rgba(24,8,18,0.30) 0%, rgba(24,8,18,0.16) 55%, rgba(24,8,18,0.05) 100%)",
+            "radial-gradient(120% 105% at 50% 40%, rgba(24,8,18,0.20) 0%, rgba(24,8,18,0.09) 55%, rgba(24,8,18,0.02) 100%)",
         }}
       />
       {/* Top + bottom grounding bands — the nav strip and the finale/footer
@@ -410,7 +414,7 @@ export const PavoBackdrop = ({
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(10,9,8,0.42) 0%, rgba(10,9,8,0.28) 40%, rgba(10,9,8,0.28) 70%, rgba(10,9,8,0.42) 100%)",
+            "linear-gradient(to bottom, rgba(10,9,8,0.24) 0%, rgba(10,9,8,0.10) 40%, rgba(10,9,8,0.10) 70%, rgba(10,9,8,0.24) 100%)",
         }}
       />
     </div>
