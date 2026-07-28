@@ -1264,7 +1264,21 @@ export const Welcome = () => {
                 fix"). The source is only 641×353 so we cap the upscale ~1.3× and
                 lean on the soft-edge feather to keep it from reading as pixelated;
                 bigger so it fills the section. Never cropped; ring frame kept. */}
-            <Reveal as="figure" className="m-0 mt-8 md:mt-10 mx-auto w-full max-w-[620px] md:max-w-[840px] 2xl:max-w-[920px]">
+            <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[620px] md:max-w-[840px] 2xl:max-w-[920px]">
+              {/* A whisper-soft CREAM lift behind the photo + caption (Hugo
+                  2026-07-28: "faint black behind the caption"). It's a LIGHT glow,
+                  not a dark scrim — the opposite of the box he hates — and it's a
+                  radial that fades fully to transparent well before any edge, so it
+                  can never read as a rectangle. It just keeps this pocket of the
+                  peacock backdrop from ever sitting dark behind the cream text. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[155%] w-[145%] -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  background:
+                    "radial-gradient(closest-side, rgba(228,222,206,0.11), rgba(228,222,206,0.045) 46%, transparent 72%)",
+                }}
+              />
               <div className="overflow-hidden">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar.jpg"
@@ -1274,10 +1288,10 @@ export const Welcome = () => {
                   className="soft-edge-img block w-full h-auto"
                 />
               </div>
-              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.02em] text-ink/65 mt-4 text-center">
+              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.02em] text-ink/80 mt-4 text-center">
                 Farmacy · Notting Hill · London
               </figcaption>
-              <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">
+              <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/85 mt-2.5 text-center">
                 Photograph from Stephen's archive, c. 2016.
               </p>
             </Reveal>
