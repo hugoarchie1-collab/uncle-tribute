@@ -312,6 +312,13 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
       <Reveal as="header" className="pt-1 md:pt-2">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
+            <img
+              src="/logo/logo-seal-v9-w256.png"
+              alt="The Mandala Company"
+              width={112}
+              height={112}
+              className="trade-seal h-14 w-14 mb-4 select-none"
+            />
             <p className={cn(LABEL, "mb-2.5")}>The estate of Stephen Meakin · Trade</p>
             <h1 ref={headingRef} tabIndex={-1} className={cn(TITLE, "m-0 max-w-none outline-none")}>Trade price sheet.</h1>
           </div>
