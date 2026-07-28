@@ -750,6 +750,18 @@ const tradeTierForRetail = (retailTotalPence: number): TradeTierId => {
   if (retailTotalPence >= TRADE_MIN_RETAIL_PENCE.project) return "project";
   return "standard";
 };
+// The tiers a TRADE order may be billed for. Deliberately NOT `TIERS[id].available`
+// — that flag is kept `true` for `heirloom` (crash-safety for stale retail clients)
+// and `studio`, but neither is buyer-visible, so the gated sheet never advertises
+// them. Billing them would break advertised==charged. This set mirrors the
+// BUYER-visible sellable tiers in src/data/paintings.ts PRINT_TIERS
+// (`available && !isOneOff`): A3/A2/A1 today. ⚠️ If A0 (heirloom) is re-listed for
+// buyers (paintings.ts `available:true`), add "heirloom" here too (gotcha #9).
+const TRADE_SELLABLE_TIERS = new Set<TierId>([
+  "atelier",
+  "collector",
+  "atelier-grande",
+]);
 
 /**
  * Compute the shipping options for a session.
@@ -879,6 +891,15 @@ async function handleTradeQuote(
     }
     if (!isTierId(raw.tierId)) {
       return send(400, { error: `Unknown size / tier "${String(raw.tierId)}".` });
+    }
+    // Gate on the BUYER-visible sellable set, NOT TIERS[id].available (which is
+    // deliberately true for the hidden heirloom/studio rows) — otherwise a
+    // hand-crafted request could bill an A0 the gated sheet never advertises,
+    // breaking advertised==charged (gotcha #9).
+    if (!TRADE_SELLABLE_TIERS.has(raw.tierId)) {
+      return send(400, {
+        error: `Size "${raw.tierId}" is not available for trade orders.`,
+      });
     }
     const tier = TIERS[raw.tierId];
     if (!tier || !tier.available) {
@@ -1102,17 +1123,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const secret = process.env.STRIPE_SECRET_KEY;
   const siteUrl = process.env.SITE_URL;
   if (!secret) return send(500, { error: "Server missing STRIPE_SECRET_KEY." });
-  if (!siteUrl) return send(500, { error: "Server missing SITE_URL." });
 
   // ── TRADE BILLING (kind:"trade-quote") ───────────────────────────────────
   // ADMIN_API_KEY-gated. Computes the trade-discounted total from the SAME
   // TIERS retail the gated sheet advertises (advertised == charged, gotcha #9)
   // and mints a Stripe Payment Link at that total. NEVER touches the public
   // basket flow; trade discount REPLACES bundle discounts (no bundlePercentOff
-  // here). See handleTradeQuote below.
+  // here). Handled before the SITE_URL check — payment links don't use SITE_URL.
   if (kind === "trade-quote") {
     return handleTradeQuote(body, secret, send);
   }
+
+  if (!siteUrl) return send(500, { error: "Server missing SITE_URL." });
 
   // ---- Normalise items ----------------------------------------------------
   // Multi-item mode if `items` is present; otherwise single-item legacy.

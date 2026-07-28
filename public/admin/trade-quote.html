@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Internal estate tool — keep it out of search results. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Trade quote · The Mandala Company</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0908;
+        --surface: #15120f;
+        --ink: #ede6d6;
+        --ink-soft: rgba(237, 230, 214, 0.72);
+        --ink-muted: rgba(237, 230, 214, 0.48);
+        --accent: #c97844;
+        --divider: rgba(237, 230, 214, 0.16);
+        --ok: #6fae7a;
+        --err: #d97a6a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        justify-content: center;
+        padding: 48px 16px 80px;
+      }
+      .shell { width: 100%; max-width: 720px; }
+      .eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 14px;
+      }
+      h1 {
+        font-family: "Playfair Display", Georgia, serif;
+        font-weight: 700;
+        font-size: 40px;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+      }
+      .lede { color: var(--ink-soft); font-size: 15px; line-height: 1.65; margin: 0 0 28px; }
+      .divider { border: 0; border-top: 1px solid var(--divider); margin: 0 0 28px; }
+      label { display: block; margin-bottom: 18px; }
+      .field-label {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+        margin-bottom: 8px;
+      }
+      input[type="text"], input[type="number"], input[type="password"], select {
+        width: 100%;
+        background: rgba(237, 230, 214, 0.04);
+        border: 1px solid var(--divider);
+        border-radius: 4px;
+        padding: 12px 14px;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        transition: border-color 0.2s;
+      }
+      input::placeholder { color: rgba(237, 230, 214, 0.3); }
+      input:focus, select:focus { outline: none; border-color: var(--accent); }
+      select option { color: #14110e; }
+      .lines { margin: 0 0 8px; }
+      .line {
+        display: grid;
+        grid-template-columns: 1fr 0.9fr 0.7fr 64px 34px;
+        gap: 8px;
+        align-items: end;
+        margin-bottom: 10px;
+      }
+      .line label { margin: 0; }
+      .line .field-label { margin-bottom: 5px; }
+      .line .rm {
+        appearance: none;
+        border: 1px solid var(--divider);
+        background: transparent;
+        color: var(--ink-muted);
+        border-radius: 4px;
+        height: 42px;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+      }
+      .line .rm:hover { color: var(--err); border-color: var(--err); }
+      @media (max-width: 620px) {
+        .line { grid-template-columns: 1fr 1fr; }
+        .line .rm { grid-column: 1 / -1; height: 34px; }
+      }
+      .addline {
+        appearance: none;
+        border: 1px dashed var(--divider);
+        background: transparent;
+        color: var(--ink-soft);
+        border-radius: 4px;
+        padding: 10px 16px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        margin-bottom: 26px;
+      }
+      .addline:hover { border-color: var(--accent); color: var(--ink); }
+      .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 620px) { .row2 { grid-template-columns: 1fr; } }
+      button.submit {
+        appearance: none;
+        border: 0;
+        background: var(--ink);
+        color: var(--bg);
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 14px 26px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: background 0.25s, color 0.25s;
+      }
+      button.submit:hover { background: var(--accent); color: var(--ink); }
+      button.submit:disabled { opacity: 0.55; cursor: default; }
+      .remember {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin: -6px 0 24px;
+      }
+      .remember input { width: auto; }
+      .status {
+        margin-top: 22px;
+        font-size: 14px;
+        line-height: 1.6;
+        padding: 16px 18px;
+        border-radius: 4px;
+        border: 1px solid var(--divider);
+        background: var(--surface);
+        display: none;
+      }
+      .status.show { display: block; }
+      .status.ok { border-color: var(--ok); }
+      .status.err { border-color: var(--err); color: var(--err); }
+      .status a.link { color: var(--accent); word-break: break-all; }
+      .quote-head { font-weight: 700; color: var(--ok); margin: 0 0 10px; }
+      table.breakdown { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+      table.breakdown th, table.breakdown td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--divider); }
+      table.breakdown th:first-child, table.breakdown td:first-child { text-align: left; }
+      table.breakdown th { color: var(--ink-muted); font-weight: 700; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+      .totals { color: var(--ink-soft); font-size: 14px; margin: 10px 0 0; }
+      .totals strong { color: var(--ink); }
+      .warn { color: var(--accent); font-size: 13px; margin: 10px 0 0; }
+      .copybtn {
+        appearance: none; border: 1px solid var(--divider); background: transparent; color: var(--ink-soft);
+        border-radius: 4px; padding: 8px 14px; font-family: inherit; font-size: 12px; cursor: pointer; margin-top: 10px;
+      }
+      .copybtn:hover { border-color: var(--accent); color: var(--ink); }
+      .hint { font-size: 12px; color: var(--ink-muted); margin: 6px 0 0; }
+      code { font-family: "SF Mono", Menlo, Consolas, monospace; color: var(--ink-soft); }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <p class="eyebrow">The Mandala Company · Estate tool</p>
+      <h1>Trade quote &amp; payment link</h1>
+      <p class="lede">
+        Build a trade order and mint a Stripe payment link at the trade price.
+        Prices are computed from the live catalogue at the selected trade tier —
+        the figure billed matches the trade price sheet to the penny. Send the
+        link to the designer to settle the project.
+      </p>
+      <hr class="divider" />
+
+      <form id="form" novalidate>
+        <span class="field-label">Line items</span>
+        <div class="lines" id="lines"></div>
+        <button type="button" class="addline" id="addline">+ Add line</button>
+
+        <div class="row2">
+          <label>
+            <span class="field-label">Trade tier</span>
+            <select id="tradeTier">
+              <option value="standard">Standard — 30% off</option>
+              <option value="project">Project — 35% off (£5,000+ retail)</option>
+              <option value="key">Key / hospitality — 40% off (£15,000+ retail)</option>
+            </select>
+          </label>
+          <label>
+            <span class="field-label">Admin key</span>
+            <input id="secret" type="password" placeholder="Your ADMIN_API_KEY" autocomplete="off" required />
+            <p class="hint">Your <code>ADMIN_API_KEY</code> from Vercel — never shown to buyers.</p>
+          </label>
+        </div>
+
+        <div class="remember">
+          <input id="remember" type="checkbox" />
+          <label for="remember" style="margin: 0; display: inline;">Remember the admin key on this device</label>
+        </div>
+
+        <button class="submit" id="submit" type="submit">Mint payment link →</button>
+      </form>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </main>
+
+    <script>
+      (function () {
+        var KEY = "tasm.admin.key";
+        var PAINTINGS = [
+          ["wild-rose", "Mandala of Wild Rose"],
+          ["english-bluebells", "Mandala of English Bluebells"],
+          ["orchis-7", "Orchis 7"],
+          ["flower-of-life", "Flower of Life"],
+          ["slipper-orchids", "Slipper Orchids"],
+          ["peacock-minerva", "Peacock Minerva"],
+          ["ophiuchus", "Ophiuchus"],
+          ["tridecagon-moon-star", "Tridecagon Moon Star"],
+          ["lulin", "Lulin"],
+          ["enneagon-swans", "Enneagon — The Swans"]
+        ];
+        // Only the AVAILABLE, framed/canvas sizes (A0 Heirloom is hidden).
+        var SIZES = [
+          ["atelier", "A3 · 29.5 × 29.5 cm"],
+          ["collector", "A2 · 42 × 42 cm"],
+          ["atelier-grande", "A1 · 59.5 × 59.5 cm"]
+        ];
+        var FINISHES = [
+          ["framed", "Framed"],
+          ["canvas", "Canvas"]
+        ];
+
+        var linesEl = document.getElementById("lines");
+        var form = document.getElementById("form");
+        var statusEl = document.getElementById("status");
+        var btn = document.getElementById("submit");
+        var secretInput = document.getElementById("secret");
+        var rememberInput = document.getElementById("remember");
+
+        function opts(list) {
+          return list.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join("");
+        }
+        function addLine() {
+          var div = document.createElement("div");
+          div.className = "line";
+          div.innerHTML =
+            '<label><span class="field-label">Painting</span><select class="p">' + opts(PAINTINGS) + '</select></label>' +
+            '<label><span class="field-label">Size</span><select class="t">' + opts(SIZES) + '</select></label>' +
+            '<label><span class="field-label">Finish</span><select class="f">' + opts(FINISHES) + '</select></label>' +
+            '<label><span class="field-label">Qty</span><input class="q" type="number" min="1" max="99" value="1" /></label>' +
+            '<button type="button" class="rm" title="Remove line" aria-label="Remove line">×</button>';
+          div.querySelector(".rm").addEventListener("click", function () {
+            if (linesEl.children.length > 1) linesEl.removeChild(div);
+          });
+          linesEl.appendChild(div);
+        }
+        addLine();
+        document.getElementById("addline").addEventListener("click", addLine);
+
+        try {
+          var saved = localStorage.getItem(KEY);
+          if (saved) { secretInput.value = saved; rememberInput.checked = true; }
+        } catch (e) {}
+
+        function gbp(pence) {
+          return "£" + (pence / 100).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+        function setStatus(kind, html) {
+          statusEl.className = "status show " + kind;
+          statusEl.innerHTML = html;
+        }
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          var items = [];
+          Array.prototype.forEach.call(linesEl.children, function (row) {
+            items.push({
+              paintingId: row.querySelector(".p").value,
+              tierId: row.querySelector(".t").value,
+              finish: row.querySelector(".f").value,
+              quantity: parseInt(row.querySelector(".q").value, 10) || 1
+            });
+          });
+          var tradeTier = document.getElementById("tradeTier").value;
+          var secret = secretInput.value;
+          if (!items.length || !secret) { setStatus("err", "Add at least one line and your admin key."); return; }
+
+          try {
+            if (rememberInput.checked) localStorage.setItem(KEY, secret);
+            else localStorage.removeItem(KEY);
+          } catch (e) {}
+
+          btn.disabled = true;
+          var original = btn.textContent;
+          btn.textContent = "Minting…";
+          setStatus("", "Minting the payment link…");
+
+          try {
+            var res = await fetch("/api/checkout", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ kind: "trade-quote", secret: secret, tradeTier: tradeTier, items: items })
+            });
+            var data = await res.json().catch(function () { return {}; });
+            if (res.ok && data.url) {
+              var rows = (data.lines || []).map(function (l) {
+                return "<tr><td>" + l.title + " · " + l.tierLabel + " · " + l.finish + " ×" + l.quantity + "</td>" +
+                  "<td>" + gbp(l.lineRetailPence) + "</td>" +
+                  "<td>" + gbp(l.lineTradePence) + "</td></tr>";
+              }).join("");
+              var warn = data.thresholdMet
+                ? ""
+                : '<p class="warn">Note: this order’s retail value doesn’t reach the ' +
+                  data.tradeTier + ' threshold (qualifies for: ' + data.qualifyingTier + '). Billing at the selected tier anyway.</p>';
+              setStatus("ok",
+                '<p class="quote-head">Payment link ready · ' + data.discountPercent + '% trade (' + data.tradeTier + ')</p>' +
+                '<p><a class="link" href="' + data.url + '" target="_blank" rel="noopener">' + data.url + '</a></p>' +
+                '<button type="button" class="copybtn" id="copybtn">Copy link</button>' +
+                '<table class="breakdown"><thead><tr><th>Line</th><th>Retail</th><th>Trade</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+                '<p class="totals">Retail subtotal <strong>' + gbp(data.retailSubtotalPence) + '</strong> · ' +
+                'Trade total <strong>' + gbp(data.tradeSubtotalPence) + '</strong> · ' +
+                'Saving <strong>' + gbp(data.savingPence) + '</strong></p>' + warn);
+              var cb = document.getElementById("copybtn");
+              if (cb) cb.addEventListener("click", function () {
+                navigator.clipboard && navigator.clipboard.writeText(data.url);
+                cb.textContent = "Copied ✓";
+              });
+            } else {
+              setStatus("err", (data.error || "Something went wrong (HTTP " + res.status + ").") + (res.status === 401 ? " — check the admin key." : ""));
+            }
+          } catch (err) {
+            setStatus("err", "Couldn't reach the server. Check your connection and try again.");
+          } finally {
+            btn.disabled = false;
+            btn.textContent = original;
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

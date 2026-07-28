@@ -129,10 +129,11 @@ export const Seo = ({
     );
     upsertMeta("name", "twitter:image", ogImage);
     setRouteJsonLd(blocksJson ? (JSON.parse(blocksJson) as object[]) : null);
-    // A page that mounts <Seo> is indexable by definition — clear any robots
-    // noindex a transactional route may have left (belt-and-braces; the
-    // App-level defaults writer also clears it on route change).
-    setRobotsNoindex(false);
+    // Most <Seo> routes are indexable, so clear any robots noindex a
+    // transactional route may have left. A route can opt OUT with `noindex`
+    // (the gated trade sheet) — it keeps its real title/canonical but stays
+    // out of the index.
+    setRobotsNoindex(noindex);
     markSeoWrote(pathname);
   }, [
     fullTitle,
@@ -144,6 +145,7 @@ export const Seo = ({
     ogUrl,
     ogImage,
     blocksJson,
+    noindex,
     pathname,
   ]);
 
