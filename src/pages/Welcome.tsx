@@ -1091,8 +1091,8 @@ export const Welcome = () => {
               <Reveal as="div" className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
                 <figure className="m-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
                   <AssetImage
-                    src="/img/welcome/stephen-painting-denim-v1.jpg"
-                    alt="Stephen Meakin drawing a mandala at his easel, a large finished mandala on the wall behind him"
+                    src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
+                    alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 1024px) 620px, 100vw"
