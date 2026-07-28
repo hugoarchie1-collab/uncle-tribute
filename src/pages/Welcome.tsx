@@ -913,7 +913,7 @@ export const Welcome = () => {
                           to (no ragged gap on two-line titles). */}
                       <div className="flex items-baseline justify-between gap-4 mt-2">
                         {hasYear ? (
-                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.08em] m-0")}>
+                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.02em] m-0")}>
                             {painting.year}
                           </p>
                         ) : (

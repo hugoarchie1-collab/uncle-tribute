@@ -351,7 +351,7 @@ export const SeeOnYourWall = ({
                       sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
                     )}
                   >
-                    <span className="font-sans text-[13px] font-bold tracking-[0.08em]">{s.label}</span>
+                    <span className="font-sans text-[13px] font-bold tracking-[0.02em]">{s.label}</span>
                     <span className={cn("font-sans text-[13px] font-semibold", sel ? "text-bg/70" : "text-ink/60")}>
                       {s.cm}cm
                     </span>

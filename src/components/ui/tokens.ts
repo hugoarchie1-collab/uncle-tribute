@@ -84,7 +84,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
  *  verbatim invocation, which uppercasing would mangle. This is the canonical
  *  home value. */
 export const EYEBROW =
-  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.14em] text-accent";
+  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.02em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -116,11 +116,11 @@ export const SUBTITLE =
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.01em] text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[16px] font-bold tracking-[0.04em] text-ink-muted";
+  "font-sans text-[16px] font-bold tracking-[0.01em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
 export const META = "font-sans text-[19px] leading-[1.55] text-ink-muted";
