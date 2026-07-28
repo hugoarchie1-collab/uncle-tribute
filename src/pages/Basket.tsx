@@ -408,7 +408,7 @@ export const Basket = () => {
             {BEGIN_WITH_PICKS.length > 0 && (
               <div className="mt-8 md:mt-10">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
-                <ul className="list-none p-0 m-0 grid grid-cols-3 gap-3 sm:gap-4">
+                <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                   {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
                     <li key={painting.id} className="m-0 min-w-0">
                       <Link
@@ -560,7 +560,7 @@ export const Basket = () => {
                                 }
                                 disabled={line.item.quantity <= 1}
                                 aria-label={`Decrease quantity of ${line.title}`}
-                                className="flex h-9 w-9 items-center justify-center text-ink text-[17px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
                               >
                                 −
                               </button>
@@ -579,7 +579,7 @@ export const Basket = () => {
                                   )
                                 }
                                 aria-label={`Increase quantity of ${line.title}`}
-                                className="flex h-9 w-9 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors"
+                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors"
                               >
                                 +
                               </button>

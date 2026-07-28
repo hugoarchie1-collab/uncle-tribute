@@ -155,7 +155,11 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           paintingId: painting.id,
           colourwayName,
           tierId: anchor.id,
-          framing: false,
+          // Framed to match the advertised framed floor (getTierAdvertisedPricePence)
+          // AND the two-product model — every piece is framed or canvas, never a
+          // bare sheet. Was `false`, which under-charged (base only) and shipped an
+          // unframed print that no PDP size rung is even buyable at.
+          framing: true,
           embellished: false,
           currency: currencyCode,
           ...(utm ? { utm } : {}),

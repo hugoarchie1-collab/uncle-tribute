@@ -196,7 +196,7 @@ export const AddedConfirmation = () => {
                 <p className="font-display text-[16px] leading-tight text-ink m-0">
                   {row.title}
                 </p>
-                <p className="mt-1 font-sans text-[12px] leading-[1.5] text-ink-muted m-0">
+                <p className="mt-1 font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
                   {row.colourwayName} · {row.tierLabel} · {row.size}
                   {row.addons.length > 0 && ` · ${row.addons.join(" · ")}`}
                 </p>

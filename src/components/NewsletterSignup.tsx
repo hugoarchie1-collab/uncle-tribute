@@ -156,7 +156,7 @@ export const NewsletterSignup = ({
                   disabled={status === "submitting"}
                   className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                 >
-                  {status === "submitting" ? "…" : "Subscribe"}
+                  {status === "submitting" ? "Sending…" : "Subscribe"}
                 </button>
               </div>
             </label>

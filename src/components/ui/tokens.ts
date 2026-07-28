@@ -159,14 +159,14 @@ export const ABOUT_LEAD =
  *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired
  *  STYLE below. */
 export const ABOUT_STANDOUT =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(32px,2.7vw,56px)] leading-[1.14] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(32px,2.7vw,56px)] leading-[1.14] text-ink hero-text-shadow";
 export const ABOUT_STANDOUT_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
 
 /** ROLE 3 — SUBHEAD / interview question (Fraunces, roman). Ceiling 34px. */
 export const ABOUT_SUBHEAD =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.1vw,45px)] leading-[1.18] text-ink";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.1vw,45px)] leading-[1.18] text-ink hero-text-shadow";
 export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };

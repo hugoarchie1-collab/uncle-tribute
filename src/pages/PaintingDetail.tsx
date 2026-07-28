@@ -1598,7 +1598,7 @@ const BuyBox = ({
                           )}
                           {e.label}
                           {sur > 0 && (
-                            <span className="text-[12px] text-ink/45 tabular-nums">
+                            <span className="text-[13px] text-ink/45 tabular-nums">
                               +{fmtP(sur)}
                             </span>
                           )}
@@ -1665,7 +1665,7 @@ const BuyBox = ({
                                 />
                                 {f.label}
                                 {surcharge > 0 && (
-                                  <span className="text-[12px] text-ink/45 tabular-nums">
+                                  <span className="text-[13px] text-ink/45 tabular-nums">
                                     +{fmtP(surcharge)}
                                   </span>
                                 )}
@@ -1764,7 +1764,7 @@ const BuyBox = ({
                       {embellishActive ? "Added — one of a kind" : "Add hand-finishing"}
                       <span aria-hidden="true">→</span>
                     </span>
-                    <span className="text-ink-muted text-[12.5px]">
+                    <span className="text-ink-muted text-[13px]">
                       Allow {FINISH_LEAD_WEEKS} weeks.
                     </span>
                   </span>
@@ -2927,6 +2927,7 @@ export const PaintingDetail = () => {
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
+                <span className="font-sans text-[13px] font-bold text-ink-muted mr-1">from</span>
                 {fmtP(pricePence)}
               </span>
               <span aria-hidden="true" className="text-ink/35">·</span>
@@ -3145,7 +3146,7 @@ export const PaintingDetail = () => {
                 <button
                   type="button"
                   onClick={resetOptions}
-                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   <span aria-hidden="true">↺</span> Reset options
                 </button>

@@ -820,7 +820,7 @@ export const Welcome = () => {
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className={cn(SUBTITLE, "m-0")}>{WELCOME.bio[0]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[0]}</p>
               </div>
             </Reveal>
           </section>
@@ -970,7 +970,7 @@ export const Welcome = () => {
               </Reveal>
               <Reveal as="div" delay={0.1} className="mt-5 md:mt-6 mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[900px] space-y-4">
                 {WELCOME.archiveStatement.body.map((para, i) => (
-                  <p key={i} className={cn(SUBTITLE, "m-0")}>
+                  <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
                     {para}
                   </p>
                 ))}
@@ -1009,7 +1009,7 @@ export const Welcome = () => {
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
                   <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
                     {[
                       "Dots of paint, applied by hand",
@@ -1077,7 +1077,7 @@ export const Welcome = () => {
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className={cn(SUBTITLE, "my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto")}>
+                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto")}>
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1213,7 +1213,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className={cn(SUBTITLE, "max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center")}>
+              <p className={cn(SUBTITLE, "reading-shadow max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center")}>
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1261,7 +1261,7 @@ export const Welcome = () => {
 
             {/* The commission prose, between the film and the photo. */}
             <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center mt-6 md:mt-8">
-              <p className={cn(SUBTITLE, "m-0 mx-auto max-w-[72ch]")}>
+              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[72ch]")}>
                 {WELCOME.bio[2]}
               </p>
             </Reveal>

@@ -14,7 +14,7 @@ import { cn } from "../lib/cn";
 const LABEL = "font-sans text-[13px] font-semibold text-accent m-0";
 const LABEL_MUTED = "font-sans text-[13px] font-medium text-ink-muted m-0";
 const CARD_LABEL = "font-sans text-[15px] font-semibold text-ink m-0";
-const COL_LABEL = "font-sans text-[12.5px] font-semibold text-ink-muted m-0";
+const COL_LABEL = "font-sans text-[13px] font-semibold text-ink-muted m-0";
 
 /**
  * /trade/pricing — the GATED trade price sheet.
@@ -368,7 +368,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
                   className={cn(COL_LABEL, "py-3 pl-4 text-right whitespace-nowrap")}
                 >
                   {t.shortLabel}
-                  <span className="block text-ink-muted font-normal tracking-normal normal-case text-[12px]">
+                  <span className="block text-ink-muted font-normal tracking-normal normal-case text-[13px]">
                     {t.discountPercent}% off
                   </span>
                 </th>
@@ -381,7 +381,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
                 <td className="py-3.5 pr-4">
                   <span className="text-ink font-medium">{r.aLabel}</span>
                   <span className="block text-ink-muted text-[13px]">{r.size}</span>
-                  <span className="block text-ink-muted text-[12px]">{r.tierLabel}</span>
+                  <span className="block text-ink-muted text-[13px]">{r.tierLabel}</span>
                 </td>
                 <td className="py-3.5 pr-4 text-ink-muted text-[14px]">{r.finishLabel}</td>
                 <td className="py-3.5 pr-4 text-right text-ink-muted tabular-nums line-through decoration-ink/30">
