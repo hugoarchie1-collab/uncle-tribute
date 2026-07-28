@@ -451,31 +451,92 @@ const TERMS: { title: string; body: string }[] = [
   },
 ];
 
-// Print stylesheet — hide the atmosphere / nav / footer and lay the sheet on
-// white so a closer's PDF reads like estate stationery, not a dark web page.
+// Print stylesheet — turns the dark web page into clean estate stationery.
+// Prints ONLY the sheet (every other element — nav, footer, scene, film grain,
+// cursor, cookie banner, the "Save as PDF" button — is hidden), on white, in one
+// restrained, consistent type scale, all in dark ink so nothing reads faint.
 const PRINT_CSS = `
 @media print {
-  .trade-sheet-root { background: #ffffff !important; }
-  .trade-sheet-root .no-print { display: none !important; }
-  /* Hide the fixed scene backdrop, film grain, nav and footer. */
-  .trade-sheet-root nav, .trade-sheet-root footer { display: none !important; }
-  .trade-sheet-root [aria-hidden="true"].fixed, .trade-sheet-root .fixed { display: none !important; }
-  .trade-sheet-main { padding: 0 !important; max-width: none !important; }
-  /* The dark document panel flips to plain white estate stationery for print. */
+  /* margin:0 + white body fills the whole sheet edge-to-edge (no transparent
+     page-margin that some viewers render dark); the content is padded instead. */
+  @page { size: A4; margin: 0; }
+  /* Kill every dark background the app paints, then make the page plain paper.
+     (Belt-and-braces: transparent everywhere means even "background graphics on"
+     prints white.) Borders use border-color, so they survive this. */
+  /* Do NOT force print-color-adjust:exact — that would make Chrome print the app's
+     dark backdrops even with "Background graphics" off. Instead strip every fill so
+     the page is plain paper regardless of the buyer's print settings. */
+  *, *::before, *::after { background: transparent !important; box-shadow: none !important; }
+  html, body { background: #ffffff !important; }
+  /* Kill EVERY fixed layer — the app's ambient backdrop (rendered at #root, OUTSIDE
+     this page) + the page's scene backdrop + consent banner + cursor + music button.
+     position:fixed paints edge-to-edge (into the margins) in print; nothing we want
+     on paper is fixed, so this is the decisive fix for the dark page. */
+  .fixed { display: none !important; }
+
+  /* Reveal ONLY the sheet: hide all painting (incl. app-level fixed chrome that
+     lives outside the page — cursor, consent banner, film grain, music), then
+     turn the sheet subtree back on. */
+  body * { visibility: hidden !important; }
+  .trade-sheet-main, .trade-sheet-main * { visibility: visible !important; }
+  /* Defeat the on-scroll Reveal fade so EVERY section prints (not just what was
+     scrolled into view) — force full opacity, no transform/filter. */
+  .trade-sheet-main, .trade-sheet-main * { opacity: 1 !important; transform: none !important; filter: none !important; }
+  /* Drop the non-sheet flow siblings entirely so the sheet starts at the page
+     top with no blank pages (nav / footer / scene backdrop). */
+  .trade-sheet-root > *:not(.trade-sheet-main) { display: none !important; }
+  .trade-sheet-main { display: block !important; padding: 15mm 16mm !important; margin: 0 !important; max-width: none !important; width: 100% !important; background: #ffffff !important; }
+  .no-print, .no-print * { display: none !important; }
+
+  /* The dark document panel → plain white paper. */
   .trade-sheet {
+    position: static !important;
     background: #ffffff !important;
     box-shadow: none !important;
     border: 0 !important;
+    border-radius: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
+
+  /* One clean, dark, consistent type scale — overrides the screen's fluid
+     clamp()/token sizes so nothing is oversized or faint on paper. */
   .trade-sheet, .trade-sheet * {
-    color: #14110e !important;
+    color: #1c1712 !important;
     text-shadow: none !important;
+    letter-spacing: 0 !important;
+    line-height: 1.45 !important;
   }
-  .trade-sheet .text-ink-muted, .trade-sheet [class*="text-ink-muted"] { color: #5a544a !important; }
-  .trade-sheet .border-line, .trade-sheet [class*="border-line"] { border-color: #d8cfbe !important; }
-  .trade-table th, .trade-table td { padding-top: 8px !important; padding-bottom: 8px !important; }
-  .trade-table thead tr, .trade-table tbody tr { border-color: #b9ad97 !important; }
-  a { color: #14110e !important; text-decoration: none !important; }
+  .trade-sheet h1 { font-size: 25pt !important; line-height: 1.05 !important; margin: 0 0 6pt !important; letter-spacing: -0.01em !important; }
+  .trade-sheet h3 { font-size: 12pt !important; line-height: 1.2 !important; margin: 0 0 3pt !important; }
+  /* Eyebrows / labels stay small caps but readable. */
+  .trade-sheet [class*="tracking-"] { letter-spacing: 0.14em !important; }
+  /* Intro + terms body copy. */
+  .trade-sheet p { font-size: 10.5pt !important; }
+
+  /* Tier legend cards. */
+  .trade-sheet .grid > div.border { padding: 10pt 12pt !important; break-inside: avoid; }
+  .trade-sheet p.font-display { font-size: 15pt !important; line-height: 1 !important; }
+
+  /* Price table — the centrepiece. Crisp, aligned, dark. */
+  .trade-table { font-size: 10.5pt !important; }
+  .trade-table th { font-size: 8pt !important; padding: 4pt 6pt !important; color: #6a6152 !important; }
+  .trade-table th span { font-size: 7.5pt !important; }
+  .trade-table td { padding: 7pt 6pt !important; }
+  .trade-table td span.block { font-size: 8.5pt !important; color: #6a6152 !important; }
+  .trade-table tbody tr { break-inside: avoid; }
+  /* No "sale"-style strikethrough on paper — retail is a quiet reference. */
+  .trade-sheet .line-through { text-decoration: none !important; color: #8a8272 !important; }
+
+  /* Secondary text: a legible warm grey, never the faint on-screen grey. */
+  .trade-sheet .text-ink-muted, .trade-sheet [class*="text-ink-muted"] { color: #6a6152 !important; }
+  /* Hairlines. */
+  .trade-sheet .border-line, .trade-sheet [class*="border-line"],
+  .trade-sheet .border, .trade-table thead tr, .trade-table tbody tr,
+  .trade-sheet [class*="border-t"] { border-color: #cfc7b6 !important; }
+  .trade-table thead tr { border-bottom: 1.2pt solid #8a8272 !important; }
+
+  .trade-sheet a { color: #1c1712 !important; text-decoration: none !important; }
+  .trade-sheet section, .trade-sheet header { break-inside: avoid; }
 }
 `;
