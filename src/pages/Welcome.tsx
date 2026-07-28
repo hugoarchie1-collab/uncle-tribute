@@ -1316,7 +1316,17 @@ export const Welcome = () => {
               }}
             />
             <img
-              src={asset("/img/scenes/jupiter-limb-v14.webp")}
+              // ⚠️ THE FOOT IS NOW THE EXACT MIRROR OF THE TOP EARTH (Hugo
+              // 2026-07-28, after ~14 rejected Jupiter re-crops: "I need it to be
+              // JUST LIKE EARTH IN SHAPE SIZE ETC"). Every Jupiter asset was a
+              // taller/domed limb (to fit the Great Red Spot) and so could never
+              // match the thin top Earth. The only way to GUARANTEE identical
+              // shape + size + glow is to reuse the SAME approved earth-cutout-v2
+              // asset with the SAME width classes as the masthead — here in its
+              // NATURAL orientation (no scaleY flip) so the limb curves UP from
+              // the foot, a true vertical reflection of the Earth curving DOWN at
+              // the top. "As above, so below" — Earth above, Earth mirrored below.
+              src={asset("/img/scenes/earth-cutout-v2.webp")}
               alt=""
               loading="lazy"
               decoding="async"
@@ -1324,13 +1334,13 @@ export const Welcome = () => {
               style={{
                 maxWidth: "none",
                 height: "auto",
-                // Whisper top-fade only — the transparent space + baked rim glow do
-                // the blend into the peacock; the body stays opaque + flush on the
-                // catalogue (no black bar).
+                // Mask solid at the BOTTOM (flush to the footer), dissolving UP
+                // into the peacock — the exact vertical mirror of the top Earth's
+                // mask (which is solid at its pinned top edge, dissolving down).
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 0%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
               }}
             />
           </section>
