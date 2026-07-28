@@ -527,11 +527,17 @@ export const Welcome = () => {
                   we are" text + His story (order-2), THEN the video below — so the
                   photo and video are separated by the text, never touching. */}
               <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
-                <h1 className="font-display tracking-[-0.045em] text-ink m-0 mx-auto text-balance hero-text-shadow">
-                  <span className="block font-semibold text-[clamp(48px,8.4vw,120px)] leading-[1.02]">
+                <h1 className="font-display tracking-[-0.03em] text-ink m-0 mx-auto text-balance hero-text-shadow">
+                  {/* THE key visualiser (Hugo 2026-07-28: "boldness to match if
+                      not bigger, more impactful"). True Fraunces 700 at opsz 48 —
+                      the SAME bold display cut as the masthead — set large. */}
+                  <span
+                    className="block text-[clamp(56px,11vw,176px)] leading-[0.94]"
+                    style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
+                  >
                     So here we are on Earth
                   </span>
-                  <span className="block font-normal italic text-[clamp(26px,4.4vw,56px)] leading-[1.12] mt-3 md:mt-4 text-ink/90">
+                  <span className="block font-normal italic text-[clamp(30px,5vw,72px)] leading-[1.06] mt-4 md:mt-6 text-ink/95">
                     &mdash; orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
