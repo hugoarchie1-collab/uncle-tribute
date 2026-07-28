@@ -55,6 +55,50 @@ const DEFAULT_DESCRIPTION =
 
 const DEFAULT_OG_IMAGE = "https://themandalacompany.com/og-image.jpg";
 
+// -- Review stats (build-time, for a TRUTHFUL Product aggregateRating) --------
+// Baked into the prerendered HTML so NON-JS crawlers (Bing, GPTBot/ClaudeBot,
+// social unfurlers, Merchant Center) also see ⭐ ratings — mirroring the runtime
+// PaintingDetail JSON-LD, which this file's header mandates it track. Sourced
+// from the SAME public, already-moderated-and-filtered endpoint the site serves,
+// so the baked ratingValue can't disagree with what visitors (or the runtime
+// JSON-LD) show. FULLY graceful: any failure — no network, prod unreachable,
+// unprovisioned KV, or simply zero reviews — yields an empty map, so NO
+// aggregateRating is baked. schema.org forbids an empty rating and we never fake
+// one. Set PRERENDER_SKIP_REVIEWS=1 to opt out of the build-time fetch entirely.
+const clampRating = (n: number): number => Math.max(0, Math.min(5, Math.round(n)));
+let REVIEW_STATS = new Map<string, { count: number; average: number }>();
+async function loadReviewStats(): Promise<Map<string, { count: number; average: number }>> {
+  const map = new Map<string, { count: number; average: number }>();
+  if (process.env.PRERENDER_SKIP_REVIEWS === "1") return map;
+  try {
+    const res = await fetch(`${SITE_URL}/api/memories-submit?kind=reviews`, {
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) return map;
+    const json = (await res.json()) as {
+      reviews?: Array<{ paintingId?: unknown; rating?: unknown }>;
+    };
+    const list = Array.isArray(json.reviews) ? json.reviews : [];
+    const acc = new Map<string, { sum: number; count: number }>();
+    for (const r of list) {
+      const pid = typeof r?.paintingId === "string" ? r.paintingId : "";
+      const rating = typeof r?.rating === "number" ? clampRating(r.rating) : NaN;
+      if (!pid || !Number.isFinite(rating)) continue;
+      const cur = acc.get(pid) ?? { sum: 0, count: 0 };
+      cur.sum += rating;
+      cur.count += 1;
+      acc.set(pid, cur);
+    }
+    for (const [pid, { sum, count }] of acc) {
+      if (count > 0) map.set(pid, { count, average: sum / count });
+    }
+  } catch {
+    // Graceful — a build must never fail (or bake a rating) over reviews.
+  }
+  return map;
+}
+
 // Mirror of src/pages/PaintingDetail.tsx PRICE_VALID_UNTIL (a build-time date
 // ~12 months out; carries no money value so it can't drift from the price).
 const PRICE_VALID_UNTIL = new Date(Date.now() + 365 * 864e5)
@@ -237,6 +281,7 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
   const highPricePence = Math.max(...tierPricesPence);
   const artworkYear = p.year.match(/\d{4}/)?.[0];
   const artworkDims = parseSizeCm(p.size ?? "");
+  const reviewStats = REVIEW_STATS.get(p.id);
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -246,6 +291,20 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
     description: productDescription,
     brand: { "@id": `${SITE_URL}/#organization` },
     creator: { "@id": `${SITE_URL}/#person` },
+    // TRUTHFUL aggregateRating — baked ONLY for prints with real, moderated
+    // reviews (empty map → this key is omitted). Mirrors the runtime
+    // PaintingDetail JSON-LD; ratingValue == the average the site shows.
+    ...(reviewStats && reviewStats.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(reviewStats.average.toFixed(1)),
+            reviewCount: reviewStats.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
     offers: {
       "@type": "AggregateOffer",
       lowPrice: (lowPricePence / 100).toFixed(2),
@@ -608,10 +667,19 @@ export function prerenderPlugin(): Plugin {
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir);
     },
-    closeBundle() {
+    async closeBundle() {
+      // Fetch real, moderated review aggregates BEFORE building routes so the
+      // per-painting Product JSON-LD can bake a truthful aggregateRating. Fully
+      // graceful — an empty map just means no ratings are baked.
+      REVIEW_STATS = await loadReviewStats();
       const { count, warnings } = writePrerenderedRoutes(outDir);
       if (warnings.length > 0) {
         console.warn(`[prerender] ${warnings.length} warning(s):\n  ${warnings.join("\n  ")}`);
+      }
+      if (REVIEW_STATS.size > 0) {
+        console.log(
+          `[prerender] baked aggregateRating for ${REVIEW_STATS.size} print(s) with real reviews`,
+        );
       }
       console.log(`[prerender] wrote ${count} per-route HTML files (head + JSON-LD)`);
     },

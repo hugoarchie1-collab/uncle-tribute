@@ -27,6 +27,7 @@ const CloserLook = lazy(() =>
 );
 import { EnquireModal } from "../components/EnquireModal";
 import { Reviews } from "../components/Reviews";
+import { useReviewStats } from "../lib/useReviewStats";
 import { AssetImage } from "../components/AssetImage";
 import {
   COLLECTIONS,
@@ -2483,6 +2484,13 @@ export const PaintingDetail = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [painting?.id]);
 
+  // Real, moderated review stats for THIS print. Feeds a TRUTHFUL Product
+  // `aggregateRating` into the JSON-LD below (⭐ star rich-snippets) — and ONLY
+  // when real reviews exist; with none it stays {0,0} and no rating is emitted
+  // (schema.org forbids an empty rating; we never fabricate). Mirrors the
+  // average the <Reviews> section renders, so the two can't disagree.
+  const reviewStats = useReviewStats(painting?.id);
+
   // Add-on state — lives on the parent so the sticky add bar and the BuyBox
   // share one source of truth.
   const [framing, setFraming] = useState(false);
@@ -2753,6 +2761,20 @@ export const PaintingDetail = () => {
     // brand AND to the artist, the strongest entity signal for an estate.
     brand: { "@id": `${SITE_URL}/#organization` },
     creator: { "@id": `${SITE_URL}/#person` },
+    // TRUTHFUL aggregateRating — emitted ONLY when real, moderated reviews exist
+    // for this print (never an empty or fabricated rating). The ratingValue is
+    // the SAME average the on-page <Reviews> summary shows.
+    ...(reviewStats.count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(reviewStats.average.toFixed(1)),
+            reviewCount: reviewStats.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
     offers: {
       "@type": "AggregateOffer",
       lowPrice: (lowPricePence / 100).toFixed(2),
