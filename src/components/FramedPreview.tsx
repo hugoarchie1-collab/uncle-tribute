@@ -181,8 +181,9 @@ export const CanvasWrap = ({
   // thickness; eight mirrored slices fill the wrapped border (edges + corners); a
   // fold shadow + a float drop-shadow read it as a solid object off the wall.
   if (!floatColor) {
-    const inset = "5.75%"; // wrapped-edge thickness as a share of the whole canvas
-    const front = "88.5%"; // the front face (100% − 2×inset)
+    const inset = "8.33%"; // wrapped-edge thickness (≈10% of the front) — enough
+    const front = "83.33%"; // that a clear band of the mirrored print shows on
+    //                          every side, like Point 101 (Hugo 2026-07-28).
     const ar = String(aspectRatio || 1);
     const artBg: CSSProperties = artUrl
       ? { backgroundImage: `url(${artUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
@@ -196,17 +197,20 @@ export const CanvasWrap = ({
     );
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
-        <div className="relative w-full h-full" style={{ filter: CANVAS_DEPTH_SHADOW }}>
+        {/* The art fills the whole wrap as a base layer, so while the mirrored
+            slices decode there is never a black flash (Hugo 2026-07-28 saw the
+            mid-load black). The slices + front paint the crisp wrap on top. */}
+        <div className="relative w-full h-full" style={{ ...artBg, filter: CANVAS_DEPTH_SHADOW }}>
           {/* four edges — the print mirrored outward */}
           {slice({ top: 0, left: inset, width: front, height: inset }, { left: 0, bottom: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "bottom" })}
           {slice({ bottom: 0, left: inset, width: front, height: inset }, { left: 0, top: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "top" })}
           {slice({ top: inset, left: 0, width: inset, height: front }, { top: 0, right: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "right" })}
           {slice({ top: inset, right: 0, width: inset, height: front }, { top: 0, left: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "left" })}
           {/* four corners — double-mirrored (inner is front-sized ≈1539% of the corner) */}
-          {slice({ top: 0, left: 0, width: inset, height: inset }, { bottom: 0, right: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom right" })}
-          {slice({ top: 0, right: 0, width: inset, height: inset }, { bottom: 0, left: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom left" })}
-          {slice({ bottom: 0, left: 0, width: inset, height: inset }, { top: 0, right: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top right" })}
-          {slice({ bottom: 0, right: 0, width: inset, height: inset }, { top: 0, left: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top left" })}
+          {slice({ top: 0, left: 0, width: inset, height: inset }, { bottom: 0, right: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom right" })}
+          {slice({ top: 0, right: 0, width: inset, height: inset }, { bottom: 0, left: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom left" })}
+          {slice({ bottom: 0, left: 0, width: inset, height: inset }, { top: 0, right: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top right" })}
+          {slice({ bottom: 0, right: 0, width: inset, height: inset }, { top: 0, left: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top left" })}
           {/* a hint of shadow across the wrapped border so the sides read as in shadow */}
           <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.22)" }} />
           {/* FRONT face — the actual art, inset by the wrap thickness, with a fold shadow */}
