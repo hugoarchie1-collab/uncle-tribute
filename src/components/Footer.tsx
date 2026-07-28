@@ -86,15 +86,11 @@ export const Footer = () => (
     // full gradient → a re-brightening seam) and no `border-t` divider between
     // the two bands. On /collections + /for-you the Footer stands alone; the
     // feathered seam below fades its top red into the page there.
-    className="relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
-    style={{
-      // Same FLAT 25%-transparent wax-seal red as the top nav bar (.nav-bg-top,
-      // rgba(72,14,14,0.72)) — Hugo 2026-07-28: footer must match the top bar's
-      // colour AND transparency. Continuous with the catalogue strip above (same
-      // flat wash → no seam).
-      backgroundImage:
-        "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
-    }}
+    // Hugo 2026-07-28: the footer must be a LITERAL clone of the top nav bar.
+    // Use the nav's OWN class (.nav-bg-scrolled — the opaque wax-seal-red gradient
+    // the bar shows once scrolled, which is the state visible beside the footer),
+    // so colour, gradient AND alpha are identical to the top banner by construction.
+    className="nav-bg-scrolled relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
   >
     {/* NO feathered seam (Hugo 2026-07-28: "i hate that blur above the
         catalogue"). Clean STRAIGHT top edge — a true clone of the top nav bar. */}

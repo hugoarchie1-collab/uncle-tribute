@@ -60,15 +60,10 @@ export const FooterCatalogue = () => {
       // top-bright→bottom-dark wash that matches the top bar's red AND alpha.
       // No `nav-bg-scrolled` class here (that restarts the full gradient and
       // caused a re-brightening seam); no internal divider between the bands.
-      className="relative hidden md:block border-t border-[rgba(120,30,30,0.5)] px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
-      style={{
-        // Same FLAT 25%-transparent wax-seal red as the top nav bar (.nav-bg-top,
-        // rgba(72,14,14,0.72)) — Hugo 2026-07-28: "footer must be the SAME
-        // transparency as the top bar". One flat wash, so the backdrop reads
-        // through it exactly as the Earth reads through the top bar.
-        backgroundImage:
-          "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
-      }}
+      // Same nav bar class as the Footer below — the whole catalogue+footer block
+      // is a LITERAL clone of the top banner (.nav-bg-scrolled). Clean straight top
+      // edge (no border, no seam).
+      className="nav-bg-scrolled relative hidden md:block px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
     >
       {/* NO feathered seam above the strip (Hugo 2026-07-28: "i hate that blur
           above the catalogue"). The red block starts on a clean STRAIGHT edge,
