@@ -16,6 +16,7 @@ import { CustomCursor } from "./components/CustomCursor";
 import { AddedConfirmation } from "./components/AddedConfirmation";
 import { ConsentBanner } from "./components/ConsentBanner";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { SkipToContent } from "./components/SkipToContent";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { BackgroundMusic } from "./components/BackgroundMusic";
 import { PageTransition } from "./components/PageTransition";
@@ -287,6 +288,9 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <BrowserRouter basename={basename}>
         <CurrencyProvider>
+        {/* First focusable element on every route — keyboard bypass for the
+            header/nav (WCAG 2.4.1). Invisible until focused. */}
+        <SkipToContent />
         <RouteHeadDefaults />
           {/* PERSISTENT atmospheric ground (2026-07-07, Hugo: "background
               glitches when you click a page" + "reveal it clearer like home").
