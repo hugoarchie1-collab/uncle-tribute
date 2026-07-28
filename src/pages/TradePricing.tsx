@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -16,16 +16,6 @@ import {
   BTN_PRIMARY,
 } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
-import {
-  PRINT_TIERS,
-  TRADE_TIERS,
-  TRADE_TIER_ORDER,
-  tradePricePence,
-  tierRetailLinePence,
-  formatGBP,
-  type PrintTier,
-  type TradeTierId,
-} from "../data/paintings";
 
 /**
  * /trade/pricing — the GATED trade price sheet.
@@ -33,130 +23,143 @@ import {
  * Reachable ONLY via the link the estate shares with an approved designer
  * (never public nav / footer / sitemap; noindex + robots Disallow). Access is
  * gated by a shared code checked server-side against TRADE_ACCESS_CODE (POST
- * /api/checkout kind:"trade-access") — no user-auth system, mirroring the
- * env-gated pattern used elsewhere. Wrong / absent code → a dignified "request
- * access" state pointing back to the trade application.
+ * /api/checkout kind:"trade-access") — no user-auth system.
  *
- * Every trade PRICE is DERIVED LIVE from src/data/paintings.ts (PRINT_TIERS +
- * TRADE_TIERS) — there is never a second hardcoded price list. The 30/35/40%
- * tiers apply to the FULL retail line (base + finish). Because the admin billing
- * endpoint (kind:"trade-quote") mints its Stripe payment link from the SAME
- * formula off the SAME retail, the sheet figure equals the charge to the penny.
+ * ⚠️ The trade FIGURES are assembled SERVER-SIDE and returned by the gate ONLY
+ * after the code verifies (see api/checkout.ts buildTradeSheet). This client
+ * imports NO trade numbers or trade math from src/data/paintings.ts, so the
+ * trade %s never ship in the public JS bundle — they live only behind the gate
+ * and in the estate's Stripe invoices (Hugo's non-negotiable). advertised ==
+ * charged is guaranteed by construction: the sheet and the billing endpoint
+ * (kind:"trade-quote") read the SAME TIERS retail + tradePricePence in one file.
  *
  * A print stylesheet renders it clean on white so a closer can save it as a PDF.
  */
 
-// A-series label per tier id, for a designer-legible size column.
-const A_LABEL: Record<PrintTier["id"], string> = {
-  atelier: "A3",
-  collector: "A2",
-  "atelier-grande": "A1",
-  heirloom: "A0",
-  studio: "",
-};
-
-interface SheetRow {
-  key: string;
+// ── Server sheet shape (mirror of api/checkout.ts buildTradeSheet return) ──
+interface TradeTierLegend {
+  id: "standard" | "project" | "key";
+  label: string;
+  shortLabel: string;
+  discountPercent: number;
+  note: string;
+}
+interface TradeSheetRow {
   aLabel: string;
   size: string;
   tierLabel: string;
   finishLabel: string;
   retailPence: number;
+  prices: Record<"standard" | "project" | "key", number>;
+}
+interface TradeSheetData {
+  tiers: TradeTierLegend[];
+  rows: TradeSheetRow[];
+  projectThresholdLabel: string;
+  keyThresholdLabel: string;
 }
 
-/**
- * The sheet rows, derived from PRINT_TIERS. Only AVAILABLE, non-one-off tiers
- * that offer a finish appear (so A0 auto-drops while hidden — "where
- * available"). Framed and canvas share a price today, so a size collapses to a
- * single "Framed or canvas" row; if the two ever diverge they split cleanly.
- */
-const buildSheetRows = (): SheetRow[] => {
-  const rows: SheetRow[] = [];
-  for (const tier of PRINT_TIERS) {
-    if (!tier.available || tier.isOneOff) continue;
-    const framed = tierRetailLinePence(tier, "framed");
-    const canvas = tierRetailLinePence(tier, "canvas");
-    const entries: { label: string; pence: number }[] = [];
-    if (framed !== null && canvas !== null && framed === canvas) {
-      entries.push({ label: "Framed or canvas", pence: framed });
-    } else {
-      if (framed !== null) entries.push({ label: "Framed", pence: framed });
-      if (canvas !== null) entries.push({ label: "Canvas", pence: canvas });
-    }
-    for (const e of entries) {
-      rows.push({
-        key: `${tier.id}-${e.label}`,
-        aLabel: A_LABEL[tier.id] || "",
-        size: tier.size,
-        tierLabel: tier.label,
-        finishLabel: e.label,
-        retailPence: e.pence,
-      });
-    }
-  }
-  return rows;
-};
+// Local currency formatter — a generic Intl helper, carries no trade data (so
+// nothing trade-specific is imported into this client chunk).
+const gbp = (pence: number): string =>
+  new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(pence / 100);
 
 type GateState = "checking" | "prompt" | "denied" | "granted";
-const GRANT_KEY = "tasm.trade.pricing.granted";
+// The verified sheet is cached (per browser session) so a reload re-renders it
+// instantly on the authorised device. Only ever populated by a successful
+// server verify — a forged flag alone can't produce the numbers.
+const SHEET_KEY = "tasm.trade.pricing.sheet";
 
 export const TradePricing = () => {
   const [params] = useSearchParams();
   const [gate, setGate] = useState<GateState>("checking");
+  const [sheet, setSheet] = useState<TradeSheetData | null>(null);
   const [code, setCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const rows = useMemo(() => buildSheetRows(), []);
 
   // DEV-ONLY preview: `import.meta.env.DEV` is statically false in production
-  // builds, so Vite dead-code-eliminates this whole branch — it can NEVER grant
-  // access on the live site. It exists solely so the sheet can be visually
-  // checked with `npm run dev` (serverless functions aren't available locally).
+  // builds, so Vite dead-code-eliminates this whole branch (including the sample
+  // figures) — it can NEVER grant access or leak numbers on the live site. It
+  // exists solely so the sheet layout can be eyeballed with `npm run dev`
+  // (serverless functions aren't available locally).
   const devPreview = import.meta.env.DEV && params.has("preview");
 
-  const verify = async (candidate: string): Promise<boolean> => {
+  // Verify the code with the server; on success returns the assembled sheet,
+  // else null. Never defaults to granted on any error.
+  const verify = async (candidate: string): Promise<TradeSheetData | null> => {
     const trimmed = candidate.trim();
-    if (!trimmed) return false;
+    if (!trimmed) return null;
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ kind: "trade-access", code: trimmed }),
       });
-      const data = (await res.json().catch(() => ({}))) as { ok?: boolean };
-      return res.ok && data.ok === true;
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        sheet?: TradeSheetData;
+      };
+      if (res.ok && data.ok === true && data.sheet) return data.sheet;
+      return null;
     } catch {
-      return false;
+      return null;
     }
   };
 
-  // On mount: honour a dev preview, a remembered grant, or a ?code= deep link.
+  const grant = (s: TradeSheetData) => {
+    try {
+      sessionStorage.setItem(SHEET_KEY, JSON.stringify(s));
+    } catch {
+      /* non-fatal */
+    }
+    setSheet(s);
+    setGate("granted");
+  };
+
+  // On mount: honour a dev preview, a cached sheet, or a ?code= deep link.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       if (devPreview) {
+        // Dev-only sample (real figures) so the layout can be checked locally —
+        // dead-code-eliminated from production (see devPreview note above).
+        setSheet({
+          tiers: [
+            { id: "standard", label: "Trade account", shortLabel: "Trade", discountPercent: 30, note: "Approved trade account" },
+            { id: "project", label: "Project", shortLabel: "Project", discountPercent: 35, note: "Single project — retail value £5,000 or more" },
+            { id: "key", label: "Key / hospitality account", shortLabel: "Key account", discountPercent: 40, note: "Key or hospitality account — retail value £15,000 or more" },
+          ],
+          rows: [
+            { aLabel: "A3", size: "29.5 × 29.5 cm", tierLabel: "Open Edition", finishLabel: "Framed or canvas", retailPence: 44500, prices: { standard: 31150, project: 28925, key: 26700 } },
+            { aLabel: "A2", size: "42 × 42 cm", tierLabel: "Collector Edition", finishLabel: "Framed or canvas", retailPence: 75000, prices: { standard: 52500, project: 48750, key: 45000 } },
+            { aLabel: "A1", size: "59.5 × 59.5 cm", tierLabel: "Atelier Edition", finishLabel: "Framed or canvas", retailPence: 130000, prices: { standard: 91000, project: 84500, key: 78000 } },
+          ],
+          projectThresholdLabel: "£5,000",
+          keyThresholdLabel: "£15,000",
+        });
         setGate("granted");
         return;
       }
       try {
-        if (sessionStorage.getItem(GRANT_KEY) === "1") {
+        const cached = sessionStorage.getItem(SHEET_KEY);
+        if (cached) {
+          setSheet(JSON.parse(cached) as TradeSheetData);
           setGate("granted");
           return;
         }
       } catch {
-        /* sessionStorage may be unavailable — fall through to the prompt */
+        /* sessionStorage may be unavailable / corrupt — fall through to prompt */
       }
       const linked = params.get("code");
       if (linked) {
-        const ok = await verify(linked);
+        const s = await verify(linked);
         if (cancelled) return;
-        if (ok) {
-          try {
-            sessionStorage.setItem(GRANT_KEY, "1");
-          } catch {
-            /* non-fatal */
-          }
-          setGate("granted");
+        if (s) {
+          grant(s);
           return;
         }
         setGate("denied");
@@ -177,18 +180,10 @@ export const TradePricing = () => {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    const ok = await verify(code);
+    const s = await verify(code);
     setSubmitting(false);
-    if (ok) {
-      try {
-        sessionStorage.setItem(GRANT_KEY, "1");
-      } catch {
-        /* non-fatal */
-      }
-      setGate("granted");
-    } else {
-      setGate("denied");
-    }
+    if (s) grant(s);
+    else setGate("denied");
   };
 
   return (
@@ -245,9 +240,7 @@ export const TradePricing = () => {
 
                 <form onSubmit={onSubmit} className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-end">
                   <label className="block flex-1">
-                    <span
-                      className={cn(EYEBROW_TIGHT, "block mb-2")}
-                    >
+                    <span className={cn(EYEBROW_TIGHT, "block mb-2")}>
                       Access code
                     </span>
                     <input
@@ -291,7 +284,7 @@ export const TradePricing = () => {
           </Reveal>
         )}
 
-        {gate === "granted" && <TradeSheet rows={rows} />}
+        {gate === "granted" && sheet && <TradeSheet sheet={sheet} />}
       </main>
 
       <Footer />
@@ -299,12 +292,10 @@ export const TradePricing = () => {
   );
 };
 
-// ── The sheet itself ─────────────────────────────────────────────────────────
-const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
-  const project = TRADE_TIERS.project;
-  const key = TRADE_TIERS.key;
-  const projectLabel = `£${(project.minRetailPence / 100).toLocaleString("en-GB")}`;
-  const keyLabel = `£${(key.minRetailPence / 100).toLocaleString("en-GB")}`;
+// ── The sheet itself (renders server-assembled data) ─────────────────────────
+const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
+  const project = sheet.tiers.find((t) => t.id === "project");
+  const key = sheet.tiers.find((t) => t.id === "key");
   // Move focus to the sheet heading when it reveals, so keyboard / screen-reader
   // users are advanced from the gate to the newly shown document.
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -314,11 +305,10 @@ const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
 
   return (
     // A solid "document" panel so the numbers read crisply as estate stationery
-    // laid on the wall, rather than floating on the atmospheric scene. The scene
-    // stays visible around the panel + behind the nav. Print CSS flips it to
-    // white (see PRINT_CSS).
+    // laid on the wall, rather than floating on the atmospheric scene. Print CSS
+    // flips it to white (see PRINT_CSS).
     <div className="trade-sheet relative bg-[#0b0a09]/92 ring-1 ring-line rounded-sm px-5 py-8 sm:px-8 md:px-12 md:py-12 shadow-liftLg">
-      {/* Header — kept simple so it prints cleanly. */}
+      {/* Header */}
       <Reveal as="header" className="pt-1 md:pt-2">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
@@ -344,18 +334,15 @@ const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
 
       {/* Tier legend */}
       <Reveal as="div" className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {TRADE_TIER_ORDER.map((id) => {
-          const t = TRADE_TIERS[id];
-          return (
-            <div key={id} className="border border-line p-4">
-              <p className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>{t.label}</p>
-              <p className="font-display text-ink m-0 text-[clamp(22px,2.4vw,30px)] leading-none">
-                {t.discountPercent}% <span className="text-ink-muted text-[0.6em] align-middle">off retail</span>
-              </p>
-              <p className={cn(META, "m-0 mt-2 text-[14px]")}>{t.note}</p>
-            </div>
-          );
-        })}
+        {sheet.tiers.map((t) => (
+          <div key={t.id} className="border border-line p-4">
+            <p className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>{t.label}</p>
+            <p className="font-display text-ink m-0 text-[clamp(22px,2.4vw,30px)] leading-none">
+              {t.discountPercent}% <span className="text-ink-muted text-[0.6em] align-middle">off retail</span>
+            </p>
+            <p className={cn(META, "m-0 mt-2 text-[14px]")}>{t.note}</p>
+          </div>
+        ))}
       </Reveal>
 
       {/* Price table */}
@@ -366,22 +353,22 @@ const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
               <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold")}>Size</th>
               <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold")}>Finish</th>
               <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold text-right")}>Retail</th>
-              {TRADE_TIER_ORDER.map((id) => (
+              {sheet.tiers.map((t) => (
                 <th
-                  key={id}
+                  key={t.id}
                   className={cn(EYEBROW_TIGHT, "py-3 pl-4 font-bold text-right whitespace-nowrap")}
                 >
-                  {TRADE_TIERS[id].shortLabel}
+                  {t.shortLabel}
                   <span className="block text-ink-muted font-normal tracking-normal normal-case text-[12px]">
-                    {TRADE_TIERS[id].discountPercent}% off
+                    {t.discountPercent}% off
                   </span>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => (
-              <tr key={r.key} className="border-b border-line align-baseline">
+            {sheet.rows.map((r) => (
+              <tr key={`${r.aLabel}-${r.finishLabel}`} className="border-b border-line align-baseline">
                 <td className="py-3.5 pr-4">
                   <span className="text-ink font-medium">{r.aLabel}</span>
                   <span className="block text-ink-muted text-[13px]">{r.size}</span>
@@ -389,17 +376,17 @@ const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
                 </td>
                 <td className="py-3.5 pr-4 text-ink-muted text-[14px]">{r.finishLabel}</td>
                 <td className="py-3.5 pr-4 text-right text-ink-muted tabular-nums line-through decoration-ink/30">
-                  {formatGBP(r.retailPence)}
+                  {gbp(r.retailPence)}
                 </td>
-                {TRADE_TIER_ORDER.map((id) => (
+                {sheet.tiers.map((t) => (
                   <td
-                    key={id}
+                    key={t.id}
                     className={cn(
                       "py-3.5 pl-4 text-right tabular-nums whitespace-nowrap",
-                      id === "standard" ? "text-ink font-semibold" : "text-ink",
+                      t.id === "standard" ? "text-ink font-semibold" : "text-ink",
                     )}
                   >
-                    {formatGBP(tradePricePence(r.retailPence, id as TradeTierId))}
+                    {gbp(r.prices[t.id])}
                   </td>
                 ))}
               </tr>
@@ -409,10 +396,10 @@ const TradeSheet = ({ rows }: { rows: SheetRow[] }) => {
       </Reveal>
 
       <Reveal as="div" className={cn(META, "mt-4 max-w-[72ch]")}>
-        Standard trade pricing applies to every approved account. Project pricing
-        ({project.discountPercent}%) applies from {projectLabel} retail value in a
-        single order; key / hospitality pricing ({key.discountPercent}%) from{" "}
-        {keyLabel}. Prices in GBP; all figures exclude any local import duties.
+        Standard trade pricing applies to every approved account.
+        {project ? ` Project pricing (${project.discountPercent}%) applies from ${sheet.projectThresholdLabel} retail value in a single order;` : ""}
+        {key ? ` key / hospitality pricing (${key.discountPercent}%) from ${sheet.keyThresholdLabel}.` : ""}{" "}
+        Prices in GBP; all figures exclude any local import duties.
       </Reveal>
 
       {/* Terms */}

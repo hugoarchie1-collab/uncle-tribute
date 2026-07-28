@@ -763,6 +763,97 @@ const TRADE_SELLABLE_TIERS = new Set<TierId>([
   "atelier-grande",
 ]);
 
+// Trade tier presentation copy (mirror of TRADE_TIERS labels/notes in
+// src/data/paintings.ts). Lives server-side so the gated /trade/pricing sheet is
+// assembled HERE and returned only after the access code verifies — the trade %s
+// therefore NEVER ship in the public client bundle (Hugo's non-negotiable: trade
+// numbers live ONLY behind the gate). advertised == charged is now guaranteed by
+// construction: the sheet and handleTradeQuote read the SAME TIERS retail +
+// tradePricePence in this one file.
+const TRADE_TIER_META: Record<
+  TradeTierId,
+  { label: string; shortLabel: string; note: string }
+> = {
+  standard: { label: "Trade account", shortLabel: "Trade", note: "Approved trade account" },
+  project: {
+    label: "Project",
+    shortLabel: "Project",
+    note: "Single project — retail value £5,000 or more",
+  },
+  key: {
+    label: "Key / hospitality account",
+    shortLabel: "Key account",
+    note: "Key or hospitality account — retail value £15,000 or more",
+  },
+};
+const TRADE_A_LABEL: Record<TierId, string> = {
+  atelier: "A3",
+  collector: "A2",
+  "atelier-grande": "A1",
+  heirloom: "A0",
+  studio: "",
+};
+
+/**
+ * Assemble the trade price sheet, server-side, from the same TIERS retail +
+ * tradePricePence the billing endpoint uses. Only TRADE_SELLABLE_TIERS appear
+ * (A3/A2/A1 today). Framed and canvas collapse to one "Framed or canvas" row
+ * when equal-priced. Returned to the client only after the gate verifies.
+ */
+const buildTradeSheet = () => {
+  const order: TierId[] = ["atelier", "collector", "atelier-grande", "heirloom"];
+  const rows: Array<{
+    aLabel: string;
+    size: string;
+    tierLabel: string;
+    finishLabel: string;
+    retailPence: number;
+    prices: Record<TradeTierId, number>;
+  }> = [];
+  for (const id of order) {
+    if (!TRADE_SELLABLE_TIERS.has(id)) continue;
+    const t = TIERS[id];
+    const framed =
+      typeof t.framingPricePence === "number" ? t.pricePence + t.framingPricePence : null;
+    const canvas =
+      typeof t.canvasPricePence === "number" ? t.pricePence + t.canvasPricePence : null;
+    const entries: Array<{ label: string; retail: number }> = [];
+    if (framed !== null && canvas !== null && framed === canvas) {
+      entries.push({ label: "Framed or canvas", retail: framed });
+    } else {
+      if (framed !== null) entries.push({ label: "Framed", retail: framed });
+      if (canvas !== null) entries.push({ label: "Canvas", retail: canvas });
+    }
+    for (const e of entries) {
+      rows.push({
+        aLabel: TRADE_A_LABEL[id],
+        size: t.size,
+        tierLabel: t.label,
+        finishLabel: e.label,
+        retailPence: e.retail,
+        prices: {
+          standard: tradePricePence(e.retail, "standard"),
+          project: tradePricePence(e.retail, "project"),
+          key: tradePricePence(e.retail, "key"),
+        },
+      });
+    }
+  }
+  const tiers = (["standard", "project", "key"] as TradeTierId[]).map((id) => ({
+    id,
+    label: TRADE_TIER_META[id].label,
+    shortLabel: TRADE_TIER_META[id].shortLabel,
+    discountPercent: TRADE_DISCOUNT_PERCENT[id],
+    note: TRADE_TIER_META[id].note,
+  }));
+  return {
+    tiers,
+    rows,
+    projectThresholdLabel: `£${(TRADE_MIN_RETAIL_PENCE.project / 100).toLocaleString("en-GB")}`,
+    keyThresholdLabel: `£${(TRADE_MIN_RETAIL_PENCE.key / 100).toLocaleString("en-GB")}`,
+  };
+};
+
 /**
  * Compute the shipping options for a session.
  *
@@ -1108,16 +1199,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const kind = typeof body.kind === "string" ? body.kind : "";
 
   // ── TRADE ACCESS GATE (kind:"trade-access") ──────────────────────────────
-  // The /trade/pricing sheet POSTs the shared access code here; we answer
-  // { ok } after a constant-time compare against process.env.TRADE_ACCESS_CODE.
-  // No Stripe, no secrets leaked — the client reveals the (client-derived) sheet
-  // only on ok. An unset TRADE_ACCESS_CODE → always { ok:false } (sheet stays
-  // gated until Hugo sets the env var). Never blocks / never 500s.
+  // The /trade/pricing gate POSTs the shared access code here; on a constant-
+  // time match against process.env.TRADE_ACCESS_CODE we return { ok:true, sheet }
+  // — the sheet (trade %s + figures) is assembled HERE and travels to the client
+  // ONLY after the code verifies, so the trade numbers never ship in the public
+  // bundle (Hugo's non-negotiable). Wrong / absent code → { ok:false } with NO
+  // sheet. An unset TRADE_ACCESS_CODE keeps the sheet gated for everyone. Never
+  // blocks / never 500s.
   if (kind === "trade-access") {
     const code = typeof body.code === "string" ? body.code.trim() : "";
     const expected = (process.env.TRADE_ACCESS_CODE ?? "").trim();
     const ok = expected.length > 0 && code.length > 0 && safeEqual(code, expected);
-    return send(200, { ok });
+    return send(200, ok ? { ok: true, sheet: buildTradeSheet() } : { ok: false });
   }
 
   const secret = process.env.STRIPE_SECRET_KEY;
