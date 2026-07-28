@@ -15,6 +15,7 @@ import { Welcome } from "./pages/Welcome";
 import { CustomCursor } from "./components/CustomCursor";
 import { AddedConfirmation } from "./components/AddedConfirmation";
 import { ConsentBanner } from "./components/ConsentBanner";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { UpdatePrompt } from "./components/UpdatePrompt";
 import { BackgroundMusic } from "./components/BackgroundMusic";
 import { PageTransition } from "./components/PageTransition";
@@ -326,6 +327,10 @@ export default function App() {
               basket store's add side-channel, so every add path triggers it
               with no per-button wiring. Mounted once. */}
           <AddedConfirmation />
+          {/* Floating "back to top" disc — appears past one viewport of scroll
+              on long pages (Hugo 2026-07-28). Mounted here (outside the route
+              crossfade) so it persists across navigations. */}
+          <ScrollToTop />
           {/* Consent banner — quiet bottom bar, renders only while no
               decision exists in tasm.consent.v1. GA4 + Meta Pixel load ONLY
               after "Allow analytics"; the footer's "Cookie preferences" link

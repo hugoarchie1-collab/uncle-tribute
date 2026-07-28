@@ -287,6 +287,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"
+          // Clicking the logo while ALREADY on home does not re-navigate (same
+          // path → PageTransition's scroll-to-top never fires), so it felt dead.
+          // Hugo 2026-07-28: "clicking logo should take you to top of home." When
+          // we're already home, scroll to the masthead instead of doing nothing.
+          onClick={() => {
+            if (location.pathname === "/")
+              window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
           className="press inline-flex items-center min-w-0"
         >
           {/* The "The Art of Stephen Meakin" LOCKUP — wax-seal rose + Fraunces
