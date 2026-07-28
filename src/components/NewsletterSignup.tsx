@@ -154,7 +154,7 @@ export const NewsletterSignup = ({
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                 >
                   {status === "submitting" ? "…" : "Subscribe"}
                 </button>
@@ -182,7 +182,7 @@ export const NewsletterSignup = ({
   if (variant === "inline") {
     return (
       <div className="border-t border-line pt-8 mt-8">
-        <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 m-0 mb-3">
+        <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 m-0 mb-3">
           {eyebrow}
         </p>
         {status === "success" ? (
@@ -311,7 +311,7 @@ export const NewsletterSignup = ({
             {/* Focus-within `group`: the muted field label warms to full ink
                 while its input is focused (matches Contact's form focus). */}
             <label className="group block">
-              <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Name
               </span>
               <input
@@ -323,7 +323,7 @@ export const NewsletterSignup = ({
               />
             </label>
             <label className="group block">
-              <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Email
               </span>
               <input

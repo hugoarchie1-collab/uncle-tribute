@@ -164,7 +164,7 @@ const FoundCard = ({ record }: { record: RegistryRecord }) => {
       <dl className="mt-5 pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 m-0">
         <div>
           <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Certificate ID</dt>
-          <dd className="m-0 font-mono text-[15px] md:text-[16px] tracking-[0.06em] text-ink break-all">
+          <dd className="m-0 font-mono text-[15px] md:text-[16px] tracking-[0.02em] text-ink break-all">
             {record.certificateId}
           </dd>
         </div>
@@ -327,7 +327,7 @@ export const Auth = () => {
                   autoComplete="off"
                   autoCapitalize="characters"
                   spellCheck={false}
-                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-mono tracking-[0.04em] text-[16px] md:text-[17px] text-ink placeholder:text-ink/30 focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-4 py-3.5 font-mono tracking-[0.02em] text-[16px] md:text-[17px] text-ink placeholder:text-ink/30 focus:outline-none"
                 />
                 <button
                   type="submit"

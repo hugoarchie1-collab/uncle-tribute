@@ -286,7 +286,7 @@ export const EnquireModal = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <label className="block">
-                      <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2">
+                      <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                         Name
                       </span>
                       <input
@@ -299,7 +299,7 @@ export const EnquireModal = ({
                       />
                     </label>
                     <label className="block">
-                      <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2">
+                      <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                         Email
                       </span>
                       <input
@@ -314,7 +314,7 @@ export const EnquireModal = ({
                   </div>
 
                   <label className="block mb-5">
-                    <span className="block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2">
+                    <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                       Message
                     </span>
                     <textarea
@@ -341,7 +341,7 @@ export const EnquireModal = ({
                     </button>
                     <a
                       href="mailto:info@themandalacompany.com"
-                      className="font-sans text-[14px] tracking-[0.06em] text-ink/55 hover:text-ink transition-colors"
+                      className="font-sans text-[14px] tracking-[0.02em] text-ink/55 hover:text-ink transition-colors"
                     >
                       Or write directly →
                     </a>

@@ -21,7 +21,7 @@ export const WallLoading = () =>
           className="h-8 w-8 animate-spin rounded-full border-2 border-white/25 border-t-accent"
           aria-hidden="true"
         />
-        <span className="font-sans text-[13px] tracking-[0.04em] text-ink/85">Opening…</span>
+        <span className="font-sans text-[13px] tracking-[0.02em] text-ink/85">Opening…</span>
       </span>
     </div>,
     document.body,

@@ -346,7 +346,7 @@ export const FindAPrint = () => {
                   aria-checked={sel}
                   onClick={() => setBrowseTier(t)}
                   className={cn(
-                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.04em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.02em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                     sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
                   )}
                 >
@@ -396,7 +396,7 @@ export const FindAPrint = () => {
                     {painting.title}
                   </h2>
                   <p
-                    className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.04em] text-ink-muted m-0"
+                    className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.02em] text-ink-muted m-0"
                     style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
                   >
                     Estate-stamped giclée · {sizeCode(browseTier)} from {fmtP(getTierAdvertisedPricePence(browseTier))}

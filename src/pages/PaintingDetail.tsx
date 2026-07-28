@@ -713,7 +713,7 @@ const Colourways = ({
                     `hidden` by default, shown only on sm+ AND (pointer:fine). */}
                 <span
                   aria-hidden="true"
-                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.04em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.02em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -817,7 +817,7 @@ const TrueSizeViewer = ({
               onKeyDown={(e) => onRadioKey(e, scaleTiers.length, i, (n) => onSelectTier(scaleTiers[n].id))}
               onClick={() => onSelectTier(t.id)}
               className={cn(
-                "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.04em] transition-colors",
+                "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.02em] transition-colors",
                 isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
               )}
             >
@@ -1442,7 +1442,7 @@ const BuyBox = ({
             <p
               aria-live="polite"
               className={cn(
-                "mt-2.5 font-sans text-[13px] tracking-[0.04em] text-ink-muted m-0 transition-opacity duration-500",
+                "mt-2.5 font-sans text-[13px] tracking-[0.02em] text-ink-muted m-0 transition-opacity duration-500",
                 colourwaySetAdded ? "opacity-100" : "opacity-0",
               )}
             >
@@ -1862,7 +1862,7 @@ const BuyBox = ({
         <p
           aria-live="polite"
           className={cn(
-            "mt-3 font-sans text-[13.5px] tracking-[0.04em] text-ink-muted m-0 transition-opacity duration-500",
+            "mt-3 font-sans text-[13.5px] tracking-[0.02em] text-ink-muted m-0 transition-opacity duration-500",
             showAdded ? "opacity-100" : "opacity-0",
           )}
         >
@@ -2340,7 +2340,7 @@ const StickyAddBar = ({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -2373,7 +2373,7 @@ const StickyAddBar = ({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+            className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
           >
             {added ? "Added ✓" : "Add to basket"}
           </button>
@@ -2917,14 +2917,14 @@ export const PaintingDetail = () => {
           <div className="flex items-center justify-between gap-4 mb-4 md:mb-5">
             <Link
               to={collection ? `/collections#collection-${collection.id}` : "/collections"}
-              className="font-sans text-[14px] md:text-[13px] font-semibold tracking-[0.04em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
+              className="font-sans text-[14px] md:text-[13px] font-semibold tracking-[0.02em] text-ink-muted inline-flex items-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-[58vw] sm:max-w-none transition-colors duration-300 hover:text-ink"
             >
               ← {collection ? collection.title.split(" — ")[0] : "All collections"}
             </Link>
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
               <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
@@ -2957,7 +2957,7 @@ export const PaintingDetail = () => {
                       onClick={() => setView(v)}
                       aria-pressed={view === v}
                       className={cn(
-                        "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.04em] transition-colors",
+                        "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.02em] transition-colors",
                         view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
                       )}
                     >
@@ -3146,7 +3146,7 @@ export const PaintingDetail = () => {
                 <button
                   type="button"
                   onClick={resetOptions}
-                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   <span aria-hidden="true">↺</span> Reset options
                 </button>

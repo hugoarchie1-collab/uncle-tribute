@@ -272,7 +272,7 @@ export const ModelViewerAR = ({
           <button
             type="button"
             onClick={launchAR}
-            className="press inline-flex min-h-[54px] w-full max-w-[420px] items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[14px] font-bold tracking-[0.03em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
+            className="press inline-flex min-h-[54px] w-full max-w-[420px] items-center justify-center gap-2.5 rounded-full bg-ink px-7 font-sans text-[14px] font-bold tracking-[0.02em] text-bg outline-none transition-colors duration-300 hover:bg-accent hover:text-ink focus-visible:ring-2 focus-visible:ring-accent"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />

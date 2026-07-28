@@ -50,7 +50,7 @@ export function ScanToVisit({
   );
 
   const eyebrow = (
-    <span className="font-sans text-[13px] font-bold tracking-[0.04em] text-cream-ink-soft">
+    <span className="font-sans text-[13px] font-bold tracking-[0.02em] text-cream-ink-soft">
       {label}
     </span>
   );

@@ -362,7 +362,7 @@ const PostCard = ({
           ) : null}
         </div>
         {pinned ? (
-          <span className="shrink-0 ml-auto inline-flex items-center gap-1 rounded-full bg-accent/12 px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.05em] uppercase text-accent">
+          <span className="shrink-0 ml-auto inline-flex items-center gap-1 rounded-full bg-accent/12 px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.02em] uppercase text-accent">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
@@ -475,7 +475,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
     </span>
     <span
       aria-hidden="true"
-      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-3.5 py-1.5 font-sans text-[13px] font-bold tracking-[0.04em] uppercase text-accent"
+      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-3.5 py-1.5 font-sans text-[13px] font-bold tracking-[0.02em] uppercase text-accent"
     >
       Post
     </span>
@@ -880,7 +880,7 @@ const ShareMemoryModal = ({
                         <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.04em] rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose image
                         </span>
                         <input

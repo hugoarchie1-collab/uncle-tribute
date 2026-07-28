@@ -544,14 +544,14 @@ export const Welcome = () => {
                 <div className="mt-6 md:mt-7 flex flex-wrap items-center justify-center gap-3">
                   <MagneticLink
                     to="/collections"
-                    className="press group inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
+                    className="press group inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap"
                     ariaLabel="See the collection"
                   >
                     See the collection <span aria-hidden="true" className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1">&rarr;</span>
                   </MagneticLink>
                   <MagneticLink
                     to="/about"
-                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
+                    className="press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap"
                     ariaLabel="About Stephen"
                   >
                     His story
@@ -934,7 +934,7 @@ export const Welcome = () => {
                   CTA; this repeat is demoted to an underlined-on-hover link. */}
               <MagneticLink
                 to="/collections"
-                className="press group inline-flex items-center gap-2 font-sans text-[14px] font-bold tracking-[0.04em] text-ink transition-colors duration-300 hover:text-accent"
+                className="press group inline-flex items-center gap-2 font-sans text-[14px] font-bold tracking-[0.02em] text-ink transition-colors duration-300 hover:text-accent"
                 ariaLabel="See the collection"
               >
                 See the collection <span aria-hidden="true" className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5">→</span>
@@ -1027,7 +1027,7 @@ export const Welcome = () => {
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                     <MagneticLink
                       to="/collections"
-                      className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.04em] transition-colors duration-300 hover:bg-accent hover:text-ink"
+                      className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] transition-colors duration-300 hover:bg-accent hover:text-ink"
                       ariaLabel="Choose a print to hand-finish"
                     >
                       Choose a print to finish
@@ -1036,7 +1036,7 @@ export const Welcome = () => {
                     {/* Marketing anchor — mirrors the A2 embellishmentPricePence
                         (£595) in paintings.ts; the real per-size price shows on the
                         product page. */}
-                    <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.03em] text-ink-muted">
+                    <span className="font-sans text-[clamp(13px,0.8vw,15px)] tracking-[0.02em] text-ink-muted">
                       From £595 · on the Collector &amp; Atelier prints · allow 2 weeks
                     </span>
                   </div>
@@ -1217,7 +1217,7 @@ export const Welcome = () => {
               </h2>
               {/* Key-fact strip — surfaces the commission's provenance up
                   front instead of burying it in prose. */}
-              <p className="font-sans text-[13px] font-bold tracking-[0.04em] text-ink/70 m-0">
+              <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink/70 m-0">
                 Diameter 3.6m <span className="text-ink/35 mx-1">·</span> Commissioned 2016
               </p>
             </Reveal>
@@ -1259,7 +1259,7 @@ export const Welcome = () => {
                   className="soft-edge-img block w-full h-auto"
                 />
               </div>
-              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.04em] text-ink/65 mt-4 text-center">
+              <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.02em] text-ink/65 mt-4 text-center">
                 Farmacy · Notting Hill · London
               </figcaption>
               <p className="font-display italic text-[17px] md:text-[19px] leading-[1.6] text-ink/70 mt-2.5 text-center">

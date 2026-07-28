@@ -326,7 +326,7 @@ export const SearchBar = ({
                         <span
                           className={cn(
                             "inline-flex shrink-0 items-center rounded-full px-2 py-1",
-                            "font-sans text-[13px] font-bold tracking-[0.04em]",
+                            "font-sans text-[13px] font-bold tracking-[0.02em]",
                             "text-ink-muted ring-1 ring-line",
                           )}
                         >

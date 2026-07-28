@@ -107,7 +107,7 @@ export const FriendsAndFamilyWelcome = () => {
               <span className={cn(EYEBROW, "block mb-2")}>Friends &amp; Family</span>
               <span className="block font-sans text-[14px] leading-[1.55] text-ink">
                 Welcome, friend of Steve&rsquo;s. Enter{" "}
-                <span className="font-bold tracking-[0.04em] text-accent">
+                <span className="font-bold tracking-[0.02em] text-accent">
                   {FRIENDS_FAMILY_CODE}
                 </span>{" "}
                 at checkout &mdash; with our love, from the family.

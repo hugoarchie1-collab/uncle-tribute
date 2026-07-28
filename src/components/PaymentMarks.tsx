@@ -77,7 +77,7 @@ const Chip = ({ children, label }: { children: React.ReactNode; label: string })
 const MARKS: { label: string; node: React.ReactNode }[] = [
   { label: "Visa", node: <WordMark italic>VISA</WordMark> },
   { label: "Mastercard", node: <Mastercard className="h-[15px] w-auto" /> },
-  { label: "American Express", node: <WordMark className="tracking-[0.06em]">AMEX</WordMark> },
+  { label: "American Express", node: <WordMark className="tracking-[0.02em]">AMEX</WordMark> },
   {
     label: "Apple Pay",
     node: (

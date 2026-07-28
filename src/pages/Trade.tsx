@@ -208,7 +208,7 @@ const TradeApplication = () => {
     }
   };
 
-  const fieldLabel = "block font-sans text-[13px] font-bold tracking-[0.04em] text-ink/55 mb-2";
+  const fieldLabel = "block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2";
   const fieldInput =
     "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow";
 

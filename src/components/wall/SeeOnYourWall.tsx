@@ -388,7 +388,7 @@ export const SeeOnYourWall = ({
                           : "repeating-linear-gradient(45deg, #2a2620, #2a2620 3px, #14110d 3px, #14110d 6px)",
                       }}
                     />
-                    <span className={cn("font-sans text-[14px] font-bold tracking-[0.03em]", sel ? "text-ink" : "text-ink-muted")}>
+                    <span className={cn("font-sans text-[14px] font-bold tracking-[0.02em]", sel ? "text-ink" : "text-ink-muted")}>
                       {f.label}
                     </span>
                   </button>

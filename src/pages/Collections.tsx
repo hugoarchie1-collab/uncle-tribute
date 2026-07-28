@@ -253,7 +253,7 @@ const SetSizeSelector = ({
                 : "bg-transparent text-ink-muted ring-line hover:text-ink hover:ring-accent/70",
             )}
           >
-            <span className="font-semibold tracking-[0.04em]">{sizeCode(tier)}</span>
+            <span className="font-semibold tracking-[0.02em]">{sizeCode(tier)}</span>
             <span
               className={cn("ml-2", active ? "text-bg/70" : "text-ink/70")}
             >
@@ -726,7 +726,7 @@ export const Collections = () => {
                 </p>
                 <Link
                   to="/for-you"
-                  className="inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.04em] text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors duration-300"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                 >
                   Not sure where to start? Browse by colour <span aria-hidden="true">→</span>
