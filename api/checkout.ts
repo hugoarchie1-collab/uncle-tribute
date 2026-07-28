@@ -701,6 +701,56 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
   return count >= 3 ? 8 : 5;                            // general / collection bundle (3+ was 10)
 };
 
+// ---- Constant-time string compare (mirror of api/admin/order-shipped.ts) ----
+// For admin-key / access-code checks — avoids leaking length-independent timing.
+const safeEqual = (a: string, b: string): boolean => {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+};
+
+// ---- TRADE pricing (mirror of src/data/paintings.ts TRADE_TIERS) ------------
+// The by-introduction rate for designers & hospitality buyers. Trade pricing is
+// NEVER charged through the public print/basket flow — it is minted ONLY here,
+// behind the ADMIN_API_KEY-gated `kind:"trade-quote"` branch, as a Stripe
+// Payment Link. Three tiers off FULL retail (base + finish, never the bare
+// base):
+//   • standard (approved trade account)            → 30%
+//   • project  (single order, retail ≥ £5,000)      → 35%
+//   • key      (hospitality / key, retail ≥ £15,000)→ 40%
+// ⚠️ MONEY (gotcha #9): the percentages AND thresholds mirror TRADE_TIERS in
+// src/data/paintings.ts. The gated sheet advertises tradePricePence(retail,
+// tier) with the SAME formula off the SAME TIERS retail (base + framing/canvas),
+// so advertised == charged. Trade discount REPLACES bundle discounts — this
+// branch never calls bundlePercentOff, so the two can never stack.
+type TradeTierId = "standard" | "project" | "key";
+const TRADE_DISCOUNT_PERCENT: Record<TradeTierId, number> = {
+  standard: 30,
+  project: 35,
+  key: 40,
+};
+const TRADE_MIN_RETAIL_PENCE: Record<TradeTierId, number> = {
+  standard: 0,
+  project: 500000, //  £5,000 retail value
+  key: 1500000, //     £15,000 retail value
+};
+const isTradeTierId = (v: unknown): v is TradeTierId =>
+  v === "standard" || v === "project" || v === "key";
+/** Trade % off the FULL retail line (base + finish). Whole pence. Mirror of
+ *  tradePricePence in src/data/paintings.ts. */
+const tradePricePence = (retailLinePence: number, tier: TradeTierId): number =>
+  Math.round(retailLinePence * (1 - TRADE_DISCOUNT_PERCENT[tier] / 100));
+/** Best trade tier a retail order total qualifies for by threshold. Mirror of
+ *  tradeTierForRetail in src/data/paintings.ts. */
+const tradeTierForRetail = (retailTotalPence: number): TradeTierId => {
+  if (retailTotalPence >= TRADE_MIN_RETAIL_PENCE.key) return "key";
+  if (retailTotalPence >= TRADE_MIN_RETAIL_PENCE.project) return "project";
+  return "standard";
+};
+
 /**
  * Compute the shipping options for a session.
  *
@@ -727,6 +777,28 @@ const bundlePercentOff = (items: NormalisedItem[]): number => {
  * a different currency than the line items). Every band is £0 → 0 in any
  * currency, so the displayed "Free" is exact regardless of presentment currency.
  */
+// The broad set of Stripe-supported delivery destinations (sanctioned countries
+// are rejected by Stripe automatically and are intentionally omitted). Shared by
+// the retail checkout session AND the trade payment link so both capture a
+// worldwide ship-to. Stephen's collector base includes the Gulf/Dubai.
+const ALLOWED_SHIPPING_COUNTRIES = [
+  // Europe
+  "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU", "AT", "PT",
+  "DK", "SE", "NO", "FI", "IS", "CH", "PL", "CZ", "SK", "HU", "SI",
+  "HR", "RO", "BG", "GR", "EE", "LV", "LT", "CY", "MT", "LI", "MC",
+  // North America
+  "US", "CA", "MX",
+  // Middle East / Gulf
+  "AE", "SA", "QA", "KW", "BH", "OM", "JO", "IL", "TR",
+  // Asia-Pacific
+  "JP", "SG", "HK", "KR", "TW", "CN", "IN", "MY", "TH", "ID", "PH",
+  "VN", "AU", "NZ",
+  // Latin America
+  "BR", "AR", "CL", "CO", "PE", "UY", "CR",
+  // Africa
+  "ZA", "MU",
+] as const;
+
 const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) => [
   {
     shipping_rate_data: {
@@ -751,6 +823,187 @@ const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) 
   },
 ];
 
+// ---- Trade billing (kind:"trade-quote") -----------------------------------
+// ADMIN_API_KEY-gated. Input:
+//   { kind:"trade-quote", secret:<ADMIN_API_KEY>, tradeTier:"standard"|"project"|"key",
+//     items:[{ paintingId, tierId, finish:"framed"|"canvas", quantity }] }
+// Computes the trade-discounted total from the SAME TIERS retail (base + finish)
+// the gated sheet advertises, then mints a Stripe Payment Link at that total.
+// GBP only (the sheet is GBP). advertised == charged by construction (identical
+// tradePricePence formula + identical retail). Trade discount REPLACES bundle
+// discounts — this path never runs bundlePercentOff. Never throws; always
+// answers via `send`.
+interface TradeQuoteLine {
+  paintingId: string;
+  title: string;
+  tierId: TierId;
+  tierLabel: string;
+  size: string;
+  finish: "framed" | "canvas";
+  quantity: number;
+  retailUnitPence: number; // base + finish
+  tradeUnitPence: number; // retail × (1 − trade%)
+}
+
+async function handleTradeQuote(
+  body: { secret?: unknown; tradeTier?: unknown; items?: unknown },
+  stripeKey: string,
+  send: (status: number, payload: unknown) => void,
+): Promise<void> {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) {
+    return send(500, { error: "Server missing ADMIN_API_KEY." });
+  }
+  const submitted = typeof body.secret === "string" ? body.secret : "";
+  if (!submitted || !safeEqual(submitted, adminKey)) {
+    return send(401, { error: "Unauthorised." });
+  }
+  if (!isTradeTierId(body.tradeTier)) {
+    return send(400, {
+      error: 'tradeTier must be "standard", "project" or "key".',
+    });
+  }
+  const tradeTier = body.tradeTier;
+  if (!Array.isArray(body.items) || body.items.length === 0) {
+    return send(400, { error: "At least one line item is required." });
+  }
+  if (body.items.length > MAX_ITEMS) {
+    return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
+  }
+
+  const lines: TradeQuoteLine[] = [];
+  for (const raw of body.items as Array<Record<string, unknown>>) {
+    const paintingId = typeof raw.paintingId === "string" ? raw.paintingId : "";
+    if (!VALID_PAINTING_IDS.has(paintingId)) {
+      return send(400, { error: `Unknown painting "${paintingId}".` });
+    }
+    if (!isTierId(raw.tierId)) {
+      return send(400, { error: `Unknown size / tier "${String(raw.tierId)}".` });
+    }
+    const tier = TIERS[raw.tierId];
+    if (!tier || !tier.available) {
+      return send(400, { error: `Size "${raw.tierId}" is not available.` });
+    }
+    const finish = raw.finish === "canvas" ? "canvas" : "framed";
+    const surcharge =
+      finish === "canvas" ? tier.canvasPricePence : tier.framingPricePence;
+    if (typeof surcharge !== "number") {
+      return send(400, {
+        error: `${finish === "canvas" ? "Canvas" : "Framing"} is not offered at ${tier.label} (${tier.size}).`,
+      });
+    }
+    const quantity =
+      typeof raw.quantity === "number" && Number.isFinite(raw.quantity)
+        ? Math.min(99, Math.max(1, Math.floor(raw.quantity)))
+        : 1;
+    const retailUnitPence = tier.pricePence + surcharge;
+    lines.push({
+      paintingId,
+      title: PAINTING_TITLES[paintingId] ?? paintingId,
+      tierId: tier.id,
+      tierLabel: tier.label,
+      size: sizeFor(paintingId, tier),
+      finish,
+      quantity,
+      retailUnitPence,
+      tradeUnitPence: tradePricePence(retailUnitPence, tradeTier),
+    });
+  }
+
+  const retailSubtotalPence = lines.reduce(
+    (sum, l) => sum + l.retailUnitPence * l.quantity,
+    0,
+  );
+  const tradeSubtotalPence = lines.reduce(
+    (sum, l) => sum + l.tradeUnitPence * l.quantity,
+    0,
+  );
+  const discountPercent = TRADE_DISCOUNT_PERCENT[tradeTier];
+  const qualifyingTier = tradeTierForRetail(retailSubtotalPence);
+  const thresholdMet = retailSubtotalPence >= TRADE_MIN_RETAIL_PENCE[tradeTier];
+
+  try {
+    const stripe = new Stripe(stripeKey);
+    const priceLineItems: Array<{ price: string; quantity: number }> = [];
+    for (const l of lines) {
+      // Inline product (product_data) — Payment Links require pre-created Price
+      // objects, so we mint one ad-hoc Price per line at the trade unit amount.
+      const price = await stripe.prices.create({
+        currency: "gbp",
+        unit_amount: l.tradeUnitPence,
+        product_data: {
+          name: `${l.title} — ${l.tierLabel} ${l.size} — ${
+            l.finish === "canvas" ? "Stretched canvas" : "Framed print"
+          }`,
+        },
+      });
+      priceLineItems.push({ price: price.id, quantity: l.quantity });
+    }
+
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: priceLineItems,
+      shipping_address_collection: {
+        allowed_countries: ALLOWED_SHIPPING_COUNTRIES as unknown as NonNullable<
+          Stripe.PaymentLinkCreateParams["shipping_address_collection"]
+        >["allowed_countries"],
+      },
+      metadata: {
+        order_kind: "trade",
+        trade_tier: tradeTier,
+        discount_percent: String(discountPercent),
+        retail_subtotal_pence: String(retailSubtotalPence),
+        trade_subtotal_pence: String(tradeSubtotalPence),
+        item_count: String(lines.length),
+        lines: truncateMetadata(
+          lines.map(
+            (l) =>
+              `${l.paintingId}:${l.tierId}:${l.finish}×${l.quantity}`,
+          ),
+        ),
+      },
+    });
+
+    console.log("[/api/checkout] trade payment link minted", {
+      id: paymentLink.id,
+      tradeTier,
+      discountPercent,
+      retailSubtotalPence,
+      tradeSubtotalPence,
+      lineCount: lines.length,
+    });
+
+    return send(200, {
+      url: paymentLink.url,
+      tradeTier,
+      discountPercent,
+      currency: "gbp",
+      retailSubtotalPence,
+      tradeSubtotalPence,
+      savingPence: retailSubtotalPence - tradeSubtotalPence,
+      qualifyingTier,
+      thresholdMet,
+      lines: lines.map((l) => ({
+        paintingId: l.paintingId,
+        title: l.title,
+        tierId: l.tierId,
+        tierLabel: l.tierLabel,
+        size: l.size,
+        finish: l.finish,
+        quantity: l.quantity,
+        retailUnitPence: l.retailUnitPence,
+        tradeUnitPence: l.tradeUnitPence,
+        lineRetailPence: l.retailUnitPence * l.quantity,
+        lineTradePence: l.tradeUnitPence * l.quantity,
+      })),
+    });
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Stripe payment-link creation failed.";
+    console.error("[/api/checkout] trade-quote Stripe error:", message);
+    return send(500, { error: message });
+  }
+}
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   // CORS on every response.
   for (const [key, value] of Object.entries(corsHeaders)) {
@@ -768,14 +1021,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   }
   if (req.method !== "POST") return send(405, { error: "Method not allowed" });
 
-  const secret = process.env.STRIPE_SECRET_KEY;
-  const siteUrl = process.env.SITE_URL;
-  if (!secret) return send(500, { error: "Server missing STRIPE_SECRET_KEY." });
-  if (!siteUrl) return send(500, { error: "Server missing SITE_URL." });
-
   // Vercel's Node runtime parses a JSON request body into req.body. Handle
-  // both the parsed-object case and a raw-string fallback defensively.
+  // both the parsed-object case and a raw-string fallback defensively. Parsed
+  // BEFORE the env checks so the trade-access gate can answer even if a Stripe
+  // key were momentarily unset.
   let body: {
+    // Top-level `kind` routes the request: "trade-access" (gate check) and
+    // "trade-quote" (admin billing) branch off before the normal print flow.
+    kind?: unknown;
+    // trade-access: the shared trade access code the estate hands an approved
+    // designer. Verified against process.env.TRADE_ACCESS_CODE.
+    code?: unknown;
+    // trade-quote: ADMIN_API_KEY + the selected trade tier.
+    secret?: unknown;
+    tradeTier?: unknown;
     paintingId?: string;
     colourwayName?: string;
     tierId?: unknown;
@@ -800,6 +1059,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       paperFinish?: unknown;
       canvasEdge?: unknown;
       quantity?: unknown;
+      // Trade-quote line field: which finish this line is priced at.
+      finish?: unknown;
       // Gift-card line fields (kind === "gift"):
       amountPence?: unknown;
       label?: unknown;
@@ -821,6 +1082,36 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         : ((req.body ?? {}) as typeof body);
   } catch {
     return send(400, { error: "Invalid JSON body." });
+  }
+
+  const kind = typeof body.kind === "string" ? body.kind : "";
+
+  // ── TRADE ACCESS GATE (kind:"trade-access") ──────────────────────────────
+  // The /trade/pricing sheet POSTs the shared access code here; we answer
+  // { ok } after a constant-time compare against process.env.TRADE_ACCESS_CODE.
+  // No Stripe, no secrets leaked — the client reveals the (client-derived) sheet
+  // only on ok. An unset TRADE_ACCESS_CODE → always { ok:false } (sheet stays
+  // gated until Hugo sets the env var). Never blocks / never 500s.
+  if (kind === "trade-access") {
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    const expected = (process.env.TRADE_ACCESS_CODE ?? "").trim();
+    const ok = expected.length > 0 && code.length > 0 && safeEqual(code, expected);
+    return send(200, { ok });
+  }
+
+  const secret = process.env.STRIPE_SECRET_KEY;
+  const siteUrl = process.env.SITE_URL;
+  if (!secret) return send(500, { error: "Server missing STRIPE_SECRET_KEY." });
+  if (!siteUrl) return send(500, { error: "Server missing SITE_URL." });
+
+  // ── TRADE BILLING (kind:"trade-quote") ───────────────────────────────────
+  // ADMIN_API_KEY-gated. Computes the trade-discounted total from the SAME
+  // TIERS retail the gated sheet advertises (advertised == charged, gotcha #9)
+  // and mints a Stripe Payment Link at that total. NEVER touches the public
+  // basket flow; trade discount REPLACES bundle discounts (no bundlePercentOff
+  // here). See handleTradeQuote below.
+  if (kind === "trade-quote") {
+    return handleTradeQuote(body, secret, send);
   }
 
   // ---- Normalise items ----------------------------------------------------
@@ -1263,23 +1554,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         // Stripe-supported destinations (sanctioned countries are rejected by
         // Stripe automatically and are intentionally omitted).
         shipping_address_collection: {
-          allowed_countries: [
-            // Europe
-            "GB", "IE", "FR", "DE", "ES", "IT", "NL", "BE", "LU", "AT", "PT",
-            "DK", "SE", "NO", "FI", "IS", "CH", "PL", "CZ", "SK", "HU", "SI",
-            "HR", "RO", "BG", "GR", "EE", "LV", "LT", "CY", "MT", "LI", "MC",
-            // North America
-            "US", "CA", "MX",
-            // Middle East / Gulf
-            "AE", "SA", "QA", "KW", "BH", "OM", "JO", "IL", "TR",
-            // Asia-Pacific
-            "JP", "SG", "HK", "KR", "TW", "CN", "IN", "MY", "TH", "ID", "PH",
-            "VN", "AU", "NZ",
-            // Latin America
-            "BR", "AR", "CL", "CO", "PE", "UY", "CR",
-            // Africa
-            "ZA", "MU",
-          ],
+          allowed_countries: ALLOWED_SHIPPING_COUNTRIES as unknown as NonNullable<
+            Stripe.Checkout.SessionCreateParams["shipping_address_collection"]
+          >["allowed_countries"],
         },
         shipping_options: buildShippingOptions(normalised, currencyCode),
       };

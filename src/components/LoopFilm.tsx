@@ -17,7 +17,7 @@ export const LoopFilm = ({
   poster,
   label,
   aspect,
-  edges = "y",
+  edges = "none",
   frame = false,
   className,
 }: {

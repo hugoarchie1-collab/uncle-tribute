@@ -96,15 +96,8 @@ export const Footer = () => (
         "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
     }}
   >
-    {/* FEATHERED SEAM — fades the footer's top red up into whatever sits above
-        it. From the footer's OWN top colour (rgba(48,9,10)): when the catalogue
-        strip is directly above (same colour at the join) this is invisible —
-        one continuous block; when the Footer stands alone (/collections,
-        /for-you) it softly dissolves the red into the page. */}
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(72,14,14,0.72)] via-[rgba(72,14,14,0.3)] to-transparent"
-    />
+    {/* NO feathered seam (Hugo 2026-07-28: "i hate that blur above the
+        catalogue"). Clean STRAIGHT top edge — a true clone of the top nav bar. */}
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
           tidy lockup capped to the tribute measure (max-w-[280px]) so it never

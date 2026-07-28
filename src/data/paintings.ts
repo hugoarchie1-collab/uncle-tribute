@@ -1472,3 +1472,122 @@ export const getCompleteCatalogueBundle = (
     savePence: fullPricePence - bundlePricePence,
   };
 };
+
+// -----------------------------------------------------------------------------
+// TRADE PRICING — the by-introduction rate for designers & hospitality buyers
+// -----------------------------------------------------------------------------
+//
+// The estate works directly with interior designers, art consultants and
+// hospitality buyers. Trade pricing is NEVER shown on any public surface (that
+// would cheapen the retail perceived value) — it lives ONLY behind the gated
+// price sheet (/trade/pricing, TRADE_ACCESS_CODE) and in the estate's Stripe
+// invoices/payment links (minted by the ADMIN_API_KEY-gated /api/checkout
+// `kind:"trade-quote"` branch).
+//
+// THREE tiers off FULL retail (base + finish — never the bare base):
+//   • Standard  (approved trade account)                     → 30% off
+//   • Project   (single order, retail value ≥ £5,000)         → 35% off
+//   • Key/hospitality account (retail value ≥ £15,000)        → 40% off
+//
+// ⚠️ MONEY (gotcha #9): the percentages AND the thresholds are mirrored inline
+// in api/checkout.ts (TRADE_DISCOUNT_PERCENT / TRADE_MIN_RETAIL_PENCE) — the
+// charge side. The gated sheet advertises `tradePricePence(retail, tier)`; the
+// admin endpoint charges the SAME formula off the SAME TIERS retail, so
+// advertised == charged by construction. Change both files together.
+//
+// Trade discount REPLACES the bundle (colourway-set / catalogue / count-ladder)
+// discounts — a trade order NEVER stacks the two. The trade-quote endpoint is a
+// separate code path that never calls bundlePercentOff, so the bundle % can't
+// leak in.
+
+export type TradeTierId = "standard" | "project" | "key";
+
+export interface TradeTier {
+  id: TradeTierId;
+  /** Full label for the sheet / admin form. */
+  label: string;
+  /** Compact label for chips / table headers. */
+  shortLabel: string;
+  discountPercent: number;
+  /**
+   * Minimum RETAIL order value (pence, base + finish across the whole order) at
+   * which this tier applies. Standard = 0 (any approved trade account); Project
+   * = £5,000; Key = £15,000. The estate selects the tier per project — this
+   * threshold is the qualifying line, surfaced as guidance, not auto-enforced.
+   */
+  minRetailPence: number;
+  /** One-line qualifying note for the sheet. */
+  note: string;
+}
+
+export const TRADE_TIERS: Record<TradeTierId, TradeTier> = {
+  standard: {
+    id: "standard",
+    label: "Trade account",
+    shortLabel: "Trade",
+    discountPercent: 30,
+    minRetailPence: 0,
+    note: "Approved trade account",
+  },
+  project: {
+    id: "project",
+    label: "Project",
+    shortLabel: "Project",
+    discountPercent: 35,
+    minRetailPence: 500000, // £5,000 retail value
+    note: "Single project — retail value £5,000 or more",
+  },
+  key: {
+    id: "key",
+    label: "Key / hospitality account",
+    shortLabel: "Key account",
+    discountPercent: 40,
+    minRetailPence: 1500000, // £15,000 retail value
+    note: "Key or hospitality account — retail value £15,000 or more",
+  },
+};
+
+/** Tiers in ascending order (Standard → Project → Key). */
+export const TRADE_TIER_ORDER: TradeTierId[] = ["standard", "project", "key"];
+
+/**
+ * The trade price (pence) for a single configured retail line at a given tier.
+ * The trade % applies to the FULL retail line — base + finish (framing OR
+ * canvas), never the bare base. Rounds to whole pence. ⚠️ Mirror of
+ * tradePricePence in api/checkout.ts (gotcha #9) — identical formula, so the
+ * gated sheet figure equals the Stripe charge to the penny.
+ */
+export const tradePricePence = (
+  retailLinePence: number,
+  tierId: TradeTierId,
+): number =>
+  Math.round(retailLinePence * (1 - TRADE_TIERS[tierId].discountPercent / 100));
+
+/**
+ * The best trade tier a given RETAIL order total qualifies for by threshold.
+ * Used by the gated sheet / admin form to hint which tier a project reaches
+ * (the estate still selects the tier on the invoice). Mirror of
+ * tradeTierForRetail in api/checkout.ts.
+ */
+export const tradeTierForRetail = (retailTotalPence: number): TradeTierId => {
+  if (retailTotalPence >= TRADE_TIERS.key.minRetailPence) return "key";
+  if (retailTotalPence >= TRADE_TIERS.project.minRetailPence) return "project";
+  return "standard";
+};
+
+/**
+ * The retail (undiscounted) price of a configured print line at a given finish
+ * — base + the finish surcharge (framing OR canvas). Returns null if the finish
+ * isn't offered at that size (e.g. framed A0). This is the SAME retail the trade
+ * % is taken off, so the gated sheet and the admin endpoint agree. Framing ==
+ * canvas price today, so framed and canvas retail coincide at A3/A2/A1.
+ */
+export const tierRetailLinePence = (
+  tier: PrintTier,
+  finish: "framed" | "canvas",
+): number | null => {
+  const add =
+    finish === "canvas" ? tier.canvasPricePence : tier.framingPricePence;
+  if (typeof add !== "number") return null;
+  return tier.pricePence + add;
+};

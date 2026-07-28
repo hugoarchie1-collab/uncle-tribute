@@ -268,6 +268,19 @@
     );
   }
 
+  /* Hugo 2026-07-28: NO blurred/feathered edges ANYWHERE — every image + video
+     ends on a clean STRAIGHT edge, exactly like the featured-works grid. The
+     feather utilities above are neutralised site-wide; the classes stay for
+     compatibility but apply no mask. (Masthead Earth/Jupiter use their own inline
+     radial masks, not these classes, so they're unaffected.) */
+  .soft-edge,
+  .soft-edge-y,
+  .soft-edge-img,
+  .soft-edge-bottom {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
   :focus-visible {
     outline: 2px solid theme(colors.accent.DEFAULT);
     outline-offset: 3px;

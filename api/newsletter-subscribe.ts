@@ -446,6 +446,57 @@ const renderCustomSizeHtml = (p: {
     + `</div></body></html>`;
 };
 
+// ---------------------------------------------------------------------------
+// Trade application email → HTML string. Folded into THIS function (rather than
+// its own api/trade-application.ts) to stay within Vercel's Hobby-plan
+// 12-Serverless-Function cap — a 13th /api file fails the deploy. Reuses
+// esc/SANS/DISPLAY above (gotcha #5). Emails the ESTATE the trade enquiry with
+// replyTo the applicant. No prices — the estate prepares trade pricing offline.
+// ---------------------------------------------------------------------------
+const renderTradeApplicationHtml = (p: {
+  name: string;
+  email: string;
+  studio: string;
+  website: string;
+  role: string;
+  projectType: string;
+  scale: string;
+  vatNumber: string;
+  message: string;
+}): string => {
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
+    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const row = (label: string, value: string) =>
+    value
+      ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
+      : "";
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Trade application</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · Trade &amp; Interior Design</p>`
+    + `<h1 style="${s.heading}">A trade application${p.studio ? ` from ${esc(p.studio)}` : ""}.</h1>`
+    + row("Studio / company", p.studio)
+    + row("Website", p.website)
+    + row("Contact", `${p.name ? `${p.name} · ` : ""}${p.email}`)
+    + row("Role", p.role)
+    + row("Project type", p.projectType)
+    + row("Scale / budget band", p.scale)
+    + row("VAT / company no.", p.vatNumber)
+    + (p.message ? `<p style="${s.row}"><span style="${s.label}">About the project</span></p><div style="${s.quote}">${esc(p.message)}</div>` : "")
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Reply directly to prepare trade pricing for this designer — <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a>.<br/>The Art of Stephen Meakin · The Mandala Company</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -479,6 +530,16 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     dimensions?: string;
     message?: string;
     company?: string;
+    // Trade-application fields (kind === "trade-application"):
+    studio?: string;
+    website?: string;
+    role?: string;
+    projectType?: string;
+    scale?: string;
+    vatNumber?: string;
+    // Honeypot for the trade form (custom-size reuses `company` as its honeypot,
+    // but `company`/studio is a REAL field here — so trade uses `botcheck`).
+    botcheck?: string;
   };
   try {
     body =
@@ -560,6 +621,80 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       } else {
         console.warn(
           "[newsletter-subscribe] RESEND_API_KEY missing — custom-size logged only.",
+        );
+      }
+    }
+    return send(200, { ok: true });
+  }
+
+  // ── Trade application (folded in, same 12-function-cap reasoning as custom-
+  //    size). kind:"trade-application" emails the ESTATE the enquiry (replyTo
+  //    the applicant) and returns — bypassing the newsletter welcome / Klaviyo /
+  //    audience flow. Price-silent: the estate prepares trade pricing offline
+  //    and issues a Stripe payment link (see /api/checkout kind:"trade-quote").
+  //    Always 200 + logs even without Resend, so the applicant sees a soft
+  //    success and Hugo reads it in the Vercel logs. ──
+  if ((body.kind ?? "").toString() === "trade-application") {
+    // Honeypot — a bot that fills `botcheck` is silently accepted (no email).
+    if ((body.botcheck ?? "").toString().trim() === "") {
+      const studio = (body.studio ?? "").toString().trim().slice(0, 200);
+      const website = (body.website ?? "").toString().trim().slice(0, 200);
+      const role = (body.role ?? "").toString().trim().slice(0, 120);
+      const projectType = (body.projectType ?? "").toString().trim().slice(0, 120);
+      const scale = (body.scale ?? "").toString().trim().slice(0, 200);
+      const vatNumber = (body.vatNumber ?? "").toString().trim().slice(0, 60);
+      const taMessage = (body.message ?? "").toString().trim().slice(0, 2000);
+      console.log("[newsletter-subscribe] trade application", {
+        email,
+        name,
+        studio,
+        role,
+        projectType,
+        scale,
+      });
+      const resendKeyTa = process.env.RESEND_API_KEY;
+      if (resendKeyTa) {
+        try {
+          const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+          const toEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_FROM;
+          const resend = new Resend(resendKeyTa);
+          const html = renderTradeApplicationHtml({
+            name,
+            email,
+            studio,
+            website,
+            role,
+            projectType,
+            scale,
+            vatNumber,
+            message: taMessage,
+          });
+          const r = await resend.emails.send({
+            from: `${FROM_NAME} <${fromEmail}>`,
+            to: [toEmail],
+            replyTo: email,
+            subject: studio
+              ? `Trade application — ${studio}`
+              : "Trade application",
+            html,
+          });
+          if (r.error) {
+            console.error("[newsletter-subscribe] trade-application send error:", r.error);
+          } else {
+            console.log("[newsletter-subscribe] trade-application email sent", {
+              email,
+              resend_id: r.data?.id,
+            });
+          }
+        } catch (err) {
+          console.error(
+            "[newsletter-subscribe] trade-application email failed:",
+            err instanceof Error ? err.message : String(err),
+          );
+        }
+      } else {
+        console.warn(
+          "[newsletter-subscribe] RESEND_API_KEY missing — trade application logged only.",
         );
       }
     }

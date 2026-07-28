@@ -163,12 +163,6 @@ const CosmicInterlude = () => {
             vertical feather handle every ratio. */}
         <div
           className="relative w-full overflow-hidden bg-transparent h-[clamp(480px,76svh,1180px)] 2xl:h-[clamp(560px,84svh,1320px)] 3xl:h-[clamp(560px,84svh,1420px)] 4xl:h-[clamp(560px,82svh,1520px)]"
-          style={{
-            WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-            maskImage:
-              "linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)",
-          }}
         >
           {near && (
             <video
@@ -580,7 +574,7 @@ export const Welcome = () => {
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
                   aspect="aspect-[3/2]"
-                  edges="all"
+                  edges="none"
                   parallax={0}
                   zoom={1}
                   objectPosition="center"
@@ -836,7 +830,7 @@ export const Welcome = () => {
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
               aspect="aspect-[5/3] md:aspect-[12/5] 2xl:aspect-[5/2]"
-              edges="y"
+              edges="none"
               parallax={0.06}
               objectPosition="center 62%"
               shadow=""
@@ -1057,7 +1051,7 @@ export const Welcome = () => {
                 src="/img/welcome/stephen-painting-denim-v1.jpg"
                 alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                 aspect="aspect-[3/2]"
-                edges="all"
+                edges="none"
                 parallax={0.08}
                 objectPosition="center"
                 shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
@@ -1144,7 +1138,7 @@ export const Welcome = () => {
                 poster="/video/poster-studio-mandala-v1.jpg"
                 label="Stephen Meakin painting a mandala, filmed from above"
                 aspect="aspect-[4/3] sm:aspect-[16/9]"
-                edges="all"
+                edges="none"
               />
             </Reveal>
           </section>
@@ -1234,7 +1228,7 @@ export const Welcome = () => {
                 poster="/video/poster-arista-timelapse-v1.jpg"
                 label="The Arista SunStar being painted, in timelapse"
                 aspect="aspect-[16/9]"
-                edges="all"
+                edges="none"
               />
             </Reveal>
 

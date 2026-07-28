@@ -70,15 +70,9 @@ export const FooterCatalogue = () => {
           "linear-gradient(180deg, rgba(72,14,14,0.72) 0%, rgba(72,14,14,0.72) 100%)",
       }}
     >
-      {/* FEATHERED SEAM — dissolves the top edge of the RED footer block up
-          into the section above (Hugo 2026-07-24: the bottom mirrors the top
-          nav's red). SHORT fade (h-16) from the block's OWN top colour
-          (rgba(64,13,13) — the nav gradient's top stop) so the entry matches
-          the red directly beneath it. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-16 -translate-y-full bg-gradient-to-t from-[rgba(72,14,14,0.72)] via-[rgba(72,14,14,0.32)] to-transparent"
-      />
+      {/* NO feathered seam above the strip (Hugo 2026-07-28: "i hate that blur
+          above the catalogue"). The red block starts on a clean STRAIGHT edge,
+          exactly like the top nav bar's clean edge — a true clone of the bar. */}
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] 4xl:max-w-[2100px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
           The Catalogue · {tiles.length}

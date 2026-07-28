@@ -59,6 +59,13 @@ export interface SeoProps {
   canonical?: string;
   /** schema.org JSON-LD object(s) to inject. */
   jsonLd?: object | object[];
+  /**
+   * Keep this route OUT of the index while still setting a real title/canonical
+   * (unlike the transactional useNoindexHead, which forces the site-default
+   * meta). Used by the gated trade price sheet — reachable only via the estate's
+   * link, never a public/nav surface.
+   */
+  noindex?: boolean;
 }
 
 export const Seo = ({
@@ -69,6 +76,7 @@ export const Seo = ({
   type = "website",
   canonical,
   jsonLd,
+  noindex = false,
 }: SeoProps) => {
   const { pathname } = useLocation();
   const fullTitle = pageTitle(title);
