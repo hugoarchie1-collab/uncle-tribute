@@ -815,7 +815,7 @@ export const Welcome = () => {
               <div className="min-w-0 flex flex-col justify-center">
                 <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.invocation}</p>
                 <h2
-                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance m-0 mb-4 md:mb-5"
+                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
                   style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
@@ -1004,7 +1004,7 @@ export const Welcome = () => {
                 <div className="min-w-0">
                   <p className={cn(EYEBROW, "m-0 mb-3")}>The hand-finished edition</p>
                   <h2
-                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance m-0 mb-4 md:mb-5"
+                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
                     style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                   >
                     Take a print further — finished by hand.

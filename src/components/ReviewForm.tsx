@@ -560,6 +560,7 @@ export const ReviewForm = ({
                       <button
                         type="submit"
                         disabled={status === "submitting"}
+                        aria-busy={status === "submitting"}
                         className={BTN_PRIMARY}
                       >
                         {status === "submitting" ? "Sending…" : "Share this review"}

@@ -903,6 +903,7 @@ export const Basket = () => {
                   type="button"
                   onClick={onCheckout}
                   disabled={status === "loading"}
+                  aria-busy={status === "loading"}
                   className={BTN_PRIMARY}
                 >
                   {status === "loading" ? "Opening checkout…" : "Proceed to checkout"}
