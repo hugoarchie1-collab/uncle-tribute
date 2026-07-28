@@ -1112,34 +1112,40 @@ export const Welcome = () => {
                     className="absolute inset-0 block w-full h-full object-cover object-center"
                   />
                 </figure>
-                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-start">
-                  <div className="flex flex-col gap-y-4 md:gap-y-5">
-                    <p className={cn(SUBTITLE, "m-0")}>
-                      Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
-                    </p>
-                    <p className={cn(SUBTITLE, "m-0")}>
-                      When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
-                    </p>
-                  </div>
-                  <ul className="list-none p-0 m-0">
-                    {[
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                    ].map(([label, value]) => (
-                      <li
-                        key={label}
-                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line first:border-t-0 lg:first:border-t"
-                      >
-                        <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
-                        <span className="text-right font-sans font-normal text-[15px] md:text-[16px] leading-[1.4] text-ink">{value}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {/* Process prose — CENTRED as one reading column (Hugo 2026-07-28:
+                    "centre paragraph so there's no huge gap"). The old prose-left /
+                    spec-right split left dead space beside the shorter ledger; now
+                    the paragraphs sit centred, with the spec sheet balanced full-
+                    width beneath. reading-shadow lifts them off the mandala (box-free). */}
+                <div className="mx-auto w-full max-w-[820px] 2xl:max-w-[920px] flex flex-col gap-y-4 md:gap-y-5 text-center">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0")}>
+                    Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
+                  </p>
+                  <p className={cn(SUBTITLE, "reading-shadow m-0")}>
+                    When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
+                  </p>
                 </div>
+                {/* Material ledger — a BALANCED two-column spec sheet spanning the
+                    full width below the prose (6 facts = 2×3: no orphan, no dead
+                    space beside the prose). */}
+                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1080px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+                  {[
+                    ["Time", "Hundreds of hours per canvas"],
+                    ["Edition", "Individually made to order"],
+                    ["Surface", "350gsm archival canvas"],
+                    ["Frame", "Hand-stretched, deep wooden"],
+                    ["Tools", "Compass · rule · brush"],
+                    ["Pigment", "Hand-pressed oils + pigment inks"],
+                  ].map(([label, value]) => (
+                    <li
+                      key={label}
+                      className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line"
+                    >
+                      <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
+                      <span className="text-right font-sans font-normal text-[15px] md:text-[16px] leading-[1.4] text-ink">{value}</span>
+                    </li>
+                  ))}
+                </ul>
               </Reveal>
             </div>
           </section>
