@@ -149,7 +149,7 @@ export const NewsletterSignup = ({
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink-faint focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink-fade focus:outline-none"
                 />
                 <button
                   type="submit"

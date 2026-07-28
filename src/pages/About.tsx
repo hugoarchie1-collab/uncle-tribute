@@ -587,6 +587,7 @@ const AboutMasthead = () => (
             aspect="aspect-[1337/1600]"
             edges="none"
             parallax={0}
+            eager
             sizes="(min-width: 768px) 44vw, 90vw"
           />
         </div>

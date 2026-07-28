@@ -494,7 +494,7 @@ const CustomSizeRequest = ({
 
   const fieldId = (k: string) => `custom-${k}-${paintingId}`;
   const INPUT =
-    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-faint focus:outline-none transition-shadow";
+    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-fade focus:outline-none transition-shadow";
 
   return (
     <div className="mt-3">
@@ -588,7 +588,7 @@ const CustomSizeRequest = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor={fieldId("name")} className={cn(META, "block mb-1.5")}>
-                    Your name <span className="text-ink-faint">(optional)</span>
+                    Your name <span className="text-ink-fade">(optional)</span>
                   </label>
                   <input
                     id={fieldId("name")}
@@ -617,7 +617,7 @@ const CustomSizeRequest = ({
               </div>
               <div>
                 <label htmlFor={fieldId("message")} className={cn(META, "block mb-1.5")}>
-                  Anything else <span className="text-ink-faint">(optional)</span>
+                  Anything else <span className="text-ink-fade">(optional)</span>
                 </label>
                 <textarea
                   id={fieldId("message")}
@@ -1877,7 +1877,16 @@ const BuyBox = ({
           )}
         </p>
         {status === "error" && (
-          <p className="mt-2 font-sans text-[13.5px] font-semibold text-ink m-0">{errorMsg}</p>
+          <p
+            role="alert"
+            className="mt-2 flex items-center gap-2 rounded-[3px] ring-1 ring-ink/40 px-3 py-2 font-sans text-[13.5px] font-semibold text-ink m-0"
+          >
+            <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-ink/70" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+              <circle cx="10" cy="10" r="8" />
+              <path d="M10 6v5M10 14h.01" strokeLinecap="round" />
+            </svg>
+            {errorMsg}
+          </p>
         )}
 
         {/* Made-to-order reassurance — surfaces the REAL 24-hour goodwill
@@ -2336,13 +2345,22 @@ const StickyAddBar = ({
               {fmtP(barTotalPence)}
             </span>
           </span>
-          <button
-            type="button"
-            onClick={onAdd}
-            className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
-          >
-            {added ? "Added ✓" : "Add to basket"}
-          </button>
+          {added ? (
+            <Link
+              to="/basket"
+              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+            >
+              View basket ✓
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={onAdd}
+              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+            >
+              Add to basket
+            </button>
+          )}
         </motion.div>
 
         {/* DESKTOP — the original bottom-right pill (md and up). */}
@@ -2369,13 +2387,22 @@ const StickyAddBar = ({
               {fmtP(barTotalPence)}
             </span>
           </span>
-          <button
-            type="button"
-            onClick={onAdd}
-            className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
-          >
-            {added ? "Added ✓" : "Add to basket"}
-          </button>
+          {added ? (
+            <Link
+              to="/basket"
+              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+            >
+              View basket ✓
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={onAdd}
+              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+            >
+              Add to basket
+            </button>
+          )}
         </motion.div>
         </>
       )}
@@ -2491,10 +2518,19 @@ export const PaintingDetail = () => {
   const reviewStats = useReviewStats(painting?.id);
 
   // Add-on state — lives on the parent so the sticky add bar and the BuyBox
-  // share one source of truth.
-  const [framing, setFraming] = useState(false);
+  // share one source of truth. LAZILY initialised to the FRAMED-default (the
+  // same rule the mount effect below applies) so the very first paint already
+  // shows the framed floor price — no bare-unframed→framed price JUMP on load
+  // (audit 2026-07-28). anchorTier + the price helpers are all in scope above.
+  const [framing, setFraming] = useState(
+    () => (anchorTier ? getFramingPricePence(anchorTier) !== null : false),
+  );
   const [embellished, setEmbellished] = useState(false);
-  const [canvas, setCanvas] = useState(false);
+  const [canvas, setCanvas] = useState(() => {
+    const framingAvail = anchorTier ? getFramingPricePence(anchorTier) !== null : false;
+    const canvasAvail = anchorTier ? getCanvasPricePence(anchorTier) !== null : false;
+    return !framingAvail && canvasAvail;
+  });
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
   const [paperFinish, setPaperFinish] = useState<string>(DEFAULT_PAPER_FINISH);

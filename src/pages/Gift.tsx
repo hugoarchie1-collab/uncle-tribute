@@ -378,7 +378,7 @@ export const Gift = () => {
                         setCustomAmount(e.target.value);
                         setError("");
                       }}
-                      className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-fade transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       placeholder={String(minPounds)}
                     />
                   </div>
@@ -406,7 +406,7 @@ export const Gift = () => {
                     autoComplete="name"
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-fade transition-shadow"
                     placeholder="Their name"
                   />
                 </label>
@@ -420,7 +420,7 @@ export const Gift = () => {
                     autoComplete="email"
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-faint transition-shadow"
+                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink-fade transition-shadow"
                     placeholder="them@example.com"
                   />
                 </label>
@@ -435,7 +435,7 @@ export const Gift = () => {
                   value={giftMessage}
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={400}
-                  className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-faint transition-shadow resize-none"
+                  className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.65] text-ink placeholder:text-ink-fade transition-shadow resize-none"
                   placeholder="A few words to go with the gift."
                 />
               </label>

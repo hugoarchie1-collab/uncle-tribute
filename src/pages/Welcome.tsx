@@ -1066,13 +1066,16 @@ export const Welcome = () => {
           </section>
 
           {/* 6 · CRAFT — Each painting is a ritual.
-              Sits FLAT on the peacock backdrop like every other section
-              (restraint pass): the frosted-glass panel — generous rounding,
-              translucent dark fill, luminous border and lift-shadow — was
-              removed; a plain hairline divider gives the dense section (heading +
-              intro + two paragraphs + a 6-row spec ledger) its separation. */}
+              ⚠️ This section is DELIBERATELY the one "island" on the page: a
+              rounded, translucent-dark card with a warm cream hairline ring +
+              lift-shadow (NO backdrop-blur — scroll-jank gotcha). Hugo explicitly
+              RESTORED "the cool island with the image of him painting + the
+              details" on 2026-07-28 (see the figure note below), so do NOT strip
+              the card wrapper back to a flat section — that would revert an owner
+              decision. It holds the heading + intro + the full-width craft photo
+              + two paragraphs + the 6-row material ledger. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-white/12 shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
+            <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
               <Reveal as="div" className="text-center mb-8 md:mb-10">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
@@ -1102,7 +1105,7 @@ export const Welcome = () => {
                   material ledger in two columns below. No side space, no floating
                   gaps, no one cropped out. */}
               <Reveal as="div" className="flex flex-col gap-8 lg:gap-10">
-                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-white/10 aspect-[16/10] sm:aspect-[3/2]">
+                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line aspect-[16/10] sm:aspect-[3/2]">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"

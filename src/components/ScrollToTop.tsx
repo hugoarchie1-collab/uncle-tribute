@@ -42,7 +42,7 @@ export const ScrollToTop = () => {
       onClick={toTop}
       aria-label="Back to top"
       title="Back to top"
-      className={`press fixed bottom-6 right-5 sm:right-6 z-[100] inline-flex h-12 w-12 items-center justify-center rounded-full text-ink shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] ring-1 ring-white/15 backdrop-blur-sm transition-[opacity,transform] duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
+      className={`press fixed bottom-6 right-5 sm:right-6 z-[100] inline-flex h-12 w-12 items-center justify-center rounded-full text-ink shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] ring-1 ring-line backdrop-blur-sm transition-[opacity,transform] duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
         shown ? "opacity-100" : "pointer-events-none opacity-0 translate-y-2"
       }`}
       style={{

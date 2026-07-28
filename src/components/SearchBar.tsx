@@ -254,7 +254,7 @@ export const SearchBar = ({
             // the search "looked like a blur") — a distinct near-black fill + a
             // stronger cream ring, vs the page variant's blurred glass.
             isPage ? "bg-bg-soft/60 backdrop-blur-sm" : "bg-[#0a0908]/80",
-            isPage ? "placeholder:text-ink-faint" : "placeholder:text-ink/45",
+            isPage ? "placeholder:text-ink-fade" : "placeholder:text-ink/45",
             "font-sans text-ink",
             isPage ? "ring-1 ring-line" : "ring-1 ring-[rgba(237,230,214,0.32)]",
             "transition-shadow duration-200",
