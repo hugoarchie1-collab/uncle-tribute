@@ -6,16 +6,15 @@ import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
-import {
-  EYEBROW,
-  EYEBROW_MUTED,
-  EYEBROW_TIGHT,
-  TITLE,
-  SUBTITLE,
-  META,
-  BTN_PRIMARY,
-} from "../components/ui/tokens";
+import { TITLE, SUBTITLE, META, BTN_PRIMARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+
+// Clean, un-tracked labels for the sheet — NO wide letter-spacing / uppercase
+// "eyebrow" styling (Hugo dislikes it). Plain, tight, legible.
+const LABEL = "font-sans text-[13px] font-semibold text-accent m-0";
+const LABEL_MUTED = "font-sans text-[13px] font-medium text-ink-muted m-0";
+const CARD_LABEL = "font-sans text-[15px] font-semibold text-ink m-0";
+const COL_LABEL = "font-sans text-[12.5px] font-semibold text-ink-muted m-0";
 
 /**
  * /trade/pricing — the GATED trade price sheet.
@@ -240,7 +239,7 @@ export const TradePricing = () => {
 
                 <form onSubmit={onSubmit} className="mt-6 flex flex-col sm:flex-row gap-3 sm:items-end">
                   <label className="block flex-1">
-                    <span className={cn(EYEBROW_TIGHT, "block mb-2")}>
+                    <span className={cn(COL_LABEL, "block mb-2")}>
                       Access code
                     </span>
                     <input
@@ -313,13 +312,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
       <Reveal as="header" className="pt-1 md:pt-2">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <img
-              src="/logo/logo-emblem.svg"
-              alt=""
-              aria-hidden="true"
-              className="trade-mark h-10 md:h-11 w-auto mb-4 opacity-90 select-none"
-            />
-            <p className={cn(EYEBROW, "m-0 mb-2.5")}>The estate of Stephen Meakin · Trade</p>
+            <p className={cn(LABEL, "mb-2.5")}>The estate of Stephen Meakin · Trade</p>
             <h1 ref={headingRef} tabIndex={-1} className={cn(TITLE, "m-0 max-w-none outline-none")}>Trade price sheet.</h1>
           </div>
           <button
@@ -342,8 +335,10 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
       {/* Tier legend */}
       <Reveal as="div" className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
         {sheet.tiers.map((t) => (
-          <div key={t.id} className="border border-line p-4">
-            <p className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>{t.label}</p>
+          <div key={t.id} className="border border-line p-4 flex flex-col">
+            {/* min-height reserves two label lines so the % baselines align
+                across all three cards even when a label wraps. */}
+            <p className={cn(CARD_LABEL, "mb-1.5 leading-[1.3] min-h-[2.4em]")}>{t.label}</p>
             <p className="font-display text-ink m-0 text-[clamp(22px,2.4vw,30px)] leading-none">
               {t.discountPercent}% <span className="text-ink-muted text-[0.6em] align-middle">off retail</span>
             </p>
@@ -357,13 +352,13 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
         <table className="w-full min-w-[660px] border-collapse text-left trade-table">
           <thead>
             <tr className="border-b border-ink/25">
-              <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold")}>Size</th>
-              <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold")}>Finish</th>
-              <th className={cn(EYEBROW_TIGHT, "py-3 pr-4 font-bold text-right")}>Retail</th>
+              <th className={cn(COL_LABEL, "py-3 pr-4")}>Size</th>
+              <th className={cn(COL_LABEL, "py-3 pr-4")}>Finish</th>
+              <th className={cn(COL_LABEL, "py-3 pr-4 text-right")}>Retail</th>
               {sheet.tiers.map((t) => (
                 <th
                   key={t.id}
-                  className={cn(EYEBROW_TIGHT, "py-3 pl-4 font-bold text-right whitespace-nowrap")}
+                  className={cn(COL_LABEL, "py-3 pl-4 text-right whitespace-nowrap")}
                 >
                   {t.shortLabel}
                   <span className="block text-ink-muted font-normal tracking-normal normal-case text-[12px]">
@@ -411,7 +406,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
 
       {/* Terms */}
       <Reveal as="section" className="mt-12 border-t border-line pt-8">
-        <p className={cn(EYEBROW, "m-0 mb-5")}>Terms</p>
+        <p className={cn(LABEL, "mb-5")}>Terms</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-7">
           {TERMS.map((t) => (
             <div key={t.title}>
@@ -427,10 +422,10 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
       {/* Estate footer — prints, so a designer can act on the PDF. */}
       <Reveal as="div" className="mt-12 border-t border-line pt-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
-          <p className={cn(EYEBROW_MUTED, "m-0")}>
+          <p className={cn(CARD_LABEL, "text-ink-muted")}>
             The Mandala Company — the estate of Stephen Meakin
           </p>
-          <p className={cn(EYEBROW_MUTED, "m-0")}>
+          <p className={cn(LABEL_MUTED)}>
             info@themandalacompany.com · themandalacompany.com
           </p>
         </div>
@@ -500,9 +495,6 @@ const PRINT_CSS = `
   /* Defeat the on-scroll Reveal fade so EVERY section prints (not just what was
      scrolled into view) — force full opacity, no transform. */
   .trade-sheet-main, .trade-sheet-main * { opacity: 1 !important; transform: none !important; }
-  /* The estate mark is a cream SVG (for the dark web page) — flip it to crisp
-     black ink for paper. */
-  .trade-mark { filter: brightness(0) !important; opacity: 0.9 !important; }
   /* Drop the non-sheet flow siblings entirely so the sheet starts at the page
      top with no blank pages (nav / footer / scene backdrop). */
   .trade-sheet-root > *:not(.trade-sheet-main) { display: none !important; }
@@ -528,10 +520,10 @@ const PRINT_CSS = `
     letter-spacing: 0 !important;
     line-height: 1.45 !important;
   }
-  .trade-sheet h1 { font-size: 25pt !important; line-height: 1.05 !important; margin: 0 0 6pt !important; letter-spacing: -0.01em !important; }
+  .trade-sheet h1 { font-size: 25pt !important; line-height: 1.05 !important; margin: 0 0 6pt !important; letter-spacing: -0.02em !important; }
   .trade-sheet h3 { font-size: 12pt !important; line-height: 1.2 !important; margin: 0 0 3pt !important; }
-  /* Eyebrows / labels stay small caps but readable. */
-  .trade-sheet [class*="tracking-"] { letter-spacing: 0.14em !important; }
+  /* NOTE: no letter-spacing override — everything stays tight (the old
+     [class*=tracking-] rule was spreading the title + labels apart). */
   /* Intro + terms body copy. */
   .trade-sheet p { font-size: 10.5pt !important; }
 
