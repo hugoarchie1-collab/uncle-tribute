@@ -1316,7 +1316,7 @@ export const Welcome = () => {
               }}
             />
             <img
-              src={asset("/img/scenes/jupiter-limb-v4.webp")}
+              src={asset("/img/scenes/jupiter-limb-v14.webp")}
               alt=""
               loading="lazy"
               decoding="async"
