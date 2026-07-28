@@ -20,7 +20,6 @@ import { useParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
 import { PageMasthead } from "../components/PageMasthead";
@@ -381,7 +380,6 @@ export const Auth = () => {
           </Reveal>
         </section>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

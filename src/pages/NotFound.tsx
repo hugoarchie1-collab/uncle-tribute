@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -101,7 +100,7 @@ export const NotFound = () => {
                   </span>
                 </Link>
                 <Link to="/collections" className={BTN_SECONDARY}>
-                  View the collections
+                  See the collection
                 </Link>
               </div>
             </Reveal>
@@ -164,7 +163,6 @@ export const NotFound = () => {
           </div>
         </div>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

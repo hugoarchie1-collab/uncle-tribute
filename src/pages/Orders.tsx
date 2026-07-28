@@ -9,7 +9,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
 import { useNoindexHead } from "../lib/useNoindexHead";
@@ -76,13 +75,17 @@ export const Orders = () => {
         <Reveal>
           <PageMasthead
             eyebrow="Orders & returns"
-            meta={
-              <Link to="/account" className="hover:text-accent transition-colors">
+            title={<>Track an order</>}
+          >
+            <p className="mt-4 md:mt-5">
+              <Link
+                to="/account"
+                className={cn(META, "m-0 hover:text-accent transition-colors")}
+              >
                 Sign in for full history <span aria-hidden="true">→</span>
               </Link>
-            }
-            title={<>Track an order</>}
-          />
+            </p>
+          </PageMasthead>
         </Reveal>
 
         <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-10 items-start border-t border-line pt-8 md:pt-10">
@@ -183,7 +186,6 @@ export const Orders = () => {
           </Reveal>
         </div>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

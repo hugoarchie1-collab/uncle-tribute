@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { FooterCatalogue } from "./FooterCatalogue";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
@@ -74,8 +75,15 @@ const LinkColumn = ({
 );
 
 export const Footer = () => (
-  <footer
-    role="contentinfo"
+  // The catalogue strip is now rendered as the TOP of the Footer itself (Hugo
+  // 2026-07-28: "the catalogue on every single page, literally part of the
+  // footer, not separated"). Baking it in guarantees every page that mounts
+  // <Footer/> gets the strip flush above the columns as one continuous red
+  // block — it can never drift onto some pages and off others again.
+  <>
+    <FooterCatalogue />
+    <footer
+      role="contentinfo"
     // CONTINUOUS FOOTER — the link columns are the BOTTOM slice of one red
     // block shared with <FooterCatalogue/> above. This carries the BOTTOM half
     // of the nav bar's exact wax-seal gradient (`.nav-bg-scrolled`), starting
@@ -225,5 +233,6 @@ export const Footer = () => (
         </button>
       </p>
     </div>
-  </footer>
+    </footer>
+  </>
 );

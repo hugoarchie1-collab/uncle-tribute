@@ -2,7 +2,6 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -474,7 +473,7 @@ export const Trade = () => {
                 We'll help you compose the set — across sizes, finishes and
                 colourways — and prepare it as a single project.{" "}
                 <Link to="/collections" className="text-accent hover:underline underline-offset-2">
-                  Browse the collection →
+                  See the collection →
                 </Link>
               </p>
             </div>
@@ -516,7 +515,6 @@ export const Trade = () => {
         </section>
       </main>
 
-      <FooterCatalogue />
       <Footer />
     </div>
   );

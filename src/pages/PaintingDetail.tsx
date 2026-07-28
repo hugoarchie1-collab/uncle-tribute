@@ -12,7 +12,6 @@ import { useParams, useSearchParams, Link, Navigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { FrameWrap, CanvasWrap } from "../components/FramedPreview";
 import { Separator } from "../components/ui/separator";
@@ -3171,7 +3170,6 @@ export const PaintingDetail = () => {
             story so it never disturbs the monochrome buy box or pricing. */}
         <Reviews paintingId={painting.id} paintingTitle={painting.title} />
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
-        <FooterCatalogue />
         <Footer />
       </div>
 

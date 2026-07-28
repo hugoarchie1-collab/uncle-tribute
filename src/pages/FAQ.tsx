@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
@@ -123,7 +122,7 @@ const FAQS: QA[] = [
       <>
         Three tiers, each estate-stamped and ready to hang — framed in solid wood
         or gallery-wrapped on canvas, with the frame or canvas included in the
-        price and free delivery worldwide. <strong>Open Edition</strong> at £445 (issued within each edition, no fixed allocation).{" "}
+        price and free delivery worldwide. <strong>Open Edition</strong> at £445 (unnumbered, issued to order — no fixed allocation).{" "}
         <strong>Collector Edition</strong> at £750 (edition of 200).{" "}
         <strong>Atelier Edition</strong> at £1,300 (edition of 75).
       </>
@@ -384,7 +383,6 @@ export const FAQ = () => {
           </Reveal>
         </section>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

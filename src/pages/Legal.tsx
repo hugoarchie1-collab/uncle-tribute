@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Seo } from "../components/Seo";
@@ -873,7 +872,6 @@ const LegalPage = ({
           ))}
         </article>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

@@ -38,7 +38,6 @@ import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { SceneReveal } from "../components/SceneReveal";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { AssetImage } from "../components/AssetImage";
 import { Seo } from "../components/Seo";
 import { Reveal } from "../components/Reveal";
@@ -195,7 +194,7 @@ const NewsMasthead = () => (
           style={{
             ...MASTHEAD_TITLE_STYLE,
             fontSynthesis: "none",
-            textShadow: "0 3px 28px rgba(0,0,0,0.7), 0 1px 4px rgba(0,0,0,0.55)",
+            textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.5)",
           }}
         >
           News &amp; <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>releases</em>
@@ -498,7 +497,7 @@ export const News = () => {
                 {/* Programme spine — a quiet ledger laid out two-up so the column
                     fills its width and height densely, never a thin stack with a
                     half-empty void beside the panel. Page framing microcopy. */}
-                <ul className="list-none p-0 m-0 mt-5 md:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-10 border-t border-line">
+                <ul className="list-none p-0 m-0 mt-5 md:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-x-10 border-t border-line">
                   {[
                     ["Collections & singles", "Prints released like albums"],
                     ["Exhibitions", "Where the work goes on view"],
@@ -700,7 +699,6 @@ export const News = () => {
           </Reveal>
         ) : null}
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

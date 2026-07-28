@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { MagneticLink } from "../components/MagneticLink";
 import { ShareTheEstate } from "../components/ShareTheEstate";
@@ -343,7 +342,6 @@ export const OrderSuccess = () => {
             to suggest. */}
         <CompleteTheSet justBought={justBought} />
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );
@@ -418,7 +416,6 @@ export const OrderCancel = () => {
           </div>
         </Reveal>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

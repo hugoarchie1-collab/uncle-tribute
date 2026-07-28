@@ -5,7 +5,6 @@ import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SOCIAL_PROFILES } from "../data/socials";
 import { cn } from "../lib/cn";
 
@@ -244,7 +243,6 @@ export const Links = () => (
       </Reveal>
     </main>
 
-    <FooterCatalogue />
     <Footer />
   </div>
 );

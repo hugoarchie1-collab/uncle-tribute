@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
@@ -220,7 +219,7 @@ export const Contact = () => {
               >
                 <p
                   className="font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(30px,4.2vw,64px)] leading-[1.05] text-ink m-0 mb-4 md:mb-5"
-                  style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
+                  style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.45)" }}
                 >
                   Thank you.
                 </p>
@@ -428,7 +427,6 @@ export const Contact = () => {
           </Reveal>
         </section>
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

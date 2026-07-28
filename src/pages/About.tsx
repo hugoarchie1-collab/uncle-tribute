@@ -8,7 +8,6 @@ import {
 } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { LoopFilm } from "../components/LoopFilm";
@@ -1519,7 +1518,6 @@ export const About = () => {
         subject="Subscribe — Mandala Company"
         intro="Leave your name and email and we'll add you to Friends & Family. Occasional updates only — exhibitions, new releases, news from the estate."
       />
-      <FooterCatalogue />
       <Footer />
     </div>
   );

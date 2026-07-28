@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { LoopFilm } from "../components/LoopFilm";
@@ -1088,15 +1087,21 @@ export const Welcome = () => {
                   the image of him painting + the details"). NO backdrop-blur on the
                   panel (scroll-lag gotcha) — the translucent fill + ring + shadow
                   give the island lift on their own. */}
-              <Reveal as="div" className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
-                <figure className="m-0 overflow-hidden rounded-[14px] ring-1 ring-white/10">
+              {/* items-stretch + the photo cover-filling its column to the text's
+                  full height (lg:h-full) — Hugo 2026-07-28: the old items-center
+                  floated the shorter photo with "gaps above and below". Now the
+                  image is a flush full-bleed panel down the card's left half, level
+                  with the prose. Mobile keeps its natural 4:3 (aspect-[4/3], no crop,
+                  stacked). object-center keeps the two of them + the mandala. */}
+              <Reveal as="div" className="grid lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-stretch">
+                <figure className="relative m-0 overflow-hidden rounded-[14px] ring-1 ring-white/10 aspect-[4/3] lg:aspect-auto lg:h-full min-h-[240px]">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 1024px) 620px, 100vw"
-                    className="block w-full h-auto"
+                    className="absolute inset-0 block w-full h-full object-cover object-center"
                   />
                 </figure>
                 <div className="flex flex-col gap-y-4 md:gap-y-5">
@@ -1346,7 +1351,6 @@ export const Welcome = () => {
           </section>
         </main>
 
-        <FooterCatalogue />
         <Footer />
       </div>
     </>

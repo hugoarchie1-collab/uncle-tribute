@@ -21,7 +21,6 @@ import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { useNoindexHead } from "../lib/useNoindexHead";
 import { usePageTitle } from "../lib/usePageTitle";
@@ -174,7 +173,7 @@ const EmptyState = ({ query }: { query: string }) => {
       </p>
       <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3">
         {[
-          { to: "/collections", label: "Browse the collection" },
+          { to: "/collections", label: "See the collection" },
           { to: "/for-you", label: "Find a print for you" },
           { to: "/contact", label: "Ask the estate" },
         ].map((link) => (
@@ -286,7 +285,6 @@ export const Search = () => {
         )}
       </main>
 
-      <FooterCatalogue />
       <Footer />
     </div>
   );

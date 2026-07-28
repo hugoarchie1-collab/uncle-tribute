@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -289,11 +288,11 @@ export const Gift = () => {
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
-              {/* 2-up (→4-up on 3xl). NEVER 3-up: there are exactly four
-                  denominations, so a 3-col grid orphaned the fourth into a
-                  lopsided 3+1 last row beside two empty cells (the gap Hugo
-                  flags). 2/4 keeps every row full at every width. */}
-              <div className="grid grid-cols-2 3xl:grid-cols-4 gap-2.5 md:gap-3 3xl:gap-4">
+              {/* Three size-pegged denominations (A0/Heirloom retired), so the
+                  grid is 3-up from sm — one full row, no orphan — stacking to
+                  1-up on phones where a 3-across amount would clip £1,300. The
+                  custom-amount rung below spans the full row. */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3 3xl:gap-4">
                 {denominations.map((d) => {
                   const isSelected =
                     selection.kind === "tier" && selection.id === d.id;
@@ -339,7 +338,7 @@ export const Gift = () => {
                   }}
                   aria-pressed={selection.kind === "custom"}
                   className={cn(
-                    "text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft/85 col-span-2 3xl:col-span-4",
+                    "text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft/85 col-span-1 sm:col-span-3",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                     selection.kind === "custom"
                       ? "ring-accent ring-2"
@@ -487,7 +486,6 @@ export const Gift = () => {
           </div>
         )}
       </main>
-      <FooterCatalogue />
       <Footer />
     </div>
   );

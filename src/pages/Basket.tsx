@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { Reveal } from "../components/Reveal";
 import { AssetImage } from "../components/AssetImage";
 import { Badge } from "../components/ui/badge";
@@ -401,7 +400,7 @@ export const Basket = () => {
               estate-stamped on behalf of The Mandala Company.
             </p>
             <Link to="/collections" className={cn(BTN_PRIMARY, "w-fit")}>
-              View the collections <span aria-hidden="true" className="ml-2">→</span>
+              See the collection <span aria-hidden="true" className="ml-2">→</span>
             </Link>
 
             {/* BEGIN WITH THESE — quiet three-tile strip of signature works
@@ -977,7 +976,6 @@ export const Basket = () => {
       {/* Exit-intent toast — mounts globally on the basket page, fires
           only on top-edge mouse exit and only once per session. */}
       <ExitSaveBasket items={items} />
-      <FooterCatalogue />
       <Footer />
     </div>
   );

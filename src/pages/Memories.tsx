@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { FooterCatalogue } from "../components/FooterCatalogue";
 import { SceneReveal } from "../components/SceneReveal";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
@@ -1126,7 +1125,6 @@ export const Memories = () => {
 
       </main>
 
-      <FooterCatalogue />
       <Footer />
       <ShareMemoryModal
         open={modalOpen}

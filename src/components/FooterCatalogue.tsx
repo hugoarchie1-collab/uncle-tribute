@@ -26,13 +26,18 @@ import { EYEBROW_MUTED } from "./ui/tokens";
 export const FooterCatalogue = () => {
   const reduceMotion = useReducedMotion();
 
+  // Only paintings that actually have an AVAILABLE cover — a painting whose
+  // every colourway is hidden (removed / not-yet-released) has no purchasable
+  // face, so it must not leave an empty black tile in the strip (Hugo 2026-07-28:
+  // "2 empty tiles"). Dropping the `?? colourways[0]` fallback filters those out.
   const tiles = PAINTINGS.map((p) => {
     const cover =
       p.colourways.find((c) => c.isOriginal && c.available) ??
-      p.colourways.find((c) => c.available) ??
-      p.colourways[0];
-    return { id: p.id, title: p.title, image: cover.image, colourway: cover.name };
-  });
+      p.colourways.find((c) => c.available);
+    return cover
+      ? { id: p.id, title: p.title, image: cover.image, colourway: cover.name }
+      : null;
+  }).filter((t): t is { id: string; title: string; image: string; colourway: string } => t !== null);
 
   const variants: Variants = reduceMotion
     ? {
@@ -84,7 +89,11 @@ export const FooterCatalogue = () => {
           whileInView="show"
           viewport={{ once: true, amount: 0.1 }}
           variants={variants}
-          className="group/cat grid grid-cols-10 gap-2.5 list-none p-0 m-0"
+          className="group/cat grid gap-2.5 list-none p-0 m-0"
+          // Columns follow the ACTUAL tile count so the row always fills exactly —
+          // never a hardcoded 10 that leaves empty cells when fewer paintings are
+          // live (Hugo 2026-07-28). One clean row of every catalogued painting.
+          style={{ gridTemplateColumns: `repeat(${tiles.length}, minmax(0, 1fr))` }}
         >
           {tiles.map((t) => (
             <li
