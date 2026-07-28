@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, type CSSProperties } from "react";
 import { asset } from "../lib/asset";
 
 /**
@@ -103,15 +103,6 @@ const CANVAS_DEPTH_SHADOW =
   "drop-shadow(0 2px 3px rgba(0,0,0,0.45)) drop-shadow(0 26px 42px rgba(0,0,0,0.5))";
 const CANVAS_SIZER =
   "mx-auto block max-w-full max-h-[72svh] lg:max-h-[70svh] 2xl:max-h-[72svh]";
-// The mirror-wrap depth cue: the image visibly TURNS THE CORNER down the right
-// edge and along the bottom (a darkened wrapped band = the stretcher thickness),
-// with a soft light catch on the top-left face — so a plain print vs a
-// gallery-wrapped canvas are obviously different objects (Hugo: "it doesn't show
-// any change"). Point 101's stretched-canvas look, in Stephen's own artwork.
-const CANVAS_WRAP_EDGE =
-  "inset 14px 14px 26px -20px rgba(255,255,255,0.32), " +
-  "inset -2px -2px 30px -18px rgba(0,0,0,0.35)";
-
 // The visible stretcher-bar DEPTH of the wrapped canvas (a real gallery canvas
 // is ~38mm deep). Rendered as true 3D right/bottom faces so the canvas reads as
 // a solid object with thickness — Point 101's stretched-canvas look, on
@@ -183,30 +174,43 @@ export const CanvasWrap = ({
     />
   );
 
-  // MIRROR WRAP — a gallery-wrapped stretcher, image edge-to-edge, standing off
-  // the wall with a visible ~38mm depth (true 3D side faces + a subtle tilt).
+  // MIRROR WRAP — a real gallery-wrapped stretched canvas. The PRINTED image
+  // visibly wraps, MIRRORED, around all four edges (top, bottom, left, right) —
+  // exactly like Point 101's canvas preview (Hugo 2026-07-28: "you need to
+  // slightly see the print around every edge"). The front sits inset by the wrap
+  // thickness; eight mirrored slices fill the wrapped border (edges + corners); a
+  // fold shadow + a float drop-shadow read it as a solid object off the wall.
   if (!floatColor) {
+    const inset = "5.75%"; // wrapped-edge thickness as a share of the whole canvas
+    const front = "88.5%"; // the front face (100% − 2×inset)
+    const ar = String(aspectRatio || 1);
+    const artBg: CSSProperties = artUrl
+      ? { backgroundImage: `url(${artUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+      : { background: "#d9d1bf" };
+    // One mirrored slice: a clipped window over a FRONT-sized copy of the art,
+    // flipped so the fold (window edge touching the front) matches the print edge.
+    const slice = (win: CSSProperties, inner: CSSProperties) => (
+      <div aria-hidden className="absolute overflow-hidden" style={win}>
+        <div className="absolute" style={{ ...artBg, ...inner }} />
+      </div>
+    );
     return (
-      <div className={CANVAS_SIZER} style={{ aspectRatio: String(aspectRatio || 1) }}>
-        <div
-          className="relative w-full h-full"
-          style={{
-            transformStyle: "preserve-3d",
-            transform: CANVAS_TILT,
-            filter: CANVAS_DEPTH_SHADOW,
-          }}
-        >
-          {rightFace}
-          {bottomFace}
-          <div
-            className="relative w-full h-full overflow-hidden"
-            style={{
-              transform: `translateZ(${CANVAS_DEPTH})`,
-              // A faint light catch on the top-left front face — the canvas edge
-              // catching gallery light — so the front reads as a lit surface.
-              boxShadow: CANVAS_WRAP_EDGE,
-            }}
-          >
+      <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
+        <div className="relative w-full h-full" style={{ filter: CANVAS_DEPTH_SHADOW }}>
+          {/* four edges — the print mirrored outward */}
+          {slice({ top: 0, left: inset, width: front, height: inset }, { left: 0, bottom: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "bottom" })}
+          {slice({ bottom: 0, left: inset, width: front, height: inset }, { left: 0, top: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "top" })}
+          {slice({ top: inset, left: 0, width: inset, height: front }, { top: 0, right: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "right" })}
+          {slice({ top: inset, right: 0, width: inset, height: front }, { top: 0, left: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "left" })}
+          {/* four corners — double-mirrored (inner is front-sized ≈1539% of the corner) */}
+          {slice({ top: 0, left: 0, width: inset, height: inset }, { bottom: 0, right: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom right" })}
+          {slice({ top: 0, right: 0, width: inset, height: inset }, { bottom: 0, left: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom left" })}
+          {slice({ bottom: 0, left: 0, width: inset, height: inset }, { top: 0, right: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top right" })}
+          {slice({ bottom: 0, right: 0, width: inset, height: inset }, { top: 0, left: 0, width: "1539%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top left" })}
+          {/* a hint of shadow across the wrapped border so the sides read as in shadow */}
+          <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.22)" }} />
+          {/* FRONT face — the actual art, inset by the wrap thickness, with a fold shadow */}
+          <div className="absolute overflow-hidden" style={{ top: inset, left: inset, width: front, height: front, boxShadow: "0 0 7px 1px rgba(0,0,0,0.32)" }}>
             {children}
           </div>
         </div>
