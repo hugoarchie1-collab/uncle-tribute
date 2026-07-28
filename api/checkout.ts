@@ -324,6 +324,11 @@ const VALID_PAINTING_IDS = new Set<string>([
   "tridecagon-moon-star",
   "lulin",
   "enneagon-swans",
+  // Ancient Canons (added 2026-07-28)
+  "celtic-shield",
+  "twelve-around-three",
+  "persian-flower-of-life",
+  "royal-knot",
 ]);
 
 // Distinct paintings in the catalogue. A basket containing at least one line of
@@ -343,6 +348,10 @@ const PAINTING_TITLES: Record<string, string> = {
   "tridecagon-moon-star": "Tridecagon Moon Star",
   "lulin": "Lulin",
   "enneagon-swans": "Enneagon — The Swans",
+  "celtic-shield": "Orbital — Celtic Shield Mandala",
+  "twelve-around-three": "12 Around 3 — Flower of Life",
+  "persian-flower-of-life": "Persian Flower of Life",
+  "royal-knot": "Royal Knot",
 };
 
 const corsHeaders = {

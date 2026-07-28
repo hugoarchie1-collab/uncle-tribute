@@ -72,7 +72,7 @@ export interface Painting {
   id: string;
   title: string;
   year: string;
-  collection: "habundia" | "genesis" | "born-in-the-sky";
+  collection: "habundia" | "genesis" | "born-in-the-sky" | "ancient-canons";
   size?: string;           // e.g. "60 × 60 cm (approx. 24 × 24 in)" — from the source PDF
   description: string;     // the full story for this painting
   artistQuote?: string;    // Stephen's own words, if a quote exists for this piece
@@ -817,7 +817,7 @@ export const parseSizeCm = (size: string): { w: number; h: number } | null => {
 };
 
 export interface Collection {
-  id: "habundia" | "genesis" | "born-in-the-sky";
+  id: "habundia" | "genesis" | "born-in-the-sky" | "ancient-canons";
   title: string;
   description: string;
   /**
@@ -860,6 +860,18 @@ export const COLLECTIONS: Collection[] = [
     description:
       "Stephen worked at night. While the world slept, he was at his canvas, alone with geometry and gold leaf and the dark outside the window. He understood, more than most, what it felt like to carry knowledge that set you apart. To see things others didn't look for. To find more companionship in the sky than in a room full of people.\n\nThese five paintings came from that place. Each one about something above us that most people never notice: a constellation left out, a comet on its only pass, a message sent into deep space not knowing if it will ever be received, nine stars in the shape of a swan.\n\nThings that exist beyond the edge of what is commonly seen or celebrated. Stephen found them beautiful. He spent months, sometimes over a year, bringing each one down to earth.\n\nHe called the Enneagon a painting born in the sky. All five of these were.",
     backdropImage: "/img/scenes/born-in-the-sky-blur-v2.webp",
+  },
+  {
+    id: "ancient-canons",
+    title: "Ancient Canons",
+    // NOTE (2026-07-28): placeholder description built from Hugo's supplied
+    // framing — expand/rewrite freely. Kept faithful to his words; nothing
+    // about Stephen invented here.
+    description:
+      "Ancient Canons takes its name from a phrase of Stephen's own — \"the ancient canons of the Geometer's Craft.\"\n\nThese are the works that express that craft most directly: the Celtic, Pythagorean, Islamic and Flower of Life traditions he studied for years, each drawn in its own language of line and number.",
+    // No backdropImage yet → Collections.tsx renders the hand-drawn SVG scene
+    // fallback (works fine). Add "/img/scenes/ancient-canons-blur-vN.webp" later
+    // to give it a photographic hero like the other three.
   },
 ];
 
@@ -1193,6 +1205,138 @@ export const PAINTINGS: Painting[] = [
         image: "/img/paintings/enneagon-velvet-purple-v2.jpg",
         hex: "#5e3d6e",
         isOriginal: false,
+        available: true,
+      },
+    ],
+  },
+
+  // -------------------------------------------------------------------------
+  // ANCIENT CANONS
+  // (added 2026-07-28 — the four works below reference images that DO NOT
+  // EXIST YET. Drop the JPGs into public/img/paintings/ with the exact
+  // filenames shown in each `image:` before pushing live, or the tiles 404.)
+  // -------------------------------------------------------------------------
+  {
+    id: "celtic-shield",
+    title: "Orbital — Celtic Shield Mandala",
+    year: "2003",
+    collection: "ancient-canons",
+    description:
+      "Kepler spent years trying to understand why the planets moved as they did. In 1619, in Harmonices Mundi — The Harmony of the World — he published his discovery: each planet's orbital velocity produces a musical tone. The cosmos was not silent. It was singing. Pythagoras had said the same thing two thousand years earlier.\n\nGeometer, architect and antiquarian, Stephen had studied the world's sacred sites before he ever put brush to canvas. This is what that knowledge looks like made visible — a Celtic shield mandala, circular, with concentric rings of pattern, the outer edge serrated into sharp star points like the teeth of a weapon or the rays of a sun. Celtic knotwork spirals inward through layer after layer of interlocking gold and deep green toward a centre of interlinked circles. The rings read like the orbits of nested spheres — one inside the other, each moving at its own frequency, each one a year's worth of the same returning path.\n\nThe eye follows the rings the way a body follows an ellipse. Drawn inward. Circling back. Never quite arriving.",
+    colourways: [
+      {
+        name: "Aurora Green",
+        image: "/img/paintings/celtic-shield-aurora-green.jpg",
+        hex: "#5f9e79",
+        isOriginal: true,
+        available: true,
+      },
+      {
+        name: "Tyrian Purple",
+        image: "/img/paintings/celtic-shield-tyrian-purple.jpg",
+        hex: "#7a2f5a",
+        isOriginal: false,
+        available: true,
+      },
+      {
+        // ⚠️ no artwork in the doc yet — hidden until Hugo supplies Faience Blue.
+        name: "Faience Blue",
+        image: "/img/paintings/celtic-shield-faience-blue.jpg",
+        hex: "#3f8fa6",
+        isOriginal: false,
+        available: false,
+      },
+    ],
+  },
+  {
+    id: "twelve-around-three",
+    title: "12 Around 3 — Flower of Life",
+    year: "2005",
+    collection: "ancient-canons",
+    description:
+      "In 1611, Johannes Kepler conjectured that the maximum number of equal spheres you can pack around a single sphere is twelve. It took until 1998 to prove him right. Twelve is the structure of three-dimensional space — the number at which things are perfectly, completely surrounded.\n\nThree is the first shape. The triangle is the simplest polygon — the minimum number of points required to enclose space. In the Flower of Life, the innermost arrangement resolves into three.\n\nTwelve around three. The cosmos around the source.\n\nMeakin built this on the Flower of Life — the same symbol found at Abydos, in Leonardo's notebooks, and at the heart of his Transformation mandala five years earlier — but here in its specific structural logic: twelve circles arranged around the inner three, the whole assembly dense and lace-like, ring after ring of overlapping form radiating outward, every circle passing through the centre of the ones beside it. The surface has the quality of something grown rather than constructed — organic in its mathematics, alive in its repetition.",
+    colourways: [
+      {
+        name: "Tanzanite Purple",
+        image: "/img/paintings/twelve-around-three-tanzanite-purple.jpg",
+        hex: "#5a4a9c",
+        isOriginal: true,
+        available: true,
+      },
+      {
+        name: "Terracotta Brown",
+        image: "/img/paintings/twelve-around-three-terracotta-brown.jpg",
+        hex: "#a85a3c",
+        isOriginal: false,
+        available: true,
+      },
+      {
+        // ⚠️ no artwork in the doc yet — hidden until Hugo supplies Eden Green.
+        name: "Eden Green",
+        image: "/img/paintings/twelve-around-three-eden-green.jpg",
+        hex: "#3f7d54",
+        isOriginal: false,
+        available: false,
+      },
+    ],
+  },
+  {
+    id: "persian-flower-of-life",
+    title: "Persian Flower of Life",
+    year: "[ DATE ]", // [TBD] — Hugo to confirm (description references study c. 2007)
+    collection: "ancient-canons",
+    description:
+      "Stephen described his mission as weaving together four key components: \"The spirit of ancient Insular (Island) Arts, the great Rose Windows of Medieval Europe, the Art of Persian Geometry and the Sacred Mandala of Tibet.\"\n\nThis painting holds two of those four in the same frame simultaneously.\n\nPersian geometric art reached its peak between the 9th and 14th centuries in mosques, madrasas and palaces across Iran, Central Asia and Moorish Spain. In 2007, physicists studying the Alhambra in Granada discovered that medieval Islamic geometers had constructed quasi-crystalline patterns with five-fold symmetry — patterns Western mathematics had only formally described in the 1970s. They knew, through craft and geometric intuition, five centuries before Western science caught up.\n\nStephen studied this tradition for years — learning the ancient construction methods from illuminated manuscripts found in a Bournemouth library, later travelling to Petra in Jordan, standing inside the buildings these geometries were made to inhabit.\n\nThe Flower of Life — carved at Abydos, studied by Leonardo, at the heart of his Transformation mandala two decades earlier — here meets Persian geometric craft directly. The circular overlapping structure of the Flower of Life held within the angular interlaced lattice of girih tilework: warm amber and gold against deep blue, the colours of Persian tilework and pottery — lapis, cobalt, ochre — carried from the 13th century into this. Two ancient traditions, each complete in itself, each discovering the same underlying order from a different direction.",
+    colourways: [
+      // ⚠️ Hugo to confirm the ORIGINAL colourway name + rename the three alts
+      // ("Blue / Red / Purple" were his "need to rename" placeholders).
+      {
+        name: "Original",
+        image: "/img/paintings/persian-flower-of-life-original.jpg",
+        hex: "#d1a13a",
+        isOriginal: true,
+        available: true,
+      },
+      {
+        name: "Blue",
+        image: "/img/paintings/persian-flower-of-life-blue.jpg",
+        hex: "#2f6aa0",
+        isOriginal: false,
+        available: true,
+      },
+      {
+        // ⚠️ text-only in the doc (no image yet) — hidden until Hugo supplies Red.
+        name: "Red",
+        image: "/img/paintings/persian-flower-of-life-red.jpg",
+        hex: "#a8412f",
+        isOriginal: false,
+        available: false,
+      },
+      {
+        // ⚠️ text-only in the doc (no image yet) — hidden until Hugo supplies Purple.
+        name: "Purple",
+        image: "/img/paintings/persian-flower-of-life-purple.jpg",
+        hex: "#6a4a86",
+        isOriginal: false,
+        available: false,
+      },
+    ],
+  },
+  {
+    id: "royal-knot",
+    title: "Royal Knot",
+    year: "[ DATE ]", // [TBD] — Hugo to confirm
+    collection: "ancient-canons",
+    description:
+      "Stephen described his practice as built on four key components. The first: \"The spirit of ancient Insular (Island) Arts.\"\n\nThis is that spirit, unrestrained.\n\nIt began for Stephen in a library in Bournemouth in 1990. He found \"a dusty old hardback full of ancient illuminated manuscripts from all over the world. This book contained the loose-leaf illustrations of geometric pattern construction methods for both Arabic and Celtic pattern.\" He described finding something \"true\" in the patterns — and from that moment, his passion for geometry was born.\n\nThe illuminated manuscript tradition he discovered was created between the 6th and 9th centuries in the island monasteries of Scotland and Ireland — Iona, Lindisfarne, Durrow. Its greatest expression is the Book of Kells, produced around 800 CE, which Giraldus Cambrensis wrote in 1185 was \"the work of angels, not of men.\" The monks who made it worked by candlelight on single pages for years. At its heart: the endless knot — a strand that passes over and under itself continuously, with no beginning and no end. The endless knot is also one of the Eight Auspicious Symbols of Tibetan Buddhism. Stephen knew both traditions.\n\nHere he takes the Celtic strand and fills it with full contemporary colour — purples, greens, oranges, blues — the knotwork large and fluid, bold forms interlocking across the canvas. Nothing breaks. Every strand continues. Every colour flows into the next. It has a joy in it that the candlelit manuscript tradition never permitted.\n\nThe knot keeps going beyond any individual claim on it. It always has.",
+    colourways: [
+      // ⚠️ Hugo did not list colourways for Royal Knot — this single "Original"
+      // is a placeholder so the page renders. Add the real colourway suite.
+      {
+        name: "Original",
+        image: "/img/paintings/royal-knot-original.jpg",
+        hex: "#6a4a86",
+        isOriginal: true,
         available: true,
       },
     ],

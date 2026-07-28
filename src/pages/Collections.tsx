@@ -27,6 +27,21 @@ import { cn } from "../lib/cn";
 import { PageMasthead } from "../components/PageMasthead";
 import { BTN_PRIMARY, EYEBROW, EYEBROW_MUTED, TITLE, SUBTITLE, META } from "../components/ui/tokens";
 
+// Roman numeral for a collection's index (1-based). Generated rather than
+// hardcoded so adding a 4th/5th collection numbers correctly with no edit here.
+const toRoman = (n: number): string => {
+  const table: [number, string][] = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"],
+    [100, "C"], [90, "XC"], [50, "L"], [40, "XL"],
+    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+  ];
+  let out = "";
+  for (const [value, sym] of table) {
+    while (n >= value) { out += sym; n -= value; }
+  }
+  return out;
+};
+
 // ── CANONICAL CENTRED ENVELOPE ────────────────────────────────────────────────
 // One shared max-width axis for the WHOLE page (the page-intro masthead AND every
 // collection section AND the catalogue set), so the page sits on a single centred
@@ -824,7 +839,7 @@ export const Collections = () => {
                     className={cn(EYEBROW, "m-0 mb-4")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                   >
-                    {["I", "II", "III"][collIndex]}
+                    {toRoman(collIndex + 1)}
                     <span className="mx-2 text-ink/35" aria-hidden="true">·</span>
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>

@@ -30,7 +30,12 @@ public/img/paintings/
 - Format: **JPG**, colour profile **sRGB**
 - Size: ideally **2000 × 2000 px** (square). Bigger is fine; it's displayed scaled.
 - Filename: lowercase-with-dashes, e.g. `winter-light.jpg`
-- (A matching `.webp` is served automatically if present — optional. JPG alone works.)
+- ⚠️ **A matching `.webp` sibling is REQUIRED, not optional.** The product-page
+  image uses `<picture>` and commits to the WebP source — a lone JPG shows a
+  broken image. After adding the JPG, generate the WebP next to it:
+  `cwebp -q 80 public/img/paintings/winter-light.jpg -o public/img/paintings/winter-light.webp`
+  (or run the batch optimiser — see below). Claude does this for you automatically
+  when placing artwork.
 
 ## Step 2 — Add the painting DATA
 
@@ -113,6 +118,30 @@ In `api/checkout.ts`, added `"winter-light"` to the allowed-ids list.
 Pushed to `main`. Live at `/collections/winter-light` in ~2 minutes. Done.
 
 ---
+
+## Adding a whole NEW collection (e.g. a fourth grouping)
+
+A collection is a top-level grouping (Habundia / Genesis / Born in the Sky / …).
+Adding one is **three small edits + the paintings**:
+
+1. **`src/data/paintings.ts` — allow the new collection id in TWO type unions.**
+   Both the `Painting.collection` field and the `Collection.id` field list the
+   allowed ids. Add your new id (e.g. `"ancient-canons"`) to **both** — miss one
+   and the build won't compile (a safe, loud failure).
+2. **`src/data/paintings.ts` — add a `COLLECTIONS` entry** with `id`, `title`,
+   `description`. `backdropImage` is **optional** — leave it off and the
+   Collections page draws a tasteful fallback scene; add
+   `"/img/scenes/<id>-blur-vN.webp"` later for a photographic hero like the others.
+3. **Add the paintings** exactly as in Steps 1–3 above, each with
+   `collection: "<your-new-id>"`.
+
+Everything else is automatic — the Collections page renders the new section (with
+the correct Roman numeral), its own "complete collection" set-bundle price, the
+home featured grid, routing, and pricing. No layout code to touch.
+
+> The `/print-catalogue` PDF layout is the one place that still lists the three
+> original collections by hand — it won't include a 4th collection until that page
+> is updated. It's an internal print-only page, so this doesn't affect the website.
 
 ## Troubleshooting
 
