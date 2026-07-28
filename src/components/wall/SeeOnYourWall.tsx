@@ -212,10 +212,12 @@ export const SeeOnYourWall = ({
             <h2 className="m-0 truncate font-display text-[clamp(18px,2.4vw,24px)] leading-tight text-ink">
               {painting.title}
             </h2>
-            <p className="m-0 mt-0.5 font-sans text-[13px] text-ink-muted">
-              {colourway.name} · {size.label} · <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span> ·{" "}
-              {frame.label}
-            </p>
+            {WALL_AR_ENABLED && (
+              <p className="m-0 mt-0.5 font-sans text-[13px] text-ink-muted">
+                {colourway.name} · {size.label} · <span className="text-ink">{wallDimsLabel(painting.id, size.cm)}</span> ·{" "}
+                {frame.label}
+              </p>
+            )}
           </div>
           <button
             ref={closeRef}
@@ -232,6 +234,31 @@ export const SeeOnYourWall = ({
 
         {/* ---- Scrollable body ---- */}
         <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
+          {!WALL_AR_ENABLED ? (
+            // Hugo 2026-07-28: while the wall preview is being remade, the panel
+            // must show ONLY a "temporarily unavailable" message — no colourway,
+            // size or frame pickers. Flip WALL_AR_ENABLED back to true to restore
+            // the full picker + AR UI (every section below is intact, unremoved).
+            <div className="flex min-h-full flex-col items-center justify-center gap-3 px-2 py-16 text-center">
+              <span
+                aria-hidden="true"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full text-ink-muted ring-1 ring-line"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7.5v5M12 16h.01" />
+                </svg>
+              </span>
+              <p className="m-0 font-display text-[clamp(20px,3vw,26px)] leading-tight text-ink">
+                Temporarily unavailable
+              </p>
+              <p className="m-0 max-w-[40ch] font-sans text-[14px] leading-[1.6] text-ink-muted">
+                The live wall preview is being remade and will be back soon. Every
+                piece is shown to scale on the product page.
+              </p>
+            </div>
+          ) : (
+          <>
           {showAr ? (
             <>
               {/* True-size AR tile — shows the print; on a capable phone the
@@ -406,6 +433,8 @@ export const SeeOnYourWall = ({
             <p className="mt-5 m-0 rounded-2xl bg-accent/10 px-4 py-3 text-center font-sans text-[13px] leading-[1.6] text-ink ring-1 ring-accent/30">
               For the AR experience, open this page in Safari or Chrome.
             </p>
+          )}
+          </>
           )}
         </div>
       </div>
