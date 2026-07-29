@@ -975,6 +975,23 @@ export const Welcome = () => {
                   </p>
                 ))}
               </Reveal>
+              {/* Stephen at the easel — the man behind the archive, closing the
+                  "less than a tenth of him" statement. Native 3:2, shown WHOLE
+                  (no crop), width-capped so it never fills the screen (Hugo
+                  2026-07-08). Moved here 2026-07-29 (Hugo: make the painting
+                  photo part of this section) from a standalone plate. */}
+              <Reveal as="figure" delay={0.15} className="m-0 mt-10 md:mt-14 mx-auto w-full max-w-[min(1040px,102svh)]">
+                <ImageReveal
+                  src="/img/welcome/stephen-painting-denim-v1.jpg"
+                  alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
+                  aspect="aspect-[3/2]"
+                  edges="none"
+                  parallax={0.08}
+                  objectPosition="center"
+                  shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
+                  sizes="(min-width: 1400px) 1040px, 92vw"
+                />
+              </Reveal>
             </div>
           </section>
 
@@ -1042,27 +1059,6 @@ export const Welcome = () => {
                 </div>
               </Reveal>
             </div>
-          </section>
-
-          {/* STEPHEN AT WORK — Hugo's supplied studio photograph: Stephen
-              painting at the easel with a finished mandala on the wall behind.
-              A full-content-width plate at native 3:2 (shown WHOLE, no crop)
-              that leads into the "ritual" section. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-            {/* Width-capped so the 3:2 plate never exceeds the viewport height
-                (Hugo 2026-07-08: no full-screen images); shown WHOLE, no crop. */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1180px,110svh)] 3xl:max-w-[min(1300px,110svh)]">
-              <ImageReveal
-                src="/img/welcome/stephen-painting-denim-v1.jpg"
-                alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
-                aspect="aspect-[3/2]"
-                edges="none"
-                parallax={0.08}
-                objectPosition="center"
-                shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
-                sizes="(min-width: 1400px) 1320px, 92vw"
-              />
-            </Reveal>
           </section>
 
           {/* 6 · CRAFT — Each painting is a ritual.
@@ -1342,7 +1338,7 @@ export const Welcome = () => {
             /* mb cancels <main>'s pb-8/md:pb-10 (+1px) so the Jupiter limb butts
                FLUSH against the red footer — no near-black page-bg band showing
                between the globe and the footer (Hugo 2026-07-27). */
-            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(0px,1.5vh,0.75rem)] !-mb-8 md:!-mb-10"
+            className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(64px,9vh,150px)] !-mb-8 md:!-mb-10"
           >
             {/* Warm halo along the foot — matches the top Earth's rim. */}
             <div
