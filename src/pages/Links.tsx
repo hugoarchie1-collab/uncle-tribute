@@ -168,7 +168,7 @@ export const Links = () => (
         SceneBackdrop scrim + cursor-reveal now governs it exactly like the rest. */}
     <SceneBackdrop src="/img/scenes/links-studio-scene-v5.webp" />
     <Seo
-      title="Links — The Mandala Company"
+      title="Links"
       description="Everything from the estate of Stephen Meakin (SEM) in one place — shop the signed prints, gift an edition, read his story, and follow the estate on Instagram, Facebook and Pinterest."
       url="/links"
     />

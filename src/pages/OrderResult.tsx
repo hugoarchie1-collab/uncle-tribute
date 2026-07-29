@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Navigate } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -288,11 +288,17 @@ export const OrderSuccess = () => {
   // upsell falls back to a quiet catalogue trio in that case.)
   const [justBought] = useState<BasketItem[]>(() => getBasket());
 
-  // Clear the basket once on mount. Stripe only redirects here after a
-  // successful payment, so it's safe to wipe local state at this point.
+  // Clear the basket once on mount — but ONLY for a real Stripe redirect, which
+  // always carries a session_id. A session-less arrival (browser back/forward,
+  // bookmark, shared link, stale tab) must NOT wipe the basket (audit 2026-07-28).
   useEffect(() => {
-    clearBasket();
-  }, []);
+    if (sessionId) clearBasket();
+  }, [sessionId]);
+
+  // …and such an arrival must never show a false "payment received" — bounce it
+  // home rather than confirm a payment that never happened. (Every real Stripe /
+  // "Buy now" redirect carries session_id, so the happy path is unchanged.)
+  if (!sessionId) return <Navigate to="/" replace />;
 
   return (
     <div className="relative min-h-[100svh] flex flex-col">

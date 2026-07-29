@@ -663,7 +663,7 @@ const NavMenu = ({
 
             {/* Footer — quiet secondary links + estate email. */}
             <div className="px-7 sm:px-8 pt-6 pb-safe-6 border-t border-ink/60 flex flex-col gap-3">
-              <div className="flex flex-wrap gap-x-4 gap-y-0.5 font-sans text-[13px] text-ink-muted">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 font-sans text-[13px] text-ink-muted">
                 {SECONDARY_LINKS.map((l, i) => (
                   <span key={l.to} className="inline-flex items-center gap-x-4">
                     {i > 0 && (
@@ -673,7 +673,7 @@ const NavMenu = ({
                     )}
                     <Link
                       to={l.to}
-                      className="inline-block py-1 transition-colors duration-200 hover:text-ink"
+                      className="inline-block py-2 transition-colors duration-200 hover:text-ink"
                     >
                       {l.label}
                     </Link>

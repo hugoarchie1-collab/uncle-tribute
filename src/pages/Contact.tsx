@@ -101,6 +101,14 @@ export const Contact = () => {
       return;
     }
 
+    // Validate the sender address so a typo'd email isn't silently accepted
+    // (mirrors Gift.tsx's recipient-email check — audit 2026-07-28).
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("error");
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
+
     const accessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
 
     // Path A — Web3Forms backend (real email send).

@@ -149,7 +149,7 @@ export const NewsletterSignup = ({
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[14px] text-ink placeholder:text-ink-fade focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-fade focus:outline-none"
                 />
                 <button
                   type="submit"
@@ -226,7 +226,7 @@ export const NewsletterSignup = ({
                 autoComplete="name"
                 aria-label="Your name"
                 placeholder="Your name"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -235,7 +235,7 @@ export const NewsletterSignup = ({
                 autoComplete="email"
                 aria-label="Email address"
                 placeholder="you@example.com"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <button
                 type="submit"
@@ -319,7 +319,7 @@ export const NewsletterSignup = ({
                 type="text"
                 autoComplete="name"
                 placeholder="Jane Smith"
-                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
             <label className="group block">
@@ -332,7 +332,7 @@ export const NewsletterSignup = ({
                 required
                 autoComplete="email"
                 placeholder="jane@example.com"
-                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
           </div>

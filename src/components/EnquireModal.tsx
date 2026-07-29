@@ -294,7 +294,7 @@ export const EnquireModal = ({
                         name="name"
                         required
                         autoComplete="name"
-                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="Jane Smith"
                       />
                     </label>
@@ -307,7 +307,7 @@ export const EnquireModal = ({
                         type="email"
                         required
                         autoComplete="email"
-                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="jane@example.com"
                       />
                     </label>
@@ -321,7 +321,7 @@ export const EnquireModal = ({
                       name="message"
                       required
                       rows={5}
-                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                       placeholder="A few lines about what you're after."
                     />
                   </label>

@@ -1583,7 +1583,7 @@ const BuyBox = ({
                           aria-pressed={canvasEdge === e.id}
                           title={e.note}
                           className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
                             canvasEdge === e.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1652,7 +1652,7 @@ const BuyBox = ({
                                 aria-pressed={frameStyle === f.id}
                                 title={f.note}
                                 className={cn(
-                                  "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2 ring-1 transition-all duration-200",
+                                  "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
                                   frameStyle === f.id
                                     ? "ring-ink text-ink"
                                     : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",

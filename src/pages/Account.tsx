@@ -389,7 +389,7 @@ export const AccountPanel = () => {
               </li>
               <li>
                 <Link to="/collections" className={cn(META, "hover:text-accent transition-colors")}>
-                  See the collection →
+                  See the collection <span aria-hidden="true">→</span>
                 </Link>
               </li>
             </ul>

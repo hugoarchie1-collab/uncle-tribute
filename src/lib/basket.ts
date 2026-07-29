@@ -455,12 +455,23 @@ export const addItem = (
 };
 
 /**
- * Set a print line's quantity (basket-page stepper). Clamps to ≥ 1 whole units;
- * to remove a line entirely use `removeItem`. No-ops if the line isn't found.
+ * Per-line quantity ceiling. MUST match the server clamp in api/checkout.ts
+ * (Math.min(99, …) on both the print and trade paths) so the basket can never
+ * ADVERTISE a total the checkout won't CHARGE (audit 2026-07-28, money-mirror).
+ */
+export const MAX_LINE_QUANTITY = 99;
+
+/**
+ * Set a print line's quantity (basket-page stepper). Clamps to 1‥99 whole units
+ * (99 = the server ceiling); to remove a line entirely use `removeItem`. No-ops
+ * if the line isn't found.
  */
 export const setItemQuantity = (addedAt: number, quantity: number): void => {
   const current = ensureCache();
-  const qty = Number.isFinite(quantity) && quantity >= 1 ? Math.floor(quantity) : 1;
+  const qty =
+    Number.isFinite(quantity) && quantity >= 1
+      ? Math.min(MAX_LINE_QUANTITY, Math.floor(quantity))
+      : 1;
   const idx = current.findIndex((l) => l.addedAt === addedAt && isPrintItem(l));
   if (idx < 0) return;
   const next = current.slice();

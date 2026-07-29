@@ -209,7 +209,7 @@ const TradeApplication = () => {
 
   const fieldLabel = "block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2";
   const fieldInput =
-    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow";
+    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow";
 
   if (status === "success") {
     return (
@@ -473,7 +473,7 @@ export const Trade = () => {
                 We'll help you compose the set — across sizes, finishes and
                 colourways — and prepare it as a single project.{" "}
                 <Link to="/collections" className="text-accent hover:underline underline-offset-2">
-                  See the collection →
+                  See the collection <span aria-hidden="true">→</span>
                 </Link>
               </p>
             </div>

@@ -26,7 +26,7 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { useCurrency, formatMinorUnits } from "../lib/currency";
-import { useBasket, useGiftCards, removeItem, setItemQuantity, type BasketItem, type GiftBasketItem } from "../lib/basket";
+import { useBasket, useGiftCards, removeItem, setItemQuantity, MAX_LINE_QUANTITY, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
 import { trackInitiateCheckout } from "../lib/tracking";
@@ -269,7 +269,11 @@ export const Basket = () => {
   const giftMinor = giftCards.reduce((sum, g) => sum + convert(g.amountPence), 0);
   const grandTotalMinor =
     subtotalMinor - bundleDiscountMinor + giftMinor;
-  const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode);
+  // `pretty` drops an exact trailing .00 so whole pounds read "£750" like every
+  // other price surface (PDP/Collections/empty-state) — the regex only strips
+  // ".00", so genuine part-pound figures (e.g. a £62.25 bundle discount) keep
+  // their pence (audit 2026-07-28). Display-only; the charge is server-computed.
+  const fmtMinor = (minor: number) => formatMinorUnits(minor, currencyCode, { pretty: true });
 
   // Cross-sell rail — fills the left column when there are few items (kills the
   // dead void beside the tall sticky summary Hugo flagged) AND lifts AOV.
@@ -578,8 +582,9 @@ export const Basket = () => {
                                     line.item.quantity + 1,
                                   )
                                 }
+                                disabled={line.item.quantity >= MAX_LINE_QUANTITY}
                                 aria-label={`Increase quantity of ${line.title}`}
-                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors"
+                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors disabled:opacity-30 disabled:pointer-events-none"
                               >
                                 +
                               </button>
@@ -718,7 +723,7 @@ export const Basket = () => {
                   Every additional piece ships free, in the same estate box &mdash;
                   with its own catalogue and seal.
                 </p>
-                <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-6">
+                <ul className="list-none p-0 m-0 grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-7">
                   {crossSell.map((p) => {
                     const cw =
                       p.colourways.find((c) => c.available) ?? p.colourways[0];
@@ -970,7 +975,7 @@ export const Basket = () => {
         {/* YOUR ACCOUNT — the basket page IS the account page now (Hugo's
             "two-in-one"): sign in, order history, certificates and profile all
             live here. Separated by air, not a rule. */}
-        <section className="mt-16 md:mt-24">
+        <section className="mt-10 md:mt-14">
           <AccountPanel />
         </section>
       </main>
