@@ -373,7 +373,7 @@ export const FindAPrint = () => {
               key={painting.id}
               className="m-0 min-w-0 grow basis-[clamp(260px,20vw,340px)] max-w-full sm:max-w-[calc(50%-0.625rem)] lg:max-w-[calc(33.333%-1rem)]"
             >
-              <Link to={`/collections/${painting.id}`} className="group block" aria-label={`View ${painting.title}`}>
+              <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
                   {/* Gentle zoom on hover only — a small scale-up of the cover.
                       Hugo: hover should zoom in a little, never flick to another
