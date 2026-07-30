@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /trade/pricing
+Disallow: /representatives
 
 Sitemap: https://themandalacompany.com/sitemap.xml

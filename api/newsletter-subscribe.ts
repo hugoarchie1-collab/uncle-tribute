@@ -497,6 +497,54 @@ const renderTradeApplicationHtml = (p: {
     + `</div></body></html>`;
 };
 
+// ---------------------------------------------------------------------------
+// Representative application email → HTML string. Folded into THIS function
+// (same 12-function-cap reasoning). The /representatives page (private, unlinked)
+// POSTs kind:"representative-application" — someone applying to introduce/place
+// the estate's work with trade/hospitality clients for a private commission.
+// Emails the ESTATE, replyTo the applicant. Reuses esc/SANS/DISPLAY (gotcha #5).
+// ---------------------------------------------------------------------------
+const renderRepresentativeApplicationHtml = (p: {
+  name: string;
+  email: string;
+  company: string;
+  website: string;
+  background: string;
+  reach: string;
+  message: string;
+}): string => {
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
+    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const row = (label: string, value: string) =>
+    value
+      ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
+      : "";
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Representative application</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · Representatives</p>`
+    + `<h1 style="${s.heading}">A representative application${p.name ? ` from ${esc(p.name)}` : ""}.</h1>`
+    + row("Name", p.name)
+    + row("Contact", p.email)
+    + row("Company", p.company)
+    + row("Website", p.website)
+    + row("Background", p.background)
+    + row("Clients / rooms they reach", p.reach)
+    + (p.message ? `<p style="${s.row}"><span style="${s.label}">In their words</span></p><div style="${s.quote}">${esc(p.message)}</div>` : "")
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Reply personally to arrange terms in confidence — <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a>.<br/>The Art of Stephen Meakin · The Mandala Company</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -537,8 +585,15 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     projectType?: string;
     scale?: string;
     vatNumber?: string;
-    // Honeypot for the trade form (custom-size reuses `company` as its honeypot,
-    // but `company`/studio is a REAL field here — so trade uses `botcheck`).
+    // Representative-application fields (kind === "representative-application").
+    // `company` (a real field here) + `website` are reused from above; `botcheck`
+    // is the honeypot. (Note: custom-size uses `company` as ITS honeypot, but
+    // that's a different kind branch, so there is no collision.)
+    background?: string;
+    reach?: string;
+    // Honeypot for the trade / representative forms (custom-size reuses `company`
+    // as its honeypot, but `company`/studio is a REAL field there — so these use
+    // `botcheck`).
     botcheck?: string;
   };
   try {
@@ -695,6 +750,73 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       } else {
         console.warn(
           "[newsletter-subscribe] RESEND_API_KEY missing — trade application logged only.",
+        );
+      }
+    }
+    return send(200, { ok: true });
+  }
+
+  // ── Representative application (folded in, same 12-function-cap reasoning).
+  //    kind:"representative-application" — someone applying to introduce / place
+  //    the estate's work with trade / hospitality clients for a private
+  //    commission (the /representatives page). Emails the ESTATE, replyTo the
+  //    applicant. Price-silent: terms are arranged privately, never on the page. ──
+  if ((body.kind ?? "").toString() === "representative-application") {
+    // Honeypot — a bot that fills `botcheck` is silently accepted (no email).
+    if ((body.botcheck ?? "").toString().trim() === "") {
+      const company = (body.company ?? "").toString().trim().slice(0, 200);
+      const website = (body.website ?? "").toString().trim().slice(0, 200);
+      const background = (body.background ?? "").toString().trim().slice(0, 200);
+      const reach = (body.reach ?? "").toString().trim().slice(0, 200);
+      const repMessage = (body.message ?? "").toString().trim().slice(0, 2000);
+      console.log("[newsletter-subscribe] representative application", {
+        email,
+        name,
+        company,
+        background,
+        reach,
+      });
+      const resendKeyRep = process.env.RESEND_API_KEY;
+      if (resendKeyRep) {
+        try {
+          const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+          const toEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_FROM;
+          const resend = new Resend(resendKeyRep);
+          const html = renderRepresentativeApplicationHtml({
+            name,
+            email,
+            company,
+            website,
+            background,
+            reach,
+            message: repMessage,
+          });
+          const r = await resend.emails.send({
+            from: `${FROM_NAME} <${fromEmail}>`,
+            to: [toEmail],
+            replyTo: email,
+            subject: name
+              ? `Representative application — ${name}`
+              : "Representative application",
+            html,
+          });
+          if (r.error) {
+            console.error("[newsletter-subscribe] representative-application send error:", r.error);
+          } else {
+            console.log("[newsletter-subscribe] representative-application email sent", {
+              email,
+              resend_id: r.data?.id,
+            });
+          }
+        } catch (err) {
+          console.error(
+            "[newsletter-subscribe] representative-application email failed:",
+            err instanceof Error ? err.message : String(err),
+          );
+        }
+      } else {
+        console.warn(
+          "[newsletter-subscribe] RESEND_API_KEY missing — representative application logged only.",
         );
       }
     }

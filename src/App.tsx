@@ -49,6 +49,7 @@ const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ defaul
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
+const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
 const Links = lazy(() => import("./pages/Links").then((m) => ({ default: m.Links })));
@@ -158,6 +159,10 @@ const AnimatedRoutes = () => {
           {/* Gated trade price sheet — reachable only via the estate's link
               (noindex + robots Disallow; not in nav / footer / sitemap). */}
           <Route path="/trade/pricing" element={<TradePricing />} />
+          {/* Private representatives programme — intentionally UNLINKED (not in
+              nav/footer/sitemap; noindex + robots Disallow). The single dignified
+              link the estate hands a vetted prospect. */}
+          <Route path="/representatives" element={<Representatives />} />
           {/* Account (passwordless) + Orders & Returns — Amazon-IA header. */}
           <Route path="/account" element={<Account />} />
           <Route path="/orders" element={<Orders />} />
