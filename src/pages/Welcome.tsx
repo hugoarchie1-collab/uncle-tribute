@@ -469,8 +469,12 @@ export const Welcome = () => {
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
                     color: "#ede6d6",
+                    // Box-free legibility (Hugo 2026-07-29 #4): tight, letter-hugging
+                    // layers that CARVE the wordmark off the bright indigo mandala so
+                    // it commands — a near-glyph dark outline + two short drops. Max
+                    // blur ≤10px so it can NEVER read as a scrim/box behind the type.
                     textShadow:
-                      "0 1px 2px rgba(8,6,12,0.55), 0 2px 10px rgba(8,6,12,0.42)",
+                      "0 0 1px rgba(8,6,12,0.9), 0 1px 2px rgba(8,6,12,0.82), 0 2px 8px rgba(8,6,12,0.55)",
                   }}
                 >
                   {["The", "SEM", "Experience"].map((word, i) => (
@@ -907,21 +911,17 @@ export const Welcome = () => {
                       <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
                         {painting.title}
                       </h3>
-                      {/* One baseline row: year left, price right — always aligned
-                          across tiles regardless of how many lines the title wraps
-                          to (no ragged gap on two-line titles). */}
-                      <div className="flex items-baseline justify-between gap-4 mt-2">
-                        {hasYear ? (
-                          <p className={cn(EYEBROW_TIGHT, "tracking-[0.02em] m-0")}>
-                            {painting.year}
-                          </p>
-                        ) : (
-                          <span aria-hidden="true" />
-                        )}
-                        <span className="shrink-0 font-sans text-[14px] md:text-[15px] 2xl:text-[16px] 3xl:text-[18px] font-bold [font-variant-numeric:tabular-nums] text-ink-muted whitespace-nowrap group-hover:text-ink transition-colors duration-300">
-                          From {fmtPrice(fromPrice)}
-                        </span>
-                      </div>
+                      {/* Gallery caption — the WORK leads: title + year only. The
+                          repeated "From £445" price chip was dropped from the home
+                          tiles (Hugo 2026-07-29: a gallery leads with the art, not a
+                          shop shelf of identical prices) — the price still lives on
+                          the PDP + Collections, and the Link's aria-label still
+                          spells it (`fromPrice`), so a11y is unchanged. */}
+                      {hasYear && (
+                        <p className={cn(EYEBROW_TIGHT, "tracking-[0.02em] m-0 mt-2")}>
+                          {painting.year}
+                        </p>
+                      )}
                     </div>
                   </Link>
                 );

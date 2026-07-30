@@ -46,9 +46,18 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
 ];
 
 /** Flat list (Home + every grouped link) for the hidden desktop inline nav. */
-const NAV_LINKS: NavItem[] = [
-  { to: "/", label: "Home", end: true },
-  ...NAV_GROUPS.flatMap((g) => g.links),
+/** CURATED desktop inline nav (Hugo 2026-07-29 #3) — the FIVE primary
+ *  destinations shown inline from xl+, so desktop has real wayfinding instead of
+ *  hamburger-only. The full menu (every page) still lives in the drawer via the
+ *  always-on hamburger, so the long tail is never lost. Short labels so the row
+ *  never crowds the bar; the 11-link overflow that killed the old inline bar
+ *  can't happen with a fixed five. */
+const CURATED_NAV: NavItem[] = [
+  { to: "/collections", label: "Collections" },
+  { to: "/for-you", label: "Find a print" },
+  { to: "/about", label: "About" },
+  { to: "/memories", label: "Memories" },
+  { to: "/trade", label: "Trade" },
 ];
 
 /** Quiet drawer-footer set — account/orders + FAQ + legal. Gift cards moved UP
@@ -349,10 +358,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               This inline nav is kept hidden (so the markup/chip stay available if
               we ever want a curated desktop subset). */}
           <nav
-            className="hidden"
+            className="hidden xl:flex items-center gap-5 2xl:gap-7 mr-1"
             aria-label="Primary"
           >
-            {NAV_LINKS.map((l) => (
+            {CURATED_NAV.map((l) => (
               <NavLink
                 key={l.to}
                 to={l.to}

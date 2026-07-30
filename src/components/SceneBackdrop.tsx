@@ -70,9 +70,19 @@ const SCENE_IMAGE_FILTER = "brightness(1.4) saturate(1.05)";
  *  pointer is, over the softer scrimmed base. */
 const SCENE_REVEAL_FILTER = "brightness(1.95) saturate(1.4) contrast(1.14)";
 
+/** ONE calm ground for EVERY scene/utility page (Hugo 2026-07-29 #2 — the
+ *  Aesop/Hermès restraint move: retire the 14 different per-page photos so the
+ *  ARTWORK is the only colour in the shop). A single dark, whisper-blurred
+ *  dissolved-geometry motif (luma ≈34, "never a competing picture") — quiet
+ *  enough that cream text always reads, present enough that it never looks like
+ *  the background was removed. Pages still pass their old `src`; it's ignored on
+ *  purpose so the whole shop shares one coherent, restrained ground. */
+const CALM_GROUND = "/img/scenes/ancient-canons-blur-v1.webp";
+
 export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
+  void src; // superseded by the ONE shared CALM_GROUND (restraint pass)
   // STATIC backdrop — no parallax, no overscan, no crossfade (see history above).
-  const urls = (Array.isArray(src) ? src : [src]).map((s) => asset(s));
+  const urls = [asset(CALM_GROUND)];
 
   const reduceMotion = useReducedMotion();
   const pointerFine = usePointerFine();
