@@ -2926,21 +2926,14 @@ export const PaintingDetail = () => {
         type="product"
         jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
-      {/* THE PAINTING, DIMMED (2026-07-24) — the background is a heavily-blurred,
-          darkened wash of the SELECTED artwork (`pd-art`), so the page genuinely
-          reflects the painting on it and re-tints when the colourway changes. The
-          coloured "orb ball of light" halo Hugo disliked is gone. The wall / wash
-          / reprise tint layers stay ON TOP as a legibility scrim (still driven by
-          the --pd-* colourway vars), keeping cream text readable over the art. */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden>
-        <div
-          className="pd-art"
-          style={{ backgroundImage: `url(${asset(webp(selected.image))})` }}
-        />
-        <div className="pd-wash" />
-        <div className="pd-wall" />
-        <div className="pd-reprise" />
-      </div>
+      {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the blurred, darkened
+          echo of the selected painting + the colourway tint scrim are retired for
+          a clean near-black ground, matching the rest of the site — the artwork
+          shows large in the hero, so the page still reflects it without a busy
+          background. Restore the pd-art/pd-wash/pd-wall/pd-reprise stack (driven
+          by the --pd-* vars on the root) to bring the painted-wall atmosphere
+          back. */}
+      <div className="absolute inset-0 z-0 bg-bg pointer-events-none" aria-hidden />
 
       <div className="relative z-[1] isolate">
         <Nav />

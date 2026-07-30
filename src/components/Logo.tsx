@@ -22,82 +22,21 @@ export const Logo = ({
   wordmarkText = "The Art of Stephen Meakin",
   className,
 }: LogoProps) => {
-  // The ROUND "THE MANDALA COMPANY" wax seal (Hugo, 2026-07-22, sent the exact
-  // art: "this is the round new updated logo for top left bar… i want this
-  // transparent, no checkered background, a visible aesthetic and clear enough").
-  // v2 = the seal keyed to FULL transparency (the cream ground is gone); paired
-  // with the cream rim-light below it stays visible + crisp on the dark-red nav.
-  // Shown symbol-only in the nav (its own ring text IS the wordmark).
-  // 2026-07-23 COHERENCE FIX (Hugo: "the logos aren't coherent"): the footer was
-  // the LONE surface using the round disc seal (with "THE MANDALA COMPANY" baked
-  // in its ring) while the nav + favicons + entrance + /links all use the clean
-  // wax-rose `logo-seal-v9`. Unified the footer onto the same clean rose so every
-  // seal on the site matches AND the footer no longer shows a second brand name
-  // (Mandala Company) beside the "The Art of Stephen Meakin" wordmark.
-  const url = `${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`;
+  // 2026-07-30 (Hugo "everything live" / full consistency): the wax seal was
+  // dropped from the header, so the footer is aligned to MATCH — the plain
+  // grotesk wordmark, no seal. The `size` prop is retained for API-compat but
+  // there's no longer a mark to size. The seal still lives on certificates +
+  // the favicon (where it's big enough to read + means authenticity). Restore
+  // the <img> here if the estate wants the seal back as a footer signature.
+  void size;
   return (
-    <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-3 leading-none ${className ?? ""}`}>
-      {/*
-        The Mandala Company wax-seal mark — a deep-red 3D Tudor-rose seal whose
-        OWN engraved relief is brought out in white (v7, 2026-06-28). Hugo
-        rejected v6 (a clean white line-rose composited on top) as "appealing but
-        NOT naturally engraved within the wax symbol — it's awful": the flat lines
-        read as pasted-on, not part of the wax. v7 instead ENHANCES the seal's
-        existing 3D relief — its real raised petal edges catch a white specular
-        highlight (the seal's own high-pass ridges + isolated highlights screened
-        back, deepened recesses via sigmoidal contrast). v8 (2026-06-28) ADDS a
-        clean white RIM-LIGHT around the wax's outer silhouette edge — derived
-        from the seal's OWN alpha edge, so it reads as the wax catching light on
-        its raised rim, NOT a pasted-on ring — giving Hugo BOTH of his asks at
-        once: the "white outline around the rose" that makes it STAND OUT on any
-        ground, AND the rose's details in thin white, naturally engraved. So the
-        worldwide-recognisable Tudor rose reads from a distance as a ROSE, never a
-        flat red disc, while looking like genuine pressed wax. v9 (2026-06-28)
-        FIXES the regression that shipped the v8 PNGs flattened onto an OPAQUE
-        BLACK square (mean-alpha 1.0 — the "random black box behind the logo"
-        Hugo flagged sitewide): a border-bridged corner flood-fill keys that
-        black background back to transparent (fuzz 18%, so the dark inter-petal
-        crevices — not connected to the border — stay intact), leaving the wax
-        rose + its white rim on clean transparency. The seal's feathered alpha is
-        preserved untouched.
-        Square mark, width === height. Never display:none'd; the wordmark shows at
-        EVERY width (wraps to two lines on the smallest phones — Hugo: "add full
-        logo with text on mobile too so it's not just the symbol").
-      */}
-      <img
-        src={url}
-        alt=""
-        aria-hidden="true"
-        width={size}
-        height={size}
-        decoding="async"
-        /* v2 (2026-07-21): the disc is now keyed to full TRANSPARENCY (the cream
-           ground Hugo hated is gone), so NO rounded-full clip — a circle would
-           slice the ends of the arced "THE MANDALA COMPANY" wordmark. The mark
-           floats clean on any ground, like a Nike symbol (Hugo's ask). */
-        className="block shrink-0"
-        style={{
-          width: size,
-          height: size,
-          // A soft, WARM (not white) depth halo — enough for the deep-red seal
-          // to read on the dark-red nav / near-black footer, without the harsh
-          // white rim-light Hugo rejected. The readable brand TEXT now sits
-          // beside it (wordmark on), so the seal itself only needs gentle lift.
-          filter:
-            "drop-shadow(0 0 2px rgba(228,222,206,0.3)) drop-shadow(0 1px 3px rgba(0,0,0,0.6))",
-        }}
-      />
+    <div className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center leading-none ${className ?? ""}`}>
       {wordmark && (
-        // Footer wordmark — the name in Fraunces bold beside the wax seal. The
-        // footer KEEPS the seal (unlike the nav header, where the seal was
-        // dropped 2026-07-30 + the wordmark simplified to a plain single-line
-        // grotesk): on near-black the seal reads big + acts as the estate's
-        // signature. Wraps cleanly to two lines in the narrow brand column.
-        // ⚠️ Header (plain sans) + footer (Fraunces + seal) now differ — pending
-        // Hugo's call on whether to align them.
+        // Footer wordmark — the SAME clean grotesk wordmark as the nav header, so
+        // the brand reads identically top + bottom. Wraps in the narrow footer
+        // brand column (wordmarkWrap).
         <span
-          className={`inline font-display text-ink [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[clamp(17px,3.6vw,24px)] font-bold tracking-[-0.015em] min-w-0 whitespace-normal leading-[1.05]" : "text-[clamp(19px,5vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.08] min-w-0 max-w-full sm:max-w-none"}`}
-          style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}
+          className={`inline font-sans font-medium text-ink tracking-[0.005em] [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[clamp(17px,3.6vw,23px)] min-w-0 whitespace-normal leading-[1.1]" : "text-[clamp(18px,4.4vw,26px)] whitespace-normal sm:whitespace-nowrap leading-[1.12] min-w-0 max-w-full sm:max-w-none"}`}
         >
           {wordmarkText}
         </span>
