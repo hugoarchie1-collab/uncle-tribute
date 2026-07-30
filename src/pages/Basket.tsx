@@ -199,7 +199,7 @@ export const Basket = () => {
   // Presentment currency (header picker). `fmt` charges-parity formatting,
   // `fmtP` the pretty (no .00) variant; `currencyCode` rides along on the
   // checkout POST so Stripe charges in the SAME currency shown here.
-  const { format: fmt, formatPretty: fmtP, convert, code: currencyCode } = useCurrency();
+  const { formatPretty: fmtP, convert, code: currencyCode } = useCurrency();
   const items = useBasket();
   const lines = resolveLines(items);
 
@@ -610,7 +610,7 @@ export const Basket = () => {
                             figure with the add-ons + subtotal itemised below —
                             so nothing is hidden (DMCC #13: no drip-pricing). */}
                         <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
-                          {fmt(baseUnitPence)}
+                          {fmtP(baseUnitPence)}
                         </p>
                       </div>
 
@@ -629,7 +629,7 @@ export const Basket = () => {
                                   : `${line.tier.label} print (${line.tier.size})`}
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                              {fmt(baseUnitPence)}
+                              {fmtP(baseUnitPence)}
                             </span>
                           </div>
                           {line.item.quantity > 1 && (
@@ -648,7 +648,7 @@ export const Basket = () => {
                                 Hand-finished by Polly (Stephen's sister)
                               </span>
                               <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                                + {fmt(embellishPence)}
+                                + {fmtP(embellishPence)}
                               </span>
                             </div>
                           )}
@@ -703,7 +703,7 @@ export const Basket = () => {
                           </button>
                         </div>
                         <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
-                          {fmt(g.amountPence)}
+                          {fmtP(g.amountPence)}
                         </p>
                       </div>
                     </li>
@@ -884,7 +884,7 @@ export const Basket = () => {
                             {region}
                           </span>
                           <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink tabular-nums flex-shrink-0">
-                            {pence === 0 ? "Free" : fmt(pence)}
+                            {pence === 0 ? "Free" : fmtP(pence)}
                           </span>
                         </li>
                       ))}
