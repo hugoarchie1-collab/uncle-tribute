@@ -186,8 +186,10 @@ export const Representatives = () => {
       <Nav />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-24">
-        {/* ── HERO ── the type is the art. One line beneath, no more. */}
-        <Reveal as="header" className="min-h-[62svh] flex flex-col justify-center pt-6 md:pt-8 pb-8">
+        {/* ── HERO ── the type is the art. Natural height (NO forced min-h /
+            centering — that left a dead gap under the lede on tall screens,
+            which Hugo hates); the section below follows immediately. */}
+        <Reveal as="header" className="pt-6 md:pt-10 pb-2 md:pb-4">
           <p className={cn(EYEBROW, "m-0 mb-6")}>Partners · By invitation</p>
           <h1
             className="font-display font-bold text-ink m-0 text-balance"

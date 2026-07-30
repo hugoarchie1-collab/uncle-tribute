@@ -1260,7 +1260,7 @@ export const About = () => {
                 (object top). Mobile: a portrait aspect, stacked (no side gap). */}
             <Reveal
               as="figure"
-              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[280px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[280px] max-h-[64svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
             >
               <AssetImage
                 src="/img/about/29-at-the-easel.jpg"
@@ -1354,7 +1354,7 @@ export const About = () => {
           <div className={cn(READING_WIDE, BLOCK_GAP)}>
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
-          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0", BLOCK_GAP, "2xl:max-h-[64svh] 2xl:overflow-hidden")}>
+          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0", BLOCK_GAP, "max-h-[62svh] overflow-hidden")}>
             <Plate
               src="/img/about/35-gathering-at-the-gallery.jpg"
               alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
