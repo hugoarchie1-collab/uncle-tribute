@@ -1,11 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
-import { SceneBackdrop } from "../components/SceneBackdrop";
-import { PageMasthead } from "../components/PageMasthead";
 import {
   EYEBROW,
   EYEBROW_MUTED,
@@ -18,28 +15,35 @@ import {
 import { cn } from "../lib/cn";
 
 /**
- * /representatives — the estate's PRIVATE representative programme.
+ * /representatives — the estate's PRIVATE representatives programme (rebuilt
+ * 2026-07-28 from a 3-agent panel: art direction + persuasion + sell-kit).
  *
- * Aimed at SELLERS (not buyers): interior designers, art consultants, hospitality
- * specialists and gallerists who introduce / place Stephen Meakin's work with
- * trade & hospitality clients and share in every placement.
+ * Aimed at SELLERS: designers, hospitality specialists, property managers and
+ * gallerists who place Stephen Meakin's work in hotels / projects and share in
+ * every placement (10% · 15% on hospitality — stated plainly HERE because the
+ * page is private).
  *
- * ⚠️ PRIVATE + PRICE-SILENT by design (from a 3-angle strategy panel):
- *  - Intentionally UNLINKED: not in nav / footer / sitemap; `noindex` + robots
- *    Disallow. It is the single dignified link the estate hands a vetted prospect,
- *    NOT a public recruitment drive — a memorial estate must never publicly read
- *    as a commission scheme.
- *  - NO commission figures / percentages / "earn"/"affiliate" language anywhere
- *    on the page (same discipline as /trade's price-silence). Terms are arranged
- *    privately, 1:1, after a conversation. Words used: representative, placement,
- *    by arrangement, in confidence, professional courtesy. Never: affiliate,
- *    referral link, earn, commission %, sign up, payout.
- *  - Separate from /trade (buyers) — opposite money-flows never cohabit.
- *
- * Reuses the /trade design + the application-form pattern; the form POSTs
- * kind:"representative-application" to /api/newsletter-subscribe (a new branch on
- * the existing email path — zero new backend, respects the 12-function cap).
+ * ⚠️ PRIVATE: intentionally UNLINKED (noindex + robots Disallow; not in
+ * nav/footer/sitemap). It is the single link the estate hands a vetted prospect,
+ * NOT a public affiliate scheme. Commission figures + the /trade/pricing toolkit
+ * link must never appear on any public / linked surface.
  */
+
+// ── Proof, before the money (hard credentials a hotel buyer trusts). ──
+const PROOF: { title: string; body: string }[] = [
+  {
+    title: "Placed at scale",
+    body: "A 3.6-metre Arista SunStar hangs behind Farmacy in Notting Hill — a single piece, scaled for the wall. The work belongs in rooms people remember.",
+  },
+  {
+    title: "Authenticated by the estate",
+    body: "Every piece is estate-stamped and hand-numbered within its edition, issued with a Certificate of Authenticity. Provenance the client keeps.",
+  },
+  {
+    title: "The family carries it",
+    body: "Produced, framed and delivered worldwide, invoiced by the estate — handled personally, in Stephen's own voice. You open the door; we carry the rest.",
+  },
+];
 
 interface Reason {
   index: string;
@@ -48,9 +52,6 @@ interface Reason {
   body: React.ReactNode;
 }
 
-// Why this is worth a serious representative's time — leans into SCALE and
-// READINESS (turnkey, hospitality, whole-property) so it attracts people who can
-// bring project-sized placements, without a single number on the page.
 const REASONS: Reason[] = [
   {
     index: "01",
@@ -60,9 +61,8 @@ const REASONS: Reason[] = [
       <>
         Stephen Meakin spent his life on sacred geometry — mandalas built with the
         precision of ancient temples and Persian courts. The catalogue is finite
-        and estate-authenticated, hand-numbered within its editions. It is not
-        another print line; it is a legacy, and it sells on the strength of the
-        story you already believe in.
+        and cannot be extended. It is not a print line you'll compete on: the story
+        is true, and it sells on a name you can stand behind.
       </>
     ),
   },
@@ -73,45 +73,42 @@ const REASONS: Reason[] = [
     body: (
       <>
         A single piece or a scheme across an entire hotel — at any size, from a
-        standard edition to a <strong>bespoke piece scaled for a lobby wall</strong>,
-        like the 3.6-metre Arista SunStar at Farmacy in Notting Hill. Bulk orders,
-        custom sizes and whole-property schemes are all handled — every piece
-        produced, framed, delivered worldwide and invoiced by the estate. You open
-        the door; the family handles everything behind it.
+        standard edition to a <strong>bespoke piece scaled for a lobby wall</strong>.
+        Bulk orders, custom sizes and whole-property schemes are all handled — every
+        piece produced, framed, delivered worldwide and invoiced by the estate.
       </>
     ),
   },
   {
     index: "03",
-    eyebrow: "Generous, private terms",
-    title: "You share in every placement.",
+    eyebrow: "A relationship, not a scheme",
+    title: "Agreed once, honoured always.",
     body: (
       <>
-        Representatives are paid a considered share of every placement they bring —
-        agreed with you personally, at the outset, and held in confidence. No
-        public rate card, no scheme: a professional courtesy between the estate and
-        the people who place the work well.
+        This is a professional courtesy between the estate and the people who place
+        the work well — no public rate card, no dashboards, no small print. Terms
+        are agreed with you at the outset and kept, personally, by the family.
       </>
     ),
   },
 ];
 
-// The mechanics, in plain steps — turnkey on the estate's side.
+// The mechanics — turnkey on the estate's side.
 const STEPS: { index: string; title: string; body: string }[] = [
   {
     index: "01",
     title: "Introduce",
-    body: "Bring the estate a designer, a hospitality group, or a project — a room, a suite, a whole property. A single warm introduction is all it takes to begin.",
+    body: "Bring the estate a designer, a hospitality group, or a project — a room, a suite, a whole property. A single warm introduction is all it takes.",
   },
   {
     index: "02",
-    title: "The estate prepares",
+    title: "We take it from there",
     body: "The family confirms pricing, presents the work, and prepares a considered proposal for the client — handled personally, in the estate's own voice.",
   },
   {
     index: "03",
     title: "Made & delivered",
-    body: "Each piece is estate-stamped and made to order, then delivered free worldwide — drop-shipped to the client or to site, timed to the install. Nothing for you to manage.",
+    body: "Each piece is estate-stamped and made to order, then delivered free worldwide — drop-shipped to the client or to site, timed to the install.",
   },
   {
     index: "04",
@@ -120,14 +117,20 @@ const STEPS: { index: string; title: string; body: string }[] = [
   },
 ];
 
-// Who the estate is looking for.
+// Earnings examples — all hospitality (15%), so the number scales in the mind.
+const EARNINGS: { room: string; invoiced: string; share: string }[] = [
+  { room: "A restaurant — a run of six pieces", invoiced: "£4,500", share: "£675" },
+  { room: "A boutique hotel — twenty across rooms & lobby", invoiced: "£15,000", share: "£2,250" },
+  { room: "A whole property — commission + scheme", invoiced: "five figures", share: "agreed with you" },
+];
+
 const SUITS: { title: string; body: string }[] = [
   {
     title: "Interior designers & consultants",
     body: "You specify art for residential and commercial schemes and want a distinctive, authored body of work to place with confidence.",
   },
   {
-    title: "Hospitality & hotel-group specialists",
+    title: "Hospitality & property managers",
     body: "You fit out hotels, restaurants and wellness spaces at scale, and know how much a coherent scheme of original work lifts a property.",
   },
   {
@@ -136,14 +139,15 @@ const SUITS: { title: string; body: string }[] = [
   },
 ];
 
+const PLACES = [
+  "Hotels & hospitality",
+  "Restaurants & bars",
+  "Residential & property",
+  "Galleries & advisory",
+] as const;
+
 type Status = "idle" | "submitting" | "success" | "error";
 
-/**
- * The representative application — captures name / email / company / website /
- * background / who they reach / a note. POSTs kind:"representative-application"
- * to /api/newsletter-subscribe (emails the estate, replyTo the applicant).
- * Price-silent: terms are arranged privately.
- */
 const RepresentativeApplication = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -181,8 +185,7 @@ const RepresentativeApplication = () => {
           email,
           company: get("company"),
           website: get("website"),
-          background: get("background"),
-          reach: get("reach"),
+          reach: get("reach"), // "Where you place work" select
           message: get("message"),
           botcheck: "",
         }),
@@ -212,14 +215,14 @@ const RepresentativeApplication = () => {
 
   if (status === "success") {
     return (
-      <div className="border border-line p-7 md:p-9 max-w-[720px]">
-        <p className="font-display text-[clamp(24px,3vw,32px)] text-ink m-0 mb-3">
+      <div className="ring-1 ring-line bg-ink/[0.03] p-7 md:p-9 max-w-[760px]">
+        <p className="font-display text-[clamp(24px,3vw,34px)] text-ink m-0 mb-3">
           Thank you.
         </p>
         <p className={cn(SUBTITLE, "max-w-none m-0")}>
-          Your note is with the estate. We keep this group small and read every
-          application ourselves — we'll reply personally, in confidence, usually
-          within a day or two. If it's pressing, write to{" "}
+          Your note is with the estate. We keep this circle small and read every
+          one ourselves — we'll reply personally, in confidence, usually within a
+          day or two. If it's pressing, write to{" "}
           <a
             href="mailto:info@themandalacompany.com?subject=Representatives"
             className="text-accent hover:underline"
@@ -233,7 +236,7 @@ const RepresentativeApplication = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="max-w-[820px]">
+    <form onSubmit={handleSubmit} noValidate className="ring-1 ring-line bg-ink/[0.03] p-6 md:p-9 max-w-[860px]">
       <input
         type="text"
         name="botcheck"
@@ -270,47 +273,43 @@ const RepresentativeApplication = () => {
           <span className={fieldLabel}>Website</span>
           <input name="website" autoComplete="url" className={fieldInput} placeholder="studio.com" />
         </label>
-        <label className="block">
-          <span className={fieldLabel}>What you do</span>
-          <input name="background" className={fieldInput} placeholder="Interior designer, art consultant, hospitality…" />
-        </label>
-        <label className="block">
-          <span className={fieldLabel}>The clients or rooms you reach</span>
-          <input name="reach" className={fieldInput} placeholder="Hotels, restaurants, private residences…" />
+        <label className="block sm:col-span-2">
+          <span className={fieldLabel}>Where you place work</span>
+          <select name="reach" defaultValue="" className={cn(fieldInput, "appearance-none")}>
+            <option value="">Select…</option>
+            {PLACES.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
         </label>
       </div>
 
       <label className="block mb-5">
-        <span className={fieldLabel}>A little about you</span>
+        <span className={fieldLabel}>Who you'd open a door to</span>
         <textarea
           name="message"
-          rows={5}
+          rows={4}
           className={cn(fieldInput, "leading-[1.6] resize-none")}
-          placeholder="Who you'd introduce the estate to, and why it's a fit."
+          placeholder="A project or client you have in mind — no detail needed yet."
         />
       </label>
 
       {errorMsg && <p className="mb-4 font-sans text-[14px] text-accent m-0">{errorMsg}</p>}
 
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <button
-          type="submit"
-          disabled={status === "submitting"}
-          className={cn(
-            BTN_PRIMARY,
-            "disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-          )}
-        >
-          {status === "submitting" ? "Sending…" : "Apply in confidence"}
-          <span aria-hidden="true" className="ml-2">→</span>
-        </button>
-        <Link
-          to="/contact"
-          className={cn(META, "inline-flex items-center min-h-[44px] hover:text-accent transition-colors")}
-        >
-          Or use the contact page →
-        </Link>
-      </div>
+      <button
+        type="submit"
+        disabled={status === "submitting"}
+        className={cn(
+          BTN_PRIMARY,
+          "disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+        )}
+      >
+        {status === "submitting" ? "Sending…" : "Request an introduction"}
+        <span aria-hidden="true" className="ml-2">→</span>
+      </button>
+      <p className={cn(META, "mt-4 m-0 text-[14px]")}>
+        Read by the family, replied to personally — usually within a day or two.
+      </p>
     </form>
   );
 };
@@ -318,9 +317,20 @@ const RepresentativeApplication = () => {
 export const Representatives = () => {
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
-      <SceneBackdrop src="/img/scenes/trade-scene-v3.webp" />
-      {/* Private + unlinked: noindex, not in nav / footer / sitemap. The single
-          dignified link the estate hands a vetted prospect. */}
+      {/* Bespoke luxe ground — deep near-black with a low, warm rust glow rising
+          from the top. No photo (no repeats), no decorative SVG (no "AI" look):
+          the type is the art. */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-0 pointer-events-none"
+        style={{
+          background: [
+            "radial-gradient(140% 95% at 50% -12%, rgba(201,120,68,0.20), rgba(10,9,8,0) 52%)",
+            "radial-gradient(70% 55% at 88% 8%, rgba(201,120,68,0.10), transparent 60%)",
+            "linear-gradient(180deg, #0c0a09 0%, #0a0908 42%, #080706 100%)",
+          ].join(","),
+        }}
+      />
       <Seo
         title="Representatives"
         description="A private, by-invitation programme for representatives of the estate of Stephen Meakin."
@@ -330,49 +340,72 @@ export const Representatives = () => {
       <Nav />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
-        {/* ── MASTHEAD ── */}
-        <Reveal as="div" className="pb-4 md:pb-5">
-          <PageMasthead
-            eyebrow="Representatives"
-            meta="By invitation"
-            title={
-              <>
-                For those who open <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>the right</em> doors.
-              </>
-            }
+        {/* ── HERO ── screen-filling type on the bespoke ground: the type is the art. */}
+        <Reveal as="header" className="min-h-[80svh] flex flex-col justify-center pt-14 md:pt-16 pb-10 md:pb-16">
+          <p className={cn(EYEBROW, "m-0 mb-6 md:mb-8")}>Representatives · By invitation</p>
+          <h1
+            className="font-display font-bold text-ink m-0 text-balance"
+            style={{
+              fontVariationSettings: '"opsz" 48, "wght" 700',
+              fontSize: "clamp(46px, 9vw, 176px)",
+              lineHeight: 0.9,
+              letterSpacing: "-0.035em",
+              textShadow: "0 2px 26px rgba(0,0,0,0.5)",
+            }}
           >
-            <Reveal as="div" className="mt-4 md:mt-5 border-t border-line pt-4 md:pt-5">
-              <p className={cn(EYEBROW_MUTED, "m-0 mb-3 leading-[1.8]")}>
-                The estate of Stephen Meakin · SEM
-              </p>
-              <p
-                className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[68ch]"
-                style={{
-                  fontVariationSettings: '"opsz" 32, "wght" 400',
-                  fontSize: "clamp(21px, 2.5vw, 34px)",
-                  lineHeight: 1.26,
-                  textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
-                }}
-              >
-                The estate works with a small, private group of representatives —
-                designers, consultants and hospitality specialists who bring
-                Stephen's work to the projects and properties it belongs in, and
-                share in every placement. By invitation, arranged in confidence.
-              </p>
-              <p className={cn(META, "mt-4 m-0")}>
-                Terms are generous, and arranged privately.
-              </p>
-            </Reveal>
-          </PageMasthead>
+            For those who open{" "}
+            <em
+              className="italic font-normal"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
+            >
+              the right
+            </em>{" "}
+            doors.
+          </h1>
+          <div className="mt-9 md:mt-14 max-w-[66ch]">
+            <div className="h-px w-16 bg-accent/70 mb-6 md:mb-7" />
+            <p
+              className="font-display font-normal tracking-[-0.01em] text-ink m-0"
+              style={{
+                fontVariationSettings: '"opsz" 32, "wght" 400',
+                fontSize: "clamp(21px, 2.4vw, 33px)",
+                lineHeight: 1.28,
+                textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+              }}
+            >
+              The estate places a small number of representatives beside a finite,
+              authored body of work — those who bring Stephen's work to the projects
+              and properties it belongs in, and share in every placement. You open
+              the door; everything behind it is ours to carry.
+            </p>
+            <p className={cn(EYEBROW_MUTED, "m-0 mt-6 leading-[1.7]")}>
+              A finite body of work · Turnkey behind the door · Terms in confidence
+            </p>
+          </div>
         </Reveal>
 
-        {/* ── WHY REPRESENT THE ESTATE ── */}
+        {/* ── PROOF ── */}
         <section className="py-6 md:py-8">
-          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
-            <p className={cn(EYEBROW, "m-0")}>Why represent the estate</p>
-            <p className={cn(EYEBROW_MUTED, "m-0")}>Worth a serious hand</p>
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6">
+            <p className={cn(EYEBROW, "m-0")}>The estate behind you</p>
           </Reveal>
+          <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 md:gap-y-0 items-start">
+            {PROOF.map((p) => (
+              <div key={p.title} className="md:border-l md:border-line md:pl-6 lg:pl-8 first:md:border-l-0 first:md:pl-0">
+                <h3 className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(19px,2vw,26px)] leading-[1.15]">
+                  {p.title}
+                </h3>
+                <p className={cn(SUBTITLE, "max-w-none mt-2.5")}>{p.body}</p>
+              </div>
+            ))}
+          </Reveal>
+        </section>
 
+        {/* ── WHY REPRESENT ── */}
+        <section className="py-6 md:py-8">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6">
+            <p className={cn(EYEBROW, "m-0")}>Why represent the estate</p>
+          </Reveal>
           <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 md:gap-y-0 items-start">
             {REASONS.map((item) => (
               <section
@@ -398,53 +431,60 @@ export const Representatives = () => {
           </Reveal>
         </section>
 
-        {/* ── WHAT YOU EARN ── This page is PRIVATE (unlinked, noindex), so the
-            reward is stated plainly here to motivate a vetted prospect. These
-            figures must NEVER appear on any public / linked surface. */}
+        {/* ── WHAT YOU EARN ── the money moment, in a quiet vitrine. */}
         <section className="py-6 md:py-8">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
             <p className={cn(EYEBROW, "m-0")}>What you earn</p>
             <p className={cn(EYEBROW_MUTED, "m-0")}>Paid on completion, in confidence</p>
           </Reveal>
-          <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-            <div className="lg:col-span-6">
-              <p className="font-display text-ink m-0 leading-[1.0] tracking-[-0.02em] text-[clamp(42px,5.4vw,80px)]">
-                10%<span className="text-ink-muted"> of every placement.</span>
-              </p>
-              <p className="font-display text-ink m-0 mt-3 leading-[1.05] tracking-[-0.02em] text-[clamp(26px,3vw,46px)]">
-                15%<span className="text-ink-muted"> on hospitality &amp; key accounts.</span>
-              </p>
-              <p className={cn(SUBTITLE, "max-w-none mt-5")}>
-                Paid promptly on each completed placement, agreed with you at the
-                outset and held in confidence. No small print, no scheme — a
-                professional share of the work you place well.
-              </p>
-            </div>
-            <div className="lg:col-span-6 lg:border-l lg:border-line lg:pl-10">
-              <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>For a sense of scale</p>
-              <p className={cn(SUBTITLE, "max-w-none m-0")}>
-                Stephen's work sells at project scale, so a single introduction is
-                rarely small. A twenty-piece scheme across a boutique hotel — where
-                the estate invoices around{" "}
-                <span className="text-ink font-semibold">£15,000</span> — earns the
-                representative <span className="text-ink font-semibold">£2,250</span>
-                . A whole property, considerably more — for one warm introduction.
-              </p>
-              <p className={cn(META, "mt-4 m-0")}>
-                Commission is a share of the order the estate invoices, on completed
-                placements; larger projects are agreed individually.
-              </p>
+
+          <Reveal as="div" className="ring-1 ring-line bg-ink/[0.03] rounded-[2px] px-6 md:px-10 py-9 md:py-11">
+            <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-x-12 gap-y-9 items-start">
+              {/* Rate */}
+              <div>
+                <p className="font-display text-ink m-0 leading-[0.9] tracking-[-0.02em] tabular-nums text-[clamp(56px,7vw,112px)]">
+                  10<span className="text-[0.62em] align-top">%</span>
+                </p>
+                <p className={cn(META, "m-0 mt-1 text-[15px] uppercase-none")}>of every placement</p>
+                <div className="border-t border-line mt-6 pt-6">
+                  <p className="font-display text-ink m-0 leading-[0.95] tracking-[-0.02em] tabular-nums text-[clamp(34px,4vw,60px)]">
+                    15<span className="text-[0.62em] align-top">%</span>
+                  </p>
+                  <p className={cn(META, "m-0 mt-1 text-[15px]")}>on hospitality &amp; key accounts</p>
+                </div>
+              </div>
+
+              {/* The worked ledger — hammer-price register. */}
+              <div className="lg:border-l lg:border-line lg:pl-12">
+                <p className={cn(EYEBROW_TIGHT, "m-0 mb-4")}>What a single introduction returns</p>
+                <div className="flex flex-col gap-3.5">
+                  {EARNINGS.map((e) => (
+                    <div key={e.room} className="grid grid-cols-[1fr_auto] items-baseline gap-4 border-b border-line pb-3.5">
+                      <div>
+                        <p className="font-sans text-ink m-0 text-[15px] leading-snug">{e.room}</p>
+                        <p className={cn(META, "m-0 text-[13px]")}>estate invoices {e.invoiced}</p>
+                      </div>
+                      <p className="font-display text-ink m-0 tabular-nums whitespace-nowrap text-[clamp(22px,2.4vw,32px)] tracking-[-0.01em]">
+                        {e.share}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className={cn(META, "mt-4 m-0 text-[14px]")}>
+                  Stephen's work sells at project scale, so one warm introduction is
+                  rarely small — and it's paid promptly on completion, held in
+                  confidence.
+                </p>
+              </div>
             </div>
           </Reveal>
         </section>
 
         {/* ── HOW IT WORKS ── */}
         <section className="py-6 md:py-8">
-          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6">
             <p className={cn(EYEBROW, "m-0")}>How it works</p>
-            <p className={cn(EYEBROW_MUTED, "m-0")}>Turnkey, on the estate's side</p>
           </Reveal>
-
           <Reveal as="div" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 lg:gap-x-10 gap-y-8 items-start">
             {STEPS.map((step) => (
               <div key={step.index} className="lg:border-l lg:border-line lg:pl-6 first:lg:border-l-0 first:lg:pl-0">
@@ -466,9 +506,8 @@ export const Representatives = () => {
 
         {/* ── WHO THIS SUITS ── */}
         <section className="py-6 md:py-8">
-          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6">
             <p className={cn(EYEBROW, "m-0")}>Who this suits</p>
-            <p className={cn(EYEBROW_MUTED, "m-0")}>People with the right rooms</p>
           </Reveal>
           <Reveal as="div" className="grid grid-cols-1 md:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 md:gap-y-0 items-start">
             {SUITS.map((s) => (
@@ -482,7 +521,39 @@ export const Representatives = () => {
           </Reveal>
         </section>
 
-        {/* ── APPLICATION ── */}
+        {/* ── YOUR TOOLKIT ── discreet: equips the rep to actually quote (private). ── */}
+        <section className="py-6 md:py-8">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start">
+            <div className="lg:col-span-5">
+              <p className={cn(EYEBROW, "m-0 mb-3.5")}>Your toolkit</p>
+              <h2 className={cn(TITLE, "max-w-none m-0")}>
+                Everything to quote with confidence.
+              </h2>
+            </div>
+            <div className="lg:col-span-7 lg:border-l lg:border-line lg:pl-10">
+              <p className={cn(SUBTITLE, "max-w-none m-0")}>
+                Once you're on account, you carry the estate's private trade price
+                sheet — bulk tiers, framing and finishes, lead times and free
+                worldwide delivery — to quote any room or whole property. For a
+                bespoke lobby centrepiece or a custom size, tell us the wall and we
+                prepare it individually.
+              </p>
+              <p className={cn(META, "mt-4 m-0")}>
+                Approved representatives receive the sheet's access link directly.
+                Questions, or a project already in mind —{" "}
+                <a
+                  href="mailto:info@themandalacompany.com?subject=Representatives%20%E2%80%94%20project"
+                  className="text-accent hover:underline"
+                >
+                  info@themandalacompany.com
+                </a>
+                .
+              </p>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ── APPLY / CLOSE ── */}
         <section className="py-6 md:py-8">
           <Reveal as="div" className="border-t border-line pt-4 md:pt-5">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start mb-8">
@@ -494,19 +565,10 @@ export const Representatives = () => {
               </div>
               <div className="lg:col-span-7 lg:border-l lg:border-line lg:pl-10">
                 <p className={cn(SUBTITLE, "max-w-none m-0")}>
-                  Tell us who you are and the rooms you reach. We keep this group
-                  small and personal — if it's a fit, we'll reply in confidence and
-                  agree terms directly with you.
-                </p>
-                <p className={cn(META, "mt-4 m-0")}>
-                  Or write directly to{" "}
-                  <a
-                    href="mailto:info@themandalacompany.com?subject=Representatives"
-                    className="text-accent hover:underline"
-                  >
-                    info@themandalacompany.com
-                  </a>
-                  .
+                  The estate keeps this circle small on purpose. If you have a room,
+                  a property or a client where Stephen's work belongs, tell us — and
+                  we'll take it from there. No rush, no rate card: only a
+                  conversation, and generous private terms once it's a fit.
                 </p>
               </div>
             </div>
