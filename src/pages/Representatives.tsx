@@ -7,13 +7,15 @@ import { EYEBROW, EYEBROW_MUTED, SUBTITLE, BTN_PRIMARY } from "../components/ui/
 import { cn } from "../lib/cn";
 
 /**
- * /representatives — the estate's PRIVATE representatives programme.
+ * /trade — the estate's "Partners" programme (Hugo 2026-07-30: this REPLACED the
+ * old buyer-facing /trade page; it now lives at /trade and "/representatives"
+ * redirects here. Menu label = "Partners"; indexed + in the sitemap).
  *
- * Dignified and SPARE by design (Hugo, 2026-07-28): a memorial estate must never
- * read as a commission scheme. NO commission figures / earnings / "how much you
- * make" anywhere on the page — terms are arranged privately, 1:1. Concise, quiet,
- * confident. Linked discreetly in the footer; noindex. Application POSTs
- * kind:"representative-application" to /api/newsletter-subscribe (existing path).
+ * Dignified and SPARE by design: a memorial estate must never read as a
+ * commission scheme. NO commission figures / earnings / "how much you make"
+ * anywhere on the page — terms are arranged privately, 1:1. Concise, quiet,
+ * confident. Application POSTs kind:"representative-application" to
+ * /api/newsletter-subscribe (existing backend path — kept as-is).
  */
 
 const ROLE: { title: string; body: string }[] = [
@@ -27,7 +29,7 @@ const ROLE: { title: string; body: string }[] = [
   },
   {
     title: "You're looked after.",
-    body: "Representatives share in every placement, on terms agreed with you privately.",
+    body: "Partners share in every placement, on terms agreed with you privately.",
   },
 ];
 
@@ -101,7 +103,7 @@ const RepresentativeApplication = () => {
         <p className="font-display text-[clamp(24px,3vw,34px)] text-ink m-0 mb-3">Thank you.</p>
         <p className={cn(SUBTITLE, "max-w-none m-0")}>
           We'll be in touch, personally and in confidence. If it's pressing, write to{" "}
-          <a href="mailto:info@themandalacompany.com?subject=Representatives" className="text-accent hover:underline">
+          <a href="mailto:info@themandalacompany.com?subject=Partners" className="text-accent hover:underline">
             info@themandalacompany.com
           </a>
           .
@@ -177,17 +179,16 @@ export const Representatives = () => {
         }}
       />
       <Seo
-        title="Representatives"
-        description="A private, by-invitation programme for representatives of the estate of Stephen Meakin."
-        url="/representatives"
-        noindex
+        title="Partners"
+        description="A by-invitation programme for those who place the work of Stephen Meakin with trade and hospitality clients."
+        url="/trade"
       />
       <Nav />
 
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-24">
         {/* ── HERO ── the type is the art. One line beneath, no more. */}
         <Reveal as="header" className="min-h-[62svh] flex flex-col justify-center pt-6 md:pt-8 pb-8">
-          <p className={cn(EYEBROW, "m-0 mb-6")}>Representatives · By invitation</p>
+          <p className={cn(EYEBROW, "m-0 mb-6")}>Partners · By invitation</p>
           <h1
             className="font-display font-bold text-ink m-0 text-balance"
             style={{
@@ -206,7 +207,7 @@ export const Representatives = () => {
               className="font-display font-normal tracking-[-0.01em] text-ink m-0"
               style={{ fontVariationSettings: '"opsz" 32, "wght" 400', fontSize: "clamp(21px, 2.4vw, 32px)", lineHeight: 1.3, textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}
             >
-              The estate works with a few trusted representatives who place Stephen's
+              The estate works with a few trusted partners who place Stephen's
               work in the rooms it belongs in.
             </p>
           </div>

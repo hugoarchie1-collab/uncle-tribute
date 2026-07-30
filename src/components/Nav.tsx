@@ -24,7 +24,7 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
       { to: "/collections", label: "Collections" },
       { to: "/for-you", label: "Find a print" },
       { to: "/gift", label: "Gift cards" },
-      { to: "/trade", label: "Trade & Interiors" },
+      { to: "/trade", label: "Partners" },
     ],
   },
   {
@@ -57,7 +57,7 @@ const CURATED_NAV: NavItem[] = [
   { to: "/for-you", label: "Find a print" },
   { to: "/about", label: "About" },
   { to: "/memories", label: "Memories" },
-  { to: "/trade", label: "Trade" },
+  { to: "/trade", label: "Partners" },
 ];
 
 /** Quiet drawer-footer set — account/orders + FAQ + legal. Gift cards moved UP

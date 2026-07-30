@@ -47,7 +47,6 @@ const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.C
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
-const Trade = lazy(() => import("./pages/Trade").then((m) => ({ default: m.Trade })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
 const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
@@ -155,14 +154,16 @@ const AnimatedRoutes = () => {
               page so old links + printed certificates keep resolving. */}
           <Route path="/verify" element={<Navigate to="/auth" replace />} />
           <Route path="/gift" element={<Gift />} />
-          <Route path="/trade" element={<Trade />} />
+          {/* /trade IS the Partners page (Hugo 2026-07-30: replace the old buyer
+              trade page with the introducer/Partners page — one page, no more
+              "two confusing trade pages"). The old Trade.tsx is kept on disk but
+              no longer routed. Menu label = "Partners". */}
+          <Route path="/trade" element={<Representatives />} />
           {/* Gated trade price sheet — reachable only via the estate's link
               (noindex + robots Disallow; not in nav / footer / sitemap). */}
           <Route path="/trade/pricing" element={<TradePricing />} />
-          {/* Private representatives programme — intentionally UNLINKED (not in
-              nav/footer/sitemap; noindex + robots Disallow). The single dignified
-              link the estate hands a vetted prospect. */}
-          <Route path="/representatives" element={<Representatives />} />
+          {/* Old /representatives URL now redirects to the canonical /trade. */}
+          <Route path="/representatives" element={<Navigate to="/trade" replace />} />
           {/* Account (passwordless) + Orders & Returns — Amazon-IA header. */}
           <Route path="/account" element={<Account />} />
           <Route path="/orders" element={<Orders />} />
