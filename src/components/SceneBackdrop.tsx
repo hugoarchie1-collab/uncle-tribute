@@ -79,6 +79,12 @@ const SCENE_REVEAL_FILTER = "brightness(1.95) saturate(1.4) contrast(1.14)";
  *  purpose so the whole shop shares one coherent, restrained ground. */
 const CALM_GROUND = "/img/scenes/ancient-canons-blur-v1.webp";
 
+/** CALM MODE (Hugo 2026-07-30 "go calm everywhere"): go the whole way — retire
+ *  every scene-photo backdrop (even the shared CALM_GROUND motif and the `own`
+ *  bespoke pages) for a clean near-black ground, so the artwork is the only
+ *  colour in the shop. Flip to `false` to restore the scene photos + reveal. */
+const CALM_BACKDROPS = true;
+
 export const SceneBackdrop = ({
   src,
   own = false,
@@ -129,6 +135,11 @@ export const SceneBackdrop = ({
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [reveal]);
+
+  // CALM MODE — a single clean near-black ground, no scene photo.
+  if (CALM_BACKDROPS) {
+    return <div aria-hidden="true" className="fixed inset-0 z-0 pointer-events-none bg-bg" />;
+  }
 
   return (
     <div

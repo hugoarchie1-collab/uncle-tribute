@@ -81,15 +81,12 @@ type WallMemory = Memory & { imageUrl?: string; avatar?: string };
 // jumped to a stale scroll position on route transitions, reading as a
 // zoom+jump — so it's a static image now.)
 // ---------------------------------------------------------------------------
-const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => (
-  <div
-    style={{
-      backgroundImage: `url("${photoUrl}")`,
-      willChange: "auto",
-    }}
-    className="absolute inset-0 bg-cover bg-center"
-    aria-hidden="true"
-  />
+// CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the peacock-plumage scene is
+// retired for a clean near-black ground so the memories read like a quiet
+// gallery wall. `photoUrl` is ignored on purpose; restore the image to bring the
+// scene back.
+const ScrollBackdrop = ({ photoUrl: _photoUrl }: { photoUrl: string }) => (
+  <div className="absolute inset-0 bg-bg" aria-hidden="true" />
 );
 
 // The pinned founding memory — Stephen's letter to his students, verbatim.

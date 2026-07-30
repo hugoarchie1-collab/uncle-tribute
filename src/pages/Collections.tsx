@@ -71,6 +71,11 @@ const SET_CARD_SCRIM =
  * fades back out. Adjacent backdrops overlap, eliminating the hard
  * horizontal seam between collections.
  */
+/** CALM MODE (Hugo 2026-07-30 "go calm everywhere"): retire the crossfading
+ *  collection scene photos for a clean near-black ground so the painting tiles
+ *  are the only colour. Flip to `false` to restore the scenes. */
+const CALM_BACKDROPS = true;
+
 const ScrollBackdrop = ({
   photoUrl,
   sectionRef,
@@ -130,6 +135,10 @@ const ScrollBackdrop = ({
     io.observe(el);
     return () => io.disconnect();
   }, [sectionRef]);
+
+  // CALM MODE — render nothing; the single near-black base div (below) is the
+  // whole background now.
+  if (CALM_BACKDROPS) return null;
 
   // Reduced-motion: drop the parallax/scale entirely, hold the backdrop at a
   // calm static opacity, and release the GPU layer (will-change:auto) so we
@@ -654,13 +663,10 @@ export const Collections = () => {
             the LAST ScrollBackdrop (Born in the Sky, the nebula) now holds at
             full opacity through the complete-catalogue panel + footer via
             isLast, so the nebula EXTENDS to the very end of the page. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url("${asset("/img/scenes/habundia-blur-v5.webp")}")`,
-          }}
-        />
+        {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the collection
+            scene photos are retired for a clean near-black ground so the
+            painting tiles are the only colour. */}
+        <div aria-hidden="true" className="absolute inset-0 bg-bg" />
         {COLLECTIONS.map((coll, i) =>
           coll.backdropImage ? (
             <ScrollBackdrop

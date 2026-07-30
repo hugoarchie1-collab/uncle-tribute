@@ -5,14 +5,7 @@ import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE, BTN_PRIMARY } from "../components/ui/tokens";
-import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
-
-// Single backdrop scene for /contact — Hugo's certified contact-page image
-// (pink azaleas), pre-blurred + normalised to the dark-family band so the cream
-// copy stays legible. webp referenced directly because it's a CSS background-image
-// (this matches Collections; the <picture> jpg-swap rule applies only to <img>).
-const BACKDROP = asset("/img/scenes/contact-scene-v3.webp");
 
 /**
  * Fixed full-page backdrop — one STATIC bg-cover layer at full opacity. (The
@@ -24,14 +17,9 @@ const BACKDROP = asset("/img/scenes/contact-scene-v3.webp");
 const ContactBackdrop = () => {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-      <div
-        style={{
-          backgroundImage: `url("${BACKDROP}")`,
-          willChange: "auto",
-        }}
-        className="absolute inset-0 bg-cover bg-center"
-        aria-hidden="true"
-      />
+      {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): scene photo retired
+          for a clean near-black ground. */}
+      <div className="absolute inset-0 bg-bg" aria-hidden="true" />
       {/* Shared scrim — the EXACT gradient Collections uses, so /contact reads as
           part of the same world and the cream copy stays legible over the photo. */}
       <div

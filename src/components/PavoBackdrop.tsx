@@ -74,6 +74,15 @@ const useHeavyViewport = () =>
  * Render as a child of the page root (fixed, z-0); content sits at z-10.
  */
 
+/** CALM MODE (Hugo 2026-07-30 "go calm everywhere"): retire the busy Pavo
+ *  mandala tapestry behind content in favour of a clean near-black ground, so
+ *  the ARTWORK is the only colour in the shop — the single biggest "Rolex-level"
+ *  restraint move (verified side-by-side: calm reads markedly more premium and
+ *  keeps text effortless). The Earth masthead hero on Home is a SEPARATE element
+ *  and is unaffected. Flip to `false` to instantly restore the full tapestry —
+ *  all the crossfade/cursor-reveal code below is kept intact for that. */
+const CALM_BACKDROPS = true;
+
 // NOT exported: keeping this file component-only satisfies react-refresh/
 // only-export-components (the PavoFades type export is erased at runtime).
 const PAVO_COLOURWAYS = [
@@ -322,6 +331,11 @@ export const PavoBackdrop = ({
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [reveal]);
+
+  // CALM MODE — a single clean near-black ground, no painting layers.
+  if (CALM_BACKDROPS) {
+    return <div aria-hidden="true" className="fixed inset-0 z-0 pointer-events-none bg-bg" />;
+  }
 
   return (
     <div

@@ -63,15 +63,11 @@ import {
  * scroll-parallax + inset-[-8%] overscan jumped to a stale scroll position on
  * route transitions, reading as a zoom+jump — so it's a plain static image now.)
  */
-const ScrollBackdrop = ({ photoUrl }: { photoUrl: string }) => (
-  <div
-    style={{
-      backgroundImage: `url("${photoUrl}")`,
-      willChange: "auto",
-    }}
-    className="absolute inset-0 bg-cover bg-center"
-    aria-hidden="true"
-  />
+// CALM MODE (Hugo 2026-07-30 "go calm everywhere"): scene photo retired for a
+// clean near-black ground. `photoUrl` ignored on purpose; restore to bring the
+// scene back.
+const ScrollBackdrop = ({ photoUrl: _photoUrl }: { photoUrl: string }) => (
+  <div className="absolute inset-0 bg-bg" aria-hidden="true" />
 );
 
 // Quiet type pill — the EYEBROW_TIGHT recipe inside a rounded-full hairline

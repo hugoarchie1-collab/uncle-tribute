@@ -26,13 +26,7 @@ const sizeCode = (t: PrintTier): string => {
   const d = parseSizeCm(t.size);
   return d ? `${d.w} cm` : t.size;
 };
-import { asset } from "../lib/asset";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
-
-// Single backdrop scene for /for-you — Hugo's certified "find a print for you"
-// image (aurora over the shore), pre-blurred + normalised to the dark-family
-// band so the cream copy stays legible. Treatment is baked into the file.
-const FORYOU_BACKDROP = "/img/scenes/foryou-scene-v4.webp";
 
 // The intention lens — what a piece can cultivate, mapped ONLY to the paintings
 // whose own documented meaning (in paintings.ts descriptions) genuinely carries
@@ -145,23 +139,9 @@ export const FindAPrint = () => {
           overscan jumped to a stale scroll position on route transitions,
           reading as a zoom+jump — so it's a static image now.) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div
-          style={{
-            backgroundImage: `url("${asset(FORYOU_BACKDROP)}")`,
-            // Bias toward the rainbow (left of frame) so it survives the
-            // portrait center-crop on mobile — on desktop the bar is wide
-            // enough that this still shows the wave too. Cross-platform parity.
-            backgroundPosition: "28% center",
-            // 2026-07-24 (Hugo: "where's my background gone on /for-you"): this
-            // page renders its OWN backdrop (not SceneBackdrop), so it MISSED the
-            // site-wide brightening — the dark asset under the heavy scrim read as
-            // no background. Match SceneBackdrop's lift so it SHOWS like the rest.
-            filter: "brightness(1.15) saturate(1.02)",
-            willChange: "auto",
-          }}
-          className="absolute inset-0 bg-cover"
-          aria-hidden="true"
-        />
+        {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): scene photo retired
+            for a clean near-black ground so the artwork is the only colour. */}
+        <div className="absolute inset-0 bg-bg" aria-hidden="true" />
         {/* Shared scrim — EXACT gradient used on Collections / the rest of the
             site, so the colour swatches + tile copy read clearly over the
             scenes while the photo stays a subdued, moody texture. */}

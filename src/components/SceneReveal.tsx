@@ -28,6 +28,10 @@ const usePointerFine = () =>
  * viewport-sized clarified copy counter-translates to stay pinned. Renders
  * nothing on touch / reduced-motion.
  */
+/** CALM MODE (Hugo 2026-07-30): calm backdrops carry no photo, so the reveal
+ *  spotlight is retired site-wide. Flip to `false` with the scene photos. */
+const CALM_BACKDROPS = true;
+
 export const SceneReveal = ({
   photoUrl,
   filter = "brightness(1.68) saturate(1.28) contrast(1.1)",
@@ -64,6 +68,10 @@ export const SceneReveal = ({
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [reveal]);
+
+  // CALM MODE (Hugo 2026-07-30 "go calm everywhere"): no photo backdrops → no
+  // cursor spotlight to reveal. Render nothing. Flip to restore with the scenes.
+  if (CALM_BACKDROPS) return null;
 
   if (!reveal) return null;
 
