@@ -333,9 +333,9 @@ export const FindAPrint = () => {
         {/* Size / edition selector — the price on every tile follows the size
             you pick (A3 → A0), instead of a flat "from £…". Mirrors the size
             selector on Collections. */}
-        <div className="mb-7 md:mb-9 flex flex-wrap items-center gap-3">
+        <div className="mb-7 md:mb-9 flex flex-wrap items-center justify-center gap-3">
           <span className={cn(EYEBROW, "m-0")}>Prices for</span>
-          <div role="radiogroup" aria-label="Show prices for print size" className="flex flex-wrap gap-2">
+          <div role="radiogroup" aria-label="Show prices for print size" className="flex flex-wrap justify-center gap-2">
             {BROWSE_TIERS.map((t) => {
               const sel = t.id === browseTier.id;
               return (
@@ -371,7 +371,7 @@ export const FindAPrint = () => {
           {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0 grow basis-[clamp(260px,20vw,340px)] max-w-full sm:max-w-[calc(50%-0.625rem)] lg:max-w-[calc(33.333%-1rem)]"
+              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
             >
               <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
                 <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
@@ -388,7 +388,7 @@ export const FindAPrint = () => {
                     />
                   </div>
                 </div>
-                <figcaption className="pt-3 md:pt-4">
+                <figcaption className="pt-3 md:pt-4 text-center">
                   <h2
                     className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 min-h-[2.5em] group-hover:text-accent transition-colors duration-300"
                     style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
@@ -408,7 +408,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className={cn(META, "leading-[1.7] mt-6")}>
+          <p className={cn(META, "leading-[1.7] mt-6 text-center")}>
             Nothing matches all of those at once.{" "}
             <button
               type="button"
