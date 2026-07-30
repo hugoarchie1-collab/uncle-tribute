@@ -68,7 +68,11 @@ export const FooterCatalogue = () => {
       // Same nav bar class as the Footer below — the whole catalogue+footer block
       // is a LITERAL clone of the top banner (.nav-bg-scrolled). Clean straight top
       // edge (no border, no seam).
-      className="nav-bg-scrolled relative hidden md:block px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
+      // ONE FLAT wax-red (not the nav GRADIENT) so the catalogue + Footer read as
+      // a single continuous block — the gradient RESTARTED per element, so the dark
+      // bottom of the catalogue met the bright-red top of the footer = a seam
+      // (Hugo 2026-07-29). Flat colour = no restart, no seam. Footer uses the same.
+      className="bg-[#2a0a0b] relative hidden md:block px-4 sm:px-6 md:px-8 lg:px-12 pt-5 md:pt-6 pb-4 md:pb-5"
     >
       {/* NO feathered seam above the strip (Hugo 2026-07-28: "i hate that blur
           above the catalogue"). The red block starts on a clean STRAIGHT edge,

@@ -98,7 +98,7 @@ export const Footer = () => (
     // Use the nav's OWN class (.nav-bg-scrolled — the opaque wax-seal-red gradient
     // the bar shows once scrolled, which is the state visible beside the footer),
     // so colour, gradient AND alpha are identical to the top banner by construction.
-    className="nav-bg-scrolled relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
+    className="bg-[#2a0a0b] relative text-ink-muted px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-7 pb-6 md:pb-7"
   >
     {/* NO feathered seam (Hugo 2026-07-28: "i hate that blur above the
         catalogue"). Clean STRAIGHT top edge — a true clone of the top nav bar. */}
