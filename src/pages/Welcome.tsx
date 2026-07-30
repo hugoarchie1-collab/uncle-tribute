@@ -1270,20 +1270,9 @@ export const Welcome = () => {
                 lean on the soft-edge feather to keep it from reading as pixelated;
                 bigger so it fills the section. Never cropped; ring frame kept. */}
             <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[620px] md:max-w-[840px] 2xl:max-w-[920px]">
-              {/* A whisper-soft CREAM lift behind the photo + caption (Hugo
-                  2026-07-28: "faint black behind the caption"). It's a LIGHT glow,
-                  not a dark scrim — the opposite of the box he hates — and it's a
-                  radial that fades fully to transparent well before any edge, so it
-                  can never read as a rectangle. It just keeps this pocket of the
-                  peacock backdrop from ever sitting dark behind the cream text. */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[155%] w-[145%] -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  background:
-                    "radial-gradient(closest-side, rgba(228,222,206,0.11), rgba(228,222,206,0.045) 46%, transparent 72%)",
-                }}
-              />
+              {/* (Removed the cream glow that sat behind the photo + caption —
+                  Hugo 2026-07-30: "that background behind the writing, remove it".
+                  The caption now sits directly on the peacock backdrop.) */}
               <div className="overflow-hidden">
                 <AssetImage
                   src="/img/welcome/05-arista-sunstar-v2.jpg"
@@ -1340,15 +1329,10 @@ export const Welcome = () => {
                between the globe and the footer (Hugo 2026-07-27). */
             className="relative z-20 isolate w-full overflow-hidden !mt-[clamp(64px,9vh,150px)] !-mb-8 md:!-mb-10"
           >
-            {/* Warm halo along the foot — matches the top Earth's rim. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-full"
-              style={{
-                background:
-                  "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.12) 0%, rgba(201,120,68,0) 66%)",
-              }}
-            />
+            {/* (Removed the warm halo band that sat above the Earth limb — Hugo
+                2026-07-30: it read as a "line of shading above the earth". The
+                earth-cutout asset already carries its own baked rim glow, so the
+                planet still glows without this extra gradient band.) */}
             <img
               // ⚠️ THE FOOT IS NOW THE EXACT MIRROR OF THE TOP EARTH (Hugo
               // 2026-07-28, after ~14 rejected Jupiter re-crops: "I need it to be
