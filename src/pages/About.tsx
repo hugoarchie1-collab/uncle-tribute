@@ -197,9 +197,29 @@ const ProseColumns = ({
 // with NO crop, NO letterbox, NO mount. Stacks to one column on phones.
 const readAspect = (node: ReactNode): number => {
   if (!isValidElement(node)) return 1;
-  const props = node.props as { width?: number; height?: number; children?: ReactNode };
+  const props = node.props as {
+    width?: number;
+    height?: number;
+    aspect?: string;
+    children?: ReactNode;
+  };
   if (typeof props.width === "number" && typeof props.height === "number" && props.height > 0) {
     return props.width / props.height;
+  }
+  // ImageReveal tiles carry no width/height — only an `aspect` class string
+  // (e.g. "aspect-[4/3]", "aspect-square", "aspect-video"). Parse it so those
+  // rows JUSTIFY to one shared height just like the Plate rows do. Without this,
+  // every ImageReveal fell back to 1 → equal-width columns → mixed-aspect tiles
+  // rendered at DIFFERENT heights = the "jaggered jigsaw" Hugo keeps flagging.
+  if (typeof props.aspect === "string") {
+    if (props.aspect.includes("square")) return 1;
+    if (props.aspect.includes("video")) return 16 / 9;
+    const m = props.aspect.match(/\[(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\]/);
+    if (m) {
+      const w = parseFloat(m[1]);
+      const h = parseFloat(m[2]);
+      if (h > 0) return w / h;
+    }
   }
   // Photos are wrapped in <Reveal><Plate …/></Reveal>; look one level in.
   for (const child of Children.toArray(props.children)) {
@@ -987,7 +1007,7 @@ export const About = () => {
           <Reveal
             as="figure"
             className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px]",
+              "relative m-0 mx-auto w-full max-w-[880px] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
               BLOCK_GAP,
             )}
           >
@@ -997,7 +1017,7 @@ export const About = () => {
               loading="lazy"
               decoding="async"
               sizes="(min-width: 768px) 880px, 100vw"
-              className="block w-full h-auto"
+              className="absolute inset-0 h-full w-full object-cover object-center"
             />
           </Reveal>
 
@@ -1426,14 +1446,14 @@ export const About = () => {
             as="div"
             className={cn(BLOCK_GAP, "mx-auto w-full max-w-[900px]")}
           >
-            <figure className="m-0 overflow-hidden rounded-[3px]">
+            <figure className="m-0 flex justify-center overflow-hidden rounded-[3px] bg-ink/[0.04]">
               <AssetImage
                 src="/img/about/07-az-zarqa-students.jpg"
                 alt="Stephen seated among a group of children, the mandalas they made held up around them"
                 loading="lazy"
                 decoding="async"
                 sizes="(min-width: 1024px) 900px, 100vw"
-                className="block w-full h-auto"
+                className="mx-auto block h-auto w-auto max-h-[60svh] max-w-full"
               />
             </figure>
             <div className={cn(BLOCK_GAP, "mx-auto max-w-[70ch] text-center")}>

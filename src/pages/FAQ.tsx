@@ -307,7 +307,7 @@ const FaqMasthead = () => (
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[72ch] 3xl:max-w-[80ch]"
             style={{
-              fontVariationSettings: '"opsz" 32, "wght" 430',
+              fontVariationSettings: '"opsz" 32, "wght" 400',
               fontSize: "clamp(22px, 2.2vw, 38px)",
               lineHeight: 1.28,
             }}

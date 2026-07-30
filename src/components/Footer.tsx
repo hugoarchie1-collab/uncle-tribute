@@ -135,7 +135,7 @@ export const Footer = () => (
         </p>
         {/* Follow the estate — official social profiles (mirrored into the
             Organization sameAs in index.html). Inline SVG glyphs, each in a
-            40px hit-area (a11y), muted→ink with a soft lift on hover. */}
+            44px hit-area (a11y), muted→ink with a soft lift on hover. */}
         <div className="mt-4">
           <h2 className={cn(EYEBROW_MUTED, "mb-2.5")}>Follow</h2>
           <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
@@ -146,7 +146,7 @@ export const Footer = () => (
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${s.label} — The Mandala Company`}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-ink hover:-translate-y-0.5 focus-visible:text-ink"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-ink hover:-translate-y-0.5 focus-visible:text-ink"
                 >
                   {s.icon}
                 </a>

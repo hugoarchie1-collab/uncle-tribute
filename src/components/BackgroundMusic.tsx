@@ -165,12 +165,12 @@ export const BackgroundMusic = () => {
         className="fixed bottom-5 left-4 sm:left-5 z-[118] inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink ring-1 ring-line backdrop-blur-sm outline-none transition-colors duration-300 hover:bg-[#0a0908]/90 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent print:hidden"
       >
         {playing ? (
-          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M4 8v4h3l4 3V5L7 8H4Z" fill="currentColor" />
             <path d="M14 7.5a3.5 3.5 0 0 1 0 5M16 5.5a6 6 0 0 1 0 9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
         ) : (
-          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M4 8v4h3l4 3V5L7 8H4Z" fill="currentColor" />
             <path d="M14 8l4 4M18 8l-4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
