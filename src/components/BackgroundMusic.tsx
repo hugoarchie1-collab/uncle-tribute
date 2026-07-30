@@ -162,7 +162,7 @@ export const BackgroundMusic = () => {
         onClick={toggle}
         aria-label={playing ? "Mute background music" : "Play background music"}
         aria-pressed={playing}
-        className="fixed bottom-4 left-4 z-[118] inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink ring-1 ring-line backdrop-blur-sm outline-none transition-colors duration-300 hover:bg-[#0a0908]/90 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent print:hidden"
+        className="fixed bottom-5 left-4 sm:left-5 z-[118] inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink ring-1 ring-line backdrop-blur-sm outline-none transition-colors duration-300 hover:bg-[#0a0908]/90 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent print:hidden"
       >
         {playing ? (
           <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">

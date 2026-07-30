@@ -42,13 +42,13 @@ export const ScrollToTop = () => {
       onClick={toTop}
       aria-label="Back to top"
       title="Back to top"
-      className={`press fixed bottom-6 right-5 sm:right-6 z-[100] inline-flex h-12 w-12 items-center justify-center rounded-full text-ink shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] ring-1 ring-line backdrop-blur-sm transition-[opacity,transform] duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 ${
+      // Matched pair with the BackgroundMusic mute toggle (bottom-left): SAME
+      // size (h-11 w-11), SAME bottom offset (bottom-5), SAME dark disc + ring
+      // treatment, just mirrored to the right. Hugo 2026-07-30: the two floating
+      // controls must never look like different-sized mismatched buttons.
+      className={`press fixed bottom-5 right-4 sm:right-5 z-[100] inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0a0908]/70 text-ink ring-1 ring-line backdrop-blur-sm transition-[opacity,transform,color,background-color] duration-300 hover:bg-[#0a0908]/90 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
         shown ? "opacity-100" : "pointer-events-none opacity-0 translate-y-2"
       }`}
-      style={{
-        background:
-          "linear-gradient(160deg, rgba(72,14,14,0.94), rgba(40,8,9,0.96))",
-      }}
     >
       <svg
         viewBox="0 0 24 24"
