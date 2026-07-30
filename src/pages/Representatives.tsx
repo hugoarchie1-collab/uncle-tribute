@@ -72,10 +72,12 @@ const REASONS: Reason[] = [
     title: "Built for whole rooms and whole properties.",
     body: (
       <>
-        A single piece or a suite across an entire hotel — the work reads at any
-        scale, from an A3 to the 3.6-metre Arista SunStar at Farmacy in Notting
-        Hill. Every piece is produced, framed, delivered worldwide and invoiced by
-        the estate. You open the door; the family handles everything behind it.
+        A single piece or a scheme across an entire hotel — at any size, from a
+        standard edition to a <strong>bespoke piece scaled for a lobby wall</strong>,
+        like the 3.6-metre Arista SunStar at Farmacy in Notting Hill. Bulk orders,
+        custom sizes and whole-property schemes are all handled — every piece
+        produced, framed, delivered worldwide and invoiced by the estate. You open
+        the door; the family handles everything behind it.
       </>
     ),
   },
@@ -393,6 +395,46 @@ export const Representatives = () => {
                 <div className={cn(SUBTITLE, "max-w-none mt-3.5 md:mt-4")}>{item.body}</div>
               </section>
             ))}
+          </Reveal>
+        </section>
+
+        {/* ── WHAT YOU EARN ── This page is PRIVATE (unlinked, noindex), so the
+            reward is stated plainly here to motivate a vetted prospect. These
+            figures must NEVER appear on any public / linked surface. */}
+        <section className="py-6 md:py-8">
+          <Reveal as="div" className="border-t border-line pt-4 md:pt-5 mb-5 md:mb-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+            <p className={cn(EYEBROW, "m-0")}>What you earn</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>Paid on completion, in confidence</p>
+          </Reveal>
+          <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
+            <div className="lg:col-span-6">
+              <p className="font-display text-ink m-0 leading-[1.0] tracking-[-0.02em] text-[clamp(42px,5.4vw,80px)]">
+                10%<span className="text-ink-muted"> of every placement.</span>
+              </p>
+              <p className="font-display text-ink m-0 mt-3 leading-[1.05] tracking-[-0.02em] text-[clamp(26px,3vw,46px)]">
+                15%<span className="text-ink-muted"> on hospitality &amp; key accounts.</span>
+              </p>
+              <p className={cn(SUBTITLE, "max-w-none mt-5")}>
+                Paid promptly on each completed placement, agreed with you at the
+                outset and held in confidence. No small print, no scheme — a
+                professional share of the work you place well.
+              </p>
+            </div>
+            <div className="lg:col-span-6 lg:border-l lg:border-line lg:pl-10">
+              <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>For a sense of scale</p>
+              <p className={cn(SUBTITLE, "max-w-none m-0")}>
+                Stephen's work sells at project scale, so a single introduction is
+                rarely small. A twenty-piece scheme across a boutique hotel — where
+                the estate invoices around{" "}
+                <span className="text-ink font-semibold">£15,000</span> — earns the
+                representative <span className="text-ink font-semibold">£2,250</span>
+                . A whole property, considerably more — for one warm introduction.
+              </p>
+              <p className={cn(META, "mt-4 m-0")}>
+                Commission is a share of the order the estate invoices, on completed
+                placements; larger projects are agreed individually.
+              </p>
+            </div>
           </Reveal>
         </section>
 
