@@ -88,12 +88,13 @@ export const Logo = ({
         }}
       />
       {wordmark && (
-        // NAV wordmark sized to MATCH the weight of the deep-red seal beside it
-        // (Hugo: the old 16px/normal text read small + un-impactful). In the nav
-        // it's bold Fraunces that grows responsively across the screen
-        // (clamp 20→28px, opsz 28, semibold). The FOOTER (wordmarkWrap) keeps the
-        // original tidy 16px/normal so it still wraps cleanly to two lines inside
-        // the narrow brand column — only the header logo gets the big treatment.
+        // Footer wordmark — the name in Fraunces bold beside the wax seal. The
+        // footer KEEPS the seal (unlike the nav header, where the seal was
+        // dropped 2026-07-30 + the wordmark simplified to a plain single-line
+        // grotesk): on near-black the seal reads big + acts as the estate's
+        // signature. Wraps cleanly to two lines in the narrow brand column.
+        // ⚠️ Header (plain sans) + footer (Fraunces + seal) now differ — pending
+        // Hugo's call on whether to align them.
         <span
           className={`inline font-display text-ink [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] ${wordmarkWrap ? "text-[clamp(17px,3.6vw,24px)] font-bold tracking-[-0.015em] min-w-0 whitespace-normal leading-[1.05]" : "text-[clamp(19px,5vw,28px)] font-bold tracking-[-0.015em] whitespace-normal sm:whitespace-nowrap leading-[1.08] min-w-0 max-w-full sm:max-w-none"}`}
           style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}

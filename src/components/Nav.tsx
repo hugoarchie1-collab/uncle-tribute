@@ -306,30 +306,18 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           }}
           className="press inline-flex items-center min-w-0"
         >
-          {/* The "The Art of Stephen Meakin" LOGOTYPE (Hugo 2026-07-30: the old
-              lockup — photo wax-seal + the name set in body-font Schibsted 400 —
-              "looked unprofessional, not Rolex-level". Two problems fixed: (1) the
-              photoreal seal turned to mud at ~40px and read as a sticker, so it's
-              DROPPED from the header (the seal still lives where it can be read big
-              + means authenticity: certificates, packaging, favicon, footer); (2)
-              the name was in the plain BODY font at regular weight = a sentence,
-              not a mark. Now it's a real logotype: the NAME in Fraunces (the brand
-              serif) carries the mark, with "The Art of" demoted to a small tracked
-              kicker above it — the layered lockup luxury houses actually use.
-              Option A of the 6 mocked live for Hugo. */}
-          <span className="flex flex-col leading-none min-w-0">
-            <span
-              className="font-display font-semibold uppercase text-accent leading-none tracking-[0.4em] text-[clamp(10px,1.05vw,12px)] mb-[5px] sm:mb-[7px] pl-[2px]"
-              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
-            >
-              The Art of
-            </span>
-            <span
-              className="font-display font-semibold text-ink leading-none tracking-[0.01em] min-w-0 whitespace-nowrap text-[clamp(21px,2.4vw,33px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
-              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
-            >
-              Stephen Meakin
-            </span>
+          {/* The "The Art of Stephen Meakin" wordmark (Hugo 2026-07-30): a CLEAN,
+              simple single-line wordmark in the body grotesk — NO wax seal, NO
+              serif/kicker treatment. The old lockup paired a photoreal wax-seal
+              (read as a sticker at ~40px) with the name; Hugo's problem was the
+              seal, not the type. With the seal gone the plain wordmark reads
+              confident + modern (his explicit pick — "current baseline is the
+              one"). The seal now lives only where it reads big + means
+              authenticity: certificates, packaging, favicon, footer. */}
+          <span
+            className="font-sans font-medium text-ink tracking-[0.005em] leading-[1.05] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(18px,2.1vw,27px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+          >
+            The Art of Stephen Meakin
           </span>
         </Link>
 
