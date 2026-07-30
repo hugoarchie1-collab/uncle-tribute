@@ -44,6 +44,7 @@ const ESTATE_LINKS = [
   { to: "/news", label: "News" },
   { to: "/memories", label: "Memories" },
   { to: "/auth", label: "Authenticate" },
+  { to: "/representatives", label: "Representatives" },
   { to: "/contact", label: "Contact" },
   { to: "/faq", label: "FAQ" },
 ];
