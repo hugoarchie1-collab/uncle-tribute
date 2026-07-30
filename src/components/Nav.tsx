@@ -306,26 +306,29 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           }}
           className="press inline-flex items-center min-w-0"
         >
-          {/* The "The Art of Stephen Meakin" LOCKUP — wax-seal rose + Fraunces
-              wordmark (Hugo 2026-07-22: "replace [the nav seal] with the longer
-              one that was underneath the SEM Experience — I want it on the top
-              [nav] + footer, not underneath the masthead"). This is the same
-              rose+text lockup that used to sit under "THE SEM EXPERIENCE". */}
-          <span className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-            <img
-              src={`${import.meta.env.BASE_URL}logo/logo-seal-v9-w256.png`}
-              alt=""
-              aria-hidden="true"
-              width={44}
-              height={44}
-              className="h-[40px] w-[40px] sm:h-[44px] sm:w-[44px] shrink-0 object-contain"
-              style={{ filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.6))" }}
-            />
+          {/* The "The Art of Stephen Meakin" LOGOTYPE (Hugo 2026-07-30: the old
+              lockup — photo wax-seal + the name set in body-font Schibsted 400 —
+              "looked unprofessional, not Rolex-level". Two problems fixed: (1) the
+              photoreal seal turned to mud at ~40px and read as a sticker, so it's
+              DROPPED from the header (the seal still lives where it can be read big
+              + means authenticity: certificates, packaging, favicon, footer); (2)
+              the name was in the plain BODY font at regular weight = a sentence,
+              not a mark. Now it's a real logotype: the NAME in Fraunces (the brand
+              serif) carries the mark, with "The Art of" demoted to a small tracked
+              kicker above it — the layered lockup luxury houses actually use.
+              Option A of the 6 mocked live for Hugo. */}
+          <span className="flex flex-col leading-none min-w-0">
             <span
-              className="font-display font-bold text-ink tracking-[-0.015em] leading-[1.02] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(17px,2vw,29px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
-              style={{ fontVariationSettings: '"opsz" 34, "wght" 700' }}
+              className="font-display font-semibold uppercase text-accent leading-none tracking-[0.4em] text-[clamp(10px,1.05vw,12px)] mb-[5px] sm:mb-[7px] pl-[2px]"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
             >
-              The Art of Stephen Meakin
+              The Art of
+            </span>
+            <span
+              className="font-display font-semibold text-ink leading-none tracking-[0.01em] min-w-0 whitespace-nowrap text-[clamp(21px,2.4vw,33px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+            >
+              Stephen Meakin
             </span>
           </span>
         </Link>
