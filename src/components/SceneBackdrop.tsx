@@ -79,10 +79,21 @@ const SCENE_REVEAL_FILTER = "brightness(1.95) saturate(1.4) contrast(1.14)";
  *  purpose so the whole shop shares one coherent, restrained ground. */
 const CALM_GROUND = "/img/scenes/ancient-canons-blur-v1.webp";
 
-export const SceneBackdrop = ({ src }: { src: string | string[] }) => {
-  void src; // superseded by the ONE shared CALM_GROUND (restraint pass)
+export const SceneBackdrop = ({
+  src,
+  own = false,
+}: {
+  src: string | string[];
+  /** Render THIS page's own scene photo instead of the shared CALM_GROUND. Set
+   *  on pages Hugo wants to keep their bespoke backdrop (e.g. /basket's
+   *  cherry-blossom scene) rather than the restraint-pass shared ground. */
+  own?: boolean;
+}) => {
+  // Default = the ONE shared CALM_GROUND (restraint pass). `own` opts back into
+  // the page's own passed `src` where Hugo wants the bespoke scene kept.
+  const chosen = own ? (Array.isArray(src) ? src[0] : src) : CALM_GROUND;
   // STATIC backdrop — no parallax, no overscan, no crossfade (see history above).
-  const urls = [asset(CALM_GROUND)];
+  const urls = [asset(chosen)];
 
   const reduceMotion = useReducedMotion();
   const pointerFine = usePointerFine();
