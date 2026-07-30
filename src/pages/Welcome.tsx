@@ -1286,7 +1286,7 @@ export const Welcome = () => {
               />
               <div className="overflow-hidden">
                 <AssetImage
-                  src="/img/welcome/05-arista-sunstar.jpg"
+                  src="/img/welcome/05-arista-sunstar-v2.jpg"
                   alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"
                   loading="lazy"
                   decoding="async"

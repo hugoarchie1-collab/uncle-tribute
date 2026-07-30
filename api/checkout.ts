@@ -159,14 +159,6 @@ const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
     heirloom: "103.6 × 84 cm",
     studio: "73.4 × 59.5 cm",
   },
-  // Royal Knot — landscape 1.916:1 (fills the A long side, height derived).
-  "royal-knot": {
-    atelier: "42 × 21.9 cm",
-    collector: "59.4 × 31 cm",
-    "atelier-grande": "84.1 × 43.9 cm",
-    heirloom: "118.9 × 62.1 cm",
-    studio: "84.1 × 43.9 cm",
-  },
 };
 
 /** The printed size for a painting at a tier — a per-painting override (e.g.
@@ -336,7 +328,6 @@ const VALID_PAINTING_IDS = new Set<string>([
   "celtic-shield",
   "twelve-around-three",
   "persian-flower-of-life",
-  "royal-knot",
 ]);
 
 // Distinct paintings in the catalogue. A basket containing at least one line of
@@ -358,8 +349,7 @@ const PAINTING_TITLES: Record<string, string> = {
   "enneagon-swans": "Enneagon — The Swans",
   "celtic-shield": "Orbital — Celtic Shield Mandala",
   "twelve-around-three": "12 Around 3 — Flower of Life",
-  "persian-flower-of-life": "Persian Flower of Life",
-  "royal-knot": "Royal Knot",
+  "persian-flower-of-life": "Persian Flower of Life — Kepler's Key",
 };
 
 const corsHeaders = {

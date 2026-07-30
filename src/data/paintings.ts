@@ -1313,7 +1313,7 @@ export const PAINTINGS: Painting[] = [
   },
   {
     id: "persian-flower-of-life",
-    title: "Persian Flower of Life",
+    title: "Persian Flower of Life — Kepler's Key",
     year: "[ DATE ]", // [TBD] — Hugo to confirm (description references study c. 2007)
     collection: "ancient-canons",
     description:
@@ -1350,30 +1350,6 @@ export const PAINTINGS: Painting[] = [
         hex: "#6a4a86",
         isOriginal: false,
         available: false,
-      },
-    ],
-  },
-  {
-    id: "royal-knot",
-    title: "Royal Knot",
-    year: "[ DATE ]", // [TBD] — Hugo to confirm
-    collection: "ancient-canons",
-    description:
-      "Stephen described his practice as built on four key components. The first: \"The spirit of ancient Insular (Island) Arts.\"\n\nThis is that spirit, unrestrained.\n\nIt began for Stephen in a library in Bournemouth in 1990. He found \"a dusty old hardback full of ancient illuminated manuscripts from all over the world. This book contained the loose-leaf illustrations of geometric pattern construction methods for both Arabic and Celtic pattern.\" He described finding something \"true\" in the patterns — and from that moment, his passion for geometry was born.\n\nThe illuminated manuscript tradition he discovered was created between the 6th and 9th centuries in the island monasteries of Scotland and Ireland — Iona, Lindisfarne, Durrow. Its greatest expression is the Book of Kells, produced around 800 CE, which Giraldus Cambrensis wrote in 1185 was \"the work of angels, not of men.\" The monks who made it worked by candlelight on single pages for years. At its heart: the endless knot — a strand that passes over and under itself continuously, with no beginning and no end. The endless knot is also one of the Eight Auspicious Symbols of Tibetan Buddhism. Stephen knew both traditions.\n\nHere he takes the Celtic strand and fills it with full contemporary colour — purples, greens, oranges, blues — the knotwork large and fluid, bold forms interlocking across the canvas. Nothing breaks. Every strand continues. Every colour flows into the next. It has a joy in it that the candlelit manuscript tradition never permitted.\n\nThe knot keeps going beyond any individual claim on it. It always has.",
-    // Royal Knot is a LANDSCAPE work (2048×1069, ≈1.916:1) — override the square
-    // ladder so the framed/canvas/true-size previews AND the printed Point 101
-    // dimensions use its real landscape aspect, not a square crop. See
-    // ROYAL_KNOT_PRINT_TIERS above.
-    printTiers: ROYAL_KNOT_PRINT_TIERS,
-    colourways: [
-      // ⚠️ Hugo did not list colourways for Royal Knot — this single "Original"
-      // is a placeholder so the page renders. Add the real colourway suite.
-      {
-        name: "Original",
-        image: "/img/paintings/royal-knot-original.jpg",
-        hex: "#6a4a86",
-        isOriginal: true,
-        available: true,
       },
     ],
   },
