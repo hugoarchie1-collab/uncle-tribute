@@ -443,7 +443,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
+                    fontSize: "min(clamp(28px, 5.6vw, 90px), 10svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -462,7 +462,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(46px, 13.5vw, 264px), 17svh)",
+                    fontSize: "min(clamp(28px, 5.6vw, 90px), 10svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.92,
                     textTransform: "uppercase",
@@ -1279,7 +1279,7 @@ export const Welcome = () => {
                   alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"
                   loading="lazy"
                   decoding="async"
-                  className="soft-edge-img block w-full h-auto"
+                  className="block w-full h-auto"
                 />
               </div>
               <figcaption className="font-sans text-[13px] md:text-[14px] font-bold tracking-[0.02em] text-ink/80 mt-4 text-center">
