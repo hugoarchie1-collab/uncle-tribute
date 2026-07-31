@@ -1071,6 +1071,9 @@ export const About = () => {
                   parallax={0.06}
                   sizes="(min-width: 768px) 640px, 100vw"
                 />
+                <figcaption className="mt-4 text-center font-sans text-[13px] md:text-[14px] leading-[1.55] text-ink-muted">
+                  Cymatics — sound made visible: twelve frequencies, from 345 to 5907&nbsp;Hz, each vibrating sand into a distinct geometric figure.
+                </figcaption>
               </Reveal>
             </div>
           </div>

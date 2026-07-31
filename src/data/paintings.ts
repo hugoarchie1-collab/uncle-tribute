@@ -1320,22 +1320,23 @@ export const PAINTINGS: Painting[] = [
       "Stephen described his mission as weaving together four key components: \"The spirit of ancient Insular (Island) Arts, the great Rose Windows of Medieval Europe, the Art of Persian Geometry and the Sacred Mandala of Tibet.\"\n\nThis painting holds two of those four in the same frame simultaneously.\n\nPersian geometric art reached its peak between the 9th and 14th centuries in mosques, madrasas and palaces across Iran, Central Asia and Moorish Spain. In 2007, physicists studying the Alhambra in Granada discovered that medieval Islamic geometers had constructed quasi-crystalline patterns with five-fold symmetry — patterns Western mathematics had only formally described in the 1970s. They knew, through craft and geometric intuition, five centuries before Western science caught up.\n\nStephen studied this tradition for years — learning the ancient construction methods from illuminated manuscripts found in a Bournemouth library, later travelling to Petra in Jordan, standing inside the buildings these geometries were made to inhabit.\n\nThe Flower of Life — carved at Abydos, studied by Leonardo, at the heart of his Transformation mandala two decades earlier — here meets Persian geometric craft directly. The circular overlapping structure of the Flower of Life held within the angular interlaced lattice of girih tilework: warm amber and gold against deep blue, the colours of Persian tilework and pottery — lapis, cobalt, ochre — carried from the 13th century into this. Two ancient traditions, each complete in itself, each discovering the same underlying order from a different direction.",
     colourways: [
       {
-        name: "Isfahan Gold",
-        image: "/img/paintings/persian-flower-of-life-original.jpg",
-        hex: "#d1a13a",
+        // ⚠️ Blue is the ORIGINAL colourway (Hugo 2026-07-31), listed first.
+        name: "Lapis Blue",
+        image: "/img/paintings/persian-flower-of-life-blue.jpg",
+        hex: "#2f6aa0",
         isOriginal: true,
         available: true,
       },
       {
-        name: "Samarkand Blue",
-        image: "/img/paintings/persian-flower-of-life-blue.jpg",
-        hex: "#2f6aa0",
+        name: "Saffron Gold",
+        image: "/img/paintings/persian-flower-of-life-original.jpg",
+        hex: "#d1a13a",
         isOriginal: false,
         available: true,
       },
       {
         // ⚠️ text-only in the doc (no image yet) — hidden until Hugo supplies Red.
-        name: "Tabriz Red",
+        name: "Pomegranate Red",
         image: "/img/paintings/persian-flower-of-life-red.jpg",
         hex: "#a8412f",
         isOriginal: false,
@@ -1343,7 +1344,7 @@ export const PAINTINGS: Painting[] = [
       },
       {
         // ⚠️ text-only in the doc (no image yet) — hidden until Hugo supplies Purple.
-        name: "Shiraz Purple",
+        name: "Amethyst Purple",
         image: "/img/paintings/persian-flower-of-life-purple.jpg",
         hex: "#6a4a86",
         isOriginal: false,
