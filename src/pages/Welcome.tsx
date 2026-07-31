@@ -337,7 +337,20 @@ export const Welcome = () => {
         // film band below tucks into the first viewport. Held at 68 (NOT ≤64,
         // which crowds/hides the Earth limb per the durable note above) — the
         // balance point between the defended Earth open and showing more film.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 landscape:min-h-[42svh] justify-end landscape:pt-[max(5rem,7svh)] portrait:pt-[clamp(10rem,52vw,19rem)] pb-[clamp(20px,3svh,44px)]"
+        // 2026-07-31 CINEMATIC-OPEN REBUILD (Hugo: the masthead "looks so bad
+        // over the earth", title "too small", "glow cuts off unnaturally"). The
+        // section was regressed to 42svh — far shorter than the Earth limb's own
+        // rendered height (the 2000×541 asset is ~360–560px tall on desktop), so
+        // the section's overflow-hidden SLICED the limb mid-dissolve (the "hard
+        // glow cutoff") AND the bottom-anchored wordmark landed right on that cut.
+        // Restored to a full-viewport cinematic frame that gives the limb + its
+        // radial dissolve room to complete into the backdrop with NO seam, and
+        // the title is now vertically CENTRED in the composition (biased a touch
+        // below middle via pt>pb) so it sits IN the fading atmosphere just beneath
+        // the Earth's curve — earth + glow + title reading as ONE image, with
+        // generous, deliberate dark space below before the page begins. Portrait
+        // keeps its content-hugging justify-end + pt (unchanged — mobile was fine).
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-center portrait:justify-end portrait:pt-[clamp(10rem,52vw,19rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[90svh] landscape:pt-[max(6rem,17svh)] landscape:pb-[clamp(24px,5svh,72px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -443,15 +456,19 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(28px, 5.6vw, 90px), 10svh)",
+                    // LARGE + confident (Hugo 2026-07-31: the open must read big
+                    // and impactful, not a timid line floating on the photo). ~2×
+                    // the old ceiling; svh-capped so it stays composed on short
+                    // landscape windows. opsz 48 keeps the heavy strokes clean.
+                    fontSize: "min(clamp(40px, 9.2vw, 168px), 17svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.92,
+                    lineHeight: 0.9,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
                     color: "#ede6d6",
                     textShadow:
-                      "0 1px 2px rgba(8,6,12,0.55), 0 2px 10px rgba(8,6,12,0.42)",
+                      "0 0 1px rgba(8,6,12,0.9), 0 1px 3px rgba(8,6,12,0.8), 0 3px 14px rgba(8,6,12,0.5)",
                   }}
                 >
                   The SEM Experience
@@ -462,19 +479,21 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    fontSize: "min(clamp(28px, 5.6vw, 90px), 10svh)",
+                    // LARGE + confident (Hugo 2026-07-31). See the reduced-motion
+                    // twin above — identical size/leading, only the entrance differs.
+                    fontSize: "min(clamp(40px, 9.2vw, 168px), 17svh)",
                     letterSpacing: "-0.03em",
-                    lineHeight: 0.92,
+                    lineHeight: 0.9,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
                     color: "#ede6d6",
                     // Box-free legibility (Hugo 2026-07-29 #4): tight, letter-hugging
-                    // layers that CARVE the wordmark off the bright indigo mandala so
-                    // it commands — a near-glyph dark outline + two short drops. Max
-                    // blur ≤10px so it can NEVER read as a scrim/box behind the type.
+                    // layers that CARVE the wordmark off the atmosphere so it commands
+                    // — a near-glyph dark outline + two short drops. Max blur ≤14px so
+                    // it can NEVER read as a scrim/box behind the type.
                     textShadow:
-                      "0 0 1px rgba(8,6,12,0.9), 0 1px 2px rgba(8,6,12,0.82), 0 2px 8px rgba(8,6,12,0.55)",
+                      "0 0 1px rgba(8,6,12,0.9), 0 1px 3px rgba(8,6,12,0.8), 0 3px 14px rgba(8,6,12,0.5)",
                   }}
                 >
                   {["The", "SEM", "Experience"].map((word, i) => (
