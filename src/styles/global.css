@@ -486,15 +486,37 @@
 @property --amb-ctx {
   syntax: "<color>";
   inherits: true;
-  initial-value: #8a7a63;
+  /* Cosmic-blue BASE (Hugo 2026-07-31) — where no artwork is on screen (the
+     masthead, text sections) the wash is a deep atmospheric blue that harmonises
+     with the Earth limb + the "orbiting a Sun Star" theme, so no area is ever
+     dead black. Painting sections override this with the artwork's own hue. */
+  initial-value: #5d89bb;
 }
 .ambient-bg__glow--context {
   /* Over-sized so its own gentle scroll drift never slides a hard edge in. */
-  inset: -30% -18%;
+  inset: -35% -20%;
+  /* CLEARLY VISIBLE (Hugo 2026-07-31 "beautiful backgrounds" — the whisper was
+     imperceptible). The on-screen artwork's hue blooms up from behind the page:
+     a strong core easing through a wide, soft falloff so it reads as a rich
+     coloured atmosphere, never a hard shape, and stays in the margins/behind the
+     art rather than washing the cream text. */
   background: radial-gradient(
-    66% 56% at 50% 42%,
-    color-mix(in srgb, var(--amb-ctx) 30%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 12%, transparent) 46%,
+    78% 66% at 50% 38%,
+    color-mix(in srgb, var(--amb-ctx) 52%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 30%, transparent) 34%,
+    color-mix(in srgb, var(--amb-ctx) 12%, transparent) 60%,
+    transparent 84%
+  );
+}
+/* A second, offset bloom of the SAME artwork hue — the two soft blobs read as a
+   gentle iPhone-style mesh gradient rather than one flat vignette. Foot-biased,
+   drifts opposite the main context glow (set in the component). */
+.ambient-bg__glow--context2 {
+  inset: -35% -20%;
+  background: radial-gradient(
+    64% 56% at 76% 82%,
+    color-mix(in srgb, var(--amb-ctx) 34%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 14%, transparent) 44%,
     transparent 74%
   );
 }

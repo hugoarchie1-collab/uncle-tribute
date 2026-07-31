@@ -1,7 +1,12 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { COLOURWAY_TINTS, DEFAULT_TINT } from "../lib/colourwayTints";
+import { COLOURWAY_TINTS } from "../lib/colourwayTints";
+
+/** Cosmic-blue BASE hue where no artwork is on screen (mirrors the CSS
+ *  @property --amb-ctx initial-value). Keeps the masthead + text sections a
+ *  living atmospheric blue instead of dead black. */
+const AMBIENT_BASE_HALO = "#5d89bb";
 
 /**
  * AMBIENT BACKGROUND — the site-wide base "wallpaper" layer.
@@ -57,7 +62,7 @@ const tintForSrc = (src: string): string | null => {
 /** The artwork nearest the viewport centre wins the wash. Ignores off-screen and
  *  thumbnail-sized images so a tiny footer tile never beats the hero on screen. */
 const pickContextTint = (): string => {
-  if (typeof document === "undefined") return DEFAULT_TINT.halo;
+  if (typeof document === "undefined") return AMBIENT_BASE_HALO;
   const vh = window.innerHeight;
   const cy = vh / 2;
   let best: string | null = null;
@@ -73,7 +78,7 @@ const pickContextTint = (): string => {
       best = halo;
     }
   });
-  return best ?? DEFAULT_TINT.halo;
+  return best ?? AMBIENT_BASE_HALO;
 };
 
 export const AmbientBackground = () => {

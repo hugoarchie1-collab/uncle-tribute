@@ -410,7 +410,7 @@ export const Welcome = () => {
             // Scale it UP on smaller widths so it anchors the top and the limb
             // reads as a real Earth curve, not a hairline (the marginLeft keeps
             // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[178%] ml-[-39%] sm:w-[150%] sm:ml-[-25%] md:w-[104%] md:ml-[-2%]"
+            className="block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[92%] md:ml-[4%]"
             style={{
               display: "block",
               maxWidth: "none",
@@ -430,7 +430,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
           {/* NO local halo behind the wordmark — Hugo 2026-07-23: "a weird black
               text box behind that i never asked for and advised clearly against".
               The soft radial that used to back the text read as a dark box; it is
@@ -468,7 +468,7 @@ export const Welcome = () => {
                     // and impactful, not a timid line floating on the photo). ~2×
                     // the old ceiling; svh-capped so it stays composed on short
                     // landscape windows. opsz 48 keeps the heavy strokes clean.
-                    fontSize: "min(clamp(40px, 9.2vw, 168px), 17svh)",
+                    fontSize: "min(clamp(34px, 6.6vw, 112px), 15svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.9,
                     textTransform: "uppercase",
@@ -489,7 +489,7 @@ export const Welcome = () => {
                     fontWeight: 700,
                     // LARGE + confident (Hugo 2026-07-31). See the reduced-motion
                     // twin above — identical size/leading, only the entrance differs.
-                    fontSize: "min(clamp(40px, 9.2vw, 168px), 17svh)",
+                    fontSize: "min(clamp(34px, 6.6vw, 112px), 15svh)",
                     letterSpacing: "-0.03em",
                     lineHeight: 0.9,
                     textTransform: "uppercase",
@@ -552,7 +552,7 @@ export const Welcome = () => {
               blank space around it"). No side column, no text-over-image overlap:
               the headline sits ABOVE the photo; the photo owns the full width. */}
           <section className="relative isolate w-full overflow-hidden pt-4 md:pt-6">
-            <div className="mx-auto flex flex-col w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+            <div className="mx-auto flex flex-col w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
               {/* Order (Hugo 2026-07-24): PHOTO first (order-1), THEN the "So here
                   we are" text + His story (order-2), THEN the video below — so the
                   photo and video are separated by the text, never touching. */}
@@ -642,7 +642,7 @@ export const Welcome = () => {
               close, never on body-size glyphs where it fuzzed the edges.
               Fraunces opsz held ≤48 (finale invariant); whole-element Reveals
               only (gotcha #2). */}
-          <section className="relative isolate mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="relative isolate mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* NO local reading scrim. Hugo flagged the old radial deepening
                 here as "black boxes behind the text" — at the wide essay measure
                 the soft-edged radial still read as a dark rectangle sitting on
@@ -823,7 +823,7 @@ export const Welcome = () => {
               above or below it (Hugo: "huge gap above and below, looks crap"). The
               descriptive title is a SMALL heading along the top of the copy — not
               the screen-filling display title it briefly became. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
               className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-center"
@@ -877,7 +877,7 @@ export const Welcome = () => {
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-4 md:mb-5">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
@@ -975,7 +975,7 @@ export const Welcome = () => {
               drew from. Verbatim from WELCOME.archiveStatement (content.ts) —
               no words are typed inline here. Transparent over the peacock
               backdrop like every section; hero-text-shadow keeps it legible. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-9 md:pt-12 text-center">
               <Reveal as="div">
                 <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.archiveStatement.eyebrow}</p>
@@ -1029,7 +1029,7 @@ export const Welcome = () => {
               the right. Sits FLAT on the backdrop like every other section (the
               frosted-glass panel was removed — restraint pass); a plain hairline
               divider gives separation. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-9 md:pt-12">
               <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
                 {/* Craft FILM — the hand-finishing in motion (dots of paint +
@@ -1097,7 +1097,7 @@ export const Welcome = () => {
               the card wrapper back to a flat section — that would revert an owner
               decision. It holds the heading + intro + the full-width craft photo
               + two paragraphs + the 6-row material ledger. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
               <Reveal as="div" className="text-center mb-8 md:mb-10">
                 <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
@@ -1181,7 +1181,7 @@ export const Welcome = () => {
               the section above describes, in motion. Contained 16:9 plate,
               muted/looping/lazy, feathered into the backdrop; reduced-motion
               holds the poster still. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             {/* Capped so this cinematic plate stays LARGE but never fills the
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
@@ -1197,7 +1197,7 @@ export const Welcome = () => {
           </section>
 
           {/* 7 · SACRED GEOMETRY — 4-card grid of traditions */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="text-center mb-4 md:mb-5">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
@@ -1254,7 +1254,7 @@ export const Welcome = () => {
               backdrop into a crisp gallery object. The source is low-res
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
@@ -1302,7 +1302,7 @@ export const Welcome = () => {
                   The caption now sits directly on the peacock backdrop.) */}
               <div className="overflow-hidden">
                 <AssetImage
-                  src="/img/welcome/05-arista-sunstar-v2.jpg"
+                  src="/img/welcome/05-arista-sunstar-v3.jpg"
                   alt="Stephen standing beside the full 3.6-metre Arista SunStar painting at the Farmacy restaurant, Notting Hill"
                   loading="lazy"
                   decoding="async"
@@ -1375,7 +1375,7 @@ export const Welcome = () => {
               alt=""
               loading="lazy"
               decoding="async"
-              className="relative z-[1] block h-auto select-none w-[132%] ml-[-16%] sm:w-[112%] sm:ml-[-6%] md:w-[78%] md:ml-[11%]"
+              className="relative z-[1] block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[92%] md:ml-[4%]"
               style={{
                 maxWidth: "none",
                 height: "auto",
