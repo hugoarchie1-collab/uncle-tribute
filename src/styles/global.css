@@ -438,6 +438,9 @@
      no backdrop. Page backdrops (Pavo, .pd-*, scenes) render later in the DOM at
      z-0 and paint OVER this, so it only fills the void underneath. */
   background-color: #0a0908;
+  /* The context tint (below) eases over ~1.2s so the wash hue HANDS OFF as the
+     reader scrolls past different artworks — the "living, in-context" feel. */
+  transition: --amb-ctx 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .ambient-bg__glow {
   position: absolute;
@@ -450,8 +453,8 @@
 .ambient-bg__glow--indigo {
   background: radial-gradient(
     62% 52% at 26% 14%,
-    rgba(74, 62, 138, 0.16) 0%,
-    rgba(74, 62, 138, 0.06) 42%,
+    rgba(74, 62, 138, 0.32) 0%,
+    rgba(74, 62, 138, 0.13) 42%,
     transparent 70%
   );
 }
@@ -459,8 +462,8 @@
 .ambient-bg__glow--rust {
   background: radial-gradient(
     56% 46% at 82% 82%,
-    rgba(201, 120, 68, 0.12) 0%,
-    rgba(201, 120, 68, 0.045) 46%,
+    rgba(201, 120, 68, 0.24) 0%,
+    rgba(201, 120, 68, 0.10) 46%,
     transparent 72%
   );
 }
@@ -468,9 +471,31 @@
 .ambient-bg__glow--violet {
   background: radial-gradient(
     72% 56% at 58% 46%,
-    rgba(109, 74, 143, 0.12) 0%,
-    rgba(109, 74, 143, 0.04) 48%,
+    rgba(109, 74, 143, 0.24) 0%,
+    rgba(109, 74, 143, 0.09) 48%,
     transparent 75%
+  );
+}
+/* CONTEXT tint — the "iPhone in-context" layer (2026-07-31). Its hue is a
+   registered <color> custom property so it can smoothly @property-animate (the
+   exact technique the PDP .pd-* wall/halo layers use — a triple can't animate,
+   a real <color> can). AmbientBackground's JS sets --amb-ctx on .ambient-bg to
+   the HALO colour of the artwork nearest the viewport centre; the transition on
+   .ambient-bg eases the handoff. Kept to a WHISPER via color-mix over the
+   near-black so it never out-shouts the cream text (Hugo's "Whisper" setting). */
+@property --amb-ctx {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #8a7a63;
+}
+.ambient-bg__glow--context {
+  /* Over-sized so its own gentle scroll drift never slides a hard edge in. */
+  inset: -30% -18%;
+  background: radial-gradient(
+    66% 56% at 50% 42%,
+    color-mix(in srgb, var(--amb-ctx) 30%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 12%, transparent) 46%,
+    transparent 74%
   );
 }
 /* Reduced motion: the wash is entirely static (the component also stops feeding

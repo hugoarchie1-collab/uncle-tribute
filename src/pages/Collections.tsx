@@ -666,7 +666,7 @@ export const Collections = () => {
         {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the collection
             scene photos are retired for a clean near-black ground so the
             painting tiles are the only colour. */}
-        <div aria-hidden="true" className="absolute inset-0 bg-bg" />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" />
         {COLLECTIONS.map((coll, i) =>
           coll.backdropImage ? (
             <ScrollBackdrop

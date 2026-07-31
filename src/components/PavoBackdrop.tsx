@@ -332,9 +332,13 @@ export const PavoBackdrop = ({
     };
   }, [reveal]);
 
-  // CALM MODE — a single clean near-black ground, no painting layers.
+  // CALM MODE — no painting layers AND no opaque black fill: let the site-wide
+  // AmbientBackground (App root, z-0) show through so the home content below the
+  // Earth masthead carries the same calm ambient colour wash as the rest of the
+  // site instead of flat black (Hugo 2026-07-31). The ambient paints the
+  // #0a0908 base, so nothing goes bare.
   if (CALM_BACKDROPS) {
-    return <div aria-hidden="true" className="fixed inset-0 z-0 pointer-events-none bg-bg" />;
+    return null;
   }
 
   return (

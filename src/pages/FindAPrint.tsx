@@ -238,7 +238,7 @@ export const FindAPrint = () => {
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): scene photo retired
             for a clean near-black ground so the artwork is the only colour. */}
-        <div className="absolute inset-0 bg-bg" aria-hidden="true" />
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true" />
         {/* Shared scrim — EXACT gradient used on Collections / the rest of the
             site, so the colour swatches + tile copy read clearly over the
             scenes while the photo stays a subdued, moody texture. */}

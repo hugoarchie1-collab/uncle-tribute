@@ -1076,7 +1076,7 @@ export const Memories = () => {
           at relative z-10; the z-[200] share modal sits well above this z-0
           layer, so its stacking is undisturbed. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 bg-bg" />
+        <div className="absolute inset-0 pointer-events-none" />
         {/* Warm rust breath, top-centre — the same sparing accent, barely there. */}
         <div
           className="absolute inset-0"

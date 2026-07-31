@@ -19,7 +19,7 @@ const ContactBackdrop = () => {
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
       {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): scene photo retired
           for a clean near-black ground. */}
-      <div className="absolute inset-0 bg-bg" aria-hidden="true" />
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true" />
       {/* Shared scrim — the EXACT gradient Collections uses, so /contact reads as
           part of the same world and the cream copy stays legible over the photo. */}
       <div

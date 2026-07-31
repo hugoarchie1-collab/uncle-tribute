@@ -136,9 +136,13 @@ export const SceneBackdrop = ({
     };
   }, [reveal]);
 
-  // CALM MODE — a single clean near-black ground, no scene photo.
+  // CALM MODE — no scene photo AND no opaque black fill: let the site-wide
+  // AmbientBackground (App root, z-0) show through, so every page carries the
+  // calm iPhone-style ambient colour wash instead of flat black (Hugo
+  // 2026-07-31: "the backgrounds aren't the Apple-like ambient colour… it's all
+  // black"). The ambient itself paints the #0a0908 base, so nothing goes bare.
   if (CALM_BACKDROPS) {
-    return <div aria-hidden="true" className="fixed inset-0 z-0 pointer-events-none bg-bg" />;
+    return null;
   }
 
   return (

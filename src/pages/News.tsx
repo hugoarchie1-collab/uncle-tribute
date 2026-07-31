@@ -67,7 +67,7 @@ import {
 // clean near-black ground. `photoUrl` ignored on purpose; restore to bring the
 // scene back.
 const ScrollBackdrop = ({ photoUrl: _photoUrl }: { photoUrl: string }) => (
-  <div className="absolute inset-0 bg-bg" aria-hidden="true" />
+  <div className="absolute inset-0 pointer-events-none" aria-hidden="true" />
 );
 
 // Quiet type pill — the EYEBROW_TIGHT recipe inside a rounded-full hairline
