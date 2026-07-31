@@ -441,7 +441,8 @@ const PAPER_FINISH_LABELS: Record<string, string> = {
 // canvas line so the estate orders the right wrap. Unknown / missing id falls
 // back to the default (mirror wrap).
 const CANVAS_EDGE_LABELS: Record<string, string> = {
-  mirror: "Mirror wrap",
+  basic: "Basic canvas (white edge)",
+  mirror: "Colour wrap",
   "float-black": "Black float frame",
   "float-white": "White float frame",
   "float-wenge": "Wenge float frame",

@@ -493,10 +493,16 @@ export const CANVAS_NOTE =
 // FLOAT_EDGE_SURCHARGE_PENCE × tier. Mirrored in api/checkout.ts — gotcha #9.
 export const CANVAS_EDGES = [
   {
-    id: "mirror",
-    label: "Mirror wrap",
+    id: "basic",
+    label: "Basic canvas",
     isFloat: false,
-    note: "The image continues around all four sides, mirrored at each edge — a clean, contemporary wrap with the artwork uninterrupted from the front. Included.",
+    note: "The stretched canvas with clean white edges — the simplest, most classic finish. Included.",
+  },
+  {
+    id: "mirror",
+    label: "Colour wrap",
+    isFloat: false,
+    note: "The canvas stretched with the artwork's own background colour continued cleanly around all four edges — no image on the sides. Included.",
   },
   {
     id: "float-black",
@@ -524,7 +530,7 @@ export const CANVAS_EDGES = [
   },
 ] as const;
 export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
-export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "mirror";
+export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "basic";
 export const canvasEdgeLabel = (id: string | undefined): string =>
   CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
 

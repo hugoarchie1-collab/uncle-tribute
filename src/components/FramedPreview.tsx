@@ -1,4 +1,4 @@
-import { type ReactNode, type CSSProperties } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { asset } from "../lib/asset";
 
 /**
@@ -129,9 +129,62 @@ export const CanvasWrap = ({
   src?: string;
   children: ReactNode;
 }) => {
+  const artUrl = src ? asset(src) : undefined;
+
+  // Colour-wrap ("mirror") edge — Hugo 2026-07-31: "no mandala around the edges,
+  // literally just the colour of the background extended." Sample the artwork's
+  // four corners (where a circular mandala's plain background sits) and extend
+  // THAT solid colour around the wrap, instead of mirroring the image. Falls
+  // back to a neutral canvas tone if the pixels can't be read (tainted canvas).
+  const [bgColor, setBgColor] = useState<string | null>(null);
+  useEffect(() => {
+    if (edge !== "mirror" || !artUrl) {
+      setBgColor(null);
+      return;
+    }
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const S = 20;
+        const c = document.createElement("canvas");
+        c.width = S;
+        c.height = S;
+        const ctx = c.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, S, S);
+        const pts: [number, number][] = [
+          [1, 1],
+          [S - 2, 1],
+          [1, S - 2],
+          [S - 2, S - 2],
+        ];
+        let r = 0;
+        let g = 0;
+        let b = 0;
+        for (const [x, y] of pts) {
+          const d = ctx.getImageData(x, y, 1, 1).data;
+          r += d[0];
+          g += d[1];
+          b += d[2];
+        }
+        const n = pts.length;
+        if (!cancelled) {
+          setBgColor(`rgb(${Math.round(r / n)}, ${Math.round(g / n)}, ${Math.round(b / n)})`);
+        }
+      } catch {
+        /* cross-origin taint — keep the neutral fallback */
+      }
+    };
+    img.src = artUrl;
+    return () => {
+      cancelled = true;
+    };
+  }, [edge, artUrl]);
+
   if (!active) return <>{children}</>;
   const floatColor = CANVAS_FLOAT_COLOR[edge];
-  const artUrl = src ? asset(src) : undefined;
 
   // The two receding side faces (right + bottom) — the stretcher-bar thickness.
   // Mirror wrap → the artwork continues around the edge (a darkened slice of the
@@ -181,40 +234,35 @@ export const CanvasWrap = ({
   // thickness; eight mirrored slices fill the wrapped border (edges + corners); a
   // fold shadow + a float drop-shadow read it as a solid object off the wall.
   if (!floatColor) {
-    const inset = "8.33%"; // wrapped-edge thickness (≈10% of the front) — enough
-    const front = "83.33%"; // that a clear band of the mirrored print shows on
-    //                          every side, like Point 101 (Hugo 2026-07-28).
+    // SOLID-COLOUR WRAP (Hugo 2026-07-31). Two non-float finishes, both a clean
+    // stretched canvas whose wrapped edges are a SOLID colour — never the mandala
+    // mirrored around the sides:
+    //   • "basic"  → white edges (the simple, classic default).
+    //   • "mirror" → the artwork's OWN background colour (sampled corners above)
+    //                extended around all four edges — "just the colour of the
+    //                background extended", no image on the sides.
+    const inset = "8.33%"; // wrapped-edge thickness (≈10% of the front)
+    const front = "83.33%";
     const ar = String(aspectRatio || 1);
-    const artBg: CSSProperties = artUrl
-      ? { backgroundImage: `url(${artUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-      : { background: "#d9d1bf" };
-    // One mirrored slice: a clipped window over a FRONT-sized copy of the art,
-    // flipped so the fold (window edge touching the front) matches the print edge.
-    const slice = (win: CSSProperties, inner: CSSProperties) => (
-      <div aria-hidden className="absolute overflow-hidden" style={win}>
-        <div className="absolute" style={{ ...artBg, ...inner }} />
-      </div>
-    );
+    const edgeColor = edge === "basic" ? "#f2efe7" : bgColor ?? "#cfc7b6";
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
-        {/* The art fills the whole wrap as a base layer, so while the mirrored
-            slices decode there is never a black flash (Hugo 2026-07-28 saw the
-            mid-load black). The slices + front paint the crisp wrap on top. */}
-        <div className="relative w-full h-full" style={{ ...artBg, filter: CANVAS_DEPTH_SHADOW }}>
-          {/* four edges — the print mirrored outward */}
-          {slice({ top: 0, left: inset, width: front, height: inset }, { left: 0, bottom: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "bottom" })}
-          {slice({ bottom: 0, left: inset, width: front, height: inset }, { left: 0, top: 0, width: "100%", aspectRatio: ar, transform: "scaleY(-1)", transformOrigin: "top" })}
-          {slice({ top: inset, left: 0, width: inset, height: front }, { top: 0, right: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "right" })}
-          {slice({ top: inset, right: 0, width: inset, height: front }, { top: 0, left: 0, height: "100%", aspectRatio: ar, transform: "scaleX(-1)", transformOrigin: "left" })}
-          {/* four corners — double-mirrored (inner is front-sized ≈1539% of the corner) */}
-          {slice({ top: 0, left: 0, width: inset, height: inset }, { bottom: 0, right: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom right" })}
-          {slice({ top: 0, right: 0, width: inset, height: inset }, { bottom: 0, left: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "bottom left" })}
-          {slice({ bottom: 0, left: 0, width: inset, height: inset }, { top: 0, right: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top right" })}
-          {slice({ bottom: 0, right: 0, width: inset, height: inset }, { top: 0, left: 0, width: "1000%", aspectRatio: ar, transform: "scale(-1,-1)", transformOrigin: "top left" })}
-          {/* a hint of shadow across the wrapped border so the sides read as in shadow */}
-          <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.22)" }} />
-          {/* FRONT face — the actual art, inset by the wrap thickness, with a fold shadow */}
-          <div className="absolute overflow-hidden" style={{ top: inset, left: inset, width: front, height: front, boxShadow: "0 0 7px 1px rgba(0,0,0,0.32)" }}>
+        <div
+          className="relative w-full h-full"
+          style={{ background: edgeColor, filter: CANVAS_DEPTH_SHADOW }}
+        >
+          {/* a hint of shadow across the wrapped border so the edges read as
+              sides catching less light (the canvas has real depth) */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.18)" }}
+          />
+          {/* FRONT face — the actual art, inset by the wrap thickness, fold shadow */}
+          <div
+            className="absolute overflow-hidden"
+            style={{ top: inset, left: inset, width: front, height: front, boxShadow: "0 0 7px 1px rgba(0,0,0,0.30)" }}
+          >
             {children}
           </div>
         </div>
