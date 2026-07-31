@@ -4,7 +4,6 @@ import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
 import { clearConsent } from "../lib/consent";
-import { EYEBROW_MUTED } from "./ui/tokens";
 import { PaymentMarks } from "./PaymentMarks";
 import { SOCIAL_PROFILES } from "../data/socials";
 
@@ -56,7 +55,7 @@ const LinkColumn = ({
   links: { to: string; label: string }[];
 }) => (
   <nav aria-label={heading}>
-    <h2 className={cn(EYEBROW_MUTED, "mb-4")}>{heading}</h2>
+    <h2 className="font-display font-semibold text-[15px] md:text-[16px] tracking-[0.005em] text-ink mb-4">{heading}</h2>
     <ul
       className={cn(
         FOOTER_TEXT,
@@ -137,7 +136,7 @@ export const Footer = () => (
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             44px hit-area (a11y), muted→ink with a soft lift on hover. */}
         <div className="mt-4">
-          <h2 className={cn(EYEBROW_MUTED, "mb-2.5")}>Follow</h2>
+          <h2 className="font-display font-semibold text-[15px] md:text-[16px] tracking-[0.005em] text-ink mb-2.5">Follow</h2>
           <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
             {SOCIAL_PROFILES.map((s) => (
               <li key={s.label} className="m-0">
