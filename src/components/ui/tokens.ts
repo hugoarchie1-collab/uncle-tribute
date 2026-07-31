@@ -50,11 +50,11 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
   // Match the Sacred-Geometry finale: even, heavy, low-contrast Fraunces.
   fontVariationSettings: '"opsz" 48, "wght" 700',
   fontWeight: 700,
-  // Clamp ceiling held at 150px (the 2026-06-20 fill-the-screen ceiling) — bold
-  // at large widths but never the crude 220px logo the 700/opsz-48 cut hit in
-  // its first (rejected) form.
-  fontSize: "clamp(50px, 9.6vw, 186px)",
-  lineHeight: 0.92,
+  // 2026-07-31 SUBTLE-PROFESSIONAL PASS (Hugo: "overall size too big… in unison"):
+  // ceiling 186→108px so page mastheads land in the SAME cap-height band as the
+  // just-approved home wordmark (~90px) — one voice across the site, not a shout.
+  fontSize: "clamp(38px, 6.0vw, 108px)",
+  lineHeight: 0.98,
   letterSpacing: "-0.03em",
   // Default legibility halo for mastheads that sit over the photographic
   // SceneBackdrop (Auth/Basket/Links/Orders lacked one — 2026-07-16). Invisible
@@ -68,8 +68,8 @@ export const MASTHEAD_TITLE_STYLE: CSSProperties = {
 export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
   fontVariationSettings: '"opsz" 48, "wght" 700',
   fontWeight: 700,
-  fontSize: "clamp(42px, 7.6vw, 132px)",
-  lineHeight: 0.96,
+  fontSize: "clamp(34px, 5.0vw, 84px)",
+  lineHeight: 1.0,
   letterSpacing: "-0.028em",
   textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.45)",
 };
@@ -84,7 +84,7 @@ export const MASTHEAD_TITLE_STYLE_SM: CSSProperties = {
  *  verbatim invocation, which uppercasing would mangle. This is the canonical
  *  home value. */
 export const EYEBROW =
-  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.02em] text-accent";
+  "font-sans text-[13px] md:text-[14px] font-semibold tracking-[0.14em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
  *  shares. Matches the home section-header h2: Fraunces (font-display) bold,
@@ -95,7 +95,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-[clamp(44px,5.6vw,96px)] leading-[1.03] md:leading-[1.0] text-ink text-balance";
+  "font-display font-semibold [font-variation-settings:'opsz'_40,'wght'_600] tracking-[-0.03em] text-[clamp(34px,3.9vw,68px)] leading-[1.05] md:leading-[1.02] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -111,19 +111,19 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-medium text-[clamp(24px,0.85vw_+_19px,40px)] leading-[1.5] text-ink-muted";
+  "font-sans font-medium text-[clamp(19px,0.5vw_+_16px,26px)] leading-[1.5] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
 export const EYEBROW_MUTED =
-  "font-sans text-[16px] md:text-[18px] font-bold tracking-[0.01em] text-ink-muted";
+  "font-sans text-[13px] md:text-[14px] font-semibold tracking-[0.12em] text-ink-muted";
 
 /** Tight micro-variant — ONLY for genuinely cramped tier / fact labels. */
 export const EYEBROW_TIGHT =
-  "font-sans text-[16px] font-bold tracking-[0.01em] text-ink-muted";
+  "font-sans text-[13px] font-semibold tracking-[0.12em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[19px] leading-[1.55] text-ink-muted";
+export const META = "font-sans text-[15px] leading-[1.55] text-ink-muted";
 
 // =============================================================================
 // ABOUT MONOGRAPH TYPE SCALE — the seven-role scale the About rebuild composes
@@ -175,7 +175,7 @@ export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
  *  the page — ceiling 58px (the hero h1 + the sole Anegada poster are the only
  *  sanctioned larger moments). */
 export const ABOUT_TITLE =
-  "font-display font-semibold tracking-[-0.03em] text-[clamp(38px,4.2vw,74px)] leading-[1.05] text-ink";
+  "font-display font-semibold tracking-[-0.03em] text-[clamp(34px,3.9vw,68px)] leading-[1.05] text-ink";
 export const ABOUT_TITLE_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -189,11 +189,11 @@ export const ABOUT_CAPTION =
  *  quickly (100ms) on :active and eases back over 300ms; disabled under
  *  reduced-motion. */
 export const BTN_PRIMARY =
-  "inline-flex items-center justify-center bg-ink text-bg px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center bg-ink text-bg px-8 py-[18px] font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-accent hover:text-ink active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 /** Secondary CTA pill — ring outline → accent on hover. */
 export const BTN_SECONDARY =
-  "inline-flex items-center justify-center ring-1 ring-ink/30 px-8 py-[18px] font-sans text-[16.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
+  "inline-flex items-center justify-center ring-1 ring-ink/30 px-8 py-[18px] font-sans text-[14.5px] font-semibold tracking-[0.01em] rounded-full transition-all duration-300 hover:ring-accent hover:text-accent active:scale-[0.97] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg";
 
 // =============================================================================
 // MOTION CANON — single source of truth for the site's signature easing +

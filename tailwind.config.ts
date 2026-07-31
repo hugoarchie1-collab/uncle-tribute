@@ -63,17 +63,19 @@ const config: Config = {
         // 2026-06-20: ceilings + vw growth raised so type FILLS big screens
         // (Hugo: "increase font size + fill screen, too much spacing"). Mobile
         // floors barely move; large screens grow markedly bolder.
-        // 2026-07-24 (Hugo: "text too small on EVERY page, too much empty space —
-        // bigger + bolder"): another step up across the board (headings + body).
-        hero: ["clamp(54px, 9.4vw, 210px)", { lineHeight: "1.02", letterSpacing: "-0.04em" }],
-        h1: ["clamp(46px, 7.6vw, 168px)", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
-        h2: ["clamp(38px, 5.9vw, 128px)", { lineHeight: "1.07", letterSpacing: "-0.035em" }],
-        h3: ["clamp(28px, 3.7vw, 72px)", { lineHeight: "1.12", letterSpacing: "-0.025em" }],
-        // Fluid body — grows on large screens so prose scales with the viewport
-        // (dynamic cross-platform unison) instead of looking tiny in a sea of
-        // dead space at fullscreen.
-        body: ["clamp(21px, 0.5vw + 18px, 31px)", { lineHeight: "1.62" }],
-        "body-sm": ["clamp(18px, 0.34vw + 15.5px, 25px)", { lineHeight: "1.62" }],
+        // 2026-07-31 SUBTLE-PROFESSIONAL PASS (Hugo: "overall size too big… in
+        // unison / subtle professional") — REVERSES the 2026-07-24 "bigger +
+        // bolder" uplift below. Display ceilings drop ~40% so the utility scale
+        // matches the refined tokens (masthead 108) and the home register; the
+        // fill-the-screen job is now done by wider measures + tighter rhythm +
+        // the artwork's own colour mass, NOT brute type size.
+        hero: ["clamp(46px, 7.0vw, 128px)", { lineHeight: "1.02", letterSpacing: "-0.04em" }],
+        h1: ["clamp(38px, 5.2vw, 96px)", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
+        h2: ["clamp(32px, 4.0vw, 72px)", { lineHeight: "1.07", letterSpacing: "-0.035em" }],
+        h3: ["clamp(24px, 2.6vw, 48px)", { lineHeight: "1.12", letterSpacing: "-0.025em" }],
+        // Refined fluid body — an editorial reading size, not oversized.
+        body: ["clamp(18px, 0.35vw + 16px, 22px)", { lineHeight: "1.62" }],
+        "body-sm": ["clamp(16px, 0.25vw + 14.5px, 19px)", { lineHeight: "1.62" }],
         label: ["13px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {
