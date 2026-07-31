@@ -145,7 +145,7 @@ const TRUESIZE_PAINTING_IDS = new Set<string>([]);
 // This is the museum wall-label idiom: the work's name in TRUE Fraunces italic
 // at a controlled opsz 40 (clean strokes, gotcha #7), one tier above the price.
 const PDP_TITLE =
-  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(34px,3.6vw,58px)] leading-[1.05] text-ink text-balance";
+  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(34px,3.6vw,84px)] leading-[1.05] text-ink text-balance";
 // One ledger-card geometry for every secondary buy-box card (one-off / custom
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
@@ -154,13 +154,13 @@ const CARD = "ring-1 ring-line px-5 py-5";
 // 1.55 leading, primary ink tone. A deliberately secondary value (provenance,
 // pigment) composes cn(SPEC_VALUE, "text-ink-muted") — a rule-based two-tone,
 // not the old ad-hoc spray of text-ink vs text-ink-muted at the same size.
-const SPEC_VALUE = "font-sans text-[17px] leading-[1.55] text-ink";
+const SPEC_VALUE = "font-sans text-[17px] 2xl:text-[22px] 3xl:text-[26px] 4xl:text-[30px] leading-[1.5] text-ink";
 // ONE lead/running-body clamp for the story + card prose (order-arrives lead,
 // original-print spec, colourway-set desc, finish intro). Collapses the former
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
 // of running prose is exactly one size. Colour is applied per-block on the two
 // sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
-const BODY = "font-sans font-normal text-[clamp(17px,1vw,21px)] leading-[1.62]";
+const BODY = "font-sans font-normal text-[clamp(18px,1.5vw,40px)] leading-[1.55]";
 const BTN_PRIMARY =
   "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[17px] md:text-[18px] font-semibold tracking-[0.02em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-ink/85 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
@@ -1991,7 +1991,7 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10 mb-16 md:mb-24"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10 mb-16 md:mb-24"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ? collectionTitle.split(" — ")[0] : "the estate"}
@@ -2935,7 +2935,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}

@@ -253,7 +253,7 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred

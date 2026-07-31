@@ -71,7 +71,7 @@ export const Orders = () => {
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <SceneBackdrop src="/img/scenes/orders-autumn-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-14 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-14 md:pb-20">
         <Reveal>
           <PageMasthead
             eyebrow="Orders & returns"

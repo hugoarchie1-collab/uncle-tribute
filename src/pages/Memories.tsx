@@ -978,7 +978,7 @@ const ShareMemoryModal = ({
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
   <section className="relative px-[clamp(1rem,5vw,3rem)] pt-9 md:pt-12 pb-[clamp(1rem,2.5vw,1.75rem)]">
-    <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
+    <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full">
         <h1
           className="font-display text-ink m-0 text-balance"

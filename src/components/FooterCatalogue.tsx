@@ -77,7 +77,7 @@ export const FooterCatalogue = () => {
       {/* NO feathered seam above the strip (Hugo 2026-07-28: "i hate that blur
           above the catalogue"). The red block starts on a clean STRAIGHT edge,
           exactly like the top nav bar's clean edge — a true clone of the bar. */}
-      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] 4xl:max-w-[2100px]">
+      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2100px]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
           The Catalogue · {tiles.length}
         </p>

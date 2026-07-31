@@ -74,8 +74,13 @@ const config: Config = {
         h2: ["clamp(32px, 4.0vw, 72px)", { lineHeight: "1.07", letterSpacing: "-0.035em" }],
         h3: ["clamp(24px, 2.6vw, 48px)", { lineHeight: "1.12", letterSpacing: "-0.025em" }],
         // Refined fluid body — an editorial reading size, not oversized.
-        body: ["clamp(18px, 0.35vw + 16px, 22px)", { lineHeight: "1.62" }],
-        "body-sm": ["clamp(16px, 0.25vw + 14.5px, 19px)", { lineHeight: "1.62" }],
+        // 2026-07-31 (Hugo, 4K monitor: "text is so small"): ceilings raised so
+        // reading text keeps growing on large external/4K displays instead of
+        // freezing at 22/19px in a huge canvas (looked tiny). Laptop widths are
+        // unchanged — the vw term only exceeds the old cap above ~1700px, so
+        // 1512/1728 stay at today's size and only 2xl/3xl/4xl grow.
+        body: ["clamp(20px, 1.5vw, 44px)", { lineHeight: "1.5" }],
+        "body-sm": ["clamp(17px, 1.15vw, 34px)", { lineHeight: "1.5" }],
         label: ["13px", { lineHeight: "1.2", letterSpacing: "0.18em" }],
       },
       colors: {

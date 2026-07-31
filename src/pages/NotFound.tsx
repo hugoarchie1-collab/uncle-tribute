@@ -44,7 +44,7 @@ export const NotFound = () => {
           and the day's painting interleaved as an asymmetric editorial plate —
           no centered afterthought, no dead vertical air. */}
       <main className="relative z-10 flex-1 px-4 pt-10 pb-10 sm:px-6 md:px-8 md:pt-12 md:pb-12 lg:px-12">
-        <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px]">
+        <div className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px]">
           {/* The giant numeral + the statement, on one bold asymmetric line. */}
           <div className="grid grid-cols-1 items-end gap-x-10 gap-y-4 lg:grid-cols-12">
             <Reveal as="div" className="lg:col-span-7 xl:col-span-8">

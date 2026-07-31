@@ -95,7 +95,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-semibold [font-variation-settings:'opsz'_40,'wght'_600] tracking-[-0.03em] text-[clamp(34px,3.9vw,68px)] leading-[1.05] md:leading-[1.02] text-ink text-balance";
+  "font-display font-semibold [font-variation-settings:'opsz'_40,'wght'_600] tracking-[-0.03em] text-[clamp(34px,4.4vw,116px)] leading-[1.05] md:leading-[1.02] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.
@@ -111,7 +111,7 @@ export const TITLE =
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
 export const SUBTITLE =
-  "font-sans font-medium text-[clamp(19px,0.5vw_+_16px,26px)] leading-[1.5] text-ink-muted";
+  "font-sans font-medium text-[clamp(20px,1.25vw,42px)] leading-[1.45] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
@@ -123,7 +123,7 @@ export const EYEBROW_TIGHT =
   "font-display font-semibold normal-case text-[14px] tracking-[-0.005em] text-ink-muted";
 
 /** Meta / spec / fine-detail body. */
-export const META = "font-sans text-[15px] leading-[1.55] text-ink-muted";
+export const META = "font-sans text-[15px] 3xl:text-[17px] 4xl:text-[19px] leading-[1.55] text-ink-muted";
 
 // =============================================================================
 // ABOUT MONOGRAPH TYPE SCALE — the seven-role scale the About rebuild composes
@@ -145,28 +145,28 @@ export const META = "font-sans text-[15px] leading-[1.55] text-ink-muted";
  *  20px (was a 25px runaway). Leading eases to 1.6 on desktop. Mobile floors
  *  (18px / 1.58) + the md: step (19px / 1.7) are frozen. */
 export const ABOUT_BODY =
-  "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[26px] 3xl:text-[28px] " +
-  "leading-[1.6] md:leading-[1.68] 2xl:leading-[1.62] tracking-normal text-ink-soft text-pretty m-0 reading-shadow";
+  "font-sans font-normal text-[22px] md:text-[24px] 2xl:text-[31px] 3xl:text-[38px] 4xl:text-[44px] " +
+  "leading-[1.55] md:leading-[1.6] 2xl:leading-[1.5] tracking-normal text-ink-soft text-pretty m-0 reading-shadow";
 
 /** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
  *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
  *  floors + the md: step are frozen. */
 export const ABOUT_LEAD =
-  "font-sans font-normal text-[25px] md:text-[27px] 2xl:text-[30px] 3xl:text-[32px] " +
-  "leading-[1.55] md:leading-[1.66] 2xl:leading-[1.5] tracking-[-0.005em] text-ink/90 text-pretty m-0 reading-shadow";
+  "font-sans font-normal text-[25px] md:text-[27px] 2xl:text-[35px] 3xl:text-[42px] 4xl:text-[48px] " +
+  "leading-[1.5] md:leading-[1.6] 2xl:leading-[1.45] tracking-[-0.005em] text-ink/90 text-pretty m-0 reading-shadow";
 
 /** ROLE 2 — PULL-LINE / STANDOUT (Fraunces). The ONE interior display-serif
  *  pull register. ONE clamp, ceiling 42px, opsz 40 / wght 600 via the paired
  *  STYLE below. */
 export const ABOUT_STANDOUT =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(32px,2.7vw,56px)] leading-[1.14] text-ink hero-text-shadow";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(32px,2.7vw,78px)] leading-[1.14] text-ink hero-text-shadow";
 export const ABOUT_STANDOUT_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
 
 /** ROLE 3 — SUBHEAD / interview question (Fraunces, roman). Ceiling 34px. */
 export const ABOUT_SUBHEAD =
-  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.1vw,45px)] leading-[1.18] text-ink hero-text-shadow";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.1vw,62px)] leading-[1.18] text-ink hero-text-shadow";
 export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -175,7 +175,7 @@ export const ABOUT_SUBHEAD_STYLE: CSSProperties = {
  *  the page — ceiling 58px (the hero h1 + the sole Anegada poster are the only
  *  sanctioned larger moments). */
 export const ABOUT_TITLE =
-  "font-display font-semibold tracking-[-0.03em] text-[clamp(34px,3.9vw,68px)] leading-[1.05] text-ink";
+  "font-display font-semibold tracking-[-0.03em] text-[clamp(34px,4.4vw,112px)] leading-[1.05] text-ink";
 export const ABOUT_TITLE_STYLE: CSSProperties = {
   fontVariationSettings: '"opsz" 40, "wght" 600',
 };
@@ -183,7 +183,7 @@ export const ABOUT_TITLE_STYLE: CSSProperties = {
 /** ROLE 6 — CAPTION / META (sans, fixed small — never clamps up). Ceiling
  *  16px; the quietest ink so brightest→quietest (body > caption) reads. */
 export const ABOUT_CAPTION =
-  "font-sans font-normal text-[16px] 2xl:text-[17px] leading-[1.45] tracking-[0.01em] text-ink-muted";
+  "font-sans font-normal text-[16px] 2xl:text-[18px] 3xl:text-[20px] 4xl:text-[22px] leading-[1.45] tracking-[0.01em] text-ink-muted";
 
 /** Primary CTA pill — filled ink → accent on hover. Tactile press: scales in
  *  quickly (100ms) on :active and eases back over 300ms; disabled under

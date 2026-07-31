@@ -50,7 +50,7 @@ const toRoman = (n: number): string => {
 // the centred sections below it — the two now share this exact measure (mx-auto,
 // equal L/R margins) and the same large-screen step-ups.
 const PAGE_ENVELOPE =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] 4xl:max-w-[1880px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ── SOFT SET-CARD SCRIM ───────────────────────────────────────────────────────
 // The set cards (complete-collection / compose / catalogue) sit ON the photo
