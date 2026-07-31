@@ -302,7 +302,7 @@ const FeaturedGallery = ({
               disabled={index === 0}
               className="press absolute left-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-bg/80 ring-1 ring-line h-10 w-10 text-ink transition-opacity duration-200 hover:bg-bg disabled:opacity-0 md:inline-flex"
             >
-              <span aria-hidden="true" className="text-[20px] leading-none">‹</span>
+              <span aria-hidden="true" className="text-[20px] 3xl:text-[27px] 4xl:text-[32px] leading-none">‹</span>
             </button>
             <button
               type="button"
@@ -311,7 +311,7 @@ const FeaturedGallery = ({
               disabled={index === slides.length - 1}
               className="press absolute right-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-bg/80 ring-1 ring-line h-10 w-10 text-ink transition-opacity duration-200 hover:bg-bg disabled:opacity-0 md:inline-flex"
             >
-              <span aria-hidden="true" className="text-[20px] leading-none">›</span>
+              <span aria-hidden="true" className="text-[20px] 3xl:text-[27px] 4xl:text-[32px] leading-none">›</span>
             </button>
           </>
         )}
@@ -583,7 +583,7 @@ export const News = () => {
                     (no crammed/oversized inline form beside the artwork). */}
                 <a
                   href="#notify"
-                  className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-sm font-sans text-[15px] font-bold tracking-[0.02em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-sm font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] font-bold tracking-[0.02em] text-ink-muted outline-none transition-colors duration-300 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   Be the first to know
                   <span aria-hidden="true" className="text-accent">→</span>

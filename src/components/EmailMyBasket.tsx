@@ -109,7 +109,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="group inline-flex items-center gap-2.5 ring-1 ring-line hover:ring-accent bg-transparent px-5 py-3 rounded-full font-sans text-[14px] font-semibold tracking-[0.02em] text-ink hover:text-accent transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          className="group inline-flex items-center gap-2.5 ring-1 ring-line hover:ring-accent bg-transparent px-5 py-3 rounded-full font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-semibold tracking-[0.02em] text-ink hover:text-accent transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
             <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
@@ -121,11 +121,11 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
       )}
 
       {open && status !== "success" && (
-        <div className="max-w-[560px]">
-          <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 m-0 mb-3">
+        <div className="max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]">
+          <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 m-0 mb-3">
             Save your basket
           </p>
-          <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/70 m-0 mb-4">
+          <p className="font-sans font-normal text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.7] text-ink/70 m-0 mb-4">
             We'll email this basket to you so you can pick it up from any
             device. The estate keeps no copy — the prints stay in your
             browser until you're ready to check out.
@@ -139,7 +139,7 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 aria-label="Your name (optional)"
                 defaultValue={savedName}
                 placeholder="Your name (optional)"
-                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -148,14 +148,14 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                 autoComplete="email"
                 aria-label="Your email"
                 placeholder="you@example.com"
-                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
+                className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:bg-accent hover:text-ink transition-colors disabled:opacity-60"
               >
                 {status === "sending" ? "Sending…" : "Email me my basket"}
               </button>
@@ -166,20 +166,20 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
                   setErrorMsg("");
                   setStatus("idle");
                 }}
-                className="font-sans text-[13px] tracking-[0.02em] text-ink/50 hover:text-ink transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] tracking-[0.02em] text-ink/50 hover:text-ink transition-colors bg-transparent border-0 p-0 cursor-pointer"
               >
                 Cancel
               </button>
             </div>
             {errorMsg && (
-              <p className="mt-3 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+              <p className="mt-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">{errorMsg}</p>
             )}
           </form>
         </div>
       )}
 
       {status === "success" && (
-        <p className="font-sans text-[14px] leading-[1.7] text-ink/75 m-0 max-w-[560px]">
+        <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.7] text-ink/75 m-0 max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]">
           Sent. Check your inbox — the email carries a link straight back to
           your basket whenever you're ready.
         </p>

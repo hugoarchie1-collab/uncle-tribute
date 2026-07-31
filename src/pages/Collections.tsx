@@ -469,7 +469,7 @@ const ComposeSetCard = () => {
                 {on && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-1.5 right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-bg text-[13px] font-bold"
+                    className="absolute top-1.5 right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-bg text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold"
                   >
                     ✓
                   </span>
@@ -737,7 +737,7 @@ export const Collections = () => {
                 the shared page envelope — no narrow centred column, no empty
                 side margins. AI framing only — Stephen's verbatim collection
                 descriptions are untouched below. */}
-            <div className="mt-4 md:mt-5 mx-auto max-w-[860px] text-center flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
+            <div className="mt-4 md:mt-5 mx-auto max-w-[860px] 3xl:max-w-[1152px] 4xl:max-w-[1393px] text-center flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
               <p
                 className="font-display font-normal tracking-[-0.012em] text-ink m-0"
                 style={{
@@ -762,7 +762,7 @@ export const Collections = () => {
                 </p>
                 <Link
                   to="/for-you"
-                  className="inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors duration-300"
+                  className="inline-flex items-center gap-1.5 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors duration-300"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
                 >
                   Not sure where to start? Browse by colour <span aria-hidden="true">→</span>

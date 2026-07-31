@@ -113,7 +113,7 @@ const ReviewCard = ({ review }: { review: PublicReview }) => {
         >{`${rating} out of 5 stars`}</span>
         {when && <span className={cn(EYEBROW_TIGHT)}>{when}</span>}
       </div>
-      <div className="flex flex-col gap-3 font-sans text-[15px] leading-[1.7] text-ink-soft">
+      <div className="flex flex-col gap-3 font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.7] text-ink-soft">
         {review.body
           .split(/\n{2,}/)
           .map((para) => para.trim())
@@ -160,7 +160,7 @@ const ReviewCard = ({ review }: { review: PublicReview }) => {
         </div>
       )}
 
-      <p className="mt-4 font-sans text-[14px] text-ink m-0">
+      <p className="mt-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink m-0">
         <span className="font-semibold">{review.name}</span>
       </p>
     </li>
@@ -290,7 +290,7 @@ export const Reviews = ({
         ) : null}
       </div>
 
-      <p className="font-sans text-[14px] leading-[1.6] text-ink-muted m-0 mb-9 max-w-[560px]">
+      <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.6] text-ink-muted m-0 mb-9 max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]">
         Reviews are posted by visitors and shown after moderation. We never
         write or buy reviews. To ask us to remove one, email
         info@themandalacompany.com.
@@ -311,7 +311,7 @@ export const Reviews = ({
           <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(20px,2.4vw,28px)] leading-[1.2] text-ink m-0 mt-5">
             {loaded ? "Be the first to review this print." : "Reviews"}
           </p>
-          <p className="font-sans text-[15px] leading-[1.7] text-ink-muted m-0 mt-3 max-w-[460px] mx-auto">
+          <p className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.7] text-ink-muted m-0 mt-3 max-w-[460px] mx-auto">
             {loaded
               ? `No reviews yet for ${paintingTitle}. If it's hanging on your wall, we'd be honoured to hear how it arrived and how it lives in the light.`
               : "Loading reviews…"}

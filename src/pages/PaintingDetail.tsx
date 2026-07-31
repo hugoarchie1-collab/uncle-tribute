@@ -304,7 +304,7 @@ const SizePicker = ({
             <span className={cn(EYEBROW_TIGHT, "flex items-center gap-2 mb-1")}>
               {tier.label}
               {tier.isAnchor && (
-                <span className={cn(EYEBROW_TIGHT, "text-[13px]")}>
+                <span className={cn(EYEBROW_TIGHT, "text-[13px] 3xl:text-[16px] 4xl:text-[19px]")}>
                   · most chosen
                 </span>
               )}
@@ -317,7 +317,7 @@ const SizePicker = ({
           <span
             className={cn(
               "font-display font-semibold tracking-[-0.01em] text-ink justify-self-end",
-              isSelected ? "text-[22px]" : "text-[19px]",
+              isSelected ? "text-[22px] 3xl:text-[30px] 4xl:text-[35px]" : "text-[19px] 3xl:text-[26px] 4xl:text-[30px]",
             )}
             style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
@@ -405,7 +405,7 @@ const OneOffCard = ({
       <span className={EYEBROW_TIGHT}>
         Unique · one of one
       </span>
-      <span className="font-display font-semibold tracking-[-0.01em] text-[20px] text-ink whitespace-nowrap">
+      <span className="font-display font-semibold tracking-[-0.01em] text-[20px] 3xl:text-[27px] 4xl:text-[32px] text-ink whitespace-nowrap">
         {fmtP(tier.pricePence)}
       </span>
     </span>
@@ -494,7 +494,7 @@ const CustomSizeRequest = ({
 
   const fieldId = (k: string) => `custom-${k}-${paintingId}`;
   const INPUT =
-    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-fade focus:outline-none transition-shadow";
+    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade focus:outline-none transition-shadow";
 
   return (
     <div className="mt-3">
@@ -516,7 +516,7 @@ const CustomSizeRequest = ({
               <span className={EYEBROW_TIGHT}>
                 Bespoke · by request
               </span>
-              <span className="font-display font-semibold tracking-[-0.01em] text-[18px] text-ink whitespace-nowrap">
+              <span className="font-display font-semibold tracking-[-0.01em] text-[18px] 3xl:text-[24px] 4xl:text-[29px] text-ink whitespace-nowrap">
                 Price on application
               </span>
             </span>
@@ -640,7 +640,7 @@ const CustomSizeRequest = ({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="bg-transparent border-0 cursor-pointer font-sans text-[13px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+                className="bg-transparent border-0 cursor-pointer font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
               >
                 Cancel
               </button>
@@ -712,7 +712,7 @@ const Colourways = ({
                     `hidden` by default, shown only on sm+ AND (pointer:fine). */}
                 <span
                   aria-hidden="true"
-                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.02em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
+                  className="hidden sm:[@media(pointer:fine)]:block pointer-events-none absolute left-1/2 -translate-x-1/2 -top-9 whitespace-nowrap bg-bg px-2.5 py-1 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink rounded-full ring-1 ring-line opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200"
                 >
                   {c.name}
                 </span>
@@ -816,7 +816,7 @@ const TrueSizeViewer = ({
               onKeyDown={(e) => onRadioKey(e, scaleTiers.length, i, (n) => onSelectTier(scaleTiers[n].id))}
               onClick={() => onSelectTier(t.id)}
               className={cn(
-                "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.02em] transition-colors",
+                "px-3.5 py-1.5 rounded-full font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] transition-colors",
                 isActive ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
               )}
             >
@@ -1282,7 +1282,7 @@ const BuyBox = ({
       >
         {painting.title}
       </h1>
-      <p className="font-sans text-[15px] tracking-[0.01em] text-ink m-0 mb-5">
+      <p className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] tracking-[0.01em] text-ink m-0 mb-5">
         Stephen Meakin <span className="text-ink-muted">· 1966&ndash;2021</span>
       </p>
 
@@ -1418,7 +1418,7 @@ const BuyBox = ({
               colours exactly as he left them.
             </p>
             <p className={cn(META, "text-ink m-0 mb-1.5")}>
-              <span className="font-display font-semibold tracking-[-0.02em] text-[22px] mr-2.5">
+              <span className="font-display font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] mr-2.5">
                 {fmtP(colourwaySet.bundlePricePence)}
               </span>
               the complete set, together
@@ -1441,7 +1441,7 @@ const BuyBox = ({
             <p
               aria-live="polite"
               className={cn(
-                "mt-2.5 font-sans text-[13px] tracking-[0.02em] text-ink-muted m-0 transition-opacity duration-500",
+                "mt-2.5 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] tracking-[0.02em] text-ink-muted m-0 transition-opacity duration-500",
                 colourwaySetAdded ? "opacity-100" : "opacity-0",
               )}
             >
@@ -1459,7 +1459,7 @@ const BuyBox = ({
                 " "
               )}
             </p>
-            <p className="font-sans text-[14px] leading-[1.5] text-ink-muted mt-2.5 m-0">
+            <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.5] text-ink-muted mt-2.5 m-0">
               The set saving is applied automatically at checkout.
             </p>
           </div>
@@ -1522,11 +1522,11 @@ const BuyBox = ({
                     )}
                   >
                     <span className="flex w-full items-baseline justify-between gap-2">
-                      <strong className="font-sans text-[14px] text-ink">
+                      <strong className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink">
                         Framed print
                       </strong>
                     </span>
-                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                    <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
                       Museum giclée on Hahnemühle Photo Rag — 308gsm, 100% cotton
                       archival paper — set within a hand-cut conservation mount,
                       hand-framed in solid wood, glazed and ready to hang.
@@ -1544,11 +1544,11 @@ const BuyBox = ({
                     )}
                   >
                     <span className="flex w-full items-baseline justify-between gap-2">
-                      <strong className="font-sans text-[14px] text-ink">
+                      <strong className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink">
                         Canvas print
                       </strong>
                     </span>
-                    <span className="font-sans text-[13px] leading-[1.5] text-ink-muted">
+                    <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
                       Printed on bright 350gsm textured fine-art canvas, hand-stretched
                       over a 39mm-deep solid wooden gallery frame — ready to hang, no
                       glass. Choose your edge finish below.
@@ -1583,7 +1583,7 @@ const BuyBox = ({
                           aria-pressed={canvasEdge === e.id}
                           title={e.note}
                           className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
+                            "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
                             canvasEdge === e.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1598,7 +1598,7 @@ const BuyBox = ({
                           )}
                           {e.label}
                           {sur > 0 && (
-                            <span className="text-[13px] text-ink/45 tabular-nums">
+                            <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink/45 tabular-nums">
                               +{fmtP(sur)}
                             </span>
                           )}
@@ -1608,7 +1608,7 @@ const BuyBox = ({
                   </div>
                   {/* Chosen edge — plain-language note + the clean canvas total it
                       resolves to (one clear number, mirroring the framed detail). */}
-                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mt-0.5">
                     {(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).note}
                     {` Canvas: ${fmtP(finishTotalPence)}.`}
                   </p>
@@ -1628,7 +1628,7 @@ const BuyBox = ({
                   finish never toggles the framing checkbox. Monochrome (#7). */}
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
-                  <p className="font-sans text-[14px] leading-[1.5] text-ink-muted m-0">
+                  <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.5] text-ink-muted m-0">
                     Choose your frame — the full atelier range. Classic frames
                     are included; Signature and Ornate mouldings step the framed
                     price up.
@@ -1652,7 +1652,7 @@ const BuyBox = ({
                                 aria-pressed={frameStyle === f.id}
                                 title={f.note}
                                 className={cn(
-                                  "inline-flex items-center gap-2 font-sans text-[14px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
+                                  "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
                                   frameStyle === f.id
                                     ? "ring-ink text-ink"
                                     : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1665,7 +1665,7 @@ const BuyBox = ({
                                 />
                                 {f.label}
                                 {surcharge > 0 && (
-                                  <span className="text-[13px] text-ink/45 tabular-nums">
+                                  <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink/45 tabular-nums">
                                     +{fmtP(surcharge)}
                                   </span>
                                 )}
@@ -1678,7 +1678,7 @@ const BuyBox = ({
                     {/* Visible detail of the CHOSEN frame — note + tier + the
                         clean framed total it resolves to (Hugo: one clear
                         number, and no info hidden behind a hover). */}
-                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mt-0.5">
+                    <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mt-0.5">
                       {FRAME_STYLES.find((f) => f.id === frameStyle)?.note}
                       {frameTier !== "classic"
                         ? ` — ${FRAME_TIERS[frameTier].label} frame`
@@ -1692,7 +1692,7 @@ const BuyBox = ({
                       never changed the price, so the "choice" only confused).
                       Stated now as a fixed spec; `paperFinish` stays at
                       DEFAULT_PAPER_FINISH (Photo Rag) and still rides to checkout. */}
-                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                     Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival
                     fine-art paper, the house stock for every framed print.
                   </p>
@@ -1704,17 +1704,17 @@ const BuyBox = ({
                       selected size (includedGlazingId) and rides to checkout so
                       the estate orders the right glazing. Copy matches the print
                       house's own spec. */}
-                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                     Set within a hand-cut, acid-free conservation mount — included.
                   </p>
                   {selectedTier.id === "atelier-grande" ? (
-                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                    <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                       Glazed with ultra-clear acrylic — the clarity of glass,
                       UV-filtering, shatter-safe and lightweight so it ships
                       safely at this size. Included.
                     </p>
                   ) : (
-                    <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                    <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                       Glazed with anti-reflective art glass — reflections reduced
                       to under 1%, revealing the artwork's true colour with no
                       green tint. Included.
@@ -1748,11 +1748,11 @@ const BuyBox = ({
                       The hand-finished edition
                     </span>
                     <span className="flex items-baseline justify-between gap-3">
-                      <strong className="text-ink text-[15px] leading-[1.3]">
+                      <strong className="text-ink text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.3]">
                         Hand-finished by Polly (Stephen's sister)
                       </strong>
                       {embellishPriceLabel && (
-                        <span className="font-sans text-[15px] font-semibold text-ink whitespace-nowrap">
+                        <span className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] font-semibold text-ink whitespace-nowrap">
                           +{embellishPriceLabel}
                         </span>
                       )}
@@ -1760,11 +1760,11 @@ const BuyBox = ({
                     <span className="text-ink-muted text-[13.5px] leading-[1.55]">
                       {EMBELLISHMENT_NOTE}
                     </span>
-                    <span className="inline-flex items-center gap-1.5 mt-0.5 text-[13px] font-semibold text-ink underline underline-offset-4 decoration-ink/30 group-hover:decoration-ink transition-colors">
+                    <span className="inline-flex items-center gap-1.5 mt-0.5 text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-semibold text-ink underline underline-offset-4 decoration-ink/30 group-hover:decoration-ink transition-colors">
                       {embellishActive ? "Added — one of a kind" : "Add hand-finishing"}
                       <span aria-hidden="true">→</span>
                     </span>
-                    <span className="text-ink-muted text-[13px]">
+                    <span className="text-ink-muted text-[13px] 3xl:text-[16px] 4xl:text-[19px]">
                       Allow {FINISH_LEAD_WEEKS} weeks.
                     </span>
                   </span>
@@ -1791,7 +1791,7 @@ const BuyBox = ({
                     Made to order · allow {leadWeeks} weeks
                   </span>
                 </span>
-                <span className="font-display font-semibold tracking-[-0.02em] text-[22px] text-ink whitespace-nowrap">
+                <span className="font-display font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] text-ink whitespace-nowrap">
                   {fmtP(lineTotalPence)}
                 </span>
               </div>
@@ -1808,13 +1808,13 @@ const BuyBox = ({
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
               aria-label="Decrease quantity"
-              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               −
             </button>
             <span
               aria-live="polite"
-              className="min-w-[2.75ch] text-center font-display text-[17px] text-ink [font-variant-numeric:tabular-nums]"
+              className="min-w-[2.75ch] text-center font-display text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]"
             >
               {quantity}
             </span>
@@ -1822,7 +1822,7 @@ const BuyBox = ({
               type="button"
               onClick={() => setQuantity((q) => Math.min(99, q + 1))}
               aria-label="Increase quantity"
-              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               +
             </button>
@@ -2338,14 +2338,14 @@ const StickyAddBar = ({
             <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink [font-variant-numeric:tabular-nums]">
+            <span className="font-display font-semibold tracking-[-0.01em] text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]">
               {fmtP(barTotalPence)}
             </span>
           </span>
           {added ? (
             <Link
               to="/basket"
-              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
             >
               View basket ✓
             </Link>
@@ -2353,7 +2353,7 @@ const StickyAddBar = ({
             <button
               type="button"
               onClick={onAdd}
-              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
+              className="inline-flex items-center justify-center min-h-[44px] bg-ink text-bg px-6 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap shrink-0"
             >
               Add to basket
             </button>
@@ -2380,14 +2380,14 @@ const StickyAddBar = ({
             <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[16px] text-ink">
+            <span className="font-display font-semibold tracking-[-0.01em] text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink">
               {fmtP(barTotalPence)}
             </span>
           </span>
           {added ? (
             <Link
               to="/basket"
-              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
             >
               View basket ✓
             </Link>
@@ -2395,7 +2395,7 @@ const StickyAddBar = ({
             <button
               type="button"
               onClick={onAdd}
-              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
+              className="inline-flex items-center bg-ink text-bg px-6 py-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:bg-ink/85 transition-colors whitespace-nowrap"
             >
               Add to basket
             </button>
@@ -2949,11 +2949,11 @@ export const PaintingDetail = () => {
             <button
               type="button"
               onClick={scrollToOrder}
-              className="inline-flex items-center gap-2 font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
+              className="inline-flex items-center gap-2 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
-              <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px]">
-                <span className="font-sans text-[13px] font-bold text-ink-muted mr-1">from</span>
+              <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px] 3xl:text-[17px] 4xl:text-[20px]">
+                <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold text-ink-muted mr-1">from</span>
                 {fmtP(pricePence)}
               </span>
               <span aria-hidden="true" className="text-ink/35">·</span>
@@ -2983,7 +2983,7 @@ export const PaintingDetail = () => {
                       onClick={() => setView(v)}
                       aria-pressed={view === v}
                       className={cn(
-                        "px-3.5 py-1.5 rounded-full font-sans text-[13px] font-bold tracking-[0.02em] transition-colors",
+                        "px-3.5 py-1.5 rounded-full font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] transition-colors",
                         view === v ? "bg-ink text-bg" : "text-ink/55 hover:text-ink",
                       )}
                     >
@@ -3124,7 +3124,7 @@ export const PaintingDetail = () => {
                   onClick={() => setWallOpen(true)}
                   onPointerEnter={() => void importSeeOnYourWall()}
                   onFocus={() => void importSeeOnYourWall()}
-                  className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] font-bold tracking-[0.01em] text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
+                  className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.01em] text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
                     <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
@@ -3172,7 +3172,7 @@ export const PaintingDetail = () => {
                 <button
                   type="button"
                   onClick={resetOptions}
-                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
                 >
                   <span aria-hidden="true">↺</span> Reset options
                 </button>

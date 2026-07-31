@@ -46,7 +46,7 @@ const WELCOMED_KEY = "tasm.ff.welcomed";
 export const FriendsAndFamilyNote = () => (
   <div>
     <p className={cn(EYEBROW, "m-0 mb-2.5")}>Friends &amp; Family</p>
-    <p className="font-sans font-normal text-[13px] leading-[1.6] text-ink-muted m-0 max-w-[520px]">
+    <p className="font-sans font-normal text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.6] text-ink-muted m-0 max-w-[520px] 3xl:max-w-[697px] 4xl:max-w-[842px]">
       If Steve&rsquo;s family shared a remembrance code with you, add it at
       checkout &mdash; a small thank-you for keeping his work close. For a single
       keepsake print.
@@ -105,7 +105,7 @@ export const FriendsAndFamilyWelcome = () => {
           >
             <span className="min-w-0">
               <span className={cn(EYEBROW, "block mb-2")}>Friends &amp; Family</span>
-              <span className="block font-sans text-[14px] leading-[1.55] text-ink">
+              <span className="block font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.55] text-ink">
                 Welcome, friend of Steve&rsquo;s. Enter{" "}
                 <span className="font-bold tracking-[0.02em] text-accent">
                   {FRIENDS_FAMILY_CODE}

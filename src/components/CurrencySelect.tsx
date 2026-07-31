@@ -150,7 +150,7 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
             <span
               className={cn(
                 "font-sans font-semibold text-ink truncate tabular-nums",
-                isMenu ? "text-[15px]" : "text-[13px] sm:text-[14px]",
+                isMenu ? "text-[15px] 3xl:text-[18px] 4xl:text-[21px]" : "text-[13px] sm:text-[14px]",
               )}
             >
               {meta.symbol} {code}
@@ -215,20 +215,20 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
                     </span>
                     <span
                       aria-hidden="true"
-                      className="shrink-0 w-[28px] font-sans text-[14px] text-ink/70 tabular-nums"
+                      className="shrink-0 w-[28px] font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink/70 tabular-nums"
                     >
                       {cm.symbol}
                     </span>
                     <span className="flex-1 min-w-0">
                       <span
                         className={cn(
-                          "block font-sans text-[14px] leading-tight truncate",
+                          "block font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-tight truncate",
                           selected ? "text-ink font-semibold" : "text-ink/85",
                         )}
                       >
                         {cm.label}
                       </span>
-                      <span className="block font-sans text-[13px] leading-tight text-ink/70 mt-0.5 tabular-nums">
+                      <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-tight text-ink/70 mt-0.5 tabular-nums">
                         {c}
                       </span>
                     </span>

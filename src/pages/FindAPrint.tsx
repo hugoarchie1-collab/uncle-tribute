@@ -356,7 +356,7 @@ export const FindAPrint = () => {
             <div
               role="group"
               aria-label="Filter by intention"
-              className="mx-auto mt-6 md:mt-7 flex max-w-[920px] flex-wrap items-stretch justify-center gap-3 sm:gap-4"
+              className="mx-auto mt-6 md:mt-7 flex max-w-[920px] 3xl:max-w-[1233px] 4xl:max-w-[1490px] flex-wrap items-stretch justify-center gap-3 sm:gap-4"
             >
               {INTENTIONS.map((it) => {
                 const on = intent.has(it.key);
@@ -433,7 +433,7 @@ export const FindAPrint = () => {
                 }}
                 className={cn(
                   BTN_SECONDARY,
-                  "min-h-[44px] px-4 py-2 text-[13px]",
+                  "min-h-[44px] px-4 py-2 text-[13px] 3xl:text-[16px] 4xl:text-[19px]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 )}
               >
@@ -464,7 +464,7 @@ export const FindAPrint = () => {
                   aria-checked={sel}
                   onClick={() => setBrowseTier(t)}
                   className={cn(
-                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] font-bold tracking-[0.02em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
+                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
                     sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
                   )}
                 >

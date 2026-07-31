@@ -198,13 +198,13 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           />
         </picture>
       </div>
-      <p className="font-sans text-[15px] font-semibold leading-[1.3] text-ink m-0">
+      <p className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] font-semibold leading-[1.3] text-ink m-0">
         {painting.title}
       </p>
       <p className={cn(EYEBROW_TIGHT, "mt-1.5")}>{colourwayName}</p>
       <p className={cn(META, "mt-2 mb-3")}>{note}</p>
       <div className="mt-auto flex items-baseline justify-between gap-3">
-        <span className="font-display font-semibold tracking-[-0.01em] text-[17px] text-ink">
+        <span className="font-display font-semibold tracking-[-0.01em] text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink">
           from {fmtP(getTierAdvertisedPricePence(anchor))}
         </span>
         <span className={cn(EYEBROW_TIGHT)}>{anchor.size}</span>
@@ -220,7 +220,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
       </button>
       <p aria-live="polite" className="m-0 empty:hidden">
         {status === "error" && (
-          <span className="mt-2 block font-sans text-[14px] font-semibold text-ink">
+          <span className="mt-2 block font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-semibold text-ink">
             {errorMsg}
           </span>
         )}
@@ -247,7 +247,7 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
         <h2 className="font-display font-semibold tracking-[-0.02em] text-[clamp(24px,3vw,34px)] leading-[1.1] text-ink m-0">
           A companion piece
         </h2>
-        <p className="font-sans font-normal text-[clamp(18px,1.1vw,25px)] leading-[1.6] text-ink-muted m-0 mt-5 md:mt-6 mx-auto max-w-[600px]">
+        <p className="font-sans font-normal text-[clamp(18px,1.1vw,25px)] leading-[1.6] text-ink-muted m-0 mt-5 md:mt-6 mx-auto max-w-[600px] 3xl:max-w-[804px] 4xl:max-w-[972px]">
           Stephen often worked in pairs and in series — a colourway beside its
           twin, a flower beside its collection. With no obligation, here are a
           few of his works that sit naturally alongside the one you&rsquo;ve
@@ -262,7 +262,7 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
       {/* The thank-you 10% code is minted server-side and reaches the buyer via
           the confirmation email — we reference it warmly here, but never print
           a code we don't hold client-side (no fabrication; gotcha #9 register). */}
-      <p className={cn(META, "text-center mt-7 mx-auto max-w-[560px]")}>
+      <p className={cn(META, "text-center mt-7 mx-auto max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]")}>
         Your order comes with a small thank-you towards a future print — look for
         it in the confirmation email Stripe is sending now, with our warmth.
       </p>
@@ -315,10 +315,10 @@ export const OrderSuccess = () => {
           >
             Thank you.
           </h1>
-          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
-          <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px]">
+          <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
             Each print is made to order. We place yours with our London atelier
             within two working days, then ship to the address you gave at checkout. A tracking
             link follows the moment it leaves the studio.
@@ -387,7 +387,7 @@ export const OrderCancel = () => {
           >
             No charge taken.
           </h1>
-          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-8 mx-auto text-center max-w-[640px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-8 mx-auto text-center max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
             You left checkout before completing the order, so nothing was charged.
             {hasBasket && " Your basket is saved — return when you're ready."}
             {" "}If a detail was unclear, or you would like help choosing a

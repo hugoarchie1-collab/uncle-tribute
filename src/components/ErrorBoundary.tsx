@@ -37,13 +37,13 @@ export class ErrorBoundary extends Component<Props, State> {
         role="alert"
         className="fixed inset-0 z-[300] flex flex-col items-center justify-center gap-6 bg-bg px-6 text-center text-ink"
       >
-        <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55">
+        <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55">
           The Art of Stephen Meakin
         </p>
         <h1 className="max-w-[18ch] font-display text-[clamp(28px,6vw,44px)] font-semibold leading-[1.1] tracking-[-0.01em]">
           Something interrupted this page.
         </h1>
-        <p className="max-w-[42ch] font-sans text-[15px] leading-relaxed text-ink/70">
+        <p className="max-w-[42ch] font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-relaxed text-ink/70">
           A quiet technical hiccup — not anything you did. Reloading usually puts
           it right.
         </p>
@@ -51,13 +51,13 @@ export class ErrorBoundary extends Component<Props, State> {
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="press inline-flex items-center justify-center rounded-full bg-ink px-7 py-3 font-sans text-[14px] font-bold tracking-[0.02em] text-bg transition-colors hover:bg-accent"
+            className="press inline-flex items-center justify-center rounded-full bg-ink px-7 py-3 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-bg transition-colors hover:bg-accent"
           >
             Reload the page
           </button>
           <a
             href="/"
-            className="font-sans text-[14px] font-bold tracking-[0.02em] text-ink/55 transition-colors hover:text-ink"
+            className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-ink/55 transition-colors hover:text-ink"
           >
             Return home
           </a>

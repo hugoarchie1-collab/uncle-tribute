@@ -77,13 +77,13 @@ export const UpdatePrompt = () => {
       className="fixed inset-x-0 bottom-0 z-[115] flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-none"
     >
       <div className="pointer-events-auto flex items-center gap-3 sm:gap-4 rounded-full border border-line bg-[#0a0908]/95 px-5 py-3 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
-        <span className="font-sans text-[13px] leading-snug text-ink">
+        <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-snug text-ink">
           A newer version of the site is ready.
         </span>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="shrink-0 rounded-full bg-accent px-4 py-1.5 font-sans text-[14px] font-bold tracking-[0.02em] text-bg transition-opacity duration-300 hover:opacity-90"
+          className="shrink-0 rounded-full bg-accent px-4 py-1.5 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-bg transition-opacity duration-300 hover:opacity-90"
         >
           Refresh
         </button>
@@ -94,7 +94,7 @@ export const UpdatePrompt = () => {
             dismissed.current = true;
             setReady(false);
           }}
-          className="shrink-0 text-ink-muted hover:text-ink transition-colors duration-300 text-[18px] leading-none"
+          className="shrink-0 text-ink-muted hover:text-ink transition-colors duration-300 text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none"
         >
           &times;
         </button>

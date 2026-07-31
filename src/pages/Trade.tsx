@@ -207,13 +207,13 @@ const TradeApplication = () => {
     }
   };
 
-  const fieldLabel = "block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2";
+  const fieldLabel = "block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2";
   const fieldInput =
-    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow";
+    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow";
 
   if (status === "success") {
     return (
-      <div className="border border-line p-7 md:p-9 max-w-[720px]">
+      <div className="border border-line p-7 md:p-9 max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
         <p className="font-display text-[clamp(24px,3vw,32px)] text-ink m-0 mb-3">
           Thank you.
         </p>
@@ -234,7 +234,7 @@ const TradeApplication = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="max-w-[820px]">
+    <form onSubmit={handleSubmit} noValidate className="max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px]">
       {/* Honeypot — visually hidden; bots fill it, we reject. */}
       <input
         type="text"
@@ -310,7 +310,7 @@ const TradeApplication = () => {
         />
       </label>
 
-      {errorMsg && <p className="mb-4 font-sans text-[14px] text-accent m-0">{errorMsg}</p>}
+      {errorMsg && <p className="mb-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-accent m-0">{errorMsg}</p>}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <button

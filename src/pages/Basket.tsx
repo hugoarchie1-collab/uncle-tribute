@@ -383,7 +383,7 @@ export const Basket = () => {
           so the cream basket copy still reads. */}
       <SceneBackdrop src="/img/scenes/basket-mountain-scene-v2.webp" own />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] 3xl:max-w-[1233px] 4xl:max-w-[1490px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
@@ -564,13 +564,13 @@ export const Basket = () => {
                                 }
                                 disabled={line.item.quantity <= 1}
                                 aria-label={`Decrease quantity of ${line.title}`}
-                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
+                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] 3xl:text-[23px] 4xl:text-[27px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors"
                               >
                                 −
                               </button>
                               <span
                                 aria-live="polite"
-                                className="min-w-[2.5ch] text-center font-sans text-[14px] text-ink [font-variant-numeric:tabular-nums]"
+                                className="min-w-[2.5ch] text-center font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-ink [font-variant-numeric:tabular-nums]"
                               >
                                 {line.item.quantity}
                               </span>
@@ -584,21 +584,21 @@ export const Basket = () => {
                                 }
                                 disabled={line.item.quantity >= MAX_LINE_QUANTITY}
                                 aria-label={`Increase quantity of ${line.title}`}
-                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                                className="flex h-11 w-11 items-center justify-center text-ink text-[17px] 3xl:text-[23px] 4xl:text-[27px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors disabled:opacity-30 disabled:pointer-events-none"
                               >
                                 +
                               </button>
                             </div>
                             <Link
                               to={`/collections/${line.paintingId}?c=${encodeURIComponent(line.colourwayName)}`}
-                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors"
+                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors"
                             >
                               Edit
                             </Link>
                             <button
                               type="button"
                               onClick={() => removeItem(line.item.addedAt)}
-                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                              className="inline-flex items-center min-h-[44px] font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                             >
                               Remove
                             </button>
@@ -653,7 +653,7 @@ export const Basket = () => {
                             </div>
                           )}
                           <div className="flex items-baseline justify-between gap-4 pt-1.5 mt-0.5 border-t border-line">
-                            <span className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted min-w-0">
+                            <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted min-w-0">
                               Line total
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] font-semibold text-ink tabular-nums flex-shrink-0">
@@ -697,7 +697,7 @@ export const Basket = () => {
                           <button
                             type="button"
                             onClick={() => removeItem(g.addedAt)}
-                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                            className="mt-2 inline-flex items-center min-h-[44px] font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors bg-transparent border-0 p-0 cursor-pointer"
                           >
                             Remove
                           </button>
@@ -719,7 +719,7 @@ export const Basket = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>
                   Add another to your order
                 </p>
-                <p className="font-sans text-[14px] leading-[1.55] text-ink-muted m-0 mb-5 max-w-[54ch]">
+                <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.55] text-ink-muted m-0 mb-5 max-w-[54ch]">
                   Every additional piece ships free, in the same estate box &mdash;
                   with its own catalogue and seal.
                 </p>
@@ -742,7 +742,7 @@ export const Basket = () => {
                               className="w-full h-full object-cover object-center block transition-transform duration-500 group-hover:scale-[1.04]"
                             />
                           </div>
-                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] text-ink leading-tight mt-2.5 min-h-[2.5em] group-hover:text-accent transition-colors">
+                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] 3xl:text-[18px] 4xl:text-[21px] text-ink leading-tight mt-2.5 min-h-[2.5em] group-hover:text-accent transition-colors">
                             {p.title}
                           </p>
                           <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
@@ -773,7 +773,7 @@ export const Basket = () => {
                   <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>
                     Included free with every order
                   </p>
-                  <p className="font-sans text-[13px] leading-[1.5] text-ink-muted m-0 mb-2.5">
+                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mb-2.5">
                     The finishing others would add to the bill — ours, with our warmth.
                   </p>
                   <ul className="m-0 p-0 list-none flex flex-col gap-1.5">
@@ -933,7 +933,7 @@ export const Basket = () => {
                   2026-06-06) and the damaged-in-transit replacement
                   (/returns; ReassuranceRow). Deliberately NOT an unconditional
                   refund promise and NO fake SSL seal. */}
-              <div className="mt-4 max-w-[560px]">
+              <div className="mt-4 max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]">
                 <p className="m-0 flex items-start gap-2.5">
                   {/* Lock glyph — same hairline lock as ReassuranceRow. */}
                   <svg

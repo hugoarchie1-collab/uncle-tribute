@@ -178,7 +178,7 @@ export const AddedConfirmation = () => {
                   <path d="M3.2 8.4l3 3 6.6-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
-              <p className="font-display text-[19px] leading-none text-ink m-0">
+              <p className="font-display text-[19px] 3xl:text-[26px] 4xl:text-[30px] leading-none text-ink m-0">
                 Added to basket
               </p>
             </div>
@@ -193,18 +193,18 @@ export const AddedConfirmation = () => {
                 loading="lazy"
               />
               <div className="min-w-0 flex-1">
-                <p className="font-display text-[16px] leading-tight text-ink m-0">
+                <p className="font-display text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-tight text-ink m-0">
                   {row.title}
                 </p>
-                <p className="mt-1 font-sans text-[13px] leading-[1.5] text-ink-muted m-0">
+                <p className="mt-1 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                   {row.colourwayName} · {row.tierLabel} · {row.size}
                   {row.addons.length > 0 && ` · ${row.addons.join(" · ")}`}
                 </p>
                 <div className="mt-2 flex items-baseline justify-between gap-3">
-                  <span className="font-sans text-[13px] text-ink-muted [font-variant-numeric:tabular-nums]">
+                  <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted [font-variant-numeric:tabular-nums]">
                     Qty {row.quantity}
                   </span>
-                  <span className="font-display text-[16px] text-ink [font-variant-numeric:tabular-nums]">
+                  <span className="font-display text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink [font-variant-numeric:tabular-nums]">
                     {format(row.linePence)}
                   </span>
                 </div>
@@ -228,7 +228,7 @@ export const AddedConfirmation = () => {
               <button
                 type="button"
                 onClick={close}
-                className="w-full font-sans text-[13px] text-ink-muted hover:text-ink transition-colors bg-transparent border-0 cursor-pointer py-1.5"
+                className="w-full font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted hover:text-ink transition-colors bg-transparent border-0 cursor-pointer py-1.5"
               >
                 Continue browsing
               </button>

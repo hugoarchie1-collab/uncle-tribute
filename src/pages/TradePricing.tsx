@@ -11,10 +11,10 @@ import { cn } from "../lib/cn";
 
 // Clean, un-tracked labels for the sheet — NO wide letter-spacing / uppercase
 // "eyebrow" styling (Hugo dislikes it). Plain, tight, legible.
-const LABEL = "font-sans text-[13px] font-semibold text-accent m-0";
-const LABEL_MUTED = "font-sans text-[13px] font-medium text-ink-muted m-0";
-const CARD_LABEL = "font-sans text-[15px] font-semibold text-ink m-0";
-const COL_LABEL = "font-sans text-[13px] font-semibold text-ink-muted m-0";
+const LABEL = "font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-semibold text-accent m-0";
+const LABEL_MUTED = "font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-medium text-ink-muted m-0";
+const CARD_LABEL = "font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] font-semibold text-ink m-0";
+const COL_LABEL = "font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-semibold text-ink-muted m-0";
 
 /**
  * /trade/pricing — the GATED trade price sheet.
@@ -206,7 +206,7 @@ export const TradePricing = () => {
         )}
 
         {(gate === "prompt" || gate === "denied") && (
-          <Reveal as="div" className="max-w-[640px] pt-6 md:pt-10 no-print">
+          <Reveal as="div" className="max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px] pt-6 md:pt-10 no-print">
             <PageMasthead
               eyebrow="Trade & Interior Design"
               meta="By introduction"
@@ -249,7 +249,7 @@ export const TradePricing = () => {
                       autoComplete="off"
                       spellCheck={false}
                       placeholder="Your trade access code"
-                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow"
+                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] text-ink placeholder:text-ink/30 transition-shadow"
                     />
                   </label>
                   <button
@@ -349,7 +349,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
             <p className="font-display text-ink m-0 text-[clamp(22px,2.4vw,30px)] leading-none">
               {t.discountPercent}% <span className="text-ink-muted text-[0.6em] align-middle">off retail</span>
             </p>
-            <p className={cn(META, "m-0 mt-2 text-[14px]")}>{t.note}</p>
+            <p className={cn(META, "m-0 mt-2 text-[14px] 3xl:text-[17px] 4xl:text-[20px]")}>{t.note}</p>
           </div>
         ))}
       </Reveal>
@@ -368,7 +368,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
                   className={cn(COL_LABEL, "py-3 pl-4 text-right whitespace-nowrap")}
                 >
                   {t.shortLabel}
-                  <span className="block text-ink-muted font-normal tracking-normal normal-case text-[13px]">
+                  <span className="block text-ink-muted font-normal tracking-normal normal-case text-[13px] 3xl:text-[16px] 4xl:text-[19px]">
                     {t.discountPercent}% off
                   </span>
                 </th>
@@ -380,10 +380,10 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
               <tr key={`${r.aLabel}-${r.finishLabel}`} className="border-b border-line align-baseline">
                 <td className="py-3.5 pr-4">
                   <span className="text-ink font-medium">{r.aLabel}</span>
-                  <span className="block text-ink-muted text-[13px]">{r.size}</span>
-                  <span className="block text-ink-muted text-[13px]">{r.tierLabel}</span>
+                  <span className="block text-ink-muted text-[13px] 3xl:text-[16px] 4xl:text-[19px]">{r.size}</span>
+                  <span className="block text-ink-muted text-[13px] 3xl:text-[16px] 4xl:text-[19px]">{r.tierLabel}</span>
                 </td>
-                <td className="py-3.5 pr-4 text-ink-muted text-[14px]">{r.finishLabel}</td>
+                <td className="py-3.5 pr-4 text-ink-muted text-[14px] 3xl:text-[17px] 4xl:text-[20px]">{r.finishLabel}</td>
                 <td className="py-3.5 pr-4 text-right text-ink-muted tabular-nums line-through decoration-ink/30">
                   {gbp(r.retailPence)}
                 </td>
@@ -436,7 +436,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
             info@themandalacompany.com · themandalacompany.com
           </p>
         </div>
-        <p className={cn(META, "m-0 mt-3 text-[14px]")}>
+        <p className={cn(META, "m-0 mt-3 text-[14px] 3xl:text-[17px] 4xl:text-[20px]")}>
           To place an order, send us the pieces, sizes and finishes — the estate
           confirms the trade price and issues a secure payment link. Pricing held
           in confidence for your studio.

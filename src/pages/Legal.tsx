@@ -769,7 +769,7 @@ const LegalMasthead = ({
                   href={`#legal-${i}`}
                   className="group flex items-baseline gap-2 font-sans text-[14.5px] md:text-[15px] 3xl:text-[clamp(15px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
                 >
-                  <span aria-hidden className="font-sans text-[13px] font-bold tracking-[0.02em] tabular-nums text-ink/55 group-hover:text-accent">
+                  <span aria-hidden className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] tabular-nums text-ink/55 group-hover:text-accent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>{section.heading}</span>

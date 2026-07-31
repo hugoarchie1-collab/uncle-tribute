@@ -128,12 +128,12 @@ export const Orders = () => {
                   <div className="border border-accent/30 bg-bg-soft/30 px-6 py-7 sm:px-8">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line pb-4">
                       <span className={EYEBROW}>{result.order.status}</span>
-                      <span className="font-display font-semibold text-[20px] text-ink">{result.order.total}</span>
+                      <span className="font-display font-semibold text-[20px] 3xl:text-[27px] 4xl:text-[32px] text-ink">{result.order.total}</span>
                     </div>
                     {result.order.items.length > 0 && (
                       <ul className="mt-4 list-none p-0 m-0 flex flex-col gap-1.5">
                         {result.order.items.map((it, i) => (
-                          <li key={i} className="font-sans text-[16px] leading-[1.5] text-ink">{it}</li>
+                          <li key={i} className="font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.5] text-ink">{it}</li>
                         ))}
                       </ul>
                     )}
@@ -144,7 +144,7 @@ export const Orders = () => {
                   </div>
                 )}
                 {result.state === "missing" && (
-                  <p className="font-sans text-[16px] leading-[1.7] text-ink-soft m-0 max-w-[52ch]">
+                  <p className="font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.7] text-ink-soft m-0 max-w-[52ch]">
                     We couldn't find an order for that reference{email.trim() ? " + email" : ""}.
                     Check the reference from your confirmation email, or write to{" "}
                     <a href="mailto:info@themandalacompany.com" className="underline underline-offset-4 hover:text-accent">

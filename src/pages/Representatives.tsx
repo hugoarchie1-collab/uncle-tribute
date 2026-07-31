@@ -93,13 +93,13 @@ const RepresentativeApplication = () => {
     }
   };
 
-  const fieldLabel = "block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2";
+  const fieldLabel = "block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2";
   const fieldInput =
-    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 transition-shadow";
+    "w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] text-ink placeholder:text-ink/30 transition-shadow";
 
   if (status === "success") {
     return (
-      <div className="ring-1 ring-line bg-ink/[0.03] p-7 md:p-9 max-w-[680px]">
+      <div className="ring-1 ring-line bg-ink/[0.03] p-7 md:p-9 max-w-[680px] 3xl:max-w-[911px] 4xl:max-w-[1102px]">
         <p className="font-display text-[clamp(24px,3vw,34px)] text-ink m-0 mb-3">Thank you.</p>
         <p className={cn(SUBTITLE, "max-w-none m-0")}>
           We'll be in touch, personally and in confidence. If it's pressing, write to{" "}
@@ -113,7 +113,7 @@ const RepresentativeApplication = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="ring-1 ring-line bg-ink/[0.03] p-6 md:p-9 max-w-[720px]">
+    <form onSubmit={handleSubmit} noValidate className="ring-1 ring-line bg-ink/[0.03] p-6 md:p-9 max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
       <input
         type="text"
         name="botcheck"
@@ -150,7 +150,7 @@ const RepresentativeApplication = () => {
         <span className={fieldLabel}>Anything you'd like to add</span>
         <textarea name="message" rows={3} className={cn(fieldInput, "leading-[1.6] resize-none")} placeholder="A client or project you have in mind." />
       </label>
-      {errorMsg && <p className="mb-4 font-sans text-[14px] text-accent m-0">{errorMsg}</p>}
+      {errorMsg && <p className="mb-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-accent m-0">{errorMsg}</p>}
       <button
         type="submit"
         disabled={status === "submitting"}

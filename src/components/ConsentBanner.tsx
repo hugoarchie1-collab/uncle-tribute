@@ -45,7 +45,7 @@ export const ConsentBanner = () => {
       className="fixed inset-x-0 bottom-0 z-[110] border-t border-line bg-[#0a0908]/[0.98]"
     >
       <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12 pt-4 md:pt-5 pb-safe-4 flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
-        <p className="font-sans font-normal text-[13px] leading-[1.65] text-ink-muted m-0 flex-1 min-w-0">
+        <p className="font-sans font-normal text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.65] text-ink-muted m-0 flex-1 min-w-0">
           We&rsquo;d like to use analytics and advertising cookies to understand
           how the estate&rsquo;s site is found. Essential cookies only, unless
           you allow more.{" "}

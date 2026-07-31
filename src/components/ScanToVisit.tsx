@@ -50,7 +50,7 @@ export function ScanToVisit({
   );
 
   const eyebrow = (
-    <span className="font-sans text-[13px] font-bold tracking-[0.02em] text-cream-ink-soft">
+    <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-cream-ink-soft">
       {label}
     </span>
   );
@@ -73,7 +73,7 @@ export function ScanToVisit({
         <span className="shrink-0 bg-cream rounded-lg p-1.5">{qr}</span>
         <span className="flex flex-col gap-1 min-w-0">
           {eyebrow}
-          <span className="text-[15px]">{url}</span>
+          <span className="text-[15px] 3xl:text-[18px] 4xl:text-[21px]">{url}</span>
         </span>
       </a>
     );
@@ -93,9 +93,9 @@ export function ScanToVisit({
       <span className="bg-cream rounded-lg p-2">{qr}</span>
       <span className="flex flex-col items-center gap-1.5">
         {eyebrow}
-        <span className="text-[17px]">{url}</span>
+        <span className="text-[17px] 3xl:text-[23px] 4xl:text-[27px]">{url}</span>
         {variant === "card" && (
-          <span className="font-sans text-[14px] leading-[1.5] text-cream-ink-soft mt-0.5">
+          <span className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.5] text-cream-ink-soft mt-0.5">
             the art of stephen meakin.
           </span>
         )}

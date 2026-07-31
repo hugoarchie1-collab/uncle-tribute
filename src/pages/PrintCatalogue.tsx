@@ -33,7 +33,7 @@ import { asset, webp, webpSrcSet } from "../lib/asset";
 
 // ── product-page type tokens (verbatim from PaintingDetail) ──────────────────
 const SPEC_LABEL =
-  "font-sans text-[14px] font-bold tracking-[0.06em] text-ink-muted";
+  "font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.06em] text-ink-muted";
 const SPEC_VALUE = "font-sans text-[16.5px] leading-[1.4] text-ink";
 const EYEBROW = "font-sans text-[14.5px] font-bold tracking-[0.14em] text-accent";
 const EYEBROW_MUTED =
@@ -671,9 +671,9 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
                   <div key={t.id} className="cat-edition-row" data-anchor={t.isAnchor ? "1" : undefined}>
                     <div>
                       <span className="font-sans text-[15.5px] font-bold text-ink">{t.label}</span>
-                      <span className="font-sans text-[13px] text-ink-muted">{"  "}{t.size}</span>
+                      <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted">{"  "}{t.size}</span>
                     </div>
-                    <span className="font-display text-[19px] text-ink">{gbp(t.pricePence)}</span>
+                    <span className="font-display text-[19px] 3xl:text-[26px] 4xl:text-[30px] text-ink">{gbp(t.pricePence)}</span>
                   </div>
                 ))}
               </div>

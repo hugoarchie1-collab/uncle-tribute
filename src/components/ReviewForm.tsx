@@ -140,7 +140,7 @@ const StarPicker = ({
       </div>
       <p
         aria-live="polite"
-        className="mt-2 font-sans text-[13px] leading-[1.5] text-ink-muted m-0 min-h-[1.2em]"
+        className="mt-2 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 min-h-[1.2em]"
       >
         {shown ? `${shown} of 5 — ${STAR_LABELS[shown]}` : "Tap a star to rate"}
       </p>
@@ -383,7 +383,7 @@ export const ReviewForm = ({
 
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[680px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[680px] 3xl:max-w-[911px] 4xl:max-w-[1102px] bg-bg-soft ring-1 ring-line shadow-[0_40px_120px_rgba(0,0,0,0.7)] max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -426,10 +426,10 @@ export const ReviewForm = ({
               <div aria-live="polite">
                 {status === "success" ? (
                   <div className="py-4">
-                    <p className="font-display font-semibold text-[24px] text-ink m-0 mb-3">
+                    <p className="font-display font-semibold text-[24px] 3xl:text-[32px] 4xl:text-[38px] text-ink m-0 mb-3">
                       Thank you.
                     </p>
-                    <p className="font-sans font-normal text-[15px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
+                    <p className="font-sans font-normal text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.7] text-ink-muted m-0 max-w-[480px]">
                       {autoPublished
                         ? "Your review is now on this print's page, and the family has been told. Thank you for taking the time."
                         : "Your review has reached the family. We read each one with care before it appears — so yours may not show straight away. Thank you for sharing it."}
@@ -525,7 +525,7 @@ export const ReviewForm = ({
                         </span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose file
                         </span>
                         <input
@@ -535,23 +535,23 @@ export const ReviewForm = ({
                           onChange={handleMediaChange}
                           className="sr-only"
                         />
-                        <span className="font-sans text-[13px] text-ink-muted truncate max-w-[200px]">
+                        <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted truncate max-w-[200px]">
                           {mediaName || "No file chosen"}
                         </span>
                       </label>
-                      <p className="mt-2 font-sans text-[14px] leading-[1.55] text-ink-muted m-0">
+                      <p className="mt-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.55] text-ink-muted m-0">
                         Reviews with a photo, video or audio clip are held for the
                         family to approve before they appear. Keep files under 4MB.
                       </p>
                       {mediaError && (
-                        <p className="mt-2 font-sans text-[13px] text-accent m-0">
+                        <p className="mt-2 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">
                           {mediaError}
                         </p>
                       )}
                     </div>
 
                     {errorMsg && (
-                      <p className="mb-4 font-sans text-[13px] text-accent m-0">
+                      <p className="mb-4 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">
                         {errorMsg}
                       </p>
                     )}
@@ -568,7 +568,7 @@ export const ReviewForm = ({
                           →
                         </span>
                       </button>
-                      <p className="font-sans text-[14px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
+                      <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.55] text-ink-muted m-0 max-w-[240px]">
                         Your email stays private — it's only so the family can
                         thank you.
                       </p>

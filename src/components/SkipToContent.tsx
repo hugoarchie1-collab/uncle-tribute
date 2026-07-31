@@ -45,7 +45,7 @@ export const SkipToContent = () => {
       onKeyDown={jump}
       className={
         focused
-          ? "fixed top-3 left-3 z-[200] inline-flex items-center rounded-full bg-ink px-5 py-2.5 font-sans text-[14px] font-bold tracking-[0.01em] text-bg no-underline shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] outline-none ring-2 ring-accent"
+          ? "fixed top-3 left-3 z-[200] inline-flex items-center rounded-full bg-ink px-5 py-2.5 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.01em] text-bg no-underline shadow-[0_10px_30px_-8px_rgba(0,0,0,0.7)] outline-none ring-2 ring-accent"
           : undefined
       }
       style={focused ? undefined : HIDDEN}

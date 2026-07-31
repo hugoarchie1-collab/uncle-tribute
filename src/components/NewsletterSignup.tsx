@@ -109,7 +109,7 @@ export const NewsletterSignup = ({
       <div>
         <h3 className={cn(EYEBROW_MUTED, "mb-4")}>Friends &amp; Family</h3>
         {status === "success" ? (
-          <p role="status" aria-live="polite" className="font-sans text-[13px] leading-[1.65] text-ink-muted m-0">
+          <p role="status" aria-live="polite" className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.65] text-ink-muted m-0">
             Thank you. We'll be in touch when the next edition is released.
           </p>
         ) : (
@@ -139,7 +139,7 @@ export const NewsletterSignup = ({
                 while the email input is focused — the label answers the focus,
                 not just the input ring. */}
             <label className="group block">
-              <span className="block font-sans text-[13px] leading-[1.6] text-ink-muted mb-3 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.6] text-ink-muted mb-3 transition-colors duration-200 group-focus-within:text-ink">
                 A note when there's a new edition or an exhibition.
               </span>
               <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
@@ -149,21 +149,21 @@ export const NewsletterSignup = ({
                   required
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[16px] text-ink placeholder:text-ink-fade focus:outline-none"
+                  className="flex-1 min-w-0 bg-transparent px-3 py-2.5 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade focus:outline-none"
                 />
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+                  className="shrink-0 whitespace-nowrap px-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-ink-muted hover:text-accent transition-colors disabled:opacity-60 bg-transparent border-0 border-l border-line cursor-pointer focus-visible:outline-none focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
                 >
                   {status === "submitting" ? "Sending…" : "Subscribe"}
                 </button>
               </div>
             </label>
             {errorMsg && (
-              <p className="mt-2 font-sans text-[14px] text-accent m-0">{errorMsg}</p>
+              <p className="mt-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[14px] italic text-ink-fade mt-3 m-0">
+            <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] italic text-ink-fade mt-3 m-0">
               By subscribing you agree to our{" "}
               <Link to="/privacy" className="underline transition-colors hover:text-ink">
                 Privacy Policy
@@ -182,16 +182,16 @@ export const NewsletterSignup = ({
   if (variant === "inline") {
     return (
       <div className="border-t border-line pt-8 mt-8">
-        <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 m-0 mb-3">
+        <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 m-0 mb-3">
           {eyebrow}
         </p>
         {status === "success" ? (
-          <p role="status" aria-live="polite" className="font-sans text-[14.5px] leading-[1.7] text-ink/75 m-0 max-w-[520px]">
+          <p role="status" aria-live="polite" className="font-sans text-[14.5px] leading-[1.7] text-ink/75 m-0 max-w-[520px] 3xl:max-w-[697px] 4xl:max-w-[842px]">
             Thank you. Your name has been added to Friends &amp; Family. We'll write when
             the next edition is released.
           </p>
         ) : (
-          <form onSubmit={handleSubmit} noValidate className="max-w-[560px]">
+          <form onSubmit={handleSubmit} noValidate className="max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px]">
             <input
               type="text"
               name="botcheck"
@@ -226,7 +226,7 @@ export const NewsletterSignup = ({
                 autoComplete="name"
                 aria-label="Your name"
                 placeholder="Your name"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <input
                 name="email"
@@ -235,7 +235,7 @@ export const NewsletterSignup = ({
                 autoComplete="email"
                 aria-label="Email address"
                 placeholder="you@example.com"
-                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="flex-1 min-w-0 bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
               />
               <button
                 type="submit"
@@ -246,9 +246,9 @@ export const NewsletterSignup = ({
               </button>
             </div>
             {errorMsg && (
-              <p className="mt-3 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+              <p className="mt-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">{errorMsg}</p>
             )}
-            <p className="font-sans text-[13px] italic text-ink/55 mt-2 m-0">
+            <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] italic text-ink/55 mt-2 m-0">
               By subscribing you agree to our{" "}
               <Link to="/privacy" className="underline hover:text-ink/70">
                 Privacy Policy
@@ -265,7 +265,7 @@ export const NewsletterSignup = ({
   // PANEL variant — default, for Welcome page Estate section / About page.
   // -----------------------------------------------------------------------
   return (
-    <div className="border border-line bg-bg-soft/30 p-7 sm:p-9 md:p-10 max-w-[640px]">
+    <div className="border border-line bg-bg-soft/30 p-7 sm:p-9 md:p-10 max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
       <p className={cn(EYEBROW, "m-0 mb-4")}>
         {eyebrow}
       </p>
@@ -278,7 +278,7 @@ export const NewsletterSignup = ({
           <p className="font-sans font-normal text-[14.5px] sm:text-[15.5px] leading-[1.7] text-ink/80 m-0 mb-2">
             Thank you. Your name has been added to Friends &amp; Family.
           </p>
-          <p className="font-sans font-normal text-[14px] leading-[1.7] text-ink/65 m-0">
+          <p className="font-sans font-normal text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.7] text-ink/65 m-0">
             A short welcome from the estate is on its way to your inbox.
           </p>
         </div>
@@ -311,7 +311,7 @@ export const NewsletterSignup = ({
             {/* Focus-within `group`: the muted field label warms to full ink
                 while its input is focused (matches Contact's form focus). */}
             <label className="group block">
-              <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Name
               </span>
               <input
@@ -319,11 +319,11 @@ export const NewsletterSignup = ({
                 type="text"
                 autoComplete="name"
                 placeholder="Jane Smith"
-                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
             <label className="group block">
-              <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
+              <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2 transition-colors duration-200 group-focus-within:text-ink">
                 Email
               </span>
               <input
@@ -332,13 +332,13 @@ export const NewsletterSignup = ({
                 required
                 autoComplete="email"
                 placeholder="jane@example.com"
-                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
               />
             </label>
           </div>
 
           {errorMsg && (
-            <p className="mb-3 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+            <p className="mb-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">{errorMsg}</p>
           )}
 
           <div className="flex items-center justify-between gap-3 flex-wrap mt-2">
@@ -355,11 +355,11 @@ export const NewsletterSignup = ({
                 →
               </span>
             </button>
-            <p className="font-sans text-[13px] leading-[1.5] text-ink/55 m-0">
+            <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink/55 m-0">
               Only when it matters — a few times a year at most. Unsubscribe in a click.
             </p>
           </div>
-          <p className="font-sans text-[13px] italic text-ink/55 mt-2 m-0">
+          <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] italic text-ink/55 mt-2 m-0">
             By subscribing you agree to our{" "}
             <Link to="/privacy" className="underline hover:text-ink/70">
               Privacy Policy

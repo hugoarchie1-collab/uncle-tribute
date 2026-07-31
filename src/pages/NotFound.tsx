@@ -85,7 +85,7 @@ export const NotFound = () => {
               </p>
             </Reveal>
             <Reveal as="div" delay={0.06} className="lg:col-span-9">
-              <p className="m-0 max-w-[56ch] font-sans text-[18px] leading-[1.65] text-ink-soft md:text-[20px]">
+              <p className="m-0 max-w-[56ch] font-sans text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-[1.65] text-ink-soft md:text-[20px]">
                 The page you requested could not be found. Stephen&rsquo;s work
                 remains a few steps away.
               </p>

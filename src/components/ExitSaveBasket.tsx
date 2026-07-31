@@ -151,7 +151,7 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
           />
         </svg>
       </button>
-      <p className="font-sans text-[13px] font-bold tracking-[0.02em] text-accent m-0 mb-2">
+      <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-accent m-0 mb-2">
         Save your basket
       </p>
       {status === "success" ? (
@@ -172,18 +172,18 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
               autoComplete="email"
               aria-label="Your email"
               placeholder="you@example.com"
-              className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-3 py-2 font-sans text-[13px] text-ink placeholder:text-ink/30 transition-shadow"
+              className="flex-1 bg-bg ring-1 ring-white/12 focus:ring-accent focus:outline-none px-3 py-2 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink placeholder:text-ink/30 transition-shadow"
             />
             <button
               type="submit"
               disabled={status === "sending"}
-              className="bg-ink text-bg px-4 font-sans text-[13px] font-bold tracking-[0.02em] hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 border-0 cursor-pointer"
+              className="bg-ink text-bg px-4 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] hover:bg-accent hover:text-ink transition-colors disabled:opacity-60 border-0 cursor-pointer"
             >
               {status === "sending" ? "…" : "Send"}
             </button>
           </form>
           {errorMsg && (
-            <p className="mt-2 font-sans text-[14px] text-accent m-0">{errorMsg}</p>
+            <p className="mt-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] text-accent m-0">{errorMsg}</p>
           )}
         </>
       )}

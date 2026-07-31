@@ -78,7 +78,7 @@ const ResultRow = ({ doc }: { doc: SearchDoc }) => (
       <span
         className={cn(
           "mt-0.5 inline-flex shrink-0 items-center rounded-full px-2.5 py-1",
-          "font-sans text-[13px] font-bold tracking-[0.02em]",
+          "font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em]",
           "text-ink-muted ring-1 ring-line",
         )}
       >
@@ -135,7 +135,7 @@ const ArtworkTile = ({ doc }: { doc: SearchDoc }) => (
           {doc.title}
         </h3>
         {doc.subtitle && (
-          <p className="mt-1 m-0 font-sans text-[14px] leading-[1.5] text-ink-muted">
+          <p className="mt-1 m-0 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.5] text-ink-muted">
             {doc.subtitle}
           </p>
         )}
@@ -180,7 +180,7 @@ const EmptyState = ({ query }: { query: string }) => {
           <Link
             key={link.to}
             to={link.to}
-            className="group inline-flex items-center gap-1.5 font-sans text-[13px] font-bold tracking-[0.02em] text-ink-muted transition-colors duration-300 hover:text-accent"
+            className="group inline-flex items-center gap-1.5 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted transition-colors duration-300 hover:text-accent"
           >
             {link.label}
             <span
@@ -240,7 +240,7 @@ export const Search = () => {
 
           {/* Refine — the same SearchBar in its large page variant, so a reader
               can correct or broaden their query without leaving the results. */}
-          <Reveal as="div" className="mt-6 md:mt-8 max-w-[760px] border-t border-line pt-6 md:pt-8">
+          <Reveal as="div" className="mt-6 md:mt-8 max-w-[760px] 3xl:max-w-[1018px] 4xl:max-w-[1231px] border-t border-line pt-6 md:pt-8">
             <SearchBar variant="page" />
           </Reveal>
         </header>

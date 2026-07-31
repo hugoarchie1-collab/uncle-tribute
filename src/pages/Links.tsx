@@ -130,7 +130,7 @@ const CardBody = ({ row }: { row: LinkRow }) => (
       {row.label}
     </span>
     {row.href && (
-      <span aria-hidden="true" className="absolute right-6 text-[15px] opacity-60">
+      <span aria-hidden="true" className="absolute right-6 text-[15px] 3xl:text-[18px] 4xl:text-[21px] opacity-60">
         ↗
       </span>
     )}

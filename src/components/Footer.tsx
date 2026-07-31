@@ -16,7 +16,7 @@ const FOOTER_LINK = "transition-colors duration-300 hover:text-ink";
 /** ONE body/link type recipe for the whole footer — Hanken 14px. Every text
  *  node uses this (or the 11px eyebrow header / 13px fine-print bottom-bar /
  *  the serif wordmark) so the footer reads as ONE consistent system. */
-const FOOTER_TEXT = "font-sans text-[14px] leading-[1.6]";
+const FOOTER_TEXT = "font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.6]";
 
 /** Footer navigation — TWO short columns, not one tall 12-item stack.
  *
@@ -129,7 +129,7 @@ export const Footer = () => (
           <br />
           213 Elm Drive, Hove, East Sussex, BN3 7JD, UK
         </p>
-        <p className="font-sans text-[13px] leading-[1.5] text-ink-muted mt-3 max-w-[280px] m-0">
+        <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted mt-3 max-w-[280px] m-0">
           The Mandala Company is a trading name of Hugo Archie Charles Wedge.
         </p>
         {/* Follow the estate — official social profiles (mirrored into the
@@ -200,7 +200,7 @@ export const Footer = () => (
 
     {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·
         Returns appear ONLY here, never also in a column above). */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] leading-[1.5] text-ink-muted">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the
         estate. All rights reserved.
@@ -225,7 +225,7 @@ export const Footer = () => (
           onClick={clearConsent}
           className={cn(
             FOOTER_LINK,
-            "bg-transparent border-0 p-0 cursor-pointer font-sans text-[13px] leading-[1.5] text-ink-muted",
+            "bg-transparent border-0 p-0 cursor-pointer font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted",
           )}
         >
           Cookie preferences

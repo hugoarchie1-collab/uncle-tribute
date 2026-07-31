@@ -385,7 +385,7 @@ const PostCard = ({
           ) : null}
         </div>
         {pinned ? (
-          <span className="shrink-0 ml-auto inline-flex items-center gap-1.5 rounded-full bg-accent/12 px-3 py-1 font-display text-[13px] font-semibold text-accent">
+          <span className="shrink-0 ml-auto inline-flex items-center gap-1.5 rounded-full bg-accent/12 px-3 py-1 font-display text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-semibold text-accent">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
@@ -502,7 +502,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
     </span>
     <span
       aria-hidden="true"
-      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-4 py-1.5 font-display text-[14px] font-semibold text-accent"
+      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-4 py-1.5 font-display text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-semibold text-accent"
     >
       Post
     </span>
@@ -743,7 +743,7 @@ const ShareMemoryModal = ({
 
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[680px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[680px] 3xl:max-w-[911px] 4xl:max-w-[1102px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -907,7 +907,7 @@ const ShareMemoryModal = ({
                         <span className="normal-case tracking-normal text-ink-muted">(optional)</span>
                       </span>
                       <label className="inline-flex items-center gap-3 cursor-pointer">
-                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] font-bold tracking-[0.02em] rounded-full hover:ring-accent hover:text-accent transition-all">
+                        <span className="inline-flex items-center ring-1 ring-ink/30 px-4 py-2.5 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] rounded-full hover:ring-accent hover:text-accent transition-all">
                           Choose image
                         </span>
                         <input
@@ -1111,7 +1111,7 @@ export const Memories = () => {
             funeral tribute (featured). Both verbatim, shown in full/folded. */}
         <section
           aria-label="Featured memories"
-          className="mx-auto w-full max-w-[820px] px-[clamp(1rem,5vw,1.5rem)] text-left"
+          className="mx-auto w-full max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px] px-[clamp(1rem,5vw,1.5rem)] text-left"
         >
           <div className="flex flex-col gap-[clamp(0.9rem,1.8vw,1.35rem)]">
             <Reveal as="div" delay={0}>
@@ -1129,9 +1129,9 @@ export const Memories = () => {
             sits above it, and a centred display heading introduces the grid. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1160px] px-[clamp(1rem,5vw,1.5rem)] pt-[clamp(1.4rem,3vw,2.4rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
+          className="mx-auto w-full max-w-[1160px] 3xl:max-w-[1554px] 4xl:max-w-[1879px] px-[clamp(1rem,5vw,1.5rem)] pt-[clamp(1.4rem,3vw,2.4rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
         >
-          <div className="mx-auto max-w-[720px]">
+          <div className="mx-auto max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
             <ComposerCard onShare={() => setModalOpen(true)} />
           </div>
 
@@ -1162,7 +1162,7 @@ export const Memories = () => {
               </div>
             </>
           ) : (
-            <div className="mx-auto max-w-[720px] mt-[clamp(1.2rem,2.5vw,2rem)]">
+            <div className="mx-auto max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px] mt-[clamp(1.2rem,2.5vw,2rem)]">
               <Reveal as="div" delay={0.08}>
                 <EmptyStateCard />
               </Reveal>

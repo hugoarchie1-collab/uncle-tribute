@@ -208,7 +208,7 @@ export const EnquireModal = ({
           {/* Modal panel */}
           <motion.div
             ref={panelRef}
-            className="relative w-full max-w-[560px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-[560px] 3xl:max-w-[750px] 4xl:max-w-[907px] bg-bg-soft ring-1 ring-line shadow-liftLg max-h-[90vh] overflow-y-auto"
             initial={{ y: 24, scale: 0.96, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 24, scale: 0.96, opacity: 0 }}
@@ -247,7 +247,7 @@ export const EnquireModal = ({
 
               {status === "success" ? (
                 <div className="py-6">
-                  <p className="font-display font-bold text-[22px] text-ink m-0 mb-3">Thank you.</p>
+                  <p className="font-display font-bold text-[22px] 3xl:text-[30px] 4xl:text-[35px] text-ink m-0 mb-3">Thank you.</p>
                   <p className="font-sans font-normal text-[14.5px] leading-[1.7] text-ink/75 m-0">
                     Your message has been sent on its way to{" "}
                     <span className="text-ink">info@themandalacompany.com</span>. If your mail
@@ -286,7 +286,7 @@ export const EnquireModal = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <label className="block">
-                      <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
+                      <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                         Name
                       </span>
                       <input
@@ -294,12 +294,12 @@ export const EnquireModal = ({
                         name="name"
                         required
                         autoComplete="name"
-                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="Jane Smith"
                       />
                     </label>
                     <label className="block">
-                      <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
+                      <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                         Email
                       </span>
                       <input
@@ -307,27 +307,27 @@ export const EnquireModal = ({
                         type="email"
                         required
                         autoComplete="email"
-                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] text-ink placeholder:text-ink/30 transition-shadow"
+                        className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink/30 transition-shadow"
                         placeholder="jane@example.com"
                       />
                     </label>
                   </div>
 
                   <label className="block mb-5">
-                    <span className="block font-sans text-[13px] font-bold tracking-[0.02em] text-ink/55 mb-2">
+                    <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink/55 mb-2">
                       Message
                     </span>
                     <textarea
                       name="message"
                       required
                       rows={5}
-                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
+                      className="w-full bg-bg ring-1 ring-line focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.6] text-ink placeholder:text-ink/30 transition-shadow resize-none"
                       placeholder="A few lines about what you're after."
                     />
                   </label>
 
                   {errorMsg && (
-                    <p className="mb-4 font-sans text-[13px] text-accent m-0">{errorMsg}</p>
+                    <p className="mb-4 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-accent m-0">{errorMsg}</p>
                   )}
 
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-2">
@@ -341,7 +341,7 @@ export const EnquireModal = ({
                     </button>
                     <a
                       href="mailto:info@themandalacompany.com"
-                      className="font-sans text-[14px] tracking-[0.02em] text-ink/55 hover:text-ink transition-colors"
+                      className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] tracking-[0.02em] text-ink/55 hover:text-ink transition-colors"
                     >
                       Or write directly →
                     </a>

@@ -1014,7 +1014,7 @@ export const About = () => {
           <Reveal
             as="figure"
             className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
+              "relative m-0 mx-auto w-full max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
               IMG_GAP,
             )}
           >
@@ -1125,7 +1125,7 @@ export const About = () => {
           <div
             className={cn(
               IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] mx-auto",
             )}
           >
             {/* Compact 2×2 index (natural spacing — NOT spread thin down the
@@ -1230,7 +1230,7 @@ export const About = () => {
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px]", IMG_GAP)} delay={0.08}>
+            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px]", IMG_GAP)} delay={0.08}>
               <ContainImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
                 alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
@@ -1261,7 +1261,7 @@ export const About = () => {
           <div
             className={cn(
               IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] mx-auto",
             )}
           >
             <div className="min-w-0">
@@ -1453,7 +1453,7 @@ export const About = () => {
               beside-text grid that stranded an ugly side void. */}
           <Reveal
             as="div"
-            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px]")}
+            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px] 3xl:max-w-[1206px] 4xl:max-w-[1458px]")}
           >
             <figure className="m-0 flex justify-center overflow-hidden rounded-[3px] bg-ink/[0.04]">
               <AssetImage
