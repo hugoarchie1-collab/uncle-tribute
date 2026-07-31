@@ -976,7 +976,7 @@ export const Collections = () => {
                               className={cn(META, "mt-2 m-0")}
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
-                              Estate-stamped giclée · from{" "}
+                              Estate-stamped giclée ·{" "}
                               <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
                                 {fmtP(getLowestTierPricePence(painting))}
                               </span>
