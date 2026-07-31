@@ -1799,6 +1799,63 @@ const BuyBox = ({
           </fieldset>
         )}
 
+        {/* 6a · YOUR SELECTION — a persistent, plain-language summary so the
+            buyer always knows EXACTLY what they have configured before they
+            commit (Hugo 2026-07-31: "customers can't identify clearly what
+            they've selected"). It reads live from the SAME state the CTAs
+            submit + the SAME finishTotalPence the price figure shows, so it can
+            never disagree with the Stripe charge. Monochrome, wall-label idiom
+            to match the rest of the column. */}
+        <div className={cn("mt-6", CARD)}>
+          <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your selection</p>
+          <dl className="grid grid-cols-[max-content_1fr] gap-x-5 gap-y-1.5 m-0">
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Piece</dt>
+            <dd className={cn(SPEC_VALUE, "m-0")}>
+              {painting.title} · {selected.name}
+            </dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Edition</dt>
+            <dd className={cn(SPEC_VALUE, "m-0")}>
+              {selectedTier.label} · {selectedTier.size}
+            </dd>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Presentation</dt>
+            <dd className={cn(SPEC_VALUE, "m-0")}>
+              {canvasActive
+                ? `Canvas — ${(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).label}`
+                : framingActive
+                  ? `Framed — ${FRAME_STYLES.find((f) => f.id === frameStyle)?.label ?? "solid wood"}`
+                  : "Fine-art print"}
+            </dd>
+            {embellishActive && (
+              <>
+                <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Finish</dt>
+                <dd className={cn(SPEC_VALUE, "m-0")}>Hand-finished by Polly</dd>
+              </>
+            )}
+            {quantity > 1 && (
+              <>
+                <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Quantity</dt>
+                <dd className={cn(SPEC_VALUE, "m-0")}>{quantity}</dd>
+              </>
+            )}
+          </dl>
+          <div className="mt-4 pt-3.5 border-t border-line flex items-baseline justify-between gap-3">
+            <span className={cn(EYEBROW_TIGHT)}>
+              Total{quantity > 1 ? ` · ${quantity} pieces` : ""}
+            </span>
+            <span
+              className="font-display font-semibold tracking-[-0.02em] text-[26px] 3xl:text-[34px] 4xl:text-[40px] text-ink whitespace-nowrap"
+              style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+            >
+              {fmtP(finishTotalPence * quantity)}
+            </span>
+          </div>
+          <p className={cn(META, "m-0 mt-2")}>
+            {canvasActive || framingActive
+              ? "Ready to hang · free delivery worldwide"
+              : "Free delivery worldwide"}
+          </p>
+        </div>
+
         {/* 6b · QUANTITY — whole units, 1–99. Separated by air, not a rule. */}
         <div className="flex items-center justify-between mt-6">
           <span className={cn(EYEBROW_TIGHT)}>Quantity</span>
