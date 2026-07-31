@@ -482,6 +482,72 @@ const W_BODY = 1;
 // Bonuses.
 const PHRASE_BONUS = 8; // whole query appears as a substring (title/subtitle/body)
 const PREFIX_WEIGHT = 0.4; // partial credit when a doc word starts with the token
+const FUZZY_WEIGHT = 0.55; // partial credit when a doc word is a near-miss (typo)
+const SYNONYM_WEIGHT = 0.7; // synonyms of a query token score at a slight discount
+
+/**
+ * Bounded Levenshtein — returns the edit distance between `a` and `b`, but stops
+ * and returns `max + 1` as soon as the true distance is known to exceed `max`.
+ * (Cheap: the index is a few hundred short docs, and we early-exit on the row
+ * minimum.) Powers typo tolerance so "serach"→"search", "expeirnce"→"experience".
+ */
+const boundedEditDistance = (a: string, b: string, max: number): number => {
+  const la = a.length;
+  const lb = b.length;
+  if (Math.abs(la - lb) > max) return max + 1;
+  let prev = Array.from({ length: lb + 1 }, (_, i) => i);
+  let curr = new Array(lb + 1);
+  for (let i = 1; i <= la; i++) {
+    curr[0] = i;
+    let rowMin = curr[0];
+    const ai = a.charCodeAt(i - 1);
+    for (let j = 1; j <= lb; j++) {
+      const cost = ai === b.charCodeAt(j - 1) ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+      if (curr[j] < rowMin) rowMin = curr[j];
+    }
+    if (rowMin > max) return max + 1; // whole remaining rows can only grow
+    [prev, curr] = [curr, prev];
+  }
+  return prev[lb];
+};
+
+/** Max typos tolerated for a query token of a given length (short words must
+ *  match tighter so "art" doesn't fuzz into "arc"/"ant"). */
+const fuzzyBudget = (len: number): number => (len >= 8 ? 2 : len >= 5 ? 1 : 0);
+
+/**
+ * Keyword synonyms — so a natural query lands on the right page even when the
+ * visitor's word isn't the word on the page. Each query token is expanded with
+ * these at a slight score discount. Kept intentionally small + estate-specific
+ * (delivery↔shipping, cost↔price, refund↔return, buy↔order, framed↔frame …) so
+ * "how much is delivery" finds the shipping copy and "refund" finds /returns.
+ */
+const SYNONYMS: Record<string, string[]> = {
+  delivery: ["shipping", "postage", "dispatch"],
+  shipping: ["delivery", "postage", "dispatch"],
+  postage: ["delivery", "shipping"],
+  cost: ["price", "pricing", "how much"],
+  price: ["cost", "pricing"],
+  pricing: ["price", "cost"],
+  refund: ["return", "returns", "money back"],
+  return: ["refund", "returns"],
+  returns: ["refund", "return"],
+  buy: ["order", "purchase", "checkout"],
+  order: ["buy", "purchase", "checkout"],
+  purchase: ["buy", "order"],
+  frame: ["framed", "framing", "mount"],
+  framed: ["frame", "framing"],
+  framing: ["frame", "framed", "mount"],
+  canvas: ["stretched", "print"],
+  print: ["giclee", "giclée", "reproduction"],
+  authentic: ["authenticity", "certificate", "provenance", "genuine"],
+  certificate: ["authenticity", "provenance", "coa"],
+  size: ["dimensions", "cm", "measurements"],
+  gift: ["voucher", "present", "gift card"],
+  contact: ["email", "enquiry", "get in touch"],
+  privacy: ["data", "gdpr", "cookies"],
+};
 
 /**
  * Count whole-word occurrences of `token` in `haystackLc`, plus a small prefix
@@ -497,13 +563,26 @@ const tokenScore = (token: string, haystackLc: string): number => {
   // Words are alnum/£ runs (mirrors `tokenise`).
   const words = haystackLc.match(/[a-z0-9£]+/g);
   if (!words) return 0;
+  const budget = fuzzyBudget(token.length);
+  let fuzzy = 0;
   for (const w of words) {
     if (w === token) exact += 1;
     else if (w.length > token.length && w.startsWith(token)) prefix += 1;
+    // Typo tolerance: only when there's no exact/prefix hit for this word and
+    // the lengths are close enough to be a plausible misspelling.
+    else if (
+      budget > 0 &&
+      Math.abs(w.length - token.length) <= budget &&
+      boundedEditDistance(w, token, budget) <= budget
+    ) {
+      fuzzy += 1;
+    }
   }
   score += exact;
   // Cap prefix credit so a single common stem can't dominate.
   score += Math.min(prefix, 3) * PREFIX_WEIGHT;
+  // Cap fuzzy credit likewise; only counts when the word had no better match.
+  if (exact === 0) score += Math.min(fuzzy, 2) * FUZZY_WEIGHT;
   return score;
 };
 
@@ -514,6 +593,25 @@ function scoreDoc(indexed: IndexedDoc, tokens: string[], phraseLc: string): numb
     score += tokenScore(token, indexed.titleLc) * W_TITLE;
     score += tokenScore(token, indexed.subtitleLc) * W_SUBTITLE;
     score += tokenScore(token, indexed.bodyLc) * W_BODY;
+
+    // Synonym expansion — a query token also earns (discounted) credit for its
+    // estate-specific synonyms, so "delivery" finds "shipping", "refund" finds
+    // "returns", etc. Multi-word synonyms ("how much") are scored as a phrase
+    // substring; single-word ones go through the same field scorer.
+    const syns = SYNONYMS[token];
+    if (syns) {
+      for (const syn of syns) {
+        if (syn.includes(" ")) {
+          if (indexed.titleLc.includes(syn)) score += W_TITLE * SYNONYM_WEIGHT;
+          else if (indexed.subtitleLc.includes(syn)) score += W_SUBTITLE * SYNONYM_WEIGHT;
+          else if (indexed.bodyLc.includes(syn)) score += W_BODY * SYNONYM_WEIGHT;
+        } else {
+          score += tokenScore(syn, indexed.titleLc) * W_TITLE * SYNONYM_WEIGHT;
+          score += tokenScore(syn, indexed.subtitleLc) * W_SUBTITLE * SYNONYM_WEIGHT;
+          score += tokenScore(syn, indexed.bodyLc) * W_BODY * SYNONYM_WEIGHT;
+        }
+      }
+    }
   }
 
   // Exact-phrase substring bonus (only worth checking for a multi-token query

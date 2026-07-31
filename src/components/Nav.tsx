@@ -47,15 +47,15 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
 
 /** Flat list (Home + every grouped link) for the hidden desktop inline nav. */
 /** CURATED desktop inline nav (Hugo 2026-07-29 #3) — the FIVE primary
- *  destinations shown inline from 3xl+ (1700px), so wide desktops have real
- *  wayfinding instead of hamburger-only. The reveal matches DeliverTo (also 3xl)
- *  so the full bar — logo · Deliver-to · search · 5 links · currency · basket —
- *  turns on as ONE coherent unit only at the width that fits it; below 3xl the
- *  links (and Deliver-to) fold into the always-on hamburger drawer. It was `xl`
- *  (1280px) until 2026-07-31 — at 1280–1400px the search field collided with the
- *  logo on its left and the first nav link on its right (logo + search + 5 links
- *  + currency + basket never fit that row). The full menu (every page) still
- *  lives in the drawer, so the long tail is never lost. */
+ *  destinations shown inline from 2xl+ (1536px), so wide desktops fill with real
+ *  wayfinding instead of an empty band. Deliver-to reveals one step later at 3xl
+ *  (1700px). The search is fluid-fill (see below), so the whole row stays tight
+ *  at every width and the fixed controls never collide. It was `xl` (1280px)
+ *  until 2026-07-31 — at 1280–1400px the search field collided with the logo and
+ *  the first nav link (logo + search + 5 links + currency + basket never fit that
+ *  row); briefly moved to 3xl, then settled at 2xl once the search was made to
+ *  shrink fluidly so 1536+ fills without crowding. The full menu (every page)
+ *  still lives in the drawer, so the long tail is never lost. */
 const CURATED_NAV: NavItem[] = [
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
@@ -102,12 +102,12 @@ const BasketIcon = ({ className }: { className?: string }) => (
 /**
  * Global site navigation (#4 redesign).
  *
- * Wide desktop (≥3xl / 1700px): the full inline bar — the five curated links +
- * Deliver-to reveal together, the current page indicated by a quiet accent
- * underline. The reveal is 3xl (was `xl`) so cramped 1280–1400px widths — where
- * the search field overlapped the logo and the links — fall back to the drawer.
+ * Desktop (≥2xl / 1536px): the inline curated links reveal (Deliver-to follows
+ * at 3xl), the current page indicated by a quiet accent underline. The search is
+ * a fluid-fill field that grows with the viewport and shrinks when those controls
+ * appear, so the row holds a constant ~48px gap and never overlaps at any width.
  *
- * Below 3xl: one accessible menu — a dimmed backdrop + a panel that traps
+ * Below 2xl: one accessible menu — a dimmed backdrop + a panel that traps
  * focus, closes on Escape or backdrop click, locks body scroll while open, and
  * restores focus to the toggle on close. Keyboard navigable, ARIA-labelled.
  *
@@ -335,14 +335,17 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             container is the flex-1 spacer that keeps the logo left + icons hard
             right at every width; the field itself only appears from lg up, so the
             phone/tablet bar stays uncluttered (search still lives in the drawer). */}
-        {/* Desktop search — a LONG bar, shown only from 2xl where the row has
-            genuine room for it beside the wordmark; below that it lives in the
-            drawer. NEVER collapses to a circular "dot" and NEVER overlaps the
-            logo (Hugo): the flex-1 spacer stays min-w-0 so when the bar is hidden
-            the space fully collapses, and when shown it only appears at a width
-            that fits a min-[320px] long field without crowding the logo. */}
+        {/* Desktop search — a FLUID-FILL bar (Hugo 2026-07-31: "the gaps here
+            are MASSIVE… everything dynamic, proportions consistent like YouTube").
+            The old fixed max-w-[340px] island sat centered in the flex-1 spacer,
+            leaving huge symmetric voids at laptop widths. Now it's w-full with a
+            fluid clamp cap (44vw floor scaling to 56vw, capped 860px) so it grows
+            WITH the viewport and fills the middle — gaps hold a constant ~48px at
+            every width instead of ballooning. Because the wrapper is flex-1
+            min-w-0, the field auto-shrinks (never overlaps) when the inline nav +
+            Deliver-to reveal at 2xl/3xl; shown from md, in the drawer below. */}
         <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden md:block w-full min-w-[180px] max-w-[340px]" />
+          <SearchBar variant="header" className="hidden md:block w-full min-w-[160px] max-w-[clamp(320px,56vw,860px)]" />
         </div>
 
         <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
@@ -353,7 +356,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               This inline nav is kept hidden (so the markup/chip stay available if
               we ever want a curated desktop subset). */}
           <nav
-            className="hidden 3xl:flex items-center gap-7 mr-1"
+            className="hidden 2xl:flex items-center gap-6 3xl:gap-7 mr-1"
             aria-label="Primary"
           >
             {CURATED_NAV.map((l) => (

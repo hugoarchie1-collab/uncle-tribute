@@ -42,6 +42,21 @@ interface SearchBarProps {
   onNavigate?: () => void;
 }
 
+/** Minimal shape of the Web Speech API's SpeechRecognition (this TS lib ships
+ *  SpeechRecognitionEvent but not the recognition interface). Only the members
+ *  we use are typed. */
+type MinimalSpeechRecognition = {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((e: SpeechRecognitionEvent) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+
 /** Top results to surface in the live dropdown — the brief's ~7. */
 const DROPDOWN_LIMIT = 7;
 /** Debounce so we don't re-rank on every keystroke (~120ms per the brief). */
@@ -79,6 +94,59 @@ export const SearchBar = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
   const isPage = variant === "page";
+
+  // ── Voice search (YouTube-style) ────────────────────────────────────────────
+  // Uses the browser's built-in Web Speech API — no server, no key, no data
+  // leaves the device beyond the browser's own dictation. The mic button only
+  // renders where the API exists (Chrome/Edge/Safari); elsewhere it's absent.
+  const recognitionRef = useRef<MinimalSpeechRecognition | null>(null);
+  const [listening, setListening] = useState(false);
+  const voiceSupported =
+    typeof window !== "undefined" &&
+    !!((window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown })
+      .SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition);
+
+  const stopVoice = useCallback(() => {
+    recognitionRef.current?.stop();
+    setListening(false);
+  }, []);
+
+  const startVoice = useCallback(() => {
+    const Ctor =
+      (window as unknown as { SpeechRecognition?: new () => MinimalSpeechRecognition }).SpeechRecognition ||
+      (window as unknown as { webkitSpeechRecognition?: new () => MinimalSpeechRecognition })
+        .webkitSpeechRecognition;
+    if (!Ctor) return;
+    const rec = new Ctor();
+    rec.lang = "en-GB";
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    recognitionRef.current = rec;
+    rec.onresult = (e: SpeechRecognitionEvent) => {
+      const transcript = Array.from(e.results)
+        .map((r) => r[0]?.transcript ?? "")
+        .join("")
+        .trim();
+      if (transcript) {
+        setQuery(transcript);
+        setOpen(true);
+      }
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    try {
+      rec.start();
+      setListening(true);
+      inputRef.current?.focus();
+    } catch {
+      setListening(false);
+    }
+  }, []);
+
+  const toggleVoice = () => (listening ? stopVoice() : startVoice());
+
+  useEffect(() => () => recognitionRef.current?.abort(), []);
 
   // Debounce the query → debounced, so ranking runs ~once per pause, not per
   // key. A settled new query also resets the highlight (a stale index must not
@@ -188,8 +256,8 @@ export const SearchBar = ({
   // Shared input/pill sizing per variant. The pill is the focusable surround;
   // we lift the ring to accent when the field is focused (focus-within).
   const pillSize = isPage
-    ? "h-[52px] md:h-[56px] pl-12 md:pl-14 pr-4 text-[16px] md:text-[17px]"
-    : "h-[54px] lg:h-[58px] pl-14 pr-5 text-[16px] lg:text-[17px]";
+    ? "h-[52px] md:h-[56px] pl-12 md:pl-14 pr-14 text-[16px] md:text-[17px]"
+    : "h-[54px] lg:h-[58px] pl-14 pr-14 text-[16px] lg:text-[17px]";
   const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-5 h-[20px] w-[20px]";
 
   return (
@@ -264,6 +332,41 @@ export const SearchBar = ({
             pillSize,
           )}
         />
+
+        {/* Voice search — a mic on the right of the pill, YouTube-style. Only
+            rendered where the browser supports dictation. Pulses while listening
+            (accent), quiet cream at rest. */}
+        {voiceSupported && (
+          <button
+            type="button"
+            onClick={toggleVoice}
+            aria-label={listening ? "Stop voice search" : "Search by voice"}
+            aria-pressed={listening}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 z-10 grid place-items-center rounded-full transition-colors duration-200 outline-none",
+              "focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+              isPage ? "right-3 md:right-4 h-9 w-9" : "right-3.5 h-9 w-9",
+              listening
+                ? "text-accent bg-accent/10 motion-safe:animate-pulse"
+                : "text-ink/70 hover:text-ink hover:bg-ink/5",
+            )}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="h-[20px] w-[20px]"
+            >
+              <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
+              <path d="M19 11a7 7 0 0 1-14 0" />
+              <path d="M12 18v3" />
+            </svg>
+          </button>
+        )}
       </form>
 
       {showPanel && (
