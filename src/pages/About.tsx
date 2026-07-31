@@ -124,6 +124,13 @@ const SECTION_PAD = "py-8 md:py-10 2xl:py-12";
 const BLOCK_GAP = "mt-6 md:mt-8";
 /** The same rhythm as a BOTTOM gap (a block that separates from what follows). */
 const BLOCK_GAP_B = "mb-6 md:mb-8";
+/** A GENEROUS gap reserved for the seam where TEXT meets an IMAGE (above or
+ *  below). Text must never sit tight against a photo/figure — this opens a clear
+ *  breathing band (≥40px) at every prose↔image boundary while image↔image and
+ *  text↔text seams keep the tighter BLOCK_GAP rhythm. */
+const IMG_GAP = "mt-10 md:mt-14 2xl:mt-16";
+/** The same generous seam as a BOTTOM gap (a text block above an image). */
+const IMG_GAP_B = "mb-10 md:mb-14 2xl:mb-16";
 
 // =============================================================================
 // LAYOUT PRIMITIVES — P1–P8. Defined ONCE; every section composes exactly one.
@@ -872,7 +879,7 @@ export const About = () => {
         <section id="beginnings" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
           <ChapterHead id="beginnings" />
           <ProseFull text={ABOUT.earlyLife[0]} lead dropCap />
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <PhotoRow width="wide">
               <Reveal as="div">
                 <Plate
@@ -904,7 +911,7 @@ export const About = () => {
         <section id="bournemouth" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
           <ChapterHead id="bournemouth" />
           <ProseFull text={ABOUT.earlyLife[1]} lead dropCap />
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <PhotoRow width="wide">
               <Reveal as="div">
                 <Plate
@@ -939,7 +946,7 @@ export const About = () => {
           <ProseColumns text={ABOUT.earlyLife[2]} lead dropCap />
           {/* Three portraits, even 3-up (the landscape "evening with friends"
               photo removed at Hugo's request 2026-07-13). */}
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <PhotoRow cols={3}>
               <Reveal as="div">
                 <Plate
@@ -976,7 +983,7 @@ export const About = () => {
               </Reveal>
             </PhotoRow>
           </div>
-          <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP)}>
+          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP)}>
             <p className={cn(CAPTION, "m-0")}>A four-year stay in the Virgin Islands</p>
           </Reveal>
         </section>
@@ -1008,7 +1015,7 @@ export const About = () => {
             as="figure"
             className={cn(
               "relative m-0 mx-auto w-full max-w-[880px] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
-              BLOCK_GAP,
+              IMG_GAP,
             )}
           >
             <AssetImage
@@ -1053,14 +1060,14 @@ export const About = () => {
               CENTRED figure. It's a reference document, NOT a hero — full-width
               6/5 rendered it ~1460px tall (Hugo: "why is this so big, awful").
               Capped max-w so the whole 12-pattern grid reads at a sane size. */}
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <div className={ONE_WIDTH}>
               <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
                 <Prose text={ABOUT.anegada[1]} per={3} className={LEAD} />
               </Reveal>
               <Reveal
                 as="figure"
-                className={cn("relative m-0 mx-auto w-full max-w-[520px] md:max-w-[640px]", BLOCK_GAP)}
+                className={cn("relative m-0 mx-auto w-full max-w-[520px] md:max-w-[640px]", IMG_GAP)}
               >
                 <ImageReveal
                   src="/img/about/25-harmonic-frequencies.jpg"
@@ -1080,11 +1087,14 @@ export const About = () => {
 
           <Dinkus />
 
-          {/* The long practice passage as a balanced two-column spread. */}
-          <ProseColumns text={ABOUT.anegada[2]} breakInside />
+          {/* The long practice passage as a balanced two-column spread. Held clear
+              of the cymatics figure above it by the generous image seam. */}
+          <div className={IMG_GAP}>
+            <ProseColumns text={ABOUT.anegada[2]} breakInside />
+          </div>
 
           {/* THE RITUAL, IN MOTION — two archive clips, an even diptych. */}
-          <Reveal as="div" className={cn(ONE_WIDTH, BLOCK_GAP, "grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch")}>
+          <Reveal as="div" className={cn(ONE_WIDTH, IMG_GAP, "grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch")}>
             <LoopFilm
               src="/video/studio-paint-a-v1.mp4"
               poster="/video/poster-studio-paint-a-v1.jpg"
@@ -1114,7 +1124,7 @@ export const About = () => {
               pillarboxed the portrait with huge empty sides — Hugo's #1 rule). */}
           <div
             className={cn(
-              BLOCK_GAP,
+              IMG_GAP,
               "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
           >
@@ -1220,7 +1230,7 @@ export const About = () => {
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px]", BLOCK_GAP)} delay={0.08}>
+            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px]", IMG_GAP)} delay={0.08}>
               <ContainImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
                 alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
@@ -1235,7 +1245,7 @@ export const About = () => {
           </div>
 
           {/* Q1 — full reading measure. */}
-          <div className={cn(READING_WIDE, BLOCK_GAP)}>
+          <div className={cn(READING_WIDE, IMG_GAP)}>
             <InterviewQA item={INTERVIEW.qa[0]} />
           </div>
 
@@ -1250,36 +1260,32 @@ export const About = () => {
               keeps the whole figure; no face crop. */}
           <div
             className={cn(
-              BLOCK_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] mx-auto",
+              IMG_GAP,
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] mx-auto",
             )}
           >
             <div className="min-w-0">
               <InterviewQA item={INTERVIEW.qa[2]} />
             </div>
-            {/* Portrait COVER-FILLS the column to the text's exact height (lg: h-full
-                on an items-stretch row) so the two columns end on the same line on
-                every device — no dangling space beside the answer. Face-safe crop
-                (object top). Mobile: a portrait aspect, stacked (no side gap). */}
+            {/* Portrait shown WHOLE at its native 2:3 (no lg:h-full stretch, no
+                cover-crop). The old stretch-to-text-height forced a wide window on
+                an 800×1200 portrait and sliced Stephen's brush HAND mid-stroke —
+                the heart of the frame. Now the figure keeps its true aspect and
+                object-contain guarantees NOTHING is cut: hand, brush, face and the
+                wall mandala all read. The row aligns at the top (items-start); any
+                remaining space sits below the photo, never across the artist. */}
             <Reveal
               as="figure"
-              className="relative m-0 w-full aspect-[3/4] lg:aspect-auto lg:h-full min-h-[280px] max-h-[64svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
+              className="relative m-0 w-full aspect-[2/3] min-h-[280px] max-h-[74svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
             >
               <AssetImage
                 src="/img/about/29-at-the-easel.jpg"
                 alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
                 loading="lazy"
                 decoding="async"
-                sizes="(min-width: 1024px) 480px, 100vw"
+                sizes="(min-width: 1024px) 400px, 100vw"
                 style={{ filter: PHOTO_GRADE_SHADOW }}
-                // Beside the LONG Q3 answer the figure stretches to lg:h-full, so
-                // this landscape-ish portrait (800×1200 shown ~71% wide) crops ~29%
-                // horizontally. Centred (was 50%) that sliced BOTH edges — cutting
-                // his brush HAND mid-stroke on the left (the heart of the frame).
-                // Bias the window LEFT (14%) so the crop drops only the expendable
-                // right-edge books/table, keeping hand + brush + face + the wall
-                // mandala. Row still fills completely — no dangling space.
-                className="absolute inset-0 h-full w-full object-cover object-[14%_50%]"
+                className="absolute inset-0 h-full w-full object-contain object-center"
               />
             </Reveal>
           </div>
@@ -1295,10 +1301,10 @@ export const About = () => {
           </div>
 
           {/* Q4, then the pair the PDF places with it — P3 (2-up art). */}
-          <div className={cn(READING_WIDE, BLOCK_GAP)}>
+          <div className={cn(READING_WIDE, IMG_GAP)}>
             <InterviewQA item={INTERVIEW.qa[3]} />
           </div>
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <PhotoRow>
               <Reveal as="figure" className="m-0">
                 <ImageReveal
@@ -1354,10 +1360,10 @@ export const About = () => {
           {/* Q5 — the wonderment beat, answered by the gathering: crowd photo
               beneath it. 35 is PEOPLE → Plate fill (object-contain, no face crop),
               in an ImageBand-capped figure (≤64svh). */}
-          <div className={cn(READING_WIDE, BLOCK_GAP)}>
+          <div className={cn(READING_WIDE, IMG_GAP)}>
             <InterviewQA item={INTERVIEW.qa[4]} />
           </div>
-          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0", BLOCK_GAP, "max-h-[62svh] overflow-hidden")}>
+          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0", IMG_GAP, "max-h-[62svh] overflow-hidden")}>
             <Plate
               src="/img/about/35-gathering-at-the-gallery.jpg"
               alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
@@ -1370,10 +1376,10 @@ export const About = () => {
           </Reveal>
 
           {/* Q6 — the tea line, then the exhibition room band + the source credit. */}
-          <div className={cn(READING_WIDE, BLOCK_GAP)}>
+          <div className={cn(READING_WIDE, IMG_GAP)}>
             <InterviewQA item={INTERVIEW.qa[5]} />
           </div>
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <ImageBand
               src="/img/about/36-mystic-rose-exhibition.jpg"
               alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
@@ -1381,7 +1387,7 @@ export const About = () => {
               parallax={0.08}
             />
           </div>
-          <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP)} delay={0.08}>
+          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP)} delay={0.08}>
             <p className={cn(BODY, "max-w-[62ch] mb-4")}>{INTERVIEW.source.note}</p>
             <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
               {INTERVIEW.source.publication} · {INTERVIEW.source.byline} · {INTERVIEW.source.date}
@@ -1404,7 +1410,7 @@ export const About = () => {
 
         {/* 11 · FORCE INDIA — the design plate. P3 (2-up DOC at ONE aspect). */}
         <section className={cn(SECTION, SECTION_PAD)}>
-          <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP_B)}>
+          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP_B)}>
             <p className={cn(EYEBROW_MUTED, "m-0")}>From the design archive</p>
           </Reveal>
           <PhotoRow width="wide">
@@ -1447,7 +1453,7 @@ export const About = () => {
               beside-text grid that stranded an ugly side void. */}
           <Reveal
             as="div"
-            className={cn(BLOCK_GAP, "mx-auto w-full max-w-[900px]")}
+            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px]")}
           >
             <figure className="m-0 flex justify-center overflow-hidden rounded-[3px] bg-ink/[0.04]">
               <AssetImage
@@ -1459,7 +1465,7 @@ export const About = () => {
                 className="mx-auto block h-auto w-auto max-h-[60svh] max-w-full"
               />
             </figure>
-            <div className={cn(BLOCK_GAP, "mx-auto max-w-[70ch] text-center")}>
+            <div className={cn(IMG_GAP, "mx-auto max-w-[70ch] text-center")}>
               <blockquote className="m-0">
                 <Prose text={ABOUT.academyQuote} className={BODY} />
                 <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
@@ -1471,7 +1477,7 @@ export const About = () => {
           {/* The Academy as it was — a place of teaching AND making. Two archive
               photographs at ONE aspect (never mix in a row): students at their
               tables, and Stephen absorbed in finishing a large mandala by hand. */}
-          <div className={BLOCK_GAP}>
+          <div className={IMG_GAP}>
             <PhotoRow width="wide">
               <Reveal as="figure" className="m-0">
                 <ImageReveal

@@ -3,14 +3,12 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { SceneReveal } from "../components/SceneReveal";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY, META } from "../components/ui/tokens";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
-import { asset } from "../lib/asset";
 import { useAuth } from "../lib/auth";
 import { MEMORIES, type Memory } from "../data/memories";
 import { ABOUT, TRIBUTE } from "../data/content";
@@ -74,21 +72,6 @@ type Status = "idle" | "submitting" | "success" | "error";
 /** A memory plus an optional published image URL (from KV). */
 type WallMemory = Memory & { imageUrl?: string; avatar?: string };
 
-// ---------------------------------------------------------------------------
-// ScrollBackdrop — the single full-page atmospheric layer. A blurred peacock-
-// plumage scene sits behind the whole comments feed at full opacity, held as a
-// plain STATIC bg-cover layer. (The old scroll-parallax + inset-[-8%] overscan
-// jumped to a stale scroll position on route transitions, reading as a
-// zoom+jump — so it's a static image now.)
-// ---------------------------------------------------------------------------
-// CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the peacock-plumage scene is
-// retired for a clean near-black ground so the memories read like a quiet
-// gallery wall. `photoUrl` is ignored on purpose; restore the image to bring the
-// scene back.
-const ScrollBackdrop = ({ photoUrl: _photoUrl }: { photoUrl: string }) => (
-  <div className="absolute inset-0 bg-bg" aria-hidden="true" />
-);
-
 // The pinned founding memory — Stephen's letter to his students, verbatim.
 const ARTIST_MEMORY: WallMemory = {
   id: "from-the-artist-sem",
@@ -148,12 +131,22 @@ const initialsOf = (name: string) => {
 // enlarged (rank is the "Pinned" chip, per real YouTube/X). The size prop is
 // kept in the signature for safety but no caller passes it.
 // ---------------------------------------------------------------------------
-const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
+const Monogram = ({ name, size = "md" }: { name: string; size?: "md" | "lg" }) => (
   <span
     aria-hidden="true"
-    className="shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]"
+    className={cn(
+      "shrink-0 inline-flex items-center justify-center rounded-full bg-bg-elevated ring-1 ring-line transition-colors duration-300 group-hover:ring-accent",
+      size === "lg"
+        ? "h-[clamp(50px,5vw,60px)] w-[clamp(50px,5vw,60px)]"
+        : "h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]",
+    )}
   >
-    <span className="font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent text-[clamp(15px,3vw,17px)]">
+    <span
+      className={cn(
+        "font-display font-semibold not-italic leading-none text-ink transition-colors duration-300 group-hover:text-accent",
+        size === "lg" ? "text-[clamp(18px,3.4vw,22px)]" : "text-[clamp(15px,3vw,17px)]",
+      )}
+    >
       {initialsOf(name)}
     </span>
   </span>
@@ -181,6 +174,10 @@ const Monogram = ({ name }: { name: string; size?: "md" | "lg" }) => (
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
   "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
+// A slightly larger body measure for the FEATURED founding posts (Stephen's
+// letter + Polly's tribute) so they read as the cornerstone voices of the wall.
+const BODY_CLASS_LG =
+  "font-sans font-normal text-[clamp(17px,1.7vw,20px)] leading-[1.66] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 // ---------------------------------------------------------------------------
 // PhotoLightbox — the X.com-style photo viewer. Tapping any attached photo in
@@ -311,9 +308,13 @@ const PhotoLightbox = ({
 const PostCard = ({
   memory,
   pinned = false,
+  featured = false,
 }: {
   memory: WallMemory;
   pinned?: boolean;
+  /** The two founding voices (Stephen's letter, Polly's tribute) — a larger,
+   *  warmer hero card that anchors the top of the wall. */
+  featured?: boolean;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [zoom, setZoom] = useState(false);
@@ -325,40 +326,66 @@ const PostCard = ({
   // every width; expanding restores the real paragraph breaks.
   const plain = memory.message.replace(/\s+/g, " ").trim();
   const needsFold = plain.length > 280;
+  const hero = featured || pinned;
+  const bodyClass = hero ? BODY_CLASS_LG : BODY_CLASS;
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-[12px] bg-bg-soft/92 ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
+        "group relative overflow-hidden rounded-[14px] bg-bg-soft/92 ring-1 ring-line transition-colors duration-300 hover:ring-line-strong",
         pinned && "ring-accent/40 hover:ring-accent/55",
+        featured && !pinned && "ring-line-strong bg-bg-soft/95",
       )}
     >
       {/* HEADER — avatar + name over a quiet meta "handle" line (STACKED, the
           key "reads as a post" lever), + the Pinned chip. Text is padded; the
-          media below will run flush to the card edge. */}
-      <header className="flex items-center gap-[clamp(0.6rem,1.6vw,0.8rem)] px-[clamp(1rem,2.4vw,1.4rem)] pt-[clamp(1rem,2.4vw,1.35rem)]">
+          media below will run flush to the card edge. Names are set in
+          font-display (Fraunces) per the house type roles. */}
+      <header
+        className={cn(
+          "flex items-center gap-[clamp(0.6rem,1.6vw,0.85rem)] px-[clamp(1.1rem,2.6vw,1.6rem)]",
+          hero ? "pt-[clamp(1.15rem,2.6vw,1.6rem)]" : "pt-[clamp(1rem,2.4vw,1.35rem)]",
+        )}
+      >
         {/* The contributor's PUBLIC profile picture if they set one; else the
-            calm monogram. Same circular size for all. */}
+            calm monogram. Featured founding posts get the larger avatar. */}
         {memory.avatar ? (
           <img
             src={memory.avatar}
             alt={memory.name}
-            className="shrink-0 rounded-full object-cover ring-1 ring-line transition-colors duration-300 group-hover:ring-accent h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]"
+            className={cn(
+              "shrink-0 rounded-full object-cover ring-1 ring-line transition-colors duration-300 group-hover:ring-accent",
+              hero
+                ? "h-[clamp(50px,5vw,60px)] w-[clamp(50px,5vw,60px)]"
+                : "h-[clamp(40px,4vw,46px)] w-[clamp(40px,4vw,46px)]",
+            )}
           />
         ) : (
-          <Monogram name={memory.name} />
+          <Monogram name={memory.name} size={hero ? "lg" : "md"} />
         )}
         <div className="min-w-0 flex-1">
-          <p className="m-0 font-sans font-semibold text-[clamp(15.5px,1.5vw,18px)] leading-[1.25] text-ink truncate">
+          <p
+            className={cn(
+              "m-0 font-display font-semibold not-italic tracking-[-0.01em] leading-[1.2] text-ink truncate [font-variation-settings:'opsz'_36,'wght'_600]",
+              hero
+                ? "text-[clamp(20px,2.4vw,29px)]"
+                : "text-[clamp(17px,1.6vw,21px)]",
+            )}
+          >
             {memory.name}
           </p>
           {meta ? (
-            <p className="m-0 font-sans text-[clamp(13px,1.3vw,15px)] leading-[1.3] text-ink-muted truncate">
+            <p
+              className={cn(
+                "m-0 font-sans leading-[1.35] text-ink-muted truncate",
+                hero ? "text-[clamp(14px,1.4vw,16px)] mt-0.5" : "text-[clamp(13px,1.3vw,15px)]",
+              )}
+            >
               {meta}
             </p>
           ) : null}
         </div>
         {pinned ? (
-          <span className="shrink-0 ml-auto inline-flex items-center gap-1 rounded-full bg-accent/12 px-2.5 py-1 font-sans text-[13px] font-bold tracking-[0.02em] uppercase text-accent">
+          <span className="shrink-0 ml-auto inline-flex items-center gap-1.5 rounded-full bg-accent/12 px-3 py-1 font-display text-[13px] font-semibold text-accent">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M14 4l6 6-3 1-4 4-1 5-2-2-4 4-1-1 4-4-2-2 5-1 4-4 1-3z" />
             </svg>
@@ -368,12 +395,16 @@ const PostCard = ({
       </header>
 
       {/* BODY — upright sans for EVERY post incl. the letter. NEVER italic/serif */}
-      <div className="px-[clamp(1rem,2.4vw,1.4rem)] pt-[clamp(0.7rem,1.4vw,0.9rem)] pb-[clamp(0.9rem,1.8vw,1.15rem)]">
+      <div
+        className={cn(
+          "px-[clamp(1.1rem,2.6vw,1.6rem)] pt-[clamp(0.7rem,1.4vw,0.95rem)] pb-[clamp(0.9rem,1.8vw,1.25rem)]",
+        )}
+      >
         {needsFold && !expanded ? (
-          <p className={cn(BODY_CLASS, "line-clamp-4")}>{plain}</p>
+          <p className={cn(bodyClass, "line-clamp-4")}>{plain}</p>
         ) : (
           paragraphs.map((p, i) => (
-            <p key={i} className={cn(BODY_CLASS, i > 0 && "mt-2.5")}>
+            <p key={i} className={cn(bodyClass, i > 0 && "mt-3")}>
               {p}
             </p>
           ))
@@ -471,7 +502,7 @@ const ComposerCard = ({ onShare }: { onShare: () => void }) => (
     </span>
     <span
       aria-hidden="true"
-      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-3.5 py-1.5 font-sans text-[13px] font-bold tracking-[0.02em] uppercase text-accent"
+      className="shrink-0 inline-flex items-center rounded-full bg-accent/12 px-4 py-1.5 font-display text-[14px] font-semibold text-accent"
     >
       Post
     </span>
@@ -1038,27 +1069,30 @@ export const Memories = () => {
   // convention in global.css).
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
-      {/* FIXED BACKDROP LAYER — a single full-page blurred aurora-beach scene
-          drifting with the document scroll, cloned from the Collections
-          treatment (one image, no cross-fade). The whole feed reads over it at
-          relative z-10. The z-[200] share modal sits well above this z-0 layer,
-          so its stacking is undisturbed. */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <ScrollBackdrop photoUrl={asset("/img/scenes/memories-scene-v3.webp")} />
-        {/* Shared scrim — the EXACT site-wide gradient (matches Collections /
-            Welcome) so the cream copy stays legible over the photo while the
-            backdrop reads as a subdued, moody texture. */}
+      {/* FIXED BACKDROP LAYER — calm ambient ground (Hugo 2026-07-30 "go calm
+          everywhere"): the retired peacock scene is gone; in its place a near-
+          black wash carrying only a WHISPER of warm colour, an iPhone-wallpaper
+          hush that never out-shouts the cream text. The whole feed reads over it
+          at relative z-10; the z-[200] share modal sits well above this z-0
+          layer, so its stacking is undisturbed. */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="absolute inset-0 bg-bg" />
+        {/* Warm rust breath, top-centre — the same sparing accent, barely there. */}
         <div
-          aria-hidden="true"
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,7,6,0.42) 0%, rgba(8,7,6,0.56) 45%, rgba(8,7,6,0.70) 100%)",
+              "radial-gradient(115% 80% at 50% -12%, rgba(201,120,68,0.11) 0%, rgba(201,120,68,0.035) 32%, transparent 62%)",
           }}
         />
-        {/* Cursor-clarity reveal — the scene brightens/clears where the pointer
-            is, the same affordance as the home/About backdrop. */}
-        <SceneReveal photoUrl={asset("/img/scenes/memories-scene-v3.webp")} />
+        {/* A cool violet undertone at the foot so the ground feels alive, not flat. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(100% 65% at 50% 112%, rgba(120,96,150,0.06) 0%, transparent 55%)",
+          }}
+        />
       </div>
       <Seo
         title="Memories"
@@ -1068,58 +1102,73 @@ export const Memories = () => {
       <Nav />
 
       <main className="relative z-10 flex-1">
-        {/* 1 · MASTHEAD — bold left-aligned front cover (the AboutMasthead
-            recipe). Replaces the old timid 640px-band centred header that
-            floated a sub-scale h1 in dead horizontal space. */}
+        {/* 1 · MASTHEAD — the centred front cover of the Book of Memories. */}
         <MemoriesMasthead onShare={() => setModalOpen(true)} />
 
-        {/* 2 · THE FEED — ONE narrow, centred column, the true Instagram /
-            Threads / X atom (Hugo, 2026-07-22: "the images are so wide even at
-            default view, it doesn't look like instagram threads or x.com").
-            NO side rails, NO masonry, NO wide multi-column grid — just the
-            composer at the top (like X's compose box) then the posts stacked, all
-            capped to a social ~600px measure so a shared photo never sprawls the
-            width of the screen. */}
+        {/* 2 · FEATURED — the two founding voices anchor the top as larger hero
+            cards, held in a premium centred reading column so their measure never
+            sprawls: Stephen's own words to his students (pinned) and Polly's
+            funeral tribute (featured). Both verbatim, shown in full/folded. */}
         <section
-          aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[600px] px-[clamp(1rem,5vw,1.5rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
+          aria-label="Featured memories"
+          className="mx-auto w-full max-w-[820px] px-[clamp(1rem,5vw,1.5rem)] text-left"
         >
-          <div className="flex flex-col gap-[clamp(0.85rem,1.8vw,1.2rem)]">
-            {/* Composer at the TOP of the feed — the "leave a memory" box. */}
-            <ComposerCard onShare={() => setModalOpen(true)} />
-
-            {/* PINNED — Stephen's own words to his students (its long letter
-                folds). Rank = position + warm ring + chip only. */}
+          <div className="flex flex-col gap-[clamp(0.9rem,1.8vw,1.35rem)]">
             <Reveal as="div" delay={0}>
               <PostCard memory={ARTIST_MEMORY} pinned />
             </Reveal>
-
-            {/* FAMILY — Polly Wedge's funeral tribute lives HERE, on the memories
-                wall (Hugo: keep it on memories only, not About). Shown in full. */}
             <Reveal as="div" delay={0.05}>
-              <PostCard memory={FAMILY_TRIBUTE} />
+              <PostCard memory={FAMILY_TRIBUTE} featured />
             </Reveal>
-
-            {hasVisitorMemories ? (
-              <Reveal as="div" className="pt-[clamp(0.5rem,1.2vw,0.9rem)]">
-                <p className={cn(EYEBROW_MUTED, "m-0")}>From those who knew him</p>
-              </Reveal>
-            ) : null}
-
-            {hasVisitorMemories ? (
-              visitorMemories.map((memory, i) => (
-                <Reveal key={memory.id} as="div" delay={Math.min(i * 0.05, 0.25)}>
-                  <PostCard memory={memory} />
-                </Reveal>
-              ))
-            ) : (
-              <Reveal as="div" delay={0.08}>
-                <EmptyStateCard />
-              </Reveal>
-            )}
           </div>
         </section>
 
+        {/* 3 · THE FEED — visitor memories in a balanced masonry that FILLS the
+            width on lg (one column on phones, two from lg) so the wall reads full
+            and alive rather than a lone skinny thread. The composer ("add yours")
+            sits above it, and a centred display heading introduces the grid. */}
+        <section
+          aria-label="Memories of Steve"
+          className="mx-auto w-full max-w-[1160px] px-[clamp(1rem,5vw,1.5rem)] pt-[clamp(1.4rem,3vw,2.4rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
+        >
+          <div className="mx-auto max-w-[720px]">
+            <ComposerCard onShare={() => setModalOpen(true)} />
+          </div>
+
+          {hasVisitorMemories ? (
+            <>
+              <Reveal
+                as="div"
+                className="mt-[clamp(1.6rem,3.5vw,2.6rem)] mb-[clamp(1rem,2vw,1.6rem)] text-center"
+              >
+                <h2 className="m-0 font-display font-semibold not-italic tracking-[-0.02em] text-ink text-[clamp(24px,3vw,40px)] leading-[1.08] [font-variation-settings:'opsz'_40,'wght'_600]">
+                  From those who knew him
+                </h2>
+              </Reveal>
+
+              {/* CSS masonry (columns) — each card is break-inside-avoid so it is
+                  never sliced across the column gutter. */}
+              <div className="[column-gap:clamp(0.9rem,1.8vw,1.35rem)] columns-1 lg:columns-2">
+                {visitorMemories.map((memory, i) => (
+                  <Reveal
+                    key={memory.id}
+                    as="div"
+                    delay={Math.min(i * 0.05, 0.25)}
+                    className="mb-[clamp(0.9rem,1.8vw,1.35rem)] break-inside-avoid"
+                  >
+                    <PostCard memory={memory} />
+                  </Reveal>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="mx-auto max-w-[720px] mt-[clamp(1.2rem,2.5vw,2rem)]">
+              <Reveal as="div" delay={0.08}>
+                <EmptyStateCard />
+              </Reveal>
+            </div>
+          )}
+        </section>
       </main>
 
       <Footer />

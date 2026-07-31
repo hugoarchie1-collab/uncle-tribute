@@ -1991,7 +1991,7 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10 mb-16 md:mb-24"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ? collectionTitle.split(" — ")[0] : "the estate"}
@@ -2015,7 +2015,7 @@ const CompanionWorks = ({
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 768px) 360px, 30vw"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                    className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>
                 <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 mb-1 group-hover:text-ink transition-colors duration-300">
@@ -3014,7 +3014,7 @@ export const PaintingDetail = () => {
                     {/* Live framed preview — when framing is ticked, the print
                         shows INSIDE the selected moulding (no mat), updating per
                         frame style. Plain print otherwise. */}
-                    <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h}>
+                    <FrameWrap active={framing} frameStyle={frameStyle} glazing={glazing} aspectRatio={heroDims.w / heroDims.h} src={selected.image}>
                     <CanvasWrap active={canvas} edge={canvasEdge} src={selected.image} aspectRatio={heroDims.w / heroDims.h}>
                     {/* initial={false}: the FIRST hero render paints at opacity 1
                         (no LCP-delaying fade-in) — the crossfade still runs on

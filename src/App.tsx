@@ -22,6 +22,7 @@ import { BackgroundMusic } from "./components/BackgroundMusic";
 import { PageTransition } from "./components/PageTransition";
 import { SiteEntrance } from "./components/SiteEntrance";
 import { AmbientBackdrop } from "./components/AmbientBackdrop";
+import { AmbientBackground } from "./components/AmbientBackground";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
@@ -308,6 +309,17 @@ export default function App() {
               covers it in normal viewing; it only shows in the transition gap
               (and behind any page that lacks its own). */}
           <AmbientBackdrop opacity={0.9} />
+          {/* AMBIENT BASE WALLPAPER (2026-07-31) — the calm iPhone-style dark
+              wash Hugo wanted instead of plain black. A fixed z-0 layer: opaque
+              near-black + three very soft, slowly scroll-drifting colour glows
+              (indigo/rust/violet ≤0.16 opacity). Mounted directly AFTER
+              AmbientBackdrop (same z-0) so it is the visible base on pages that
+              own no backdrop — nothing is ever bare black. Every page that DOES
+              own a backdrop (home PavoBackdrop, PDP .pd-* layers, collection
+              scenes) renders later in the DOM at z-0 and paints OVER this, so it
+              changes nothing for them; it only fills the void underneath.
+              Scroll-linked, reduced-motion static. */}
+          <AmbientBackground />
           {/* Premium custom cursor — fine-pointer + motion-allowed only;
               renders nothing (native cursor) on touch / reduced-motion. */}
           <CustomCursor />

@@ -423,6 +423,63 @@
 }
 
 /* =============================================================================
+   AMBIENT BACKGROUND — the site-wide base "wallpaper" (src/components/
+   AmbientBackground.tsx). A FIXED z-0 layer mounted once at the app root, behind
+   every route: an opaque near-black base + three very large, very soft radial
+   colour glows (indigo · rust · violet, each ≤0.16 opacity fading to
+   transparent). The component drives the gentle scroll drift via Framer
+   (transform/opacity only); these rules define the base + the glow gradients.
+   Kept SUBTLE on purpose — it must never brighten enough to fight the cream
+   text (#ede6d6) that sits far above it at the page's z-10.
+   Deliberately UNLAYERED so it always ships and wins source-order ties.
+   ============================================================================= */
+.ambient-bg {
+  /* Opaque near-black base so nothing is ever bare black even where a page owns
+     no backdrop. Page backdrops (Pavo, .pd-*, scenes) render later in the DOM at
+     z-0 and paint OVER this, so it only fills the void underneath. */
+  background-color: #0a0908;
+}
+.ambient-bg__glow {
+  position: absolute;
+  /* Over-sized well beyond the viewport so the few-percent scroll drift can
+     never slide a hard gradient edge into view. */
+  inset: -22% -14%;
+  will-change: transform, opacity;
+}
+/* Deep indigo, top-left biased. */
+.ambient-bg__glow--indigo {
+  background: radial-gradient(
+    62% 52% at 26% 14%,
+    rgba(74, 62, 138, 0.16) 0%,
+    rgba(74, 62, 138, 0.06) 42%,
+    transparent 70%
+  );
+}
+/* Warm rust (the house accent), foot-right biased and kept faint. */
+.ambient-bg__glow--rust {
+  background: radial-gradient(
+    56% 46% at 82% 82%,
+    rgba(201, 120, 68, 0.12) 0%,
+    rgba(201, 120, 68, 0.045) 46%,
+    transparent 72%
+  );
+}
+/* Muted violet, centre — the slow "breathing" band. */
+.ambient-bg__glow--violet {
+  background: radial-gradient(
+    72% 56% at 58% 46%,
+    rgba(109, 74, 143, 0.12) 0%,
+    rgba(109, 74, 143, 0.04) 48%,
+    transparent 75%
+  );
+}
+/* Reduced motion: the wash is entirely static (the component also stops feeding
+   it scroll values), so release the compositor promotions kept only for motion. */
+@media (prefers-reduced-motion: reduce) {
+  .ambient-bg__glow { will-change: auto; }
+}
+
+/* =============================================================================
    Mobile form inputs — iOS Safari auto-zoom guard.
    iOS zooms the WHOLE viewport when focusing any form control whose computed
    font-size is under 16px (audit: every input sitewide computed 14–15px),

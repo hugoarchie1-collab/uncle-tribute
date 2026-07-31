@@ -54,6 +54,92 @@ const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = 
   { key: "remembrance", label: "Remembrance", paintings: ["lulin", "enneagon-swans"] },
 ];
 
+// A small, consistent family of sacred-geometry LINE marks — one per intention,
+// drawn in the artwork's own language (seed-of-life, vesica, enso, spiral) so
+// the intention lens reads as a considered gallery instrument, not a text list.
+// currentColor + no fill so each glyph inherits the chip's resting/active tone.
+const IntentionGlyph = ({ k }: { k: IntentionKey }) => {
+  const p = {
+    width: 34,
+    height: 34,
+    viewBox: "0 0 32 32",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.3,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  switch (k) {
+    case "transformation": // an unfurling spiral — becoming
+      return (
+        <svg {...p}>
+          <path d="M16 16 a2 2 0 0 1 2 -2 a4 4 0 0 1 4 4 a6 6 0 0 1 -6 6 a8 8 0 0 1 -8 -8 a10 10 0 0 1 10 -10" />
+        </svg>
+      );
+    case "abundance": // seed of life — flowering, plenty
+      return (
+        <svg {...p}>
+          {[
+            [16, 16], [21, 16], [18.5, 11.67], [13.5, 11.67], [11, 16], [13.5, 20.33], [18.5, 20.33],
+          ].map(([cx, cy], i) => (
+            <circle key={i} cx={cx} cy={cy} r={5} />
+          ))}
+        </svg>
+      );
+    case "protection": // concentric rings around a still centre — a circle held
+      return (
+        <svg {...p}>
+          <circle cx={16} cy={16} r={11} />
+          <circle cx={16} cy={16} r={6.5} />
+          <circle cx={16} cy={16} r={1.6} />
+        </svg>
+      );
+    case "healing": // the healer's serpent within the circle — Asclepius
+      return (
+        <svg {...p}>
+          <circle cx={16} cy={16} r={10.5} />
+          <path d="M16 7 C 11 10.5, 21 13.5, 16 16 C 11 18.5, 21 21.5, 16 25" />
+        </svg>
+      );
+    case "unity": // vesica piscis — two made one
+      return (
+        <svg {...p}>
+          <circle cx={11.5} cy={16} r={7.5} />
+          <circle cx={20.5} cy={16} r={7.5} />
+        </svg>
+      );
+    case "wholeness": // an ensō — the self, complete
+      return (
+        <svg {...p}>
+          <path d="M24.6 9.98 A10.5 10.5 0 1 1 21.25 6.91" />
+        </svg>
+      );
+    case "remembrance": // a remembered star, ringed — made permanent
+      return (
+        <svg {...p}>
+          <circle cx={16} cy={16} r={10.5} />
+          <path d="M16 10.6 L17.9 14.1 L21.4 16 L17.9 17.9 L16 21.4 L14.1 17.9 L10.6 16 L14.1 14.1 Z" />
+        </svg>
+      );
+  }
+};
+
+// A centred, symmetric lens heading — the Fraunces kicker flanked by two short
+// hairlines that taper into the ground, so each lens opens on a shared axis.
+const LensHeading = ({ label }: { label: string }) => (
+  <div className="flex items-center justify-center gap-3 sm:gap-4">
+    <span aria-hidden="true" className="h-px w-8 sm:w-14 bg-gradient-to-r from-transparent to-line" />
+    <span
+      className={cn(EYEBROW, "m-0 whitespace-nowrap")}
+      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
+    >
+      {label}
+    </span>
+    <span aria-hidden="true" className="h-px w-8 sm:w-14 bg-gradient-to-l from-transparent to-line" />
+  </div>
+);
+
 /**
  * /for-you — a calm "find a piece that's right for you, by colour" wayfinder
  * (NOT a quiz, no email gate, no right or wrong answer). The colour lens:
@@ -99,6 +185,17 @@ export const FindAPrint = () => {
   // another colourway), so each tile carries just its painting + cover.
   // The set of painting ids the active intentions allow (null = no intention
   // lens active → no intention narrowing).
+  // How many pieces each intention actually surfaces (truthful count, from the
+  // live catalogue) — a quiet premium data note on each card.
+  const intentCounts = useMemo(() => {
+    const ids = new Set(entries.map((e) => e.painting.id));
+    const m = new Map<IntentionKey, number>();
+    for (const it of INTENTIONS) {
+      m.set(it.key, it.paintings.filter((p) => ids.has(p)).length);
+    }
+    return m;
+  }, [entries]);
+
   const intentPaintings = useMemo(() => {
     if (intent.size === 0) return null;
     const ids = new Set<string>();
@@ -205,14 +302,12 @@ export const FindAPrint = () => {
               sits above a centred swatch row, with the live count + reset
               centred below (no off-axis justify-between row, no big gap before
               the grid). */}
-          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
-            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}>
-              The colour lens
-            </p>
+          <Reveal as="div" className="mt-7 md:mt-9 border-t border-line pt-6 md:pt-8">
+            <LensHeading label="The colour lens" />
             <div
               role="group"
               aria-label="Filter by colour"
-              className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+              className="mt-5 md:mt-6 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
             >
               {COLOUR_FAMILIES.map((f) => {
                 const on = active.has(f.key);
@@ -226,13 +321,21 @@ export const FindAPrint = () => {
                     className={cn(
                       "inline-flex items-center gap-2.5 rounded-full pl-1.5 pr-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                      on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
+                      on
+                        ? "ring-accent bg-accent/[0.07] text-ink shadow-lift"
+                        : "ring-line hover:ring-accent/50 hover:bg-ink/[0.02] hover:-translate-y-0.5",
                     )}
                   >
                     <span
                       aria-hidden="true"
-                      className="block w-7 h-7 rounded-full ring-1 ring-line"
-                      style={{ background: f.swatch }}
+                      className={cn(
+                        "block w-7 h-7 rounded-full ring-1 transition-shadow duration-300",
+                        on ? "ring-accent/70" : "ring-line",
+                      )}
+                      style={{
+                        background: f.swatch,
+                        boxShadow: on ? "0 0 0 4px rgba(201,120,68,0.12)" : undefined,
+                      }}
                     />
                     <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>
                       {f.label}
@@ -243,33 +346,68 @@ export const FindAPrint = () => {
             </div>
           </Reveal>
 
-          {/* Intention lens — a meaning-led way in, sitting beside the colour
-              lens. Each chip maps to the paintings whose own documented meaning
-              carries that intention (INTENTIONS, above). */}
-          <Reveal as="div" className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
-            <p className={cn(EYEBROW, "m-0")} style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}>
-              The intention lens
-            </p>
+          {/* Intention lens — the meaning-led way in, elevated to premium
+              selectable CARDS: a sacred-geometry line mark + Fraunces label +
+              a truthful piece-count per card, over a clear active state. Each
+              maps to the paintings whose own documented meaning carries that
+              intention (INTENTIONS, above); filtering behaviour is unchanged. */}
+          <Reveal as="div" className="mt-7 md:mt-9 border-t border-line pt-6 md:pt-8">
+            <LensHeading label="The intention lens" />
             <div
               role="group"
               aria-label="Filter by intention"
-              className="mt-3 md:mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+              className="mx-auto mt-6 md:mt-7 flex max-w-[920px] flex-wrap items-stretch justify-center gap-3 sm:gap-4"
             >
               {INTENTIONS.map((it) => {
                 const on = intent.has(it.key);
+                const n = intentCounts.get(it.key) ?? 0;
                 return (
                   <button
                     key={it.key}
                     type="button"
                     aria-pressed={on}
+                    aria-label={`${it.label} — ${n} ${n === 1 ? "piece" : "pieces"}`}
                     onClick={() => toggleIntent(it.key)}
                     className={cn(
-                      "inline-flex items-center rounded-full px-4 py-1.5 min-h-[44px] ring-1 transition-all duration-300",
+                      "group/int relative flex w-[clamp(140px,20vw,172px)] flex-col items-center gap-3 overflow-hidden rounded-2xl px-4 py-5 text-center ring-1 transition-all duration-300",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                      on ? "ring-accent text-ink" : "ring-line hover:ring-accent/50",
+                      on
+                        ? "ring-accent bg-accent/[0.07] shadow-lift"
+                        : "ring-line bg-ink/[0.02] hover:-translate-y-0.5 hover:ring-accent/45 hover:bg-ink/[0.035]",
                     )}
                   >
-                    <span className={cn(EYEBROW_TIGHT, on && "text-ink")}>{it.label}</span>
+                    {on && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0"
+                        style={{
+                          background:
+                            "radial-gradient(120% 90% at 50% 0%, rgba(201,120,68,0.18), transparent 68%)",
+                        }}
+                      />
+                    )}
+                    <span
+                      className={cn(
+                        "relative transition-colors duration-300",
+                        on ? "text-accent" : "text-ink-muted group-hover/int:text-ink",
+                      )}
+                    >
+                      <IntentionGlyph k={it.key} />
+                    </span>
+                    <span
+                      className="relative flex min-h-[2.4em] items-center justify-center font-display text-[16px] md:text-[17px] font-semibold leading-[1.15] tracking-[-0.01em] text-ink"
+                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
+                    >
+                      {it.label}
+                    </span>
+                    <span
+                      className={cn(
+                        "relative font-sans text-[12px] tracking-[0.015em] transition-colors duration-300",
+                        on ? "text-accent/90" : "text-ink-muted/70",
+                      )}
+                    >
+                      {n} {n === 1 ? "piece" : "pieces"}
+                    </span>
                   </button>
                 );
               })}

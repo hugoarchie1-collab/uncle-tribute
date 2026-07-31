@@ -268,12 +268,18 @@ export const FrameWrap = ({
   frameStyle,
   glazing,
   aspectRatio,
+  src: artSrc,
   children,
 }: {
   active: boolean;
   frameStyle: string;
   glazing: string;
   aspectRatio: number;
+  /** The artwork source — painted as a cover-scaled BASE layer behind the
+   *  object-contain print so the art meets the moulding edge-to-edge (no thin
+   *  dark letterbox line when the source isn't pixel-perfectly square) and there
+   *  is never a black flash while the print image decodes. */
+  src?: string;
   children: ReactNode;
 }) => {
   if (!active) return <>{children}</>;
@@ -314,13 +320,19 @@ export const FrameWrap = ({
       {/* The print, set into the frame's rebate (no mat). `relative` +
           `overflow-hidden` make it the positioning context for the absolutely-
           filled print + glazing, so the print's intrinsic size can't push the
-          box past its aspect-ratio. A soft inner shadow recesses the sheet under
-          the moulding lip. */}
+          box past its aspect-ratio. The artwork is also painted cover-scaled as
+          the BACKGROUND of this box, so the object-contain print always meets
+          the moulding edge-to-edge — no thin black inner edge from a sub-pixel
+          letterbox, and no black flash before the print decodes. A soft top
+          recess keeps the sheet reading as set under the moulding lip (the old
+          hard 1px black ring — the visible "black edge" — is gone). */}
       <div
         className="relative w-full h-full overflow-hidden"
         style={{
-          boxShadow:
-            "inset 0 2px 7px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.45)",
+          backgroundImage: artSrc ? `url(${asset(artSrc)})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          boxShadow: "inset 0 2px 6px rgba(0,0,0,0.30)",
         }}
       >
         {children}
