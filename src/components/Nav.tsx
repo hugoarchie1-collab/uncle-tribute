@@ -628,7 +628,7 @@ const NavMenu = ({
               </NavLink>
               {NAV_GROUPS.map((group, gi) => (
                 <div key={group.heading} className={gi > 0 ? "mt-6" : ""}>
-                  <p className="mb-2 font-display not-italic font-semibold text-[clamp(13px,1.1vw,15px)] uppercase tracking-[0.16em] text-ink-muted/80">
+                  <p className="mb-2 font-display not-italic font-semibold text-[clamp(15px,1.3vw,18px)] tracking-[-0.01em] normal-case text-ink-muted">
                     {group.heading}
                   </p>
                   {group.links.map((l, li) => (
