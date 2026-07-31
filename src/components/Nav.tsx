@@ -47,11 +47,15 @@ const NAV_GROUPS: { heading: string; links: NavItem[] }[] = [
 
 /** Flat list (Home + every grouped link) for the hidden desktop inline nav. */
 /** CURATED desktop inline nav (Hugo 2026-07-29 #3) — the FIVE primary
- *  destinations shown inline from xl+, so desktop has real wayfinding instead of
- *  hamburger-only. The full menu (every page) still lives in the drawer via the
- *  always-on hamburger, so the long tail is never lost. Short labels so the row
- *  never crowds the bar; the 11-link overflow that killed the old inline bar
- *  can't happen with a fixed five. */
+ *  destinations shown inline from 3xl+ (1700px), so wide desktops have real
+ *  wayfinding instead of hamburger-only. The reveal matches DeliverTo (also 3xl)
+ *  so the full bar — logo · Deliver-to · search · 5 links · currency · basket —
+ *  turns on as ONE coherent unit only at the width that fits it; below 3xl the
+ *  links (and Deliver-to) fold into the always-on hamburger drawer. It was `xl`
+ *  (1280px) until 2026-07-31 — at 1280–1400px the search field collided with the
+ *  logo on its left and the first nav link on its right (logo + search + 5 links
+ *  + currency + basket never fit that row). The full menu (every page) still
+ *  lives in the drawer, so the long tail is never lost. */
 const CURATED_NAV: NavItem[] = [
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
@@ -98,12 +102,12 @@ const BasketIcon = ({ className }: { className?: string }) => (
 /**
  * Global site navigation (#4 redesign).
  *
- * Desktop (≥lg): a single minimal inline bar — small-caps links, generous
- * letter-spacing + breathing room, the current page indicated by a quiet accent
- * underline. With the catalogue trimmed to five links the inline nav now shows
- * from `lg` (was `xl`), so tablets/laptops get it instead of the menu.
+ * Wide desktop (≥3xl / 1700px): the full inline bar — the five curated links +
+ * Deliver-to reveal together, the current page indicated by a quiet accent
+ * underline. The reveal is 3xl (was `xl`) so cramped 1280–1400px widths — where
+ * the search field overlapped the logo and the links — fall back to the drawer.
  *
- * Mobile (<lg): one accessible menu — a dimmed backdrop + a panel that traps
+ * Below 3xl: one accessible menu — a dimmed backdrop + a panel that traps
  * focus, closes on Escape or backdrop click, locks body scroll while open, and
  * restores focus to the toggle on close. Keyboard navigable, ARIA-labelled.
  *
@@ -292,7 +296,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             : "py-5 nav-bg-top-plain border-b border-transparent",
       )}
     >
-      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1840px] items-center justify-between gap-3 sm:gap-6">
+      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center justify-between gap-3 sm:gap-6">
         <Link
           to="/"
           aria-label="The Art of Stephen Meakin — home"
@@ -315,7 +319,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               one"). The seal now lives only where it reads big + means
               authenticity: certificates, packaging, favicon, footer. */}
           <span
-            className="font-sans font-medium text-ink tracking-[0.005em] leading-[1.05] min-w-0 whitespace-normal sm:whitespace-nowrap text-[clamp(18px,2.1vw,27px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+            className="font-sans font-medium text-ink tracking-[0.005em] leading-[1.05] min-w-0 whitespace-nowrap text-[clamp(14px,1.5vw,20px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
           >
             The Art of Stephen Meakin
           </span>
@@ -349,7 +353,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               This inline nav is kept hidden (so the markup/chip stay available if
               we ever want a curated desktop subset). */}
           <nav
-            className="hidden xl:flex items-center gap-5 2xl:gap-7 mr-1"
+            className="hidden 3xl:flex items-center gap-7 mr-1"
             aria-label="Primary"
           >
             {CURATED_NAV.map((l) => (
