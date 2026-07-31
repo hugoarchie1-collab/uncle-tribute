@@ -28,7 +28,7 @@ import { cn } from "../lib/cn";
  */
 
 const SECTION =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
 interface QA {
   eyebrow: string;
@@ -283,7 +283,7 @@ const FaqMasthead = () => (
   // brightness rule forbids. Whole-element, not per-glyph, so gotcha #2 (no
   // SplitReveal blockiness) is not triggered.
   <section className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}>
-    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px]">
+    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
       <Reveal as="div">
         <h1
           className="font-display text-ink m-0"
@@ -375,7 +375,7 @@ export const FAQ = () => {
               divider aligned at the top and stacked items read as dense blocks. */}
           <Reveal
             as="div"
-            className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[1520px] 4xl:max-w-[1720px] md:columns-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 [column-fill:balance]"
+            className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] md:columns-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 [column-fill:balance]"
           >
             {FAQS.map((qa, i) => (
               <QaItem key={i} qa={qa} i={i} />

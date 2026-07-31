@@ -113,7 +113,7 @@ const RepresentativeApplication = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="ring-1 ring-line bg-ink/[0.03] p-6 md:p-9 max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
+    <form onSubmit={handleSubmit} noValidate className="ring-1 ring-line bg-ink/[0.03] p-6 md:p-9 max-w-[720px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
       <input
         type="text"
         name="botcheck"
@@ -185,7 +185,7 @@ export const Representatives = () => {
       />
       <Nav />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-24">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-24">
         {/* ── HERO ── the type is the art. Natural height (NO forced min-h /
             centering — that left a dead gap under the lede on tall screens,
             which Hugo hates); the section below follows immediately. */}

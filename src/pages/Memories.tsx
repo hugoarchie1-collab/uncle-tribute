@@ -978,7 +978,7 @@ const ShareMemoryModal = ({
 // ---------------------------------------------------------------------------
 const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
   <section className="relative px-[clamp(1rem,5vw,3rem)] pt-9 md:pt-12 pb-[clamp(1rem,2.5vw,1.75rem)]">
-    <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
+    <div className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] flex flex-col items-center text-center">
       <Reveal as="div" className="w-full">
         <h1
           className="font-display text-ink m-0 text-balance"
@@ -1000,7 +1000,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             A pin board, in his own words &amp; yours
           </p>
         </Reveal>
-        <Reveal as="div" delay={0.06} className="mx-auto max-w-[920px] 3xl:max-w-[1040px]">
+        <Reveal as="div" delay={0.06} className="mx-auto max-w-[920px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
           <p
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
@@ -1111,7 +1111,7 @@ export const Memories = () => {
             funeral tribute (featured). Both verbatim, shown in full/folded. */}
         <section
           aria-label="Featured memories"
-          className="mx-auto w-full max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px] px-[clamp(1rem,5vw,1.5rem)] text-left"
+          className="mx-auto w-full max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-[clamp(1rem,5vw,1.5rem)] text-left"
         >
           <div className="flex flex-col gap-[clamp(0.9rem,1.8vw,1.35rem)]">
             <Reveal as="div" delay={0}>
@@ -1129,9 +1129,9 @@ export const Memories = () => {
             sits above it, and a centred display heading introduces the grid. */}
         <section
           aria-label="Memories of Steve"
-          className="mx-auto w-full max-w-[1160px] 3xl:max-w-[1554px] 4xl:max-w-[1879px] px-[clamp(1rem,5vw,1.5rem)] pt-[clamp(1.4rem,3vw,2.4rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
+          className="mx-auto w-full max-w-[1160px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-[clamp(1rem,5vw,1.5rem)] pt-[clamp(1.4rem,3vw,2.4rem)] pb-[clamp(2rem,4vw,3.5rem)] text-left"
         >
-          <div className="mx-auto max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
+          <div className="mx-auto max-w-[720px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
             <ComposerCard onShare={() => setModalOpen(true)} />
           </div>
 
@@ -1162,7 +1162,7 @@ export const Memories = () => {
               </div>
             </>
           ) : (
-            <div className="mx-auto max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px] mt-[clamp(1.2rem,2.5vw,2rem)]">
+            <div className="mx-auto max-w-[720px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mt-[clamp(1.2rem,2.5vw,2rem)]">
               <Reveal as="div" delay={0.08}>
                 <EmptyStateCard />
               </Reveal>

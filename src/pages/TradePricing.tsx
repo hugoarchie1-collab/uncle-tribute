@@ -198,7 +198,7 @@ export const TradePricing = () => {
       <style>{PRINT_CSS}</style>
       <Nav />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-20 trade-sheet-main">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-16 md:pb-20 trade-sheet-main">
         {gate === "checking" && (
           <div className="min-h-[42vh] flex items-center">
             <p className={cn(META, "m-0")}>Checking access…</p>

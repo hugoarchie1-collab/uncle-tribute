@@ -304,7 +304,7 @@ export const OrderSuccess = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order confirmed
@@ -376,7 +376,7 @@ export const OrderCancel = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[1040px] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
+      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order cancelled

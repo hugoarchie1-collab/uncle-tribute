@@ -253,14 +253,14 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
             rule, headline, guidance and colour controls all share one centred
             reading measure (mx-auto) so the top of the page reads as one calm
             axis-centred block over the rainbow-wave scene. Verbatim copy unchanged;
             only the framing moves. */}
-        <section className="mx-auto w-full max-w-[1280px] 3xl:max-w-[1460px] text-center">
+        <section className="mx-auto w-full max-w-[1280px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] text-center">
           <Reveal as="div">
             <h1
               className="font-display text-ink m-0 text-balance text-pretty hero-text-shadow"
@@ -356,7 +356,7 @@ export const FindAPrint = () => {
             <div
               role="group"
               aria-label="Filter by intention"
-              className="mx-auto mt-6 md:mt-7 flex max-w-[920px] 3xl:max-w-[1233px] 4xl:max-w-[1490px] flex-wrap items-stretch justify-center gap-3 sm:gap-4"
+              className="mx-auto mt-6 md:mt-7 flex max-w-[920px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] flex-wrap items-stretch justify-center gap-3 sm:gap-4"
             >
               {INTENTIONS.map((it) => {
                 const on = intent.has(it.key);

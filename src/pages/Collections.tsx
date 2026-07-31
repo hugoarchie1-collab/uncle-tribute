@@ -50,7 +50,7 @@ const toRoman = (n: number): string => {
 // the centred sections below it — the two now share this exact measure (mx-auto,
 // equal L/R margins) and the same large-screen step-ups.
 const PAGE_ENVELOPE =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ── SOFT SET-CARD SCRIM ───────────────────────────────────────────────────────
 // The set cards (complete-collection / compose / catalogue) sit ON the photo
@@ -329,7 +329,7 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -339,7 +339,7 @@ const CollectionSetCard = ({
         <h3 className={cn(TITLE, "my-0")}>
           The complete {shortName}
         </h3>
-        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto")}>
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
           All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
           edition ({sizeCode(tier)}) — the collection entire, for one home.
         </p>
@@ -415,7 +415,7 @@ const ComposeSetCard = () => {
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px]"
+      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]"
     >
       <div
         className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
@@ -425,7 +425,7 @@ const ComposeSetCard = () => {
         <h3 className={cn(TITLE, "my-0")}>
           Build a wall of your own
         </h3>
-        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[1160px] mx-auto")}>
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
           Choose any two or more mandalas to hang together. The set saving builds
           as you add — 5% for two, 10% for three or more — applied automatically
           at checkout.
@@ -535,7 +535,7 @@ const CatalogueSetCard = () => {
   return (
     <Reveal
       as="section"
-      className="relative mx-auto max-w-[1080px] 3xl:max-w-[1280px] 4xl:max-w-[1480px] px-4 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-14"
+      className="relative mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-14"
     >
       <div
         className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 text-center"
@@ -737,7 +737,7 @@ export const Collections = () => {
                 the shared page envelope — no narrow centred column, no empty
                 side margins. AI framing only — Stephen's verbatim collection
                 descriptions are untouched below. */}
-            <div className="mt-4 md:mt-5 mx-auto max-w-[860px] 3xl:max-w-[1152px] 4xl:max-w-[1393px] text-center flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
+            <div className="mt-4 md:mt-5 mx-auto max-w-[860px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] text-center flex flex-col items-center gap-y-4 border-t border-line pt-4 md:pt-5">
               <p
                 className="font-display font-normal tracking-[-0.012em] text-ink m-0"
                 style={{
@@ -855,7 +855,7 @@ export const Collections = () => {
               className="relative scroll-mt-24"
             >
               <div className={cn(PAGE_ENVELOPE, "relative pt-8 md:pt-10 pb-8 md:pb-10")}>
-                <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[1280px] mx-auto text-center mb-4 md:mb-6">
+                <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto text-center mb-4 md:mb-6">
                   <p
                     className={cn(EYEBROW, "m-0 mb-4")}
                     style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
@@ -865,13 +865,13 @@ export const Collections = () => {
                     {items.length} {items.length === 1 ? "Painting" : "Paintings"}
                   </p>
                   <h2
-                    className={cn(TITLE, "max-w-[1080px] 3xl:max-w-[1280px] mx-auto my-0")}
+                    className={cn(TITLE, "max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto my-0")}
                     style={{ textShadow: "0 3px 24px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.title}
                   </h2>
                   <div
-                    className={cn(SUBTITLE, "mt-3 md:mt-4 flex flex-col gap-3 max-w-[1040px] 3xl:max-w-[1200px] mx-auto")}
+                    className={cn(SUBTITLE, "mt-3 md:mt-4 flex flex-col gap-3 max-w-[1040px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}
                     style={{ textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)" }}
                   >
                     {coll.description.split("\n\n").map((para, i) => (
@@ -1002,7 +1002,7 @@ export const Collections = () => {
 
         {/* Hairline divider so the two stacked set-cards read as TWO distinct
             offers, not one conjoined dark block (Hugo). */}
-        <div className="mx-auto max-w-[1080px] 3xl:max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12">
           <div aria-hidden="true" className="h-px bg-ink/50 my-6 md:my-8" />
         </div>
 

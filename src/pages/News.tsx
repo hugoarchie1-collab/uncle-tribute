@@ -183,7 +183,7 @@ const EntryRow = ({ entry, hideDate = false }: { entry: NewsEntry; hideDate?: bo
 // unchanged; this is page-framing microcopy only (the page owns its headings).
 const NewsMasthead = () => (
   <section className="relative pt-8 md:pt-10 pb-6 md:pb-8">
-    <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1460px] text-center">
+    <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] text-center">
       <Reveal as="div">
         <h1
           className="font-display text-ink m-0 text-balance"
@@ -457,7 +457,7 @@ export const News = () => {
         url="/news"
       />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-10 md:pb-14">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 3xl:px-16 pb-10 md:pb-14">
         {/* MASTHEAD — CENTRED front cover on the page's single axis (the
             FAQ/Memories recipe). Replaces the old left-aligned split that
             stranded a half-empty eyebrow column beside the prose block. */}
@@ -553,7 +553,7 @@ export const News = () => {
             {/* BALANCED CARD — cover + text, CENTRED in the measure and aligned to
                 each other's vertical centre. Both halves share one mx-auto frame so
                 the composition sits dead-centre on the page axis. */}
-            <div className="mt-5 md:mt-6 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
+            <div className="mt-5 md:mt-6 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 lg:gap-14 items-center">
               {/* SWIPEABLE COVER GALLERY — the upcoming release paintings, square
                   (mandalas read best square), swipe/dots to move between them. */}
               <div className="md:col-span-6 w-full">

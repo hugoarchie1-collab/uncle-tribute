@@ -734,7 +734,7 @@ const LegalMasthead = ({
   updated: string;
   sections: Section[];
 }) => (
-  <section className="relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
+  <section className="relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
     <Reveal as="div">
       <h1
         className="font-display text-ink m-0 text-balance text-pretty [&_br]:hidden sm:[&_br]:block"
@@ -818,7 +818,7 @@ const LegalPage = ({
           legibility of the legal copy stays paramount (the right column never
           goes multi-column — clauses must read linearly). Compressed py so the
           whole page reads tight, never an endless scroll. */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1500px] 4xl:max-w-[1760px] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
         <article className="flex flex-col">
           {sections.map((section, i) => (
             <Reveal

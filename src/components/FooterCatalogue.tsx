@@ -77,7 +77,7 @@ export const FooterCatalogue = () => {
       {/* NO feathered seam above the strip (Hugo 2026-07-28: "i hate that blur
           above the catalogue"). The red block starts on a clean STRAIGHT edge,
           exactly like the top nav bar's clean edge — a true clone of the bar. */}
-      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] 4xl:max-w-[2100px]">
+      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
         <p className={cn(EYEBROW_MUTED, "m-0 mb-4 text-center")}>
           The Catalogue · {tiles.length}
         </p>
@@ -120,7 +120,7 @@ export const FooterCatalogue = () => {
                   decoding="async"
                   // The section is hidden below md and the tiles sit ten across
                   // (flex-[0_1_calc(10%-9px)]) from md up, so each tile renders
-                  // at ~10vw. Capped by the max-w-[1400px]→[1840px] container on
+                  // at ~10vw. Capped by the max-w-[1400px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]→[1840px] container on
                   // very wide screens (≈184px max), well under the w480 variant.
                   sizes="(min-width: 768px) 10vw, 1px"
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"

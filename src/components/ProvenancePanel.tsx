@@ -15,7 +15,7 @@ import { cn } from "../lib/cn";
  * copy from single-source data.
  */
 export const ProvenancePanel = () => (
-  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto mt-10 md:mt-12 border-t border-line pt-8 md:pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-14">
+  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto mt-10 md:mt-12 border-t border-line pt-8 md:pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-14">
     <section>
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Authentication &amp; provenance</p>
       <ul className="list-none m-0 p-0 flex flex-col gap-2.5">

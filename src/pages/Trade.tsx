@@ -213,7 +213,7 @@ const TradeApplication = () => {
 
   if (status === "success") {
     return (
-      <div className="border border-line p-7 md:p-9 max-w-[720px] 3xl:max-w-[965px] 4xl:max-w-[1166px]">
+      <div className="border border-line p-7 md:p-9 max-w-[720px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
         <p className="font-display text-[clamp(24px,3vw,32px)] text-ink m-0 mb-3">
           Thank you.
         </p>
@@ -234,7 +234,7 @@ const TradeApplication = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px]">
+    <form onSubmit={handleSubmit} noValidate className="max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
       {/* Honeypot — visually hidden; bots fill it, we reject. */}
       <input
         type="text"
@@ -346,7 +346,7 @@ export const Trade = () => {
       />
       <Nav />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-12 pb-12 md:pb-16">
         {/* ── MASTHEAD ── */}
         <Reveal as="div" className="pb-4 md:pb-5">
           <PageMasthead

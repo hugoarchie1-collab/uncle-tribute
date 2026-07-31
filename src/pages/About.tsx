@@ -106,14 +106,14 @@ const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, ceili
 // box is always ≤ this) — every block fills the SAME box → ONE left + right edge
 // down the page, and fills WIDE (no centred inset gutter).
 const ONE_WIDTH =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px]";
+  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]";
 /** The reading-measure alias points at the ONE width so all call-sites stay
  *  uniform — every prose block, photo, grid and band shares this exact box. */
 const READING_WIDE = ONE_WIDTH;
 
 /** The one shared section shell + the delimiter rhythm (P8). */
 const SECTION =
-  "mx-auto max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[1860px] 4xl:max-w-[2040px] px-4 sm:px-6 md:px-8 lg:px-12";
+  "mx-auto max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ─── ONE vertical rhythm — cloned from Home (Welcome.tsx) ─────────────────────
 // Home reads calm because it uses ONE section padding + ONE inter-block gap
@@ -391,7 +391,7 @@ const ChapterHead = ({ id }: { id: ChapterId }) => {
       <p className={cn(EYEBROW, "m-0 mb-3")}>
         Chapter {numeral} · {chapter.tag}
       </p>
-      <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] mx-auto hero-text-shadow")}>
+      <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto hero-text-shadow")}>
         {chapter.kicker}
       </h2>
     </Reveal>
@@ -1014,7 +1014,7 @@ export const About = () => {
           <Reveal
             as="figure"
             className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
+              "relative m-0 mx-auto w-full max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
               IMG_GAP,
             )}
           >
@@ -1125,7 +1125,7 @@ export const About = () => {
           <div
             className={cn(
               IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto",
             )}
           >
             {/* Compact 2×2 index (natural spacing — NOT spread thin down the
@@ -1230,7 +1230,7 @@ export const About = () => {
                 </p>
               ))}
             </Reveal>
-            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px] 3xl:max-w-[1099px] 4xl:max-w-[1328px]", IMG_GAP)} delay={0.08}>
+            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]", IMG_GAP)} delay={0.08}>
               <ContainImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
                 alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
@@ -1261,7 +1261,7 @@ export const About = () => {
           <div
             className={cn(
               IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[1179px] 4xl:max-w-[1426px] mx-auto",
+              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto",
             )}
           >
             <div className="min-w-0">
@@ -1453,7 +1453,7 @@ export const About = () => {
               beside-text grid that stranded an ugly side void. */}
           <Reveal
             as="div"
-            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px] 3xl:max-w-[1206px] 4xl:max-w-[1458px]")}
+            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]")}
           >
             <figure className="m-0 flex justify-center overflow-hidden rounded-[3px] bg-ink/[0.04]">
               <AssetImage

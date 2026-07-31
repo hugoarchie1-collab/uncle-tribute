@@ -1991,7 +1991,7 @@ const CompanionWorks = ({
   return (
     <Reveal
       as="section"
-      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10 mb-16 md:mb-24"
+      className="mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10 mb-16 md:mb-24"
     >
       <p className={cn(EYEBROW_MUTED, "m-0 mb-5 text-center")}>
         More from {collectionTitle ? collectionTitle.split(" — ")[0] : "the estate"}
@@ -2046,9 +2046,9 @@ const CompanionWorks = ({
  * paintings.ts (artistQuote / description) — never re-typed or reworded.
  */
 const Story = ({ painting }: { painting: Painting }) => (
-  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[1480px] mx-auto">
+  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto">
     {painting.artistQuote && (
-      <Reveal as="div" className="max-w-[940px] 2xl:max-w-[1040px]">
+      <Reveal as="div" className="max-w-[940px] 2xl:max-w-[1040px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
         {/* Muted-ink eyebrow, then the artist quote lifted to a confident
             Fraunces statement (opsz ≤48, real italic 400) — the page's bold
             prose header. Sections separate by whitespace, not rules (Hugo:
@@ -2935,7 +2935,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}

@@ -383,7 +383,7 @@ export const Basket = () => {
           so the cream basket copy still reads. */}
       <SceneBackdrop src="/img/scenes/basket-mountain-scene-v2.webp" own />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] 3xl:max-w-[1233px] 4xl:max-w-[1490px] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[920px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] data-[wide=true]:max-w-[1180px] 2xl:data-[wide=true]:max-w-[1320px] 3xl:data-[wide=true]:max-w-[1440px] px-4 sm:px-6 md:px-8 lg:px-12 pt-10 md:pt-14 pb-12 md:pb-16" data-wide={isEmpty ? undefined : "true"}>
         {/* MASTHEAD — the refined estate register (see PageMasthead): the same
             eyebrow-left + hairline + muted-right meta rule, then the title in
             the composed display cut (MASTHEAD_TITLE_STYLE: opsz 144, wght 560,
@@ -398,7 +398,7 @@ export const Basket = () => {
         </Reveal>
 
         {isEmpty ? (
-          <Reveal as="div" className="max-w-[820px] 3xl:max-w-[920px]">
+          <Reveal as="div" className="max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
             <p className={cn(SUBTITLE, "m-0 mb-7 md:mb-8")}>
               Your basket is empty. Each print is made to order by a UK atelier and
               estate-stamped on behalf of The Mandala Company.

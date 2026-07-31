@@ -101,7 +101,7 @@ export const Footer = () => (
   >
     {/* NO feathered seam (Hugo 2026-07-28: "i hate that blur above the
         catalogue"). Clean STRAIGHT top edge — a true clone of the top nav bar. */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] grid grid-cols-2 md:grid-cols-4 gap-x-8 md:gap-x-10 gap-y-6 md:gap-y-0 items-start">
       {/* Brand + enquiries fine-print. The emblem + two-line wordmark form ONE
           tidy lockup capped to the tribute measure (max-w-[280px]) so it never
           reaches the link columns. A short tagline + the estate email +
@@ -178,7 +178,7 @@ export const Footer = () => (
         the PDP/Basket) and showed NOTHING in the footer. The marks inherit the
         footer's muted→ink ink via currentColor. Copy is literally true —
         payments run on Stripe (Cards / Apple Pay / Google Pay). */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] mt-5 md:mt-6 pt-5 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mt-5 md:mt-6 pt-5 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <p className={cn(FOOTER_TEXT, "flex items-center gap-2 text-ink-muted m-0")}>
         <svg
           viewBox="0 0 24 24"
@@ -200,7 +200,7 @@ export const Footer = () => (
 
     {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·
         Returns appear ONLY here, never also in a column above). */}
-    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
+    <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the
         estate. All rights reserved.

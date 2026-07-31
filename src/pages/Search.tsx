@@ -217,7 +217,7 @@ export const Search = () => {
       <SceneBackdrop src="/img/scenes/search-path-scene-v4.webp" />
       <Nav overlay />
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-14 md:pb-20">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-20 md:pt-24 pb-14 md:pb-20">
         {/* MASTHEAD — the refined estate front cover carrying the query (eyebrow
             + hairline meta rule → a composed Fraunces display title, never shouty). */}
         <header>
@@ -240,7 +240,7 @@ export const Search = () => {
 
           {/* Refine — the same SearchBar in its large page variant, so a reader
               can correct or broaden their query without leaving the results. */}
-          <Reveal as="div" className="mt-6 md:mt-8 max-w-[760px] 3xl:max-w-[1018px] 4xl:max-w-[1231px] border-t border-line pt-6 md:pt-8">
+          <Reveal as="div" className="mt-6 md:mt-8 max-w-[760px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] border-t border-line pt-6 md:pt-8">
             <SearchBar variant="page" />
           </Reveal>
         </header>
