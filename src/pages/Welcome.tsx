@@ -344,13 +344,21 @@ export const Welcome = () => {
         // the section's overflow-hidden SLICED the limb mid-dissolve (the "hard
         // glow cutoff") AND the bottom-anchored wordmark landed right on that cut.
         // Restored to a full-viewport cinematic frame that gives the limb + its
-        // radial dissolve room to complete into the backdrop with NO seam, and
-        // the title is now vertically CENTRED in the composition (biased a touch
-        // below middle via pt>pb) so it sits IN the fading atmosphere just beneath
-        // the Earth's curve — earth + glow + title reading as ONE image, with
-        // generous, deliberate dark space below before the page begins. Portrait
-        // keeps its content-hugging justify-end + pt (unchanged — mobile was fine).
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-center portrait:justify-end portrait:pt-[clamp(10rem,52vw,19rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[90svh] landscape:pt-[max(6rem,17svh)] landscape:pb-[clamp(24px,5svh,72px)]"
+        // radial dissolve room to complete into the backdrop with NO seam.
+        // 2026-07-31 (LATER — Hugo, overriding the "title centred IN the glow"
+        // note above): the title must read CLEARLY BELOW the Earth + its glow,
+        // NOT nestled into the fading atmosphere. So landscape is now BOTTOM-
+        // ANCHORED (justify-end): the Earth stays top-pinned + full-size (its
+        // absolute open-Earth invariant is untouched), the title drops to the
+        // lower portion of the full-viewport frame, and the dark space between
+        // the glow's fade and the title is the intended breathing room — Earth
+        // above, a clear gap, then the wordmark reading under the planet. min-h
+        // stays 90svh (the limb dissolve still needs the full frame — a shorter
+        // section would slice it, the 42svh regression); pb lifts the title off
+        // the section foot so it sits low but composed, never jammed to the edge.
+        // Portrait keeps its content-hugging justify-end + pt (mobile already
+        // reads Earth-then-title); pt nudged up a touch for a cleaner gap there.
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-end portrait:pt-[clamp(11rem,55vw,20rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[90svh] landscape:pt-[max(6rem,10svh)] landscape:pb-[clamp(40px,8svh,96px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
