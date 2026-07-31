@@ -1598,7 +1598,7 @@ const BuyBox = ({
                           )}
                           {e.label}
                           {sur > 0 && (
-                            <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink/45 tabular-nums">
+                            <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted tabular-nums">
                               +{fmtP(sur)}
                             </span>
                           )}
@@ -1665,7 +1665,7 @@ const BuyBox = ({
                                 />
                                 {f.label}
                                 {surcharge > 0 && (
-                                  <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink/45 tabular-nums">
+                                  <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted tabular-nums">
                                     +{fmtP(surcharge)}
                                   </span>
                                 )}
