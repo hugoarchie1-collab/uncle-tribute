@@ -464,13 +464,17 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    // LARGE + confident (Hugo 2026-07-31: the open must read big
-                    // and impactful, not a timid line floating on the photo). ~2×
-                    // the old ceiling; svh-capped so it stays composed on short
-                    // landscape windows. opsz 48 keeps the heavy strokes clean.
-                    fontSize: "min(clamp(34px, 6.6vw, 112px), 15svh)",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 0.9,
+                    // THE most dominant statement on the entire site (Hugo
+                    // 2026-08-01: "fill all empty space… match if not bigger than
+                    // the subtitle below the video… most dominant writing on the
+                    // whole site"). It now WRAPS into a screen-filling two/three-
+                    // line block (THE SEM / EXPERIENCE) that rises to brush the
+                    // Earth limb and closes the empty band above it. Per-line size
+                    // exceeds the hero headline (11vw/176px) and every other title;
+                    // svh-capped so a short landscape window can't overflow.
+                    fontSize: "min(clamp(52px, 13.5vw, 248px), 27svh)",
+                    letterSpacing: "-0.035em",
+                    lineHeight: 0.86,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
@@ -487,11 +491,12 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 700',
                     fontWeight: 700,
-                    // LARGE + confident (Hugo 2026-07-31). See the reduced-motion
-                    // twin above — identical size/leading, only the entrance differs.
-                    fontSize: "min(clamp(34px, 6.6vw, 112px), 15svh)",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 0.9,
+                    // THE most dominant statement on the whole site — see the
+                    // reduced-motion twin above for the full rationale. Identical
+                    // size/leading/wrap; only the entrance animates.
+                    fontSize: "min(clamp(52px, 13.5vw, 248px), 27svh)",
+                    letterSpacing: "-0.035em",
+                    lineHeight: 0.86,
                     textTransform: "uppercase",
                     overflowWrap: "normal",
                     wordBreak: "keep-all",
