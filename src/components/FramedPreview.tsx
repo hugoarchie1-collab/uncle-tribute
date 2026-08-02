@@ -138,10 +138,9 @@ export const CanvasWrap = ({
   // back to a neutral canvas tone if the pixels can't be read (tainted canvas).
   const [bgColor, setBgColor] = useState<string | null>(null);
   useEffect(() => {
-    if (edge !== "mirror" || !artUrl) {
-      setBgColor(null);
-      return;
-    }
+    // Only the mirror ("Colour wrap") edge samples the artwork; every other edge
+    // derives its colour below, so there's no synchronous reset to do here.
+    if (edge !== "mirror" || !artUrl) return;
     let cancelled = false;
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -244,7 +243,8 @@ export const CanvasWrap = ({
     const inset = "8.33%"; // wrapped-edge thickness (≈10% of the front)
     const front = "83.33%";
     const ar = String(aspectRatio || 1);
-    const edgeColor = edge === "basic" ? "#f2efe7" : bgColor ?? "#cfc7b6";
+    const edgeColor =
+      edge === "basic" ? "#f2efe7" : (edge === "mirror" ? bgColor : null) ?? "#cfc7b6";
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
         <div

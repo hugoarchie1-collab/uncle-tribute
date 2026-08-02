@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { BasketItem } from "../lib/basket";
 
 /**
@@ -31,15 +31,14 @@ export const EmailMyBasket = ({ items }: EmailMyBasketProps) => {
   const [errorMsg, setErrorMsg] = useState("");
   // Pre-fill the name from a prior newsletter/returning-visitor capture so the
   // emailed basket greets the buyer by name ("Dear Hugo,") instead of "Hello,".
-  const [savedName, setSavedName] = useState("");
-
-  useEffect(() => {
+  const [savedName] = useState(() => {
     try {
-      setSavedName(window.localStorage.getItem("tasm.subscriberName") || "");
+      return window.localStorage.getItem("tasm.subscriberName") || "";
     } catch {
       /* private mode — non-fatal */
+      return "";
     }
-  }, []);
+  });
 
   if (items.length === 0) return null;
 

@@ -1517,7 +1517,7 @@ const BuyBox = ({
                     onClick={() => onFramingChange(true)}
                     aria-pressed={framingActive}
                     className={cn(
-                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                       framingActive ? "ring-ink" : "ring-line hover:ring-ink/40",
                     )}
                   >
@@ -1539,7 +1539,7 @@ const BuyBox = ({
                     onClick={() => onCanvasChange(true)}
                     aria-pressed={canvasActive}
                     className={cn(
-                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200",
+                      "flex flex-col items-start gap-1 text-left px-4 py-3 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                       canvasActive ? "ring-ink" : "ring-line hover:ring-ink/40",
                     )}
                   >
@@ -1583,7 +1583,7 @@ const BuyBox = ({
                           aria-pressed={canvasEdge === e.id}
                           title={e.note}
                           className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
+                            "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none min-h-[44px] px-3 py-2.5 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                             canvasEdge === e.id
                               ? "ring-ink text-ink"
                               : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1652,7 +1652,7 @@ const BuyBox = ({
                                 aria-pressed={frameStyle === f.id}
                                 title={f.note}
                                 className={cn(
-                                  "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none px-3 py-2.5 ring-1 transition-all duration-200",
+                                  "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none min-h-[44px] px-3 py-2.5 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                                   frameStyle === f.id
                                     ? "ring-ink text-ink"
                                     : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
@@ -1865,7 +1865,7 @@ const BuyBox = ({
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
               aria-label="Decrease quantity"
-              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               −
             </button>
@@ -1879,7 +1879,7 @@ const BuyBox = ({
               type="button"
               onClick={() => setQuantity((q) => Math.min(99, q + 1))}
               aria-label="Increase quantity"
-              className="flex h-10 w-10 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               +
             </button>
