@@ -3001,14 +3001,22 @@ export const PaintingDetail = () => {
         type="product"
         jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
-      {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the blurred, darkened
-          echo of the selected painting + the colourway tint scrim are retired for
-          a clean near-black ground, matching the rest of the site — the artwork
-          shows large in the hero, so the page still reflects it without a busy
-          background. Restore the pd-art/pd-wash/pd-wall/pd-reprise stack (driven
-          by the --pd-* vars on the root) to bring the painted-wall atmosphere
-          back. */}
-      <div className="absolute inset-0 z-0 bg-bg pointer-events-none" aria-hidden />
+      {/* REACTIVE COLOUR ATMOSPHERE (Hugo 2026-08-03: "why is every product page
+          black — I want the dynamic, Awwwards-level, iPhone-like background
+          reactive to the colours on screen, based on the print image"). The flat
+          near-black CALM ground is replaced by the authored painted-wall tint
+          layers, driven by the --pd-wall / --pd-halo <color> vars that are set
+          from the SELECTED colourway's own hue (colourwayTints, from the artwork)
+          — so switching a colourway RE-TINTS the whole page over a 0.9s ease, and
+          the app-root reactive AmbientBackground shows through the transparent
+          mid-page so the product page belongs to the same living-colour system as
+          every other page. Clean authored gradients — NOT the blurred image echo
+          Hugo rejected as "a blurry mess"; the wall stays dark at the top so the
+          cream title + monochrome buy copy stay perfectly legible. */}
+      <div className="pd-wash" aria-hidden />
+      <div className="pd-wall" aria-hidden />
+      <div className="pd-reprise" aria-hidden />
+      <div className="pd-halo" aria-hidden />
 
       <div className="relative z-[1] isolate">
         <Nav />
