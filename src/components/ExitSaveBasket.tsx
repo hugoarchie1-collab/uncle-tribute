@@ -106,6 +106,16 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
             tierId: item.tierId,
             framing: item.framing,
             embellished: item.embellished,
+            // Full config so the cross-device restore link rebuilds the exact
+            // product the buyer configured — mirror of EmailMyBasket.tsx so a
+            // basket saved from the exit toast doesn't silently lose the
+            // canvas/frame/glazing/finish selections.
+            canvas: item.canvas,
+            frameStyle: item.frameStyle,
+            glazing: item.glazing,
+            paperFinish: item.paperFinish,
+            canvasEdge: item.canvasEdge,
+            quantity: item.quantity,
           })),
         }),
       });

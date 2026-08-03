@@ -471,7 +471,7 @@ const CustomSizeRequest = ({
       // custom-size handler is folded into that function to stay within Vercel's
       // Hobby 12-Serverless-Function cap (a standalone 13th /api file fails the
       // whole deploy). The estate is emailed the request (replyTo the buyer).
-      await fetch("/api/newsletter-subscribe", {
+      const res = await fetch("/api/newsletter-subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -486,6 +486,12 @@ const CustomSizeRequest = ({
           company,
         }),
       });
+      // Only report success on a genuine 2xx — otherwise a 4xx/5xx would
+      // silently show "Request received" and the enquiry would be lost.
+      if (!res.ok) {
+        setStatus("error");
+        return;
+      }
       setStatus("done");
     } catch {
       setStatus("error");
