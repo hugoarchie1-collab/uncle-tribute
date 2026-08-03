@@ -449,31 +449,33 @@
   inset: -22% -14%;
   will-change: transform, opacity;
 }
-/* Deep indigo, top-left biased. */
+/* Deep indigo, top-left biased. Lifted 2026-08-03 (Hugo: "where's it all gone,
+   why is it so shit" — the whisper read as flat black). Now a genuinely present
+   iPhone-style colour field, still soft-edged, still under the cream text. */
 .ambient-bg__glow--indigo {
   background: radial-gradient(
-    62% 52% at 26% 14%,
-    rgba(74, 62, 138, 0.32) 0%,
-    rgba(74, 62, 138, 0.13) 42%,
-    transparent 70%
+    66% 56% at 26% 14%,
+    rgba(84, 70, 156, 0.58) 0%,
+    rgba(84, 70, 156, 0.26) 44%,
+    transparent 72%
   );
 }
-/* Warm rust (the house accent), foot-right biased and kept faint. */
+/* Warm rust (the house accent), foot-right biased. */
 .ambient-bg__glow--rust {
   background: radial-gradient(
-    56% 46% at 82% 82%,
-    rgba(201, 120, 68, 0.24) 0%,
-    rgba(201, 120, 68, 0.10) 46%,
-    transparent 72%
+    60% 50% at 82% 82%,
+    rgba(201, 120, 68, 0.44) 0%,
+    rgba(201, 120, 68, 0.20) 48%,
+    transparent 74%
   );
 }
 /* Muted violet, centre — the slow "breathing" band. */
 .ambient-bg__glow--violet {
   background: radial-gradient(
-    72% 56% at 58% 46%,
-    rgba(109, 74, 143, 0.24) 0%,
-    rgba(109, 74, 143, 0.09) 48%,
-    transparent 75%
+    74% 58% at 58% 46%,
+    rgba(122, 84, 160, 0.44) 0%,
+    rgba(122, 84, 160, 0.18) 50%,
+    transparent 76%
   );
 }
 /* CONTEXT tint — the "iPhone in-context" layer (2026-07-31). Its hue is a
@@ -501,11 +503,11 @@
      coloured atmosphere, never a hard shape, and stays in the margins/behind the
      art rather than washing the cream text. */
   background: radial-gradient(
-    78% 66% at 50% 38%,
-    color-mix(in srgb, var(--amb-ctx) 52%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 30%, transparent) 34%,
-    color-mix(in srgb, var(--amb-ctx) 12%, transparent) 60%,
-    transparent 84%
+    80% 68% at 50% 36%,
+    color-mix(in srgb, var(--amb-ctx) 72%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 46%, transparent) 34%,
+    color-mix(in srgb, var(--amb-ctx) 22%, transparent) 62%,
+    transparent 86%
   );
 }
 /* A second, offset bloom of the SAME artwork hue — the two soft blobs read as a
@@ -514,10 +516,10 @@
 .ambient-bg__glow--context2 {
   inset: -35% -20%;
   background: radial-gradient(
-    64% 56% at 76% 82%,
-    color-mix(in srgb, var(--amb-ctx) 34%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 14%, transparent) 44%,
-    transparent 74%
+    66% 58% at 76% 82%,
+    color-mix(in srgb, var(--amb-ctx) 54%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 24%, transparent) 46%,
+    transparent 76%
   );
 }
 /* Reduced motion: the wash is entirely static (the component also stops feeding
