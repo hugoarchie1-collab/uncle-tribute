@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -9,7 +9,9 @@ import { EYEBROW, EYEBROW_MUTED, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY, EASE_SIGN
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import { PAINTINGS, getAnchorTier, getTierAdvertisedPricePence } from "../data/paintings";
+import { addItem } from "../lib/basket";
 import { colourwayFamily, type ColourFamily } from "../lib/colour";
+import { SITE_URL } from "../lib/seo";
 
 /**
  * /print-quiz — "Find your print" personality test (Hugo 2026-08-03: build a
@@ -142,10 +144,16 @@ export const PrintQuiz = () => {
   const reduce = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
 
+  const [params] = useSearchParams();
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => QUESTIONS.map(() => null));
   const [result, setResult] = useState<Result | null>(null);
+  // Result-screen conversion state.
+  const [added, setAdded] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [email, setEmail] = useState("");
 
   const total = QUESTIONS.length;
   const progress = phase === "result" ? 1 : phase === "reading" ? 1 : (step) / total;
@@ -255,6 +263,69 @@ export const PrintQuiz = () => {
   const anchorPrice = winnerPainting
     ? fmtP(getTierAdvertisedPricePence(getAnchorTier(winnerPainting)))
     : "";
+
+  // Shared-result deep link (?result=<paintingId>) — reopen straight on the
+  // result screen without answering, so a partner or friend's share lands the
+  // recipient on the recommended piece. Runs once on mount.
+  useEffect(() => {
+    const rid = params.get("result");
+    if (!rid) return;
+    const p = PAINTINGS.find((x) => x.id === rid);
+    const avail = p?.colourways.filter((c) => c.available) ?? [];
+    if (!p || avail.length === 0) return;
+    const cover = avail.find((c) => c.isOriginal) ?? avail[0];
+    const runnersUp = PAINTINGS.filter((x) => x.id !== p.id && x.colourways.some((c) => c.available))
+      .slice(0, 2)
+      .map((x) => {
+        const a = x.colourways.filter((c) => c.available);
+        const cw = a.find((c) => c.isOriginal) ?? a[0];
+        return { id: x.id, title: x.title, image: cw.image, name: cw.name };
+      });
+    // One-time sync from the URL on mount (a shared-result deep link) — an
+    // accepted external-state → React synchronisation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setResult({ paintingId: p.id, colourwayName: cover.name, colourwayImage: cover.image, runnersUp });
+    setPhase("result");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Add the recommended piece straight to the basket (anchor size, framed to
+  // match the advertised floor — the two-product model has no bare sheet).
+  const addResultToBasket = () => {
+    if (!result || !winnerPainting) return;
+    addItem(result.paintingId, result.colourwayName, getAnchorTier(winnerPainting).id, true);
+    setAdded(true);
+  };
+
+  // Copy a shareable link to this result.
+  const shareResult = async () => {
+    if (!result) return;
+    const url = `${SITE_URL}/print-quiz?result=${encodeURIComponent(result.paintingId)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2200);
+    } catch {
+      // Clipboard blocked — no-op (the See-this-print link is always available).
+    }
+  };
+
+  // Optional: email the result (consent-based lead capture → newsletter/CRM).
+  const emailResult = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!result || !email.trim() || emailStatus === "sending") return;
+    setEmailStatus("sending");
+    try {
+      const res = await fetch("/api/newsletter-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), source: `quiz:${result.paintingId}` }),
+      });
+      setEmailStatus(res.ok ? "done" : "error");
+    } catch {
+      setEmailStatus("error");
+    }
+  };
 
   const fade = reduce
     ? {}
@@ -465,17 +536,75 @@ export const PrintQuiz = () => {
                     Estate-stamped giclée · made to order{anchorPrice ? ` · from ${anchorPrice}` : ""}
                   </p>
                   <div className="mt-7 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+                    {added ? (
+                      <Link to="/basket" className={cn(BTN_PRIMARY, "justify-center")}>
+                        Added ✓ View basket
+                        <span aria-hidden="true" className="ml-2">→</span>
+                      </Link>
+                    ) : (
+                      <button type="button" onClick={addResultToBasket} className={cn(BTN_PRIMARY, "justify-center")}>
+                        Add to basket
+                        <span aria-hidden="true" className="ml-2">→</span>
+                      </button>
+                    )}
                     <Link
                       to={`/collections/${result.paintingId}?c=${encodeURIComponent(result.colourwayName)}`}
-                      className={cn(BTN_PRIMARY, "justify-center")}
+                      className={cn(BTN_SECONDARY, "justify-center")}
                     >
                       See this print
-                      <span aria-hidden="true" className="ml-2">→</span>
                     </Link>
-                    <button type="button" onClick={restart} className={cn(BTN_SECONDARY, "justify-center")}>
+                  </div>
+
+                  {/* Secondary actions — share, retake, and optional email capture. */}
+                  <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
+                    <button
+                      type="button"
+                      onClick={shareResult}
+                      className="font-sans text-[14px] font-semibold text-ink-muted hover:text-accent transition-colors"
+                    >
+                      {copied ? "Link copied ✓" : "Share your result"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={restart}
+                      className="font-sans text-[14px] font-semibold text-ink-muted hover:text-accent transition-colors"
+                    >
                       Retake the quiz
                     </button>
                   </div>
+
+                  {emailStatus === "done" ? (
+                    <p className={cn(EYEBROW_MUTED, "m-0 mt-6")}>
+                      Sent — we've noted the piece that fits you. Keep an eye on your inbox.
+                    </p>
+                  ) : (
+                    <form onSubmit={emailResult} className="mt-6 max-w-[420px]">
+                      <label className={cn(EYEBROW_MUTED, "block mb-2")} htmlFor="quiz-email">
+                        Want it saved? Email me my result
+                      </label>
+                      <div className="flex w-full items-stretch ring-1 ring-line focus-within:ring-accent transition-shadow">
+                        <input
+                          id="quiz-email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@example.com"
+                          autoComplete="email"
+                          className="flex-1 min-w-0 bg-transparent px-4 py-3 font-sans text-[15px] text-ink placeholder:text-ink/30 focus:outline-none"
+                        />
+                        <button
+                          type="submit"
+                          disabled={emailStatus === "sending"}
+                          className="press shrink-0 whitespace-nowrap px-5 font-sans text-[13.5px] font-bold tracking-[0.02em] uppercase text-bg bg-ink hover:bg-accent transition-colors border-0 cursor-pointer disabled:opacity-50"
+                        >
+                          {emailStatus === "sending" ? "…" : "Send"}
+                        </button>
+                      </div>
+                      {emailStatus === "error" && (
+                        <p className="font-sans text-[13px] text-accent m-0 mt-2">Couldn't send just now — try again.</p>
+                      )}
+                    </form>
+                  )}
                 </div>
               </div>
 

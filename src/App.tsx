@@ -26,6 +26,7 @@ import { AmbientBackground } from "./components/AmbientBackground";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
 import { captureUtm } from "./lib/utm";
+import { captureRef } from "./lib/ref";
 import { initTrackingIfConsented } from "./lib/tracking";
 import { CurrencyProvider } from "./components/CurrencyProvider";
 import "./styles/global.css";
@@ -49,6 +50,7 @@ const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 const PrintQuiz = lazy(() => import("./pages/PrintQuiz").then((m) => ({ default: m.PrintQuiz })));
 const Reviews = lazy(() => import("./pages/Reviews").then((m) => ({ default: m.Reviews })));
+const Wishlist = lazy(() => import("./pages/Wishlist").then((m) => ({ default: m.Wishlist })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
 const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
@@ -147,6 +149,7 @@ const AnimatedRoutes = () => {
           <Route path="/print-quiz" element={<PrintQuiz />} />
           <Route path="/quiz" element={<Navigate to="/print-quiz" replace />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
@@ -280,6 +283,7 @@ export default function App() {
   //    nothing (the consent banner handles first-time accepts live).
   useEffect(() => {
     captureUtm();
+    captureRef();
     initTrackingIfConsented();
   }, []);
 

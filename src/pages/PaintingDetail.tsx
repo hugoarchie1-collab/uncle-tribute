@@ -88,6 +88,7 @@ import { WallLoading } from "../components/wall/WallLoading";
 const importSeeOnYourWall = () => import("../components/wall/SeeOnYourWall");
 const SeeOnYourWall = lazy(importSeeOnYourWall);
 import { getStoredUtm } from "../lib/utm";
+import { getStoredRef } from "../lib/ref";
 import { trackAddToCart, trackViewContent } from "../lib/tracking";
 import {
   EYEBROW_MUTED,
@@ -1233,6 +1234,7 @@ const BuyBox = ({
     // First-touch attribution (tasm.utm.v1) rides along as the optional `utm`
     // field — the server validates it and writes the session metadata.
     const utm = getStoredUtm();
+    const ref = getStoredRef();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -1249,6 +1251,7 @@ const BuyBox = ({
           ...(canvasActive ? { canvasEdge } : {}),
           currency: currencyCode,
           ...(utm ? { utm } : {}),
+          ...(ref ? { ref } : {}),
         }),
         signal: controller.signal,
       });

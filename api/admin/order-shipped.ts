@@ -151,6 +151,7 @@ const renderOrderShippedHtml = (p: {
   trackingUrl: string;
   dispatchedAt: string;
   estateEmail: string;
+  siteUrl: string;
 }): string => {
   const first = (() => {
     const t = (p.buyerName ?? "").trim();
@@ -190,6 +191,10 @@ const renderOrderShippedHtml = (p: {
     + `<p style="${s.eyebrow}">What's shipped</p>`
     + `<div style="${s.card}">${lineHtml}</div>`
     + `<p style="${s.body}">Each print is packed in archival tissue and shipped in a rigid mailer for protection. UK orders typically arrive within 2–3 working days, European orders within 5–7, and rest-of-world within 7–14 — your tracking link above will show the carrier's own ETA. Once it lands, the colourway will settle into the paper over the first few days — give it light, air, and a wall it'll be loved on.</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.eyebrow}">When it's on the wall</p>`
+    + `<p style="${s.body}">If it brings you even a little of what it brought Stephen to make, we'd be honoured to hear how it lives with you — and your words help the next person choose. It takes a moment.</p>`
+    + `<p style="margin:8px 0 4px 0;"><a href="${esc(p.siteUrl)}/reviews" style="${s.link}font-weight:700;">Leave a review →</a></p>`
     + `<p style="${s.signoff}">With warmth,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`
@@ -298,6 +303,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       trackingUrl,
       dispatchedAt,
       estateEmail: DEFAULT_FROM,
+      siteUrl: (process.env.SITE_URL || "https://themandalacompany.com").replace(/\/+$/, ""),
     });
 
     const sendResult = await resend.emails.send({

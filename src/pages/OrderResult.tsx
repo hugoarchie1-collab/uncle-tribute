@@ -14,6 +14,7 @@ import { asset, webp } from "../lib/asset";
 import { usePageTitle } from "../lib/usePageTitle";
 import { getBasket, clearBasket, useBasket, type BasketItem } from "../lib/basket";
 import { getStoredUtm } from "../lib/utm";
+import { getStoredRef } from "../lib/ref";
 import { useNoindexHead } from "../lib/useNoindexHead";
 import {
   PAINTINGS,
@@ -147,6 +148,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
     // First-touch attribution (tasm.utm.v1) rides along like every other
     // checkout body — the server validates + writes the session metadata.
     const utm = getStoredUtm();
+    const ref = getStoredRef();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -163,6 +165,7 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           embellished: false,
           currency: currencyCode,
           ...(utm ? { utm } : {}),
+          ...(ref ? { ref } : {}),
         }),
         signal: controller.signal,
       });

@@ -34,6 +34,7 @@ const EXPLORE_LINKS = [
   { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
+  { to: "/wishlist", label: "Saved" },
   { to: "/reviews", label: "Reviews" },
   { to: "/trade", label: "Partners" },
   { to: "/gift", label: "Gift cards" },
