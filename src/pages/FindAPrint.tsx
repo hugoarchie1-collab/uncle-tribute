@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
+import { WishlistButton } from "../components/WishlistButton";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
@@ -506,21 +507,26 @@ export const FindAPrint = () => {
               key={painting.id}
               className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
             >
-              <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
-                <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
-                  {/* Gentle zoom on hover only — a small scale-up of the cover.
-                      Hugo: hover should zoom in a little, never flick to another
-                      colourway. */}
-                  <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
-                    <AssetImage
-                      src={cover.image}
-                      alt={`${painting.title} — ${cover.name}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover"
-                    />
+              <div className="relative">
+                <WishlistButton paintingId={painting.id} colourwayName={cover.name} floating />
+                <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
+                  <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
+                    {/* Gentle zoom on hover only — a small scale-up of the cover.
+                        Hugo: hover should zoom in a little, never flick to another
+                        colourway. */}
+                    <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
+                      <AssetImage
+                        src={cover.image}
+                        alt={`${painting.title} — ${cover.name}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
-                </div>
+                </Link>
+              </div>
+              <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
                 <figcaption className="pt-3 md:pt-4 text-center">
                   <h2
                     className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 min-h-[2.5em] group-hover:text-accent transition-colors duration-300"

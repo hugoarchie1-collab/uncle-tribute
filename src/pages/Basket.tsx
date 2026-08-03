@@ -29,6 +29,7 @@ import { useCurrency, formatMinorUnits } from "../lib/currency";
 import { useBasket, useGiftCards, removeItem, setItemQuantity, MAX_LINE_QUANTITY, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
+import { getStoredRef } from "../lib/ref";
 import { trackInitiateCheckout } from "../lib/tracking";
 import { usePageTitle } from "../lib/usePageTitle";
 import { SceneBackdrop } from "../components/SceneBackdrop";
@@ -305,6 +306,8 @@ export const Basket = () => {
     // First-touch attribution (tasm.utm.v1) rides along as the optional `utm`
     // field — the server validates it and writes the session metadata.
     const utm = getStoredUtm();
+    // Partner referral (tasm.ref.v1) rides along as `ref` → session metadata.
+    const ref = getStoredRef();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -351,6 +354,7 @@ export const Basket = () => {
           // the price shown on this page (advertised == charged, any currency).
           currency: currencyCode,
           ...(utm ? { utm } : {}),
+          ...(ref ? { ref } : {}),
         }),
         signal: controller.signal,
       });

@@ -692,6 +692,19 @@ const utmMetadata = (raw: unknown): Record<string, string> => {
   return out;
 };
 
+// Partner referral (src/lib/ref.ts, localStorage "tasm.ref.v1"). The buyer's
+// first-touch partner code rides along as the optional top-level `ref` string
+// and is written into the session metadata as `partner_ref` — so the estate can
+// see which partner introduced an order and settle terms privately. Validated
+// to a short link-safe charset; a malformed value is silently dropped and never
+// blocks checkout. NO figures — attribution only.
+const PARTNER_REF_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$/;
+const refMetadata = (raw: unknown): Record<string, string> => {
+  if (typeof raw !== "string") return {};
+  const code = raw.trim().slice(0, 120);
+  return code && PARTNER_REF_RE.test(code) ? { partner_ref: code } : {};
+};
+
 /**
  * The bundle discount percent for a basket, derived from its CONTENTS (never
  * trusted from the client). Mirrors src/data/paintings.ts (gotcha #9):
@@ -1190,6 +1203,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     }>;
     // First-touch attribution (contract C1) — optional on BOTH body shapes.
     utm?: unknown;
+    // Partner referral code (src/lib/ref.ts) — optional; written as partner_ref.
+    ref?: unknown;
     // Presentment currency (mirror of src/lib/currency.tsx). Optional; invalid
     // / missing defaults to GBP. The session is charged in this currency at the
     // converted amount the buyer was shown.
@@ -1526,6 +1541,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // validated fields are written (max 8 keys, values ≤200 chars — see
   // utmMetadata for the Stripe 50-key / 500-char headroom note).
   Object.assign(metadata, utmMetadata(body.utm));
+  // Partner referral — written as a single `partner_ref` key (see refMetadata).
+  Object.assign(metadata, refMetadata(body.ref));
 
   // Note: `new Stripe(secret)` with no apiVersion — pinning a version
   // literal like "2025-09-30.clover" can mismatch the SDK's exported type

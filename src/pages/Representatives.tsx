@@ -274,6 +274,15 @@ export const Representatives = () => {
         title="Partners"
         description="A by-invitation programme for interior designers, hospitality and galleries who place the work of Stephen Meakin. You introduce; the estate handles pricing, framing and worldwide delivery."
         url="/trade"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: FAQ.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
       />
       <Nav />
 
