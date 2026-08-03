@@ -298,6 +298,21 @@ export const FindAPrint = () => {
             </Reveal>
           </div>
 
+          {/* Prefer to be led? A quiet route into the guided personality quiz. */}
+          <Reveal as="div" className="mt-6 flex justify-center">
+            <Link
+              to="/print-quiz"
+              className={cn(
+                BTN_SECONDARY,
+                "min-h-[44px] px-6 py-2.5 text-[14px] 3xl:text-[16px]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+              )}
+            >
+              Or take the print quiz
+              <span aria-hidden="true" className="ml-2">→</span>
+            </Link>
+          </Reveal>
+
           {/* Colour controls — a CENTRED panel under a hairline; the lens label
               sits above a centred swatch row, with the live count + reset
               centred below (no off-axis justify-between row, no big gap before

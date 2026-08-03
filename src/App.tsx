@@ -47,6 +47,8 @@ const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Ret
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
+const PrintQuiz = lazy(() => import("./pages/PrintQuiz").then((m) => ({ default: m.PrintQuiz })));
+const Reviews = lazy(() => import("./pages/Reviews").then((m) => ({ default: m.Reviews })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
 const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
@@ -142,7 +144,9 @@ const AnimatedRoutes = () => {
           {/* Site-wide search — header SearchBar + this results page. */}
           <Route path="/search" element={<Search />} />
           {/* Old /quiz URL preserved so existing links never 404. */}
-          <Route path="/quiz" element={<Navigate to="/for-you" replace />} />
+          <Route path="/print-quiz" element={<PrintQuiz />} />
+          <Route path="/quiz" element={<Navigate to="/print-quiz" replace />} />
+          <Route path="/reviews" element={<Reviews />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />

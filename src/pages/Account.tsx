@@ -18,6 +18,7 @@ import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../components/ui/tokens";
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
+import { SOCIAL_PROFILES } from "../data/socials";
 
 const formatDate = (iso: string | null): string => {
   if (!iso) return "—";
@@ -393,6 +394,38 @@ export const AccountPanel = () => {
                 </Link>
               </li>
             </ul>
+
+            {/* MEMORIES + FOLLOW — the personal, social side of the account:
+                share a memory of Stephen (photo upload lives on /memories) and
+                follow the estate. Connects the account to the Book of Memories
+                and the estate's real social profiles. */}
+            <div className="mt-7 md:mt-8 pt-5 md:pt-6 border-t border-line">
+              <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Memories</p>
+              <p className={cn(META, "m-0 mb-4 max-w-[40ch]")}>
+                Share a memory of Stephen — a few words, or a photograph — on the
+                Book of Memories.
+              </p>
+              <Link to="/memories" className={cn(META, "text-accent hover:text-ink transition-colors font-semibold")}>
+                Share a memory <span aria-hidden="true">→</span>
+              </Link>
+
+              <p className={cn(EYEBROW_MUTED, "m-0 mt-6 mb-3")}>Stay close</p>
+              <ul className="list-none p-0 m-0 flex flex-wrap gap-2.5">
+                {SOCIAL_PROFILES.map((s) => (
+                  <li key={s.label}>
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${s.label} — opens in a new tab`}
+                      className="inline-flex items-center justify-center h-10 w-10 rounded-full ring-1 ring-line text-ink-muted hover:text-accent hover:ring-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    >
+                      {s.icon}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Reveal>
         </div>
     </>

@@ -545,6 +545,55 @@ const renderRepresentativeApplicationHtml = (p: {
     + `</div></body></html>`;
 };
 
+// ---------------------------------------------------------------------------
+// POSTs kind:"review" — a customer leaving a star review. Emails the ESTATE
+// (replyTo the reviewer) so an approved review can be pasted into
+// src/data/reviews.ts by hand (the memories model: HELD for family approval,
+// never auto-published — no fabricated ratings ever ship). Reuses esc/SANS/
+// DISPLAY (gotcha #5).
+// ---------------------------------------------------------------------------
+const renderReviewHtml = (p: {
+  name: string;
+  email: string;
+  rating: number;
+  title: string;
+  piece: string;
+  location: string;
+  message: string;
+}): string => {
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 10px 0;`,
+    stars: `font-family:${SANS};font-size:22px;letter-spacing:2px;color:#c97844;margin:0 0 20px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
+    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const stars = "★".repeat(p.rating) + "☆".repeat(Math.max(0, 5 - p.rating));
+  const row = (label: string, value: string) =>
+    value
+      ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
+      : "";
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>New review</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · New review — hold for approval</p>`
+    + `<h1 style="${s.heading}">${p.title ? esc(p.title) : "A new review"}${p.name ? ` — ${esc(p.name)}` : ""}</h1>`
+    + `<p style="${s.stars}">${stars} <span style="font-size:13px;color:rgba(237,230,214,0.55);">(${p.rating}/5)</span></p>`
+    + (p.message ? `<div style="${s.quote}">${esc(p.message)}</div>` : "")
+    + row("Name", p.name)
+    + row("Contact", p.email)
+    + row("Location", p.location)
+    + row("Piece", p.piece)
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Approve → paste into <strong>src/data/reviews.ts</strong> (newest first). Reply to the reviewer at <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a>.<br/>The Art of Stephen Meakin · The Mandala Company</p>`
+    + `</div></body></html>`;
+};
+
 export default async function handler(req: VercelReq, res: VercelRes) {
   const originHeader = req.headers.origin;
   const origin = typeof originHeader === "string" ? originHeader : null;
@@ -591,6 +640,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     // that's a different kind branch, so there is no collision.)
     background?: string;
     reach?: string;
+    // Review fields (kind === "review"): a 1–5 star rating, an optional title,
+    // an optional location, the piece it's about, and the review text (message).
+    rating?: string | number;
+    title?: string;
+    location?: string;
     // Honeypot for the trade / representative forms (custom-size reuses `company`
     // as its honeypot, but `company`/studio is a REAL field there — so these use
     // `botcheck`).
@@ -818,6 +872,60 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         console.warn(
           "[newsletter-subscribe] RESEND_API_KEY missing — representative application logged only.",
         );
+      }
+    }
+    return send(200, { ok: true });
+  }
+
+  // ── Customer review (folded in, 12-function cap). kind:"review" emails the
+  //    ESTATE a star review (replyTo the reviewer); an approved review is
+  //    pasted into src/data/reviews.ts by hand — reviews are HELD for family
+  //    approval, never auto-published, so no fabricated rating ever ships. ──
+  if ((body.kind ?? "").toString() === "review") {
+    // Honeypot — a bot that fills `botcheck` is silently accepted (no email).
+    if ((body.botcheck ?? "").toString().trim() === "") {
+      const ratingRaw = Number(body.rating);
+      const rating = Number.isFinite(ratingRaw) ? Math.min(5, Math.max(1, Math.round(ratingRaw))) : 5;
+      const title = (body.title ?? "").toString().trim().slice(0, 120);
+      const location = (body.location ?? "").toString().trim().slice(0, 120);
+      const piece = (body.paintingTitle ?? body.paintingId ?? "").toString().trim().slice(0, 200);
+      const reviewMessage = (body.message ?? "").toString().trim().slice(0, 2000);
+      console.log("[newsletter-subscribe] review", { email, name, rating, title, piece });
+      const resendKeyReview = process.env.RESEND_API_KEY;
+      if (resendKeyReview) {
+        try {
+          const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+          const toEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_FROM;
+          const resend = new Resend(resendKeyReview);
+          const html = renderReviewHtml({
+            name,
+            email,
+            rating,
+            title,
+            piece,
+            location,
+            message: reviewMessage,
+          });
+          const r = await resend.emails.send({
+            from: `${FROM_NAME} <${fromEmail}>`,
+            to: [toEmail],
+            replyTo: email,
+            subject: name ? `New review (${rating}★) — ${name}` : `New review (${rating}★)`,
+            html,
+          });
+          if (r.error) {
+            console.error("[newsletter-subscribe] review send error:", r.error);
+          } else {
+            console.log("[newsletter-subscribe] review email sent", { email, resend_id: r.data?.id });
+          }
+        } catch (err) {
+          console.error(
+            "[newsletter-subscribe] review email failed:",
+            err instanceof Error ? err.message : String(err),
+          );
+        }
+      } else {
+        console.warn("[newsletter-subscribe] RESEND_API_KEY missing — review logged only.");
       }
     }
     return send(200, { ok: true });
