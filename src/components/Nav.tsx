@@ -7,7 +7,7 @@ import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
-import { asset } from "../lib/asset";
+import { RoseMark } from "./RoseMark";
 import { useBasketTotalQuantity } from "../lib/basket";
 import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
 
@@ -311,16 +311,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           }}
           className="press inline-flex items-center min-w-0"
         >
-          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): the deep-red wax-seal Tudor
-              rose MARK beside the name set in the site's MAIN BOLD display face
-              (Fraunces 700 — the same cut as the masthead), proportions matched so
-              the mark and the logotype share a height and read as one recognisable
-              emblem. The seal is sized to ~2x the wordmark cap height. */}
-          <img
-            src={asset("/logo/logo-seal-v9-w256.png")}
-            alt=""
-            aria-hidden="true"
-            className="shrink-0 h-[clamp(32px,3.2vw,44px)] w-auto mr-2.5 sm:mr-3 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
+          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): a FLAT, single-colour, vector
+              geometric rose-window MARK (RoseMark — echoes Stephen's mandalas)
+              beside the name in the site's MAIN BOLD display face (Fraunces 700).
+              One consistent flat language, silhouette-legible from favicon to
+              wall, mark ~2x the wordmark cap height. Replaces the photoreal
+              wax-seal PNG. Cream on the deep-red banner. */}
+          <RoseMark
+            className="shrink-0 h-[clamp(30px,3vw,42px)] w-[clamp(30px,3vw,42px)] text-ink mr-2.5 sm:mr-3 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))]"
           />
           <span
             className="font-display font-bold text-ink tracking-[-0.01em] [font-variation-settings:'opsz'_40,'wght'_700] leading-[1.02] min-w-0 whitespace-nowrap text-[clamp(13px,1.45vw,19px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
