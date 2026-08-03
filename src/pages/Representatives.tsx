@@ -566,6 +566,12 @@ export const Representatives = () => {
               <p className={cn(EYEBROW_MUTED, "m-0 mt-8")}>
                 The Mandala Company · info@themandalacompany.com
               </p>
+              <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>
+                Already a partner?{" "}
+                <Link to="/partners/terms" className="text-accent hover:text-ink transition-colors">
+                  View your terms →
+                </Link>
+              </p>
             </Reveal>
             <Reveal as="div">
               <RepresentativeApplication />

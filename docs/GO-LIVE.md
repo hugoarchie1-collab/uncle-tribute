@@ -77,19 +77,41 @@ In the Stripe dashboard → Settings → Payment methods, enable **Klarna** and
 **Clearpay/Afterpay**. Already wired in checkout — just toggle them on. Lifts
 AOV on the higher-priced editions.
 
-## 6. Partner (affiliate) programme — your decision, then two settings
+## 6. Partner (affiliate) programme
 
 - **Attribution already works:** a partner shares `themandalacompany.com/?ref=THEIR-CODE`.
   On any resulting order, `partner_ref` appears in the Stripe order's metadata —
   that's how you know whom to pay. No setup needed.
-- **Commission terms:** decide the actual rate/arrangement (only you can — it's a
-  real financial commitment). Today the Partners page keeps this **private and
-  price-silent** by design, and terms are arranged 1:1 by email, which is the
-  recommended posture for a memorial estate. If you later want a gated partner
-  terms sheet with figures, tell me the numbers and I'll build it behind an
-  access code (same pattern as `/trade/pricing`).
-- `TRADE_ACCESS_CODE` (optional) un-gates the `/trade/pricing` trade sheet for
-  approved buyers.
+- **Gated commission sheet (`/partners/terms`):** a private, code-gated page shows
+  each partner their commission. Set **`PARTNER_TERMS_CODE`** in Vercel to the
+  shared code you hand approved partners (leave unset → the page stays gated for
+  everyone). The public Partners page stays price-silent; figures live only behind
+  this gate. Share `themandalacompany.com/partners/terms?code=YOUR-CODE`.
+
+  **Recommended commission structure (already built in as the defaults):**
+
+  | Tier | Rate | Unlocks at |
+  |---|---|---|
+  | Associate | **15%** | every approved partner, every introduction |
+  | Partner | **20%** | a single placement of £5,000+ in works, or £10,000 of introductions to date |
+  | Key partner | **25%** | a single placement of £20,000+, or £50,000 to date (hospitality / multi-room) |
+  | Repeat residual | **10%** | repeat orders from a client you first introduced, for 24 months |
+
+  *Why these numbers maximise long-run profit:* prints run ~90% gross margin and
+  are made to order (no inventory risk), so every partner-driven sale is almost
+  pure incremental profit and **volume is the lever, not per-unit margin**. Even at
+  the 25% top rate you keep ~65% margin on sales that wouldn't exist without the
+  partner; the escalating ladder self-selects your productive partners, and the
+  residual captures the high-lifetime-value hospitality accounts that are the real
+  long-run prize. Below ~15% won't move a busy designer; above ~25% erodes prestige
+  without proportionate volume.
+
+  Commission is paid on the **net sale value** (works only, ex-tax & ex-shipping),
+  on completed non-refunded orders, settled monthly. To change any rate without a
+  code change, set `PARTNER_RATE_ASSOCIATE`, `PARTNER_RATE_PARTNER`,
+  `PARTNER_RATE_KEY`, `PARTNER_RATE_RESIDUAL` (whole numbers, % — e.g. `18`).
+- `TRADE_ACCESS_CODE` (optional) un-gates the separate `/trade/pricing` trade-buy
+  sheet for approved trade buyers.
 
 ---
 
