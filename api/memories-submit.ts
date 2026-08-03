@@ -463,6 +463,13 @@ const esc = (s: string): string =>
 const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
+// The estate's wax-seal rose, centred at the head of every letter (the same
+// mark the site uses on /links and in the nav).
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
+
 const renderMemorySubmittedHtml = (p: {
   name: string;
   relationship?: string;
@@ -507,8 +514,9 @@ const renderMemorySubmittedHtml = (p: {
   const submittedLine = p.email
     ? `<p style="${s.small}">Submitted ${esc(p.submittedAt)} · <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a> (reply to thank them)</p>`
     : `<p style="${s.small}">Submitted ${esc(p.submittedAt)} · no email left</p>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A new memory of Steve</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>A new memory of Steve</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
+    + STAMP
     + `<p style="${s.eyebrow}">Book of Memories · ${published ? "Published" : "Held for review"}</p>`
     + `<h1 style="${s.heading}">A memory of Steve.</h1>`
     + statusCard
@@ -576,8 +584,9 @@ const renderReviewSubmittedHtml = (p: {
       : "")
     + `<p style="${s.small}margin:0;color:#5a544a;">— ${esc(p.name)}</p>`
     + `</div>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A new review of a print</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>A new review of a print</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
+    + STAMP
     + `<p style="${s.eyebrow}">Print review · ${p.published ? "Published" : "Held for review"}</p>`
     + `<h1 style="${s.heading}">A new review.</h1>`
     + `<p style="${s.stars}" aria-label="${p.rating} out of 5 stars">${stars}</p>`

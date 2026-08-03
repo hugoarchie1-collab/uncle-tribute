@@ -755,6 +755,16 @@ const esc = (s: string): string =>
 const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
+// The estate's wax-seal rose, centred at the head of every letter like the seal
+// on an old-fashioned envelope — the SAME mark the site uses on /links and in
+// the nav. It carries the brand, so the emails no longer repeat a text
+// "The Mandala Company" wordmark. Absolute URL (emails can't use relative
+// paths); transparent PNG so it sits on the estate-paper ground.
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
+
 const renderOrderConfirmationHtml = (p: {
   buyerName?: string | null;
   orderRef: string;
@@ -834,9 +844,10 @@ const renderOrderConfirmationHtml = (p: {
         + `</div>`;
     })
     .join("");
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your print is on its way — The Art of Stephen Meakin</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Your print is on its way — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
     + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order in London at a leading giclée atelier, and dispatched within <strong style="color:#1a1612;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
     + `<hr style="${s.divider}"/>`
@@ -928,9 +939,10 @@ const renderGiftHtml = (p: {
         + `</div>`
       : "";
 
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A gift from the Stephen Meakin estate</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>A gift from the Stephen Meakin estate</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">${greeting}</h1>`
     + intro
     + noteHtml
@@ -983,9 +995,10 @@ const renderBasketHeldHtml = (p: {
     footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your basket is still held — The Art of Stephen Meakin</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Your basket is still held — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Hello, ${first}.</h1>`
     + `<p style="${s.body}">The pieces you were considering from <em>The Art of Stephen Meakin</em> are still held in your basket. If you'd like to pick up where you left off, your checkout is here.</p>`
     + `<div style="${s.card}">`

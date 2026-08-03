@@ -99,8 +99,8 @@ const magicLinkEmail = (link: string): string => {
     `<td align="center" style="padding:32px 16px;">` +
     `<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="width:100%;max-width:520px;background:#ece4d5;border:1px solid #ddd3bf;border-radius:16px;"><tr>` +
     `<td style="padding:38px 34px;font-family:${SANS};">` +
-    `<img src="${logo}" width="54" height="54" alt="The Mandala Company" style="display:block;border:0;margin:0 0 22px;"/>` +
-    `<p style="font-size:12px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:#c97844;margin:0 0 16px;">The Mandala Company</p>` +
+    `<p style="text-align:center;margin:0 0 24px;line-height:1;"><img src="${logo}" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/></p>` +
+    `<p style="font-size:12px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:#c97844;margin:0 0 16px;">The estate of Stephen Meakin</p>` +
     `<h1 style="font-family:${DISPLAY};font-weight:700;font-size:30px;line-height:1.15;color:#1a1612;margin:0 0 16px;">Your sign-in link</h1>` +
     `<p style="font-size:16px;line-height:1.65;color:#5a544a;margin:0 0 26px;">Tap the button below to sign in to your account and view your orders. The link is valid for 15 minutes and can be used once.</p>` +
     `<p style="margin:0 0 28px;"><a href="${link}" style="display:inline-block;background:#1a1612;color:#f5efe3;font-size:14px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 34px;border-radius:8px;">Sign in</a></p>` +

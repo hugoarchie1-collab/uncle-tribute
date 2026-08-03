@@ -146,6 +146,14 @@ const esc = (s: string): string =>
 const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
+// The estate's wax-seal rose, centred at the head of the letter (the same mark
+// the site uses on /links and in the nav). Carries the brand in place of a text
+// "The Mandala Company" wordmark.
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
+
 const renderOrderShippedHtml = (p: {
   buyerName?: string | null;
   orderRef: string;
@@ -180,9 +188,10 @@ const renderOrderShippedHtml = (p: {
         `<p style="${s.orderRow}margin:${idx === 0 ? "0" : "8px 0 0 0"};"><strong style="color:#1a1612;">${esc(line.title)}</strong> — <span style="color:#5a544a;">${esc(line.colourway)}</span></p>`,
     )
     .join("");
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your print has left the studio — The Art of Stephen Meakin</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Your print has left the studio — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Your print is on its way, ${first}.</h1>`
     + `<p style="${s.body}">Your giclée left the atelier on <strong style="color:#1a1612;">${esc(p.dispatchedAt)}</strong> via ${esc(p.carrier)}. You can follow it from here:</p>`
     + `<div style="${s.giftCard}">`

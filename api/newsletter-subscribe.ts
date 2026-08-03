@@ -351,6 +351,14 @@ const esc = (s: string): string =>
 const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
 const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
+// The estate's wax-seal rose, centred at the head of every letter (the same
+// mark the site uses on /links and in the nav). It carries the brand, so the
+// letters drop the repeated text "The Mandala Company" wordmark.
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
+
 const renderWelcomeHtml = (p: {
   subscriberName?: string | null;
   estateEmail: string;
@@ -395,7 +403,7 @@ const renderWelcomeHtml = (p: {
     : "";
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="text-align:center;margin:0 0 26px 0;"><img src="https://themandalacompany.com/logo/mandala-company-seal-v1.png" width="112" height="112" alt="The Mandala Company" style="display:inline-block;width:112px;height:112px;border:0;outline:none;"/></p>`
+    + STAMP
     + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
     + `<p style="${s.body}">You've been added to Friends &amp; Family — a small list the family keeps for quarterly notes on new editions of <em>The Art of Stephen Meakin</em>, exhibitions, and the occasional piece of writing from the archive. No more than four notes a year, and never a marketing blast.</p>`
@@ -439,9 +447,10 @@ const renderCustomSizeHtml = (p: {
   };
   const row = (label: string, value: string) =>
     `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Custom size request</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Custom size request</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Custom size request</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Custom size request</p>`
     + `<h1 style="${s.heading}">A bespoke print enquiry${p.paintingTitle ? ` for ${esc(p.paintingTitle)}` : ""}.</h1>`
     + row("From", `${p.name ? `${p.name} · ` : ""}${p.email}`)
     + (p.paintingTitle ? row("Painting", p.paintingTitle) : "")
@@ -487,9 +496,10 @@ const renderTradeApplicationHtml = (p: {
     value
       ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
       : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Trade application</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Trade application</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Trade &amp; Interior Design</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Trade &amp; Interior Design</p>`
     + `<h1 style="${s.heading}">A trade application${p.studio ? ` from ${esc(p.studio)}` : ""}.</h1>`
     + row("Studio / company", p.studio)
     + row("Website", p.website)
@@ -536,9 +546,10 @@ const renderRepresentativeApplicationHtml = (p: {
     value
       ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
       : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Representative application</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Representative application</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Representatives</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Representatives</p>`
     + `<h1 style="${s.heading}">A representative application${p.name ? ` from ${esc(p.name)}` : ""}.</h1>`
     + row("Name", p.name)
     + row("Contact", p.email)
