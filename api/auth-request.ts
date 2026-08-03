@@ -80,8 +80,11 @@ const readBody = async (req: VercelReq): Promise<Record<string, unknown>> => {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const magicLinkEmail = (link: string): string => {
-  const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-  const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+  // Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+  // attributes (double quotes here nest and truncate the attribute — see the
+  // note in api/stripe-webhook.ts). Aligned to the site brand faces.
+  const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+  const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
   const logo = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
   // TABLE-based with the dark card on a <td> background (NOT the <body>): Gmail
   // strips <body> backgrounds in light mode, which turned the light cream text

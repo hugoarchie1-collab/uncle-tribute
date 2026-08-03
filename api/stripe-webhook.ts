@@ -744,8 +744,16 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Font-family names MUST be single-quoted: these stacks are interpolated into
+// double-quoted style="…" attributes, so double quotes here produce
+// style="font-family:"Fraunces"…" — nested double quotes that a strict HTML
+// parser truncates at the first inner quote, dropping every later declaration
+// (colour, size, spacing). Single quotes keep the attribute well-formed.
+// Aligned to the site's real brand faces (Fraunces + Schibsted Grotesk); email
+// clients fall back to the serif/sans generics, but the declared identity now
+// matches the site (mirror of api/email-basket.ts).
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
 const renderOrderConfirmationHtml = (p: {
   buyerName?: string | null;
@@ -784,7 +792,7 @@ const renderOrderConfirmationHtml = (p: {
     divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
     card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
     giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
-    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
+    code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
     meta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
     signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
     footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
@@ -896,7 +904,7 @@ const renderGiftHtml = (p: {
     divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
     giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:28px 22px;margin:28px 0;text-align:center;`,
     amount: `font-family:${DISPLAY};font-weight:700;font-size:40px;line-height:1;color:#ede6d6;margin:0 0 6px 0;`,
-    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:14px 0 12px 0;display:block;`,
+    code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:14px 0 12px 0;display:block;`,
     note: `font-family:${DISPLAY};font-style:italic;font-size:16px;line-height:1.6;color:#ede6d6;margin:0;`,
     noteCard: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
     signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,

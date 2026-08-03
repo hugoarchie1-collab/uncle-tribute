@@ -111,7 +111,7 @@ const TIERS: Record<TierId, EmailTier> = {
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
     // both available:true. When this read false, a saved A0 basket was
-    // silently downgraded to the A2 anchor in the email (£495 vs £1,895).
+    // silently downgraded to the A2 anchor in the email (£525 vs £1,995).
     available: true,
   },
   studio: {

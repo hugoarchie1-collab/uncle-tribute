@@ -345,8 +345,11 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+// attributes (double quotes here nest and truncate the attribute — see the
+// note in api/stripe-webhook.ts). Aligned to the site brand faces.
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
 const renderWelcomeHtml = (p: {
   subscriberName?: string | null;
@@ -372,7 +375,7 @@ const renderWelcomeHtml = (p: {
     small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
     divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
     giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
-    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
+    code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
     signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
     footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
@@ -380,8 +383,12 @@ const renderWelcomeHtml = (p: {
   };
   const giftHtml = hasGift
     ? `<div style="${s.giftCard}">`
-      + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A small note from the estate</p>`
-      + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
+      // Dark ink on the light #ece4d5 gift card — the block previously reused
+      // the dark-theme cream (#ede6d6 / rgba(237,230,214,…)) here, which was
+      // near-invisible cream-on-cream once the welcome email moved to the light
+      // estate-paper palette. Kept dormant until NEWSLETTER_DISCOUNT_ENABLED.
+      + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 14px 0;">A small note from the estate</p>`
+      + `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
       + `<code style="${s.code}">${esc(p.thankYouCode as string)}</code>`
       + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry as string)}.</p>`
       + `</div>`

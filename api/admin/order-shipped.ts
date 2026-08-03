@@ -140,8 +140,11 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+// attributes (double quotes here nest and truncate the attribute — see the
+// note in api/stripe-webhook.ts). Aligned to the site brand faces.
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
 
 const renderOrderShippedHtml = (p: {
   buyerName?: string | null;
