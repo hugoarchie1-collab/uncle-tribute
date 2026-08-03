@@ -53,6 +53,7 @@ const Reviews = lazy(() => import("./pages/Reviews").then((m) => ({ default: m.R
 const Wishlist = lazy(() => import("./pages/Wishlist").then((m) => ({ default: m.Wishlist })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
+const PartnerTerms = lazy(() => import("./pages/PartnerTerms").then((m) => ({ default: m.PartnerTerms })));
 const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
@@ -170,6 +171,7 @@ const AnimatedRoutes = () => {
           {/* Gated trade price sheet — reachable only via the estate's link
               (noindex + robots Disallow; not in nav / footer / sitemap). */}
           <Route path="/trade/pricing" element={<TradePricing />} />
+          <Route path="/partners/terms" element={<PartnerTerms />} />
           {/* Old /representatives URL now redirects to the canonical /trade. */}
           <Route path="/representatives" element={<Navigate to="/trade" replace />} />
           {/* Account (passwordless) + Orders & Returns — Amazon-IA header. */}

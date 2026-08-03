@@ -875,6 +875,86 @@ const buildTradeSheet = () => {
   };
 };
 
+// ---- PARTNER (introducer) COMMISSION — the SELL side ------------------------
+// SEPARATE from TRADE above (buyers who purchase at a discount). Partners are
+// SELLERS: they INTRODUCE a client/room and share in the resulting placement.
+// The commission is paid on the NET SALE VALUE (works only, ex-tax & ex-free-
+// shipping) of completed, non-refunded orders attributed to that partner
+// (partner_ref in the order metadata).
+//
+// RECOMMENDED STRUCTURE (the estate can override any rate via env without a code
+// change). Chosen to MAXIMISE LONG-RUN PROFIT given the economics: prints run
+// ~90% gross margin and are made to order (no inventory risk), so every
+// partner-driven sale is almost pure INCREMENTAL profit and VOLUME is the lever,
+// not per-unit margin. An escalating ladder self-selects the productive partners
+// and reserves the richest rate for the largest (most profitable) placements; a
+// residual on repeat orders captures the high-lifetime-value hospitality
+// accounts that are the real long-run prize. Even at the 25% top rate the estate
+// keeps ~65% margin on sales that would not exist without the partner. Rates
+// materially above ~25% erode prestige/margin without proportionate volume;
+// below ~15% won't move a busy designer — so 15 / 20 / 25 (+10% residual) is the
+// profit-maximising band.
+//
+// ⚠️ These are figures the estate PAYS OUT (not charged to any buyer) and are
+// surfaced ONLY behind the PARTNER_TERMS_CODE gate + on private agreements —
+// never in the public client bundle or on any buyer surface.
+const partnerRateFromEnv = (name: string, def: number): number => {
+  const raw = (process.env[name] ?? "").trim();
+  if (!raw) return def;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 && n <= 90 ? Math.round(n) : def;
+};
+type PartnerTierId = "associate" | "partner" | "key";
+const PARTNER_RATE: Record<PartnerTierId, number> = {
+  associate: partnerRateFromEnv("PARTNER_RATE_ASSOCIATE", 15),
+  partner: partnerRateFromEnv("PARTNER_RATE_PARTNER", 20),
+  key: partnerRateFromEnv("PARTNER_RATE_KEY", 25),
+};
+const PARTNER_RESIDUAL_RATE = partnerRateFromEnv("PARTNER_RATE_RESIDUAL", 10);
+const PARTNER_TIER_META: Record<PartnerTierId, { label: string; shortLabel: string; note: string }> = {
+  associate: {
+    label: "Associate",
+    shortLabel: "Associate",
+    note: "Every approved partner, on every introduction.",
+  },
+  partner: {
+    label: "Partner",
+    shortLabel: "Partner",
+    note: "A single placement of £5,000+ in works, or £10,000 of introductions to date.",
+  },
+  key: {
+    label: "Key partner",
+    shortLabel: "Key",
+    note: "A single placement of £20,000+ in works, or £50,000 to date — hospitality & multi-room.",
+  },
+};
+const buildPartnerTerms = () => {
+  const tiers = (["associate", "partner", "key"] as PartnerTierId[]).map((id) => ({
+    id,
+    label: PARTNER_TIER_META[id].label,
+    shortLabel: PARTNER_TIER_META[id].shortLabel,
+    ratePercent: PARTNER_RATE[id],
+    note: PARTNER_TIER_META[id].note,
+  }));
+  // Worked examples so a partner sees exactly what an introduction earns.
+  const sampleSales = [250000, 500000, 1500000];
+  const examples = sampleSales.map((salePence) => ({
+    salePence,
+    commissions: {
+      associate: Math.round((salePence * PARTNER_RATE.associate) / 100),
+      partner: Math.round((salePence * PARTNER_RATE.partner) / 100),
+      key: Math.round((salePence * PARTNER_RATE.key) / 100),
+    },
+  }));
+  return {
+    tiers,
+    residualPercent: PARTNER_RESIDUAL_RATE,
+    examples,
+    basis:
+      "the net sale value — the price of the works only, excluding any tax and the (free) shipping — on completed orders that are not refunded.",
+  };
+};
+
 /**
  * Compute the shipping options for a session.
  *
@@ -1234,6 +1314,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     const expected = (process.env.TRADE_ACCESS_CODE ?? "").trim();
     const ok = expected.length > 0 && code.length > 0 && safeEqual(code, expected);
     return send(200, ok ? { ok: true, sheet: buildTradeSheet() } : { ok: false });
+  }
+
+  // ── PARTNER TERMS GATE (kind:"partner-terms") ────────────────────────────
+  // Mirrors trade-access. The /partners/terms gate POSTs the shared partner
+  // code; on a constant-time match against process.env.PARTNER_TERMS_CODE we
+  // return { ok:true, terms } where `terms` (commission rates + worked examples)
+  // is assembled HERE and travels to the client ONLY after the code verifies —
+  // so the commission figures never ship in the public bundle. Wrong / absent
+  // code → { ok:false }. Unset PARTNER_TERMS_CODE keeps it gated for everyone.
+  if (kind === "partner-terms") {
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    const expected = (process.env.PARTNER_TERMS_CODE ?? "").trim();
+    const ok = expected.length > 0 && code.length > 0 && safeEqual(code, expected);
+    return send(200, ok ? { ok: true, terms: buildPartnerTerms() } : { ok: false });
   }
 
   const secret = process.env.STRIPE_SECRET_KEY;
