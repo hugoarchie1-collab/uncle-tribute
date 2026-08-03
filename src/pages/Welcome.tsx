@@ -1394,17 +1394,24 @@ export const Welcome = () => {
               alt=""
               loading="lazy"
               decoding="async"
-              className="relative z-[1] block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[92%] md:ml-[4%]"
+              // FILLS THE FULL WIDTH + SIDES like the top Earth (Hugo 2026-08-03:
+              // "the earth at the bottom doesn't fill the screen and sides like
+              // the top does"). The old md:w-[92%] left 4% side gaps and the 82%
+              // radial mask cut the two TOP corners (against the ambient), so the
+              // foot read narrower than the pinned top limb. Now it overscans past
+              // both edges and the mask is wide enough to keep the sides + corners
+              // solid — only the very top-centre feathers into the backdrop.
+              className="relative z-[1] block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[112%] md:ml-[-6%]"
               style={{
                 maxWidth: "none",
                 height: "auto",
-                // Mask solid at the BOTTOM (flush to the footer), dissolving UP
-                // into the peacock — the exact vertical mirror of the top Earth's
-                // mask (which is solid at its pinned top edge, dissolving down).
+                // Wide radial so the sides/corners stay opaque out to the edges;
+                // only the top-centre dissolves UP into the peacock (mirror of the
+                // top Earth, which feathers at its inner edge).
                 WebkitMaskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(135% 150% at 50% 100%, #000 66%, rgba(0,0,0,0.32) 88%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                  "radial-gradient(135% 150% at 50% 100%, #000 66%, rgba(0,0,0,0.32) 88%, transparent 100%)",
               }}
             />
           </section>
