@@ -782,20 +782,20 @@ const renderOrderConfirmationHtml = (p: {
   const EMBELLISH =
     "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Allow up to two weeks.";
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
-    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#1a1612;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#1a1612;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    card: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
     code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
-    meta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    meta: `font-family:${SANS};font-size:12px;color:#8a8172;margin:0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const lineHtml = p.lines
@@ -809,13 +809,13 @@ const renderOrderConfirmationHtml = (p: {
       // per-line breakdown sums to the grand Total. The add-on prices mirror
       // paintings.ts / api/checkout.ts / api/email-basket.ts (gotcha #9).
       const priceRow = (label: string, value: string, sub?: string) =>
-        `<p style="${s.meta}margin-top:6px;color:#ede6d6;">`
-        + `<span style="color:rgba(237,230,214,0.78);">${label}</span>`
-        + ` &nbsp;·&nbsp; <strong style="color:#ede6d6;">${esc(value)}</strong>`
-        + (sub ? `<br/><span style="color:rgba(237,230,214,0.55);">${sub}</span>` : "")
+        `<p style="${s.meta}margin-top:6px;color:#1a1612;">`
+        + `<span style="color:#5a544a;">${label}</span>`
+        + ` &nbsp;·&nbsp; <strong style="color:#1a1612;">${esc(value)}</strong>`
+        + (sub ? `<br/><span style="color:#8a8172;">${sub}</span>` : "")
         + `</p>`;
-      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
-        + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`
+      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid #ddd3bf"};">`
+        + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#1a1612;">${esc(line.title)}</strong> — <span style="color:#5a544a;">${esc(line.colourway)}</span></p>`
         + (tierBits ? `<p style="font-family:${SANS};color:#c97844;letter-spacing:0.18em;text-transform:uppercase;font-size:10px;font-weight:700;margin:4px 0 0 0;">${esc(tierBits)}</p>` : "")
         + `<p style="${s.meta}margin-top:4px;">${esc(line.size)}</p>`
         + priceRow("Print", line.price)
@@ -838,23 +838,23 @@ const renderOrderConfirmationHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
-    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order in London at a leading giclée atelier, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
+    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order in London at a leading giclée atelier, and dispatched within <strong style="color:#1a1612;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
-    + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
-    + `<p style="font-family:${SANS};font-size:14px;margin:0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Total (incl. shipping)</span> &nbsp; <strong style="color:#ede6d6;font-size:16px;">${esc(p.total)}</strong></p>`
+    + `<hr style="border:0;border-top:1px solid #ddd3bf;margin:18px 0 12px 0;"/>`
+    + `<p style="font-family:${SANS};font-size:14px;margin:0;"><span style="color:#8a8172;letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Total (incl. shipping)</span> &nbsp; <strong style="color:#1a1612;font-size:16px;">${esc(p.total)}</strong></p>`
     + `</div>`
     + `<p style="${s.eyebrow}margin-top:28px;">Authentication</p>`
     + `<div style="${s.card}">`
-    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.stamp}</p>`
-    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.numbering}</p>`
-    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.coa}</p>`
-    + `<p style="${s.meta}color:rgba(237,230,214,0.78);">· ${ESTATE.printer}</p>`
+    + `<p style="${s.meta}color:#1a1612;margin-bottom:8px;">· ${ESTATE.stamp}</p>`
+    + `<p style="${s.meta}color:#1a1612;margin-bottom:8px;">· ${ESTATE.numbering}</p>`
+    + `<p style="${s.meta}color:#1a1612;margin-bottom:8px;">· ${ESTATE.coa}</p>`
+    + `<p style="${s.meta}color:#5a544a;">· ${ESTATE.printer}</p>`
     + `</div>`
     + `<div style="${s.giftCard}">`
-    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A note from the estate</p>`
-    + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">In thanks for being among the first to take one of Steve's prints into your home, please accept ${esc(p.thankYouValue)} towards a future print, with our warmth.</p>`
+    + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 14px 0;">A note from the estate</p>`
+    + `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">In thanks for being among the first to take one of Steve's prints into your home, please accept ${esc(p.thankYouValue)} towards a future print, with our warmth.</p>`
     + `<code style="${s.code}">${esc(p.thankYouCode)}</code>`
     + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry)}.</p>`
     + `</div>`
@@ -894,21 +894,21 @@ const renderGiftHtml = (p: {
   const buyerFull = (p.buyerName ?? "").trim();
   const buyerLabel = buyerFull ? esc(buyerFull) : "someone who cares for you";
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#ede6d6;margin:0 0 24px 0;`,
-    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:28px 22px;margin:28px 0;text-align:center;`,
-    amount: `font-family:${DISPLAY};font-weight:700;font-size:40px;line-height:1;color:#ede6d6;margin:0 0 6px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#1a1612;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#1a1612;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:28px 22px;margin:28px 0;text-align:center;`,
+    amount: `font-family:${DISPLAY};font-weight:700;font-size:40px;line-height:1;color:#1a1612;margin:0 0 6px 0;`,
     code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:14px 0 12px 0;display:block;`,
-    note: `font-family:${DISPLAY};font-style:italic;font-size:16px;line-height:1.6;color:#ede6d6;margin:0;`,
-    noteCard: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    note: `font-family:${DISPLAY};font-style:italic;font-size:16px;line-height:1.6;color:#1a1612;margin:0;`,
+    noteCard: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
 
@@ -923,7 +923,7 @@ const renderGiftHtml = (p: {
   const noteHtml =
     p.toRecipient && cleanStr(p.giftMessage ?? undefined)
       ? `<div style="${s.noteCard}">`
-        + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">A note from ${buyerLabel}</p>`
+        + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 12px 0;">A note from ${buyerLabel}</p>`
         + `<p style="${s.note}">${esc((p.giftMessage ?? "").trim())}</p>`
         + `</div>`
       : "";
@@ -935,14 +935,14 @@ const renderGiftHtml = (p: {
     + intro
     + noteHtml
     + `<div style="${s.giftCard}">`
-    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">Your gift card</p>`
+    + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 12px 0;">Your gift card</p>`
     + `<p style="${s.amount}">${esc(p.amountLabel)}</p>`
     + `<p style="${s.small}margin:0 0 4px 0;">towards a signed estate print</p>`
     + `<code style="${s.code}">${esc(p.code)}</code>`
     + `<p style="${s.small}margin:0;">Valid until ${esc(p.expiresLabel)}.</p>`
     + `</div>`
     + `<h2 style="${s.subheading}">How to redeem</h2>`
-    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code <strong style="color:#ede6d6;">${esc(p.code)}</strong> at checkout. It covers a single order — for example, an A2 Collector's Edition print — and the gift value is taken off the total. If the print costs more than the gift, you simply pay the difference; if less, the gift covers it in full.</p>`
+    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code <strong style="color:#1a1612;">${esc(p.code)}</strong> at checkout. It covers a single order — for example, an A2 Collector's Edition print — and the gift value is taken off the total. If the print costs more than the gift, you simply pay the difference; if less, the gift covers it in full.</p>`
     + `<p style="${s.small}">The code is single-use and applies to one order. There's no need to spend it all at once on shipping or add-ons — just pick the piece that speaks to you.</p>`
     + `<p style="${s.signoff}">With warmth from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
@@ -970,17 +970,17 @@ const renderBasketHeldHtml = (p: {
     return t ? esc(t.split(/\s+/)[0]) : "there";
   })();
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#ede6d6;margin:0 0 24px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:28px 22px;margin:24px 0;text-align:center;`,
-    button: `display:inline-block;background-color:#ede6d6;color:#0a0908;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:4px;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.12;color:#1a1612;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    card: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:28px 22px;margin:24px 0;text-align:center;`,
+    button: `display:inline-block;background-color:#1a1612;color:#f5efe3;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none;padding:14px 30px;border-radius:4px;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your basket is still held — The Art of Stephen Meakin</title></head>`

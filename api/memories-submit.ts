@@ -481,28 +481,28 @@ const renderMemorySubmittedHtml = (p: {
   const paragraphs = p.message.split(/\n{2,}/).map((x) => x.trim()).filter(Boolean);
   const meta = [p.relationship, p.location].filter(Boolean).join(" · ");
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
-    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#ede6d6;margin:32px 0 12px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#1a1612;margin:0 0 24px 0;`,
+    subheading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.01em;font-size:20px;line-height:1.25;color:#1a1612;margin:32px 0 12px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    card: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const statusCard = published
-    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This memory is now live</strong> on Steve's wall — it passed moderation automatically, so there's nothing you need to do. If you'd ever like to take it down, just let me know.</p></div>`
-    : `<div style="${s.card}border:1px solid rgba(237,230,214,0.18);border-left:3px solid rgba(237,230,214,0.55);margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This memory is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} Review it below, and if you're happy, publish it manually (paste the ready-made entry into <code>src/data/memories.ts</code> and deploy).</p></div>`;
+    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#1a1612;"><strong>This memory is now live</strong> on Steve's wall — it passed moderation automatically, so there's nothing you need to do. If you'd ever like to take it down, just let me know.</p></div>`
+    : `<div style="${s.card}border:1px solid #ddd3bf;border-left:3px solid #8a8172;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#1a1612;"><strong>This memory is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} Review it below, and if you're happy, publish it manually (paste the ready-made entry into <code>src/data/memories.ts</code> and deploy).</p></div>`;
   const memoryCard =
     `<div style="${s.card}border-left:2px solid #c97844;">`
-    + paragraphs.map((x) => `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
+    + paragraphs.map((x) => `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
     + (p.hasImage
-      ? `<p style="${s.small}margin:0 0 12px 0;color:rgba(237,230,214,0.78);">${p.imageAttached ? "A photo is attached to this email. If you publish this memory, upload the photo and add its URL to the entry below." : "A photo was submitted but couldn't be attached (unsupported format / too large) — check the Vercel logs."}</p>`
+      ? `<p style="${s.small}margin:0 0 12px 0;color:#5a544a;">${p.imageAttached ? "A photo is attached to this email. If you publish this memory, upload the photo and add its URL to the entry below." : "A photo was submitted but couldn't be attached (unsupported format / too large) — check the Vercel logs."}</p>`
       : "")
-    + `<p style="${s.small}margin:0;color:rgba(237,230,214,0.78);">— ${esc(p.name)}${meta ? ` · ${esc(meta)}` : ""}</p>`
+    + `<p style="${s.small}margin:0;color:#5a544a;">— ${esc(p.name)}${meta ? ` · ${esc(meta)}` : ""}</p>`
     + `</div>`;
   const submittedLine = p.email
     ? `<p style="${s.small}">Submitted ${esc(p.submittedAt)} · <a href="mailto:${esc(p.email)}" style="${s.link}">${esc(p.email)}</a> (reply to thank them)</p>`
@@ -517,7 +517,7 @@ const renderMemorySubmittedHtml = (p: {
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.subheading}">${published ? "If you ever need to re-add it manually" : "To publish this"}</p>`
     + `<p style="${s.small}">Paste this at the top of the <code>MEMORIES</code> array in <code>src/data/memories.ts</code>, then commit &amp; push${published ? " (only needed if you move off auto-publish)" : ""}:</p>`
-    + `<pre style="background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:16px 18px;margin:12px 0 0 0;font-family:'SF Mono','Menlo','Consolas',monospace;font-size:12.5px;line-height:1.6;color:rgba(237,230,214,0.78);white-space:pre-wrap;word-break:break-word;">${esc(p.pasteEntry)}</pre>`
+    + `<pre style="background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:16px 18px;margin:12px 0 0 0;font-family:'SF Mono','Menlo','Consolas',monospace;font-size:12.5px;line-height:1.6;color:#5a544a;white-space:pre-wrap;word-break:break-word;">${esc(p.pasteEntry)}</pre>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.footer}">Book of Memories · The Art of Stephen Meakin<br/><a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a></p>`
     + `</div></body></html>`;
@@ -549,32 +549,32 @@ const renderReviewSubmittedHtml = (p: {
     Math.max(0, 5 - Math.max(0, Math.min(5, p.rating))),
   )}`;
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.1;color:#ede6d6;margin:0 0 8px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:34px;line-height:1.1;color:#1a1612;margin:0 0 8px 0;`,
     stars: `font-family:${SANS};font-size:22px;letter-spacing:0.12em;color:#c97844;margin:0 0 22px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    card: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const statusCard = p.published
-    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This review is now live</strong> on the print's page — it passed moderation automatically. If you'd ever like to take it down, just let me know.</p></div>`
-    : `<div style="${s.card}border:1px solid rgba(237,230,214,0.18);border-left:3px solid rgba(237,230,214,0.55);margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#ede6d6;"><strong>This review is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} If you're happy with it, you can publish it from your store.</p></div>`;
+    ? `<div style="${s.card}border:1px solid #c97844;border-left:3px solid #c97844;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#1a1612;"><strong>This review is now live</strong> on the print's page — it passed moderation automatically. If you'd ever like to take it down, just let me know.</p></div>`
+    : `<div style="${s.card}border:1px solid #ddd3bf;border-left:3px solid #8a8172;margin:0 0 8px 0;"><p style="${s.body}margin:0;color:#1a1612;"><strong>This review is being held</strong> — it is <em>not</em> public yet.${p.holdReason ? ` ${esc(p.holdReason)}` : ""} If you're happy with it, you can publish it from your store.</p></div>`;
   const reviewCard =
     `<div style="${s.card}border-left:2px solid #c97844;">`
-    + `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">On <strong style="color:#ede6d6;">${esc(p.paintingTitle)}</strong></p>`
-    + paragraphs.map((x) => `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
+    + `<p style="${s.small}margin:0 0 8px 0;color:#5a544a;">On <strong style="color:#1a1612;">${esc(p.paintingTitle)}</strong></p>`
+    + paragraphs.map((x) => `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">${esc(x)}</p>`).join("")
     + (p.hasImage
-      ? `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">${p.imageAttached ? "A photo is attached to this email." : "A photo was submitted but couldn't be attached (unsupported format / too large)."}</p>`
+      ? `<p style="${s.small}margin:0 0 8px 0;color:#5a544a;">${p.imageAttached ? "A photo is attached to this email." : "A photo was submitted but couldn't be attached (unsupported format / too large)."}</p>`
       : "")
     + (p.hasMedia
-      ? `<p style="${s.small}margin:0 0 8px 0;color:rgba(237,230,214,0.78);">${p.mediaHeld ? `A ${p.mediaKind ?? "media"} file was submitted but storage (Vercel Blob) isn't configured — it is held; reply here and I'll send it.` : `A ${p.mediaKind ?? "media"} file was uploaded with this review.`}</p>`
+      ? `<p style="${s.small}margin:0 0 8px 0;color:#5a544a;">${p.mediaHeld ? `A ${p.mediaKind ?? "media"} file was submitted but storage (Vercel Blob) isn't configured — it is held; reply here and I'll send it.` : `A ${p.mediaKind ?? "media"} file was uploaded with this review.`}</p>`
       : "")
-    + `<p style="${s.small}margin:0;color:rgba(237,230,214,0.78);">— ${esc(p.name)}</p>`
+    + `<p style="${s.small}margin:0;color:#5a544a;">— ${esc(p.name)}</p>`
     + `</div>`;
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A new review of a print</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`

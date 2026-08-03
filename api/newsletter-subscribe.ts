@@ -383,10 +383,10 @@ const renderWelcomeHtml = (p: {
   };
   const giftHtml = hasGift
     ? `<div style="${s.giftCard}">`
-      // Dark ink on the light #ece4d5 gift card — the block previously reused
-      // the dark-theme cream (#ede6d6 / rgba(237,230,214,…)) here, which was
-      // near-invisible cream-on-cream once the welcome email moved to the light
-      // estate-paper palette. Kept dormant until NEWSLETTER_DISCOUNT_ENABLED.
+      // Dark ink on the light #ece4d5 gift card. The block once reused the
+      // old dark-theme cream text here, which was near-invisible cream-on-cream
+      // on the light estate-paper card. Kept dormant until
+      // NEWSLETTER_DISCOUNT_ENABLED.
       + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 14px 0;">A small note from the estate</p>`
       + `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
       + `<code style="${s.code}">${esc(p.thankYouCode as string)}</code>`
@@ -426,15 +426,15 @@ const renderCustomSizeHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
@@ -472,15 +472,15 @@ const renderTradeApplicationHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
@@ -521,15 +521,15 @@ const renderRepresentativeApplicationHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
