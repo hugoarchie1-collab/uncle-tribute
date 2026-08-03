@@ -358,7 +358,7 @@ export const Welcome = () => {
         // the section foot so it sits low but composed, never jammed to the edge.
         // Portrait keeps its content-hugging justify-end + pt (mobile already
         // reads Earth-then-title); pt nudged up a touch for a cleaner gap there.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-end portrait:pt-[clamp(11rem,55vw,20rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[90svh] landscape:pt-[max(6rem,10svh)] landscape:pb-[clamp(40px,8svh,96px)]"
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-end portrait:pt-[clamp(11rem,55vw,20rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[clamp(600px,66svh,672px)] landscape:pt-[max(6rem,10svh)] landscape:pb-[clamp(24px,3.5svh,44px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
