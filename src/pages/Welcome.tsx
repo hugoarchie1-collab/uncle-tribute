@@ -831,32 +831,38 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[minmax(0,44%)_1fr] gap-6 md:gap-10 lg:gap-14 items-center"
+              className="grid grid-cols-1 md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
             >
-              {/* Portrait shown WHOLE — the photo is 2:3, so a 2:3 box + object
-                  center cover-fills with no crop (Hugo 2026-07-28: "the image of
-                  Steve is still cut off"). Crisp edge (no feather — the blurred
-                  outer edge Hugo dislikes), single hairline ring like home's figures. */}
-              <figure className="relative m-0 w-full aspect-[2/3] overflow-hidden rounded-[3px] ring-1 ring-line">
+              {/* Portrait STRETCHES to the copy's exact height (items-stretch +
+                  md:h-full) so there is NEVER a gap above or below it — the copy
+                  column now sets the row height and the photo cover-fills it,
+                  face-safe via objectPosition. On mobile it stacks with a natural
+                  4:5 box. (Fixes Hugo 2026-08-03: "huge empty space above and
+                  below" — the old items-center left a tall 2:3 photo centred
+                  against one short paragraph.) */}
+              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full overflow-hidden rounded-[3px] ring-1 ring-line">
                 <ImageReveal
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   fill
                   edges="none"
                   parallax={0}
-                  objectPosition="center"
+                  objectPosition="center 32%"
                   shadow=""
                 />
               </figure>
-              <div className="min-w-0 flex flex-col justify-center">
-                <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.invocation}</p>
+              <div className="min-w-0 flex flex-col justify-center gap-4 md:gap-5">
+                <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
-                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
+                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
                   style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
+                {/* Two bio paragraphs (not one) so the copy fills the column to the
+                    portrait's height — real content in place of dead space. */}
                 <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[0]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[1]}</p>
               </div>
             </Reveal>
           </section>
@@ -866,18 +872,19 @@ export const Welcome = () => {
               screens and Hugo rejected it hard ("ruined the sizing… it's
               tiny"). These are the June-03 proportions he approved — shorter
               than a raw 3:2 on 4K, but still a substantial cinematic moment. */}
-          <Reveal as="figure" className="m-0 w-full px-4 sm:px-6 md:px-8 lg:px-12">
+          {/* CONTAINED to the SAME measure as every other section (Hugo
+              2026-08-03: "no image should take the whole screen / edge to edge").
+              A calm cinematic band at aspect 2:1, never a full-bleed wall. */}
+          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[5/3] md:aspect-[12/5] 2xl:aspect-[5/2]"
+              aspect="aspect-[3/2] md:aspect-[2/1]"
               edges="none"
               parallax={0.06}
               objectPosition="center 62%"
               shadow=""
-              // Full-bleed minus the px-4→px-12 page gutter — effectively the
-              // viewport width; the appended 2000w original covers wide screens.
-              sizes="100vw"
+              sizes="(min-width: 1400px) 1320px, 92vw"
             />
           </Reveal>
 
