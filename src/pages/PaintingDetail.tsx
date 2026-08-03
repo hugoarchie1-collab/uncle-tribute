@@ -165,7 +165,9 @@ const SPEC_VALUE = "font-sans text-[17px] 3xl:text-[18px] 4xl:text-[20px] leadin
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
 // of running prose is exactly one size. Colour is applied per-block on the two
 // sanctioned tones (text-ink / text-ink-muted), never an ink-alpha ladder.
-const BODY = "font-sans font-normal text-[clamp(18px,1.5vw,40px)] leading-[1.55]";
+// Running body — CAPPED for cohesion (Hugo 2026-08-03): the old 40px max read
+// as a headline on wide screens; a calm 17->22px holds everywhere.
+const BODY = "font-sans font-normal text-[clamp(17px,0.4vw+13px,22px)] leading-[1.55]";
 const BTN_PRIMARY =
   "inline-flex items-center justify-center bg-ink text-bg px-7 py-[18px] font-sans text-[17px] md:text-[18px] font-semibold tracking-[0.02em] rounded-full transition-[color,background-color,transform] duration-300 ease-out hover:bg-ink/85 active:scale-[0.98] active:duration-100 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60";
 const BTN_SECONDARY =
