@@ -18,7 +18,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { cn } from "../lib/cn";
-import { EYEBROW_TIGHT } from "./ui/tokens";
 import { DELIVER_REGIONS, useDeliverTo } from "../lib/deliverTo";
 
 // ---- Icons ------------------------------------------------------------------
@@ -158,7 +157,7 @@ export const DeliverTo = ({ className, variant = "header" }: DeliverToProps) => 
           )}
         />
         <span className="inline-flex flex-col leading-none min-w-0">
-          <span className={cn(EYEBROW_TIGHT, "text-ink/80 mb-0.5")}>
+          <span className="font-sans text-[10px] sm:text-[11px] 3xl:text-[13px] font-semibold uppercase tracking-[0.16em] text-ink/55 mb-0.5">
             Deliver to
           </span>
           <span className="inline-flex items-center gap-1 min-w-0">

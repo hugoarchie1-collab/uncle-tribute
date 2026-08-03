@@ -15,7 +15,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { cn } from "../lib/cn";
-import { EYEBROW_TIGHT } from "./ui/tokens";
 import { CURRENCIES, CURRENCY_ORDER, useCurrency } from "../lib/currency";
 
 const CoinIcon = ({ className }: { className?: string }) => (
@@ -143,7 +142,7 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
           )}
         />
         <span className="inline-flex flex-col leading-none min-w-0">
-          <span className={cn(EYEBROW_TIGHT, "text-ink/80 mb-0.5")}>
+          <span className="font-sans text-[10px] sm:text-[11px] 3xl:text-[13px] font-semibold uppercase tracking-[0.16em] text-ink/55 mb-0.5">
             Currency
           </span>
           <span className="inline-flex items-center gap-1 min-w-0">
