@@ -295,13 +295,15 @@ const emit = () => {
 
 export interface AddNotification {
   /**
-   * The PRINT line that was just added. Kept as `BasketItem` (not the union)
-   * so the existing global toast (BasketToast) — which resolves a painting
-   * title off `item.paintingId` — stays correct and unbroken. Gift-card adds
-   * deliberately do NOT fire this channel (a gift has no painting to title);
-   * the Gift page shows its own in-page "Added to your basket" confirmation.
+   * The PRINT line that was just added, when a print was added — the toast
+   * resolves a painting title off `item.paintingId`. Absent for gift-card adds
+   * (a gift has no painting); those carry `giftLabel` instead.
    */
-  item: BasketItem;
+  item?: BasketItem;
+  /** The gift-card label, when a GIFT card was added (no painting to title). */
+  giftLabel?: string;
+  /** Total basket quantity AFTER this add — shown as the count on the toast. */
+  quantity: number;
   /** Monotonic id so consumers can treat rapid successive adds as fresh
    *  events even when the same painting/colourway is added twice. */
   id: number;
@@ -312,7 +314,13 @@ let lastAddNotification: AddNotification | null = null;
 let addSeq = 0;
 
 const emitAdd = (item: BasketItem) => {
-  lastAddNotification = { item, id: ++addSeq };
+  lastAddNotification = { item, quantity: ensureCache().length, id: ++addSeq };
+  for (const fn of addListeners) fn(lastAddNotification);
+};
+
+/** Fire the add-notification for a GIFT-card add (no painting to title). */
+const emitGiftAdd = (giftLabel: string) => {
+  lastAddNotification = { giftLabel, quantity: ensureCache().length, id: ++addSeq };
   for (const fn of addListeners) fn(lastAddNotification);
 };
 
@@ -530,9 +538,14 @@ export const addGiftCard = (input: {
     addedAt: Date.now(),
   };
   setCache([...current, added]);
-  // Note: gift adds do NOT fire the global "Added to basket" toast channel —
-  // that toast titles itself off a painting, which a gift has none of. The
-  // Gift page surfaces its own in-page confirmation instead.
+  // Fire the SAME global "Added to basket" toast every other add uses (Hugo
+  // 2026-08-03: "when you add a gift card the popup doesn't come up — I need
+  // EVERY add to pop"). Gifts carry a label instead of a painting title.
+  try {
+    emitGiftAdd(added.label);
+  } catch {
+    /* notification is best-effort — never let it disrupt the add */
+  }
   return true;
 };
 

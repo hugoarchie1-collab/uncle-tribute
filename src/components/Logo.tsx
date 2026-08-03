@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { RoseMark } from "./RoseMark";
+import { asset } from "../lib/asset";
 
 interface LogoProps {
   size?: number;
@@ -38,11 +38,15 @@ export const Logo = ({
     <div
       className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-2.5 sm:gap-3 leading-none ${className ?? ""}`}
     >
-      {/* Flat geometric rose MARK (RoseMark) — one consistent vector language
-          with the serif logotype, silhouette-legible at any size. Decorative
+      {/* The estate's OWN wax-seal Tudor rose MARK beside the name. Decorative
           (the wordmark + the LogoLink aria-label carry the accessible name). */}
-      <RoseMark
-        className="shrink-0 h-[clamp(36px,7vw,50px)] w-[clamp(36px,7vw,50px)] text-ink select-none [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))]"
+      <img
+        src={asset("/logo/logo-seal-v9-w256.png")}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+        className="shrink-0 h-[clamp(38px,7.4vw,52px)] w-auto select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
       />
       {wordmark && (
         // Wordmark in the MAIN BOLD DISPLAY FACE (Fraunces 700 — matches the

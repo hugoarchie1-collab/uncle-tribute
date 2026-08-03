@@ -14,6 +14,7 @@ import {
 } from "../data/paintings";
 import { useCurrency } from "../lib/currency";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { BTN_PRIMARY } from "./ui/tokens";
 
 /**
@@ -55,6 +56,8 @@ interface Resolved {
   addons: string[];
   quantity: number;
   linePence: number;
+  /** A gift card add — no colourway/tier/price line, seal image, its own subline. */
+  isGift?: boolean;
 }
 
 const resolve = (item: BasketItem): Resolved | null => {
@@ -97,7 +100,22 @@ export const AddedConfirmation = () => {
 
   useEffect(() => {
     const unsub = subscribeToAdds((n) => {
-      const resolved = resolve(n.item);
+      // A GIFT card carries a label (no painting); a PRINT resolves its details.
+      const resolved: Resolved | null = n.giftLabel
+        ? {
+            title: n.giftLabel,
+            colourwayName: "",
+            image: asset("/logo/logo-seal-v9-w256.png"),
+            tierLabel: "Gift card",
+            size: "",
+            addons: [],
+            quantity: 1,
+            linePence: 0,
+            isGift: true,
+          }
+        : n.item
+          ? resolve(n.item)
+          : null;
       if (!resolved) return; // never pop an empty confirmation
       setRow(resolved);
       setBasketCount(getBasketTotalQuantity());
@@ -168,19 +186,38 @@ export const AddedConfirmation = () => {
               </svg>
             </button>
 
-            {/* Tick + heading */}
+            {/* Tick + heading + live quantity. The tick WOBBLES on each add and
+                the quantity badge pops (Hugo 2026-08-03: "wobble animation, have
+                the quantity number at top too"). Reduced-motion skips both. */}
             <div className="flex items-center gap-2.5">
-              <span
+              <motion.span
                 aria-hidden="true"
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent"
+                initial={reduce ? false : { rotate: 0, scale: 0.5 }}
+                animate={
+                  reduce ? {} : { rotate: [0, -16, 12, -6, 0], scale: [0.5, 1.2, 0.94, 1.06, 1] }
+                }
+                transition={{ duration: 0.62, ease: [0.22, 0.61, 0.36, 1], times: [0, 0.3, 0.55, 0.8, 1] }}
               >
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
                   <path d="M3.2 8.4l3 3 6.6-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </span>
+              </motion.span>
               <p className="font-display text-[19px] 3xl:text-[26px] 4xl:text-[30px] leading-none text-ink m-0">
                 Added to basket
               </p>
+              {basketCount > 0 && (
+                <motion.span
+                  key={basketCount}
+                  aria-hidden="true"
+                  initial={reduce ? false : { scale: 0.4, opacity: 0 }}
+                  animate={reduce ? {} : { scale: [0.4, 1.25, 1], opacity: 1 }}
+                  transition={{ duration: 0.42, ease: [0.22, 0.61, 0.36, 1] }}
+                  className="ml-auto inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full bg-accent px-[7px] font-sans text-[12px] 3xl:text-[14px] font-bold leading-none text-bg [font-variant-numeric:tabular-nums]"
+                >
+                  {basketCount}
+                </motion.span>
+              )}
             </div>
 
             {/* Item */}
@@ -197,16 +234,21 @@ export const AddedConfirmation = () => {
                   {row.title}
                 </p>
                 <p className="mt-1 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
-                  {row.colourwayName} · {row.tierLabel} · {row.size}
-                  {row.addons.length > 0 && ` · ${row.addons.join(" · ")}`}
+                  {row.isGift
+                    ? "Digital gift card · redeemable against any edition"
+                    : [row.colourwayName, row.tierLabel, row.size, ...row.addons]
+                        .filter(Boolean)
+                        .join(" · ")}
                 </p>
                 <div className="mt-2 flex items-baseline justify-between gap-3">
                   <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted [font-variant-numeric:tabular-nums]">
                     Qty {row.quantity}
                   </span>
-                  <span className="font-display text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink [font-variant-numeric:tabular-nums]">
-                    {format(row.linePence)}
-                  </span>
+                  {!row.isGift && (
+                    <span className="font-display text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink [font-variant-numeric:tabular-nums]">
+                      {format(row.linePence)}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
