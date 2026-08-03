@@ -45,6 +45,8 @@ interface ToastState {
   /** Notification id — drives the in-place refresh on rapid successive adds. */
   id: number;
   title: string;
+  /** Total basket quantity after the add — shown as the count badge. */
+  quantity: number;
 }
 
 export const BasketToast = () => {
@@ -61,11 +63,12 @@ export const BasketToast = () => {
     };
 
     const onAdd = (n: AddNotification) => {
-      const painting = getPaintingById(n.item.paintingId);
-      // Defensive fallback — the store reconciles against the catalogue, so a
-      // missing painting here is near-impossible, but never show an empty card.
-      const title = painting?.title ?? "Your print";
-      setToast({ id: n.id, title });
+      // A gift carries its own label; a print resolves its painting title.
+      const title =
+        n.giftLabel ??
+        (n.item ? getPaintingById(n.item.paintingId)?.title : undefined) ??
+        "Your item";
+      setToast({ id: n.id, title, quantity: n.quantity });
       clear();
       timerRef.current = window.setTimeout(() => setToast(null), DISMISS_MS);
     };
@@ -96,10 +99,19 @@ export const BasketToast = () => {
             transition={{ duration: 0.34, ease: [0.22, 0.61, 0.36, 1] }}
             className="pointer-events-auto flex max-w-[420px] items-center gap-3.5 bg-bg-soft ring-1 ring-line px-5 py-3.5 shadow-[0_24px_70px_rgba(0,0,0,0.6)]"
           >
-            {/* Hairline-circled check — rust accent, not a filled green badge. */}
-            <span
+            {/* Hairline-circled check — rust accent, not a filled green badge.
+                A quick spring WOBBLE on each add so the confirmation feels alive
+                (Hugo 2026-08-03: "do a wobble animation"). Reduced-motion skips it. */}
+            <motion.span
               aria-hidden="true"
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-1 ring-accent/55 text-accent"
+              initial={reduce ? false : { rotate: 0, scale: 0.6 }}
+              animate={
+                reduce
+                  ? {}
+                  : { rotate: [0, -14, 10, -6, 0], scale: [0.6, 1.18, 0.94, 1.06, 1] }
+              }
+              transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1], times: [0, 0.3, 0.55, 0.8, 1] }}
             >
               <svg width="13" height="13" viewBox="0 0 18 18" fill="none">
                 <path
@@ -110,10 +122,24 @@ export const BasketToast = () => {
                   strokeLinejoin="round"
                 />
               </svg>
-            </span>
+            </motion.span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted">
-                Added to basket
+              <span className="flex items-center gap-2">
+                <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted">
+                  Added to basket
+                </span>
+                {/* Live basket QUANTITY — a small count badge that pops on each add
+                    (Hugo 2026-08-03: "have the quantity number at top too"). */}
+                <motion.span
+                  key={toast.quantity}
+                  aria-hidden="true"
+                  initial={reduce ? false : { scale: 0.4, opacity: 0 }}
+                  animate={reduce ? {} : { scale: [0.4, 1.25, 1], opacity: 1 }}
+                  transition={{ duration: 0.4, ease: [0.22, 0.61, 0.36, 1] }}
+                  className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-[5px] font-sans text-[11px] font-bold leading-none text-bg tabular-nums"
+                >
+                  {toast.quantity}
+                </motion.span>
               </span>
               <span className="mt-0.5 block truncate font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-snug text-ink">
                 {toast.title}

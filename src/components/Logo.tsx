@@ -38,8 +38,7 @@ export const Logo = ({
     <div
       className={`${wordmarkWrap ? "flex w-full" : "inline-flex min-w-0"} items-center gap-2.5 sm:gap-3 leading-none ${className ?? ""}`}
     >
-      {/* Rose wax-seal MARK — proportioned to sit at ~1.8x the wordmark's line
-          height so it reads as the dominant emblem beside the name. Decorative
+      {/* The estate's OWN wax-seal Tudor rose MARK beside the name. Decorative
           (the wordmark + the LogoLink aria-label carry the accessible name). */}
       <img
         src={asset("/logo/logo-seal-v9-w256.png")}

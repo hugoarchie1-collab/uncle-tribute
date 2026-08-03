@@ -311,11 +311,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           }}
           className="press inline-flex items-center min-w-0"
         >
-          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): the deep-red wax-seal Tudor
-              rose MARK beside the name set in the site's MAIN BOLD display face
-              (Fraunces 700 — the same cut as the masthead), proportions matched so
-              the mark and the logotype share a height and read as one recognisable
-              emblem. The seal is sized to ~2x the wordmark cap height. */}
+          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): the estate's OWN deep-red
+              wax-seal Tudor rose MARK — his established brand — beside the name in
+              the site's MAIN BOLD display face (Fraunces 700), proportions matched
+              so the mark and the logotype share a height and read as one emblem.
+              Seal ~2x the wordmark cap height. */}
           <img
             src={asset("/logo/logo-seal-v9-w256.png")}
             alt=""
