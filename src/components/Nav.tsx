@@ -7,6 +7,7 @@ import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { useBasketTotalQuantity } from "../lib/basket";
 import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
 
@@ -310,16 +311,19 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
           }}
           className="press inline-flex items-center min-w-0"
         >
-          {/* The "The Art of Stephen Meakin" wordmark (Hugo 2026-07-30): a CLEAN,
-              simple single-line wordmark in the body grotesk — NO wax seal, NO
-              serif/kicker treatment. The old lockup paired a photoreal wax-seal
-              (read as a sticker at ~40px) with the name; Hugo's problem was the
-              seal, not the type. With the seal gone the plain wordmark reads
-              confident + modern (his explicit pick — "current baseline is the
-              one"). The seal now lives only where it reads big + means
-              authenticity: certificates, packaging, favicon, footer. */}
+          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): the deep-red wax-seal Tudor
+              rose MARK beside the name set in the site's MAIN BOLD display face
+              (Fraunces 700 — the same cut as the masthead), proportions matched so
+              the mark and the logotype share a height and read as one recognisable
+              emblem. The seal is sized to ~2x the wordmark cap height. */}
+          <img
+            src={asset("/logo/logo-seal-v9-w256.png")}
+            alt=""
+            aria-hidden="true"
+            className="shrink-0 h-[clamp(32px,3.2vw,44px)] w-auto mr-2.5 sm:mr-3 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
+          />
           <span
-            className="font-sans font-medium text-ink tracking-[0.005em] leading-[1.05] min-w-0 whitespace-nowrap text-[clamp(14px,1.5vw,20px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+            className="font-display font-bold text-ink tracking-[-0.01em] [font-variation-settings:'opsz'_40,'wght'_700] leading-[1.02] min-w-0 whitespace-nowrap text-[clamp(13px,1.45vw,19px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
           >
             The Art of Stephen Meakin
           </span>
