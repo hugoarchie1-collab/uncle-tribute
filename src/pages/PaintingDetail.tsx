@@ -158,7 +158,7 @@ const CARD = "ring-1 ring-line px-5 py-5";
 // name line). Kept QUIET and clean — a spec detail must never balloon into a
 // headline (Hugo 2026-08-03: "the date and other details is soooo huge and
 // messy"). Was 17→30px; a spec value ~15–18px reads as a proper wall-label.
-const SPEC_VALUE = "font-sans text-[15px] 3xl:text-[16px] 4xl:text-[18px] leading-[1.5] text-ink";
+const SPEC_VALUE = "font-sans text-[17px] 3xl:text-[18px] 4xl:text-[20px] leading-[1.5] text-ink";
 // ONE lead/running-body clamp for the story + card prose (order-arrives lead,
 // original-print spec, colourway-set desc, finish intro). Collapses the former
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block

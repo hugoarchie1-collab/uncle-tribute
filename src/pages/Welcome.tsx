@@ -989,110 +989,55 @@ export const Welcome = () => {
               backdrop like every section; hero-text-shadow keeps it legible. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-9 md:pt-12">
-              {/* Editorial spread (2026-08-03, Hugo: bolder — break the centred
-                  stack). A tiny wide label vs an italic folio, then an asymmetric
-                  grid: the off-axis headline top-left, the man-at-the-easel photo
-                  bleeding up the right, the reading column bottom-left with a
-                  Fraunces drop-cap. Verbatim from WELCOME.archiveStatement. */}
-              <Reveal as="div" className="flex items-baseline justify-between gap-4">
-                <p className={cn(EYEBROW, "m-0")}>{WELCOME.archiveStatement.eyebrow}</p>
-                <span className="font-display italic text-ink-muted text-[13px] md:text-[15px] whitespace-nowrap">
-                  A lifetime at the compass
-                </span>
+              {/* CENTRED to match every other home section (Hugo 2026-08-03:
+                  "it's all centred wrong — I want consistency and cleanness above
+                  all"). The 2026-08-03 asymmetric editorial spread was the one
+                  off-axis block on the page; it now follows the SAME centred
+                  rhythm as "Six paintings…" and "Each painting is a ritual":
+                  centred eyebrow → centred TITLE → contained centred photo →
+                  centred reading measure. Verbatim from WELCOME.archiveStatement. */}
+              <Reveal as="div" className="text-center mb-5 md:mb-7">
+                <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.archiveStatement.eyebrow}</p>
+                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
+                  {(() => {
+                    const { headline, emphasis } = WELCOME.archiveStatement;
+                    const [before, after] = headline.split(emphasis);
+                    return (
+                      <>
+                        {before}
+                        <em className="italic font-normal">{emphasis}</em>
+                        {after}
+                      </>
+                    );
+                  })()}
+                </h2>
               </Reveal>
 
-              <div className="relative mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-[1.04fr_0.8fr] md:grid-rows-[auto_1fr] gap-x-8 lg:gap-x-14 gap-y-7 md:gap-y-4 items-start">
-                {/* Headline — off-axis, left-aligned, rust hairline above */}
-                <Reveal
-                  as="div"
-                  className="order-1 md:col-start-1 md:row-start-1 md:self-end md:pb-2"
-                >
-                  <span aria-hidden className="block h-[2px] w-[68px] bg-accent/90 mb-5 md:mb-7" />
-                  <h2 className={cn(TITLE, "text-left my-0 hero-text-shadow")}>
-                    {(() => {
-                      const { headline, emphasis } = WELCOME.archiveStatement;
-                      const [before, after] = headline.split(emphasis);
-                      return (
-                        <>
-                          {before}
-                          <em className="italic font-normal">{emphasis}</em>
-                          {after}
-                        </>
-                      );
-                    })()}
-                  </h2>
-                </Reveal>
+              {/* Stephen at the easel — contained + centred like the hero photo. */}
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
+                <ImageReveal
+                  src="/img/welcome/stephen-painting-denim-v1.jpg"
+                  alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
+                  aspect="aspect-[3/2]"
+                  edges="none"
+                  parallax={0.06}
+                  objectPosition="center"
+                  shadow="shadow-[0_44px_120px_-36px_rgba(0,0,0,0.8)]"
+                  sizes="(min-width: 1400px) 1000px, 92vw"
+                />
+                <figcaption className="font-display italic text-ink-muted text-[13px] 3xl:text-[16px] mt-3 text-center">
+                  Stephen at the easel
+                </figcaption>
+              </Reveal>
 
-                {/* Stephen at the easel — the man behind the archive, closing the
-                    "less than a tenth of him" statement. Bleeds up + off the right
-                    margin (asymmetric, never centred). Native 3:2, shown WHOLE. */}
-                <Reveal
-                  as="figure"
-                  delay={0.12}
-                  className="order-2 md:col-start-2 md:row-span-2 m-0 md:-mt-2 md:-mr-4 lg:-mr-9 relative z-[2]"
-                >
-                  <ImageReveal
-                    src="/img/welcome/stephen-painting-denim-v1.jpg"
-                    alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
-                    aspect="aspect-[3/2]"
-                    edges="none"
-                    parallax={0.08}
-                    objectPosition="center"
-                    shadow="shadow-[0_44px_120px_-36px_rgba(0,0,0,0.8)]"
-                    sizes="(min-width: 768px) 46vw, 92vw"
-                  />
-                  <figcaption className="font-display italic text-ink-muted text-[13px] 3xl:text-[16px] mt-3 pl-0.5">
-                    Stephen at the easel
-                  </figcaption>
-                </Reveal>
-
-                {/* Reading column — left-aligned, real measure, Fraunces drop-cap
-                    on the lead. All words verbatim from content.ts. */}
-                <Reveal
-                  as="div"
-                  delay={0.08}
-                  className="order-3 md:col-start-1 md:row-start-2 max-w-[54ch] space-y-4 md:space-y-5 relative z-[2]"
-                >
-                  {WELCOME.archiveStatement.body.map((para, i) => (
-                    <p
-                      key={i}
-                      className={cn(
-                        SUBTITLE,
-                        "text-left reading-shadow m-0",
-                        i === 0 &&
-                          "first-letter:font-display first-letter:font-medium first-letter:text-[3.1em] first-letter:leading-[0.8] first-letter:float-left first-letter:mr-3 first-letter:mt-1.5 first-letter:text-ink",
-                      )}
-                    >
-                      {para}
-                    </p>
-                  ))}
-                </Reveal>
-
-                {/* Ownable signature — a compass / Flower-of-Life construction,
-                    faint, bleeding off the right behind the plate. */}
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 300 300"
-                  fill="none"
-                  className="pointer-events-none absolute z-[1] -right-[8vw] -top-6 w-[clamp(320px,40vw,660px)] h-auto opacity-[0.14] text-ink mix-blend-screen"
-                >
-                  <g stroke="currentColor" strokeWidth="0.8">
-                    <circle cx="150" cy="150" r="50" />
-                    <circle cx="150" cy="100" r="50" />
-                    <circle cx="150" cy="200" r="50" />
-                    <circle cx="193.3" cy="125" r="50" />
-                    <circle cx="193.3" cy="175" r="50" />
-                    <circle cx="106.7" cy="125" r="50" />
-                    <circle cx="106.7" cy="175" r="50" />
-                    <circle cx="150" cy="150" r="100" />
-                    <circle cx="150" cy="150" r="140" />
-                  </g>
-                  <g stroke="#c97844" strokeWidth="0.9">
-                    <polygon points="150,50 236.6,200 63.4,200" />
-                    <polygon points="150,250 63.4,100 236.6,100" />
-                  </g>
-                </svg>
-              </div>
+              {/* Reading body — centred measure, matching the reminder essay. */}
+              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[840px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
+                {WELCOME.archiveStatement.body.map((para, i) => (
+                  <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
+                    {para}
+                  </p>
+                ))}
+              </Reveal>
             </div>
           </section>
 
