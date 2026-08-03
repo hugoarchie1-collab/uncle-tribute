@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -215,6 +215,32 @@ export const PrintQuiz = () => {
     else setPhase("intro");
   };
 
+  // Keyboard control — press 1–4 or A–D to answer, Backspace/← to go back.
+  // (Rebinds on phase/step change; the selection logic reads the current
+  // question at bind time, so it never needs choose/back in the deps.)
+  useEffect(() => {
+    if (phase !== "quiz") return;
+    const onKey = (e: KeyboardEvent) => {
+      const opts = QUESTIONS[step].options;
+      const key = e.key.toLowerCase();
+      let idx = -1;
+      if (/^[1-9]$/.test(key)) idx = parseInt(key, 10) - 1;
+      else if (/^[a-d]$/.test(key)) idx = key.charCodeAt(0) - 97;
+      if (idx >= 0 && idx < opts.length) {
+        e.preventDefault();
+        choose(idx);
+        return;
+      }
+      if (e.key === "Backspace" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        back();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, step, answers]);
+
   const restart = () => {
     setAnswers(QUESTIONS.map(() => null));
     setStep(0);
@@ -323,7 +349,7 @@ export const PrintQuiz = () => {
                 </p>
               </div>
               <h2
-                className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(26px,3.6vw,52px)] leading-[1.06] text-balance"
+                className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(28px,4.2vw,60px)] leading-[1.05] text-balance"
               >
                 {QUESTIONS[step].prompt}
               </h2>
@@ -367,7 +393,7 @@ export const PrintQuiz = () => {
                   );
                 })}
               </div>
-              <div className="mt-8">
+              <div className="mt-8 flex items-center justify-between gap-4">
                 <button
                   type="button"
                   onClick={back}
@@ -375,6 +401,10 @@ export const PrintQuiz = () => {
                 >
                   ← Back
                 </button>
+                <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>
+                  Tip: press <kbd className="font-sans not-italic text-ink">1–4</kbd> or{" "}
+                  <kbd className="font-sans not-italic text-ink">A–D</kbd>
+                </p>
               </div>
             </motion.section>
           )}

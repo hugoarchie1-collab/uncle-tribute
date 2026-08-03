@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -210,6 +210,35 @@ const RepresentativeApplication = () => {
 
 export const Representatives = () => {
   const applyRef = useRef<HTMLDivElement>(null);
+  const heroSentinelRef = useRef<HTMLDivElement>(null);
+  // Sticky apply bar — the high-ticket funnel signature: once the reader has
+  // scrolled past the hero, a quiet bar keeps the single CTA in reach; it hides
+  // again when the application form itself is on screen (no double CTA).
+  const [pastHero, setPastHero] = useState(false);
+  const [applyVisible, setApplyVisible] = useState(false);
+  const showSticky = pastHero && !applyVisible;
+
+  useEffect(() => {
+    const hero = heroSentinelRef.current;
+    const apply = applyRef.current;
+    const observers: IntersectionObserver[] = [];
+    if (hero) {
+      const o = new IntersectionObserver(
+        ([e]) => setPastHero(!e.isIntersecting && e.boundingClientRect.top < 0),
+        { threshold: 0 },
+      );
+      o.observe(hero);
+      observers.push(o);
+    }
+    if (apply) {
+      const o = new IntersectionObserver(([e]) => setApplyVisible(e.isIntersecting), {
+        threshold: 0,
+      });
+      o.observe(apply);
+      observers.push(o);
+    }
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   const scrollToApply = () => {
     applyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -334,6 +363,9 @@ export const Representatives = () => {
             )}
           </div>
         </section>
+
+        {/* Sentinel — marks the end of the hero for the sticky-bar observer. */}
+        <div ref={heroSentinelRef} aria-hidden="true" className="h-px w-full" />
 
         {/* ── WORK SHOWCASE — a full-bleed rail of the catalogue. The product is
             the pitch. ─────────────────────────────────────────────────────── */}
@@ -483,16 +515,27 @@ export const Representatives = () => {
           <Reveal as="div" className="border-t border-line pt-10 md:pt-14 mb-9 md:mb-12">
             <p className={cn(EYEBROW, "m-0")}>Before you ask</p>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 lg:gap-x-16 gap-y-9 md:gap-y-11">
+          <Reveal as="div" className="max-w-[820px] border-t border-line/60">
             {FAQ.map((f) => (
-              <Reveal as="div" key={f.q}>
-                <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(20px,1.7vw,28px)] leading-[1.15]">
-                  {f.q}
-                </h3>
-                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{f.a}</p>
-              </Reveal>
+              <details
+                key={f.q}
+                className="group border-b border-line/60 py-5 md:py-6 [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="flex items-center justify-between gap-6 cursor-pointer list-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm">
+                  <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(19px,1.6vw,26px)] leading-[1.15] group-hover:text-accent transition-colors">
+                    {f.q}
+                  </h3>
+                  <span
+                    aria-hidden="true"
+                    className="flex-none text-accent text-[26px] leading-none transition-transform duration-300 group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className={cn(SUBTITLE, "max-w-[64ch] mt-3 text-[clamp(15px,1vw,18px)]")}>{f.a}</p>
+              </details>
             ))}
-          </div>
+          </Reveal>
         </section>
 
         {/* ── APPLY ────────────────────────────────────────────────────────── */}
@@ -521,6 +564,31 @@ export const Representatives = () => {
           </div>
         </section>
       </main>
+
+      {/* ── STICKY APPLY BAR ─────────────────────────────────────────────── */}
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-40 transition-all duration-500 ease-out",
+          showSticky ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none",
+        )}
+        aria-hidden={!showSticky}
+      >
+        <div className="border-t border-line bg-bg/90 backdrop-blur-md">
+          <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 md:px-8 lg:px-12 py-3.5 flex items-center justify-between gap-4">
+            <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>
+              Partners · By invitation · Terms arranged privately
+            </p>
+            <button
+              type="button"
+              onClick={scrollToApply}
+              className={cn(BTN_PRIMARY, "w-full sm:w-auto py-3.5")}
+            >
+              Request an introduction
+              <span aria-hidden="true" className="ml-2">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <Footer />
     </div>
