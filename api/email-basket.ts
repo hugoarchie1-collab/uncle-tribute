@@ -411,8 +411,8 @@ const renderBasketSavedHtml = (p: {
     + `</td></tr>`
     // ---- CTA ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:30px 40px 6px 40px;">`
-    + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.rust}" style="background-color:${C.rust};">`
-    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:16px 46px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.cream};text-decoration:none;">Return to your basket</a>`
+    + `<table role="presentation" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="${C.cream}" style="background-color:${C.cream};">`
+    + `<a href="${esc(p.basketUrl)}" style="display:inline-block;padding:16px 46px;font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${C.bg};text-decoration:none;">Return to your basket</a>`
     + `</td></tr></table></td></tr>`
     // ---- secondary link: the full First Edition ----
     + `<tr><td align="center" bgcolor="${C.bg}" style="background-color:${C.bg};padding:12px 40px 0 40px;">`

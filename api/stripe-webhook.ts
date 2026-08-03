@@ -1489,7 +1489,7 @@ const renderEstateFulfilmentHtml = (p: {
         `<td style="${cell}">${esc(e.drop_label)}</td>` +
         `<td style="${cell}">${formatPrintNo(e)}</td>` +
         `<td style="${cell}font-family:monospace;">${esc(e.certificate_id)}</td>` +
-        `<td style="${cell}"><a href="${authUrl}">${esc(authUrl)}</a></td>` +
+        `<td style="${cell}"><a href="${authUrl}" style="color:#c97844;">${esc(authUrl)}</a></td>` +
         `</tr>`
       );
     })
