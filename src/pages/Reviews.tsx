@@ -230,6 +230,15 @@ const LeaveAReview = () => {
   );
 };
 
+// Honest trust signals (all documented estate facts — NOT reviews). Gives the
+// page real substance in place of fabricated social proof.
+const TRUST: { title: string; body: string }[] = [
+  { title: "Estate-stamped & numbered", body: "Every print carries the estate stamp and a certificate of authenticity." },
+  { title: "Made to order", body: "Printed one at a time on museum-grade giclée by a UK atelier." },
+  { title: "Hand-framed to the room", body: "Finished, glazed and ready to hang — nothing off a shelf." },
+  { title: "Free delivery worldwide", body: "Insured and delivered anywhere, at no cost to you." },
+];
+
 // ── page ─────────────────────────────────────────────────────────────────────
 
 export const Reviews = () => {
@@ -311,6 +320,23 @@ export const Reviews = () => {
               </Link>
             </Reveal>
           )}
+        </section>
+
+        {/* WHY COLLECTORS TRUST THE ESTATE — honest guarantees, always shown. */}
+        <section className="mt-16 md:mt-24">
+          <Reveal as="div" className="border-t border-line pt-10 md:pt-14 mb-8 md:mb-10">
+            <p className={cn(EYEBROW, "m-0")}>Why collectors trust the estate</p>
+          </Reveal>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
+            {TRUST.map((t) => (
+              <Reveal as="div" key={t.title} className="ring-1 ring-line bg-ink/[0.02] p-6 md:p-7 h-full">
+                <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(18px,1.4vw,24px)] leading-[1.14]">
+                  {t.title}
+                </h3>
+                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{t.body}</p>
+              </Reveal>
+            ))}
+          </div>
         </section>
 
         {/* LEAVE A REVIEW */}
