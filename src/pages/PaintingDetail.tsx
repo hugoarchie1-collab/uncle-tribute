@@ -154,7 +154,11 @@ const CARD = "ring-1 ring-line px-5 py-5";
 // 1.55 leading, primary ink tone. A deliberately secondary value (provenance,
 // pigment) composes cn(SPEC_VALUE, "text-ink-muted") — a rule-based two-tone,
 // not the old ad-hoc spray of text-ink vs text-ink-muted at the same size.
-const SPEC_VALUE = "font-sans text-[17px] 2xl:text-[22px] 3xl:text-[26px] 4xl:text-[30px] leading-[1.5] text-ink";
+// Spec/detail values (Date, Size, Painted in, Edition, order-arrives, selected-
+// name line). Kept QUIET and clean — a spec detail must never balloon into a
+// headline (Hugo 2026-08-03: "the date and other details is soooo huge and
+// messy"). Was 17→30px; a spec value ~15–18px reads as a proper wall-label.
+const SPEC_VALUE = "font-sans text-[15px] 3xl:text-[16px] 4xl:text-[18px] leading-[1.5] text-ink";
 // ONE lead/running-body clamp for the story + card prose (order-arrives lead,
 // original-print spec, colourway-set desc, finish intro). Collapses the former
 // near-duplicate clamps (14.5→18 / 15→18) to a single fluid step so every block
@@ -1003,6 +1007,7 @@ const BuyBox = ({
   onCanvasChange,
   onFrameStyleChange,
   onCanvasEdgeChange,
+  onReset,
   orderSentinelRef,
   orderEndSentinelRef,
 }: {
@@ -1027,6 +1032,7 @@ const BuyBox = ({
   onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
   onCanvasEdgeChange: (next: string) => void;
+  onReset: () => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
    * control so the floating bar stays suppressed for the WHOLE time any buy
@@ -1489,8 +1495,23 @@ const BuyBox = ({
         {showAddOns && (
           <fieldset className={cn("border-0 m-0 mt-6", CARD)}>
             <legend className="float-none p-0 mb-2.5 w-full">
-              <span className={cn(EYEBROW_MUTED, "block")}>
-                Finish your piece
+              {/* Reset sits WITH the finish options, at the top-right of this
+                  step (Hugo 2026-08-03: "the reset button is so out of place —
+                  needs to be with framing options and above; also reset canvas").
+                  onReset === resetOptions, which snaps framing, frame style,
+                  glazing, paper finish, hand-finishing AND canvas + canvas edge
+                  back to defaults. */}
+              <span className="flex items-baseline justify-between gap-3 w-full">
+                <span className={cn(EYEBROW_MUTED, "block")}>
+                  Finish your piece
+                </span>
+                <button
+                  type="button"
+                  onClick={onReset}
+                  className="press inline-flex items-center gap-1 font-sans text-[13px] 3xl:text-[15px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg whitespace-nowrap"
+                >
+                  <span aria-hidden="true">↺</span> Reset
+                </button>
               </span>
             </legend>
             <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
@@ -3220,20 +3241,10 @@ export const PaintingDetail = () => {
                 onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
                 onCanvasEdgeChange={setCanvasEdge}
+                onReset={resetOptions}
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}
               />
-              {/* Reset options — snaps every choice (colourway, size, frame,
-                  glazing, finish) back to the defaults (Hugo 2026-07-24). */}
-              <div className="mt-6 flex justify-center">
-                <button
-                  type="button"
-                  onClick={resetOptions}
-                  className="press inline-flex items-center gap-1.5 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-                >
-                  <span aria-hidden="true">↺</span> Reset options
-                </button>
-              </div>
             </Reveal>
           </div>
 
