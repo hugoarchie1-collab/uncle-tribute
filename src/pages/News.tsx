@@ -163,7 +163,7 @@ const EntryRow = ({ entry, hideDate = false }: { entry: NewsEntry; hideDate?: bo
             <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>{entry.location}</p>
           ) : null}
 
-          <p className={cn(META, "m-0 max-w-[72ch] 3xl:max-w-[84ch]")}>{entry.summary}</p>
+          <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted m-0 max-w-[72ch] 3xl:max-w-[84ch]">{entry.summary}</p>
 
           {cta}
         </div>

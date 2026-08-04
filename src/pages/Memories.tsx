@@ -173,11 +173,11 @@ const Monogram = ({ name, size = "md" }: { name: string; size?: "md" | "lg" }) =
 // share — the avatar+name+meta+divider structure carries the comments idiom.
 // ---------------------------------------------------------------------------
 const BODY_CLASS =
-  "font-sans font-normal text-[clamp(16px,1.5vw,18px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] leading-[1.6] text-ink-soft [overflow-wrap:anywhere] m-0";
 // A slightly larger body measure for the FEATURED founding posts (Stephen's
 // letter + Polly's tribute) so they read as the cornerstone voices of the wall.
 const BODY_CLASS_LG =
-  "font-sans font-normal text-[clamp(17px,1.7vw,20px)] leading-[1.66] text-ink-soft [overflow-wrap:anywhere] m-0";
+  "font-sans font-normal text-[clamp(21px,1.2vw+6px,39px)] leading-[1.66] text-ink-soft [overflow-wrap:anywhere] m-0";
 
 // ---------------------------------------------------------------------------
 // PhotoLightbox — the X.com-style photo viewer. Tapping any attached photo in
@@ -525,7 +525,7 @@ const EmptyStateCard = () => (
       </span>
     </span>
     <div className="min-w-0 flex-1">
-      <p className="font-sans font-normal text-[clamp(15px,1.6vw,18px)] leading-[1.55] text-ink-muted m-0">
+      <p className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] leading-[1.55] text-ink-muted m-0">
         No memories have been shared yet — be the first to leave one for Steve,
         using the box above.
       </p>
@@ -1005,7 +1005,7 @@ const MemoriesMasthead = ({ onShare }: { onShare: () => void }) => (
             className="font-display font-normal tracking-[-0.01em] text-ink m-0 text-pretty"
             style={{
               fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(20px, 2vw, 34px)",
+              fontSize: "clamp(21px, 1.2vw + 6px, 39px)",
               lineHeight: 1.3,
               textShadow: "0 2px 14px rgba(0,0,0,0.7)",
             }}
