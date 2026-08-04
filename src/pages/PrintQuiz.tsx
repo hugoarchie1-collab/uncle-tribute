@@ -528,7 +528,7 @@ export const PrintQuiz = () => {
                     {winnerPainting.title}
                   </h2>
                   <p className={cn(EYEBROW_MUTED, "m-0 mt-2")}>Colourway: {result.colourwayName}</p>
-                  <p className={cn(SUBTITLE, "max-w-none mt-5 text-[clamp(16px,1.15vw,20px)]")}>
+                  <p className={cn(SUBTITLE, "max-w-none mt-5 text-[clamp(19px,1.05vw+5px,33px)]")}>
                     {REASONS[result.paintingId] ??
                       "A piece from Stephen's catalogue chosen to fit your answers."}
                   </p>
