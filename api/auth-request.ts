@@ -80,26 +80,31 @@ const readBody = async (req: VercelReq): Promise<Record<string, unknown>> => {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const magicLinkEmail = (link: string): string => {
-  const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-  const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+  // Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+  // attributes (double quotes here nest and truncate the attribute — see the
+  // note in api/stripe-webhook.ts). Aligned to the site brand faces.
+  const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+  const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
   const logo = "https://themandalacompany.com/logo/logo-seal-v9-w256.png";
-  // TABLE-based with the dark card on a <td> background (NOT the <body>): Gmail
-  // strips <body> backgrounds in light mode, which turned the light cream text
-  // invisible on white. A td bgcolor is honoured everywhere, so the dark card —
-  // with its solid, high-contrast text + the wax-seal logo — always renders.
+  // TABLE-based with the card colour on a <td> background (NOT the <body>):
+  // Gmail strips <body> backgrounds in light mode, so we paint the estate-paper
+  // tones on <td>s, which every client honours. On the light palette the ink is
+  // dark, so even if a client dropped the background entirely the text stays
+  // legible on white — the failure mode the old dark card had to guard against
+  // can't happen here. Estate-paper palette (no black backgrounds).
   return (
     `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/></head>` +
-    `<body style="margin:0;padding:0;background:#0a0908;">` +
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0908;"><tr>` +
+    `<body style="margin:0;padding:0;background:#f5efe3;">` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5efe3;"><tr>` +
     `<td align="center" style="padding:32px 16px;">` +
-    `<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="width:100%;max-width:520px;background:#100c11;border:1px solid #2b2622;border-radius:16px;"><tr>` +
+    `<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="width:100%;max-width:520px;background:#ece4d5;border:1px solid #ddd3bf;border-radius:16px;"><tr>` +
     `<td style="padding:38px 34px;font-family:${SANS};">` +
-    `<img src="${logo}" width="54" height="54" alt="The Mandala Company" style="display:block;border:0;margin:0 0 22px;"/>` +
-    `<p style="font-size:12px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:#d98a52;margin:0 0 16px;">The Mandala Company</p>` +
-    `<h1 style="font-family:${DISPLAY};font-weight:700;font-size:30px;line-height:1.15;color:#f4eddf;margin:0 0 16px;">Your sign-in link</h1>` +
-    `<p style="font-size:16px;line-height:1.65;color:#ddd5c6;margin:0 0 26px;">Tap the button below to sign in to your account and view your orders. The link is valid for 15 minutes and can be used once.</p>` +
-    `<p style="margin:0 0 28px;"><a href="${link}" style="display:inline-block;background:#ede6d6;color:#0a0908;font-size:14px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 34px;border-radius:8px;">Sign in</a></p>` +
-    `<p style="font-size:13px;line-height:1.6;color:#9d9788;margin:0;">If you didn't request this, you can safely ignore it — no one can access your account without this link.</p>` +
+    `<p style="text-align:center;margin:0 0 24px;line-height:1;"><img src="${logo}" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/></p>` +
+    `<p style="font-size:12px;font-weight:700;letter-spacing:0.26em;text-transform:uppercase;color:#c97844;margin:0 0 16px;">The estate of Stephen Meakin</p>` +
+    `<h1 style="font-family:${DISPLAY};font-weight:700;font-size:30px;line-height:1.15;color:#1a1612;margin:0 0 16px;">Your sign-in link</h1>` +
+    `<p style="font-size:16px;line-height:1.65;color:#5a544a;margin:0 0 26px;">Tap the button below to sign in to your account and view your orders. The link is valid for 15 minutes and can be used once.</p>` +
+    `<p style="margin:0 0 28px;"><a href="${link}" style="display:inline-block;background:#1a1612;color:#f5efe3;font-size:14px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;padding:16px 34px;border-radius:8px;">Sign in</a></p>` +
+    `<p style="font-size:13px;line-height:1.6;color:#8a8172;margin:0;">If you didn't request this, you can safely ignore it — no one can access your account without this link.</p>` +
     `</td></tr></table></td></tr></table></body></html>`
   );
 };

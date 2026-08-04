@@ -150,18 +150,26 @@ abstracts, painted moods.
 
 ## Adding contact / social media links
 
-Open `src/components/Footer.tsx`. Find the `socialLinks` array near the top:
+**Social profiles** live in one file: `src/data/socials.tsx` (the
+`SOCIAL_PROFILES` array). This is the single source of truth — both the
+Footer "Follow" row and the `/links` hub page read from it, so they can
+never drift apart. Each entry is `{ label, href, icon }`:
 
-```ts
-const socialLinks: { label: string; href: string }[] = [
-  { label: "Instagram", href: "#" },
-  { label: "Pinterest", href: "#" },
-  { label: "Email", href: "mailto:enquiries@example.com" },
+```tsx
+export const SOCIAL_PROFILES: SocialProfile[] = [
+  { label: "Instagram", href: "https://www.instagram.com/theartofstephenmeakin/", icon: (/* … */) },
+  { label: "Pinterest", href: "https://www.pinterest.com/theartofstephenmeakin/", icon: (/* … */) },
+  // …
 ];
 ```
 
-Replace the `"#"` URLs with your real handles. Remove or add entries
-as you like — the footer renders whatever's in the list.
+Replace an `href` with your real handle, or add/remove entries. When you
+add a brand-new channel, also add its URL to the `sameAs` array in
+`index.html` (nowhere else) — that's the cross-web brand signal Google uses.
+
+**The contact email** is `info@themandalacompany.com` throughout the site
+(Footer, Nav, Contact page, FAQ, legal pages). It's not in a config array —
+if it ever changes, search-and-replace that address across `src/`.
 
 ---
 

@@ -140,8 +140,19 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+// attributes (double quotes here nest and truncate the attribute — see the
+// note in api/stripe-webhook.ts). Aligned to the site brand faces.
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
+
+// The estate's wax-seal rose, centred at the head of the letter (the same mark
+// the site uses on /links and in the nav). Carries the brand in place of a text
+// "The Mandala Company" wordmark.
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
 
 const renderOrderShippedHtml = (p: {
   buyerName?: string | null;
@@ -158,31 +169,32 @@ const renderOrderShippedHtml = (p: {
     return t ? esc(t.split(/\s+/)[0]) : "there";
   })();
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
-    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
-    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
-    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
-    giftCard: `background-color:#15120f;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:left;`,
-    orderRow: `font-family:${SANS};font-size:14px;line-height:1.55;color:#ede6d6;`,
-    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#1a1612;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:#5a544a;margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
+    card: `background-color:#ece4d5;border:1px solid #ddd3bf;border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:left;`,
+    orderRow: `font-family:${SANS};font-size:14px;line-height:1.55;color:#1a1612;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const lineHtml = p.lines
     .map(
       (line, idx) =>
-        `<p style="${s.orderRow}margin:${idx === 0 ? "0" : "8px 0 0 0"};"><strong style="color:#ede6d6;">${esc(line.title)}</strong> — <span style="color:rgba(237,230,214,0.78);">${esc(line.colourway)}</span></p>`,
+        `<p style="${s.orderRow}margin:${idx === 0 ? "0" : "8px 0 0 0"};"><strong style="color:#1a1612;">${esc(line.title)}</strong> — <span style="color:#5a544a;">${esc(line.colourway)}</span></p>`,
     )
     .join("");
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your print has left the studio — The Art of Stephen Meakin</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Your print has left the studio — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Your print is on its way, ${first}.</h1>`
-    + `<p style="${s.body}">Your giclée left the atelier on <strong style="color:#ede6d6;">${esc(p.dispatchedAt)}</strong> via ${esc(p.carrier)}. You can follow it from here:</p>`
+    + `<p style="${s.body}">Your giclée left the atelier on <strong style="color:#1a1612;">${esc(p.dispatchedAt)}</strong> via ${esc(p.carrier)}. You can follow it from here:</p>`
     + `<div style="${s.giftCard}">`
     + `<p style="${s.small}margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.18em;">Tracking</p>`
     + `<a href="${esc(p.trackingUrl)}" style="${s.link}font-size:15px;">${esc(p.trackingUrl)}</a>`

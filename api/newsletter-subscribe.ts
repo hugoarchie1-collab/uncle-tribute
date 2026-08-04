@@ -345,8 +345,19 @@ const esc = (s: string): string =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const SANS = `"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif`;
-const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
+// Single-quoted so the stacks stay well-formed inside double-quoted style="…"
+// attributes (double quotes here nest and truncate the attribute — see the
+// note in api/stripe-webhook.ts). Aligned to the site brand faces.
+const SANS = `'Schibsted Grotesk','Helvetica Neue',Arial,sans-serif`;
+const DISPLAY = `'Fraunces','Georgia','Times New Roman',serif`;
+
+// The estate's wax-seal rose, centred at the head of every letter (the same
+// mark the site uses on /links and in the nav). It carries the brand, so the
+// letters drop the repeated text "The Mandala Company" wordmark.
+const STAMP =
+  `<p style="text-align:center;margin:0 0 24px 0;line-height:1;">` +
+  `<img src="https://themandalacompany.com/logo/logo-seal-v9-w256.png" width="76" height="76" alt="The Mandala Company" style="display:inline-block;width:76px;height:76px;border:0;outline:none;"/>` +
+  `</p>`;
 
 const renderWelcomeHtml = (p: {
   subscriberName?: string | null;
@@ -372,7 +383,7 @@ const renderWelcomeHtml = (p: {
     small: `font-family:${SANS};font-size:12px;line-height:1.65;color:#8a8172;margin:0 0 10px 0;`,
     divider: `border:0;border-top:1px solid #ddd3bf;margin:28px 0;`,
     giftCard: `background-color:#ece4d5;border:1px solid #c97844;border-radius:4px;padding:24px 22px;margin:28px 0;text-align:center;`,
-    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
+    code: `font-family:'SF Mono','Menlo','Consolas',monospace;font-size:22px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 12px 0;display:block;`,
     signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#1a1612;margin:24px 0 4px 0;`,
     footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
@@ -380,15 +391,19 @@ const renderWelcomeHtml = (p: {
   };
   const giftHtml = hasGift
     ? `<div style="${s.giftCard}">`
-      + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A small note from the estate</p>`
-      + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
+      // Dark ink on the light #ece4d5 gift card. The block once reused the
+      // old dark-theme cream text here, which was near-invisible cream-on-cream
+      // on the light estate-paper card. Kept dormant until
+      // NEWSLETTER_DISCOUNT_ENABLED.
+      + `<p style="${s.eyebrow}color:#8a8172;margin:0 0 14px 0;">A small note from the estate</p>`
+      + `<p style="${s.body}color:#1a1612;margin:0 0 14px 0;">A small thank-you from the estate, for your first edition. ${esc(p.thankYouValue as string)} towards any print, with our warmth.</p>`
       + `<code style="${s.code}">${esc(p.thankYouCode as string)}</code>`
       + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry as string)}.</p>`
       + `</div>`
     : "";
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Welcome to Friends &amp; Family — The Art of Stephen Meakin</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="text-align:center;margin:0 0 26px 0;"><img src="https://themandalacompany.com/logo/mandala-company-seal-v1.png" width="112" height="112" alt="The Mandala Company" style="display:inline-block;width:112px;height:112px;border:0;outline:none;"/></p>`
+    + STAMP
     + `<p style="${s.eyebrow}">The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
     + `<p style="${s.body}">You've been added to Friends &amp; Family — a small list the family keeps for quarterly notes on new editions of <em>The Art of Stephen Meakin</em>, exhibitions, and the occasional piece of writing from the archive. No more than four notes a year, and never a marketing blast.</p>`
@@ -419,22 +434,23 @@ const renderCustomSizeHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
     `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`;
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Custom size request</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Custom size request</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Custom size request</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Custom size request</p>`
     + `<h1 style="${s.heading}">A bespoke print enquiry${p.paintingTitle ? ` for ${esc(p.paintingTitle)}` : ""}.</h1>`
     + row("From", `${p.name ? `${p.name} · ` : ""}${p.email}`)
     + (p.paintingTitle ? row("Painting", p.paintingTitle) : "")
@@ -465,24 +481,25 @@ const renderTradeApplicationHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
     value
       ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
       : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Trade application</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Trade application</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Trade &amp; Interior Design</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Trade &amp; Interior Design</p>`
     + `<h1 style="${s.heading}">A trade application${p.studio ? ` from ${esc(p.studio)}` : ""}.</h1>`
     + row("Studio / company", p.studio)
     + row("Website", p.website)
@@ -514,24 +531,25 @@ const renderRepresentativeApplicationHtml = (p: {
   message: string;
 }): string => {
   const s = {
-    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
-    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    page: `background-color:#f5efe3;margin:0;padding:32px 16px;font-family:${SANS};color:#1a1612;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#f5efe3;padding:0;`,
     eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
-    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#ede6d6;margin:0 0 22px 0;`,
-    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:rgba(237,230,214,0.82);margin:0 0 10px 0;`,
-    label: `color:rgba(237,230,214,0.5);text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
-    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#ede6d6;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
-    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:24px 0;`,
-    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);margin:24px 0 0 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:30px;line-height:1.12;color:#1a1612;margin:0 0 22px 0;`,
+    row: `font-family:${SANS};font-size:14px;line-height:1.6;color:#5a544a;margin:0 0 10px 0;`,
+    label: `color:#8a8172;text-transform:uppercase;letter-spacing:0.14em;font-size:10px;font-weight:700;`,
+    quote: `font-family:${SANS};font-size:15px;line-height:1.7;color:#1a1612;border-left:2px solid #c97844;padding:4px 0 4px 16px;margin:18px 0;white-space:pre-wrap;`,
+    divider: `border:0;border-top:1px solid #ddd3bf;margin:24px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:#8a8172;margin:24px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
   };
   const row = (label: string, value: string) =>
     value
       ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
       : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Representative application</title></head>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="light only"/><meta name="supported-color-schemes" content="light only"/><title>Representative application</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Representatives</p>`
+    + STAMP
+    + `<p style="${s.eyebrow}">Representatives</p>`
     + `<h1 style="${s.heading}">A representative application${p.name ? ` from ${esc(p.name)}` : ""}.</h1>`
     + row("Name", p.name)
     + row("Contact", p.email)

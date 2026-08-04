@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useConsent, setConsent } from "../lib/consent";
@@ -26,7 +27,29 @@ import { BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "./ui/tokens";
  */
 export const ConsentBanner = () => {
   const consent = useConsent();
-  if (consent !== null) return null;
+  const ref = useRef<HTMLDivElement>(null);
+  const open = consent === null;
+
+  // While the bar is up, reserve its exact height at the foot of the page so it
+  // never covers a primary CTA (a form's submit, the last button). The fixed
+  // bar sits over the viewport foot; this padding gives the page scroll-room to
+  // bring bottom content clear of it. Cleared the instant a choice is made.
+  useEffect(() => {
+    if (!open) return;
+    const el = ref.current;
+    if (!el) return;
+    const apply = () => {
+      document.body.style.paddingBottom = `${el.offsetHeight}px`;
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    return () => {
+      window.removeEventListener("resize", apply);
+      document.body.style.paddingBottom = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
 
   const decide = (marketing: boolean) => {
     setConsent(marketing);
@@ -37,6 +60,7 @@ export const ConsentBanner = () => {
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: EASE_SIGNATURE }}
