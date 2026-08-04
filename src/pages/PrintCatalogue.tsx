@@ -988,7 +988,12 @@ function BackCover() {
 // ── ASSEMBLY ─────────────────────────────────────────────────────────────────
 
 export function PrintCatalogue() {
-  _g = 0; // reset the editorial-ground colour rotation for a deterministic sequence
+  // Reset the editorial-ground colour rotation so the print catalogue is a
+  // deterministic single pass every time it is opened. This is an intentional
+  // module-singleton counter for a print-only page (not React state), so the
+  // impure-render lint rule is deliberately waived here.
+  // eslint-disable-next-line react-hooks/globals
+  _g = 0;
   useEffect(() => {
     document.body.classList.add("printing-catalogue");
     document.title = "The Art of Stephen Meakin — Catalogue";
