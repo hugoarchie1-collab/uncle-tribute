@@ -110,12 +110,15 @@ export const TITLE =
  *  list lost the cascade tie), so centred subtitles drifted off the page axis.
  *  Pages now OWN the measure — add an explicit `max-w-[…] mx-auto` at the call
  *  site for the centred variant. */
-// Body/lead — CAPPED for cohesion (Hugo 2026-08-03: "some text super sized,
-// some super small — I want Nike-level coherence"). The old max of 42px let the
-// lead balloon into a headline on wide screens; now it holds a calm 19->25px
-// reading size at every width, close to common-width behaviour but no ballooning.
+// Body/lead — COHERENT FLUID GROWTH (Hugo 2026-08-04, 4K monitor: text read
+// "so small… huge gaps"). The 2026-08-03 hard 25px cap fixed incoherence but
+// left prose marooned-tiny on large displays. This keeps the SAME ~20px laptop
+// reading size (1440 ≈ 20px, unchanged) but lets it grow GENTLY and IN UNISON
+// to ~32px on a 2560 monitor, ceiling 33px so it can never balloon into a
+// headline. Coherence now comes from a shared slope across the whole prose
+// scale, not from freezing everything small.
 export const SUBTITLE =
-  "font-sans font-medium text-[clamp(19px,0.5vw+13px,25px)] leading-[1.5] text-ink-muted";
+  "font-sans font-medium text-[clamp(19px,1.05vw+5px,33px)] leading-[1.5] text-ink-muted";
 
 /** Quiet / meta eyebrow — muted tone (captions, cites, place tags). Uses the
  *  single muted-ink token so "quieter text" is one colour site-wide. */
