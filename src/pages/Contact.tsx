@@ -184,7 +184,7 @@ export const Contact = () => {
               className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[52ch] 3xl:max-w-[60ch]"
               style={{
                 fontVariationSettings: '"opsz" 32, "wght" 400',
-                fontSize: "clamp(20px, 2vw, 34px)",
+                fontSize: "clamp(21px, 1.2vw + 6px, 39px)",
                 lineHeight: 1.3,
                 textShadow: "0 2px 14px rgba(0,0,0,0.85), 0 1px 4px rgba(0,0,0,0.6)",
               }}

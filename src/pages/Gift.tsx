@@ -439,7 +439,7 @@ export const Gift = () => {
                   placeholder="A few words to go with the gift."
                 />
               </label>
-              <p className={cn(META, "m-0 mt-2 max-w-[72ch]")}>
+              <p className={cn("font-sans leading-[1.55] text-ink-muted text-[clamp(16px,0.55vw+9px,24px)]", "m-0 mt-2 max-w-[72ch]")}>
                 Leave these blank to gift the card to yourself to pass on by
                 hand. The amount is charged at checkout exactly as shown — there
                 is no delivery cost on a gift card.
@@ -464,7 +464,7 @@ export const Gift = () => {
                     {resolved.label}
                   </p>
                 )}
-                <p className={cn(META, "m-0 mt-5 max-w-[40ch]")}>
+                <p className={cn("font-sans leading-[1.55] text-ink-muted text-[clamp(16px,0.55vw+9px,24px)]", "m-0 mt-5 max-w-[40ch]")}>
                   The figure you choose is exactly what you pay — nothing is
                   added at checkout, and a gift card carries no delivery cost.
                 </p>
