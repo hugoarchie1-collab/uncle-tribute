@@ -831,7 +831,7 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-10 lg:gap-14 items-stretch"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14 items-stretch"
             >
               {/* Portrait STRETCHES to the copy's exact height (items-stretch +
                   md:h-full) so there is NEVER a gap above or below it — the copy
@@ -1050,7 +1050,7 @@ export const Welcome = () => {
               divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-9 md:pt-12">
-              <Reveal as="div" className="grid md:grid-cols-[minmax(0,42%)_1fr] gap-6 md:gap-8 lg:gap-12 items-center">
+              <Reveal as="div" className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-stretch">
                 {/* Craft FILM — the hand-finishing in motion (dots of paint +
                     sequins placed by hand). Muted autoplay loop; the still is the
                     poster (and the reduced-motion fallback). Capped height so it's
