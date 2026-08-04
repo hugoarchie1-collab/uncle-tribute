@@ -7,7 +7,7 @@ import { WishlistButton } from "../components/WishlistButton";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
-import { EYEBROW, EYEBROW_TIGHT, SUBTITLE, META, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, SUBTITLE, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import {
@@ -547,7 +547,7 @@ export const FindAPrint = () => {
         </div>
 
         {filtered.length === 0 && (
-          <p className={cn(META, "leading-[1.7] mt-6 text-center")}>
+          <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.7] text-ink-muted mt-6 text-center">
             Nothing matches all of those at once.{" "}
             <button
               type="button"

@@ -848,7 +848,7 @@ const LegalPage = ({
                     return (
                       <p
                         key={j}
-                        className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                        className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                       >
                         {block.text}
                       </p>
@@ -857,7 +857,7 @@ const LegalPage = ({
                   return (
                     <ul
                       key={j}
-                      className="font-sans font-normal text-[16px] md:text-[17px] 2xl:text-[clamp(17px,1vw,21px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3.5 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                      className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3.5 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
                     >
                       {block.items.map((item, k) => (
                         <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">

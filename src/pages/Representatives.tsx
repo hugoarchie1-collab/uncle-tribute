@@ -441,7 +441,7 @@ export const Representatives = () => {
                 <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(19px,1.5vw,25px)] leading-[1.12]">
                   {a.title}
                 </h3>
-                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{a.body}</p>
+                <p className={cn(SUBTITLE, "max-w-none mt-3")}>{a.body}</p>
               </Reveal>
             ))}
           </div>
@@ -468,7 +468,7 @@ export const Representatives = () => {
                 <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(20px,1.7vw,28px)] leading-[1.12]">
                   {s.title}
                 </h3>
-                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{s.body}</p>
+                <p className={cn(SUBTITLE, "max-w-none mt-3")}>{s.body}</p>
               </Reveal>
             ))}
           </div>
@@ -513,7 +513,7 @@ export const Representatives = () => {
                 <h3 className="font-display font-semibold tracking-[-0.03em] text-ink m-0 mt-4 text-[clamp(22px,2.2vw,32px)]">
                   {s.title}
                 </h3>
-                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{s.body}</p>
+                <p className={cn(SUBTITLE, "max-w-none mt-3")}>{s.body}</p>
               </Reveal>
             ))}
           </div>
@@ -541,7 +541,7 @@ export const Representatives = () => {
                     +
                   </span>
                 </summary>
-                <p className={cn(SUBTITLE, "max-w-[64ch] mt-3 text-[clamp(15px,1vw,18px)]")}>{f.a}</p>
+                <p className={cn(SUBTITLE, "max-w-[64ch] mt-3")}>{f.a}</p>
               </details>
             ))}
           </Reveal>

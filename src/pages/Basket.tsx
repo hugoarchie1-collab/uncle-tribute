@@ -723,7 +723,7 @@ export const Basket = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-1.5")}>
                   Add another to your order
                 </p>
-                <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.55] text-ink-muted m-0 mb-5 max-w-[54ch]">
+                <p className="font-sans text-[clamp(19px,1.05vw+5px,33px)] leading-[1.55] text-ink-muted m-0 mb-5 max-w-[54ch]">
                   Every additional piece ships free, in the same estate box &mdash;
                   with its own catalogue and seal.
                 </p>
@@ -777,7 +777,7 @@ export const Basket = () => {
                   <p className={cn(EYEBROW_TIGHT, "m-0 mb-1 text-ink")}>
                     Included free with every order
                   </p>
-                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mb-2.5">
+                  <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.5] text-ink-muted m-0 mb-2.5">
                     The finishing others would add to the bill — ours, with our warmth.
                   </p>
                   <ul className="m-0 p-0 list-none flex flex-col gap-1.5">
@@ -788,7 +788,7 @@ export const Basket = () => {
                     ].map((t) => (
                       <li
                         key={t}
-                        className="font-sans text-[13.5px] leading-[1.5] text-ink-muted flex gap-2"
+                        className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.5] text-ink-muted flex gap-2"
                       >
                         <span aria-hidden className="text-ink/40 mt-px">
                           &mdash;
@@ -843,7 +843,7 @@ export const Basket = () => {
                   colourway-set (12%) / catalogue (15%) bundles read ≥10 here so
                   they self-exclude. Informational — never a price claim. */}
               {lines.length >= 1 && bundleDiscountPercent < 10 && (
-                <p className="m-0 -mt-1 mb-3 font-sans text-[clamp(13px,0.78vw,15.5px)] leading-[1.5] text-ink-muted">
+                <p className="m-0 -mt-1 mb-3 font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.5] text-ink-muted">
                   {lines.length === 1
                     ? "Add one more print and your order saves 5% — and 8% on three or more."
                     : "One more print lifts your bundle saving to 8%."}
@@ -893,14 +893,14 @@ export const Basket = () => {
                         </li>
                       ))}
                     </ul>
-                    <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mt-2">
+                    <p className="font-sans font-normal text-[clamp(16px,0.55vw+9px,24px)] leading-[1.5] text-ink-muted m-0 mt-2">
                       Free delivery on every order — framed or on canvas — with
                       nothing added at checkout. Each piece ships within 7–10
                       working days.
                     </p>
                   </div>
 
-                  <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.5] text-ink-muted m-0 mb-5">
+                  <p className="font-sans font-normal text-[clamp(16px,0.55vw+9px,24px)] leading-[1.5] text-ink-muted m-0 mb-5">
                     International buyers may be charged local import duties on
                     delivery.
                   </p>

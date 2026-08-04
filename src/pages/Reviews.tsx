@@ -74,7 +74,7 @@ const ReviewCard = ({ r }: { r: PublicReview }) => {
     <figure className="m-0 break-inside-avoid ring-1 ring-line bg-ink/[0.02] p-6 md:p-7">
       <Stars value={rating} />
       <span className="sr-only">{`${rating} out of 5 stars`}</span>
-      <blockquote className={cn(SUBTITLE, "max-w-none m-0 mt-4 text-[clamp(15px,1vw,18px)]")}>
+      <blockquote className={cn(SUBTITLE, "max-w-none m-0 mt-4 text-[clamp(19px,1.05vw+5px,33px)]")}>
         “{r.body}”
       </blockquote>
       {image && (
@@ -229,7 +229,7 @@ export const Reviews = () => {
                 <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(18px,1.4vw,24px)] leading-[1.14]">
                   {t.title}
                 </h3>
-                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(15px,1vw,18px)]")}>{t.body}</p>
+                <p className={cn(SUBTITLE, "max-w-none mt-3 text-[clamp(19px,1.05vw+5px,33px)]")}>{t.body}</p>
               </Reveal>
             ))}
           </div>

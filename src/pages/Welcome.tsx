@@ -679,7 +679,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[72ch] text-pretty"
+                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[72ch] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -752,7 +752,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[840px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] text-center">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -768,7 +768,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.72vw+16px,30px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty"
+                    className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -1031,7 +1031,7 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
-              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[840px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
+              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
                 {WELCOME.archiveStatement.body.map((para, i) => (
                   <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
                     {para}
@@ -1162,7 +1162,7 @@ export const Welcome = () => {
                     spec-right split left dead space beside the shorter ledger; now
                     the paragraphs sit centred, with the spec sheet balanced full-
                     width beneath. reading-shadow lifts them off the mandala (box-free). */}
-                <div className="mx-auto w-full max-w-[820px] 2xl:max-w-[920px] flex flex-col gap-y-4 md:gap-y-5 text-center">
+                <div className="mx-auto w-full max-w-[820px] 2xl:max-w-[920px] 3xl:max-w-[1160px] 4xl:max-w-[1320px] flex flex-col gap-y-4 md:gap-y-5 text-center">
                   <p className={cn(SUBTITLE, "reading-shadow m-0")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>

@@ -207,7 +207,7 @@ export const Links = () => (
         </h1>
 
         {/* One-line bio */}
-        <p className="mt-6 text-center font-sans text-[14.5px] leading-[1.6] text-ink-muted max-w-[34ch]">
+        <p className="mt-6 text-center font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.6] text-ink-muted max-w-[34ch]">
           Signed giclée editions of his mandala paintings — direct from his
           family, shipped worldwide.
         </p>

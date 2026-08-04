@@ -20,6 +20,10 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../compon
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
 import { SOCIAL_PROFILES } from "../data/socials";
 
+// Fine-print prose (real explanatory sentences currently ~15px) — grows gently
+// on large screens (≈17px at 1440, ≈24px at 2560) without enlarging chrome.
+const FINE_PRINT = "font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted";
+
 const formatDate = (iso: string | null): string => {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -204,7 +208,7 @@ const AvatarUploader = ({ email }: { email: string | null }) => {
             </button>
           )}
         </div>
-        <p className={cn(META, "m-0 mt-2 max-w-[40ch]")} aria-live="polite">
+        <p className={cn(FINE_PRINT, "m-0 mt-2 max-w-[40ch]")} aria-live="polite">
           {status === "error" && note
             ? note
             : "Your profile picture — it appears beside any memory you share."}
@@ -355,7 +359,7 @@ export const AccountPanel = () => {
                       </button>
                     </div>
                     {formError && <p className={cn(META, "m-0 mt-3 text-accent")}>{formError}</p>}
-                    <p className={cn(META, "m-0 mt-3 text-ink-muted max-w-[64ch]")}>
+                    <p className={cn(FINE_PRINT, "m-0 mt-3 text-ink-muted max-w-[64ch]")}>
                       No password needed — we email you a secure one-time link. If you've ordered
                       before, your order history appears once you sign in.
                     </p>
@@ -406,7 +410,7 @@ export const AccountPanel = () => {
                 and the estate's real social profiles. */}
             <div className="mt-7 md:mt-8 pt-5 md:pt-6 border-t border-line">
               <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Memories</p>
-              <p className={cn(META, "m-0 mb-4 max-w-[40ch]")}>
+              <p className={cn(FINE_PRINT, "m-0 mb-4 max-w-[40ch]")}>
                 Share a memory of Stephen — a few words, or a photograph — on the
                 Book of Memories.
               </p>

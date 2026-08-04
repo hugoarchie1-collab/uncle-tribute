@@ -137,14 +137,14 @@ export const Orders = () => {
                         ))}
                       </ul>
                     )}
-                    <p className={cn(META, "m-0 mt-5 pt-4 border-t border-line")}>
+                    <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted m-0 mt-5 pt-4 border-t border-line">
                       Ordered {formatDate(result.order.date)}. You'll receive a tracking email the
                       moment it leaves the studio.
                     </p>
                   </div>
                 )}
                 {result.state === "missing" && (
-                  <p className="font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.7] text-ink-soft m-0 max-w-[52ch]">
+                  <p className="font-sans text-[clamp(19px,1.05vw+5px,33px)] leading-[1.7] text-ink-soft m-0 max-w-[52ch]">
                     We couldn't find an order for that reference{email.trim() ? " + email" : ""}.
                     Check the reference from your confirmation email, or write to{" "}
                     <a href="mailto:info@themandalacompany.com" className="underline underline-offset-4 hover:text-accent">
@@ -166,7 +166,7 @@ export const Orders = () => {
               as an intentional rail beside the form, never a floating void. */}
           <Reveal as="div" delay={0.06} className="lg:col-span-5 lg:border-l lg:border-line lg:pl-10">
             <p className={cn(EYEBROW_TIGHT, "m-0 mb-3")}>Returns &amp; after-sale</p>
-            <p className="font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-soft m-0 max-w-[40ch]">
+            <p className="font-sans text-[clamp(19px,1.05vw+5px,33px)] leading-[1.7] text-ink-soft m-0 max-w-[40ch]">
               Every piece is made to order. A canvas print keeps the full 14-day
               change-of-mind right; framed and hand-finished pieces are bespoke,
               cancellable free within 24 hours before production. And if anything

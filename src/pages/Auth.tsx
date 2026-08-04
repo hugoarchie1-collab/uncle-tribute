@@ -372,7 +372,7 @@ export const Auth = () => {
             {AUTH_FACTS.map((fact) => (
               <div key={fact.label} className="border-t border-line pt-4">
                 <p className={cn(EYEBROW_TIGHT, "m-0 mb-2.5")}>{fact.label}</p>
-                <p className={cn(META, "text-pretty m-0")}>
+                <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted text-pretty m-0">
                   {fact.body}
                 </p>
               </div>
