@@ -195,6 +195,20 @@ const FAQS: QA[] = [
       </>
     ),
   },
+  {
+    eyebrow: "Family & Friends",
+    question: "Is there a discount for a second print?",
+    answer: (
+      <>
+        Every order includes a <strong>Family &amp; Friends</strong> card —{" "}
+        <strong>10% towards your next print</strong>, and one to pass to someone
+        you love. It arrives with your order confirmation as a single-use code,
+        valid for one year, redeemable against any future print at checkout.
+        First purchases are always at full price; the gesture is the estate's
+        thank-you for taking one of Steve's works into your home.
+      </>
+    ),
+  },
 ];
 
 /** Flatten an answer's React node to plain text for the FAQPage schema — one

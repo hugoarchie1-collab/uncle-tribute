@@ -245,9 +245,10 @@ const DEFAULT_BCC = "info@themandalacompany.com";
 const FROM_NAME = "The Mandala Company";
 // Fallback static code used if dynamic coupon creation fails. For this to
 // actually grant a discount at checkout, Hugo must create a matching
-// promotion code in the Stripe dashboard (one-off, %10 off, no expiry).
-// See CLAUDE.md "Thank-you discount" section for the recipe.
-const FALLBACK_CODE = "FRIENDS";
+// promotion code in the Stripe dashboard (one-off, 10% off, no expiry).
+// Named "Family & Friends" to the buyer; the redeemable code is FAMILYFRIENDS
+// (Stripe codes can't contain "&"). See CLAUDE.md "Family & Friends" section.
+const FALLBACK_CODE = "FAMILYFRIENDS";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -491,7 +492,10 @@ interface ThankYouCode {
 }
 const THANKYOU_PERCENT = 10;
 const THANKYOU_VALID_DAYS = 365;
-const THANKYOU_PREFIX = "FRIENDS";
+// "Family & Friends" gesture — the buyer-facing name. Redeemable codes read
+// FF-XXXXXX (unique, single-use); the human name "Family & Friends" is shown
+// in the email copy below.
+const THANKYOU_PREFIX = "FF";
 const THANKYOU_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const thankYouSuffix = (length = 6): string => {
   let out = "";
@@ -511,7 +515,7 @@ const createThankYouCode = async (
     duration: "once",
     max_redemptions: 1,
     redeem_by: expiresUnix,
-    name: `Estate thank-you — ${sessionId.slice(0, 14)}`,
+    name: `Family & Friends — ${sessionId.slice(0, 14)}`,
     metadata: { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" },
   });
   let promoErr: unknown = null;
@@ -845,8 +849,8 @@ const renderOrderConfirmationHtml = (p: {
     + `<p style="${s.meta}color:rgba(237,230,214,0.78);">· ${ESTATE.printer}</p>`
     + `</div>`
     + `<div style="${s.giftCard}">`
-    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">A note from the estate</p>`
-    + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">In thanks for being among the first to take one of Steve's prints into your home, please accept ${esc(p.thankYouValue)} towards a future print, with our warmth.</p>`
+    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">Family &amp; Friends</p>`
+    + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">With our thanks for taking one of Steve's prints into your home, here is ${esc(p.thankYouValue)} towards your next print — and one to pass to someone you love.</p>`
     + `<code style="${s.code}">${esc(p.thankYouCode)}</code>`
     + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry)}.</p>`
     + `</div>`
