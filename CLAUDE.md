@@ -187,19 +187,25 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 
 ## Welcome page sections (in scroll order)
 
-1. **Video intro** — sticky 100vh boomerang video, dissolves into hero (only 5% bottom fade)
-2. **Hero** — "So here we are on Earth — orbiting a Sun Star at about 67,062 miles an hour" (Stephen's words). Wild Rose painting on the easel on right. CTAs: Explore collections / Our story
-3. **A reminder** — NEW 2026-06-04. The hero now carries only a tight verbatim lead (`WELCOME.reminderLead`); this dedicated bold editorial section runs Hugo's full five-paragraph "reminder" passage VERBATIM (mapped from `WELCOME.reminderLong[]` in content.ts — never re-typed in JSX). P1 leads large; P2–P4 in a two-column measure on lg+; P5 lands after a hairline as a two-tier Fraunces close (dominant sentence + smaller subordinate clause, one rust period) echoing the finale. Over the shared peacock backdrop; Fraunces opsz held ≤48; whole-element Reveals. (The ONLY normalisation to the supplied copy was "Steven"→"Stephen".)
-4. **Meet Stephen** — portrait + IN STEVE'S OWN WORDS… eyebrow + opening bio
-5. **Studio** — full-bleed cinematic image
-6. **Featured Works** — 3×2 grid of signature paintings linking to detail pages
-7. **Each painting is a ritual** — Craft section, transparent over the peacock backdrop like every other section (the near-opaque `bg-[rgba(10,9,8,0.88)]` dark scrim card was removed 2026-06-03 — it read as a hard black rectangle that broke the smooth pink wash), with process narrative + materials grid
-8. **Sacred Geometry — four traditions** — 4-card grid (Insular Island / Rose Windows / Persian / Tibetan)
-9. **Arista SunStar** — text-left, framed photo right (the 3.6m commission for Farmacy Notting Hill)
-10. **The Estate** — Prints + Friends-of-the-estate engagement cards (open EnquireModal) + `NewsletterSignup variant="panel"` mounted below the cards
-11. **Sacred Geometry (closing statement)** — finale: **BOLD, screen-filling, TWO-TIER statement (live 2026-06-03, layered on top of the cinematic hero).** A `min-h-[100svh]` centered `flex items-center` section: **"Sacred geometry"** is the dominant title (Fraunces 700, `opsz 48`, `clamp(58px,15vw,232px)`, italic *geometry*) sitting ABOVE a deliberately ~4× smaller subordinate clause **"— the order beneath all things."** (`opsz 36 / wght 600`, `clamp(22px,3.6vw,58px)`, rust period) — Hugo's direction: "Sacred geometry needs to be larger than the order beneath all things." → hairline → Stephen's verbatim "everything is connected" (italic `opsz 24`, cite SEM) → a quiet "Explore the collection →" link. Background is the home's 4-colourway peacock crossfade closing on **Mary Pink** (`peacock-mary-pink-blur-v2.webp`, dusty rose); a soft radial scrim grounds the type — the **Earth limb + rust horizon glow were REMOVED 2026-06-03** (Hugo) so the finale shows ONLY the pink backdrop, matching the rest of the home. **NO** Earth, **NO** rust glow, **NO** rose emblem, **NO** eyebrow, **NO** mandala-ring SVG. `isolate` + `overflow-hidden` retained (gotcha #8); whole-element Reveals only (gotcha #2).
+**2026-08-04 — HOME SYSTEMATISED to one constitution (design-polish rebuild, branch `claude/home-page-design-polish-eswxs5`).** The home was accreted over 6 months of per-section ad-hoc tuning ("assembled, not designed"). Rebuilt around ONE governing system so it reads as a single designed page:
+- **ONE type scale.** Two display roles only — `heroDisplay()` (the single largest recurring statement: hero line, reminder peak, closes; Fraunces opsz-48/700) + the shared `TITLE` token (EVERY section h2). Body = the `SUBTITLE` token. No section invents a bespoke font-size clamp anymore. The masthead wordmark is the ONE dominant voice; the hero line was stepped DOWN (`clamp(36px,5.4vw,96px)`) so the two no longer compete.
+- **ONE vertical rhythm.** `<main>` owns every gap via `space-y-24 md:space-y-32 lg:space-y-40`; sections carry NO per-section `py`/`mt`/`mb`/`border-t`. The uneven 64→176px jumps are gone.
+- **ONE alignment axis.** Every content beat is centred on the page spine (Hugo: "clean, symmetrical"). The old off-axis 42% grids (Meet Stephen, Hand-finished) are now centred.
+- **ONE moving image.** The garden→galaxy `CosmicInterlude` is the sole film. The three archive loops (hand-finishing, studio-mandala, arista-timelapse) were removed from the home (assets stay on disk / interior pages) — `LoopFilm` is no longer imported here.
+- Shared local constants: `SECTION` (one container recipe), `MEASURE` (reading width), `TITLE_MEASURE`. Backup of the pre-rebuild file is in the session scratchpad.
 
-(Section 7 = Mandalas Wall and section 9 = Three Collections were both cut — kept their assets on disk for future use, e.g. About page.)
+Beats now (all centred, one rhythm):
+1. **Masthead · Earth open** — full-viewport Earth limb (top-pinned, `scaleY(-1)`, keyed transparent) + the "THE SEM EXPERIENCE" two-tier wordmark. **Owner-defended — preserved verbatim** (mask math + svh caps load-bearing).
+2. **Hero** — Stephen's "So here we are on Earth…" (stepped down, one line), the two CTAs (See the collection / His story), the Wild Rose studio photo contained beneath.
+3. **The one film** — `CosmicInterlude`, full-bleed cinematic band, feathered top+bottom.
+4. **A reminder** — `WELCOME.reminderLong[]` VERBATIM: `[0..2]` centred lead body → `[3]`'s first two sentences as the display peak (remainder falls to body) → `[4]` as the two-tier close (one rust period). Simplified from the old split/two-column machinery; no words lost.
+5. **Meet Stephen** — centred portrait + invocation eyebrow + TITLE + `bio[0..1]`.
+6. **Featured works** — the 3×2 random-six grid (wall-label captions) + the archive statement (`WELCOME.archiveStatement`) as a quiet centred coda + the single text-link CTA.
+7. **The making** — the owner-defended translucent "island" card: craft photo + process prose + 6-row material ledger, with the **hand-finished edition** upsell folded in as its commercial close (From £595 CTA).
+8. **Sacred Geometry** — the four-traditions editorial index + `bio[1]`.
+9. **Arista SunStar** — the 3.6m commission: TITLE + key-fact strip + one contained photo + `bio[2]`.
+10. **In memoriam** (NEW) — the remembrance close the page was missing: "In loving memory" · **Stephen Meakin** · `LIFE_DATES` · "Everything is connected." · "Explore his life →". The page opens on his words and lands on his name.
+11. **Earth close** — owner-defended mirror of the masthead (same asset, natural orientation, curving up flush to the footer). "As above, so below."
 
 ---
 
