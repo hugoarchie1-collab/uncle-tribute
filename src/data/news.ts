@@ -158,6 +158,24 @@ export const groupByStatus = (
 // -----------------------------------------------------------------------------
 export const NEWS: NewsEntry[] = [
   {
+    // Ancient Canons — the fourth collection, now live on the site. Three works
+    // holding the deep traditions Stephen wove from: Insular (Celtic) knotwork,
+    // the Flower of Life, and Persian geometry. Cover is a real file on disk
+    // (celtic-shield-aurora-green.jpg + its .webp sibling). Honest "recent"
+    // status + "Now available" — no fabricated date; the collection is live.
+    id: "ancient-canons-collection",
+    type: "release",
+    kind: "collection",
+    status: "recent",
+    title: "Ancient Canons",
+    displayDate: "Now available",
+    summary:
+      "A fourth collection joins the archive: Ancient Canons gathers three works that hold the deep traditions Stephen wove from — the interlaced Insular knotwork of Orbital (Celtic Shield Mandala), the sacred geometry of 12 Around 3 (Flower of Life), and the Persian Flower of Life (Kepler's Key). Each is issued as an estate-stamped, numbered giclée edition.",
+    cover: "/img/paintings/celtic-shield-aurora-green.jpg",
+    ctaLabel: "See the collection",
+    ctaTo: "/collections",
+  },
+  {
     // Orchis 7's Aquamarine colourway — Stephen's own sea-glass variation of the
     // septagon mandala, kept in his studio files. The cover is verified present
     // on disk (orchis7-aquamarine-blue.jpg + its .webp sibling).

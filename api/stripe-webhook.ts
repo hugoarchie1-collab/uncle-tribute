@@ -1236,6 +1236,9 @@ const ARTWORK_CODE: Record<string, string> = {
   "tridecagon-moon-star": "TMS",
   "lulin": "LUL",
   "enneagon-swans": "ENS",
+  "celtic-shield": "CSH",
+  "twelve-around-three": "TAT",
+  "persian-flower-of-life": "PFL",
 };
 
 // Crockford base32 (no I/L/O/U) — unambiguous read off a printed certificate.
