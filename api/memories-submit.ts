@@ -601,6 +601,9 @@ const PAINTING_TITLES: Record<string, string> = {
   "tridecagon-moon-star": "Tridecagon Moon Star",
   lulin: "Lulin",
   "enneagon-swans": "Enneagon Swans",
+  "celtic-shield": "Orbital — Celtic Shield Mandala",
+  "twelve-around-three": "12 Around 3 — Flower of Life",
+  "persian-flower-of-life": "Persian Flower of Life — Kepler's Key",
 };
 
 // Pull a single string value off the Vercel-parsed query (?kind=reviews) with a

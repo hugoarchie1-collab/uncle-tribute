@@ -48,10 +48,10 @@ type IntentionKey =
 const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = [
   { key: "transformation", label: "Transformation", paintings: ["flower-of-life", "peacock-minerva", "tridecagon-moon-star"] },
   { key: "abundance", label: "Abundance", paintings: ["wild-rose", "english-bluebells", "slipper-orchids"] },
-  { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva", "ophiuchus"] },
+  { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva", "ophiuchus", "celtic-shield"] },
   { key: "healing", label: "Healing", paintings: ["ophiuchus"] },
-  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans"] },
-  { key: "wholeness", label: "Wholeness", paintings: ["orchis-7", "flower-of-life"] },
+  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "persian-flower-of-life"] },
+  { key: "wholeness", label: "Wholeness", paintings: ["orchis-7", "flower-of-life", "twelve-around-three", "persian-flower-of-life"] },
   { key: "remembrance", label: "Remembrance", paintings: ["lulin", "enneagon-swans"] },
 ];
 

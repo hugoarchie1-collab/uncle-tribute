@@ -167,6 +167,9 @@ const VALID_PAINTING_IDS = new Set<string>([
   "tridecagon-moon-star",
   "lulin",
   "enneagon-swans",
+  "celtic-shield",
+  "twelve-around-three",
+  "persian-flower-of-life",
 ]);
 
 const PAINTING_TITLES: Record<string, string> = {
@@ -180,6 +183,9 @@ const PAINTING_TITLES: Record<string, string> = {
   "tridecagon-moon-star": "Tridecagon Moon Star",
   "lulin": "Lulin",
   "enneagon-swans": "Enneagon — The Swans",
+  "celtic-shield": "Orbital — Celtic Shield Mandala",
+  "twelve-around-three": "12 Around 3 — Flower of Life",
+  "persian-flower-of-life": "Persian Flower of Life — Kepler's Key",
 };
 
 const DEFAULT_FROM = "info@themandalacompany.com";
@@ -303,6 +309,9 @@ const PAINTING_COVERS: Record<string, string> = {
   "tridecagon-moon-star": "/img/paintings/tridecagon-sage-green.jpg",
   "lulin": "/img/paintings/lulin-original.jpg",
   "enneagon-swans": "/img/paintings/enneagon-cygnus-gold.jpg",
+  "celtic-shield": "/img/paintings/celtic-shield-aurora-green.jpg",
+  "twelve-around-three": "/img/paintings/twelve-around-three-tanzanite-purple.jpg",
+  "persian-flower-of-life": "/img/paintings/persian-flower-of-life-blue.jpg",
 };
 
 // Light "estate paper" palette (Hugo: no black backgrounds). Warm cream page +

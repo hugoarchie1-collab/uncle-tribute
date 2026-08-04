@@ -69,8 +69,8 @@ const QUESTIONS: Question[] = [
     kicker: "Question 3 · Temperament",
     prompt: "A word you'd like your home to whisper.",
     options: [
-      { label: "Wholeness", weights: { "orchis-7": 3, "flower-of-life": 2 } },
-      { label: "Protection", weights: { "wild-rose": 2, "peacock-minerva": 2, "ophiuchus": 1 } },
+      { label: "Wholeness", weights: { "orchis-7": 3, "flower-of-life": 2, "twelve-around-three": 2, "persian-flower-of-life": 2 } },
+      { label: "Protection", weights: { "wild-rose": 2, "peacock-minerva": 2, "ophiuchus": 1, "celtic-shield": 2 } },
       { label: "Connection", weights: { "enneagon-swans": 3, "ophiuchus": 1 } },
       { label: "Abundance", weights: { "english-bluebells": 2, "slipper-orchids": 2, "wild-rose": 1 } },
     ],
@@ -90,7 +90,7 @@ const QUESTIONS: Question[] = [
     prompt: "Which pattern does your eye rest on?",
     options: [
       { label: "Petals opening from a still centre", weights: { "wild-rose": 2, "english-bluebells": 1, "slipper-orchids": 1 } },
-      { label: "Interlocking circles — the seed of life", weights: { "flower-of-life": 3, "orchis-7": 1 } },
+      { label: "Interlocking circles — the seed of life", weights: { "flower-of-life": 3, "orchis-7": 1, "twelve-around-three": 2, "persian-flower-of-life": 2 } },
       { label: "A star held inside a ring", weights: { "tridecagon-moon-star": 2, "lulin": 2 } },
       { label: "Feathers and watchful eyes", weights: { "peacock-minerva": 3 } },
     ],
@@ -129,6 +129,12 @@ const REASONS: Record<PaintingId, string> = {
     "A comet already gone, made permanent. For remembrance — a way to keep something loved close.",
   "enneagon-swans":
     "Nine swans, circling: we are each other. For connection — the people you carry with you.",
+  "celtic-shield":
+    "Orbital — the Celtic Shield Mandala. Interlaced Insular knotwork turning around a still centre, like a shield held over the room. For beauty that also guards.",
+  "twelve-around-three":
+    "Twelve spheres around three — the Flower of Life in its oldest order, the geometry beneath every growing thing, drawn by hand. For quiet, structured wholeness.",
+  "persian-flower-of-life":
+    "Persian geometry meeting the medieval rose window — two of Stephen's four traditions held in one frame, keyed like a Kepler proof. For a love of order and the meeting of worlds.",
 };
 
 type Phase = "intro" | "quiz" | "reading" | "result";
