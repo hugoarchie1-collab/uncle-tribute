@@ -167,7 +167,7 @@ const EmptyState = ({ query }: { query: string }) => {
           <>Search the estate — artworks, collections, the writing, anything.</>
         )}
       </p>
-      <p className="mt-4 max-w-[56ch] font-sans text-[16px] md:text-[17px] leading-[1.7] text-ink-muted">
+      <p className="mt-4 max-w-[56ch] font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.7] text-ink-muted">
         Try a painting name, a colour, or a collection — or begin from one of
         these.
       </p>

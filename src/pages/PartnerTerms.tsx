@@ -306,7 +306,7 @@ const TermsSheet = ({ terms }: { terms: PartnerTermsData }) => {
         </table>
       </Reveal>
 
-      <Reveal as="div" className={cn(META, "mt-4 max-w-[72ch]")}>
+      <Reveal as="div" className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted mt-4 max-w-[72ch]">
         Associate applies to every approved partner. Partner and Key rates unlock with the placement
         size or your introductions to date (see each tier). Repeat orders from a client you first
         introduced carry a {terms.residualPercent}% residual for 24 months — so the accounts you open
@@ -331,7 +331,7 @@ const TermsSheet = ({ terms }: { terms: PartnerTermsData }) => {
           <p className={cn(CARD_LABEL, "text-ink-muted")}>The Mandala Company — the estate of Stephen Meakin</p>
           <p className={cn(LABEL_MUTED)}>info@themandalacompany.com · themandalacompany.com</p>
         </div>
-        <p className={cn(META, "m-0 mt-3 text-[14px] 3xl:text-[17px] 4xl:text-[20px]")}>
+        <p className="font-sans text-[clamp(16px,0.55vw+9px,24px)] leading-[1.55] text-ink-muted m-0 mt-3">
           Terms are confirmed in a short written agreement before any introduction is credited.
           Commission is calculated on completed, non-refunded orders and settled monthly.
         </p>
