@@ -444,10 +444,13 @@
 }
 .ambient-bg__glow {
   position: absolute;
-  /* Over-sized well beyond the viewport so the few-percent scroll drift can
-     never slide a hard gradient edge into view. */
-  inset: -22% -14%;
-  will-change: transform, opacity;
+  /* Over-sized well beyond the viewport so the few-percent scroll drift AND the
+     continuous float below can never slide a hard gradient edge into view. */
+  inset: -28% -18%;
+  /* translate + scale are STANDALONE properties (not `transform`), so the
+     continuous keyframe float composes ON TOP of framer's scroll-driven
+     `transform: translateY()` instead of fighting it — the "4D" layered drift. */
+  will-change: transform, translate, scale, opacity;
 }
 /* Deep indigo, top-left biased. Lifted 2026-08-03 (Hugo: "where's it all gone,
    why is it so shit" — the whisper read as flat black). Now a genuinely present
@@ -522,10 +525,42 @@
     transparent 76%
   );
 }
+/* CONTINUOUS FLOAT (Hugo 2026-08-06: "orbal dynamic immersive … most beautiful
+   iPhone background ever"). Each orb drifts + breathes on its OWN slow loop so
+   the wash is alive even when the page is still — the mesh-gradient / lava-lamp
+   feel. Animated via STANDALONE `translate`/`scale` (see .ambient-bg__glow) so it
+   layers over framer's scroll drift. Long, desynced, ease-in-out alternate =
+   never a visible repeat, never fast. Colours + the artwork-reactive context hue
+   are unchanged; this only makes them MOVE. */
+@keyframes ambFloatA {
+  from { translate: -2% -1%; scale: 1;    }
+  to   { translate: 6% 5%;   scale: 1.16; }
+}
+@keyframes ambFloatB {
+  from { translate: 4% 2%;   scale: 1.1;  }
+  to   { translate: -5% -4%; scale: 0.96; }
+}
+@keyframes ambFloatC {
+  from { translate: 0% 4%;   scale: 1.04; }
+  to   { translate: 4% -5%;  scale: 1.2;  }
+}
+@keyframes ambFloatD {
+  from { translate: -4% 1%;  scale: 1.12; }
+  to   { translate: 5% -3%;  scale: 1;    }
+}
+.ambient-bg__glow--indigo   { animation: ambFloatA 34s ease-in-out infinite alternate;         animation-delay: -3s;  }
+.ambient-bg__glow--rust     { animation: ambFloatB 43s ease-in-out infinite alternate;         animation-delay: -9s;  }
+.ambient-bg__glow--violet   { animation: ambFloatC 29s ease-in-out infinite alternate;         animation-delay: -5s;  }
+.ambient-bg__glow--context  { animation: ambFloatD 39s ease-in-out infinite alternate;         animation-delay: -13s; }
+.ambient-bg__glow--context2 { animation: ambFloatA 47s ease-in-out infinite alternate-reverse; animation-delay: -21s; }
+
 /* Reduced motion: the wash is entirely static (the component also stops feeding
-   it scroll values), so release the compositor promotions kept only for motion. */
+   it scroll values), so release the compositor promotions AND the float loop. */
 @media (prefers-reduced-motion: reduce) {
-  .ambient-bg__glow { will-change: auto; }
+  .ambient-bg__glow {
+    will-change: auto;
+    animation: none !important;
+  }
 }
 
 /* =============================================================================

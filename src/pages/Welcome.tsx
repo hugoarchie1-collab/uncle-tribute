@@ -980,67 +980,6 @@ export const Welcome = () => {
             </Reveal>
           </section>
 
-          {/* 5a · THE ARCHIVE — legacy statement (Hugo, 2026-07-16): a
-              confident band right after the featured grid making clear that
-              what's shown is less than a tenth of Stephen's work, with more
-              issued quarterly, and placing him among the great traditions he
-              drew from. Verbatim from WELCOME.archiveStatement (content.ts) —
-              no words are typed inline here. Transparent over the peacock
-              backdrop like every section; hero-text-shadow keeps it legible. */}
-          <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="border-t border-line pt-9 md:pt-12">
-              {/* CENTRED to match every other home section (Hugo 2026-08-03:
-                  "it's all centred wrong — I want consistency and cleanness above
-                  all"). The 2026-08-03 asymmetric editorial spread was the one
-                  off-axis block on the page; it now follows the SAME centred
-                  rhythm as "Six paintings…" and "Each painting is a ritual":
-                  centred eyebrow → centred TITLE → contained centred photo →
-                  centred reading measure. Verbatim from WELCOME.archiveStatement. */}
-              <Reveal as="div" className="text-center mb-5 md:mb-7">
-                <p className={cn(EYEBROW, "m-0 mb-3")}>{WELCOME.archiveStatement.eyebrow}</p>
-                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
-                  {(() => {
-                    const { headline, emphasis } = WELCOME.archiveStatement;
-                    const [before, after] = headline.split(emphasis);
-                    return (
-                      <>
-                        {before}
-                        <em className="italic font-normal">{emphasis}</em>
-                        {after}
-                      </>
-                    );
-                  })()}
-                </h2>
-              </Reveal>
-
-              {/* Stephen at the easel — contained + centred like the hero photo. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
-                <ImageReveal
-                  src="/img/welcome/stephen-painting-denim-v1.jpg"
-                  alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
-                  aspect="aspect-[3/2]"
-                  edges="none"
-                  parallax={0.06}
-                  objectPosition="center"
-                  shadow="shadow-[0_44px_120px_-36px_rgba(0,0,0,0.8)]"
-                  sizes="(min-width: 1400px) 1000px, 92vw"
-                />
-                <figcaption className="font-display italic text-ink-muted text-[13px] 3xl:text-[16px] mt-3 text-center">
-                  Stephen at the easel
-                </figcaption>
-              </Reveal>
-
-              {/* Reading body — centred measure, matching the reminder essay. */}
-              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
-                {WELCOME.archiveStatement.body.map((para, i) => (
-                  <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
-                    {para}
-                  </p>
-                ))}
-              </Reveal>
-            </div>
-          </section>
-
           {/* 5b · HAND-FINISHED UPSELL — the estate's highest-margin add-on,
               given its own commercial moment right after the buyable grid. Real
               footage of the hand-finishing (dots of paint + individually-placed
