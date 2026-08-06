@@ -144,7 +144,14 @@ interface Result {
   runnersUp: { id: PaintingId; title: string; image: string; name: string }[];
 }
 
-export const PrintQuiz = () => {
+/** The quiz can render as its own page OR embedded inside /for-you (FindAPrint).
+ *  When `embedded`, it drops its own page chrome (backdrop / Seo / Nav / Footer)
+ *  — the host page owns those — and the intro's "browse by colour" link becomes
+ *  an in-page `onExit()` toggle instead of a route link. */
+export const PrintQuiz = ({
+  embedded = false,
+  onExit,
+}: { embedded?: boolean; onExit?: () => void } = {}) => {
   const reduce = useReducedMotion();
   const { formatPretty: fmtP } = useCurrency();
 
@@ -304,7 +311,7 @@ export const PrintQuiz = () => {
   // Copy a shareable link to this result.
   const shareResult = async () => {
     if (!result) return;
-    const url = `${SITE_URL}/print-quiz?result=${encodeURIComponent(result.paintingId)}`;
+    const url = `${SITE_URL}/for-you?result=${encodeURIComponent(result.paintingId)}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -341,24 +348,29 @@ export const PrintQuiz = () => {
       };
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-clip">
-      {/* Luxe ground — deep near-black + a low warm-rust glow. */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          background: [
-            "radial-gradient(140% 95% at 50% -12%, rgba(201,120,68,0.16), rgba(10,9,8,0) 52%)",
-            "linear-gradient(180deg, #0c0a09 0%, #0a0908 42%, #080706 100%)",
-          ].join(","),
-        }}
-      />
-      <Seo
-        title="Find your print — the quiz"
-        description="Answer six short questions and discover which of Stephen Meakin's mandalas is right for you. A calm, guided way in — estate-stamped and made to order."
-        url="/print-quiz"
-      />
-      <Nav />
+    <div className={cn("relative flex flex-col overflow-x-clip", embedded ? "" : "min-h-screen")}>
+      {/* Luxe ground — deep near-black + a low warm-rust glow. Page-only; when
+          embedded the host (/for-you) owns the backdrop. */}
+      {!embedded && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-0 pointer-events-none"
+          style={{
+            background: [
+              "radial-gradient(140% 95% at 50% -12%, rgba(201,120,68,0.16), rgba(10,9,8,0) 52%)",
+              "linear-gradient(180deg, #0c0a09 0%, #0a0908 42%, #080706 100%)",
+            ].join(","),
+          }}
+        />
+      )}
+      {!embedded && (
+        <Seo
+          title="Find your print — the quiz"
+          description="Answer six short questions and discover which of Stephen Meakin's mandalas is right for you. A calm, guided way in — estate-stamped and made to order."
+          url="/print-quiz"
+        />
+      )}
+      {!embedded && <Nav />}
 
       {/* Progress bar — hidden on the intro. */}
       {phase !== "intro" && (
@@ -406,9 +418,19 @@ export const PrintQuiz = () => {
                   Begin
                   <span aria-hidden="true" className="ml-2">→</span>
                 </button>
-                <Link to="/for-you" className="font-sans text-[14.5px] font-semibold text-ink-muted hover:text-accent transition-colors underline-offset-4 hover:underline">
-                  Or browse by colour
-                </Link>
+                {embedded ? (
+                  <button
+                    type="button"
+                    onClick={onExit}
+                    className="font-sans text-[14.5px] font-semibold text-ink-muted hover:text-accent transition-colors underline-offset-4 hover:underline"
+                  >
+                    Or browse by colour
+                  </button>
+                ) : (
+                  <Link to="/for-you" className="font-sans text-[14.5px] font-semibold text-ink-muted hover:text-accent transition-colors underline-offset-4 hover:underline">
+                    Or browse by colour
+                  </Link>
+                )}
               </div>
               <p className={cn(EYEBROW_MUTED, "m-0 mt-8")}>Takes about a minute · No email needed</p>
             </motion.section>
@@ -646,7 +668,7 @@ export const PrintQuiz = () => {
         </AnimatePresence>
       </main>
 
-      <Footer />
+      {!embedded && <Footer />}
     </div>
   );
 };

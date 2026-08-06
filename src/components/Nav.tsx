@@ -170,7 +170,12 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       // "scroll down" before the deadband maths behaved again — clamp so the
       // top zone + deltas are always computed from real document positions.
       const y = Math.max(0, window.scrollY);
-      setScrolled(y > 40);
+      // Hysteresis (Hugo 2026-08-06 "top banner vibrates"): a SINGLE threshold at
+      // 40 let the header padding (py-5⇄py-3, a ~16px height change on an in-flow
+      // sticky element) nudge scrollY via scroll-anchoring back across the line,
+      // flipping `scrolled` every frame → visible shudder near the top. Two
+      // thresholds (on ≥64 / off <36) give a deadband so it can't re-toggle.
+      setScrolled((s) => (y > 64 ? true : y < 36 ? false : s));
       if (y < SHOW_ABOVE) {
         // Top zone — always show.
         setHidden(false);
@@ -276,7 +281,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         // Slide-away on scroll-down / slide-in on scroll-up. Transform + opacity
         // are GPU-composited, so the hide/reveal costs nothing on the main
         // thread. Slightly slower reveal than hide reads as deliberate, premium.
-        "transition-[transform,opacity,padding] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] will-change-transform",
+        // NO `will-change: transform` here (Hugo 2026-08-06 "top banner
+        // vibrates"): a permanent transform layer on a `position: sticky` header
+        // makes the main-thread sticky offset and the compositor layer round
+        // independently every scroll frame → a continuous sub-pixel shimmer. The
+        // hide/reveal is a one-off 300ms transform, so it needs no standing hint.
+        // `padding` is also dropped from the transition so the py-5⇄py-3 height
+        // step is instant (an animated reflow fed the same jitter loop).
+        "transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]",
         // Keep the bar pinned while the mobile menu is open (the drawer needs its
         // toggle reachable) and whenever it's revealed.
         hidden && !menuOpen

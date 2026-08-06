@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { asset } from "../lib/asset";
+import { MAT_BORDER_RATIO } from "../data/paintings";
 
 /**
  * FrameWrap + glazing sheen for the product hero. When a buyer ticks framing and
@@ -365,26 +366,43 @@ export const FrameWrap = ({
         borderRadius: "1px",
       }}
     >
-      {/* The print, set into the frame's rebate (no mat). `relative` +
-          `overflow-hidden` make it the positioning context for the absolutely-
-          filled print + glazing, so the print's intrinsic size can't push the
-          box past its aspect-ratio. The artwork is also painted cover-scaled as
-          the BACKGROUND of this box, so the object-contain print always meets
-          the moulding edge-to-edge — no thin black inner edge from a sub-pixel
-          letterbox, and no black flash before the print decodes. A soft top
-          recess keeps the sheet reading as set under the moulding lip (the old
-          hard 1px black ring — the visible "black edge" — is gone). */}
+      {/* WHITE WINDOW-MAT (Hugo 2026-08-06: "a white border … so the frame
+          doesn't go to the edge of the painting … ignore for canvas"). A hand-
+          cut, acid-free conservation mount between the moulding and the print —
+          already sold as "included" in the framed copy, now shown. Framed PAPER
+          only; CanvasWrap has no mat, so canvas is excluded by construction. The
+          board is an even ivory border sized to MAT_BORDER_RATIO of the window
+          width on all four sides (the works are ~square, so an even border reads
+          true), with a soft sheen + a fine bevel at the cut window. */}
       <div
-        className="relative w-full h-full overflow-hidden"
+        className="w-full h-full"
         style={{
-          backgroundImage: artSrc ? `url(${asset(artSrc)})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          boxShadow: "inset 0 2px 6px rgba(0,0,0,0.30)",
+          boxSizing: "border-box",
+          padding: `${MAT_BORDER_RATIO * 100}%`,
+          background: "#f4f1ea",
+          backgroundImage:
+            "linear-gradient(150deg, rgba(255,255,255,0.5) 0%, rgba(0,0,0,0.035) 100%)",
         }}
       >
-        {children}
-        <GlazingOverlay glazing={glazing} />
+        {/* The print, set into the mat's bevelled cut window. `relative` +
+            `overflow-hidden` make it the positioning context for the absolutely-
+            filled print + glazing. The artwork is painted cover-scaled as the
+            BACKGROUND so the object-contain print always fills the window with no
+            thin letterbox line and no black flash before it decodes. A fine dark
+            keyline + inner recess read as the sheet set BEHIND the mount. */}
+        <div
+          className="relative w-full h-full overflow-hidden"
+          style={{
+            backgroundImage: artSrc ? `url(${asset(artSrc)})` : undefined,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            boxShadow:
+              "0 0 0 1px rgba(0,0,0,0.12), inset 0 2px 7px rgba(0,0,0,0.32)",
+          }}
+        >
+          {children}
+          <GlazingOverlay glazing={glazing} />
+        </div>
       </div>
     </div>
   );

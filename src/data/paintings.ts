@@ -491,13 +491,10 @@ export const CANVAS_NOTE =
 // (Hugo 2026-07-25, replacing the old flat +£45 placeholder after checking the
 // Point 101 wizard). `isFloat` marks a tray-framed edge; the money comes from
 // FLOAT_EDGE_SURCHARGE_PENCE × tier. Mirrored in api/checkout.ts — gotcha #9.
+// A curated THREE canvas finishes (Hugo 2026-08-06: reduce the canvas choices
+// too). One included colour-wrap plus two slim float frames — the plain white-
+// edge, white-float and wenge-float were cut to keep the choice simple.
 export const CANVAS_EDGES = [
-  {
-    id: "basic",
-    label: "Basic canvas",
-    isFloat: false,
-    note: "The stretched canvas with clean white edges — the simplest, most classic finish. Included.",
-  },
   {
     id: "mirror",
     label: "Colour wrap",
@@ -511,18 +508,6 @@ export const CANVAS_EDGES = [
     note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
   },
   {
-    id: "float-white",
-    label: "White float frame",
-    isFloat: true,
-    note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
-  },
-  {
-    id: "float-wenge",
-    label: "Wenge float frame",
-    isFloat: true,
-    note: "Set inside a slim dark wenge-veneer tray frame with a fine shadow-gap reveal — warm and understated. Comes ready to hang.",
-  },
-  {
     id: "float-oak",
     label: "Oak float frame",
     isFloat: true,
@@ -530,7 +515,7 @@ export const CANVAS_EDGES = [
   },
 ] as const;
 export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
-export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "basic";
+export const DEFAULT_CANVAS_EDGE: CanvasEdgeId = "mirror";
 export const canvasEdgeLabel = (id: string | undefined): string =>
   CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
 
@@ -612,32 +597,28 @@ export type FrameCategory = (typeof FRAME_CATEGORY_ORDER)[number];
 // they render identically in the preview and price the same within a tier, so
 // separate rows would be pure noise (Hugo, 2026-07-24). `ar` is present on the
 // four finishes with baked wall models.
+// A tight, curated set of just THREE finishes (Hugo 2026-08-06: cut the range
+// right down, drop the poor black-lacquer sample, "don't overwhelm the
+// customers"). The three whose physical samples read best — a warm light oak, a
+// rich dark walnut, and a clean white — every one solid wood with a baked AR
+// wall model. Deliberately NOT Point 101's full trade range.
 export const FRAME_STYLES = [
-  // Black
-  { id: "black-lacquer", label: "Black lacquer", note: "Gloss black lacquer", swatch: "#17161a", category: "Black", tier: "classic", ar: false },
-  { id: "stained-black", label: "Black stained", note: "Deep matt-black solid wood", swatch: "#1c1a18", category: "Black", tier: "classic", ar: true },
-  // Dark Wood
-  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030", category: "Dark Wood", tier: "classic", ar: true },
-  { id: "walnut-grain", label: "Walnut grain", note: "Figured walnut grain", swatch: "#6b4a30", category: "Dark Wood", tier: "classic", ar: false },
-  { id: "wenge", label: "Wenge", note: "Near-black wenge hardwood", swatch: "#2e211a", category: "Dark Wood", tier: "classic", ar: false },
   // Light Wood
   { id: "natural-oak", label: "Oak", note: "Warm, light solid oak", swatch: "#c9a368", category: "Light Wood", tier: "classic", ar: true },
-  { id: "ash", label: "Ash", note: "Pale, open-grained ash", swatch: "#d9c9a8", category: "Light Wood", tier: "classic", ar: false },
+  // Dark Wood
+  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030", category: "Dark Wood", tier: "classic", ar: true },
   // White
-  { id: "white", label: "White lacquer", note: "Clean painted white", swatch: "#ede9e2", category: "White", tier: "classic", ar: true },
-  { id: "white-stained", label: "White stained", note: "Soft limed-white grain", swatch: "#e4ddcf", category: "White", tier: "classic", ar: false },
-  // Metallic
-  { id: "silver", label: "Silver", note: "Warm brushed silver", swatch: "#b9bcc0", category: "Metallic", tier: "classic", ar: false },
-  { id: "gold", label: "Gold", note: "Flat brushed gold", swatch: "#c9a24a", category: "Metallic", tier: "classic", ar: false },
-  { id: "silver-aluminium", label: "Brushed aluminium", note: "Contemporary brushed-aluminium profile", swatch: "#a8abb0", category: "Metallic", tier: "signature", ar: false },
-  { id: "black-aluminium", label: "Black aluminium", note: "Matt anodised black aluminium", swatch: "#26262a", category: "Metallic", tier: "signature", ar: false },
-  // Box Frames
-  { id: "box-black", label: "Black box", note: "Deep black box-frame with a float rebate", swatch: "#131217", category: "Box Frames", tier: "signature", ar: false },
-  { id: "box-oak", label: "Oak box", note: "Deep oak box-frame with a float rebate", swatch: "#c3a473", category: "Box Frames", tier: "signature", ar: false },
-  // Ornate (the statement tier)
-  { id: "ayous-gold", label: "Ayous, gold edge", note: "Stained ayous with a hand-gilt gold highlight", swatch: "#b98f4e", category: "Ornate", tier: "ornate", ar: false },
-  { id: "ornate-gold", label: "Ornate gold", note: "Broad, swept gold ornament — the statement frame", swatch: "#b8862f", category: "Ornate", tier: "ornate", ar: false },
+  { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2", category: "White", tier: "classic", ar: true },
 ] as const;
+
+// White window-mat (passe-partout) around FRAMED PAPER prints only (Hugo
+// 2026-08-06: "a white border … so the frame doesn't go to the edge of the
+// painting … ignore of course for canvas"). Rendered inside FramedPreview's
+// FrameWrap only. Sized as a fraction of the shorter framed-window edge per
+// side; 0.08 ≈ a gallery ~2.5–3in window mat at A2/A1 and scales cleanly across
+// sizes. The conservation mount is already sold as "included" in the framed
+// copy, so NO price mirror (gotcha #9) is engaged.
+export const MAT_BORDER_RATIO = 0.08;
 
 // GLAZING — TWO real finishes, described to match the print house's own spec.
 // Which one a framed piece receives is decided by SIZE, not a buyer picker

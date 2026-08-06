@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { PrintQuiz } from "./PrintQuiz";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
@@ -158,6 +159,14 @@ export const FindAPrint = () => {
     BROWSE_TIERS.find((t) => t.isAnchor) ?? BROWSE_TIERS[0],
   );
   const { formatPretty: fmtP } = useCurrency();
+  const [searchParams] = useSearchParams();
+  // The guided quiz now lives INSIDE this page (Hugo 2026-08-06: "I want the quiz
+  // page also inside the for-you page"). Start in quiz mode when a shared-result
+  // deep link is present (/for-you?result=<id>), else the colour/intention browse
+  // wayfinder. The embedded quiz reads the same ?result= param itself on mount.
+  const [mode, setMode] = useState<"browse" | "quiz">(
+    searchParams.get("result") ? "quiz" : "browse",
+  );
 
   // SINGLE-SELECT (Hugo 2026-07-09: "can't click more than one box at a time").
   // Clicking a swatch selects ONLY it (clearing any other in that lens); clicking
@@ -254,6 +263,9 @@ export const FindAPrint = () => {
       </div>
 
       <Nav />
+      {mode === "quiz" ? (
+        <PrintQuiz embedded onExit={() => setMode("browse")} />
+      ) : (
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-10 md:pb-12">
         {/* MASTHEAD — a single CENTRED wayfinder column (was a left-pinned
             cover + a lopsided 3/9 guidance split that left a dead gap). Eyebrow
@@ -299,10 +311,12 @@ export const FindAPrint = () => {
             </Reveal>
           </div>
 
-          {/* Prefer to be led? A quiet route into the guided personality quiz. */}
+          {/* Prefer to be led? The guided quiz now opens IN-PAGE (no route
+              change) — Hugo: "the quiz page also inside the for-you page". */}
           <Reveal as="div" className="mt-6 flex justify-center">
-            <Link
-              to="/print-quiz"
+            <button
+              type="button"
+              onClick={() => setMode("quiz")}
               className={cn(
                 BTN_SECONDARY,
                 "min-h-[44px] px-6 py-2.5 text-[14px] 3xl:text-[16px]",
@@ -311,7 +325,7 @@ export const FindAPrint = () => {
             >
               Or take the print quiz
               <span aria-hidden="true" className="ml-2">→</span>
-            </Link>
+            </button>
           </Reveal>
 
           {/* Colour controls — a CENTRED panel under a hairline; the lens label
@@ -564,6 +578,7 @@ export const FindAPrint = () => {
         )}
         </section>
       </main>
+      )}
       <Footer />
     </div>
   );

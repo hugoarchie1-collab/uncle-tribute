@@ -48,7 +48,14 @@ const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Ret
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
 const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
-const PrintQuiz = lazy(() => import("./pages/PrintQuiz").then((m) => ({ default: m.PrintQuiz })));
+
+/** The quiz now lives INSIDE /for-you (embedded in FindAPrint). Redirect the old
+ *  quiz URLs there, PRESERVING the ?result= share-link query (a plain <Navigate>
+ *  drops the query string). */
+const ForYouRedirect = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/for-you${search}`} replace />;
+};
 const Reviews = lazy(() => import("./pages/Reviews").then((m) => ({ default: m.Reviews })));
 const Wishlist = lazy(() => import("./pages/Wishlist").then((m) => ({ default: m.Wishlist })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
@@ -146,9 +153,10 @@ const AnimatedRoutes = () => {
           <Route path="/for-you" element={<FindAPrint />} />
           {/* Site-wide search — header SearchBar + this results page. */}
           <Route path="/search" element={<Search />} />
-          {/* Old /quiz URL preserved so existing links never 404. */}
-          <Route path="/print-quiz" element={<PrintQuiz />} />
-          <Route path="/quiz" element={<Navigate to="/print-quiz" replace />} />
+          {/* The quiz now lives INSIDE /for-you. Old quiz URLs redirect there,
+              preserving the ?result= share-link query. */}
+          <Route path="/print-quiz" element={<ForYouRedirect />} />
+          <Route path="/quiz" element={<ForYouRedirect />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<About />} />
