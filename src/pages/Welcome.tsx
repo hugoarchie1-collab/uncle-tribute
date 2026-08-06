@@ -15,7 +15,7 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
-import { PavoBackdrop } from "../components/PavoBackdrop";
+import { CosmicBackdrop } from "../components/CosmicBackdrop";
 
 // The home backdrop is the shared PavoBackdrop tapestry (see
 // components/PavoBackdrop.tsx): ALL FIVE Pavo colourways, each shown WHOLE
@@ -410,7 +410,7 @@ export const Welcome = () => {
             // Scale it UP on smaller widths so it anchors the top and the limb
             // reads as a real Earth curve, not a hairline (the marginLeft keeps
             // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[92%] md:ml-[4%]"
+            className="block h-auto select-none w-[172%] ml-[-36%] sm:w-[150%] sm:ml-[-25%] md:w-[128%] md:ml-[-14%] lg:w-[134%] lg:ml-[-17%] 3xl:w-[140%] 3xl:ml-[-20%]"
             style={{
               display: "block",
               maxWidth: "none",
@@ -535,15 +535,7 @@ export const Welcome = () => {
         {/* PAVO TAPESTRY BACKDROP — all five colourways, each shown WHOLE and
             zoomed out, crossfading on page-scroll. Shared with About. Fade
             windows: indigo holds the hero, Mary Pink holds the finale. */}
-        <PavoBackdrop
-          fit="cover"
-          fades={[
-            [0.16, 0.24],
-            [0.36, 0.44],
-            [0.56, 0.64],
-            [0.76, 0.84],
-          ]}
-        />
+        <CosmicBackdrop />
 
         {/* ONE vertical rhythm for the whole page. Each section's gap is the
             SAME at every breakpoint (space-y), instead of being the sum of two
@@ -1401,7 +1393,7 @@ export const Welcome = () => {
               // foot read narrower than the pinned top limb. Now it overscans past
               // both edges and the mask is wide enough to keep the sides + corners
               // solid — only the very top-centre feathers into the backdrop.
-              className="relative z-[1] block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[112%] md:ml-[-6%]"
+              className="relative z-[1] block h-auto select-none w-[120%] ml-[-10%] sm:w-[92%] sm:ml-[4%] md:w-[64%] md:ml-[18%] 3xl:w-[56%] 3xl:ml-[22%]"
               style={{
                 maxWidth: "none",
                 height: "auto",
