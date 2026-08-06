@@ -51,7 +51,7 @@ const QUESTIONS: Question[] = [
     options: [
       { label: "Steady me — make the room feel safe", weights: { "wild-rose": 3, "ophiuchus": 2, "peacock-minerva": 1 } },
       { label: "Move me forward — mark a new chapter", weights: { "flower-of-life": 3, "tridecagon-moon-star": 2, "peacock-minerva": 1 } },
-      { label: "Hold a memory of someone", weights: { "lulin": 3, "enneagon-swans": 2 } },
+      { label: "Hold a memory of someone", weights: { "enneagon-swans": 3 } },
       { label: "Fill the room with life", weights: { "english-bluebells": 3, "slipper-orchids": 2, "wild-rose": 1 } },
     ],
   },
@@ -80,7 +80,7 @@ const QUESTIONS: Question[] = [
     prompt: "Your ideal evening looks like…",
     options: [
       { label: "Quiet, candlelit, a good book", weights: { "ophiuchus": 2, "orchis-7": 2 } },
-      { label: "The night sky and a long walk", weights: { "tridecagon-moon-star": 3, "lulin": 1 } },
+      { label: "The night sky and a long walk", weights: { "tridecagon-moon-star": 3 } },
       { label: "A full table of people you love", weights: { "enneagon-swans": 2, "english-bluebells": 1, "wild-rose": 1 } },
       { label: "Making something with your hands", weights: { "flower-of-life": 2, "slipper-orchids": 2 } },
     ],
@@ -91,7 +91,7 @@ const QUESTIONS: Question[] = [
     options: [
       { label: "Petals opening from a still centre", weights: { "wild-rose": 2, "english-bluebells": 1, "slipper-orchids": 1 } },
       { label: "Interlocking circles — the seed of life", weights: { "flower-of-life": 3, "orchis-7": 1, "twelve-around-three": 2, "persian-flower-of-life": 2 } },
-      { label: "A star held inside a ring", weights: { "tridecagon-moon-star": 2, "lulin": 2 } },
+      { label: "A star held inside a ring", weights: { "tridecagon-moon-star": 2 } },
       { label: "Feathers and watchful eyes", weights: { "peacock-minerva": 3 } },
     ],
   },
@@ -102,7 +102,7 @@ const QUESTIONS: Question[] = [
       { label: "Something that quietly protects the room", weights: { "wild-rose": 2, "ophiuchus": 2 } },
       { label: "A piece with real presence that holds the wall", weights: { "peacock-minerva": 3, "flower-of-life": 1 } },
       { label: "A soft, blooming warmth", weights: { "english-bluebells": 2, "slipper-orchids": 2 } },
-      { label: "A calm reminder of what matters", weights: { "lulin": 2, "enneagon-swans": 2, "orchis-7": 1 } },
+      { label: "A calm reminder of what matters", weights: { "enneagon-swans": 2, "orchis-7": 1 } },
     ],
   },
 ];
@@ -125,8 +125,6 @@ const REASONS: Record<PaintingId, string> = {
     "The healer's constellation, ringed and still. For rest, recovery and a calm that settles a space.",
   "tridecagon-moon-star":
     "Moon and star turning in a thirteen-sided rhythm. For someone drawn to the night sky and to change.",
-  "lulin":
-    "A comet already gone, made permanent. For remembrance — a way to keep something loved close.",
   "enneagon-swans":
     "Nine swans, circling: we are each other. For connection — the people you carry with you.",
   "celtic-shield":

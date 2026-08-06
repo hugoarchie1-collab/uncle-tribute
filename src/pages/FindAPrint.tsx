@@ -52,7 +52,7 @@ const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = 
   { key: "healing", label: "Healing", paintings: ["ophiuchus"] },
   { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "persian-flower-of-life"] },
   { key: "wholeness", label: "Wholeness", paintings: ["orchis-7", "flower-of-life", "twelve-around-three", "persian-flower-of-life"] },
-  { key: "remembrance", label: "Remembrance", paintings: ["lulin", "enneagon-swans"] },
+  { key: "remembrance", label: "Remembrance", paintings: ["enneagon-swans"] },
 ];
 
 // A small, consistent family of sacred-geometry LINE marks — one per intention,

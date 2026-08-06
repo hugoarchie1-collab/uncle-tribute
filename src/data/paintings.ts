@@ -1181,24 +1181,6 @@ export const PAINTINGS: Painting[] = [
     ],
   },
   {
-    id: "lulin",
-    title: "Lulin",
-    year: "2012",
-    collection: "born-in-the-sky",
-    size: "65 × 65 cm (approx. 26 × 26 in)",
-    description:
-      "On 24 February 2009, a green comet made its closest approach to Earth. It came within 38 million miles, glowing green from cyanogen and diatomic carbon burning in its atmosphere. Cyanogen is a poisonous gas. It makes one of the most beautiful colours in the night sky.\n\nComet Lulin was discovered in 2007 by a nineteen-year-old Chinese student named Ye Quanzhi, studying a photograph taken at the Lulin Observatory in Taiwan. He noticed something that wasn't a star. No one had seen it before, because it had never been here before. This was Comet Lulin's first visit to the inner solar system, its first exposure to sunlight. It moved backwards, retrograde, against the direction of every planet.\n\nIt orbits the sun once every million years. It will not return.\n\nStephen painted it three years after its passing. A portrait of something most people missed entirely, already gone, made permanent.",
-    colourways: [
-      {
-        name: "Lulin Gold",
-        image: "/img/paintings/lulin-original.jpg",
-        hex: "#caa54a",
-        isOriginal: true,
-        available: true,
-      },
-    ],
-  },
-  {
     id: "enneagon-swans",
     title: "Enneagon — The Swans",
     year: "[ DATE ]", // [TBD] — mum will fill in
