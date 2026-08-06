@@ -497,9 +497,9 @@ export const CANVAS_NOTE =
 export const CANVAS_EDGES = [
   {
     id: "mirror",
-    label: "Colour wrap",
+    label: "Gallery wrap",
     isFloat: false,
-    note: "The canvas stretched with the artwork's own background colour continued cleanly around all four edges — no image on the sides. Included.",
+    note: "The artwork continues around all four wrapped edges — the painting's own background (its sky, stars and colour) carries over the sides of the stretcher. A true gallery wrap, ready to hang. Included.",
   },
   {
     id: "float-black",

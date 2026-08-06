@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { asset } from "../lib/asset";
 import { MAT_BORDER_RATIO } from "../data/paintings";
 
@@ -132,57 +132,6 @@ export const CanvasWrap = ({
 }) => {
   const artUrl = src ? asset(src) : undefined;
 
-  // Colour-wrap ("mirror") edge — Hugo 2026-07-31: "no mandala around the edges,
-  // literally just the colour of the background extended." Sample the artwork's
-  // four corners (where a circular mandala's plain background sits) and extend
-  // THAT solid colour around the wrap, instead of mirroring the image. Falls
-  // back to a neutral canvas tone if the pixels can't be read (tainted canvas).
-  const [bgColor, setBgColor] = useState<string | null>(null);
-  useEffect(() => {
-    // Only the mirror ("Colour wrap") edge samples the artwork; every other edge
-    // derives its colour below, so there's no synchronous reset to do here.
-    if (edge !== "mirror" || !artUrl) return;
-    let cancelled = false;
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const S = 20;
-        const c = document.createElement("canvas");
-        c.width = S;
-        c.height = S;
-        const ctx = c.getContext("2d", { willReadFrequently: true });
-        if (!ctx) return;
-        ctx.drawImage(img, 0, 0, S, S);
-        const pts: [number, number][] = [
-          [1, 1],
-          [S - 2, 1],
-          [1, S - 2],
-          [S - 2, S - 2],
-        ];
-        let r = 0;
-        let g = 0;
-        let b = 0;
-        for (const [x, y] of pts) {
-          const d = ctx.getImageData(x, y, 1, 1).data;
-          r += d[0];
-          g += d[1];
-          b += d[2];
-        }
-        const n = pts.length;
-        if (!cancelled) {
-          setBgColor(`rgb(${Math.round(r / n)}, ${Math.round(g / n)}, ${Math.round(b / n)})`);
-        }
-      } catch {
-        /* cross-origin taint — keep the neutral fallback */
-      }
-    };
-    img.src = artUrl;
-    return () => {
-      cancelled = true;
-    };
-  }, [edge, artUrl]);
-
   if (!active) return <>{children}</>;
   const floatColor = CANVAS_FLOAT_COLOR[edge];
 
@@ -234,38 +183,32 @@ export const CanvasWrap = ({
   // thickness; eight mirrored slices fill the wrapped border (edges + corners); a
   // fold shadow + a float drop-shadow read it as a solid object off the wall.
   if (!floatColor) {
-    // SOLID-COLOUR WRAP (Hugo 2026-07-31). Two non-float finishes, both a clean
-    // stretched canvas whose wrapped edges are a SOLID colour — never the mandala
-    // mirrored around the sides:
-    //   • "basic"  → white edges (the simple, classic default).
-    //   • "mirror" → the artwork's OWN background colour (sampled corners above)
-    //                extended around all four edges — "just the colour of the
-    //                background extended", no image on the sides.
-    const inset = "8.33%"; // wrapped-edge thickness (≈10% of the front)
-    const front = "83.33%";
+    // GALLERY WRAP ("mirror") — the artwork bleeds edge-to-edge so the painting's
+    // OWN background (its sky, stars and colour) CONTINUES around all four wrapped
+    // edges of the stretcher (Hugo 2026-08-06: "the colour wrap should show the
+    // continued background — stars around the edge"). The mandala is centred, so
+    // only its backdrop reaches the edges — no mandala on the sides, no flat
+    // colour band. A fold line + edge shading read it as a wrapped canvas.
     const ar = String(aspectRatio || 1);
-    const edgeColor =
-      edge === "basic" ? "#f2efe7" : (edge === "mirror" ? bgColor : null) ?? "#cfc7b6";
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
         <div
-          className="relative w-full h-full"
-          style={{ background: edgeColor, filter: CANVAS_DEPTH_SHADOW }}
+          className="relative w-full h-full overflow-hidden"
+          style={{ filter: CANVAS_DEPTH_SHADOW }}
         >
-          {/* a hint of shadow across the wrapped border so the edges read as
-              sides catching less light (the canvas has real depth) */}
+          {children}
+          {/* fold line at the wrap edge — the stretcher's front rim */}
+          <div
+            aria-hidden
+            className="absolute pointer-events-none"
+            style={{ inset: "8.33%", boxShadow: "0 0 0 1px rgba(0,0,0,0.10), 0 3px 14px rgba(0,0,0,0.22)" }}
+          />
+          {/* the wrapped sides catch less light */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
             style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.18)" }}
           />
-          {/* FRONT face — the actual art, inset by the wrap thickness, fold shadow */}
-          <div
-            className="absolute overflow-hidden"
-            style={{ top: inset, left: inset, width: front, height: front, boxShadow: "0 0 7px 1px rgba(0,0,0,0.30)" }}
-          >
-            {children}
-          </div>
         </div>
       </div>
     );
