@@ -457,28 +457,28 @@
    iPhone-style colour field, still soft-edged, still under the cream text. */
 .ambient-bg__glow--indigo {
   background: radial-gradient(
-    66% 56% at 26% 14%,
-    rgba(84, 70, 156, 0.58) 0%,
-    rgba(84, 70, 156, 0.26) 44%,
-    transparent 72%
+    58% 50% at 24% 16%,
+    rgba(88, 72, 168, 0.70) 0%,
+    rgba(88, 72, 168, 0.34) 42%,
+    transparent 70%
   );
 }
 /* Warm rust (the house accent), foot-right biased. */
 .ambient-bg__glow--rust {
   background: radial-gradient(
-    60% 50% at 82% 82%,
-    rgba(201, 120, 68, 0.44) 0%,
-    rgba(201, 120, 68, 0.20) 48%,
-    transparent 74%
+    52% 46% at 84% 80%,
+    rgba(201, 120, 68, 0.56) 0%,
+    rgba(201, 120, 68, 0.26) 46%,
+    transparent 72%
   );
 }
 /* Muted violet, centre — the slow "breathing" band. */
 .ambient-bg__glow--violet {
   background: radial-gradient(
-    74% 58% at 58% 46%,
-    rgba(122, 84, 160, 0.44) 0%,
-    rgba(122, 84, 160, 0.18) 50%,
-    transparent 76%
+    58% 48% at 60% 52%,
+    rgba(134, 92, 176, 0.56) 0%,
+    rgba(134, 92, 176, 0.22) 48%,
+    transparent 74%
   );
 }
 /* CONTEXT tint — the "iPhone in-context" layer (2026-07-31). Its hue is a
@@ -495,21 +495,20 @@
      masthead, text sections) the wash is a deep atmospheric blue that harmonises
      with the Earth limb + the "orbiting a Sun Star" theme, so no area is ever
      dead black. Painting sections override this with the artwork's own hue. */
-  initial-value: #5d89bb;
+  initial-value: #4a4482;
 }
 .ambient-bg__glow--context {
   /* Over-sized so its own gentle scroll drift never slides a hard edge in. */
   inset: -35% -20%;
-  /* CLEARLY VISIBLE (Hugo 2026-07-31 "beautiful backgrounds" — the whisper was
-     imperceptible). The on-screen artwork's hue blooms up from behind the page:
-     a strong core easing through a wide, soft falloff so it reads as a rich
-     coloured atmosphere, never a hard shape, and stays in the margins/behind the
-     art rather than washing the cream text. */
+  /* A DEFINED artwork bloom, not a full-field wash (Hugo 2026-08-06: the flat
+     single-hue field read as "flat blue"). Tighter + softer so the on-screen
+     hue is ONE bloom in the moving mesh alongside the indigo/rust/violet orbs
+     — a real mesh gradient, never a uniform colour field over the whole page. */
   background: radial-gradient(
-    80% 68% at 50% 36%,
-    color-mix(in srgb, var(--amb-ctx) 72%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 46%, transparent) 34%,
-    color-mix(in srgb, var(--amb-ctx) 22%, transparent) 62%,
+    60% 52% at 40% 30%,
+    color-mix(in srgb, var(--amb-ctx) 52%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 28%, transparent) 36%,
+    color-mix(in srgb, var(--amb-ctx) 12%, transparent) 64%,
     transparent 86%
   );
 }
@@ -519,9 +518,9 @@
 .ambient-bg__glow--context2 {
   inset: -35% -20%;
   background: radial-gradient(
-    66% 58% at 76% 82%,
-    color-mix(in srgb, var(--amb-ctx) 54%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 24%, transparent) 46%,
+    54% 50% at 78% 80%,
+    color-mix(in srgb, var(--amb-ctx) 34%, transparent) 0%,
+    color-mix(in srgb, var(--amb-ctx) 16%, transparent) 46%,
     transparent 76%
   );
 }

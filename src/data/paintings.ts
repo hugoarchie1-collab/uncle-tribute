@@ -508,6 +508,12 @@ export const CANVAS_EDGES = [
     note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
   },
   {
+    id: "float-white",
+    label: "White float frame",
+    isFloat: true,
+    note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
+  },
+  {
     id: "float-oak",
     label: "Oak float frame",
     isFloat: true,
@@ -609,6 +615,12 @@ export const FRAME_STYLES = [
   { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030", category: "Dark Wood", tier: "classic", ar: true },
   // White
   { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2", category: "White", tier: "classic", ar: true },
+  // Upsell tiers (Hugo 2026-08-06: "of course I need to upsell of framing
+  // options") — a premium deep box and a hand-gilt statement frame that step the
+  // framed price up (Signature +£95 / Ornate +£245). Kept to ONE each so the
+  // ladder is clear without overwhelming the three included woods above.
+  { id: "box-oak", label: "Oak box", note: "Deep oak box-frame with a float rebate — the print floats within the moulding", swatch: "#c3a473", category: "Box Frames", tier: "signature", ar: false },
+  { id: "ayous-gold", label: "Gold edge", note: "Stained ayous with a hand-gilt gold highlight — a quiet statement frame", swatch: "#b98f4e", category: "Ornate", tier: "ornate", ar: false },
 ] as const;
 
 // White window-mat (passe-partout) around FRAMED PAPER prints only (Hugo
