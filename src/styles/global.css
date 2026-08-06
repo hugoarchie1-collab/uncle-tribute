@@ -554,10 +554,35 @@
 .ambient-bg__glow--context  { animation: ambFloatD 39s ease-in-out infinite alternate;         animation-delay: -13s; }
 .ambient-bg__glow--context2 { animation: ambFloatA 47s ease-in-out infinite alternate-reverse; animation-delay: -21s; }
 
+/* CONTINUED-PRINT ECHO (Hugo 2026-08-06: "not just the colour but the continued
+   print"). The nearest on-screen painting, softly blurred + slowly breathing,
+   extended edge-to-edge behind the page so the mandala CONTINUES into the space
+   around it. Two layers cross-dissolve (opacity, set by the component) as you
+   scroll between artworks. Blur is baked once on a fixed layer (no per-scroll
+   repaint); the float animates composited translate/scale only, so it's cheap.
+   Behind the colour orbs + the legibility veils, and text keeps hero/reading
+   shadows, so cream copy stays readable over it. */
+.ambient-bg__print {
+  position: absolute;
+  inset: -18% -12%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(30px) saturate(1.06) brightness(0.86);
+  opacity: 0;
+  transition: opacity 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform, translate, scale;
+  animation: ambFloatC 56s ease-in-out infinite alternate;
+}
+.ambient-bg__print:nth-of-type(2) {
+  animation: ambFloatD 62s ease-in-out infinite alternate-reverse;
+}
+
 /* Reduced motion: the wash is entirely static (the component also stops feeding
    it scroll values), so release the compositor promotions AND the float loop. */
 @media (prefers-reduced-motion: reduce) {
-  .ambient-bg__glow {
+  .ambient-bg__glow,
+  .ambient-bg__print {
     will-change: auto;
     animation: none !important;
   }

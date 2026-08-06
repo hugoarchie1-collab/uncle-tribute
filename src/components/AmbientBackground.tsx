@@ -59,32 +59,51 @@ const tintForSrc = (src: string): string | null => {
   return TINT_BY_STEM[stem] ?? null;
 };
 
-/** The artwork nearest the viewport centre wins the wash. Ignores off-screen and
- *  thumbnail-sized images so a tiny footer tile never beats the hero on screen. */
-const pickContextTint = (): string => {
-  if (typeof document === "undefined") return AMBIENT_BASE_HALO;
+/** The artwork nearest the viewport centre wins the wash — returns BOTH its halo
+ *  hue (for the colour orbs) AND its image src (for the "continued print" echo,
+ *  Hugo 2026-08-06: "not just the colour but the continued print"). Ignores
+ *  off-screen and thumbnail-sized images so a tiny footer tile never beats the
+ *  hero on screen. */
+const pickContextArt = (): { halo: string; src: string | null } => {
+  if (typeof document === "undefined") return { halo: AMBIENT_BASE_HALO, src: null };
   const vh = window.innerHeight;
   const cy = vh / 2;
-  let best: string | null = null;
+  let bestHalo: string | null = null;
+  let bestSrc: string | null = null;
   let bestDist = Infinity;
   document.querySelectorAll<HTMLImageElement>('img[src*="/img/paintings/"]').forEach((img) => {
-    const halo = tintForSrc(img.getAttribute("src") || "");
+    const src = img.getAttribute("src") || "";
+    const halo = tintForSrc(src);
     if (!halo) return;
     const r = img.getBoundingClientRect();
     if (r.bottom <= 0 || r.top >= vh || r.width < 56 || r.height < 56) return;
     const dist = Math.abs(r.top + r.height / 2 - cy);
     if (dist < bestDist) {
       bestDist = dist;
-      best = halo;
+      bestHalo = halo;
+      bestSrc = src;
     }
   });
-  return best ?? AMBIENT_BASE_HALO;
+  return { halo: bestHalo ?? AMBIENT_BASE_HALO, src: bestSrc };
 };
+
+/** Strength of the continued-print echo (behind the colour orbs + legibility
+ *  veils). High enough that the mandala clearly CONTINUES into the page, low
+ *  enough the cream text over it still reads. */
+const PRINT_ECHO_OPACITY = "0.55";
 
 export const AmbientBackground = () => {
   const reduced = useReducedMotion();
   const { pathname } = useLocation();
   const rootRef = useRef<HTMLDivElement>(null);
+  // Two crossfading layers for the "continued print" echo — the nearest on-
+  // screen painting, blurred + breathing, extended behind the page. We ping-pong
+  // between A and B so a change cross-dissolves (never a hard swap). Direct-DOM
+  // (like --amb-ctx) so a scroll handoff never re-renders React.
+  const printARef = useRef<HTMLDivElement>(null);
+  const printBRef = useRef<HTMLDivElement>(null);
+  const printActive = useRef(0);
+  const printSrc = useRef("");
 
   // Whole-page scroll progress (0 at the top → 1 at the foot). No target ref =
   // the document scroll, so the wash breathes across the entire read.
@@ -109,7 +128,32 @@ export const AmbientBackground = () => {
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
-    const apply = () => el.style.setProperty("--amb-ctx", pickContextTint());
+    // Cross-dissolve the continued-print echo between the two layers on change.
+    const applyPrint = (src: string | null) => {
+      const a = printARef.current;
+      const b = printBRef.current;
+      if (!a || !b) return;
+      if (!src) {
+        a.style.opacity = "0";
+        b.style.opacity = "0";
+        printSrc.current = "";
+        return;
+      }
+      if (src === printSrc.current) return;
+      printSrc.current = src;
+      const showingA = printActive.current === 0;
+      const incoming = showingA ? b : a;
+      const outgoing = showingA ? a : b;
+      incoming.style.backgroundImage = `url("${src}")`;
+      incoming.style.opacity = PRINT_ECHO_OPACITY;
+      outgoing.style.opacity = "0";
+      printActive.current = showingA ? 1 : 0;
+    };
+    const apply = () => {
+      const { halo, src } = pickContextArt();
+      el.style.setProperty("--amb-ctx", halo);
+      applyPrint(src);
+    };
 
     apply();
     const t1 = window.setTimeout(apply, 280);
@@ -147,6 +191,13 @@ export const AmbientBackground = () => {
       aria-hidden="true"
       className="ambient-bg fixed inset-0 z-0 pointer-events-none overflow-hidden"
     >
+      {/* Continued-print echo — the nearest on-screen painting, blurred +
+          breathing, extended behind the page (Hugo 2026-08-06: "not just the
+          colour but the continued print"). Two layers cross-dissolve as you
+          scroll between artworks. Sits BEHIND the colour orbs + legibility veils
+          so the mandala continues into the page without out-shouting the text. */}
+      <div ref={printARef} className="ambient-bg__print" />
+      <div ref={printBRef} className="ambient-bg__print" />
       {/* Deep indigo — top-biased; drifts DOWN as you scroll. */}
       <motion.div
         className="ambient-bg__glow ambient-bg__glow--indigo"
