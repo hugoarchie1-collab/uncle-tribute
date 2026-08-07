@@ -6,7 +6,7 @@ import { COLOURWAY_TINTS } from "../lib/colourwayTints";
 /** Cosmic-blue BASE hue where no artwork is on screen (mirrors the CSS
  *  @property --amb-ctx initial-value). Keeps the masthead + text sections a
  *  living atmospheric blue instead of dead black. */
-const AMBIENT_BASE_HALO = "#5d89bb";
+const AMBIENT_BASE_HALO = "#4a3356";
 
 /**
  * AMBIENT BACKGROUND — the site-wide base "wallpaper" layer.
