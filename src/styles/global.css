@@ -433,99 +433,53 @@
    text (#ede6d6) that sits far above it at the page's z-10.
    Deliberately UNLAYERED so it always ships and wins source-order ties.
    ============================================================================= */
+/* REACTIVE APPLE-MESH BACKGROUND (Hugo 2026-08-06: "reactive to whatever colours
+   are showing … clone the most stunning Apple iPhone wallpapers"). Five large,
+   soft, overlapping radial blobs blend into a flowing iOS-style mesh gradient
+   over a near-black base. Each blob's colour is a registered @property <color>
+   var (--amb-c1..5) that AmbientBackground.tsx sets from the HALO hues of the
+   paintings CURRENTLY on screen (nearest-to-centre first) — so on a grid page the
+   mesh is a genuine multi-colour reflection of the art shown, and it eases to the
+   next palette as you scroll. Pages with little/no art fall back to a warm brand
+   palette (plum/terracotta/purple/rose — never blue). */
+@property --amb-c1 { syntax: "<color>"; inherits: true; initial-value: #8a5fa6; }
+@property --amb-c2 { syntax: "<color>"; inherits: true; initial-value: #b06a5a; }
+@property --amb-c3 { syntax: "<color>"; inherits: true; initial-value: #9179b3; }
+@property --amb-c4 { syntax: "<color>"; inherits: true; initial-value: #b16f8a; }
+@property --amb-c5 { syntax: "<color>"; inherits: true; initial-value: #a173a5; }
 .ambient-bg {
-  /* Opaque near-black base so nothing is ever bare black even where a page owns
-     no backdrop. Page backdrops (Pavo, .pd-*, scenes) render later in the DOM at
-     z-0 and paint OVER this, so it only fills the void underneath. */
   background-color: #0a0908;
-  /* The context tint (below) eases over ~1.2s so the wash hue HANDS OFF as the
-     reader scrolls past different artworks — the "living, in-context" feel. */
-  transition: --amb-ctx 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Each blob colour eases as the on-screen palette changes — the fluid handoff. */
+  transition:
+    --amb-c1 1.3s ease, --amb-c2 1.3s ease, --amb-c3 1.3s ease,
+    --amb-c4 1.3s ease, --amb-c5 1.3s ease;
 }
-.ambient-bg__glow {
+.ambient-bg__blob {
   position: absolute;
-  /* Over-sized well beyond the viewport so the few-percent scroll drift can
-     never slide a hard gradient edge into view. */
-  inset: -22% -14%;
-  will-change: transform, opacity;
+  inset: -25%;
+  /* translate/scale are STANDALONE so the slow mesh drift is compositor-only. */
+  will-change: transform, translate, scale;
 }
-/* Deep indigo, top-left biased. Lifted 2026-08-03 (Hugo: "where's it all gone,
-   why is it so shit" — the whisper read as flat black). Now a genuinely present
-   iPhone-style colour field, still soft-edged, still under the cream text. */
-.ambient-bg__glow--indigo {
-  background: radial-gradient(
-    66% 56% at 26% 14%,
-    rgba(110, 68, 140, 0.58) 0%,
-    rgba(110, 68, 140, 0.26) 44%,
-    transparent 72%
-  );
+.ambient-bg__blob--1 { background: radial-gradient(50% 50% at 22% 20%, color-mix(in srgb, var(--amb-c1) 82%, transparent) 0%, color-mix(in srgb, var(--amb-c1) 30%, transparent) 40%, transparent 66%); animation: meshDriftA 36s ease-in-out infinite alternate; }
+.ambient-bg__blob--2 { background: radial-gradient(52% 50% at 82% 16%, color-mix(in srgb, var(--amb-c2) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c2) 28%, transparent) 40%, transparent 66%); animation: meshDriftB 44s ease-in-out infinite alternate; animation-delay: -7s; }
+.ambient-bg__blob--3 { background: radial-gradient(58% 58% at 50% 55%, color-mix(in srgb, var(--amb-c3) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c3) 24%, transparent) 42%, transparent 68%); animation: meshDriftC 30s ease-in-out infinite alternate; animation-delay: -4s; }
+.ambient-bg__blob--4 { background: radial-gradient(52% 52% at 18% 84%, color-mix(in srgb, var(--amb-c4) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c4) 28%, transparent) 40%, transparent 66%); animation: meshDriftD 40s ease-in-out infinite alternate; animation-delay: -12s; }
+.ambient-bg__blob--5 { background: radial-gradient(52% 52% at 84% 82%, color-mix(in srgb, var(--amb-c5) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c5) 24%, transparent) 42%, transparent 66%); animation: meshDriftA 48s ease-in-out infinite alternate-reverse; animation-delay: -20s; }
+/* Legibility veil — a LIGHT top/bottom grounding so the nav + footer seams and
+   the cream text keep contrast, while the mesh stays vivid in the middle (paired
+   with the type's own shadows). Kept gentle so the colour reads Apple-vivid. */
+.ambient-bg__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 9, 8, 0.30) 0%, rgba(10, 9, 8, 0.04) 34%, rgba(10, 9, 8, 0.06) 68%, rgba(10, 9, 8, 0.32) 100%);
 }
-/* Warm rust (the house accent), foot-right biased. */
-.ambient-bg__glow--rust {
-  background: radial-gradient(
-    60% 50% at 82% 82%,
-    rgba(201, 120, 68, 0.44) 0%,
-    rgba(201, 120, 68, 0.20) 48%,
-    transparent 74%
-  );
-}
-/* Muted violet, centre — the slow "breathing" band. */
-.ambient-bg__glow--violet {
-  background: radial-gradient(
-    74% 58% at 58% 46%,
-    rgba(122, 84, 160, 0.44) 0%,
-    rgba(122, 84, 160, 0.18) 50%,
-    transparent 76%
-  );
-}
-/* CONTEXT tint — the "iPhone in-context" layer (2026-07-31). Its hue is a
-   registered <color> custom property so it can smoothly @property-animate (the
-   exact technique the PDP .pd-* wall/halo layers use — a triple can't animate,
-   a real <color> can). AmbientBackground's JS sets --amb-ctx on .ambient-bg to
-   the HALO colour of the artwork nearest the viewport centre; the transition on
-   .ambient-bg eases the handoff. Kept to a WHISPER via color-mix over the
-   near-black so it never out-shouts the cream text (Hugo's "Whisper" setting). */
-@property --amb-ctx {
-  syntax: "<color>";
-  inherits: true;
-  /* Cosmic-blue BASE (Hugo 2026-07-31) — where no artwork is on screen (the
-     masthead, text sections) the wash is a deep atmospheric blue that harmonises
-     with the Earth limb + the "orbiting a Sun Star" theme, so no area is ever
-     dead black. Painting sections override this with the artwork's own hue. */
-  initial-value: #4a3356;
-}
-.ambient-bg__glow--context {
-  /* Over-sized so its own gentle scroll drift never slides a hard edge in. */
-  inset: -35% -20%;
-  /* CLEARLY VISIBLE (Hugo 2026-07-31 "beautiful backgrounds" — the whisper was
-     imperceptible). The on-screen artwork's hue blooms up from behind the page:
-     a strong core easing through a wide, soft falloff so it reads as a rich
-     coloured atmosphere, never a hard shape, and stays in the margins/behind the
-     art rather than washing the cream text. */
-  background: radial-gradient(
-    80% 68% at 50% 36%,
-    color-mix(in srgb, var(--amb-ctx) 72%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 46%, transparent) 34%,
-    color-mix(in srgb, var(--amb-ctx) 22%, transparent) 62%,
-    transparent 86%
-  );
-}
-/* A second, offset bloom of the SAME artwork hue — the two soft blobs read as a
-   gentle iPhone-style mesh gradient rather than one flat vignette. Foot-biased,
-   drifts opposite the main context glow (set in the component). */
-.ambient-bg__glow--context2 {
-  inset: -35% -20%;
-  background: radial-gradient(
-    66% 58% at 76% 82%,
-    color-mix(in srgb, var(--amb-ctx) 54%, transparent) 0%,
-    color-mix(in srgb, var(--amb-ctx) 24%, transparent) 46%,
-    transparent 76%
-  );
-}
-/* Reduced motion: the wash is entirely static (the component also stops feeding
-   it scroll values), so release the compositor promotions kept only for motion. */
+@keyframes meshDriftA { from { translate: -3% -2%; scale: 1; }    to { translate: 5% 4%;   scale: 1.15; } }
+@keyframes meshDriftB { from { translate: 3% 2%;   scale: 1.1; }  to { translate: -5% -3%; scale: 0.98; } }
+@keyframes meshDriftC { from { translate: 0% 3%;   scale: 1.05; } to { translate: 4% -4%;  scale: 1.2; } }
+@keyframes meshDriftD { from { translate: -4% 1%;  scale: 1.12; } to { translate: 5% -2%;  scale: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .ambient-bg__glow { will-change: auto; }
+  .ambient-bg__blob { animation: none !important; will-change: auto; }
 }
 
 /* =============================================================================
