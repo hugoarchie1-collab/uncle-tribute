@@ -161,7 +161,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(480px,76svh,1180px)] 2xl:h-[clamp(560px,84svh,1320px)] 3xl:h-[clamp(560px,84svh,1420px)] 4xl:h-[clamp(560px,82svh,1520px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(360px,58svh,720px)] 2xl:h-[clamp(420px,58svh,820px)] 3xl:h-[clamp(440px,56svh,900px)] 4xl:h-[clamp(460px,54svh,960px)]"
         >
           {near && (
             <video
@@ -878,6 +878,7 @@ export const Welcome = () => {
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
               aspect="aspect-[3/2] md:aspect-[2/1]"
+              className="max-h-[58svh]"
               edges="none"
               parallax={0.06}
               objectPosition="center 62%"
@@ -1049,7 +1050,7 @@ export const Welcome = () => {
                     sequins placed by hand). Muted autoplay loop; the still is the
                     poster (and the reduced-motion fallback). Capped height so it's
                     never a full-screen wall. */}
-                <figure className="relative m-0 w-full max-h-[62svh] overflow-hidden rounded-[4px] ring-1 ring-line">
+                <figure className="relative m-0 w-full max-h-[58svh] overflow-hidden rounded-[4px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1141,7 +1142,7 @@ export const Welcome = () => {
                   material ledger in two columns below. No side space, no floating
                   gaps, no one cropped out. */}
               <Reveal as="div" className="flex flex-col gap-8 lg:gap-10">
-                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line aspect-[16/10] sm:aspect-[3/2]">
+                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line aspect-[16/10] sm:aspect-[3/2] max-h-[56svh]">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
@@ -1204,6 +1205,7 @@ export const Welcome = () => {
                 poster="/video/poster-studio-mandala-v1.jpg"
                 label="Stephen Meakin painting a mandala, filmed from above"
                 aspect="aspect-[4/3] sm:aspect-[16/9]"
+                className="max-h-[58svh]"
                 edges="none"
               />
             </Reveal>
@@ -1294,6 +1296,7 @@ export const Welcome = () => {
                 poster="/video/poster-arista-timelapse-v1.jpg"
                 label="The Arista SunStar being painted, in timelapse"
                 aspect="aspect-[16/9]"
+                className="max-h-[58svh]"
                 edges="none"
               />
             </Reveal>
