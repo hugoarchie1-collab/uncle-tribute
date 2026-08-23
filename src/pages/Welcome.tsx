@@ -613,6 +613,7 @@ export const Welcome = () => {
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
                   aspect="aspect-[3/2]"
+                  className="max-h-[72svh]"
                   edges="none"
                   parallax={0}
                   zoom={1}
@@ -1017,6 +1018,7 @@ export const Welcome = () => {
                   src="/img/welcome/stephen-painting-denim-v1.jpg"
                   alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                   aspect="aspect-[3/2]"
+                  className="max-h-[72svh]"
                   edges="none"
                   parallax={0.06}
                   objectPosition="center"
