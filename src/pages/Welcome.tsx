@@ -358,7 +358,18 @@ export const Welcome = () => {
         // the section foot so it sits low but composed, never jammed to the edge.
         // Portrait keeps its content-hugging justify-end + pt (mobile already
         // reads Earth-then-title); pt nudged up a touch for a cleaner gap there.
-        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center min-h-0 justify-end portrait:pt-[clamp(11rem,55vw,20rem)] portrait:pb-[clamp(20px,3svh,44px)] landscape:min-h-[clamp(600px,66svh,672px)] landscape:pt-[max(6rem,10svh)] landscape:pb-[clamp(24px,3.5svh,44px)]"
+        // ── SINGLE RESPONSIVE MODEL (rebuilt 2026-08-23) ────────────────────────
+        // The masthead is CONTENT-HUGGING: Earth limb in normal flow at the top,
+        // wordmark locked directly beneath it. No min-h cap, no justify-end, no
+        // portrait/landscape split, no absolute-vs-section height mismatch — that
+        // stack of ~15 contradictory patches is what made the open look DIFFERENT
+        // on every device (mobile: 80px void; 4K: title overlapping the Earth).
+        // Now the Earth→wordmark relationship is IDENTICAL at every width (it is the
+        // exact mirror of the finale foot Earth), compact, and fills the frame with
+        // no dead space. pt clears the fixed overlay nav; pb is a small even foot.
+        // To retune the open, change ONLY the earth width classes + the wordmark's
+        // -mt below — do not reintroduce section-height/anchor logic.
+        className="relative z-20 isolate w-full overflow-hidden flex flex-col items-center pt-[max(4.75rem,6svh)] pb-[clamp(18px,2.6vh,44px)]"
         aria-label="The SEM Experience"
       >
         {/* Softening scrim — a gentle, mostly-even veil so the indigo peacock
@@ -382,35 +393,23 @@ export const Welcome = () => {
             uses is flipped with the image, so it stays solid at the pinned TOP edge
             and dissolves into the peacock painting below. (Swapped 2026-06-19 at
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
+        {/* Earth limb — IN-FLOW, full-bleed, curving DOWN (scaleY -1). Normal flow
+            (NOT absolute) so it scales consistently at every width and the wordmark
+            below keeps a fixed relationship to it — the exact mirror of the finale
+            foot Earth (same asset + width classes → "as above, so below"). Overscan
+            reaches both edges + corners at all widths; the radial mask dissolves
+            only the inner (lower) edge into the backdrop. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 md:top-[-0.4in] z-[1] overflow-hidden"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden"
         >
-          {/* Warm rim halo behind the limb at the TOP — atmosphere only. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-[45%]"
-            style={{
-              background:
-                "radial-gradient(120% 80% at 50% 0%, rgba(201,120,68,0.14) 0%, rgba(201,120,68,0) 72%)",
-            }}
-          />
-          {/* Hugo's natural Earth limb, the same asset that closes the page — here
-              top-pinned + scaleY(-1) so it curves down from the top. width 124% +
-              -12% marginLeft centres a slightly-overscanned limb reaching both
-              edges; maxWidth:none lifts the global img clamp (gotcha). */}
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
             alt=""
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            // The limb is a fixed-ratio wide image — tall on a wide screen but a
-            // thin sliver on a narrow phone, which left a gap above the wordmark.
-            // Scale it UP on smaller widths so it anchors the top and the limb
-            // reads as a real Earth curve, not a hairline (the marginLeft keeps
-            // it centred: ml = -(width-100)/2). Settles to 124% on md+.
-            className="block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[92%] md:ml-[4%]"
+            className="block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[112%] md:ml-[-6%]"
             style={{
               display: "block",
               maxWidth: "none",
@@ -430,7 +429,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 text-center">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 text-center -mt-[clamp(2.75rem,11vw,12rem)]">
           {/* NO local halo behind the wordmark — Hugo 2026-07-23: "a weird black
               text box behind that i never asked for and advised clearly against".
               The soft radial that used to back the text read as a dark box; it is
