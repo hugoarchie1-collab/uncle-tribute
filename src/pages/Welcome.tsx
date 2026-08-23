@@ -393,15 +393,16 @@ export const Welcome = () => {
             uses is flipped with the image, so it stays solid at the pinned TOP edge
             and dissolves into the peacock painting below. (Swapped 2026-06-19 at
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
-        {/* Earth limb — full-bleed band, curving DOWN (scaleY -1). Its HEIGHT is
-            capped to the VIEWPORT (h clamp in svh), NOT driven by image width — that
-            width-driven version ballooned to ~580px on a 1920×1080 desktop and shoved
-            the wordmark to the bottom of the screen (Hugo, 2026-08-23). object-cover
-            fills the band edge-to-edge at every aspect ratio (no side gaps, no bottom-
-            heavy title); the radial mask dissolves the inner edge into the backdrop. */}
+        {/* Earth limb — shown WHOLE, NEVER cropped in ANY direction, on ANY device
+            (Hugo 2026-08-23: "i dont want the earth cut off in any direction on any
+            device"). w-full = exactly 100% width → the full limb spans edge-to-edge with
+            NOTHING clipped off the sides (no overscan). h-auto = natural height → the
+            ENTIRE curve + glow show, no object-cover top/bottom crop, no height cap.
+            scaleY(-1) curves it down from the top; a GENTLE radial feather softly blends
+            only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden h-[clamp(140px,24svh,300px)] md:h-[clamp(180px,26svh,340px)]"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -409,18 +410,18 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="block select-none w-full h-full object-cover"
+            className="block select-none w-full h-auto"
             style={{
               maxWidth: "none",
-              // Which horizontal slice of the (flipped) limb shows in the band.
-              objectPosition: "center 40%",
               // SPIN AROUND — limb at the top, curving down into the page.
               transform: "scaleY(-1)",
-              // Radial dissolve so the band melts into the backdrop at its lower edge.
+              // GENTLE feather: solid across the whole limb, only the far outer/lower
+              // edge softly dissolves into the backdrop (kept wide + high so nothing
+              // reads as clipped).
               WebkitMaskImage:
-                "radial-gradient(90% 130% at 50% 100%, #000 52%, rgba(0,0,0,0.35) 80%, transparent 98%)",
+                "radial-gradient(120% 150% at 50% 100%, #000 74%, rgba(0,0,0,0.45) 92%, transparent 100%)",
               maskImage:
-                "radial-gradient(90% 130% at 50% 100%, #000 52%, rgba(0,0,0,0.35) 80%, transparent 98%)",
+                "radial-gradient(120% 150% at 50% 100%, #000 74%, rgba(0,0,0,0.45) 92%, transparent 100%)",
             }}
           />
         </div>
@@ -548,7 +549,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-5 md:space-y-6 lg:space-y-7 pb-8 md:pb-10">
+        <main className="relative isolate z-10 space-y-10 md:space-y-12 lg:space-y-14 pb-8 md:pb-10">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the
@@ -560,7 +561,7 @@ export const Welcome = () => {
                   we are" text + His story (order-2), THEN the video below — so the
                   photo and video are separated by the text, never touching. */}
               <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
-                <h1 className="font-display tracking-[-0.03em] text-ink m-0 mx-auto text-balance hero-text-shadow">
+                <h1 className="font-display tracking-[-0.03em] text-ink m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-balance hero-text-shadow">
                   {/* THE key visualiser (Hugo 2026-07-28: "boldness to match if
                       not bigger, more impactful"). True Fraunces 700 at opsz 48 —
                       the SAME bold display cut as the masthead — set large. */}
@@ -594,7 +595,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
+              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
                 {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
                     (Hugo 2026-07-08: "no image should take up the full screen") —
                     at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
@@ -678,7 +679,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[72ch] text-pretty"
+                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -706,7 +707,7 @@ export const Welcome = () => {
                 never re-typed. (Bold redesign 2026-06-28, agent cherry-pick:
                 Hermès / Avant Arte asymmetric editorial scale — the missing
                 "wow", and the antidote to the centred-stack monotony.) */}
-            <Reveal delay={0.05} className="my-5 md:my-7 text-center">
+            <Reveal delay={0.05} className="my-10 md:my-14 text-center">
               <blockquote className="m-0 hero-text-shadow">
                 {/* Dominant tier — CENTRED (Hugo, repeatedly: the reminder must be
                     centred, not broken to one side). opsz held at 48 (finale). */}
@@ -751,7 +752,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] text-center">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -787,7 +788,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1} className="mt-5 md:mt-7 text-center">
               <div aria-hidden="true" className="mx-auto mb-3 md:mb-4 h-px w-16 bg-ink/20" />
-              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1560px] 4xl:max-w-[1740px] text-center hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
                   style={{
@@ -894,7 +895,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -988,7 +989,7 @@ export const Welcome = () => {
               no words are typed inline here. Transparent over the peacock
               backdrop like every section; hero-text-shadow keeps it legible. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="border-t border-line pt-9 md:pt-12">
+            <div className="border-t border-line pt-6 md:pt-8">
               {/* CENTRED to match every other home section (Hugo 2026-08-03:
                   "it's all centred wrong — I want consistency and cleanness above
                   all"). The 2026-08-03 asymmetric editorial spread was the one
@@ -997,7 +998,7 @@ export const Welcome = () => {
                   centred eyebrow → centred TITLE → contained centred photo →
                   centred reading measure. Verbatim from WELCOME.archiveStatement. */}
               <Reveal as="div" className="text-center mb-5 md:mb-7">
-                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
+                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
                   {(() => {
                     const { headline, emphasis } = WELCOME.archiveStatement;
                     const [before, after] = headline.split(emphasis);
@@ -1013,7 +1014,7 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Stephen at the easel — contained + centred like the hero photo. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1000px] 3xl:max-w-[1160px]">
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
                 <ImageReveal
                   src="/img/welcome/stephen-painting-denim-v1.jpg"
                   alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
@@ -1028,7 +1029,7 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
-              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[840px] 3xl:max-w-[1080px] 4xl:max-w-[1240px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
+              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
                 {WELCOME.archiveStatement.body.map((para, i) => (
                   <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
                     {para}
@@ -1046,7 +1047,7 @@ export const Welcome = () => {
               frosted-glass panel was removed — restraint pass); a plain hairline
               divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="border-t border-line pt-9 md:pt-12">
+            <div className="border-t border-line pt-6 md:pt-8">
               <Reveal as="div" className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-stretch">
                 {/* Craft FILM — the hand-finishing in motion (dots of paint +
                     sequins placed by hand). Muted autoplay loop; the still is the
@@ -1116,10 +1117,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
               <Reveal as="div" className="text-center mb-8 md:mb-10">
-                <h2 className={cn(TITLE, "my-0 max-w-[860px] 2xl:max-w-[1060px] 3xl:max-w-[1240px] mx-auto hero-text-shadow")}>
+                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1080px] 2xl:max-w-[1180px] 3xl:max-w-[1320px] mx-auto")}>
+                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] mx-auto")}>
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1159,7 +1160,7 @@ export const Welcome = () => {
                     spec-right split left dead space beside the shorter ledger; now
                     the paragraphs sit centred, with the spec sheet balanced full-
                     width beneath. reading-shadow lifts them off the mandala (box-free). */}
-                <div className="mx-auto w-full max-w-[820px] 2xl:max-w-[920px] 3xl:max-w-[1160px] 4xl:max-w-[1320px] flex flex-col gap-y-4 md:gap-y-5 text-center">
+                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col gap-y-4 md:gap-y-5 text-center">
                   <p className={cn(SUBTITLE, "reading-shadow m-0")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
@@ -1170,7 +1171,7 @@ export const Welcome = () => {
                 {/* Material ledger — a BALANCED two-column spec sheet spanning the
                     full width below the prose (6 facts = 2×3: no orphan, no dead
                     space beside the prose). */}
-                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1080px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
                   {[
                     ["Time", "Hundreds of hours per canvas"],
                     ["Edition", "Individually made to order"],
@@ -1201,7 +1202,7 @@ export const Welcome = () => {
             {/* Capped so this cinematic plate stays LARGE but never fills the
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1000px] 3xl:max-w-[1140px]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
               <LoopFilm
                 src="/video/studio-mandala-v1.mp4"
                 poster="/video/poster-studio-mandala-v1.jpg"
@@ -1219,7 +1220,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1256,7 +1257,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className={cn(SUBTITLE, "reading-shadow max-w-[1240px] 2xl:max-w-[1360px] 3xl:max-w-[1500px] mx-auto my-0 text-center")}>
+              <p className={cn(SUBTITLE, "reading-shadow max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto my-0 text-center")}>
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1272,7 +1273,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
               </p>
@@ -1292,7 +1293,7 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[960px]">
+            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
               <LoopFilm
                 src="/video/arista-timelapse-v1.mp4"
                 poster="/video/poster-arista-timelapse-v1.jpg"
@@ -1304,8 +1305,8 @@ export const Welcome = () => {
             </Reveal>
 
             {/* The commission prose, between the film and the photo. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1340px] 3xl:max-w-[1600px] 4xl:max-w-[1760px] text-center mt-6 md:mt-8">
-              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[72ch]")}>
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center mt-6 md:mt-8">
+              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px]")}>
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
