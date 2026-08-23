@@ -33,3 +33,6 @@ dist-ssr
 # Agent worktrees (transient, embedded git repos)
 .claude/worktrees/
 scripts/truesize-qa/
+
+# home-page freeze: transient unlock marker (never commit)
+.claude/HOME_UNLOCKED

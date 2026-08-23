@@ -1,6 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/home-freeze-guard.cjs\"",
+            "statusMessage": "Checking home-page freeze lock…"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "hooks": [
