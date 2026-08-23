@@ -393,15 +393,15 @@ export const Welcome = () => {
             uses is flipped with the image, so it stays solid at the pinned TOP edge
             and dissolves into the peacock painting below. (Swapped 2026-06-19 at
             Hugo's direction: Earth opens, Sun closes — keep text placement.) */}
-        {/* Earth limb — IN-FLOW, full-bleed, curving DOWN (scaleY -1). Normal flow
-            (NOT absolute) so it scales consistently at every width and the wordmark
-            below keeps a fixed relationship to it — the exact mirror of the finale
-            foot Earth (same asset + width classes → "as above, so below"). Overscan
-            reaches both edges + corners at all widths; the radial mask dissolves
-            only the inner (lower) edge into the backdrop. */}
+        {/* Earth limb — full-bleed band, curving DOWN (scaleY -1). Its HEIGHT is
+            capped to the VIEWPORT (h clamp in svh), NOT driven by image width — that
+            width-driven version ballooned to ~580px on a 1920×1080 desktop and shoved
+            the wordmark to the bottom of the screen (Hugo, 2026-08-23). object-cover
+            fills the band edge-to-edge at every aspect ratio (no side gaps, no bottom-
+            heavy title); the radial mask dissolves the inner edge into the backdrop. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden h-[clamp(140px,24svh,300px)] md:h-[clamp(180px,26svh,340px)]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -409,19 +409,18 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[112%] md:ml-[-6%]"
+            className="block select-none w-full h-full object-cover"
             style={{
-              display: "block",
               maxWidth: "none",
-              height: "auto",
+              // Which horizontal slice of the (flipped) limb shows in the band.
+              objectPosition: "center 40%",
               // SPIN AROUND — limb at the top, curving down into the page.
               transform: "scaleY(-1)",
-              // Same radial dissolve as the finale Earth; scaleY(-1) flips it so it
-              // is solid at the pinned TOP edge and melts into the backdrop below.
+              // Radial dissolve so the band melts into the backdrop at its lower edge.
               WebkitMaskImage:
-                "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                "radial-gradient(90% 130% at 50% 100%, #000 52%, rgba(0,0,0,0.35) 80%, transparent 98%)",
               maskImage:
-                "radial-gradient(82% 135% at 50% 100%, #000 50%, rgba(0,0,0,0.35) 77%, transparent 96%)",
+                "radial-gradient(90% 130% at 50% 100%, #000 52%, rgba(0,0,0,0.35) 80%, transparent 98%)",
             }}
           />
         </div>
@@ -429,7 +428,7 @@ export const Welcome = () => {
         {/* THE WORDMARK — back where it belongs: the estate statement reading
             over the lower sun, BIG + clearly legible (on the feathered dark sun +
             painting), the two-tier Fraunces composition mirroring the Earth close. */}
-        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 text-center -mt-[clamp(2.75rem,11vw,12rem)]">
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12 text-center mt-[clamp(10px,2.4svh,36px)]">
           {/* NO local halo behind the wordmark — Hugo 2026-07-23: "a weird black
               text box behind that i never asked for and advised clearly against".
               The soft radial that used to back the text read as a dark box; it is
@@ -1023,9 +1022,6 @@ export const Welcome = () => {
                   shadow="shadow-[0_44px_120px_-36px_rgba(0,0,0,0.8)]"
                   sizes="(min-width: 1400px) 1000px, 92vw"
                 />
-                <figcaption className="font-display italic text-ink-muted text-[13px] 3xl:text-[16px] mt-3 text-center">
-                  Stephen at the easel
-                </figcaption>
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
