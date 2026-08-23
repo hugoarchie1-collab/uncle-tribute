@@ -410,18 +410,22 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="block select-none w-full h-auto"
+            // WHOLE Earth, SMALLER, CENTRED (Hugo 2026-08-23, design-consent): height
+            // capped (max-h in svh) so the complete curve stays small enough that
+            // "THE SEM EXPERIENCE" is big + fully visible below it; w-auto keeps the
+            // natural aspect (never cropped in any direction); mx-auto centres it with
+            // the dark space background around it; max-w-full stops any side overflow
+            // on narrow screens. NO object-cover, NO width overscan — nothing sliced.
+            className="block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(150px,32svh,330px)]"
             style={{
-              maxWidth: "none",
               // SPIN AROUND — limb at the top, curving down into the page.
               transform: "scaleY(-1)",
-              // GENTLE feather: solid across the whole limb, only the far outer/lower
-              // edge softly dissolves into the backdrop (kept wide + high so nothing
-              // reads as clipped).
+              // GENTLE feather on the far outer/lower edge only — a soft dissolve into
+              // the backdrop, never a hard cut.
               WebkitMaskImage:
-                "radial-gradient(120% 150% at 50% 100%, #000 74%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+                "radial-gradient(130% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.45) 93%, transparent 100%)",
               maskImage:
-                "radial-gradient(120% 150% at 50% 100%, #000 74%, rgba(0,0,0,0.45) 92%, transparent 100%)",
+                "radial-gradient(130% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.45) 93%, transparent 100%)",
             }}
           />
         </div>
@@ -595,7 +599,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
+              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
                 {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
                     (Hugo 2026-07-08: "no image should take up the full screen") —
                     at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
@@ -614,7 +618,6 @@ export const Welcome = () => {
                   alt="Stephen Meakin painting Wild Rose at his studio desk, beside a large circular wall mandala"
                   eager
                   aspect="aspect-[3/2]"
-                  className="max-h-[72svh]"
                   edges="none"
                   parallax={0}
                   zoom={1}
@@ -831,27 +834,21 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14 items-stretch"
+              className="flex flex-col items-center text-center gap-8 md:gap-10"
             >
-              {/* Portrait STRETCHES to the copy's exact height (items-stretch +
-                  md:h-full) so there is NEVER a gap above or below it — the copy
-                  column now sets the row height and the photo cover-fills it,
-                  face-safe via objectPosition. On mobile it stacks with a natural
-                  4:5 box. (Fixes Hugo 2026-08-03: "huge empty space above and
-                  below" — the old items-center left a tall 2:3 photo centred
-                  against one short paragraph.) */}
-              <figure className="relative m-0 w-full aspect-[4/5] md:aspect-auto md:h-full overflow-hidden rounded-[3px] ring-1 ring-line">
-                <ImageReveal
+              {/* Portrait — WHOLE, CENTRED, never cropped (Hugo 2026-08-23,
+                  design-consent: "images centred, not to the side" + "nothing cut
+                  off"). Natural aspect (w-auto/h-auto = no crop), height-capped so it
+                  is sized not screen-filling, mx-auto centred with the backdrop around
+                  it. Stacked above the copy, which is also centred. */}
+              <figure className="relative m-0 mx-auto max-w-full overflow-hidden rounded-[4px] ring-1 ring-line">
+                <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  fill
-                  edges="none"
-                  parallax={0}
-                  objectPosition="center 32%"
-                  shadow=""
+                  className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(340px,56svh,640px)]"
                 />
               </figure>
-              <div className="min-w-0 flex flex-col justify-center gap-4 md:gap-5">
+              <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col items-center gap-4 md:gap-5">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -859,8 +856,6 @@ export const Welcome = () => {
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                {/* Two bio paragraphs (not one) so the copy fills the column to the
-                    portrait's height — real content in place of dead space. */}
                 <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[0]}</p>
                 <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[1]}</p>
               </div>
@@ -875,12 +870,11 @@ export const Welcome = () => {
           {/* CONTAINED to the SAME measure as every other section (Hugo
               2026-08-03: "no image should take the whole screen / edge to edge").
               A calm cinematic band at aspect 2:1, never a full-bleed wall. */}
-          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
+          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px] px-4">
             <ImageReveal
               src="/img/welcome/03-painting-in-studio.jpg"
               alt="Stephen painting in the studio"
-              aspect="aspect-[3/2] md:aspect-[2/1]"
-              className="max-h-[58svh]"
+              aspect="aspect-[3/2]"
               edges="none"
               parallax={0.06}
               objectPosition="center 62%"
@@ -1014,12 +1008,11 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Stephen at the easel — contained + centred like the hero photo. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
                 <ImageReveal
                   src="/img/welcome/stephen-painting-denim-v1.jpg"
                   alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                   aspect="aspect-[3/2]"
-                  className="max-h-[72svh]"
                   edges="none"
                   parallax={0.06}
                   objectPosition="center"
@@ -1048,30 +1041,30 @@ export const Welcome = () => {
               divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-6 md:pt-8">
-              <Reveal as="div" className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-stretch">
-                {/* Craft FILM — the hand-finishing in motion (dots of paint +
-                    sequins placed by hand). Muted autoplay loop; the still is the
-                    poster (and the reduced-motion fallback). Capped height so it's
-                    never a full-screen wall. */}
-                <figure className="relative m-0 w-full max-h-[58svh] overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* STACKED + CENTRED (Hugo 2026-08-23 design-consent: film centred, not
+                  to the side). Film whole on top, copy centred below. */}
+              <Reveal as="div" className="flex flex-col items-center text-center gap-8 md:gap-10">
+                {/* Craft FILM — the hand-finishing in motion. WHOLE 4:5 portrait sized
+                    by WIDTH (never a full-screen wall, never cropped), centred. */}
+                <figure className="relative m-0 mx-auto w-full max-w-[260px] sm:max-w-[300px] overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
                     label="Hands finishing a mandala print by hand — dots of paint and Swarovski crystals placed one by one"
-                    aspect="aspect-[4/5]"
+                    aspect="aspect-[9/16]"
                     edges="none"
                   />
                 </figure>
-                <div className="min-w-0">
-                  <p className={cn(EYEBROW, "m-0 mb-3")}>The hand-finished edition</p>
+                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col items-center">
+                  <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
                     style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
-                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 mx-auto max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
+                  <ul className="list-none p-0 m-0 mb-6 mx-auto inline-grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left">
                     {[
                       "Dots of paint, applied by hand",
                       "Swarovski crystals placed one by one, symmetrically",
@@ -1084,7 +1077,7 @@ export const Welcome = () => {
                       </li>
                     ))}
                   </ul>
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
                     <MagneticLink
                       to="/collections"
                       className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] transition-colors duration-300 hover:bg-accent hover:text-ink"
@@ -1145,14 +1138,18 @@ export const Welcome = () => {
                   material ledger in two columns below. No side space, no floating
                   gaps, no one cropped out. */}
               <Reveal as="div" className="flex flex-col gap-8 lg:gap-10">
-                <figure className="relative m-0 w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line aspect-[16/10] sm:aspect-[3/2] max-h-[56svh]">
+                {/* WHOLE, CENTRED, never cropped (Hugo 2026-08-23: this image had the
+                    two of them beheaded by an aspect-box + max-h object-cover crop).
+                    Natural aspect (w-auto/h-auto), height-capped so it's sized not
+                    screen-filling, mx-auto centred. Nobody is cut off. */}
+                <figure className="relative m-0 mx-auto max-w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 1024px) 1140px, 100vw"
-                    className="absolute inset-0 block w-full h-full object-cover object-center"
+                    className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(300px,56svh,640px)]"
                   />
                 </figure>
                 {/* Process prose — CENTRED as one reading column (Hugo 2026-07-28:
@@ -1202,13 +1199,12 @@ export const Welcome = () => {
             {/* Capped so this cinematic plate stays LARGE but never fills the
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
               <LoopFilm
                 src="/video/studio-mandala-v1.mp4"
                 poster="/video/poster-studio-mandala-v1.jpg"
                 label="Stephen Meakin painting a mandala, filmed from above"
                 aspect="aspect-[4/3] sm:aspect-[16/9]"
-                className="max-h-[58svh]"
                 edges="none"
               />
             </Reveal>
@@ -1293,13 +1289,12 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[1040px] 2xl:max-w-[1120px] 3xl:max-w-[1220px] 4xl:max-w-[1380px]">
+            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
               <LoopFilm
                 src="/video/arista-timelapse-v1.mp4"
                 poster="/video/poster-arista-timelapse-v1.jpg"
                 label="The Arista SunStar being painted, in timelapse"
                 aspect="aspect-[16/9]"
-                className="max-h-[58svh]"
                 edges="none"
               />
             </Reveal>
@@ -1401,17 +1396,17 @@ export const Welcome = () => {
               // foot read narrower than the pinned top limb. Now it overscans past
               // both edges and the mask is wide enough to keep the sides + corners
               // solid — only the very top-centre feathers into the backdrop.
-              className="relative z-[1] block h-auto select-none w-[156%] ml-[-28%] sm:w-[132%] sm:ml-[-16%] md:w-[112%] md:ml-[-6%]"
+              // WHOLE, SMALLER, CENTRED — the exact mirror of the top Earth (Hugo
+              // 2026-08-23: the foot Earth was "way too big"). Height-capped, natural
+              // aspect (never cropped), centred with mx-auto; no overscan, no crop.
+              className="relative z-[1] block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(150px,32svh,330px)]"
               style={{
-                maxWidth: "none",
-                height: "auto",
-                // Wide radial so the sides/corners stay opaque out to the edges;
-                // only the top-centre dissolves UP into the peacock (mirror of the
-                // top Earth, which feathers at its inner edge).
+                // Feather the top-centre only — dissolves UP into the backdrop as the
+                // curve rises; the lit limb stays whole + solid.
                 WebkitMaskImage:
-                  "radial-gradient(135% 150% at 50% 100%, #000 66%, rgba(0,0,0,0.32) 88%, transparent 100%)",
+                  "radial-gradient(135% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.4) 93%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(135% 150% at 50% 100%, #000 66%, rgba(0,0,0,0.32) 88%, transparent 100%)",
+                  "radial-gradient(135% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.4) 93%, transparent 100%)",
               }}
             />
           </section>
