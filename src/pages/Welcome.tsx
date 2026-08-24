@@ -416,16 +416,19 @@ export const Welcome = () => {
             // natural aspect (never cropped in any direction); mx-auto centres it with
             // the dark space background around it; max-w-full stops any side overflow
             // on narrow screens. NO object-cover, NO width overscan — nothing sliced.
-            className="block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(150px,32svh,330px)]"
+            className="block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(160px,32svh,340px)]"
             style={{
-              // SPIN AROUND — limb at the top, curving down into the page.
-              transform: "scaleY(-1)",
-              // GENTLE feather on the far outer/lower edge only — a soft dissolve into
-              // the backdrop, never a hard cut.
+              // NATURAL orientation (NO flip): the bright limb arcs across the TOP and
+              // the surface fades DOWN into the page — so there is NO dark-sky band
+              // with a hard top edge (Hugo 2026-08-23: "why have you cropped the earth"
+              // — the old scaleY(-1) put a hard-edged dark band under the nav). Whole,
+              // uncropped (w-auto/h-auto = exact natural aspect, verified aspect-match);
+              // soft feather on the top edge + the lower surface dissolves all edges
+              // into the backdrop — no hard cut in any direction.
               WebkitMaskImage:
-                "radial-gradient(130% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.45) 93%, transparent 100%)",
+                "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
               maskImage:
-                "radial-gradient(130% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.45) 93%, transparent 100%)",
+                "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
             }}
           />
         </div>
@@ -1399,14 +1402,16 @@ export const Welcome = () => {
               // WHOLE, SMALLER, CENTRED — the exact mirror of the top Earth (Hugo
               // 2026-08-23: the foot Earth was "way too big"). Height-capped, natural
               // aspect (never cropped), centred with mx-auto; no overscan, no crop.
-              className="relative z-[1] block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(150px,32svh,330px)]"
+              className="relative z-[1] block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(160px,32svh,340px)]"
               style={{
-                // Feather the top-centre only — dissolves UP into the backdrop as the
-                // curve rises; the lit limb stays whole + solid.
+                // MIRROR of the top Earth: scaleY(-1) so the limb curves UP from the
+                // foot and the surface fades UP into the page. Whole/uncropped natural
+                // aspect; soft feather both edges so nothing reads as a hard cut.
+                transform: "scaleY(-1)",
                 WebkitMaskImage:
-                  "radial-gradient(135% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.4) 93%, transparent 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
                 maskImage:
-                  "radial-gradient(135% 160% at 50% 100%, #000 78%, rgba(0,0,0,0.4) 93%, transparent 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
               }}
             />
           </section>
