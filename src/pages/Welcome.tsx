@@ -402,7 +402,7 @@ export const Welcome = () => {
             only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[6.5rem]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -410,25 +410,24 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            // WHOLE Earth, SMALLER, CENTRED (Hugo 2026-08-23, design-consent): height
-            // capped (max-h in svh) so the complete curve stays small enough that
-            // "THE SEM EXPERIENCE" is big + fully visible below it; w-auto keeps the
-            // natural aspect (never cropped in any direction); mx-auto centres it with
-            // the dark space background around it; max-w-full stops any side overflow
-            // on narrow screens. NO object-cover, NO width overscan — nothing sliced.
-            className="block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(160px,32svh,340px)]"
+            // FULL-BLEED, edge-to-edge on EVERY device (Hugo 2026-08-23: "i want
+            // desktop tv all devices to have it hitting the edge of screen 100%").
+            // w-full = the Earth spans the whole viewport width, both edges touched,
+            // no centring / no side blank space. h-auto = whole natural aspect (never
+            // cropped/sliced). The wrapper's -mt bleeds the top up BEHIND the fixed
+            // nav so there is no hard top edge.
+            className="block select-none w-full h-auto"
             style={{
-              // NATURAL orientation (NO flip): the bright limb arcs across the TOP and
-              // the surface fades DOWN into the page — so there is NO dark-sky band
-              // with a hard top edge (Hugo 2026-08-23: "why have you cropped the earth"
-              // — the old scaleY(-1) put a hard-edged dark band under the nav). Whole,
-              // uncropped (w-auto/h-auto = exact natural aspect, verified aspect-match);
-              // soft feather on the top edge + the lower surface dissolves all edges
-              // into the backdrop — no hard cut in any direction.
+              maxWidth: "none",
+              // scaleY(-1): the bright limb RIM sits at the BOTTOM of the curve with
+              // the surface above (Hugo: the natural-up version was "flipped the wrong
+              // way"). The mask feathers only the lower edge into the page; the top
+              // bleeds off behind the nav — no hard cut anywhere.
+              transform: "scaleY(-1)",
               WebkitMaskImage:
-                "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
+                "linear-gradient(to bottom, #000 62%, transparent 100%)",
               maskImage:
-                "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
+                "linear-gradient(to bottom, #000 62%, transparent 100%)",
             }}
           />
         </div>
@@ -1402,16 +1401,17 @@ export const Welcome = () => {
               // WHOLE, SMALLER, CENTRED — the exact mirror of the top Earth (Hugo
               // 2026-08-23: the foot Earth was "way too big"). Height-capped, natural
               // aspect (never cropped), centred with mx-auto; no overscan, no crop.
-              className="relative z-[1] block mx-auto select-none w-auto h-auto max-w-full max-h-[clamp(160px,32svh,340px)]"
+              className="relative z-[1] block select-none w-full h-auto"
               style={{
-                // MIRROR of the top Earth: scaleY(-1) so the limb curves UP from the
-                // foot and the surface fades UP into the page. Whole/uncropped natural
-                // aspect; soft feather both edges so nothing reads as a hard cut.
-                transform: "scaleY(-1)",
+                maxWidth: "none",
+                // FULL-BLEED MIRROR of the top Earth (natural orientation, NO flip):
+                // the rim sits at the TOP of the curve and the surface bleeds DOWN into
+                // the footer. Edge-to-edge width; whole natural aspect (never cropped);
+                // the mask feathers only the top edge into the page — no hard cut.
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 38%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 10%, #000 52%, transparent 100%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 38%)",
               }}
             />
           </section>
