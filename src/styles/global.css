@@ -921,14 +921,15 @@ video[autoplay]::-webkit-media-controls {
    that keeps the logo + links legible and then melts away so the Earth reads
    continuously — no hard cut. */
 .nav-bg-top {
-  /* UNIFORM ~25%-transparent red (2026-07-22, Hugo: "have the old full 25%
-     transparent red background like before"). One flat translucent wax-seal-red
-     wash across the whole bar (no gradient fade) — the Earth still reads through
-     the translucency, but the red is consistent top-to-bottom. */
+  /* SOLID wax-seal red — NOT transparent (Hugo 2026-08-24: "I don't want the top
+     banner transparent"). Was ~72% translucent so the Earth read through it, which
+     now looks see-through against the bright limb. Matches `.nav-bg-scrolled` so the
+     bar is a clean opaque panel top-to-bottom, at rest and scrolled. */
   background-image: linear-gradient(
     180deg,
-    rgba(72, 14, 14, 0.72) 0%,
-    rgba(72, 14, 14, 0.72) 100%
+    rgba(64, 13, 13, 0.97) 0%,
+    rgba(46, 9, 10, 0.97) 58%,
+    rgba(34, 6, 7, 0.98) 100%
   );
 }
 /* Non-overlay content pages (no hero image behind the bar) keep the solid
