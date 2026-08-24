@@ -569,7 +569,7 @@ export const Welcome = () => {
                   we are" text + His story (order-2), THEN the video below — so the
                   photo and video are separated by the text, never touching. */}
               <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
-                <h1 className="font-display tracking-[-0.03em] text-ink m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-balance hero-text-shadow">
+                <h1 className="font-display tracking-[-0.03em] text-ink m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-balance hero-text-shadow">
                   {/* THE key visualiser (Hugo 2026-07-28: "boldness to match if
                       not bigger, more impactful"). True Fraunces 700 at opsz 48 —
                       the SAME bold display cut as the masthead — set large. */}
@@ -686,7 +686,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-pretty"
+                  className="font-sans font-normal text-[clamp(17px,0.35vw+13px,23px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-pretty text-justify [text-align-last:center] hyphens-auto"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -759,7 +759,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -775,7 +775,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty"
+                    className="font-sans font-normal text-[clamp(17px,0.35vw+13px,23px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
@@ -795,7 +795,7 @@ export const Welcome = () => {
                 stay verbatim. */}
             <Reveal delay={0.1} className="mt-5 md:mt-7 text-center">
               <div aria-hidden="true" className="mx-auto mb-3 md:mb-4 h-px w-16 bg-ink/20" />
-              <p className="m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center hero-text-shadow">
+              <p className="m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
                   style={{
@@ -851,7 +851,7 @@ export const Welcome = () => {
                   className="block w-full h-auto"
                 />
               </figure>
-              <div className="w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col items-center text-center gap-4 md:gap-5">
+              <div className="w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] flex flex-col items-center text-center gap-4 md:gap-5">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -859,8 +859,8 @@ export const Welcome = () => {
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[0]}</p>
-                <p className={cn(SUBTITLE, "reading-shadow m-0")}>{WELCOME.bio[1]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>{WELCOME.bio[0]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>{WELCOME.bio[1]}</p>
               </div>
             </Reveal>
           </section>
@@ -897,7 +897,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 From the hand
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto hero-text-shadow")}>
                 Six paintings from a lifetime at the compass.
               </h2>
             </Reveal>
@@ -1000,7 +1000,7 @@ export const Welcome = () => {
                   centred eyebrow → centred TITLE → contained centred photo →
                   centred reading measure. Verbatim from WELCOME.archiveStatement. */}
               <Reveal as="div" className="text-center mb-5 md:mb-7">
-                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
+                <h2 className={cn(TITLE, "my-0 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto hero-text-shadow")}>
                   {(() => {
                     const { headline, emphasis } = WELCOME.archiveStatement;
                     const [before, after] = headline.split(emphasis);
@@ -1039,9 +1039,9 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
-              <Reveal as="div" delay={0.08} className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
+              <Reveal as="div" delay={0.08} className="mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
                 {WELCOME.archiveStatement.body.map((para, i) => (
-                  <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
+                  <p key={i} className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>
                     {para}
                   </p>
                 ))}
@@ -1072,7 +1072,7 @@ export const Welcome = () => {
                     edges="none"
                   />
                 </figure>
-                <div className="w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col items-center text-center">
+                <div className="w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] flex flex-col items-center text-center">
                   <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
@@ -1080,7 +1080,7 @@ export const Welcome = () => {
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5")}>{EMBELLISHMENT_NOTE}</p>
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 text-justify [text-align-last:center] hyphens-auto")}>{EMBELLISHMENT_NOTE}</p>
                   <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left max-w-[720px]">
                     {[
                       "Dots of paint, applied by hand",
@@ -1127,10 +1127,10 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
               <Reveal as="div" className="text-center mb-8 md:mb-10">
-                <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
+                <h2 className={cn(TITLE, "my-0 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto")}>
+                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto text-justify [text-align-last:center] hyphens-auto")}>
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1174,18 +1174,18 @@ export const Welcome = () => {
                     spec-right split left dead space beside the shorter ledger; now
                     the paragraphs sit centred, with the spec sheet balanced full-
                     width beneath. reading-shadow lifts them off the mandala (box-free). */}
-                <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col gap-y-4 md:gap-y-5 text-center">
-                  <p className={cn(SUBTITLE, "reading-shadow m-0")}>
+                <div className="mx-auto w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] flex flex-col gap-y-4 md:gap-y-5 text-center">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0")}>
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
                 </div>
                 {/* Material ledger — a BALANCED two-column spec sheet spanning the
                     full width below the prose (6 facts = 2×3: no orphan, no dead
                     space beside the prose). */}
-                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
                   {[
                     ["Time", "Hundreds of hours per canvas"],
                     ["Edition", "Individually made to order"],
@@ -1241,7 +1241,7 @@ export const Welcome = () => {
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Sacred Geometry
               </p>
-              <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
+              <h2 className={cn(TITLE, "my-0 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto hero-text-shadow")}>
                 Four traditions, one language.
               </h2>
             </Reveal>
@@ -1278,7 +1278,7 @@ export const Welcome = () => {
             </Reveal>
 
             <Reveal>
-              <p className={cn(SUBTITLE, "reading-shadow max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto my-0 text-center")}>
+              <p className={cn(SUBTITLE, "reading-shadow max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto my-0 text-justify [text-align-last:center] hyphens-auto")}>
                 {WELCOME.bio[1]}
               </p>
             </Reveal>
@@ -1294,7 +1294,7 @@ export const Welcome = () => {
               (641×353, 16:9), so the width is capped (~920px) rather than blown
               full-bleed where it would go soft. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center">
               <p className={cn(EYEBROW, "m-0 mb-3")}>
                 Arista SunStar · 2016
               </p>
@@ -1328,8 +1328,8 @@ export const Welcome = () => {
             </Reveal>
 
             {/* The commission prose, between the film and the photo. */}
-            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center mt-6 md:mt-8">
-              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px]")}>
+            <Reveal as="div" className="mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center mt-6 md:mt-8">
+              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-justify [text-align-last:center] hyphens-auto")}>
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
