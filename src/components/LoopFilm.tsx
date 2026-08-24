@@ -20,6 +20,7 @@ export const LoopFilm = ({
   edges = "none",
   frame = false,
   className,
+  objectPosition = "center",
 }: {
   src: string;
   poster: string;
@@ -28,6 +29,10 @@ export const LoopFilm = ({
   edges?: "y" | "all" | "none";
   frame?: boolean;
   className?: string;
+  /** CSS object-position for the poster + video (cover-crop framing). Default
+   *  "center". Use e.g. "center 25%" to keep a subject near the top of a wide,
+   *  heavily-cropped band (a from-above shot whose subject's head sits high). */
+  objectPosition?: string;
 }) => {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -111,6 +116,7 @@ export const LoopFilm = ({
         alt=""
         loading="lazy"
         decoding="async"
+        style={{ objectPosition }}
         className="absolute inset-0 h-full w-full object-cover"
       />
       {!reduceMotion && near && (
@@ -128,6 +134,7 @@ export const LoopFilm = ({
               el.muted = true;
             }
           }}
+          style={{ objectPosition }}
           className="absolute inset-0 h-full w-full object-cover"
           poster={asset(poster)}
           autoPlay

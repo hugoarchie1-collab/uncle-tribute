@@ -402,7 +402,7 @@ export const Welcome = () => {
             only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[6.5rem]"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[6.5rem] h-[clamp(200px,20.8vw,460px)]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -410,15 +410,17 @@ export const Welcome = () => {
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            // FULL-BLEED, edge-to-edge on EVERY device (Hugo 2026-08-23: "i want
-            // desktop tv all devices to have it hitting the edge of screen 100%").
-            // w-full = the Earth spans the whole viewport width, both edges touched,
-            // no centring / no side blank space. h-auto = whole natural aspect (never
-            // cropped/sliced). The wrapper's -mt bleeds the top up BEHIND the fixed
-            // nav so there is no hard top edge.
-            className="block select-none w-full h-auto"
+            // SMALLER Earth (Hugo 2026-08-24: "both earths are way too big"), but
+            // STILL edge-to-edge (his earlier "hitting the edge 100%"). A fixed-aspect
+            // full-bleed image can't be both whole AND short, so this is a capped-height
+            // BAND: w-full keeps both edges touched; object-cover trims only the darker
+            // planet body, and object-position keeps the luminous LIMB (the hero of the
+            // image) — never a hard cut through the bright rim. The wrapper's -mt bleeds
+            // the top up behind the fixed nav so there's no hard top edge.
+            className="block select-none w-full h-full object-cover"
             style={{
               maxWidth: "none",
+              objectPosition: "center top",
               // scaleY(-1): the bright limb RIM sits at the BOTTOM of the curve with
               // the surface above (Hugo: the natural-up version was "flipped the wrong
               // way"). The mask feathers only the lower edge into the page; the top
@@ -684,7 +686,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] text-pretty"
+                  className="font-sans font-normal text-[clamp(20px,0.98vw+12px,37px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-pretty"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -757,7 +759,7 @@ export const Welcome = () => {
                 /85 alpha — same value, token discipline). Legibility now comes
                 from a subtle per-paragraph text-shadow (the reading-scrim card
                 was removed — Hugo read it as black boxes), never a dark box. */}
-            <Reveal as="div" className="mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] text-center">
+            <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center">
               {WELCOME.reminderLong.slice(1, 4).map((para) => {
                 // reminderLong[3]'s first two sentences are the pull-quote above,
                 // so render only the remainder here — the paragraph is shown once
@@ -834,29 +836,22 @@ export const Welcome = () => {
               descriptive title is a SMALL heading along the top of the copy — not
               the screen-filling display title it briefly became. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <Reveal
-              as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(360px,32vw,480px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
-            >
-              {/* Portrait — LEFT column, sized to the EXACT height of the bio beside it
-                  (items-stretch + the image absolutely covering the figure) so the two
-                  columns line up PERFECTLY top AND bottom — no text bleeding below the
-                  photo, no photo hanging past the text (Hugo 2026-08-24: "text perfectly
-                  in line with image above and below"). object-[center_top] crops only
-                  the LOWER denim/torso to make the heights meet — Stephen's head, face
-                  and shoulders are ALWAYS kept (never a top crop). */}
-              <figure className="relative m-0 min-h-0 h-full overflow-hidden rounded-[4px] ring-1 ring-line">
+            {/* STACKED + CENTRED, like every other section (Hugo 2026-08-24: "text to
+                near edges — some stops middle, some to left, it's all messy"). The
+                portrait is a centred feature; the eyebrow + heading + bio all sit
+                CENTRED beneath it at the SAME wide near-edge measure as the rest of the
+                page, so nothing is left-aligned and nothing stops in a narrow column. */}
+            <Reveal as="div" className="flex flex-col items-center text-center gap-7 md:gap-9">
+              {/* Portrait — WHOLE (w-full h-auto = zero crop), a centred feature. */}
+              <figure className="relative m-0 w-full max-w-[420px] 2xl:max-w-[480px] overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  sizes="(min-width:768px) 32vw, 100vw"
-                  className="absolute inset-0 w-full h-full object-cover object-[center_top]"
+                  sizes="(min-width:768px) 480px, 88vw"
+                  className="block w-full h-auto"
                 />
               </figure>
-              {/* Bio — fills the column to the right (Hugo: "drag it out longer on
-                  right") so there is no void beside the text; the portrait's height is
-                  driven by this block. */}
-              <div className="w-full max-w-[760px] 2xl:max-w-[900px] 3xl:max-w-[1100px] flex flex-col items-start justify-center text-left gap-4 md:gap-5">
+              <div className="w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col items-center text-center gap-4 md:gap-5">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -1044,7 +1039,7 @@ export const Welcome = () => {
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
-              <Reveal as="div" delay={0.08} className="mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
+              <Reveal as="div" delay={0.08} className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mt-6 md:mt-8 space-y-4 md:space-y-5 text-center">
                 {WELCOME.archiveStatement.body.map((para, i) => (
                   <p key={i} className={cn(SUBTITLE, "reading-shadow m-0")}>
                     {para}
@@ -1063,27 +1058,21 @@ export const Welcome = () => {
               divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="border-t border-line pt-6 md:pt-8">
-              {/* STACKED + CENTRED (Hugo 2026-08-23 design-consent: film centred, not
-                  to the side). Film whole on top, copy centred below. */}
-              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(300px,26vw,420px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16">
-                {/* Craft FILM — LEFT column, sized to the EXACT height of the copy
-                    beside it (items-stretch + the film absolutely covering the figure)
-                    so it sits PERFECTLY LEVEL with the text top-and-bottom instead of a
-                    tall 9:16 reel towering over it (Hugo 2026-08-24: "how off this looks
-                    compared to the rest of the site"). object-cover trims the washed-out
-                    overhead desk off the top/bottom so the tone matches the deep page.
-                    Below md it stacks as its natural 9:16, width-capped + centred. */}
-                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[320px] md:max-w-none aspect-[9/16] md:aspect-auto md:h-full min-h-0 overflow-hidden rounded-[6px] ring-1 ring-line">
+              {/* STACKED + CENTRED, like every other section (Hugo 2026-08-24: "text to
+                  near edges"). Reel is a centred feature; the copy sits CENTRED beneath
+                  it at the SAME wide near-edge measure as the rest of the page. */}
+              <Reveal as="div" className="flex flex-col items-center text-center gap-7 md:gap-9">
+                {/* Craft FILM — WHOLE 9:16 reel, a centred feature. */}
+                <figure className="relative m-0 mx-auto w-full max-w-[300px] aspect-[9/16] overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
                     label="Hands finishing a mandala print by hand — dots of paint and Swarovski crystals placed one by one"
-                    aspect="h-full"
+                    aspect="aspect-[9/16]"
                     edges="none"
-                    className="absolute inset-0"
                   />
                 </figure>
-                <div className="w-full max-w-[760px] 2xl:max-w-[900px] 3xl:max-w-[1100px] flex flex-col items-start justify-center text-left">
+                <div className="w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col items-center text-center">
                   <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
@@ -1091,8 +1080,8 @@ export const Welcome = () => {
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
-                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5")}>{EMBELLISHMENT_NOTE}</p>
+                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left max-w-[720px]">
                     {[
                       "Dots of paint, applied by hand",
                       "Swarovski crystals placed one by one, symmetrically",
@@ -1105,7 +1094,7 @@ export const Welcome = () => {
                       </li>
                     ))}
                   </ul>
-                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-3">
+                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
                     <MagneticLink
                       to="/collections"
                       className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] transition-colors duration-300 hover:bg-accent hover:text-ink"
@@ -1141,7 +1130,7 @@ export const Welcome = () => {
                 <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] mx-auto")}>
+                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] mx-auto")}>
                   Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
                 </p>
               </Reveal>
@@ -1185,7 +1174,7 @@ export const Welcome = () => {
                     spec-right split left dead space beside the shorter ledger; now
                     the paragraphs sit centred, with the spec sheet balanced full-
                     width beneath. reading-shadow lifts them off the mandala (box-free). */}
-                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col gap-y-4 md:gap-y-5 text-center">
+                <div className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] flex flex-col gap-y-4 md:gap-y-5 text-center">
                   <p className={cn(SUBTITLE, "reading-shadow m-0")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
@@ -1196,7 +1185,7 @@ export const Welcome = () => {
                 {/* Material ledger — a BALANCED two-column spec sheet spanning the
                     full width below the prose (6 facts = 2×3: no orphan, no dead
                     space beside the prose). */}
-                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
                   {[
                     ["Time", "Hundreds of hours per canvas"],
                     ["Edition", "Individually made to order"],
@@ -1235,6 +1224,11 @@ export const Welcome = () => {
                   label="Stephen Meakin painting a mandala, filmed from above"
                   aspect="h-full"
                   edges="none"
+                  // Seen from above, Stephen is crouched at the TOP of the frame —
+                  // a centre cover-crop cut his head off (Hugo 2026-08-24: "the video
+                  // still has head cut off"). Anchor the crop to the TOP so his head
+                  // is always kept; the wide band trims the lower mandala rim instead.
+                  objectPosition="center top"
                   className="absolute inset-0"
                 />
               </div>
@@ -1335,7 +1329,7 @@ export const Welcome = () => {
 
             {/* The commission prose, between the film and the photo. */}
             <Reveal as="div" className="mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px] text-center mt-6 md:mt-8">
-              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px]")}>
+              <p className={cn(SUBTITLE, "reading-shadow m-0 mx-auto max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[1620px] 4xl:max-w-[1840px]")}>
                 {WELCOME.bio[2]}
               </p>
             </Reveal>
@@ -1433,9 +1427,14 @@ export const Welcome = () => {
               // WHOLE, SMALLER, CENTRED — the exact mirror of the top Earth (Hugo
               // 2026-08-23: the foot Earth was "way too big"). Height-capped, natural
               // aspect (never cropped), centred with mx-auto; no overscan, no crop.
-              className="relative z-[1] block select-none w-full h-auto"
+              // SMALLER, edge-to-edge BAND — the exact mirror of the masthead Earth
+              // (Hugo 2026-08-24: "both earths are way too big"). w-full keeps both
+              // edges touched; object-cover trims only the darker planet, object-
+              // position keeps the luminous limb curving up from the footer.
+              className="relative z-[1] block select-none w-full h-[clamp(200px,20.8vw,460px)] object-cover"
               style={{
                 maxWidth: "none",
+                objectPosition: "center top",
                 // CONSISTENT WITH THE TOP EARTH (Hugo 2026-08-24: "decide one and apply
                 // to both"). Chosen treatment: the bright limb reads CRISP/solid where
                 // it faces the page, softening only where it meets the bar. So the top
