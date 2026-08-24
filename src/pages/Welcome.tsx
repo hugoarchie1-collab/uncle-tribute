@@ -1060,7 +1060,12 @@ export const Welcome = () => {
               frosted-glass panel was removed — restraint pass); a plain hairline
               divider gives separation. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
-            <div className="border-t border-line pt-6 md:pt-8">
+            {/* FROSTED-GLASS PANEL background (Hugo 2026-08-24: "you removed its
+                background") — restored from before the restraint pass: a rounded,
+                translucent-dark card + hairline ring + soft lift so the hand-finished
+                upsell sits on its own premium surface, like the "ritual" island below.
+                0.28 alpha is a subtle frost, NOT a hard black box. */}
+            <div className="relative overflow-hidden rounded-[24px] md:rounded-[32px] bg-[rgba(12,10,9,0.28)] ring-1 ring-line shadow-[0_40px_110px_-50px_rgba(0,0,0,0.6)] p-6 sm:p-7 md:p-8 lg:p-10">
               {/* TWO-COLUMN — reel BESIDE the copy, paragraphed against the margin next
                   to it (Hugo 2026-08-24, emphatic: no isolated centred media leaving side
                   gaps — "revert to how it was before, beside the margin"). The reel cover-
