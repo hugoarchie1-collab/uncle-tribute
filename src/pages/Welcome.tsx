@@ -836,22 +836,27 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(340px,32vw,460px)_1fr] items-center gap-8 md:gap-12 lg:gap-16"
+              className="grid grid-cols-1 md:grid-cols-[clamp(360px,32vw,480px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
             >
-              {/* Portrait — LEFT column, WHOLE (w-full h-auto = zero crop), fills its
-                  column width so there is NO side void; the 32vw column is tuned so the
-                  2:3 portrait sits LEVEL with the bio (items-center). A balanced
-                  editorial block, NOT a floating centred cut-out (Hugo 2026-08-24:
-                  "portrait in the middle leaves huge gaps either side"). */}
-              <figure className="relative m-0 overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* Portrait — LEFT column, sized to the EXACT height of the bio beside it
+                  (items-stretch + the image absolutely covering the figure) so the two
+                  columns line up PERFECTLY top AND bottom — no text bleeding below the
+                  photo, no photo hanging past the text (Hugo 2026-08-24: "text perfectly
+                  in line with image above and below"). object-[center_top] crops only
+                  the LOWER denim/torso to make the heights meet — Stephen's head, face
+                  and shoulders are ALWAYS kept (never a top crop). */}
+              <figure className="relative m-0 min-h-0 h-full overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   sizes="(min-width:768px) 32vw, 100vw"
-                  className="block w-full h-auto"
+                  className="absolute inset-0 w-full h-full object-cover object-[center_top]"
                 />
               </figure>
-              <div className="w-full max-w-[640px] flex flex-col items-start text-left gap-4 md:gap-5">
+              {/* Bio — fills the column to the right (Hugo: "drag it out longer on
+                  right") so there is no void beside the text; the portrait's height is
+                  driven by this block. */}
+              <div className="w-full max-w-[760px] 2xl:max-w-[900px] 3xl:max-w-[1100px] flex flex-col items-start justify-center text-left gap-4 md:gap-5">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -876,7 +881,7 @@ export const Welcome = () => {
               svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
               (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
           <Reveal as="figure" className="m-0 w-full">
-            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
+            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
@@ -1019,14 +1024,18 @@ export const Welcome = () => {
                   both screen edges (w-screen + centred-container breakout); svh-capped
                   so it's a band, not a full-screen wall. */}
               <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
+                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                     fill
                     edges="none"
                     parallax={0}
-                    objectPosition="center"
+                    // Bias the cover-crop UP so Stephen's HEAD is kept — a plain
+                    // "center" crop clipped the top of his head off (Hugo 2026-08-24:
+                    // "you've cut off his head"). This shows from higher in the frame,
+                    // trimming the empty foreground instead.
+                    objectPosition="center 30%"
                     shadow=""
                     sizes="100vw"
                     className="h-full"
@@ -1056,21 +1065,25 @@ export const Welcome = () => {
             <div className="border-t border-line pt-6 md:pt-8">
               {/* STACKED + CENTRED (Hugo 2026-08-23 design-consent: film centred, not
                   to the side). Film whole on top, copy centred below. */}
-              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(300px,26vw,420px)_1fr] items-center gap-8 md:gap-12 lg:gap-16">
-                {/* Craft FILM — LEFT column, WHOLE 9:16, fills the (narrow, 26vw)
-                    column so a tall reel sits LEVEL with the copy rather than towering
-                    over it with side voids (Hugo 2026-08-24). Editorial block, not a
-                    floating centred reel. */}
-                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[360px] md:max-w-none overflow-hidden rounded-[6px] ring-1 ring-line">
+              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(300px,26vw,420px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16">
+                {/* Craft FILM — LEFT column, sized to the EXACT height of the copy
+                    beside it (items-stretch + the film absolutely covering the figure)
+                    so it sits PERFECTLY LEVEL with the text top-and-bottom instead of a
+                    tall 9:16 reel towering over it (Hugo 2026-08-24: "how off this looks
+                    compared to the rest of the site"). object-cover trims the washed-out
+                    overhead desk off the top/bottom so the tone matches the deep page.
+                    Below md it stacks as its natural 9:16, width-capped + centred. */}
+                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[320px] md:max-w-none aspect-[9/16] md:aspect-auto md:h-full min-h-0 overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
                     label="Hands finishing a mandala print by hand — dots of paint and Swarovski crystals placed one by one"
-                    aspect="aspect-[9/16]"
+                    aspect="h-full"
                     edges="none"
+                    className="absolute inset-0"
                   />
                 </figure>
-                <div className="w-full max-w-[640px] flex flex-col items-start text-left">
+                <div className="w-full max-w-[760px] 2xl:max-w-[900px] 3xl:max-w-[1100px] flex flex-col items-start justify-center text-left">
                   <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
@@ -1215,7 +1228,7 @@ export const Welcome = () => {
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
             <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
@@ -1308,7 +1321,7 @@ export const Welcome = () => {
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
             <Reveal as="figure" className="mb-0 mr-0 mt-6 md:mt-8 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
                 <LoopFilm
                   src="/video/arista-timelapse-v1.mp4"
                   poster="/video/poster-arista-timelapse-v1.jpg"
@@ -1423,14 +1436,17 @@ export const Welcome = () => {
               className="relative z-[1] block select-none w-full h-auto"
               style={{
                 maxWidth: "none",
-                // FULL-BLEED MIRROR of the top Earth (natural orientation, NO flip):
-                // the rim sits at the TOP of the curve and the surface bleeds DOWN into
-                // the footer. Edge-to-edge width; whole natural aspect (never cropped);
-                // the mask feathers only the top edge into the page — no hard cut.
+                // CONSISTENT WITH THE TOP EARTH (Hugo 2026-08-24: "decide one and apply
+                // to both"). Chosen treatment: the bright limb reads CRISP/solid where
+                // it faces the page, softening only where it meets the bar. So the top
+                // rim gets only a whisper of feather (was 38% → semi-transparent, which
+                // is the mismatch he flagged) and the surface stays solid + flush into
+                // the footer — the exact mirror of the masthead's crisp rim tucking
+                // under the nav.
                 WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 38%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 11%)",
                 maskImage:
-                  "linear-gradient(to bottom, transparent 0%, #000 38%)",
+                  "linear-gradient(to bottom, transparent 0%, #000 11%)",
               }}
             />
           </section>
