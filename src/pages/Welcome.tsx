@@ -836,21 +836,22 @@ export const Welcome = () => {
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <Reveal
               as="div"
-              className="flex flex-col items-center text-center gap-8 md:gap-10"
+              className="grid grid-cols-1 md:grid-cols-[clamp(340px,32vw,460px)_1fr] items-center gap-8 md:gap-12 lg:gap-16"
             >
-              {/* Portrait — WHOLE, CENTRED, never cropped (Hugo 2026-08-23,
-                  design-consent: "images centred, not to the side" + "nothing cut
-                  off"). Natural aspect (w-auto/h-auto = no crop), height-capped so it
-                  is sized not screen-filling, mx-auto centred with the backdrop around
-                  it. Stacked above the copy, which is also centred. */}
-              <figure className="relative m-0 mx-auto max-w-full overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* Portrait — LEFT column, WHOLE (w-full h-auto = zero crop), fills its
+                  column width so there is NO side void; the 32vw column is tuned so the
+                  2:3 portrait sits LEVEL with the bio (items-center). A balanced
+                  editorial block, NOT a floating centred cut-out (Hugo 2026-08-24:
+                  "portrait in the middle leaves huge gaps either side"). */}
+              <figure className="relative m-0 overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(420px,68svh,860px)]"
+                  sizes="(min-width:768px) 32vw, 100vw"
+                  className="block w-full h-auto"
                 />
               </figure>
-              <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col items-center gap-4 md:gap-5">
+              <div className="w-full max-w-[640px] flex flex-col items-start text-left gap-4 md:gap-5">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -875,14 +876,14 @@ export const Welcome = () => {
               svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
               (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
           <Reveal as="figure" className="m-0 w-full">
-            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
                 fill
                 edges="none"
                 parallax={0}
-                objectPosition="center 62%"
+                objectPosition="center 52%"
                 shadow=""
                 sizes="100vw"
                 className="h-full"
@@ -1018,7 +1019,7 @@ export const Welcome = () => {
                   both screen edges (w-screen + centred-container breakout); svh-capped
                   so it's a band, not a full-screen wall. */}
               <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
@@ -1055,10 +1056,12 @@ export const Welcome = () => {
             <div className="border-t border-line pt-6 md:pt-8">
               {/* STACKED + CENTRED (Hugo 2026-08-23 design-consent: film centred, not
                   to the side). Film whole on top, copy centred below. */}
-              <Reveal as="div" className="flex flex-col items-center text-center gap-8 md:gap-10">
-                {/* Craft FILM — the hand-finishing in motion. WHOLE 4:5 portrait sized
-                    by WIDTH (never a full-screen wall, never cropped), centred. */}
-                <figure className="relative m-0 mx-auto w-full max-w-[300px] sm:max-w-[360px] 2xl:max-w-[420px] overflow-hidden rounded-[6px] ring-1 ring-line">
+              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(300px,26vw,420px)_1fr] items-center gap-8 md:gap-12 lg:gap-16">
+                {/* Craft FILM — LEFT column, WHOLE 9:16, fills the (narrow, 26vw)
+                    column so a tall reel sits LEVEL with the copy rather than towering
+                    over it with side voids (Hugo 2026-08-24). Editorial block, not a
+                    floating centred reel. */}
+                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[360px] md:max-w-none overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1067,7 +1070,7 @@ export const Welcome = () => {
                     edges="none"
                   />
                 </figure>
-                <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col items-center">
+                <div className="w-full max-w-[640px] flex flex-col items-start text-left">
                   <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
@@ -1075,8 +1078,8 @@ export const Welcome = () => {
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 mx-auto max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
-                  <ul className="list-none p-0 m-0 mb-6 mx-auto inline-grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
+                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left">
                     {[
                       "Dots of paint, applied by hand",
                       "Swarovski crystals placed one by one, symmetrically",
@@ -1089,7 +1092,7 @@ export const Welcome = () => {
                       </li>
                     ))}
                   </ul>
-                  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-3">
                     <MagneticLink
                       to="/collections"
                       className="press group inline-flex items-center gap-2 rounded-full bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] transition-colors duration-300 hover:bg-accent hover:text-ink"
@@ -1212,7 +1215,7 @@ export const Welcome = () => {
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
             <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
@@ -1305,7 +1308,7 @@ export const Welcome = () => {
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
             <Reveal as="figure" className="mb-0 mr-0 mt-6 md:mt-8 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(300px,48svh,560px)] 2xl:h-[clamp(340px,48svh,640px)] 3xl:h-[clamp(380px,46svh,720px)] 4xl:h-[clamp(400px,44svh,800px)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(420px,62svh,760px)] 2xl:h-[clamp(460px,62svh,860px)] 3xl:h-[clamp(500px,60svh,960px)] 4xl:h-[clamp(540px,58svh,1040px)]">
                 <LoopFilm
                   src="/video/arista-timelapse-v1.mp4"
                   poster="/video/poster-arista-timelapse-v1.jpg"
