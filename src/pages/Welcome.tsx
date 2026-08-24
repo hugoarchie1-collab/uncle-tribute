@@ -555,7 +555,7 @@ export const Welcome = () => {
             neighbours' paddings — which is what produced the uneven 64→176px
             jumps Hugo flagged. Sections no longer carry their own py; the gap
             lives here so it can never double up or collapse. */}
-        <main className="relative isolate z-10 space-y-10 md:space-y-12 lg:space-y-14 pb-8 md:pb-10">
+        <main className="relative isolate z-10 overflow-x-clip space-y-10 md:space-y-12 lg:space-y-14 pb-8 md:pb-10">
           {/* 1 · HERO — HORIZONTAL headline across the top, the beloved
               studio photo MAXIMISED full content-width beneath it (Hugo: "make
               it horizontal so the full image can be maximised below — I hate the
@@ -601,7 +601,7 @@ export const Welcome = () => {
 
               {/* The studio photo — MAXIMISED full content width beneath the
                   headline, large + crisp, soft-edged (no frame box, no side voids). */}
-              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
+              <Reveal as="figure" className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[min(1400px,116svh)] 2xl:max-w-[min(1680px,116svh)] 3xl:max-w-[min(2100px,116svh)] 4xl:max-w-[min(2600px,116svh)]">
                 {/* Width-capped so the 3:2 photo NEVER exceeds the viewport height
                     (Hugo 2026-07-08: "no image should take up the full screen") —
                     at 1180px it's ~73svh tall, still large, and shown WHOLE (no crop,
@@ -847,7 +847,7 @@ export const Welcome = () => {
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(340px,56svh,640px)]"
+                  className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(420px,68svh,860px)]"
                 />
               </figure>
               <div className="mx-auto w-full max-w-[760px] 2xl:max-w-[860px] 3xl:max-w-[1040px] 4xl:max-w-[1200px] flex flex-col items-center gap-4 md:gap-5">
@@ -869,20 +869,25 @@ export const Welcome = () => {
               screens and Hugo rejected it hard ("ruined the sizing… it's
               tiny"). These are the June-03 proportions he approved — shorter
               than a raw 3:2 on 4K, but still a substantial cinematic moment. */}
-          {/* CONTAINED to the SAME measure as every other section (Hugo
-              2026-08-03: "no image should take the whole screen / edge to edge").
-              A calm cinematic band at aspect 2:1, never a full-bleed wall. */}
-          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px] px-4">
-            <ImageReveal
-              src="/img/welcome/03-painting-in-studio.jpg"
-              alt="Stephen painting in the studio"
-              aspect="aspect-[3/2]"
-              edges="none"
-              parallax={0.06}
-              objectPosition="center 62%"
-              shadow=""
-              sizes="(min-width: 1400px) 1320px, 92vw"
-            />
+          {/* FULL-BLEED cinematic band, edge-to-edge (Hugo 2026-08-24: "hitting the
+              edge of screen 100%"; images small = "huge blank space either side"). A
+              direct child of <main> so w-full spans the whole viewport; the band is
+              svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
+              (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
+          <Reveal as="figure" className="m-0 w-full">
+            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+              <ImageReveal
+                src="/img/welcome/03-painting-in-studio.jpg"
+                alt="Stephen painting in the studio"
+                fill
+                edges="none"
+                parallax={0}
+                objectPosition="center 62%"
+                shadow=""
+                sizes="100vw"
+                className="h-full"
+              />
+            </div>
           </Reveal>
 
           {/* 5 · FEATURED WORKS — 3×2 grid of signature paintings */}
@@ -1009,18 +1014,23 @@ export const Welcome = () => {
                 </h2>
               </Reveal>
 
-              {/* Stephen at the easel — contained + centred like the hero photo. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
-                <ImageReveal
-                  src="/img/welcome/stephen-painting-denim-v1.jpg"
-                  alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
-                  aspect="aspect-[3/2]"
-                  edges="none"
-                  parallax={0.06}
-                  objectPosition="center"
-                  shadow="shadow-[0_44px_120px_-36px_rgba(0,0,0,0.8)]"
-                  sizes="(min-width: 1400px) 1000px, 92vw"
-                />
+              {/* FULL-BLEED cinematic band — breaks out of the padded section to hit
+                  both screen edges (w-screen + centred-container breakout); svh-capped
+                  so it's a band, not a full-screen wall. */}
+              <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+                  <ImageReveal
+                    src="/img/welcome/stephen-painting-denim-v1.jpg"
+                    alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
+                    fill
+                    edges="none"
+                    parallax={0}
+                    objectPosition="center"
+                    shadow=""
+                    sizes="100vw"
+                    className="h-full"
+                  />
+                </div>
               </Reveal>
 
               {/* Reading body — centred measure, matching the reminder essay. */}
@@ -1048,7 +1058,7 @@ export const Welcome = () => {
               <Reveal as="div" className="flex flex-col items-center text-center gap-8 md:gap-10">
                 {/* Craft FILM — the hand-finishing in motion. WHOLE 4:5 portrait sized
                     by WIDTH (never a full-screen wall, never cropped), centred. */}
-                <figure className="relative m-0 mx-auto w-full max-w-[260px] sm:max-w-[300px] overflow-hidden rounded-[6px] ring-1 ring-line">
+                <figure className="relative m-0 mx-auto w-full max-w-[300px] sm:max-w-[360px] 2xl:max-w-[420px] overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1151,7 +1161,7 @@ export const Welcome = () => {
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 1024px) 1140px, 100vw"
-                    className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(300px,56svh,640px)]"
+                    className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(380px,64svh,820px)]"
                   />
                 </figure>
                 {/* Process prose — CENTRED as one reading column (Hugo 2026-07-28:
@@ -1201,14 +1211,17 @@ export const Welcome = () => {
             {/* Capped so this cinematic plate stays LARGE but never fills the
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
-              <LoopFilm
-                src="/video/studio-mandala-v1.mp4"
-                poster="/video/poster-studio-mandala-v1.jpg"
-                label="Stephen Meakin painting a mandala, filmed from above"
-                aspect="aspect-[4/3] sm:aspect-[16/9]"
-                edges="none"
-              />
+            <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(340px,54svh,660px)] 2xl:h-[clamp(380px,54svh,760px)] 3xl:h-[clamp(420px,52svh,860px)] 4xl:h-[clamp(440px,50svh,940px)]">
+                <LoopFilm
+                  src="/video/studio-mandala-v1.mp4"
+                  poster="/video/poster-studio-mandala-v1.jpg"
+                  label="Stephen Meakin painting a mandala, filmed from above"
+                  aspect="h-full"
+                  edges="none"
+                  className="absolute inset-0"
+                />
+              </div>
             </Reveal>
           </section>
 
@@ -1291,14 +1304,17 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            <Reveal as="figure" className="m-0 mt-6 md:mt-8 mx-auto w-full max-w-[700px] 2xl:max-w-[780px] 3xl:max-w-[880px] 4xl:max-w-[980px]">
-              <LoopFilm
-                src="/video/arista-timelapse-v1.mp4"
-                poster="/video/poster-arista-timelapse-v1.jpg"
-                label="The Arista SunStar being painted, in timelapse"
-                aspect="aspect-[16/9]"
-                edges="none"
-              />
+            <Reveal as="figure" className="mb-0 mr-0 mt-6 md:mt-8 w-screen ml-[calc(50%-50vw)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(300px,48svh,560px)] 2xl:h-[clamp(340px,48svh,640px)] 3xl:h-[clamp(380px,46svh,720px)] 4xl:h-[clamp(400px,44svh,800px)]">
+                <LoopFilm
+                  src="/video/arista-timelapse-v1.mp4"
+                  poster="/video/poster-arista-timelapse-v1.jpg"
+                  label="The Arista SunStar being painted, in timelapse"
+                  aspect="h-full"
+                  edges="none"
+                  className="absolute inset-0"
+                />
+              </div>
             </Reveal>
 
             {/* The commission prose, between the film and the photo. */}
