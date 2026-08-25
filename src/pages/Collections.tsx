@@ -435,7 +435,7 @@ const ComposeSetCard = () => {
             commanding row at 3xl (the FooterCatalogue 10-up idiom) so the AOV
             builder fills its wide card instead of sitting as a half-empty
             contact-sheet; a clean 5×2 below. */}
-        <div className="mt-5 md:mt-6 grid grid-cols-2 sm:grid-cols-5 3xl:grid-cols-10 gap-2.5 sm:gap-3 3xl:gap-2">
+        <div className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
             const cover =
               p.colourways.find((c) => c.isOriginal && c.available) ??
@@ -451,6 +451,11 @@ const ComposeSetCard = () => {
                 onClick={() => toggle(p.id)}
                 title={p.title}
                 className={cn(
+                  // Fixed per-row widths (2 / 5 / 10 up) matched to the gaps so full
+                  // rows fill edge-to-edge, while the flex-wrap + justify-center on the
+                  // container centres any partial last row (e.g. the trailing two) instead
+                  // of stranding it on the far left.
+                  "shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(20%_-_9.6px)] 3xl:basis-[calc(10%_-_7.2px)]",
                   "group relative block aspect-square overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   on ? "ring-2 ring-accent scale-[1.04] shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10" : "ring-line hover:ring-accent/50",
                 )}
