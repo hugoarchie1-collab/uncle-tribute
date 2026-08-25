@@ -401,7 +401,7 @@ export const Welcome = () => {
             only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[4rem] h-[clamp(280px,23vw,500px)]"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[1.25rem] md:-mt-[4rem] h-[clamp(150px,23vw,480px)]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -880,7 +880,7 @@ export const Welcome = () => {
           {/* CONTAINED at the photo's own 3:2 (Hugo 2026-08-25: "why zoom in so much
               — I can't see the full picture"). A matched-aspect box + zoom:1 shows the
               WHOLE photo, no cover-crop, no letterbox bars; centred on the mesh. */}
-          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
+          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(980px,81svh)]">
             <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
@@ -1027,8 +1027,8 @@ export const Welcome = () => {
               {/* CONTAINED at the photo's own 3:2 so the WHOLE frame shows — his full
                   body at the easel, head to legs (Hugo 2026-08-25: "I want to see his
                   face and hand and brush and his legs"). zoom:1 = zero crop. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
-                <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[min(980px,81svh)]">
+            <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
@@ -1074,7 +1074,7 @@ export const Welcome = () => {
                   gaps — "revert to how it was before, beside the margin"). The reel cover-
                   fills its column to the copy's height (items-stretch); below md it stacks
                   as its natural 9:16, width-capped. */}
-              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(250px,20vw,320px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16">
+              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(200px,13.5vw,235px)_1fr] items-center gap-8 md:gap-12 lg:gap-16">
                 {/* Reel — shown WHOLE at its native 9:16 (Hugo 2026-08-24: "zoom that
                     video out so you can actually see the sequins placed on the work").
                     A 9:16 box + object-cover on a 9:16 video = NO crop, the full frame
@@ -1092,7 +1092,7 @@ export const Welcome = () => {
                 {/* Copy sized UP to FILL the panel beside the tall reel (Hugo
                     2026-08-25: "I need that whole text larger to fill its box so it's
                     not gappy"). */}
-                <div className="w-full flex flex-col items-start justify-between text-left py-1">
+                <div className="w-full flex flex-col items-start justify-center text-left">
                   <p className={cn(EYEBROW, "m-0 mb-5 text-[clamp(14px,0.95vw,18px)]")}>The hand-finished edition</p>
                   <h2
                     className="font-display font-semibold tracking-[-0.02em] text-[clamp(32px,3.3vw,58px)] leading-[1.1] text-ink text-balance hero-text-shadow m-0 mb-5 md:mb-6"
@@ -1239,7 +1239,7 @@ export const Welcome = () => {
             {/* CONTAINED at the film's own 16:9 so the WHOLE frame plays — no cover-
                 crop zoom, no letterbox bars (Hugo 2026-08-25: "zoom the video out so we
                 can see the full video"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1160px,96svh)]">
               <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[16/9]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
@@ -1336,8 +1336,13 @@ export const Welcome = () => {
             {/* CONTAINED at the film's own 16:9 — the box now MATCHES the video, so
                 the whole frame fills it with NO black bars either side (Hugo 2026-08-25:
                 "remove that black bar either side"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px] mt-6 md:mt-8">
-              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[16/9]">
+            {/* The arista clip has the real footage PILLARBOXED (960×720 content +
+                160px black bars each side) inside a 1280×720 file — cropdetect
+                confirmed. A 4:3 box + object-cover crops those baked black bars off
+                (Hugo 2026-08-25: "the black bars are still there"). Height-capped so
+                it never fills the screen. */}
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(800px,72svh)] mt-6 md:mt-8">
+              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[4/3]">
                 <LoopFilm
                   src="/video/arista-timelapse-v1.mp4"
                   poster="/video/poster-arista-timelapse-v1.jpg"
@@ -1454,7 +1459,7 @@ export const Welcome = () => {
               // (Hugo 2026-08-24: "both earths are way too big"). w-full keeps both
               // edges touched; object-cover trims only the darker planet, object-
               // position keeps the luminous limb curving up from the footer.
-              className="relative z-[1] block select-none w-full h-[clamp(280px,23vw,500px)] object-cover"
+              className="relative z-[1] block select-none w-full h-[clamp(150px,23vw,480px)] object-cover"
               style={{
                 maxWidth: "none",
                 objectPosition: "center top",
