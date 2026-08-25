@@ -877,21 +877,20 @@ export const Welcome = () => {
               direct child of <main> so w-full spans the whole viewport; the band is
               svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
               (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
-          {/* CONTAINED at the photo's own 3:2 (Hugo 2026-08-25: "why zoom in so much
-              — I can't see the full picture"). A matched-aspect box + zoom:1 shows the
-              WHOLE photo, no cover-crop, no letterbox bars; centred on the mesh. */}
-          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(980px,81svh)]">
-            <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
+          {/* FULL-BLEED cinematic band, EDGE-TO-EDGE (Hugo 2026-08-25: "I want these
+              images to the edges like before — just not filling the entire screen").
+              Height capped at ~55svh so it's a wide band, never a full-screen wall. */}
+          <Reveal as="figure" className="m-0 w-full">
+            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
                 fill
                 edges="none"
                 parallax={0}
-                zoom={1}
-                objectPosition="center"
+                objectPosition="center 42%"
                 shadow=""
-                sizes="(min-width:1280px) 1240px, 100vw"
+                sizes="100vw"
                 className="h-full"
               />
             </div>
@@ -1027,18 +1026,17 @@ export const Welcome = () => {
               {/* CONTAINED at the photo's own 3:2 so the WHOLE frame shows — his full
                   body at the easel, head to legs (Hugo 2026-08-25: "I want to see his
                   face and hand and brush and his legs"). zoom:1 = zero crop. */}
-              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[min(980px,81svh)]">
-            <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
+              <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                     fill
                     edges="none"
                     parallax={0}
-                    zoom={1}
-                    objectPosition="center"
+                    objectPosition="center 38%"
                     shadow=""
-                    sizes="(min-width:1280px) 1240px, 100vw"
+                    sizes="100vw"
                     className="h-full"
                   />
                 </div>
@@ -1239,8 +1237,8 @@ export const Welcome = () => {
             {/* CONTAINED at the film's own 16:9 so the WHOLE frame plays — no cover-
                 crop zoom, no letterbox bars (Hugo 2026-08-25: "zoom the video out so we
                 can see the full video"). */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1160px,96svh)]">
-              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[16/9]">
+            <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
@@ -1333,19 +1331,16 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            {/* CONTAINED at the film's own 16:9 — the box now MATCHES the video, so
-                the whole frame fills it with NO black bars either side (Hugo 2026-08-25:
-                "remove that black bar either side"). */}
-            {/* The arista clip has the real footage PILLARBOXED (960×720 content +
-                160px black bars each side) inside a 1280×720 file — cropdetect
-                confirmed. A 4:3 box + object-cover crops those baked black bars off
-                (Hugo 2026-08-25: "the black bars are still there"). Height-capped so
-                it never fills the screen. */}
-            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(800px,72svh)] mt-6 md:mt-8">
-              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[4/3]">
+            {/* FULL-BLEED band, edge-to-edge, ~55svh (Hugo 2026-08-25: "to the edges
+                like before, not full screen"). Uses arista-timelapse-V2 — the baked-in
+                160px pillarbox black bars were PHYSICALLY CROPPED out of the file
+                (v1 1280×720 pillarboxed → v2 960×720 clean 4:3), so at full width the
+                cover-crop shows the footage with NO black bars. */}
+            <Reveal as="figure" className="mt-6 md:mt-8 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
                 <LoopFilm
-                  src="/video/arista-timelapse-v1.mp4"
-                  poster="/video/poster-arista-timelapse-v1.jpg"
+                  src="/video/arista-timelapse-v2.mp4"
+                  poster="/video/poster-arista-timelapse-v2.jpg"
                   label="The Arista SunStar being painted, in timelapse"
                   aspect="h-full"
                   edges="none"
