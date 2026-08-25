@@ -259,17 +259,9 @@ export const Representatives = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
-      {/* Bespoke luxe ground — deep near-black + a low warm-rust glow. */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 z-0 pointer-events-none"
-        style={{
-          background: [
-            "radial-gradient(140% 95% at 50% -12%, rgba(201,120,68,0.18), rgba(10,9,8,0) 52%)",
-            "linear-gradient(180deg, #0c0a09 0%, #0a0908 42%, #080706 100%)",
-          ].join(","),
-        }}
-      />
+      {/* No opaque backdrop — the site-wide AmbientBackground mesh (App root,
+          z-0) shows through so /trade carries the same living colour wash as
+          every other page (Hugo 2026-08-25: every page must have it). */}
       <Seo
         title="Partners"
         description="A by-invitation programme for interior designers, hospitality and galleries who place the work of Stephen Meakin. You introduce; the estate handles pricing, framing and worldwide delivery."

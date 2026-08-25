@@ -349,20 +349,10 @@ export const PrintQuiz = ({
 
   return (
     <div className={cn("relative flex flex-col overflow-x-clip", embedded ? "" : "min-h-screen")}>
-      {/* Luxe ground — deep near-black + a low warm-rust glow. Page-only; when
-          embedded the host (/for-you) owns the backdrop. */}
-      {!embedded && (
-        <div
-          aria-hidden="true"
-          className="fixed inset-0 z-0 pointer-events-none"
-          style={{
-            background: [
-              "radial-gradient(140% 95% at 50% -12%, rgba(201,120,68,0.16), rgba(10,9,8,0) 52%)",
-              "linear-gradient(180deg, #0c0a09 0%, #0a0908 42%, #080706 100%)",
-            ].join(","),
-          }}
-        />
-      )}
+      {/* No opaque backdrop — the site-wide AmbientBackground mesh (App root,
+          z-0) shows through so the quiz carries the same living colour wash as
+          every other page (Hugo 2026-08-25: every page must have it). When
+          embedded, the host (/for-you) already shows the same mesh. */}
       {!embedded && (
         <Seo
           title="Find your print — the quiz"
