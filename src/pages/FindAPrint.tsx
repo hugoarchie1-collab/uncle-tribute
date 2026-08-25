@@ -4,7 +4,6 @@ import { PrintQuiz } from "./PrintQuiz";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
-import { WishlistButton } from "../components/WishlistButton";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
@@ -522,7 +521,6 @@ export const FindAPrint = () => {
               className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
             >
               <div className="relative">
-                <WishlistButton paintingId={painting.id} colourwayName={cover.name} floating />
                 <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
                   <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
                     {/* Gentle zoom on hover only — a small scale-up of the cover.

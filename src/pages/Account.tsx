@@ -393,11 +393,6 @@ export const AccountPanel = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/wishlist" className={cn(META, "hover:text-accent transition-colors")}>
-                  Your saved pieces →
-                </Link>
-              </li>
-              <li>
                 <Link to="/collections" className={cn(META, "hover:text-accent transition-colors")}>
                   See the collection <span aria-hidden="true">→</span>
                 </Link>
@@ -452,7 +447,7 @@ export const Account = () => {
   // Private route — keep it out of the index (mirrors Basket).
   useNoindexHead();
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-clip bg-bg">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       {/* Serene lone-tree-on-a-cliff certified scene — account-exclusive. */}
       <SceneBackdrop src="/img/scenes/account-scene-v6.webp" />
       <Nav />

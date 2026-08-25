@@ -57,7 +57,6 @@ const ForYouRedirect = () => {
   return <Navigate to={`/for-you${search}`} replace />;
 };
 const Reviews = lazy(() => import("./pages/Reviews").then((m) => ({ default: m.Reviews })));
-const Wishlist = lazy(() => import("./pages/Wishlist").then((m) => ({ default: m.Wishlist })));
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms").then((m) => ({ default: m.PartnerTerms })));
@@ -158,7 +157,6 @@ const AnimatedRoutes = () => {
           <Route path="/print-quiz" element={<ForYouRedirect />} />
           <Route path="/quiz" element={<ForYouRedirect />} />
           <Route path="/reviews" element={<Reviews />} />
-          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/about" element={<About />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />

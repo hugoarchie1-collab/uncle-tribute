@@ -290,7 +290,7 @@ export const Auth = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-x-clip bg-bg">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <SceneBackdrop src="/img/scenes/auth-bench-scene-v2.webp" />
       <Seo
         title="Authentication"
