@@ -1361,7 +1361,11 @@ export const Welcome = () => {
                 fix"). The source is only 641×353 so we cap the upscale ~1.3× and
                 lean on the soft-edge feather to keep it from reading as pixelated;
                 bigger so it fills the section. Never cropped; ring frame kept. */}
-            <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[620px] md:max-w-[840px] 2xl:max-w-[920px]">
+            {/* Arista SunStar PHOTO — a low-res archive scan (641×353). Kept SMALL,
+                capped BELOW its native width so it's downscaled + sharp rather than
+                upscaled + soft (Hugo 2026-08-25: "make it smaller, quality is terrible").
+                Never let its display width exceed ~600px. */}
+            <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[440px] md:max-w-[540px] 2xl:max-w-[600px]">
               {/* (Removed the cream glow that sat behind the photo + caption —
                   Hugo 2026-07-30: "that background behind the writing, remove it".
                   The caption now sits directly on the peacock backdrop.) */}
