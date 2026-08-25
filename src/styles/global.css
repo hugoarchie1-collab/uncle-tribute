@@ -456,15 +456,25 @@
 }
 .ambient-bg__blob {
   position: absolute;
-  inset: -25%;
-  /* translate/scale are STANDALONE so the slow mesh drift is compositor-only. */
-  will-change: transform, translate, scale;
+  /* Smaller overscan (-12% vs -25%) = each compositor layer is far fewer pixels
+     (the biggest GPU-memory + composite cost). */
+  inset: -12%;
 }
-.ambient-bg__blob--1 { background: radial-gradient(50% 50% at 22% 20%, color-mix(in srgb, var(--amb-c1) 82%, transparent) 0%, color-mix(in srgb, var(--amb-c1) 30%, transparent) 40%, transparent 66%); animation: meshDriftA 36s ease-in-out infinite alternate; }
-.ambient-bg__blob--2 { background: radial-gradient(52% 50% at 82% 16%, color-mix(in srgb, var(--amb-c2) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c2) 28%, transparent) 40%, transparent 66%); animation: meshDriftB 44s ease-in-out infinite alternate; animation-delay: -7s; }
-.ambient-bg__blob--3 { background: radial-gradient(58% 58% at 50% 55%, color-mix(in srgb, var(--amb-c3) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c3) 24%, transparent) 42%, transparent 68%); animation: meshDriftC 30s ease-in-out infinite alternate; animation-delay: -4s; }
-.ambient-bg__blob--4 { background: radial-gradient(52% 52% at 18% 84%, color-mix(in srgb, var(--amb-c4) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c4) 28%, transparent) 40%, transparent 66%); animation: meshDriftD 40s ease-in-out infinite alternate; animation-delay: -12s; }
-.ambient-bg__blob--5 { background: radial-gradient(52% 52% at 84% 82%, color-mix(in srgb, var(--amb-c5) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c5) 24%, transparent) 42%, transparent 66%); animation: meshDriftA 48s ease-in-out infinite alternate-reverse; animation-delay: -20s; }
+/* PERF (Hugo 2026-08-25: "the whole site is so laggy it's unusable"): the mesh was
+   5 huge (150% of viewport) layers ALL animating translate AND scale forever —
+   ~5 giant GPU layers continuously rescaling = the always-on compositor load that
+   janked the whole site. Now: only 3 of the 5 blobs drift (TRANSLATE only, no
+   scale = no re-raster), and only those 3 are promoted with will-change. The other
+   two are painted once as a static wash. Still a living, colour-reactive mesh (3
+   drifters + the palette handoff), at a fraction of the GPU cost. */
+.ambient-bg__blob--1,
+.ambient-bg__blob--3,
+.ambient-bg__blob--5 { will-change: translate; }
+.ambient-bg__blob--1 { background: radial-gradient(50% 50% at 22% 20%, color-mix(in srgb, var(--amb-c1) 82%, transparent) 0%, color-mix(in srgb, var(--amb-c1) 30%, transparent) 40%, transparent 66%); animation: meshDriftA 40s ease-in-out infinite alternate; }
+.ambient-bg__blob--2 { background: radial-gradient(52% 50% at 82% 16%, color-mix(in srgb, var(--amb-c2) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c2) 28%, transparent) 40%, transparent 66%); }
+.ambient-bg__blob--3 { background: radial-gradient(58% 58% at 50% 55%, color-mix(in srgb, var(--amb-c3) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c3) 24%, transparent) 42%, transparent 68%); animation: meshDriftC 34s ease-in-out infinite alternate; animation-delay: -4s; }
+.ambient-bg__blob--4 { background: radial-gradient(52% 52% at 18% 84%, color-mix(in srgb, var(--amb-c4) 78%, transparent) 0%, color-mix(in srgb, var(--amb-c4) 28%, transparent) 40%, transparent 66%); }
+.ambient-bg__blob--5 { background: radial-gradient(52% 52% at 84% 82%, color-mix(in srgb, var(--amb-c5) 72%, transparent) 0%, color-mix(in srgb, var(--amb-c5) 24%, transparent) 42%, transparent 66%); animation: meshDriftA 52s ease-in-out infinite alternate-reverse; animation-delay: -20s; }
 /* Legibility veil — a LIGHT top/bottom grounding so the nav + footer seams and
    the cream text keep contrast, while the mesh stays vivid in the middle (paired
    with the type's own shadows). Kept gentle so the colour reads Apple-vivid. */
@@ -474,10 +484,10 @@
   background:
     linear-gradient(180deg, rgba(10, 9, 8, 0.30) 0%, rgba(10, 9, 8, 0.04) 34%, rgba(10, 9, 8, 0.06) 68%, rgba(10, 9, 8, 0.32) 100%);
 }
-@keyframes meshDriftA { from { translate: -3% -2%; scale: 1; }    to { translate: 5% 4%;   scale: 1.15; } }
-@keyframes meshDriftB { from { translate: 3% 2%;   scale: 1.1; }  to { translate: -5% -3%; scale: 0.98; } }
-@keyframes meshDriftC { from { translate: 0% 3%;   scale: 1.05; } to { translate: 4% -4%;  scale: 1.2; } }
-@keyframes meshDriftD { from { translate: -4% 1%;  scale: 1.12; } to { translate: 5% -2%;  scale: 1; } }
+/* TRANSLATE-ONLY (no scale) — a composite-only drift the GPU handles for free,
+   with none of the large-layer re-rasterising that `scale` forced. */
+@keyframes meshDriftA { from { translate: -3% -2%; } to { translate: 4% 4%;  } }
+@keyframes meshDriftC { from { translate: 1% 3%;   } to { translate: 4% -4%; } }
 @media (prefers-reduced-motion: reduce) {
   .ambient-bg__blob { animation: none !important; will-change: auto; }
 }
