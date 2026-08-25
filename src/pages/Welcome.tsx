@@ -15,7 +15,6 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
-import { PavoBackdrop } from "../components/PavoBackdrop";
 
 // The home backdrop is the shared PavoBackdrop tapestry (see
 // components/PavoBackdrop.tsx): ALL FIVE Pavo colourways, each shown WHOLE
@@ -402,7 +401,7 @@ export const Welcome = () => {
             only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[6.5rem] h-[clamp(200px,20.8vw,460px)]"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[4rem] h-[clamp(300px,26vw,540px)]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -539,18 +538,14 @@ export const Welcome = () => {
       </section>
 
       <div id="welcome-anchor" className="relative">
-        {/* PAVO TAPESTRY BACKDROP — all five colourways, each shown WHOLE and
-            zoomed out, crossfading on page-scroll. Shared with About. Fade
-            windows: indigo holds the hero, Mary Pink holds the finale. */}
-        <PavoBackdrop
-          fit="cover"
-          fades={[
-            [0.16, 0.24],
-            [0.36, 0.44],
-            [0.56, 0.64],
-            [0.76, 0.84],
-          ]}
-        />
+        {/* BACKGROUND = the global drifting AmbientBackground mesh (Hugo 2026-08-24:
+            "the home needs the same dynamic, changing background as the basket page").
+            The home was the ONLY page still painting its own static PavoBackdrop
+            peacock OVER the mesh; every other page retired its photo backdrop in the
+            calm pass (SceneBackdrop CALM_BACKDROPS) so the App-root AmbientBackground
+            (slowly-drifting iPhone-style colour glows, reactive to the on-screen art)
+            shows through. Dropping the PavoBackdrop here lets that same living mesh be
+            the home's ground too. (PavoBackdrop is still used by /about.) */}
 
         {/* ONE vertical rhythm for the whole page. Each section's gap is the
             SAME at every breakpoint (space-y), instead of being the sum of two
@@ -844,14 +839,18 @@ export const Welcome = () => {
                 two columns line up top AND bottom; object-[center_top] keeps his head. */}
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(360px,32vw,480px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
+              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-center gap-8 md:gap-12 lg:gap-16"
             >
-              <figure className="relative m-0 min-h-0 h-full overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* Portrait — WHOLE, never cropped (Hugo 2026-08-24: "you've cut his legs
+                  off — make it slightly bigger"). w-full h-auto shows the full natural
+                  photo (head to legs), and the column is a touch wider so he's larger.
+                  items-center sits the bio level beside it. */}
+              <figure className="relative m-0 overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
-                  sizes="(min-width:768px) 32vw, 100vw"
-                  className="absolute inset-0 w-full h-full object-cover object-[center_top]"
+                  sizes="(min-width:768px) 34vw, 100vw"
+                  className="block w-full h-auto"
                 />
               </figure>
               <div className="w-full flex flex-col items-start justify-center text-left gap-4 md:gap-5">
@@ -1071,8 +1070,12 @@ export const Welcome = () => {
                   gaps — "revert to how it was before, beside the margin"). The reel cover-
                   fills its column to the copy's height (items-stretch); below md it stacks
                   as its natural 9:16, width-capped. */}
-              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(300px,26vw,420px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16">
-                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[320px] md:max-w-none aspect-[9/16] md:aspect-auto md:h-full min-h-0 overflow-hidden rounded-[6px] ring-1 ring-line">
+              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(280px,24vw,360px)_1fr] items-center gap-8 md:gap-12 lg:gap-16">
+                {/* Reel — shown WHOLE at its native 9:16 (Hugo 2026-08-24: "zoom that
+                    video out so you can actually see the sequins placed on the work").
+                    A 9:16 box + object-cover on a 9:16 video = NO crop, the full frame
+                    shows. items-center sits the copy level beside it. */}
+                <figure className="relative m-0 mx-auto md:mx-0 w-full max-w-[340px] aspect-[9/16] overflow-hidden rounded-[6px] ring-1 ring-line">
                   <LoopFilm
                     src="/video/hand-finishing-loop-v1.mp4"
                     poster="/img/welcome/hand-finishing-v1.jpg"
@@ -1441,7 +1444,7 @@ export const Welcome = () => {
               // (Hugo 2026-08-24: "both earths are way too big"). w-full keeps both
               // edges touched; object-cover trims only the darker planet, object-
               // position keeps the luminous limb curving up from the footer.
-              className="relative z-[1] block select-none w-full h-[clamp(200px,20.8vw,460px)] object-cover"
+              className="relative z-[1] block select-none w-full h-[clamp(300px,26vw,540px)] object-cover"
               style={{
                 maxWidth: "none",
                 objectPosition: "center top",
