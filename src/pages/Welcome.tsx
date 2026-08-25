@@ -877,20 +877,24 @@ export const Welcome = () => {
               direct child of <main> so w-full spans the whole viewport; the band is
               svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
               (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
-          {/* FULL-BLEED cinematic band, EDGE-TO-EDGE (Hugo 2026-08-25: "I want these
-              images to the edges like before — just not filling the entire screen").
-              Height capped at ~55svh so it's a wide band, never a full-screen wall. */}
-          <Reveal as="figure" className="m-0 w-full">
-            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
+          {/* CONTAINED-WHOLE, BIG (Hugo 2026-08-25: "zoomed out so you can see all —
+              his face and brush — but still not taking up the screen"). A matched-
+              aspect box + zoom:1 shows the WHOLE photo (zero crop) at ~67svh tall — big,
+              but never a full-screen wall. NO soft-edge-y (that top feather read as a
+              "faint black box darkening above the image" — Hugo); a clean hairline ring
+              frames it on the mesh instead. */}
+          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1080px,102svh)]">
+            <div className="relative w-full overflow-hidden rounded-[8px] ring-1 ring-line aspect-[3/2]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
                 fill
                 edges="none"
                 parallax={0}
-                objectPosition="center 42%"
+                zoom={1}
+                objectPosition="center"
                 shadow=""
-                sizes="100vw"
+                sizes="(min-width:1280px) 1080px, 100vw"
                 className="h-full"
               />
             </div>
@@ -1026,17 +1030,18 @@ export const Welcome = () => {
               {/* CONTAINED at the photo's own 3:2 so the WHOLE frame shows — his full
                   body at the easel, head to legs (Hugo 2026-08-25: "I want to see his
                   face and hand and brush and his legs"). zoom:1 = zero crop. */}
-              <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[min(1080px,102svh)]">
+                <div className="relative w-full overflow-hidden rounded-[8px] ring-1 ring-line aspect-[3/2]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                     fill
                     edges="none"
                     parallax={0}
-                    objectPosition="center 38%"
+                    zoom={1}
+                    objectPosition="center"
                     shadow=""
-                    sizes="100vw"
+                    sizes="(min-width:1280px) 1080px, 100vw"
                     className="h-full"
                   />
                 </div>
@@ -1237,8 +1242,8 @@ export const Welcome = () => {
             {/* CONTAINED at the film's own 16:9 so the WHOLE frame plays — no cover-
                 crop zoom, no letterbox bars (Hugo 2026-08-25: "zoom the video out so we
                 can see the full video"). */}
-            <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(1280px,121svh)]">
+              <div className="relative w-full overflow-hidden rounded-[8px] ring-1 ring-line aspect-[16/9]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
@@ -1336,8 +1341,8 @@ export const Welcome = () => {
                 160px pillarbox black bars were PHYSICALLY CROPPED out of the file
                 (v1 1280×720 pillarboxed → v2 960×720 clean 4:3), so at full width the
                 cover-crop shows the footage with NO black bars. */}
-            <Reveal as="figure" className="mt-6 md:mt-8 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(400px,55svh,720px)] 2xl:h-[clamp(440px,55svh,820px)] 3xl:h-[clamp(480px,53svh,920px)] 4xl:h-[clamp(520px,51svh,1020px)]">
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[min(960px,91svh)] mt-6 md:mt-8">
+              <div className="relative w-full overflow-hidden rounded-[8px] ring-1 ring-line aspect-[4/3]">
                 <LoopFilm
                   src="/video/arista-timelapse-v2.mp4"
                   poster="/video/poster-arista-timelapse-v2.jpg"
