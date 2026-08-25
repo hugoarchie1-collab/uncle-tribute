@@ -66,45 +66,75 @@ const pickPalette = (): string[] => {
 export const AmbientBackground = () => {
   const { pathname } = useLocation();
   const rootRef = useRef<HTMLDivElement>(null);
+  // Last palette actually written to the DOM — so we NEVER re-set an unchanged
+  // colour (each write restarts the 1.3s CSS ease = a full-viewport repaint of
+  // all five gradient blobs; writing an identical value would repaint for
+  // nothing). Persist across re-runs so a route change doesn't force a redundant
+  // repaint when the palette is the same.
+  const lastPal = useRef<string[]>([]);
 
-  // Drive --amb-c1..5 from whatever art is on screen. Runs on mount, on route
-  // change (two delayed re-reads to catch the incoming page's layout), and on
-  // scroll/resize (rAF-throttled). The CSS transition eases each palette change.
+  // Drive --amb-c1..5 from whatever art is on screen. The mesh should re-tint as
+  // NEW art scrolls into view — NOT on every scroll frame.
+  //
+  // ⚠️ PERF (Hugo 2026-08-25: "the entire site is so laggy it's unusable").
+  // The old driver recomputed on every scroll event (throttled 200ms) and always
+  // wrote all five --amb-c vars. Because `.ambient-bg` eases those vars over 1.3s,
+  // each write repainted five viewport-sized color-mix gradients EVERY frame for
+  // 1.3s — and scroll re-triggered it every 200ms, so the 1.3s repaints overlapped
+  // into a CONTINUOUS full-viewport repaint storm for the whole duration of any
+  // scroll, on every page (the mesh went site-wide in 2790318 — same moment the
+  // lag appeared). Now: an IntersectionObserver recomputes ONLY when a painting
+  // actually enters/leaves the viewport (a handful of times per scroll, coalesced
+  // to one rAF), and we write only the channels that genuinely changed. The mesh
+  // still hands off smoothly to the new art's palette — the repaint storm is gone.
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
     const apply = () => {
       const pal = pickPalette();
-      for (let i = 0; i < BLOBS; i++) el.style.setProperty(`--amb-c${i + 1}`, pal[i]);
+      for (let i = 0; i < BLOBS; i++) {
+        if (lastPal.current[i] !== pal[i]) {
+          el.style.setProperty(`--amb-c${i + 1}`, pal[i]);
+          lastPal.current[i] = pal[i];
+        }
+      }
     };
     apply();
+    // Two delayed re-reads catch the incoming page's images finishing layout.
     const t1 = window.setTimeout(apply, 280);
     const t2 = window.setTimeout(apply, 720);
-    // Perf (Hugo 2026-08-25: "fix how glitchy and laggy it all is"): `apply()`
-    // calls getBoundingClientRect() on EVERY painting <img> (16+ on the home),
-    // which forces a synchronous layout. Running that per animation-frame while
-    // scrolling was thrashing layout 60×/s = the jank. The palette only needs to
-    // ease as new art scrolls in, and the CSS transition already smooths it — so
-    // recompute at most every ~200ms (trailing) instead of every frame.
-    let timer = 0;
-    let last = 0;
-    const onScroll = () => {
-      if (timer) return;
-      const wait = Math.max(0, 200 - (performance.now() - last));
-      timer = window.setTimeout(() => {
-        timer = 0;
-        last = performance.now();
+
+    // Recompute when art crosses the viewport — coalesced to one rAF so a burst
+    // of simultaneous crossings (a grid scrolling in) costs a single recompute.
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
         apply();
-      }, wait);
+      });
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    let io: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      io = new IntersectionObserver(schedule, {
+        // Trim the top/bottom so "on screen" means meaningfully visible, and a
+        // few thresholds so a large artwork scrolling through still nudges the
+        // palette as it passes centre.
+        rootMargin: "-8% 0px -8% 0px",
+        threshold: [0, 0.25, 0.6],
+      });
+      document
+        .querySelectorAll('img[src*="/img/paintings/"]')
+        .forEach((img) => io!.observe(img));
+    }
+    // A resize can change which art is on screen; recompute once (rAF-coalesced).
+    window.addEventListener("resize", schedule, { passive: true });
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
-      if (timer) window.clearTimeout(timer);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      io?.disconnect();
+      window.removeEventListener("resize", schedule);
     };
   }, [pathname]);
 

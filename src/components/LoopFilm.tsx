@@ -38,22 +38,31 @@ export const LoopFilm = ({
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [near, setNear] = useState(false);
+  // Whether the film is currently in (or near) the viewport. Drives play/PAUSE
+  // so an off-screen film stops decoding instead of looping forever in the
+  // background (Hugo 2026-08-25 "the whole site is laggy" — the home mounts three
+  // of these; three off-screen videos decoding continuously is pure wasted work).
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (reduceMotion) return;
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") {
       setNear(true);
+      setVisible(true);
       return;
     }
+    // Kept OBSERVING (not disconnected on first hit): `near` latches true so the
+    // <video> mounts once and stays, while `visible` toggles to pause/resume as
+    // it scrolls out of / back into view. The 200px margin starts playback just
+    // before it enters and pauses just after it leaves, so the loop is always
+    // running by the time it's actually on screen.
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setNear(true);
-          io.disconnect();
-        }
+        if (entry.isIntersecting) setNear(true);
+        setVisible(entry.isIntersecting);
       },
-      { rootMargin: "400px 0px" },
+      { rootMargin: "200px 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -66,7 +75,11 @@ export const LoopFilm = ({
     video.defaultMuted = true;
     video.muted = true;
     video.setAttribute("muted", "");
-    video.load();
+    // Off screen → pause and stop spending decode/composite on a film nobody sees.
+    if (!visible) {
+      video.pause();
+      return;
+    }
     const tryPlay = () => void video.play?.().catch(() => {});
     tryPlay();
     video.addEventListener("loadedmetadata", tryPlay);
@@ -78,7 +91,7 @@ export const LoopFilm = ({
       video.removeEventListener("canplay", tryPlay);
       for (const ev of goEvents) window.removeEventListener(ev, tryPlay);
     };
-  }, [near]);
+  }, [near, visible]);
 
   const mask =
     edges === "y"
