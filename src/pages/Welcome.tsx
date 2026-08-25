@@ -401,7 +401,7 @@ export const Welcome = () => {
             only its outer/lower edge into the backdrop — a soft dissolve, not a hard cut. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[4rem] h-[clamp(300px,26vw,540px)]"
+          className="pointer-events-none relative z-[1] w-full overflow-hidden -mt-[4rem] h-[clamp(280px,23vw,500px)]"
         >
           <img
             src={asset("/img/scenes/earth-cutout-v2.webp")}
@@ -877,17 +877,21 @@ export const Welcome = () => {
               direct child of <main> so w-full spans the whole viewport; the band is
               svh-capped so it fills the width WITHOUT becoming a full-screen-tall wall
               (object-cover a wide band — atmosphere, not the do-not-crop hero). */}
-          <Reveal as="figure" className="m-0 w-full">
-            <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
+          {/* CONTAINED at the photo's own 3:2 (Hugo 2026-08-25: "why zoom in so much
+              — I can't see the full picture"). A matched-aspect box + zoom:1 shows the
+              WHOLE photo, no cover-crop, no letterbox bars; centred on the mesh. */}
+          <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
+            <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
                 fill
                 edges="none"
                 parallax={0}
-                objectPosition="center 52%"
+                zoom={1}
+                objectPosition="center"
                 shadow=""
-                sizes="100vw"
+                sizes="(min-width:1280px) 1240px, 100vw"
                 className="h-full"
               />
             </div>
@@ -1020,21 +1024,21 @@ export const Welcome = () => {
               {/* FULL-BLEED cinematic band — breaks out of the padded section to hit
                   both screen edges (w-screen + centred-container breakout); svh-capped
                   so it's a band, not a full-screen wall. */}
-              <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-                <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
+              {/* CONTAINED at the photo's own 3:2 so the WHOLE frame shows — his full
+                  body at the easel, head to legs (Hugo 2026-08-25: "I want to see his
+                  face and hand and brush and his legs"). zoom:1 = zero crop. */}
+              <Reveal as="figure" delay={0.08} className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
+                <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[3/2]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
                     fill
                     edges="none"
                     parallax={0}
-                    // Bias the cover-crop UP so Stephen's HEAD is kept — a plain
-                    // "center" crop clipped the top of his head off (Hugo 2026-08-24:
-                    // "you've cut off his head"). This shows from higher in the frame,
-                    // trimming the empty foreground instead.
-                    objectPosition="center 30%"
+                    zoom={1}
+                    objectPosition="center"
                     shadow=""
-                    sizes="100vw"
+                    sizes="(min-width:1280px) 1240px, 100vw"
                     className="h-full"
                   />
                 </div>
@@ -1070,7 +1074,7 @@ export const Welcome = () => {
                   gaps — "revert to how it was before, beside the margin"). The reel cover-
                   fills its column to the copy's height (items-stretch); below md it stacks
                   as its natural 9:16, width-capped. */}
-              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(280px,24vw,360px)_1fr] items-center gap-8 md:gap-12 lg:gap-16">
+              <Reveal as="div" className="grid grid-cols-1 md:grid-cols-[clamp(250px,20vw,320px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16">
                 {/* Reel — shown WHOLE at its native 9:16 (Hugo 2026-08-24: "zoom that
                     video out so you can actually see the sequins placed on the work").
                     A 9:16 box + object-cover on a 9:16 video = NO crop, the full frame
@@ -1085,23 +1089,26 @@ export const Welcome = () => {
                     className="absolute inset-0"
                   />
                 </figure>
-                <div className="w-full flex flex-col items-start justify-center text-left">
-                  <p className={cn(EYEBROW, "m-0 mb-4")}>The hand-finished edition</p>
+                {/* Copy sized UP to FILL the panel beside the tall reel (Hugo
+                    2026-08-25: "I need that whole text larger to fill its box so it's
+                    not gappy"). */}
+                <div className="w-full flex flex-col items-start justify-between text-left py-1">
+                  <p className={cn(EYEBROW, "m-0 mb-5 text-[clamp(14px,0.95vw,18px)]")}>The hand-finished edition</p>
                   <h2
-                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.5vw,44px)] leading-[1.12] text-ink text-balance hero-text-shadow m-0 mb-4 md:mb-5"
+                    className="font-display font-semibold tracking-[-0.02em] text-[clamp(32px,3.3vw,58px)] leading-[1.1] text-ink text-balance hero-text-shadow m-0 mb-5 md:mb-6"
                     style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                   >
                     Take a print further — finished by hand.
                   </h2>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-5 text-left max-w-[56ch]")}>{EMBELLISHMENT_NOTE}</p>
-                  <ul className="list-none p-0 m-0 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-left">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 mb-7 text-left text-[clamp(19px,1.35vw,27px)] leading-[1.5] max-w-[62ch]")}>{EMBELLISHMENT_NOTE}</p>
+                  <ul className="list-none p-0 m-0 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3.5 text-left">
                     {[
                       "Dots of paint, applied by hand",
                       "Swarovski crystals placed one by one, symmetrically",
                       "In Stephen's geometric tradition",
                       "One of one — no two alike",
                     ].map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 font-sans text-[clamp(14px,0.9vw,17px)] leading-[1.5] text-ink-muted">
+                      <li key={f} className="flex items-start gap-2.5 font-sans text-[clamp(16px,1.1vw,21px)] leading-[1.5] text-ink-muted">
                         <span aria-hidden className="shrink-0 text-ink-muted">·</span>
                         {f}
                       </li>
@@ -1229,19 +1236,18 @@ export const Welcome = () => {
             {/* Capped so this cinematic plate stays LARGE but never fills the
                 whole screen (Hugo 2026-07-22: "no image should take up the full
                 screen — check across the site"). */}
-            <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
+            {/* CONTAINED at the film's own 16:9 so the WHOLE frame plays — no cover-
+                crop zoom, no letterbox bars (Hugo 2026-08-25: "zoom the video out so we
+                can see the full video"). */}
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px]">
+              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[16/9]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
                   label="Stephen Meakin painting a mandala, filmed from above"
                   aspect="h-full"
                   edges="none"
-                  // Seen from above, Stephen is crouched at the TOP of the frame —
-                  // a centre cover-crop cut his head off (Hugo 2026-08-24: "the video
-                  // still has head cut off"). Anchor the crop to the TOP so his head
-                  // is always kept; the wide band trims the lower mandala rim instead.
-                  objectPosition="center top"
+                  objectPosition="center"
                   className="absolute inset-0"
                 />
               </div>
@@ -1327,14 +1333,18 @@ export const Welcome = () => {
                 is 720p, so it holds up big. The prose + the (now small) archive
                 photo sit BELOW, so the film and the photo are never stacked
                 adjacent. Muted / looping / lazy, feathered like the other film. */}
-            <Reveal as="figure" className="mb-0 mr-0 mt-6 md:mt-8 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden soft-edge-y h-[clamp(440px,66svh,820px)] 2xl:h-[clamp(480px,66svh,920px)] 3xl:h-[clamp(520px,64svh,1020px)] 4xl:h-[clamp(560px,62svh,1100px)]">
+            {/* CONTAINED at the film's own 16:9 — the box now MATCHES the video, so
+                the whole frame fills it with NO black bars either side (Hugo 2026-08-25:
+                "remove that black bar either side"). */}
+            <Reveal as="figure" className="m-0 mx-auto w-full max-w-[1240px] 2xl:max-w-[1440px] 3xl:max-w-[1680px] 4xl:max-w-[1920px] mt-6 md:mt-8">
+              <div className="relative w-full overflow-hidden rounded-[6px] ring-1 ring-line aspect-[16/9]">
                 <LoopFilm
                   src="/video/arista-timelapse-v1.mp4"
                   poster="/video/poster-arista-timelapse-v1.jpg"
                   label="The Arista SunStar being painted, in timelapse"
                   aspect="h-full"
                   edges="none"
+                  objectPosition="center"
                   className="absolute inset-0"
                 />
               </div>
@@ -1444,7 +1454,7 @@ export const Welcome = () => {
               // (Hugo 2026-08-24: "both earths are way too big"). w-full keeps both
               // edges touched; object-cover trims only the darker planet, object-
               // position keeps the luminous limb curving up from the footer.
-              className="relative z-[1] block select-none w-full h-[clamp(300px,26vw,540px)] object-cover"
+              className="relative z-[1] block select-none w-full h-[clamp(280px,23vw,500px)] object-cover"
               style={{
                 maxWidth: "none",
                 objectPosition: "center top",

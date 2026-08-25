@@ -80,20 +80,29 @@ export const AmbientBackground = () => {
     apply();
     const t1 = window.setTimeout(apply, 280);
     const t2 = window.setTimeout(apply, 720);
-    let raf = 0;
+    // Perf (Hugo 2026-08-25: "fix how glitchy and laggy it all is"): `apply()`
+    // calls getBoundingClientRect() on EVERY painting <img> (16+ on the home),
+    // which forces a synchronous layout. Running that per animation-frame while
+    // scrolling was thrashing layout 60×/s = the jank. The palette only needs to
+    // ease as new art scrolls in, and the CSS transition already smooths it — so
+    // recompute at most every ~200ms (trailing) instead of every frame.
+    let timer = 0;
+    let last = 0;
     const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
+      if (timer) return;
+      const wait = Math.max(0, 200 - (performance.now() - last));
+      timer = window.setTimeout(() => {
+        timer = 0;
+        last = performance.now();
         apply();
-      });
+      }, wait);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
-      if (raf) cancelAnimationFrame(raf);
+      if (timer) window.clearTimeout(timer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
