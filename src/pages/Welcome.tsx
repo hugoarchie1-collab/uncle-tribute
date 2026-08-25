@@ -681,7 +681,7 @@ export const Welcome = () => {
               </p>
               {reminderLeadBody && (
                 <p
-                  className="font-sans font-normal text-[clamp(17px,0.35vw+13px,23px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-pretty text-justify [text-align-last:center] hyphens-auto"
+                  className="font-sans font-normal text-[clamp(20px,0.7vw+13px,30px)] leading-[1.5] text-ink-soft m-0 mt-3 md:mt-4 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-pretty text-justify [text-align-last:center] hyphens-auto"
                   style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
                 >
                   {reminderLeadBody}
@@ -770,7 +770,7 @@ export const Welcome = () => {
                     // Opened leading (1.72→1.85) + more generous paragraph gap
                     // (mb-6→mb-8 on md) so the passage breathes now that the dark
                     // scrim card is gone (Hugo: "space the reminder out better").
-                    className="font-sans font-normal text-[clamp(17px,0.35vw+13px,23px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto"
+                    className="font-sans font-normal text-[clamp(20px,0.7vw+13px,30px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto"
                     style={{
                       // Subtle legibility halo on the peacock backdrop — soft
                       // enough to never fuzz the body glyphs, no dark box.
