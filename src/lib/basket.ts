@@ -487,6 +487,36 @@ export const setItemQuantity = (addedAt: number, quantity: number): void => {
   setCache(next);
 };
 
+/**
+ * Change a print line's COLOURWAY in place (basket-page picker). Validates the
+ * name against the painting's AVAILABLE colourways; no-ops on an unknown /
+ * unavailable name or a missing line.
+ *
+ * ⚠️ PRICING: colourway does NOT affect a line's price — price is a function of
+ * painting + tier + add-ons only, so the line total is byte-identical after a
+ * swap. Bundle savings stay correct automatically: the bundle percent is derived
+ * from the basket's painting/colourway CONTENTS on BOTH sides — advertised
+ * (paintings.ts helpers over the live lines) and charged (api/checkout.ts
+ * `bundlePercentOff`) — so a swap just re-derives the same honest percent on each
+ * side (e.g. completing a colourway set turns the 5/10% count discount into the
+ * 12% set discount, advertised == charged by construction). Nothing to mirror.
+ */
+export const setItemColourway = (addedAt: number, colourwayName: string): void => {
+  const current = ensureCache();
+  const idx = current.findIndex((l) => l.addedAt === addedAt && isPrintItem(l));
+  if (idx < 0) return;
+  const line = current[idx] as BasketItem;
+  const painting = getPaintingById(line.paintingId);
+  if (!painting) return;
+  const cw = painting.colourways.find(
+    (c) => c.name === colourwayName && c.available,
+  );
+  if (!cw || cw.name === line.colourwayName) return;
+  const next = current.slice();
+  next[idx] = { ...line, colourwayName: cw.name };
+  setCache(next);
+};
+
 /** Total number of physical prints in the basket (sum of print quantities).
  *  Gift-card lines count as one each. Drives the nav badge + confirmation. */
 export const getBasketTotalQuantity = (): number =>

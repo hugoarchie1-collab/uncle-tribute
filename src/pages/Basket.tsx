@@ -26,7 +26,7 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { useCurrency, formatMinorUnits } from "../lib/currency";
-import { useBasket, useGiftCards, removeItem, setItemQuantity, MAX_LINE_QUANTITY, type BasketItem, type GiftBasketItem } from "../lib/basket";
+import { useBasket, useGiftCards, removeItem, setItemQuantity, setItemColourway, MAX_LINE_QUANTITY, type BasketItem, type GiftBasketItem } from "../lib/basket";
 import { restoreBasketFromUrl } from "../lib/basketRestore";
 import { getStoredUtm } from "../lib/utm";
 import { getStoredRef } from "../lib/ref";
@@ -52,6 +52,9 @@ interface ResolvedLine {
   colourwayName: string;
   image: string;
   tier: PrintTier;
+  /** All AVAILABLE colourways of this painting — drives the in-basket colourway
+   *  picker. Colourway doesn't change price, so swapping never re-mirrors money. */
+  colourways: { name: string; image: string }[];
 }
 
 const resolveLines = (items: BasketItem[]): ResolvedLine[] => {
@@ -78,6 +81,9 @@ const resolveLines = (items: BasketItem[]): ResolvedLine[] => {
         colourwayName: colourway.name,
         image: colourway.image,
         tier,
+        colourways: painting.colourways
+          .filter((c) => c.available)
+          .map((c) => ({ name: c.name, image: c.image })),
       } satisfies ResolvedLine;
     })
     .filter((line): line is ResolvedLine => line !== null);
@@ -555,6 +561,62 @@ export const Basket = () => {
                               </>
                             )}
                           </p>
+                          {/* Colourway picker — swap the colourway in place. Only
+                              shown when the painting has more than one available
+                              colourway. Colourway never changes the price, so the
+                              line total + any bundle saving stay exactly as they
+                              are (a set stays a set); nothing to re-confirm. */}
+                          {line.colourways.length > 1 && (
+                            <div className="mt-2.5">
+                              <p className={cn(EYEBROW_TIGHT, "m-0 mb-1.5 text-ink-muted/80")}>
+                                Colourway
+                              </p>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                {line.colourways.map((c) => {
+                                  const active = c.name === line.colourwayName;
+                                  return (
+                                    <button
+                                      key={c.name}
+                                      type="button"
+                                      onClick={() =>
+                                        setItemColourway(line.item.addedAt, c.name)
+                                      }
+                                      aria-pressed={active}
+                                      aria-label={`Show ${line.title} in ${c.name}`}
+                                      title={c.name}
+                                      className={cn(
+                                        "group/cw inline-flex items-center gap-2 rounded-full py-1 pl-1 pr-3 ring-1 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                        active
+                                          ? "ring-accent bg-white/[0.05]"
+                                          : "ring-line hover:ring-accent/50",
+                                      )}
+                                    >
+                                      <span className="block h-5 w-5 overflow-hidden rounded-full ring-1 ring-line">
+                                        <AssetImage
+                                          src={c.image}
+                                          alt=""
+                                          loading="lazy"
+                                          decoding="async"
+                                          sizes="20px"
+                                          className="h-full w-full object-cover"
+                                        />
+                                      </span>
+                                      <span
+                                        className={cn(
+                                          "font-sans text-[12px] 3xl:text-[15px] 4xl:text-[18px] tracking-[0.01em] transition-colors",
+                                          active
+                                            ? "text-ink"
+                                            : "text-ink-muted group-hover/cw:text-ink",
+                                        )}
+                                      >
+                                        {c.name}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                           <div className="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-2">
                             {/* Quantity stepper */}
                             <div className="inline-flex items-center rounded-full ring-1 ring-line">
