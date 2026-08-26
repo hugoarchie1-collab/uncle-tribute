@@ -839,12 +839,11 @@ export const Welcome = () => {
                 two columns line up top AND bottom; object-[center_top] keeps his head. */}
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-center gap-8 md:gap-12 lg:gap-16"
+              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
             >
               {/* Portrait — WHOLE, never cropped (Hugo 2026-08-24: "you've cut his legs
                   off — make it slightly bigger"). w-full h-auto shows the full natural
-                  photo (head to legs), and the column is a touch wider so he's larger.
-                  items-center sits the bio level beside it. */}
+                  photo (head to legs), and the column is a touch wider so he's larger. */}
               <figure className="relative m-0 overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
@@ -853,16 +852,22 @@ export const Welcome = () => {
                   className="block w-full h-auto"
                 />
               </figure>
-              <div className="w-full flex flex-col items-start justify-center text-left gap-4 md:gap-5">
+              {/* Copy FILLS the portrait's height (Hugo 2026-08-25, big desktop: "the
+                  text isn't large enough — it doesn't reach the top and bottom of the
+                  image, there are gaps above and below"). items-stretch makes this
+                  column the portrait's height; justify-between spreads the eyebrow to
+                  the top and the last paragraph to the bottom so it reads level with the
+                  photo edges; the type scales UP on 2xl→4xl so it genuinely fills. */}
+              <div className="w-full flex flex-col items-start justify-between text-left gap-4 md:gap-5 py-1">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
-                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.6vw,44px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
+                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,44px)] 3xl:text-[clamp(44px,2.5vw,60px)] 4xl:text-[clamp(56px,2.4vw,74px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
                   style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left")}>{WELCOME.bio[0]}</p>
-                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left")}>{WELCOME.bio[1]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>{WELCOME.bio[0]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>{WELCOME.bio[1]}</p>
               </div>
             </Reveal>
           </section>
@@ -1172,63 +1177,59 @@ export const Welcome = () => {
                   image is a flush full-bleed panel down the card's left half, level
                   with the prose. Mobile keeps its natural 4:3 (aspect-[4/3], no crop,
                   stacked). object-center keeps the two of them + the mandala. */}
-              {/* REDESIGN (Hugo 2026-07-28: "gaps above and below … totally
-                  redesign"). The photo is landscape (4:3); forcing it beside the
-                  tall spec column cropped a narrow vertical strip that sliced both
-                  of them out. Instead it now leads as a FULL-WIDTH banner at its own
-                  ~3:2 proportion (object-center trims only a sliver of garden/table
-                  — both of them + the mandala stay whole), with the prose + the
-                  material ledger in two columns below. No side space, no floating
-                  gaps, no one cropped out. */}
-              <Reveal as="div" className="flex flex-col gap-8 lg:gap-10">
-                {/* WHOLE, CENTRED, never cropped (Hugo 2026-08-23: this image had the
-                    two of them beheaded by an aspect-box + max-h object-cover crop).
-                    Natural aspect (w-auto/h-auto), height-capped so it's sized not
-                    screen-filling, mx-auto centred. Nobody is cut off. */}
-                <figure className="relative m-0 mx-auto max-w-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
+              {/* TWO-COLUMN (Hugo 2026-08-25, big desktop: "the ritual image has huge
+                  gaps either side — reshuffle it like the Steve's-own-words portrait
+                  section, image beside the text, image to the left"). The photo fills
+                  the LEFT column edge-to-edge (w-full → no side gaps), whole and never
+                  cropped; the process prose + material ledger sit in the RIGHT column,
+                  level with it. Stacks image-then-text below lg. */}
+              <Reveal
+                as="div"
+                className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] items-center gap-8 lg:gap-12 xl:gap-16"
+              >
+                {/* WHOLE, never cropped — w-full fills the column so there is NO empty
+                    space either side (the old centred w-auto image left big margins on
+                    wide screens). Nobody is cut off. */}
+                <figure className="relative m-0 overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
-                    sizes="(min-width: 1024px) 1140px, 100vw"
-                    className="block mx-auto w-auto h-auto max-w-full max-h-[clamp(380px,64svh,820px)]"
+                    sizes="(min-width: 1024px) 55vw, 100vw"
+                    className="block w-full h-auto"
                   />
                 </figure>
-                {/* Process prose — CENTRED as one reading column (Hugo 2026-07-28:
-                    "centre paragraph so there's no huge gap"). The old prose-left /
-                    spec-right split left dead space beside the shorter ledger; now
-                    the paragraphs sit centred, with the spec sheet balanced full-
-                    width beneath. reading-shadow lifts them off the mandala (box-free). */}
-                <div className="mx-auto w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] flex flex-col gap-y-4 md:gap-y-5 text-center">
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>
+                {/* RIGHT — prose + spec, left-aligned beside the image (fills the width,
+                    no dead space). Type scales up on 2xl→4xl so it reads level with the
+                    photo on a huge screen. */}
+                <div className="flex flex-col gap-5 md:gap-6">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[21px] 3xl:text-[26px] 4xl:text-[31px] 3xl:leading-[1.6]")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
-                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-justify [text-align-last:center] hyphens-auto")}>
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[21px] 3xl:text-[26px] 4xl:text-[31px] 3xl:leading-[1.6]")}>
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
+                  {/* Material ledger — single column beside the image (6 facts). */}
+                  <ul className="list-none p-0 m-0 mt-1 md:mt-2 grid grid-cols-1">
+                    {[
+                      ["Time", "Hundreds of hours per canvas"],
+                      ["Edition", "Individually made to order"],
+                      ["Surface", "350gsm archival canvas"],
+                      ["Frame", "Hand-stretched, deep wooden"],
+                      ["Tools", "Compass · rule · brush"],
+                      ["Pigment", "Hand-pressed oils + pigment inks"],
+                    ].map(([label, value]) => (
+                      <li
+                        key={label}
+                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 3xl:py-3.5 border-t border-line"
+                      >
+                        <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
+                        <span className="text-right font-sans font-normal text-[15px] md:text-[16px] 3xl:text-[20px] 4xl:text-[24px] leading-[1.4] text-ink">{value}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                {/* Material ledger — a BALANCED two-column spec sheet spanning the
-                    full width below the prose (6 facts = 2×3: no orphan, no dead
-                    space beside the prose). */}
-                <ul className="list-none p-0 m-0 mx-auto w-full max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
-                  {[
-                    ["Time", "Hundreds of hours per canvas"],
-                    ["Edition", "Individually made to order"],
-                    ["Surface", "350gsm archival canvas"],
-                    ["Frame", "Hand-stretched, deep wooden"],
-                    ["Tools", "Compass · rule · brush"],
-                    ["Pigment", "Hand-pressed oils + pigment inks"],
-                  ].map(([label, value]) => (
-                    <li
-                      key={label}
-                      className="m-0 flex items-baseline justify-between gap-6 py-2.5 border-t border-line"
-                    >
-                      <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
-                      <span className="text-right font-sans font-normal text-[15px] md:text-[16px] leading-[1.4] text-ink">{value}</span>
-                    </li>
-                  ))}
-                </ul>
               </Reveal>
             </div>
           </section>
