@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PrintQuiz } from "./PrintQuiz";
+import { ComposeSetCard } from "./Collections";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
@@ -574,6 +575,14 @@ export const FindAPrint = () => {
             .
           </p>
         )}
+        </section>
+
+        {/* BUILD YOUR OWN SET — the same set builder as Collections, surfaced here so a
+            For You visitor can assemble a set and see the saving without hopping pages
+            (Hugo 2026-08-25: put the bundle listing on For You too, kept clean). No new
+            discounts — it uses the existing 5/8/10/12% ladder, advertised == charged. */}
+        <section className="mt-14 md:mt-20 border-t border-line pt-10 md:pt-14">
+          <ComposeSetCard />
         </section>
       </main>
       )}

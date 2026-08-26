@@ -375,7 +375,7 @@ const CollectionSetCard = ({
 // set reprices live at the SAME ladder the basket/checkout applies (2→5%, 3+→10%,
 // all→15%), and adding pushes one anchor-tier line per painting so checkout
 // derives the identical % — advertised == charged by construction (gotcha #9).
-const ComposeSetCard = () => {
+export const ComposeSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const [picked, setPicked] = useState<Set<string>>(new Set());
