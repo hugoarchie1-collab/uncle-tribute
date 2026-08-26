@@ -852,13 +852,13 @@ export const Welcome = () => {
                   className="block w-full h-auto"
                 />
               </figure>
-              {/* Copy FILLS the portrait's height (Hugo 2026-08-25, big desktop: "the
-                  text isn't large enough — it doesn't reach the top and bottom of the
-                  image, there are gaps above and below"). items-stretch makes this
-                  column the portrait's height; justify-between spreads the eyebrow to
-                  the top and the last paragraph to the bottom so it reads level with the
-                  photo edges; the type scales UP on 2xl→4xl so it genuinely fills. */}
-              <div className="w-full flex flex-col items-start justify-between text-left gap-4 md:gap-5 py-1">
+              {/* Copy sits as ONE cohesive block, vertically CENTRED beside the portrait
+                  (Hugo 2026-08-25: justify-between flung the eyebrow "way above the title
+                  — out of place"; it must read as a tight group, not spread to the photo
+                  edges). The type scales UP on 2xl→4xl and the block breathes with a wider
+                  gap on huge screens so it fills the portrait's height as a unit, with the
+                  eyebrow kept right above the title. */}
+              <div className="w-full flex flex-col items-start justify-center text-left gap-4 md:gap-5 3xl:gap-7 4xl:gap-9">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,44px)] 3xl:text-[clamp(44px,2.5vw,60px)] 4xl:text-[clamp(56px,2.4vw,74px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
