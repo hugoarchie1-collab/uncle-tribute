@@ -273,6 +273,17 @@ export const Welcome = () => {
   const reminderLeadBody =
     reminderLeadSplit > 0 ? reminderLead.slice(reminderLeadSplit + 2) : "";
 
+  // Pull-quote first sentence ("There is a star inside each one of us.") — set on
+  // TWO lines, breaking after "inside", so it never reads as one over-long line on
+  // a wide desktop (Hugo 2026-08-26). Derived from the verbatim reminderLong[3] —
+  // the words are never re-typed; only the line break is inserted.
+  const starSentence = WELCOME.reminderLong[3].split(". ")[0] + ".";
+  const starBreakAt = starSentence.indexOf("inside ");
+  const starLine1 =
+    starBreakAt >= 0 ? starSentence.slice(0, starBreakAt + "inside".length) : starSentence;
+  const starLine2 =
+    starBreakAt >= 0 ? starSentence.slice(starBreakAt + "inside ".length) : "";
+
   return (
     <>
       {/* The home page is the strongest URL on the domain — give it a
@@ -714,16 +725,19 @@ export const Welcome = () => {
                 {/* Dominant tier — CENTRED (Hugo, repeatedly: the reminder must be
                     centred, not broken to one side). opsz held at 48 (finale). */}
                 <span
-                  className="block mx-auto font-display font-semibold text-ink max-w-[20ch]"
+                  className="block mx-auto font-display font-semibold text-ink"
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
-                    fontSize: "clamp(50px, 10.5vw, 132px)",
+                    fontSize: "clamp(44px, 8vw, 104px)",
                     letterSpacing: "-0.045em",
-                    lineHeight: 0.92,
+                    lineHeight: 0.98,
                   }}
                 >
-                  {WELCOME.reminderLong[3].split(". ")[0] + "."}
+                  {starLine1}
+                  {starLine2 && (
+                    <span className="block">{starLine2}</span>
+                  )}
                 </span>
                 {/* Subordinate — "Quite literally." centred beneath, its closing
                     period the one rust note. */}
@@ -788,8 +802,7 @@ export const Welcome = () => {
                 subordinate clause, the closing rust period the one accent note.
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
-            <Reveal delay={0.1} className="mt-5 md:mt-7 text-center">
-              <div aria-hidden="true" className="mx-auto mb-3 md:mb-4 h-px w-16 bg-ink/20" />
+            <Reveal delay={0.1} className="mt-10 md:mt-14 text-center">
               <p className="m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center hero-text-shadow">
                 <span
                   className="block font-display text-ink text-balance mx-auto"
@@ -839,7 +852,7 @@ export const Welcome = () => {
                 two columns line up top AND bottom; object-[center_top] keeps his head. */}
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
+              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-start gap-8 md:gap-12 lg:gap-16"
             >
               {/* Portrait — WHOLE, never cropped (Hugo 2026-08-24: "you've cut his legs
                   off — make it slightly bigger"). w-full h-auto shows the full natural
@@ -852,13 +865,12 @@ export const Welcome = () => {
                   className="block w-full h-auto"
                 />
               </figure>
-              {/* Copy sits as ONE cohesive block, vertically CENTRED beside the portrait
-                  (Hugo 2026-08-25: justify-between flung the eyebrow "way above the title
-                  — out of place"; it must read as a tight group, not spread to the photo
-                  edges). The type scales UP on 2xl→4xl and the block breathes with a wider
-                  gap on huge screens so it fills the portrait's height as a unit, with the
-                  eyebrow kept right above the title. */}
-              <div className="w-full flex flex-col items-start justify-center text-left gap-4 md:gap-5 3xl:gap-7 4xl:gap-9">
+              {/* Copy = ONE cohesive block, TOP-aligned so the eyebrow sits level with the
+                  top of the portrait — the same top-aligned image-left / text-right pattern
+                  as the ritual section below, for consistency across the page (Hugo 2026-08-26:
+                  "in Steve's own words is way below … I want consistency"). NOT justify-between
+                  (that flung the eyebrow away from the title). Type scales up 2xl→4xl. */}
+              <div className="w-full flex flex-col items-start justify-start text-left gap-4 md:gap-5 3xl:gap-7 4xl:gap-9">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
                   className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,44px)] 3xl:text-[clamp(44px,2.5vw,60px)] 4xl:text-[clamp(56px,2.4vw,74px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
@@ -1157,13 +1169,15 @@ export const Welcome = () => {
               + two paragraphs + the 6-row material ledger. */}
           <section className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12">
             <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
+              {/* Section title ONLY above the image (consistent with every other
+                  centred section title); the intro line moved DOWN into the text
+                  column so no body copy bleeds above/below the photo (Hugo 2026-08-26:
+                  "I hate how you bleed paragraph text below and above the ritual image
+                  — I want consistency"). */}
               <Reveal as="div" className="text-center mb-8 md:mb-10">
                 <h2 className={cn(TITLE, "my-0 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto hero-text-shadow")}>
                   Each painting is a ritual.
                 </h2>
-                <p className={cn(SUBTITLE, "reading-shadow my-0 mt-3 md:mt-4 max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto text-justify [text-align-last:center] hyphens-auto")}>
-                  Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
-                </p>
               </Reveal>
               {/* The ritual itself — Stephen painting a mandala at the easel —
                   beside the process prose + the material spec ledger, all held in
@@ -1185,7 +1199,7 @@ export const Welcome = () => {
                   level with it. Stacks image-then-text below lg. */}
               <Reveal
                 as="div"
-                className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] items-center gap-8 lg:gap-12 xl:gap-16"
+                className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] items-start gap-8 lg:gap-12 xl:gap-16"
               >
                 {/* WHOLE, never cropped — w-full fills the column so there is NO empty
                     space either side (the old centred w-auto image left big margins on
@@ -1204,6 +1218,9 @@ export const Welcome = () => {
                     no dead space). Type scales up on 2xl→4xl so it reads level with the
                     photo on a huge screen. */}
                 <div className="flex flex-col gap-5 md:gap-6">
+                  <p className={cn(SUBTITLE, "reading-shadow m-0 text-left font-medium text-ink 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>
+                    Each canvas hand-stretched, primed, and painted over hundreds of hours — compass, rule and brush translating sacred geometry into a singular visual language.
+                  </p>
                   <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[21px] 3xl:text-[26px] 4xl:text-[31px] 3xl:leading-[1.6]")}>
                     Each canvas was hand-stretched on a deep wooden frame and painted over hundreds of hours. Stephen began every work with compass and rule, constructing the underlying sacred geometry before a single colour was laid down.
                   </p>
