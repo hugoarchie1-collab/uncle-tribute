@@ -852,17 +852,20 @@ export const Welcome = () => {
                 two columns line up top AND bottom; object-[center_top] keeps his head. */}
             <Reveal
               as="div"
-              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-start gap-8 md:gap-12 lg:gap-16"
+              className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
             >
-              {/* Portrait — WHOLE, never cropped (Hugo 2026-08-24: "you've cut his legs
-                  off — make it slightly bigger"). w-full h-auto shows the full natural
-                  photo (head to legs), and the column is a touch wider so he's larger. */}
-              <figure className="relative m-0 overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* Portrait COVER-FILLS its column to the exact height of the copy beside
+                  it (items-stretch + h-full + object-cover) so there is NO gap below the
+                  text — Hugo's hard rule against gaps. object-[center_28%] biases the
+                  crop UP so his face + upper body always stay in frame (only a little
+                  studio floor is trimmed off the bottom). Mobile shows the whole 2:3
+                  portrait (aspect box, stacked). */}
+              <figure className="relative m-0 aspect-[2/3] md:aspect-auto overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   sizes="(min-width:768px) 34vw, 100vw"
-                  className="block w-full h-auto"
+                  className="absolute inset-0 h-full w-full object-cover object-[center_28%]"
                 />
               </figure>
               {/* Copy = ONE cohesive block, TOP-aligned so the eyebrow sits level with the
@@ -1199,19 +1202,23 @@ export const Welcome = () => {
                   level with it. Stacks image-then-text below lg. */}
               <Reveal
                 as="div"
-                className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)] items-start gap-8 lg:gap-12 xl:gap-16"
+                className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] items-stretch gap-8 lg:gap-12 xl:gap-16"
               >
-                {/* WHOLE, never cropped — w-full fills the column so there is NO empty
-                    space either side (the old centred w-auto image left big margins on
-                    wide screens). Nobody is cut off. */}
-                <figure className="relative m-0 overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
+                {/* The photo COVER-FILLS its column to the exact height of the prose
+                    beside it (items-stretch + h-full + object-cover) so there is NO empty
+                    band above/below/beside it — Hugo's hard rule: never leave gaps. The
+                    prose column is only the intro + two paragraphs (the spec ledger moved
+                    to a full-width strip below), so the two heights nearly match and the
+                    cover-crop is tiny — object-center keeps the two of them + the mandala.
+                    Mobile keeps the whole 4:3 frame (aspect box, stacked). */}
+                <figure className="relative m-0 aspect-[4/3] lg:aspect-auto lg:h-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
                     sizes="(min-width: 1024px) 55vw, 100vw"
-                    className="block w-full h-auto"
+                    className="block w-full h-full object-cover object-center"
                   />
                 </figure>
                 {/* RIGHT — prose + spec, left-aligned beside the image (fills the width,
@@ -1227,27 +1234,30 @@ export const Welcome = () => {
                   <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[21px] 3xl:text-[26px] 4xl:text-[31px] 3xl:leading-[1.6]")}>
                     When a painting depicted a flower, the oil pressed from that flower went into the paint itself — the <em>Mandala of Wild Rose</em> contains the rose. Each composition carries its own number, rhythm, cadence and tone.
                   </p>
-                  {/* Material ledger — single column beside the image (6 facts). */}
-                  <ul className="list-none p-0 m-0 mt-1 md:mt-2 grid grid-cols-1">
-                    {[
-                      ["Time", "Hundreds of hours per canvas"],
-                      ["Edition", "Individually made to order"],
-                      ["Surface", "350gsm archival canvas"],
-                      ["Frame", "Hand-stretched, deep wooden"],
-                      ["Tools", "Compass · rule · brush"],
-                      ["Pigment", "Hand-pressed oils + pigment inks"],
-                    ].map(([label, value]) => (
-                      <li
-                        key={label}
-                        className="m-0 flex items-baseline justify-between gap-6 py-2.5 3xl:py-3.5 border-t border-line"
-                      >
-                        <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
-                        <span className="text-right font-sans font-normal text-[15px] md:text-[16px] 3xl:text-[20px] 4xl:text-[24px] leading-[1.4] text-ink">{value}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </Reveal>
+              {/* Material ledger — a full-width spec strip BELOW the image + prose, so
+                  the two columns line up (the landscape photo is shorter than three
+                  paragraphs; a balanced 2×3 spec table under both reads as a clean
+                  footer, never paragraph text bleeding below the image). */}
+              <ul className="list-none p-0 m-0 mt-9 md:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+                {[
+                  ["Time", "Hundreds of hours per canvas"],
+                  ["Edition", "Individually made to order"],
+                  ["Surface", "350gsm archival canvas"],
+                  ["Frame", "Hand-stretched, deep wooden"],
+                  ["Tools", "Compass · rule · brush"],
+                  ["Pigment", "Hand-pressed oils + pigment inks"],
+                ].map(([label, value]) => (
+                  <li
+                    key={label}
+                    className="m-0 flex items-baseline justify-between gap-6 py-2.5 3xl:py-3.5 border-t border-line"
+                  >
+                    <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
+                    <span className="text-right font-sans font-normal text-[15px] md:text-[16px] 3xl:text-[20px] 4xl:text-[24px] leading-[1.4] text-ink">{value}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
 
