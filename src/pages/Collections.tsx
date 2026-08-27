@@ -395,7 +395,12 @@ export const ComposeSetCard = () => {
         ? bundleDiscountPercentForCount(count)
         : 0;
   // Per-line-converted set figures so advertised == charged in every currency (#7).
-  const setFig = bundleMinorFigures(count * tier.pricePence, count, percent, convert);
+  // ⚠️ MONEY: price on the FRAMED advertised price (base + framing), NOT the bare
+  // base — acquireSet adds framed lines (addItem(..., true)) which checkout charges
+  // at the framed price, so quoting tier.pricePence here under-quoted the buyer by
+  // the whole framing add-on. Mirrors CollectionSetCard / CatalogueSetCard, which
+  // both build their full price from getTierAdvertisedPricePence.
+  const setFig = bundleMinorFigures(count * getTierAdvertisedPricePence(tier), count, percent, convert);
   const money = (minor: number) =>
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
 
@@ -427,7 +432,7 @@ export const ComposeSetCard = () => {
         </h3>
         <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
           Choose any two or more mandalas to hang together. The set saving builds
-          as you add — 5% for two, 10% for three or more — applied automatically
+          as you add — 5% for two, 8% for three or more — applied automatically
           at checkout.
         </p>
 
