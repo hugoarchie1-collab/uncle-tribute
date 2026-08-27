@@ -335,64 +335,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             : "py-5 nav-bg-top-plain border-b border-transparent",
       )}
     >
-      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center gap-2 sm:gap-4">
-        {/* LEFT ZONE — the nav system. Curated inline links from xl (the Avant-
-            Arte gallery stance Hugo chose 2026-08-27); below xl they fold into the
-            hamburger, which opens the full drawer (every page). ONE nav system per
-            width, never inline-links-AND-a-hamburger competing at once. */}
-        <div className="flex flex-1 min-w-0 xl:min-w-max items-center justify-start gap-6 3xl:gap-8">
-          <button
-            ref={menuButtonRef}
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls={menuOpen ? "mobile-menu" : undefined}
-            onClick={() => setMenuOpen((o) => !o)}
-            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -ml-2.5 text-ink/60 hover:text-ink transition-colors"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-              {menuOpen ? (
-                <path d="M5 5 19 19M19 5 5 19" />
-              ) : (
-                <>
-                  <path d="M4 7h16" />
-                  <path d="M4 12h16" />
-                  <path d="M4 17h16" />
-                </>
-              )}
-            </svg>
-          </button>
-
-          <nav className="hidden xl:flex items-center gap-7 3xl:gap-8" aria-label="Primary">
-            {CURATED_NAV.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end={l.end}
-                className={({ isActive }) =>
-                  cn(
-                    "relative py-2 font-sans text-[15px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-300",
-                    isActive ? "text-ink" : "text-ink/55 hover:text-ink",
-                    // DIRECTIONAL underline — grows in from the left on hover,
-                    // collapses out through the right; the active page persists.
-                    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-right after:transition-transform after:duration-300",
-                    isActive && "after:scale-x-100",
-                    "hover:after:scale-x-100 hover:after:origin-left",
-                  )
-                }
-              >
-                {l.label}
-              </NavLink>
-            ))}
-            <ReturningVisitorChip />
-          </nav>
-        </div>
-
-        {/* CENTRE ZONE — the brand lockup is the masthead's anchor (Hugo
-            2026-08-27, Avant-Arte gallery register): seal + wordmark framed by
-            air, the loudest thing in the bar. Sides are flex-1-matched so it sits
-            dead-centre; min-w-0 + ellipsis means it can never bleed over an edge. */}
-        <div className="flex shrink min-w-0 items-center justify-center px-1">
+      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center justify-between gap-4">
+        {/* LEFT — brand anchor + inline nav. Brand is hard-LEFT (Hugo 2026-08-27:
+            centring the long wordmark read "out of place / crammed against the
+            nav" — a 467px nav can't balance ~180px of icons, so the gaps went
+            lopsided; anchoring left is balanced by construction and the classic
+            move for a long gallery name). Nav sits beside it from xl; below xl it
+            folds into the hamburger on the right. */}
+        <div className="flex items-center min-w-0 gap-6 xl:gap-9">
           <Link
             to="/"
             aria-label="The Art of Stephen Meakin — home"
@@ -419,13 +369,36 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               The Art of Stephen Meakin
             </span>
           </Link>
+
+          <nav className="hidden xl:flex items-center gap-7 3xl:gap-8 shrink-0" aria-label="Primary">
+            {CURATED_NAV.map((l) => (
+              <NavLink
+                key={l.to}
+                to={l.to}
+                end={l.end}
+                className={({ isActive }) =>
+                  cn(
+                    "relative py-2 font-sans text-[15px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-300",
+                    isActive ? "text-ink" : "text-ink/55 hover:text-ink",
+                    // DIRECTIONAL underline — grows in from the left on hover,
+                    // collapses out through the right; the active page persists.
+                    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-right after:transition-transform after:duration-300",
+                    isActive && "after:scale-x-100",
+                    "hover:after:scale-x-100 hover:after:origin-left",
+                  )
+                }
+              >
+                {l.label}
+              </NavLink>
+            ))}
+            <ReturningVisitorChip />
+          </nav>
         </div>
 
-        {/* RIGHT ZONE — commerce, quietened to the edge. Search is a magnifier
-            that opens a full-width reveal (no always-on pill, no mic); currency is
-            a bare "£ GBP ⌄"; the basket count is a hairline ring, not an orange
-            blob. min-w-max keeps the icons from ever collapsing under the brand. */}
-        <div className="flex flex-1 min-w-max items-center justify-end gap-1 sm:gap-2 lg:gap-3">
+        {/* RIGHT — the quiet commerce cluster: search magnifier, bare "£ GBP ⌄",
+            hairline basket; the hamburger (below xl) sits at the end. The bar's
+            justify-between pins this group to the right edge. */}
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:gap-3">
           <button
             ref={searchButtonRef}
             type="button"
@@ -496,6 +469,29 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               </motion.span>
             )}
           </NavLink>
+
+          {/* Hamburger — below xl; opens the full drawer (every page). */}
+          <button
+            ref={menuButtonRef}
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls={menuOpen ? "mobile-menu" : undefined}
+            onClick={() => setMenuOpen((o) => !o)}
+            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/60 hover:text-ink transition-colors"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              {menuOpen ? (
+                <path d="M5 5 19 19M19 5 5 19" />
+              ) : (
+                <>
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
       </div>
 
