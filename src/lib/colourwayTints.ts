@@ -28,7 +28,6 @@ const GENERATED: Record<string, ColourwayTint> = {
   "/img/paintings/ophiuchus-original.jpg": { wall: "#4b2722", halo: "#b67166" }, // H 30
   "/img/paintings/tridecagon-sage-green.jpg": { wall: "#28391a", halo: "#729258" }, // H 132
   "/img/paintings/tridecagon-moonstone-blue.jpg": { wall: "#482b16", halo: "#b07750" }, // H 55
-  "/img/paintings/tridecagon-supernova-violet-v2.jpg": { wall: "#2e2f4e", halo: "#7d7fbb" }, // H 282
   "/img/paintings/tridecagon-coral-reef-v2.jpg": { wall: "#37340f", halo: "#8e8945" }, // H 105
   "/img/paintings/lulin-original.jpg": { wall: "#41300d", halo: "#a28043" }, // H 81
   "/img/paintings/enneagon-cygnus-gold.jpg": { wall: "#3a330e", halo: "#948743" }, // H 99

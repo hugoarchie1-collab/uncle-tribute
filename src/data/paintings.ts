@@ -1158,13 +1158,6 @@ export const PAINTINGS: Painting[] = [
         available: false,
       },
       {
-        name: "Supernova Violet",
-        image: "/img/paintings/tridecagon-supernova-violet-v2.jpg",
-        hex: "#8a7fd2",
-        isOriginal: false,
-        available: true,
-      },
-      {
         name: "Coral Reef",
         image: "/img/paintings/tridecagon-coral-reef-v2.jpg",
         hex: "#dcb39e",

@@ -40,7 +40,6 @@ export const IMAGE_VARIANT_WIDTHS: Record<string, readonly number[]> = {
   "/img/paintings/tridecagon-moonstone-blue.jpg": [480, 800, 1200, 1600],
   "/img/paintings/tridecagon-rose-quartz.jpg": [480, 800, 1200, 1600],
   "/img/paintings/tridecagon-sage-green.jpg": [480, 800, 1200, 1600],
-  "/img/paintings/tridecagon-supernova-violet-v2.jpg": [480, 800, 1200, 1600],
   "/img/paintings/wild-rose-deep-forest-red.jpg": [480, 800, 1200, 1600],
   "/img/paintings/wild-rose-sussex-pink.jpg": [480, 800, 1200, 1600],
   "/img/scenes/born-in-the-sky.jpg": [800, 1400, 2000],
