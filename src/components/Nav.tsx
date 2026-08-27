@@ -336,14 +336,13 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
       )}
     >
       <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center justify-between gap-4">
-        {/* LEFT — brand anchor + inline nav. Brand is hard-LEFT (Hugo 2026-08-27:
-            centring the long wordmark read "out of place / crammed against the
-            nav" — a 467px nav can't balance ~180px of icons, so the gaps went
-            lopsided; anchoring left is balanced by construction and the classic
-            move for a long gallery name). Nav sits beside it from xl; below xl it
-            folds into the hamburger on the right. */}
-        <div className="flex items-center min-w-0 gap-6 xl:gap-9">
-          <Link
+        {/* BRAND (left) · NAV (centre) · COMMERCE (right) — a THREE-way
+            justify-between so content spreads across the FULL width with even
+            gaps, instead of clustering brand+nav on the left and stranding the
+            icons in a lonely void on the far right (Hugo 2026-08-27: fill the
+            screen, don't strand). Classic logo-left / nav-centre / cart-right
+            premium masthead. Below xl the nav folds into the hamburger. */}
+        <Link
             to="/"
             aria-label="The Art of Stephen Meakin — home"
             // Clicking the logo while ALREADY on home does not re-navigate, so it
@@ -393,7 +392,6 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             ))}
             <ReturningVisitorChip />
           </nav>
-        </div>
 
         {/* RIGHT — the quiet commerce cluster: search magnifier, bare "£ GBP ⌄",
             hairline basket; the hamburger (below xl) sits at the end. The bar's
