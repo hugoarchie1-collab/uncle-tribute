@@ -231,11 +231,16 @@ export const SearchBar = ({
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") {
-      // Esc closes the panel; a second Esc (panel already closed) clears it.
+      // Two-stage Esc: first close the suggestions panel, then (a second Esc)
+      // clear the query. When THIS field consumes the Esc, stop it bubbling so a
+      // host that also listens for Esc (the Nav search reveal) doesn't collapse
+      // on the same keypress. An Esc we don't use bubbles up to close the reveal.
       if (showPanel) {
         e.preventDefault();
+        e.stopPropagation();
         close();
       } else if (query) {
+        e.stopPropagation();
         setQuery("");
       }
       return;

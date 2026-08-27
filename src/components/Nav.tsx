@@ -142,6 +142,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   const menuOpen = useMenuOpen();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
 
   // Track the prior basket count so we pulse only on increments, exposing a
   // `pulseKey` that bumps every time a pulse should retrigger. Route changes
@@ -225,11 +226,18 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     setSearchOpen(false);
   }, [location.pathname]);
 
-  // Escape closes the search reveal (mirrors the drawer's Escape affordance).
+  // Escape closes the search reveal AND restores focus to the magnifier toggle
+  // (mirrors the drawer's focus-restore — without this a keyboard user is dumped
+  // at document.body). SearchBar stops the Esc that it consumes (dismissing its
+  // own suggestions / clearing the query) from bubbling here, so this only fires
+  // on an Esc the field didn't use — the reveal closes as the last stage.
   useEffect(() => {
     if (!searchOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSearchOpen(false);
+      if (e.key === "Escape") {
+        setSearchOpen(false);
+        searchButtonRef.current?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -332,13 +340,13 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             Arte gallery stance Hugo chose 2026-08-27); below xl they fold into the
             hamburger, which opens the full drawer (every page). ONE nav system per
             width, never inline-links-AND-a-hamburger competing at once. */}
-        <div className="flex flex-1 min-w-0 items-center justify-start gap-6 3xl:gap-8">
+        <div className="flex flex-1 min-w-0 xl:min-w-max items-center justify-start gap-6 3xl:gap-8">
           <button
             ref={menuButtonRef}
             type="button"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
+            aria-controls={menuOpen ? "mobile-menu" : undefined}
             onClick={() => setMenuOpen((o) => !o)}
             className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -ml-2.5 text-ink/60 hover:text-ink transition-colors"
           >
@@ -419,9 +427,11 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             blob. min-w-max keeps the icons from ever collapsing under the brand. */}
         <div className="flex flex-1 min-w-max items-center justify-end gap-1 sm:gap-2 lg:gap-3">
           <button
+            ref={searchButtonRef}
             type="button"
             aria-label={searchOpen ? "Close search" : "Search"}
             aria-expanded={searchOpen}
+            aria-controls={searchOpen ? "header-search-reveal" : undefined}
             onClick={() => setSearchOpen((o) => !o)}
             className="press hidden sm:inline-flex items-center justify-center w-11 h-11 text-ink/55 hover:text-ink transition-colors"
           >
@@ -497,9 +507,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         {searchOpen && (
           <motion.div
             key="search-reveal"
-            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
+            id="header-search-reveal"
+            initial={reduceMotion ? false : { opacity: 0, y: -8, pointerEvents: "none" }}
+            animate={{ opacity: 1, y: 0, pointerEvents: "auto" }}
+            // pointerEvents SNAPS to none the instant the close begins (framer
+            // applies non-tweenable props immediately) — so if the exit ever
+            // stalls without unmounting (throttled rAF in a backgrounded tab),
+            // the invisible node can't trap clicks. Mirrors the drawer scrim.
+            exit={{ opacity: 0, y: -8, pointerEvents: "none" }}
             transition={{ duration: reduceMotion ? 0 : 0.28, ease: EASE_SMOOTH }}
           >
             <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] pt-3.5 pb-1">
