@@ -125,6 +125,9 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   // (compositor-cheap); NO backdrop-filter on this always-mounted fixed element
   // (that re-samples the full-width strip every scroll frame — the "2005-lag").
   const [hidden, setHidden] = useState(false);
+  // The masthead search is collapsed to a magnifier (gallery register); clicking
+  // it opens a full-width search reveal below the bar. Never an always-on pill.
+  const [searchOpen, setSearchOpen] = useState(false);
   const lastYRef = useRef(0);
   // Total physical items — sum of print quantities + gift lines — so the badge
   // reflects quantity, not just distinct lines.
@@ -215,7 +218,22 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
   // disable is needed.)
   useEffect(() => {
     setMenuOpen(false);
+    // Close the search reveal on navigation (a valid router→UI sync). setMenuOpen
+    // above is the module-store writer so it's exempt; setSearchOpen is local
+    // state, so the strict rule flags it here — the disable is deliberate.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchOpen(false);
   }, [location.pathname]);
+
+  // Escape closes the search reveal (mirrors the drawer's Escape affordance).
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSearchOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [searchOpen]);
 
   // Mobile menu a11y: Escape to close, Tab focus-trap, body-scroll lock, and
   // focus restored to the toggle on close. Only active while the menu is open.
@@ -309,72 +327,35 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             : "py-5 nav-bg-top-plain border-b border-transparent",
       )}
     >
-      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center justify-between gap-3 sm:gap-6">
-        <Link
-          to="/"
-          aria-label="The Art of Stephen Meakin — home"
-          // Clicking the logo while ALREADY on home does not re-navigate (same
-          // path → PageTransition's scroll-to-top never fires), so it felt dead.
-          // Hugo 2026-07-28: "clicking logo should take you to top of home." When
-          // we're already home, scroll to the masthead instead of doing nothing.
-          onClick={() => {
-            if (location.pathname === "/")
-              window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          className="press inline-flex items-center min-w-0"
-        >
-          {/* GLOBAL LOGO LOCKUP (Hugo 2026-08-03): the estate's OWN deep-red
-              wax-seal Tudor rose MARK — his established brand — beside the name in
-              the site's MAIN BOLD display face (Fraunces 700), proportions matched
-              so the mark and the logotype share a height and read as one emblem.
-              Seal ~2x the wordmark cap height. */}
-          <img
-            src={asset("/logo/logo-seal-v9-w256.png")}
-            alt=""
-            aria-hidden="true"
-            className="shrink-0 h-[clamp(32px,3.2vw,44px)] w-auto mr-2.5 sm:mr-3 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
-          />
-          <span
-            className="font-display font-bold text-ink tracking-[-0.01em] [font-variation-settings:'opsz'_40,'wght'_700] leading-[1.02] min-w-0 whitespace-nowrap text-[clamp(13px,1.45vw,19px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] items-center gap-2 sm:gap-4">
+        {/* LEFT ZONE — the nav system. Curated inline links from xl (the Avant-
+            Arte gallery stance Hugo chose 2026-08-27); below xl they fold into the
+            hamburger, which opens the full drawer (every page). ONE nav system per
+            width, never inline-links-AND-a-hamburger competing at once. */}
+        <div className="flex flex-1 min-w-0 items-center justify-start gap-6 3xl:gap-8">
+          <button
+            ref={menuButtonRef}
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -ml-2.5 text-ink/60 hover:text-ink transition-colors"
           >
-            The Art of Stephen Meakin
-          </span>
-        </Link>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              {menuOpen ? (
+                <path d="M5 5 19 19M19 5 5 19" />
+              ) : (
+                <>
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
+                </>
+              )}
+            </svg>
+          </button>
 
-        {/* Deliver-to — Amazon-pattern location control sitting left of the
-            search. Free delivery, so it's an informational preference
-            only (never touches pricing). lg+ in the bar; in the drawer below. */}
-        <DeliverTo variant="header" className="hidden 3xl:flex shrink-0" />
-
-        {/* Desktop search — a compact header field filling the middle of the bar
-            (Hugo: "add a search bar on the top bar" for full-screen desktop). The
-            container is the flex-1 spacer that keeps the logo left + icons hard
-            right at every width; the field itself only appears from lg up, so the
-            phone/tablet bar stays uncluttered (search still lives in the drawer). */}
-        {/* Desktop search — a FLUID-FILL bar (Hugo 2026-07-31: "the gaps here
-            are MASSIVE… everything dynamic, proportions consistent like YouTube").
-            The old fixed max-w-[340px] island sat centered in the flex-1 spacer,
-            leaving huge symmetric voids at laptop widths. Now it's w-full with a
-            fluid clamp cap (44vw floor scaling to 56vw, capped 860px) so it grows
-            WITH the viewport and fills the middle — gaps hold a constant ~48px at
-            every width instead of ballooning. Because the wrapper is flex-1
-            min-w-0, the field auto-shrinks (never overlaps) when the inline nav +
-            Deliver-to reveal at 2xl/3xl; shown from md, in the drawer below. */}
-        <div className="flex-1 min-w-0 flex justify-center px-3 lg:px-6">
-          <SearchBar variant="header" className="hidden md:block w-full min-w-[160px] max-w-[clamp(320px,56vw,860px)]" />
-        </div>
-
-        <div className="flex shrink-0 items-center gap-4 sm:gap-7 lg:gap-9">
-          {/* Primary links live in the always-on MENU drawer now (Hugo: the
-              inline bar "all overlaps" — 11 links never fit a single row, so they
-              crammed/overlapped at wide widths). The hamburger below is shown at
-              EVERY width and opens the full-screen drawer that lists every page.
-              This inline nav is kept hidden (so the markup/chip stay available if
-              we ever want a curated desktop subset). */}
-          <nav
-            className="hidden 2xl:flex items-center gap-6 3xl:gap-7 mr-1"
-            aria-label="Primary"
-          >
+          <nav className="hidden xl:flex items-center gap-7 3xl:gap-8" aria-label="Primary">
             {CURATED_NAV.map((l) => (
               <NavLink
                 key={l.to}
@@ -382,13 +363,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "relative py-2 font-sans text-[15px] font-semibold tracking-[0.02em] transition-colors duration-300",
+                    "relative py-2 font-sans text-[15px] font-medium tracking-[0.01em] whitespace-nowrap transition-colors duration-300",
                     isActive ? "text-ink" : "text-ink/55 hover:text-ink",
-                    // DIRECTIONAL underline — grows in FROM the left (hover sets
-                    // origin-left), and on hover-out the origin reverts to the
-                    // base origin-right so the line collapses out THROUGH the
-                    // right edge: one continuous direction of travel, never a
-                    // rewind. The active page keeps its persistent underline.
+                    // DIRECTIONAL underline — grows in from the left on hover,
+                    // collapses out through the right; the active page persists.
                     "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-accent after:scale-x-0 after:origin-right after:transition-transform after:duration-300",
                     isActive && "after:scale-x-100",
                     "hover:after:scale-x-100 hover:after:origin-left",
@@ -400,15 +378,70 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             ))}
             <ReturningVisitorChip />
           </nav>
+        </div>
 
-          {/* Currency — presentment-currency picker. lg+ in the bar; in the
-              drawer below. Converts every price live AND charges in the chosen
-              currency at checkout (advertised == charged). */}
+        {/* CENTRE ZONE — the brand lockup is the masthead's anchor (Hugo
+            2026-08-27, Avant-Arte gallery register): seal + wordmark framed by
+            air, the loudest thing in the bar. Sides are flex-1-matched so it sits
+            dead-centre; min-w-0 + ellipsis means it can never bleed over an edge. */}
+        <div className="flex shrink min-w-0 items-center justify-center px-1">
+          <Link
+            to="/"
+            aria-label="The Art of Stephen Meakin — home"
+            // Clicking the logo while ALREADY on home does not re-navigate, so it
+            // felt dead (Hugo 2026-07-28) — scroll to the masthead instead.
+            onClick={() => {
+              if (location.pathname === "/")
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="press inline-flex items-center min-w-0"
+          >
+            {/* GLOBAL LOGO LOCKUP: the estate's deep-red wax-seal Tudor rose mark
+                beside the name in Fraunces 700, matched heights, read as one
+                emblem. */}
+            <img
+              src={asset("/logo/logo-seal-v9-w256.png")}
+              alt=""
+              aria-hidden="true"
+              className="shrink-0 h-[clamp(30px,3vw,42px)] w-auto mr-2 sm:mr-2.5 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
+            />
+            <span
+              className="font-display font-bold text-ink tracking-[-0.01em] [font-variation-settings:'opsz'_40,'wght'_700] leading-[1.02] min-w-0 whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(13px,1.4vw,20px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
+            >
+              The Art of Stephen Meakin
+            </span>
+          </Link>
+        </div>
+
+        {/* RIGHT ZONE — commerce, quietened to the edge. Search is a magnifier
+            that opens a full-width reveal (no always-on pill, no mic); currency is
+            a bare "£ GBP ⌄"; the basket count is a hairline ring, not an orange
+            blob. min-w-max keeps the icons from ever collapsing under the brand. */}
+        <div className="flex flex-1 min-w-max items-center justify-end gap-1 sm:gap-2 lg:gap-3">
+          <button
+            type="button"
+            aria-label={searchOpen ? "Close search" : "Search"}
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen((o) => !o)}
+            className="press hidden sm:inline-flex items-center justify-center w-11 h-11 text-ink/55 hover:text-ink transition-colors"
+          >
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              {searchOpen ? (
+                <path d="M5 5 19 19M19 5 5 19" />
+              ) : (
+                <>
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </>
+              )}
+            </svg>
+          </button>
+
+          {/* Currency — presentment-currency picker, now a bare trigger. lg+ in
+              the bar; in the drawer below. Advertised == charged at checkout. */}
           <CurrencySelect variant="header" className="hidden lg:inline-block shrink-0" />
 
-          {/* Basket — links straight to the full basket + account page (the
-              "two-in-one"). Adds are confirmed by the centered AddedConfirmation
-              modal, so there is no competing slide-in drawer. */}
+          {/* Basket — links straight to the full basket + account page. */}
           <NavLink
             to="/basket"
             aria-label={
@@ -432,10 +465,10 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                   reduceMotion
                     ? undefined
                     : {
-                        scale: [1, 1.35, 1],
+                        scale: [1, 1.3, 1],
                         boxShadow: [
                           "0 0 0 0 rgba(201,120,68,0)",
-                          "0 0 0 6px rgba(201,120,68,0.35)",
+                          "0 0 0 5px rgba(201,120,68,0.32)",
                           "0 0 0 0 rgba(201,120,68,0)",
                         ],
                       }
@@ -445,46 +478,41 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                     ? undefined
                     : { duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }
                 }
-                className="absolute -top-1.5 -right-2 min-w-[19px] h-[19px] px-[6px] inline-flex items-center justify-center rounded-full bg-accent text-bg font-sans text-[11px] font-bold leading-none"
+                // Hairline count (gallery register) — a cream ring on the ground,
+                // not a filled orange blob. The pulse-on-add is kept, softened.
+                className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] px-[5px] inline-flex items-center justify-center rounded-full bg-bg text-ink ring-1 ring-[rgba(237,230,214,0.42)] font-sans text-[11px] font-semibold leading-none tabular-nums"
               >
                 {basketCount}
               </motion.span>
             )}
           </NavLink>
-
-          {/* Hamburger — below `lg`. Toggles the accessible menu. */}
-          <button
-            ref={menuButtonRef}
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            onClick={() => setMenuOpen((o) => !o)}
-            className="press inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/70 hover:text-ink transition-colors"
-          >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              {menuOpen ? (
-                <path d="M5 5 19 19M19 5 5 19" />
-              ) : (
-                <>
-                  <path d="M4 7h16" />
-                  <path d="M4 12h16" />
-                  <path d="M4 17h16" />
-                </>
-              )}
-            </svg>
-          </button>
         </div>
       </div>
+
+      {/* SEARCH REVEAL — a full-width field that slides down under the bar when
+          the magnifier is clicked (never an always-on pill). Keeps the live
+          artwork autocomplete; the voice mic is dropped for the masthead. Escape,
+          a route change, committing a result, or the X all close it. */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            key="search-reveal"
+            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.28, ease: EASE_SMOOTH }}
+          >
+            <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] pt-3.5 pb-1">
+              <SearchBar
+                variant="page"
+                autoFocus
+                showVoice={false}
+                onNavigate={() => setSearchOpen(false)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Menu (<xl) — a slide-in side panel (drawer) portalled to document.body
           so it layers cleanly above every page stacking context (incl. the

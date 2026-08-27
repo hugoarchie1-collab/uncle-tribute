@@ -40,6 +40,13 @@ interface SearchBarProps {
   variant?: "header" | "page";
   /** Called after any navigation commits — lets the host (mobile drawer) close. */
   onNavigate?: () => void;
+  /** Focus the input as soon as it mounts — used by the header's search reveal
+   *  so the field is ready to type into the instant it opens. */
+  autoFocus?: boolean;
+  /** Show the voice-search mic. Default FALSE — the mic reads as marketplace
+   *  chrome and is dropped in unison across every device (Hugo 2026-08-27); pass
+   *  true only to bring it back for a specific surface. */
+  showVoice?: boolean;
 }
 
 /** Minimal shape of the Web Speech API's SpeechRecognition (this TS lib ships
@@ -82,6 +89,8 @@ export const SearchBar = ({
   className,
   variant = "header",
   onNavigate,
+  autoFocus = false,
+  showVoice = false,
 }: SearchBarProps) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -147,6 +156,15 @@ export const SearchBar = ({
   const toggleVoice = () => (listening ? stopVoice() : startVoice());
 
   useEffect(() => () => recognitionRef.current?.abort(), []);
+
+  // Focus the field on mount when the host asks (the header search reveal), so
+  // it is ready to type the instant it slides open. A frame's delay lets the
+  // open/enter transition mount the input first.
+  useEffect(() => {
+    if (!autoFocus) return;
+    const id = window.requestAnimationFrame(() => inputRef.current?.focus());
+    return () => window.cancelAnimationFrame(id);
+  }, [autoFocus]);
 
   // Debounce the query → debounced, so ranking runs ~once per pause, not per
   // key. A settled new query also resets the highlight (a stale index must not
@@ -336,7 +354,7 @@ export const SearchBar = ({
         {/* Voice search — a mic on the right of the pill, YouTube-style. Only
             rendered where the browser supports dictation. Pulses while listening
             (accent), quiet cream at rest. */}
-        {voiceSupported && (
+        {voiceSupported && showVoice && (
           <button
             type="button"
             onClick={toggleVoice}

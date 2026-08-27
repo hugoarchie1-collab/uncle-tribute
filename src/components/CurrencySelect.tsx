@@ -135,16 +135,18 @@ export const CurrencySelect = ({ className, variant = "header" }: CurrencySelect
             : "px-1.5 py-1.5 min-h-[44px] text-ink/70 hover:text-ink",
         )}
       >
-        <CoinIcon
-          className={cn(
-            "shrink-0",
-            isMenu ? "w-[20px] h-[20px] text-ink/70" : "w-[18px] h-[18px]",
-          )}
-        />
+        {/* Coin + "Currency" caps label live only in the drawer now. The header
+            trigger is a bare "£ GBP ⌄" — the gallery register (Hugo 2026-08-27):
+            one control, one signal, no marketplace coin. */}
+        {isMenu && (
+          <CoinIcon className="shrink-0 w-[20px] h-[20px] text-ink/70" />
+        )}
         <span className="inline-flex flex-col leading-none min-w-0">
-          <span className="font-sans text-[10px] sm:text-[11px] 3xl:text-[13px] font-semibold uppercase tracking-[0.16em] text-ink/55 mb-0.5">
-            Currency
-          </span>
+          {isMenu && (
+            <span className="font-sans text-[10px] sm:text-[11px] 3xl:text-[13px] font-semibold uppercase tracking-[0.16em] text-ink/55 mb-0.5">
+              Currency
+            </span>
+          )}
           <span className="inline-flex items-center gap-1 min-w-0">
             <span
               className={cn(
