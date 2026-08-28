@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal, RevealStagger } from "../components/Reveal";
@@ -19,7 +19,6 @@ import {
   type PrintTier,
 } from "../data/paintings";
 import { addItem } from "../lib/basket";
-import { asset } from "../lib/asset";
 import { useCurrency, formatMinorUnits, bundleMinorFigures } from "../lib/currency";
 import { Seo } from "../components/Seo";
 import { SITE_URL, absoluteUrl } from "../lib/seo";
@@ -53,127 +52,29 @@ const PAGE_ENVELOPE =
   "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
 // ── SOFT SET-CARD SCRIM ───────────────────────────────────────────────────────
-// The set cards (complete-collection / compose / catalogue) sit ON the photo
-// backdrop. They used to be a HARD ringed dark panel — bg-[rgba(10,9,8,0.82)]
-// ring-1 ring-line — i.e. an opaque black rectangle with a hard ring, the exact
-// "ringed dark panel" the brief bans. Replaced with a soft scrim that holds dense
-// at the centre (where the heading/price/CTA sit) and fades to FULLY TRANSPARENT
-// (alpha 0) at every edge, so the card melts into the scene instead of cutting a
-// box out of it. No ring, no solid rectangle. The copy keeps its own text-shadow
-// legibility via the page scrim beneath; this is the local lift over the photo.
+// The set cards (complete-collection / compose / catalogue) hold dense at the
+// centre (where the heading/price/CTA sit) and fade to FULLY TRANSPARENT at every
+// edge, so the card melts into the calm ground instead of cutting a box out of it
+// (the brief bans ringed dark panels). No ring, no solid rectangle. The copy keeps
+// its own text-shadow legibility.
 const SET_CARD_SCRIM =
   "radial-gradient(120% 100% at 50% 50%, rgba(9,7,6,0.86) 0%, rgba(9,7,6,0.78) 40%, rgba(9,7,6,0.42) 78%, rgba(9,7,6,0) 100%)";
 
-/**
- * Fixed backdrop layer that cross-fades between collection scenes as the
- * user scrolls. Each backdrop tracks its own section's visibility — when a
- * section is in view, its backdrop fades to full opacity; when leaving, it
- * fades back out. Adjacent backdrops overlap, eliminating the hard
- * horizontal seam between collections.
- */
-/** CALM MODE (Hugo 2026-07-30 "go calm everywhere"): retire the crossfading
- *  collection scene photos for a clean near-black ground so the painting tiles
- *  are the only colour. Flip to `false` to restore the scenes. */
-const CALM_BACKDROPS = true;
+// The single near-black shared scrim/vignette that grounds tile + set-card copy.
+// (CALM MODE, Hugo 2026-07-30 "go calm everywhere": the per-collection crossfading
+// scene photos were retired for a clean near-black ground so the painting tiles are
+// the only colour. The whole ScrollBackdrop crossfade system that once lived here
+// was removed 2026-08-28 — it rendered nothing under CALM.)
 
-const ScrollBackdrop = ({
-  photoUrl,
-  sectionRef,
-  isFirst = false,
-  isLast = false,
-}: {
-  photoUrl: string;
-  sectionRef: RefObject<HTMLElement | null>;
-  isFirst?: boolean;
-  isLast?: boolean;
-}) => {
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  // Hold near full opacity across the bulk of the section so the photo
-  // is never invisible while the user is reading the collection. Soft
-  // fade at the very edges keeps adjacent collections cross-dissolving.
-  // The FIRST collection opens at FULL opacity from the top (no fade-up from
-  // 0) so the page is never bare black before the first scroll — the intro
-  // sits on its backdrop immediately (Hugo: "before scrolling the background
-  // is black"). It still fades out normally as the second collection arrives.
-  // The LAST collection (Born in the Sky — the nebula) NEVER fades out: it
-  // EXTENDS through the complete-catalogue panel + footer to the very end of
-  // the page (Hugo 2026-07-03: "the nebula as last image, extended — don't
-  // add the first one again"): without the hold, the foot fell back to the
-  // indigo base wash, which read as the opening image returning.
-  const opacity = useTransform(
-    scrollYProgress,
-    isFirst ? [0, 0.88, 1] : isLast ? [0, 0.12, 1] : [0, 0.12, 0.88, 1],
-    isFirst ? [1, 1, 0] : isLast ? [0, 1, 1] : [0, 1, 1, 0],
-  );
-  // Parallax `y` + the inset-[-8%] overscan were REMOVED (2026-07-13): that
-  // transform snapped to a stale scroll position on route change = the
-  // "background zooms/jumps on every page click" bug. The scroll-driven OPACITY
-  // crossfade STAYS — it's what makes each collection show its OWN backdrop
-  // (Hugo: "3 different backgrounds", not born-in-the-sky for everyone).
-
-  // Promote to a GPU layer ONLY while this collection is in view, so the two
-  // off-screen collections don't each hold a full-viewport compositing layer
-  // alive for the whole page lifetime (texture memory → mobile jank).
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
-      setInView(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      // 10% (was 20%): release the GPU-promoted backdrop layer sooner once it
-      // scrolls away, without dropping so low (5%) that it promotes too late
-      // and stalls/flashes on the way in.
-      { rootMargin: "10% 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [sectionRef]);
-
-  // CALM MODE — render nothing; the single near-black base div (below) is the
-  // whole background now.
-  if (CALM_BACKDROPS) return null;
-
-  // Reduced-motion: drop the parallax/scale entirely, hold the backdrop at a
-  // calm static opacity, and release the GPU layer (will-change:auto) so we
-  // don't keep a promoted compositing layer alive for motion that never runs.
-  if (reduceMotion) {
-    return (
-      <div
-        style={{
-          opacity: 0.5,
-          backgroundImage: `url("${photoUrl}")`,
-          willChange: "auto",
-        }}
-        className="absolute inset-0 bg-cover bg-center"
-        aria-hidden="true"
-      />
-    );
-  }
-
-  return (
-    <motion.div
-      style={{
-        opacity,
-        backgroundImage: `url("${photoUrl}")`,
-        // GPU-promote ONLY the in-view backdrop (gated above) so the opacity
-        // crossfade composites cleanly without keeping promoted full-viewport
-        // layers alive for the 2 off-screen collections. Opacity only now.
-        willChange: inView ? "opacity" : "auto",
-      }}
-      // inset-0 (no overscan) — the overscan only existed to hide the parallax
-      // y-shift's edge gap; with y removed there's nothing to overscan for.
-      className="absolute inset-0 bg-cover bg-center"
-      aria-hidden="true"
-    />
-  );
-};
+// The colourway to show as a painting's cover: its original if available, else the
+// first available, else the first defined. ONE helper so every surface (browse
+// tile, collection/compose set cards) resolves the SAME cover — a withdrawn
+// original can never surface (the browse tile used to skip the `available` check
+// while the set cards honoured it, so a hidden original showed on the grid only).
+const coverColourway = (p: (typeof PAINTINGS)[number]) =>
+  p.colourways.find((c) => c.isOriginal && c.available) ??
+  p.colourways.find((c) => c.available) ??
+  p.colourways[0];
 
 // -----------------------------------------------------------------------------
 // BUNDLE SIZE SELECTOR — which sizes a set may be taken in
@@ -308,10 +209,7 @@ const CollectionSetCard = ({
   const shortName = coll.title.split(" — ")[0];
   const acquireCollection = () => {
     items.forEach((p) => {
-      const original =
-        p.colourways.find((c) => c.isOriginal && c.available) ??
-        p.colourways.find((c) => c.available) ??
-        p.colourways[0];
+      const original = coverColourway(p);
       // FRAMED bundle line (Hugo 2026-07-27: no unframed prints) — matches the
       // framed set price the panel advertises (advertised == charged).
       if (original) addItem(p.id, original.name, tier.id, true);
@@ -348,7 +246,7 @@ const CollectionSetCard = ({
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
             {fmtBundle(setFig.bundleMinor)}
           </span>
-          <span className="mx-3 text-ink/35">·</span>
+          <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
           the set, offered together
         </p>
         <p className={cn(META, "m-0 mb-5")}>
@@ -407,10 +305,7 @@ export const ComposeSetCard = () => {
   const acquireSet = () => {
     PAINTINGS.forEach((p) => {
       if (!picked.has(p.id)) return;
-      const original =
-        p.colourways.find((c) => c.isOriginal && c.available) ??
-        p.colourways.find((c) => c.available) ??
-        p.colourways[0];
+      const original = coverColourway(p);
       // FRAMED bundle line (Hugo 2026-07-27: no unframed prints) — matches the
       // framed set price the panel advertises (advertised == charged).
       if (original) addItem(p.id, original.name, tier.id, true);
@@ -427,9 +322,9 @@ export const ComposeSetCard = () => {
         style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
       >
         <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
-        <h3 className={cn(TITLE, "my-0")}>
+        <h2 className={cn(TITLE, "my-0")}>
           Build a wall of your own
-        </h3>
+        </h2>
         <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
           Choose any two or more mandalas to hang together. The set saving builds
           as you add — 5% for two, 8% for three or more — applied automatically
@@ -442,10 +337,7 @@ export const ComposeSetCard = () => {
             contact-sheet; a clean 5×2 below. */}
         <div className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
-            const cover =
-              p.colourways.find((c) => c.isOriginal && c.available) ??
-              p.colourways.find((c) => c.available) ??
-              p.colourways[0];
+            const cover = coverColourway(p);
             const on = picked.has(p.id);
             return (
               <button
@@ -497,7 +389,7 @@ export const ComposeSetCard = () => {
               <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
                 {money(setFig.bundleMinor)}
               </span>
-              <span className="mx-3 text-ink/35">·</span>
+              <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
               {count} prints, {sizeCode(tier)}
             </p>
             <p className={cn(META, "m-0 mb-5")}>
@@ -565,7 +457,7 @@ const CatalogueSetCard = () => {
           <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
             {fmtCatalogue(catFig.bundleMinor)}
           </span>
-          <span className="mx-3 text-ink/35">·</span>
+          <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
           <span>
             individually {fmtCatalogue(catFig.fullMinor)}, a saving of{" "}
             {fmtCatalogue(catFig.saveMinor)}
@@ -593,28 +485,6 @@ export const Collections = () => {
   // (".00" stripped). The GBP pence figures from paintings.ts stay the single
   // source of truth; only the presentation converts — advertised == charged.
   const { formatPretty: fmtP } = useCurrency();
-
-  // One ref per collection section so each backdrop can track its own
-  // visibility. ⚠️ Keep this list length === COLLECTIONS.length — a short list
-  // leaves a trailing collection with an undefined ref (its backdrop stops
-  // tracking) and breaks the isLast hold-to-footer below. Add a ref here
-  // whenever a collection is added. (Explicit calls, not a .map, to satisfy
-  // rules-of-hooks.)
-  const sectionRefs = [
-    useRef<HTMLElement>(null),
-    useRef<HTMLElement>(null),
-    useRef<HTMLElement>(null),
-    useRef<HTMLElement>(null),
-  ];
-
-  // The last collection that actually has a photographic backdrop — that
-  // ScrollBackdrop is the one held at full opacity through the catalogue panel +
-  // footer (isLast). Derived (not COLLECTIONS.length-1) so a trailing collection
-  // WITHOUT a backdrop can never leave the page foot reverting to the base wash
-  // (Hugo 2026-07-03: "the opening image returning at the foot").
-  const lastPhotoIdx = COLLECTIONS.map((c) => !!c.backdropImage).lastIndexOf(
-    true,
-  );
 
   // Bundle SIZE is now PER-CARD: each <CollectionSetCard> + the <CatalogueSetCard>
   // holds its own size + scroll-across selector (Hugo's "scroll across on each
@@ -660,50 +530,17 @@ export const Collections = () => {
       />
       <Nav />
 
-      {/* FIXED BACKDROP LAYER — covers viewport, cross-fades between collections */}
+      {/* FIXED SCRIM LAYER — one calm near-black vignette over the app's ambient
+          ground so the painting tiles + copy read clearly (CALM MODE: no scene
+          photos, the artwork is the only colour). Top kept LIGHT so the ambient
+          shows through behind the overlay nav; ramps darker toward the foot for
+          the catalogue/footer seam. The page-intro + tile copy carry their own
+          text-shadow for legibility. */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        {/* BASE WASH — an always-on, VISIBLE layer UNDER the cross-fading
-            collection scenes, covering the fade dips BETWEEN collections so
-            the page never reads as "no background / gone black" (Hugo
-            2026-06-24). ⚠️ NOT a peacock/Pavo wash: the Pavo painting is
-            reserved for home + About ONLY (Hugo 2026-07-03) — this base is the
-            page's own first collection scene (Habundia).
-            ⚠️ PAST THE LAST COLLECTION this base must never show (Hugo
-            2026-07-03: it read as "the first image returning" at the foot) —
-            the LAST ScrollBackdrop (Born in the Sky, the nebula) now holds at
-            full opacity through the complete-catalogue panel + footer via
-            isLast, so the nebula EXTENDS to the very end of the page. */}
-        {/* CALM MODE (Hugo 2026-07-30 "go calm everywhere"): the collection
-            scene photos are retired for a clean near-black ground so the
-            painting tiles are the only colour. */}
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" />
-        {COLLECTIONS.map((coll, i) =>
-          coll.backdropImage ? (
-            <ScrollBackdrop
-              key={coll.id}
-              photoUrl={asset(coll.backdropImage)}
-              sectionRef={sectionRefs[i]}
-              isFirst={i === 0}
-              isLast={i === lastPhotoIdx}
-            />
-          ) : null,
-        )}
-        {/* Shared scrim — soft vignette so painting tiles + text read clearly */}
         <div
           aria-hidden="true"
           className="absolute inset-0"
           style={{
-            // Stronger, even darkening so the cream (text-ink) copy stays
-            // legible over the bright collection photos while the photo
-            // remains as a subdued, moody texture (matches the dark brand).
-            // Top kept LIGHT (0.38) so the blurred collection backdrop shows
-            // through behind the overlay nav instead of stacking with the nav's
-            // own gradient into a black bar at the very top (Hugo). Ramps darker
-            // toward the foot for the catalogue/footer seam; the page-intro +
-            // tile copy carry their own text-shadow for legibility.
-            // 2026-07-07 lightened (Hugo: "reveal the background clearer, like
-            // home") — top/mid opened up so the collection scene reads clearly;
-            // foot kept heavier for the catalogue/footer seam + tile legibility.
             background:
               "linear-gradient(180deg, rgba(8,7,6,0.26) 0%, rgba(8,7,6,0.40) 45%, rgba(8,7,6,0.60) 100%)",
           }}
@@ -861,8 +698,7 @@ export const Collections = () => {
             <section
               key={coll.id}
               id={`collection-${coll.id}`}
-              ref={sectionRefs[collIndex]}
-              className="relative scroll-mt-24"
+              className="relative scroll-mt-28 md:scroll-mt-32"
             >
               <div className={cn(PAGE_ENVELOPE, "relative pt-8 md:pt-10 pb-8 md:pb-10")}>
                 <Reveal as="header" className="max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto text-center mb-4 md:mb-6">
@@ -895,9 +731,7 @@ export const Collections = () => {
                   className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6"
                 >
                   {items.map((painting) => {
-                    const cover =
-                      painting.colourways.find((c) => c.isOriginal) ??
-                      painting.colourways[0];
+                    const cover = coverColourway(painting);
                     return (
                       <motion.figure
                         key={painting.id}
