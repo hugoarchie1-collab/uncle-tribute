@@ -160,7 +160,7 @@ const CosmicInterlude = () => {
             than the film can resolve while still ~62svh there. object-cover + the
             vertical feather handle every ratio. */}
         <div
-          className="relative w-full overflow-hidden bg-transparent h-[clamp(360px,58svh,720px)] 2xl:h-[clamp(420px,58svh,820px)] 3xl:h-[clamp(440px,56svh,900px)] 4xl:h-[clamp(460px,54svh,960px)]"
+          className="relative w-full overflow-hidden bg-transparent h-[clamp(300px,44svh,440px)] md:h-[clamp(360px,58svh,720px)] 2xl:h-[clamp(420px,58svh,820px)] 3xl:h-[clamp(440px,56svh,900px)] 4xl:h-[clamp(460px,54svh,960px)]"
         >
           {near && (
             <video
@@ -860,14 +860,14 @@ export const Welcome = () => {
                   crop UP so his face + upper body always stay in frame (only a little
                   studio floor is trimmed off the bottom). Mobile shows the whole 2:3
                   portrait (aspect box, stacked). */}
-              <figure className="relative m-0 md:h-full overflow-hidden rounded-[4px] ring-1 ring-line">
+              <figure className="relative m-0 h-[clamp(300px,48svh,460px)] md:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   width={800}
                   height={1200}
                   sizes="(min-width:768px) 34vw, 100vw"
-                  className="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover md:object-[center_28%]"
+                  className="block w-full h-full object-cover object-[center_22%] md:absolute md:inset-0 md:h-full md:w-full md:object-[center_28%]"
                 />
               </figure>
               {/* Copy = ONE cohesive block, TOP-aligned so the eyebrow sits level with the
@@ -909,7 +909,7 @@ export const Welcome = () => {
               the edges like before — you were just cropping it terribly"). Crop
               positioned to keep Stephen (lower-centre) in frame. */}
           <Reveal as="figure" className="m-0 w-full">
-            <div className="relative w-full overflow-hidden h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
+            <div className="relative w-full overflow-hidden h-[clamp(300px,44svh,440px)] md:h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
               <ImageReveal
                 src="/img/welcome/03-painting-in-studio.jpg"
                 alt="Stephen painting in the studio"
@@ -1056,7 +1056,7 @@ export const Welcome = () => {
                   body at the easel, head to legs (Hugo 2026-08-25: "I want to see his
                   face and hand and brush and his legs"). zoom:1 = zero crop. */}
               <Reveal as="figure" delay={0.08} className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-                <div className="relative w-full overflow-hidden h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
+                <div className="relative w-full overflow-hidden h-[clamp(300px,44svh,440px)] md:h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
                   <ImageReveal
                     src="/img/welcome/stephen-painting-denim-v1.jpg"
                     alt="Stephen Meakin painting a mandala at the easel, a finished mandala on the wall behind him"
@@ -1278,7 +1278,7 @@ export const Welcome = () => {
                 crop zoom, no letterbox bars (Hugo 2026-08-25: "zoom the video out so we
                 can see the full video"). */}
             <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
+              <div className="relative w-full overflow-hidden h-[clamp(300px,44svh,440px)] md:h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
                 <LoopFilm
                   src="/video/studio-mandala-v1.mp4"
                   poster="/video/poster-studio-mandala-v1.jpg"
@@ -1377,7 +1377,7 @@ export const Welcome = () => {
                 (v1 1280×720 pillarboxed → v2 960×720 clean 4:3), so at full width the
                 cover-crop shows the footage with NO black bars. */}
             <Reveal as="figure" className="mt-6 md:mt-8 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
-              <div className="relative w-full overflow-hidden h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
+              <div className="relative w-full overflow-hidden h-[clamp(300px,44svh,440px)] md:h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]">
                 <LoopFilm
                   src="/video/arista-timelapse-v2.mp4"
                   poster="/video/poster-arista-timelapse-v2.jpg"
