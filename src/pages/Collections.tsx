@@ -90,7 +90,7 @@ const coverColourway = (p: (typeof PAINTINGS)[number]) =>
 // heirloom is `available:true` AND charged at its real £1,995 in
 // api/checkout.ts TIERS["heirloom"], so getTierById returns the true A0 price
 // (no silent A2 anchor fall-back) and advertised == charged holds for A0 sets
-// too (the 15%/12%/10%/5% bundle coupon is a percent, far above the A0 margin
+// too (the 12%/12%/8%/5% bundle coupon is a percent, far above the A0 margin
 // floor, so the checkout's margin-floor clamp is a no-op here). The `studio`
 // one-off stays excluded — it is not an edition. We derive the list from the
 // canonical PRINT_TIERS ladder — honouring each tier's own `available` flag —
@@ -161,7 +161,7 @@ const SetSizeSelector = ({
       aria-label="Choose the print size for this set — scroll across the sizes"
       className="flex max-w-full gap-1.5 overflow-x-auto snap-x snap-mandatory px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      {BUNDLE_TIERS.map((tier) => {
+      {BUNDLE_TIERS.map((tier, i) => {
         const active = tier.id === value.id;
         return (
           <button
@@ -169,6 +169,24 @@ const SetSizeSelector = ({
             type="button"
             role="radio"
             aria-checked={active}
+            // Roving tabindex + arrow-key selection so the announced "radio" role
+            // matches real keyboard behaviour (WAI-ARIA radiogroup pattern): only
+            // the selected chip is a tab stop, and Left/Right/Up/Down (+ Home/End)
+            // move and select, focusing the new chip.
+            tabIndex={active ? 0 : -1}
+            onKeyDown={(e) => {
+              const nav = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+              if (!nav.includes(e.key)) return;
+              e.preventDefault();
+              const n = BUNDLE_TIERS.length;
+              let next = i;
+              if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (i + 1) % n;
+              else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (i - 1 + n) % n;
+              else if (e.key === "Home") next = 0;
+              else if (e.key === "End") next = n - 1;
+              onChange(BUNDLE_TIERS[next]);
+              (e.currentTarget.parentElement?.children[next] as HTMLElement | undefined)?.focus();
+            }}
             onClick={() => onChange(tier)}
             className={cn(
               "snap-start shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 sm:px-5 py-2.5 font-sans text-[14px] md:text-[clamp(14px,0.75vw,15px)] leading-none ring-1 transition-colors duration-300",
@@ -270,9 +288,9 @@ const CollectionSetCard = ({
 };
 
 // "Compose your own set" — the AOV builder. Pick ANY two or more mandalas; the
-// set reprices live at the SAME ladder the basket/checkout applies (2→5%, 3+→10%,
-// all→15%), and adding pushes one anchor-tier line per painting so checkout
-// derives the identical % — advertised == charged by construction (gotcha #9).
+// set reprices live at the SAME ladder the basket/checkout applies (2→5%, 3+→8%,
+// all→12%, post-2026-07-25 squeeze), and adding pushes one anchor-tier line per
+// painting so checkout derives the identical % — advertised == charged (gotcha #9).
 export const ComposeSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
@@ -327,14 +345,16 @@ export const ComposeSetCard = () => {
         </h2>
         <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
           Choose any two or more mandalas to hang together. The set saving builds
-          as you add — 5% for two, 8% for three or more — applied automatically
-          at checkout.
+          as you add — {bundleDiscountPercentForCount(2)}% for two,{" "}
+          {bundleDiscountPercentForCount(3)}% for three or more,{" "}
+          {COMPLETE_CATALOGUE_DISCOUNT_PERCENT}% for the complete set — applied
+          automatically at checkout.
         </p>
 
-        {/* Pick grid — toggle paintings in/out of the set. All ten land on ONE
-            commanding row at 3xl (the FooterCatalogue 10-up idiom) so the AOV
-            builder fills its wide card instead of sitting as a half-empty
-            contact-sheet; a clean 5×2 below. */}
+        {/* Pick grid — toggle paintings in/out of the set. Column counts (2-up
+            mobile / 4-up sm / 6-up 3xl) all divide the 12-painting catalogue
+            evenly, so every row is full — no stranded orphan tail — and the
+            flex-wrap + justify-center centres the grid within the card. */}
         <div className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
             const cover = coverColourway(p);
@@ -348,11 +368,10 @@ export const ComposeSetCard = () => {
                 onClick={() => toggle(p.id)}
                 title={p.title}
                 className={cn(
-                  // Fixed per-row widths (2 / 5 / 10 up) matched to the gaps so full
-                  // rows fill edge-to-edge, while the flex-wrap + justify-center on the
-                  // container centres any partial last row (e.g. the trailing two) instead
-                  // of stranding it on the far left.
-                  "shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(20%_-_9.6px)] 3xl:basis-[calc(10%_-_7.2px)]",
+                  // Fixed per-row widths (2 / 4 / 6 up) matched to the gaps so full
+                  // rows fill edge-to-edge; all three divide 12 evenly, so the grid
+                  // is always balanced (6×2 / 3×4 / 2×6) with no stranded last row.
+                  "shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(25%_-_9px)] 3xl:basis-[calc(16.666%_-_7px)]",
                   "group relative block aspect-square overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   on ? "ring-2 ring-accent scale-[1.04] shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10" : "ring-line hover:ring-accent/50",
                 )}
@@ -415,7 +434,7 @@ export const ComposeSetCard = () => {
 
 // The flagship "complete catalogue" set — its own size state + scroll-across
 // selector. getCompleteCatalogueBundle is pure; acquireCatalogue adds one of every
-// painting at the SAME tier so checkout's 15% applies — advertised == charged.
+// painting at the SAME tier so checkout's 12% applies — advertised == charged.
 const CatalogueSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
@@ -541,7 +560,11 @@ const CollectionJumpNav = ({
             "linear-gradient(180deg, rgba(10,9,8,0.9) 0%, rgba(10,9,8,0.74) 55%, rgba(10,9,8,0) 100%)",
         }}
       />
-      <div className="pointer-events-auto relative mx-auto flex max-w-full items-center justify-center gap-1 overflow-x-auto px-3 py-2.5 md:py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* w-max + max-w-full + mx-auto: the row is content-width and CENTRES when
+          it fits, but caps at the viewport and scrolls FROM THE START when it
+          doesn't — avoiding the justify-center+overflow trap that clipped the
+          first chip ("Habundia") unreachably at 375. */}
+      <div className="pointer-events-auto relative mx-auto flex w-max max-w-full items-center gap-1 overflow-x-auto px-3 py-2.5 md:py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {collections.map((c) => {
           const short = c.title.split(" — ")[0];
           const on = c.id === activeId;
@@ -609,6 +632,10 @@ export const Collections = () => {
         position: i + 1,
         url: absoluteUrl(`/collections/${p.id}`),
         name: p.title,
+        // Per-item cover image → eligible for the richer merchant/listing
+        // rich-result. The per-product Product/Offer price schema still lives on
+        // each PDP (linked by url); this parent list just gains the thumbnail.
+        image: absoluteUrl(coverColourway(p).image),
       })),
     },
   };
@@ -782,6 +809,26 @@ export const Collections = () => {
                   </li>
                 ))}
               </ul>
+              {/* Reassurance rail — the service + provenance promise that justifies
+                  the price, stated once and calmly (on a considered purchase the
+                  reassurance IS the luxury). Facts only, box-free, in the ledger's
+                  own hairline idiom. "Free worldwide delivery" previously appeared
+                  on-page nowhere but the SEO meta description. No printer named; no
+                  blanket "hand-numbered" (the Open edition is un-numbered). */}
+              <div className="mt-4 md:mt-5">
+                <p
+                  className={cn(META, "m-0 flex flex-wrap items-center justify-center gap-x-3 gap-y-1")}
+                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                >
+                  <span>Certificate of authenticity</span>
+                  <span aria-hidden="true" className="text-ink/25">·</span>
+                  <span>Made to order</span>
+                  <span aria-hidden="true" className="text-ink/25">·</span>
+                  <span>Framed, ready to hang</span>
+                  <span aria-hidden="true" className="text-ink/25">·</span>
+                  <span className="font-semibold text-ink">Free worldwide delivery</span>
+                </p>
+              </div>
             </div>
 
             {/* The size choice now lives ON each set card below (scroll-across
@@ -829,8 +876,21 @@ export const Collections = () => {
                   delay={0.05}
                   className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6"
                 >
-                  {items.map((painting) => {
+                  {items.map((painting, tileIndex) => {
                     const cover = coverColourway(painting);
+                    // sizes MUST mirror the count-aware flex-basis below, or the
+                    // browser picks a source for the wrong slot width — over-fetching
+                    // on 3-up laptop tiles and, worse, under-serving (soft) the large
+                    // 2-up/2×2 tiles on a DPR-1 4K display. Caps match the clamp caps.
+                    const tileSizes =
+                      items.length <= 2 || items.length === 4
+                        ? "(min-width:1400px) min(47vw,1080px), (min-width:640px) 47vw, 90vw"
+                        : items.length === 3
+                          ? "(min-width:1400px) min(31vw,800px), (min-width:640px) 31vw, 90vw"
+                          : "(min-width:1400px) min(31vw,680px), (min-width:640px) 31vw, 90vw";
+                    // Eager-load only the very first tile so a short/landscape window
+                    // or a deep-link into the first collection has a real LCP image.
+                    const eager = tileIndex === 0 && collIndex === 0;
                     return (
                       <motion.figure
                         key={painting.id}
@@ -891,9 +951,9 @@ export const Collections = () => {
                               <AssetImage
                                 src={cover.image}
                                 alt={paintingImageAlt(painting.title, cover.name)}
-                                loading="lazy"
+                                loading={eager ? "eager" : "lazy"}
                                 decoding="async"
-                                sizes="(min-width: 1400px) 640px, (min-width: 640px) 38vw, 90vw"
+                                sizes={tileSizes}
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -932,7 +992,7 @@ export const Collections = () => {
                               className={cn(META, "mt-2 m-0")}
                               style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                             >
-                              Estate-stamped giclée ·{" "}
+                              Estate-stamped giclée, framed · from{" "}
                               <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
                                 {fmtP(getLowestTierPricePence(painting))}
                               </span>
@@ -949,10 +1009,16 @@ export const Collections = () => {
                               const ways = painting.colourways.filter(
                                 (c) => c.available,
                               );
-                              if (ways.length < 2) return null;
+                              // Reserve the row's height ALWAYS (h-5) so captions in a
+                              // mixed row keep a shared baseline — a single-colourway
+                              // work renders an invisible spacer of the same height
+                              // rather than pulling its rowmates' text up 28px.
+                              if (ways.length < 2) {
+                                return <div aria-hidden="true" className="mt-2.5 h-5" />;
+                              }
                               return (
                                 <div
-                                  className="mt-2.5 flex items-center justify-center gap-1.5"
+                                  className="mt-2.5 flex h-5 items-center justify-center gap-1.5"
                                   aria-label={`${ways.length} colourways`}
                                 >
                                   {ways.slice(0, 5).map((c) => (
@@ -965,7 +1031,7 @@ export const Collections = () => {
                                     />
                                   ))}
                                   <span
-                                    className="ml-1 font-sans text-[12px] 3xl:text-[14px] tracking-[0.04em] text-ink-muted"
+                                    className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
                                     style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                                   >
                                     {ways.length} colourways
