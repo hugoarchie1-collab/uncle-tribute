@@ -740,20 +740,24 @@ export const Collections = () => {
                         // orphan). min-w-0 lets the basis shrink below content on
                         // narrow viewports so a long title can never widen the row
                         // past the viewport.
-                        // COUNT-AWARE basis (Hugo's "goes gappy" fix): a hard
-                        // 500px/30% cap stranded ~800px of black flanking the
-                        // 2-painting Habundia row on wide screens. The basis now
-                        // scales to the collection size so a diptych commands the
-                        // envelope, a triptych fills cleanly, and 4+ keeps the
-                        // dense grid (cap lifted 500→560). Literal class strings
-                        // (one per branch) so Tailwind's JIT generates each.
+                        // COUNT-AWARE basis (Hugo's "fill the screen, no black
+                        // rails on 4K" + "no gappy orphan"): tiles are sized so each
+                        // collection's row(s) FILL the envelope on a 4K monitor with
+                        // large, phone-scale artwork, while a partial row still
+                        // centres (justify-center) and no row ever orphans a lone
+                        // tile. Two paintings → a commanding diptych; FOUR → a clean
+                        // 2×2 (was 3-up + 1 orphan); three → a full triptych; 5+ keep
+                        // a denser grid. Caps lifted hard (560/720 → 820/1080) so the
+                        // art commands the width instead of floating in a centre band.
+                        // Literal class strings (one per branch) so Tailwind's JIT
+                        // generates each.
                         className={cn(
                           "m-0 min-w-0",
-                          items.length <= 2
-                            ? "flex-[0_1_clamp(380px,46%,720px)]"
+                          items.length <= 2 || items.length === 4
+                            ? "flex-[0_1_clamp(340px,47%,1080px)]"
                             : items.length === 3
-                              ? "flex-[0_1_clamp(300px,31%,560px)]"
-                              : "flex-[0_1_clamp(280px,30%,560px)]",
+                              ? "flex-[0_1_clamp(340px,30.5%,800px)]"
+                              : "flex-[0_1_clamp(300px,31%,680px)]",
                         )}
                         // Each tile drives its OWN whileInView (not the parent
                         // RevealStagger orchestration) with amount:0 so ANY sliver
@@ -802,14 +806,23 @@ export const Collections = () => {
                             >
                               {painting.title}
                             </h3>
-                            {painting.year && painting.year !== "[ DATE ]" && (
-                              <p
-                                className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
-                                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-                              >
-                                {painting.year}
-                              </p>
-                            )}
+                            {/* Year — always occupies its line so the price row
+                                below keeps a shared baseline across a mixed row
+                                (some works are undated); an undated tile renders an
+                                invisible spacer, never blank-looking copy. */}
+                            {(() => {
+                              const hasYear =
+                                !!painting.year && painting.year !== "[ DATE ]";
+                              return (
+                                <p
+                                  className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                                  aria-hidden={!hasYear}
+                                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                                >
+                                  {hasYear ? painting.year : " "}
+                                </p>
+                              );
+                            })()}
                             {/* Price floor — sits under every tile so a
                                 browsing buyer never needs to click into a
                                 painting to learn there is a price. Advertises the
