@@ -860,14 +860,18 @@ export const Welcome = () => {
                   crop UP so his face + upper body always stay in frame (only a little
                   studio floor is trimmed off the bottom). Mobile shows the whole 2:3
                   portrait (aspect box, stacked). */}
-              <figure className="relative m-0 h-[clamp(300px,48svh,460px)] md:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
+              {/* MOBILE: the WHOLE portrait, never cropped — just sized down + centred
+                  (w-[64%], max 300px) so it's a contained ~46svh portrait, not a
+                  screen-filling wall. DESKTOP (md+): the two-column cover-fill that
+                  matches the copy height (gap-free). */}
+              <figure className="relative m-0 mx-auto w-[64%] max-w-[300px] md:w-full md:max-w-none md:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
                   width={800}
                   height={1200}
-                  sizes="(min-width:768px) 34vw, 100vw"
-                  className="block w-full h-full object-cover object-[center_22%] md:absolute md:inset-0 md:h-full md:w-full md:object-[center_28%]"
+                  sizes="(min-width:768px) 34vw, 64vw"
+                  className="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover md:object-[center_28%]"
                 />
               </figure>
               {/* Copy = ONE cohesive block, TOP-aligned so the eyebrow sits level with the
