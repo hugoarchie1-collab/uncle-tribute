@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -209,6 +209,95 @@ const SetSizeSelector = ({
   </div>
 );
 
+// ── SET-CARD SYSTEM ───────────────────────────────────────────────────────────
+// One refined "gallery-plate" shell shared by all three set offers (per-collection
+// / compose / complete catalogue), so they read as one considered system rather
+// than three copy-pasted price panels. No box — the soft SET_CARD_SCRIM fades to
+// transparent at the edges (the "no black box" rule). An eyebrow flanked by
+// tapering hairlines (the approved LensHeading idiom) crowns each plate; `grand`
+// gives the flagship catalogue card more scale + air so the hierarchy reads
+// per-collection (quiet) → compose (interactive) → catalogue (ceremonial finale).
+const SetCardShell = ({
+  eyebrow,
+  title,
+  headingLevel = 2,
+  note,
+  grand = false,
+  children,
+}: {
+  eyebrow: string;
+  title: ReactNode;
+  headingLevel?: 2 | 3;
+  note?: ReactNode;
+  grand?: boolean;
+  children: ReactNode;
+}) => {
+  const Heading = headingLevel === 3 ? "h3" : "h2";
+  return (
+    <div
+      className={cn(
+        "relative text-center",
+        grand
+          ? "px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-8 md:py-11 lg:py-14"
+          : "px-6 sm:px-8 md:px-10 3xl:px-14 py-7 md:py-9 3xl:py-11",
+      )}
+      style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
+    >
+      <div className="flex items-center justify-center gap-3 sm:gap-4">
+        <span aria-hidden="true" className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-line" />
+        <p className={cn(EYEBROW, "m-0 whitespace-nowrap")}>{eyebrow}</p>
+        <span aria-hidden="true" className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-line" />
+      </div>
+      <Heading
+        className={cn(
+          "mx-auto my-0",
+          grand
+            ? "mt-5 max-w-[16ch] font-display font-semibold tracking-[-0.02em] text-[clamp(32px,4.6vw,72px)] leading-[1.04] text-ink"
+            : cn(TITLE, "mt-4 max-w-[22ch]"),
+        )}
+        style={{ textShadow: "0 3px 24px rgba(0,0,0,0.7)" }}
+      >
+        {title}
+      </Heading>
+      {note && (
+        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 mx-auto max-w-[70ch]")}>
+          {note}
+        </p>
+      )}
+      {children}
+    </div>
+  );
+};
+
+// The price as a HERO collector statement — a large Fraunces figure on its own
+// line (was buried mid-sentence at 22–36px), a quiet what-you-get label, then the
+// individual-total anchor + saving. The figures are passed in already formatted by
+// each card from its own pure bundle helper, so advertised == charged is untouched.
+const SetPriceBlock = ({
+  price,
+  label,
+  anchor,
+  grand = false,
+}: {
+  price: string;
+  label: ReactNode;
+  anchor: ReactNode;
+  grand?: boolean;
+}) => (
+  <div className="mt-6 md:mt-7">
+    <div
+      className={cn(
+        "font-display font-semibold leading-[0.98] text-ink [font-variant-numeric:tabular-nums]",
+        grand ? "text-[clamp(40px,6vw,88px)]" : "text-[clamp(32px,4.2vw,60px)]",
+      )}
+    >
+      {price}
+    </div>
+    <p className={cn(META, "mt-3 m-0")}>{label}</p>
+    <p className={cn(META, "mt-1 m-0 text-ink-muted")}>{anchor}</p>
+  </div>
+);
+
 // A single collection's "offered as a set" card — holds its OWN size state so the
 // scroll-across selector re-prices just this set. getCollectionBundle is pure, so
 // advertised == charged: the £ shown is the bundle at the card's tier, and
@@ -245,44 +334,42 @@ const CollectionSetCard = ({
   return (
     <Reveal
       as="div"
-      className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]"
+      className="mt-8 md:mt-10 mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]"
     >
-      <div
-        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
+      <SetCardShell
+        eyebrow="The complete collection"
+        headingLevel={3}
+        title={<>The complete {shortName}</>}
+        note="The collection entire, gathered for one home."
       >
-        <p className={cn(EYEBROW, "m-0 mb-4")}>The complete collection</p>
-        <h3 className={cn(TITLE, "my-0")}>
-          The complete {shortName}
-        </h3>
-        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
-          All {bundle.paintingIds.length} paintings at the {editionWord(tier)}{" "}
-          edition ({sizeCode(tier)}) — the collection entire, for one home.
-        </p>
         <SetSizeSelector value={tier} onChange={setTier} />
-        <p className={cn(META, "m-0 mb-1.5")}>
-          <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-            {fmtBundle(setFig.bundleMinor)}
-          </span>
-          <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
-          the set, offered together
-        </p>
-        <p className={cn(META, "m-0 mb-5")}>
-          Taken individually, {fmtBundle(setFig.fullMinor)} — a saving of{" "}
-          {fmtBundle(setFig.saveMinor)} as a set.
-        </p>
+        <SetPriceBlock
+          price={fmtBundle(setFig.bundleMinor)}
+          label={
+            <>
+              all {bundle.paintingIds.length} prints · {editionWord(tier)} edition,{" "}
+              {sizeCode(tier)}
+            </>
+          }
+          anchor={
+            <>
+              Individually {fmtBundle(setFig.fullMinor)} — a saving of{" "}
+              {fmtBundle(setFig.saveMinor)}
+            </>
+          }
+        />
         <button
           type="button"
           onClick={acquireCollection}
-          className={cn(BTN_PRIMARY, "gap-2")}
+          className={cn(BTN_PRIMARY, "mt-6 gap-2")}
         >
-          Add the complete collection to basket
+          Add the complete {shortName} to basket
           <span aria-hidden="true">→</span>
         </button>
         <p className={cn(META, "m-0 mt-4")}>
           The set saving is applied automatically at checkout.
         </p>
-      </div>
+      </SetCardShell>
     </Reveal>
   );
 };
@@ -335,22 +422,19 @@ export const ComposeSetCard = () => {
       as="div"
       className="mt-6 md:mt-8 mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]"
     >
-      <div
-        className="px-6 sm:px-8 md:px-10 3xl:px-14 py-6 md:py-7 3xl:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
+      <SetCardShell
+        eyebrow="Compose your own set"
+        title="Build a wall of your own"
+        note={
+          <>
+            Choose any two or more mandalas to hang together. The set saving builds
+            as you add — {bundleDiscountPercentForCount(2)}% for two,{" "}
+            {bundleDiscountPercentForCount(3)}% for three or more,{" "}
+            {COMPLETE_CATALOGUE_DISCOUNT_PERCENT}% for the complete set — applied
+            automatically at checkout.
+          </>
+        }
       >
-        <p className={cn(EYEBROW, "m-0 mb-4")}>Compose your own set</p>
-        <h2 className={cn(TITLE, "my-0")}>
-          Build a wall of your own
-        </h2>
-        <p className={cn(SUBTITLE, "mt-3 md:mt-4 my-0 max-w-[1000px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto")}>
-          Choose any two or more mandalas to hang together. The set saving builds
-          as you add — {bundleDiscountPercentForCount(2)}% for two,{" "}
-          {bundleDiscountPercentForCount(3)}% for three or more,{" "}
-          {COMPLETE_CATALOGUE_DISCOUNT_PERCENT}% for the complete set — applied
-          automatically at checkout.
-        </p>
-
         {/* Pick grid — toggle paintings in/out of the set. Column counts (2-up
             mobile / 4-up sm / 6-up 3xl) all divide the 12-painting catalogue
             evenly, so every row is full — no stranded orphan tail — and the
@@ -404,17 +488,21 @@ export const ComposeSetCard = () => {
 
         {count >= 2 ? (
           <>
-            <p className={cn(META, "m-0 mb-1.5")}>
-              <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-                {money(setFig.bundleMinor)}
-              </span>
-              <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
-              {count} prints, {sizeCode(tier)}
-            </p>
-            <p className={cn(META, "m-0 mb-5")}>
-              Taken individually, {money(setFig.fullMinor)} — a saving of {money(setFig.saveMinor)} ({percent}%) as a set.
-            </p>
-            <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "gap-2")}>
+            <SetPriceBlock
+              price={money(setFig.bundleMinor)}
+              label={
+                <>
+                  {count} prints · {editionWord(tier)} edition, {sizeCode(tier)}
+                </>
+              }
+              anchor={
+                <>
+                  Individually {money(setFig.fullMinor)} — a saving of{" "}
+                  {money(setFig.saveMinor)} ({percent}%)
+                </>
+              }
+            />
+            <button type="button" onClick={acquireSet} className={cn(BTN_PRIMARY, "mt-6 gap-2")}>
               Add my set to basket
               <span aria-hidden="true">→</span>
             </button>
@@ -423,11 +511,11 @@ export const ComposeSetCard = () => {
             </p>
           </>
         ) : (
-          <p className={cn(META, "m-0 mt-2")}>
+          <p className={cn(META, "m-0 mt-6")}>
             Select at least two prints to begin your set.
           </p>
         )}
-      </div>
+      </SetCardShell>
     </Reveal>
   );
 };
@@ -458,34 +546,39 @@ const CatalogueSetCard = () => {
       as="section"
       className="relative mx-auto max-w-[1080px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pb-10 md:pb-14"
     >
-      <div
-        className="px-6 sm:px-8 md:px-12 lg:px-16 3xl:px-24 py-6 md:py-7 lg:py-9 text-center"
-        style={{ background: SET_CARD_SCRIM, textShadow: "0 2px 14px rgba(0,0,0,0.7)" }}
+      <SetCardShell
+        grand
+        eyebrow="The full collection"
+        title="Every print, in one home."
+        note={
+          <>
+            One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
+            {catalogue.paintingCount} paintings currently on the site, gathered for
+            one home &mdash; with more of Stephen&rsquo;s work still to come.
+          </>
+        }
       >
-        <p className={cn(EYEBROW, "m-0 mb-4")}>The full collection</p>
-        <h2 className={cn(TITLE, "max-w-[16ch] mx-auto my-0")}>
-          Every print, in one home.
-        </h2>
-        <p className={cn(SUBTITLE, "mt-3 md:mt-4 max-w-[74ch] mx-auto my-0")}>
-          One estate-stamped {editionWord(tier)} print ({sizeCode(tier)}) of all{" "}
-          {catalogue.paintingCount} paintings currently on the site, gathered for
-          one home &mdash; with more of Stephen&rsquo;s work still to come.
-        </p>
         <SetSizeSelector value={tier} onChange={setTier} />
-        <p className={cn(META, "m-0 mb-5")}>
-          <span className="font-display font-semibold text-[22px] md:text-[clamp(26px,1.9vw,36px)] text-ink align-middle">
-            {fmtCatalogue(catFig.bundleMinor)}
-          </span>
-          <span aria-hidden="true" className="mx-3 text-ink/35">·</span>
-          <span>
-            individually {fmtCatalogue(catFig.fullMinor)}, a saving of{" "}
-            {fmtCatalogue(catFig.saveMinor)}
-          </span>
-        </p>
+        <SetPriceBlock
+          grand
+          price={fmtCatalogue(catFig.bundleMinor)}
+          label={
+            <>
+              all {catalogue.paintingCount} prints · {editionWord(tier)} edition,{" "}
+              {sizeCode(tier)}
+            </>
+          }
+          anchor={
+            <>
+              Individually {fmtCatalogue(catFig.fullMinor)} — a saving of{" "}
+              {fmtCatalogue(catFig.saveMinor)}
+            </>
+          }
+        />
         <button
           type="button"
           onClick={acquireCatalogue}
-          className={cn(BTN_PRIMARY, "gap-2")}
+          className={cn(BTN_PRIMARY, "mt-7 gap-2")}
         >
           Add the full collection to basket
           <span aria-hidden="true">→</span>
@@ -493,7 +586,7 @@ const CatalogueSetCard = () => {
         <p className={cn(META, "m-0 mt-4")}>
           The set saving is applied automatically at checkout.
         </p>
-      </div>
+      </SetCardShell>
     </Reveal>
   );
 };
@@ -884,9 +977,9 @@ export const Collections = () => {
                     // 2-up/2×2 tiles on a DPR-1 4K display. Caps match the clamp caps.
                     const tileSizes =
                       items.length <= 2 || items.length === 4
-                        ? "(min-width:1400px) min(47vw,1080px), (min-width:640px) 47vw, 90vw"
+                        ? "(min-width:1400px) min(48vw,1200px), (min-width:640px) 48vw, 90vw"
                         : items.length === 3
-                          ? "(min-width:1400px) min(31vw,800px), (min-width:640px) 31vw, 90vw"
+                          ? "(min-width:1400px) min(32vw,820px), (min-width:640px) 32vw, 90vw"
                           : "(min-width:1400px) min(31vw,680px), (min-width:640px) 31vw, 90vw";
                     // Eager-load only the very first tile so a short/landscape window
                     // or a deep-link into the first collection has a real LCP image.
@@ -913,9 +1006,9 @@ export const Collections = () => {
                         className={cn(
                           "m-0 min-w-0",
                           items.length <= 2 || items.length === 4
-                            ? "flex-[0_1_clamp(340px,47%,1080px)]"
+                            ? "flex-[0_1_clamp(340px,48%,1200px)]"
                             : items.length === 3
-                              ? "flex-[0_1_clamp(340px,30.5%,800px)]"
+                              ? "flex-[0_1_clamp(340px,32%,820px)]"
                               : "flex-[0_1_clamp(300px,31%,680px)]",
                         )}
                         // Each tile drives its OWN whileInView (not the parent
