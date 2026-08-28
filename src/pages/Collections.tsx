@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Nav } from "../components/Nav";
@@ -479,6 +479,103 @@ const CatalogueSetCard = () => {
   );
 };
 
+// ── COLLECTION JUMP-NAV ───────────────────────────────────────────────────────
+// Wayfinding on a long (~4-chapter) scroll: a centred hairline row of the four
+// collection names that sticks to the top and scrolls smoothly to a chapter on
+// click, with the current chapter marked. NOT a hard bar — the background is a
+// soft downward gradient that fades to transparent (the site's "no black box"
+// idiom), and it sits UNDER the main Nav (lower z), so when the smart-hiding Nav
+// is showing it covers this, and when the Nav hides on scroll-down (reading) this
+// is the single bar at the top. Deep-links to the existing #collection-<id>
+// anchors; nothing here changes the money/data path.
+const CollectionJumpNav = ({
+  collections,
+}: {
+  collections: typeof COLLECTIONS;
+}) => {
+  const [activeId, setActiveId] = useState<string>(collections[0]?.id ?? "");
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const sections = collections
+      .map((c) => document.getElementById(`collection-${c.id}`))
+      .filter((el): el is HTMLElement => Boolean(el));
+    if (!sections.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        // The chapter whose top is nearest the band just under the sticky bar
+        // wins the "current" mark — take the topmost intersecting section.
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) {
+          setActiveId(visible[0].target.id.replace("collection-", ""));
+        }
+      },
+      // A narrow band ~a third down the viewport, so the active chapter flips as
+      // its header crosses that line rather than the moment a sliver appears.
+      { rootMargin: "-28% 0px -60% 0px", threshold: 0 },
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, [collections]);
+
+  const go = (id: string) => {
+    document
+      .getElementById(`collection-${id}`)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <nav
+      aria-label="Jump to a collection"
+      className="sticky top-0 z-20 pointer-events-none"
+    >
+      {/* Soft top-anchored scrim so the chips read over scrolling artwork without
+          a hard-edged bar — dense at the top, fully transparent by the foot. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-[130%] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(10,9,8,0.9) 0%, rgba(10,9,8,0.74) 55%, rgba(10,9,8,0) 100%)",
+        }}
+      />
+      <div className="pointer-events-auto relative mx-auto flex max-w-full items-center justify-center gap-1 overflow-x-auto px-3 py-2.5 md:py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {collections.map((c) => {
+          const short = c.title.split(" — ")[0];
+          const on = c.id === activeId;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => go(c.id)}
+              aria-current={on ? "true" : undefined}
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 font-sans text-[13px] 3xl:text-[15px] font-semibold tracking-[0.02em] transition-colors duration-300",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                on
+                  ? "text-ink"
+                  : "text-ink-muted/80 hover:text-ink",
+              )}
+              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85)" }}
+            >
+              <span
+                className={cn(
+                  "inline-block border-b pb-0.5 transition-colors duration-300",
+                  on ? "border-accent" : "border-transparent",
+                )}
+              >
+                {short}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+};
+
 export const Collections = () => {
   // Presentment currency — every £ on the page renders (and checkout charges) in
   // the buyer's chosen currency. fmt = full ("£450.00"/"$572.00"), fmtP = pretty
@@ -692,6 +789,8 @@ export const Collections = () => {
           </PageMasthead>
         </Reveal>
 
+        <CollectionJumpNav collections={COLLECTIONS} />
+
         {COLLECTIONS.map((coll, collIndex) => {
           const items = PAINTINGS.filter((p) => p.collection === coll.id);
           return (
@@ -838,6 +937,42 @@ export const Collections = () => {
                                 {fmtP(getLowestTierPricePence(painting))}
                               </span>
                             </p>
+                            {/* Colourway depth — Stephen left several of his own
+                                colourways of most mandalas. A quiet row of real
+                                colour dots (each a colourway's own hex) + a factual
+                                count surfaces that range on the browse tile without
+                                exploding the grid into 27 cards, and without any
+                                hover flick (Hugo: hover zooms, never flicks). The
+                                dots are non-interactive; the tile links to the PDP.
+                                Only shown when there's more than one to show. */}
+                            {(() => {
+                              const ways = painting.colourways.filter(
+                                (c) => c.available,
+                              );
+                              if (ways.length < 2) return null;
+                              return (
+                                <div
+                                  className="mt-2.5 flex items-center justify-center gap-1.5"
+                                  aria-label={`${ways.length} colourways`}
+                                >
+                                  {ways.slice(0, 5).map((c) => (
+                                    <span
+                                      key={c.name}
+                                      aria-hidden="true"
+                                      title={c.name}
+                                      className="block h-2.5 w-2.5 rounded-full ring-1 ring-line/80"
+                                      style={{ backgroundColor: c.hex }}
+                                    />
+                                  ))}
+                                  <span
+                                    className="ml-1 font-sans text-[12px] 3xl:text-[14px] tracking-[0.04em] text-ink-muted"
+                                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                                  >
+                                    {ways.length} colourways
+                                  </span>
+                                </div>
+                              );
+                            })()}
                           </figcaption>
                         </Link>
                       </motion.figure>
