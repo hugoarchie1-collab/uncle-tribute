@@ -860,12 +860,14 @@ export const Welcome = () => {
                   crop UP so his face + upper body always stay in frame (only a little
                   studio floor is trimmed off the bottom). Mobile shows the whole 2:3
                   portrait (aspect box, stacked). */}
-              <figure className="relative m-0 aspect-[2/3] md:aspect-auto overflow-hidden rounded-[4px] ring-1 ring-line">
+              <figure className="relative m-0 md:h-full overflow-hidden rounded-[4px] ring-1 ring-line">
                 <AssetImage
                   src="/img/welcome/02-portrait-denim.jpg"
                   alt="Stephen Meakin"
+                  width={800}
+                  height={1200}
                   sizes="(min-width:768px) 34vw, 100vw"
-                  className="absolute inset-0 h-full w-full object-cover object-[center_28%]"
+                  className="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover md:object-[center_28%]"
                 />
               </figure>
               {/* Copy = ONE cohesive block, TOP-aligned so the eyebrow sits level with the
@@ -1211,14 +1213,16 @@ export const Welcome = () => {
                     to a full-width strip below), so the two heights nearly match and the
                     cover-crop is tiny — object-center keeps the two of them + the mandala.
                     Mobile keeps the whole 4:3 frame (aspect box, stacked). */}
-                <figure className="relative m-0 aspect-[4/3] lg:aspect-auto lg:h-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
+                <figure className="relative m-0 lg:h-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
                   <AssetImage
                     src="/img/welcome/steve-and-collaborator-painting-v1.jpg"
                     alt="Stephen Meakin and a collaborator hand-finishing a large blue-and-gold mandala together at the studio table, the garden beyond the open doors"
                     loading="lazy"
                     decoding="async"
+                    width={1800}
+                    height={1350}
                     sizes="(min-width: 1024px) 55vw, 100vw"
-                    className="block w-full h-full object-cover object-center"
+                    className="block w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:w-full lg:object-cover lg:object-center"
                   />
                 </figure>
                 {/* RIGHT — prose + spec, left-aligned beside the image (fills the width,
