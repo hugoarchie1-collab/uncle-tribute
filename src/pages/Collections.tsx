@@ -340,7 +340,7 @@ const CollectionSetCard = ({
         eyebrow="The complete collection"
         headingLevel={3}
         title={<>The complete {shortName}</>}
-        note="The collection entire, gathered for one home."
+        note="Gathered for one home."
       >
         <SetSizeSelector value={tier} onChange={setTier} />
         <SetPriceBlock
