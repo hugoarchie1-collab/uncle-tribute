@@ -897,9 +897,9 @@ video[autoplay]::-webkit-media-controls {
      and the bar never out-shouts the type. */
   background-image: linear-gradient(
     180deg,
-    rgba(64, 13, 13, 0.97) 0%,
-    rgba(46, 9, 10, 0.97) 58%,
-    rgba(34, 6, 7, 0.98) 100%
+    rgba(126, 27, 27, 0.95) 0%,
+    rgba(104, 21, 23, 0.96) 58%,
+    rgba(82, 16, 18, 0.97) 100%
   );
 }
 
@@ -937,9 +937,9 @@ video[autoplay]::-webkit-media-controls {
      bar is a clean opaque panel top-to-bottom, at rest and scrolled. */
   background-image: linear-gradient(
     180deg,
-    rgba(64, 13, 13, 0.97) 0%,
-    rgba(46, 9, 10, 0.97) 58%,
-    rgba(34, 6, 7, 0.98) 100%
+    rgba(126, 27, 27, 0.95) 0%,
+    rgba(104, 21, 23, 0.96) 58%,
+    rgba(82, 16, 18, 0.97) 100%
   );
 }
 /* Non-overlay content pages (no hero image behind the bar) keep the solid
@@ -947,9 +947,9 @@ video[autoplay]::-webkit-media-controls {
 .nav-bg-top-plain {
   background-image: linear-gradient(
     180deg,
-    rgba(64, 13, 13, 0.97) 0%,
-    rgba(46, 9, 10, 0.97) 58%,
-    rgba(34, 6, 7, 0.98) 100%
+    rgba(126, 27, 27, 0.95) 0%,
+    rgba(104, 21, 23, 0.96) 58%,
+    rgba(82, 16, 18, 0.97) 100%
   );
 }
 
