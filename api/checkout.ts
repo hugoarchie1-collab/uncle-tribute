@@ -384,18 +384,18 @@ const isTierId = (v: unknown): v is TierId =>
   v === "heirloom" ||
   v === "studio";
 
-// Point 101 framing-finish labels — a mirror of FRAME_STYLES in
-// src/data/paintings.ts (gotcha #9). An unknown / missing id falls back to the
-// default finish (natural-oak).
+// Framing-finish labels — a mirror of FRAME_STYLES in src/data/paintings.ts.
+// The live range is Oak / White / Black; older ids are kept so a stale in-flight
+// client still resolves a label. An unknown id falls back to the default (Oak).
 const FRAME_STYLE_LABELS: Record<string, string> = {
   "black-lacquer": "Black lacquer",
-  "stained-black": "Black stained",
+  "stained-black": "Black",
   "walnut-tray": "Walnut",
   "walnut-grain": "Walnut grain",
   wenge: "Wenge",
   "natural-oak": "Oak",
   ash: "Ash",
-  white: "White lacquer",
+  white: "White",
   "white-stained": "White stained",
   silver: "Silver",
   gold: "Gold",
@@ -423,7 +423,7 @@ const FRAME_SURCHARGE_PENCE: Record<string, number> = {
 };
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Clear acrylic",
-  "museum-glass": "Anti-glare glass",
+  "museum-glass": "Float glass",
 };
 // Curated paper-finish labels — a mirror of PAPER_FINISHES in
 // src/data/paintings.ts. NO price impact (every finish is included in the
@@ -442,7 +442,7 @@ const PAPER_FINISH_LABELS: Record<string, string> = {
 // back to the default (mirror wrap).
 const CANVAS_EDGE_LABELS: Record<string, string> = {
   basic: "Basic canvas (white edge)",
-  mirror: "Colour wrap",
+  mirror: "Gallery wrap",
   "float-black": "Black float frame",
   "float-white": "White float frame",
   "float-wenge": "Wenge float frame",
@@ -1502,10 +1502,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             item.tier.canvasPricePence + item.canvasEdgeSurchargePence,
           ),
           product_data: {
-            name: `Stretched canvas${item.canvasEdge ? ` — ${item.canvasEdge}` : ""} — ${item.title} (${item.tier.label} ${item.tier.size})`,
-            // Mirror of CANVAS_NOTE in src/data/paintings.ts (gotcha #9). The
-            // chosen edge finish is named so the estate orders the right wrap.
-            description: `Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a deep, solid gallery-depth wooden frame and finished ready to hang — no glass, no separate frame.${item.canvasEdge ? ` Edge: ${item.canvasEdge}.` : ""} Made to order.`,
+            name: `Stretched canvas — ${item.title} (${item.tier.label} ${item.tier.size})`,
+            // Mirror of CANVAS_NOTE in src/data/paintings.ts.
+            description: `Printed onto Hahnemühle 370gsm fine-art art canvas, hand-stretched over a solid wooden frame with a gallery wrap and finished ready to hang — no glass, no separate frame. Made to order.`,
           },
         },
       });

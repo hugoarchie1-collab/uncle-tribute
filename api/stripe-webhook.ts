@@ -769,7 +769,7 @@ const renderOrderConfirmationHtml = (p: {
     stamp: "Estate-stamped by The Mandala Company",
     numbering: "Numbered within its edition",
     coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
-    printer: "Printed at a leading giclée atelier in London",
+    printer: "Printed and finished by a specialist giclée studio on the Sussex coast",
   };
   // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 — the
   // add-on wording lives in several places). Lead time is "up to two weeks"
@@ -834,7 +834,7 @@ const renderOrderConfirmationHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
-    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order in London at a leading giclée atelier, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
+    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order by a specialist giclée studio on the Sussex coast, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
@@ -1484,11 +1484,11 @@ const renderEstateFulfilmentHtml = (p: {
   return (
     `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/></head>` +
     `<body style="font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;padding:24px;">` +
-    `<h2 style="margin:0 0 4px 0;">Estate fulfilment — Point 101 print instructions</h2>` +
+    `<h2 style="margin:0 0 4px 0;">Estate fulfilment — Giclee &amp; Co print instructions</h2>` +
     `<p style="margin:0 0 16px 0;color:#444;">Order <strong>${esc(p.orderRef)}</strong>` +
     (p.shippingName ? ` · ship to <strong>${esc(p.shippingName)}</strong>` : "") +
     `</p>` +
-    `<p style="margin:0 0 16px 0;color:#444;">Each line below has been issued a Certificate ID and (for numbered tiers) the next sequential print number within its edition, recorded in the estate registry. Generate the Certificate of Authenticity + back-of-print label for each, then place the Point 101 order with the buyer's shipping address.</p>` +
+    `<p style="margin:0 0 16px 0;color:#444;">Each line below has been issued a Certificate ID and (for numbered tiers) the next sequential print number within its edition, recorded in the estate registry. Generate the Certificate of Authenticity + back-of-print label for each, then place the Giclee &amp; Co order with the buyer's shipping address.</p>` +
     `<table style="border-collapse:collapse;width:100%;font-size:13px;">` +
     `<thead><tr>` +
     `<th style="${th}">Artwork</th><th style="${th}">Tier</th><th style="${th}">Edition</th>` +

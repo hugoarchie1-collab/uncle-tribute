@@ -190,7 +190,7 @@ async function buildCertificate(
 
   drawCentered(
     page,
-    "Estate-stamped by The Mandala Company · printed in London",
+    "Estate-stamped by The Mandala Company · printed on the Sussex coast",
     36,
     sans,
     7,

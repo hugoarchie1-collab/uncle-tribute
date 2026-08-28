@@ -119,7 +119,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "The print itself",
     question: "What are the prints made on?",
     answer:
-      "Hahnemühle Photo Rag — 308gsm, 100% cotton archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order at one of the UK's leading giclée print ateliers in London, used by museums and contemporary artists alike. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer.",
+      "Hahnemühle Photo Rag — 308gsm, 100% cotton archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each print is made to order by a specialist Hahnemühle-certified giclée studio on the Sussex coast. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer.",
   },
   {
     eyebrow: "Lead time",
@@ -137,7 +137,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Yes — framing is offered on the Open, Collector and Atelier editions. Choose your finish: a solid-wood frame (natural oak, stained black, white or walnut), with UV-filtering, shatter-safe acrylic glazing as standard or an anti-reflective glass upgrade — every finish included in the framing price. Add £150 on the Open edition, £225 on Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
+      "Yes — framing is offered on the Open, Collector and Atelier editions. Choose a solid-wood frame in oak, white or black, glazed with clear, edge-polished float glass and finished ready to hang — the frame is included in the framing price. Add £150 on the Open edition, £225 on Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
   },
   {
     eyebrow: "Hand-finishing",

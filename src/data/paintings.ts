@@ -176,13 +176,13 @@ export const ESTATE_AUTHENTICATION = {
   numberingLabel: "Numbered within the edition",
   coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
-  // NOTE: the print atelier is deliberately NOT named to buyers (Hugo, 2026-07-11:
+  // NOTE: the print studio is deliberately NOT named to buyers (Hugo, 2026-07-11:
   // naming the printer can read as un-prestigious to snobbier collectors; value sits
   // in the estate stamp + one-off status, not the vendor). The real supplier
-  // (Point 101, London) stays named ONLY in internal/estate-facing surfaces (the
-  // fulfilment email + code comments). Buyer copy: unnamed but premium.
-  printer: "Printed at a leading giclée atelier in London",
-  printerLabel: "Atelier-printed in London",
+  // (Giclee & Co, Brighton — minutes from the family in Hove) stays named ONLY in
+  // internal/estate-facing surfaces. Buyer copy: unnamed but honest about place.
+  printer: "Printed and finished by a specialist giclée studio on the Sussex coast",
+  printerLabel: "Printed on the Sussex coast",
 };
 
 /**
@@ -479,45 +479,21 @@ export const getCanvasPricePence = (tier: PrintTier): number | null =>
 
 /** Copy for the canvas add-on, mirrored into api/checkout.ts (gotcha #9, label only). */
 export const CANVAS_NOTE =
-  "Printed onto bright 350gsm textured fine-art canvas, hand-stretched over a 39mm-deep solid wooden gallery frame and finished ready to hang — no glass, no separate frame. Made to order.";
+  "Printed onto Hahnemühle 370gsm fine-art art canvas, hand-stretched over a solid wooden stretcher and finished ready to hang — no glass, no separate frame. Made to order.";
 
-// CANVAS EDGE — how the sides of the stretched canvas are finished. Like the
-// paper finish. Mirror wrap is the clean default (included); the four float
-// (tray) frames set the canvas inside a slim shadow-gap frame for a gallery
-// look. ⚠️ MONEY: a float frame is a real hand-built tray frame at Point 101
-// (32mm canvas set inside a 10mm-wide, 33mm-deep wood tray) — a genuine premium
-// that costs materially more, and MORE at larger sizes. So the surcharge is now
-// SIZE-SCALED (per tier) in FLOAT_EDGE_SURCHARGE_PENCE below, not a flat fee
-// (Hugo 2026-07-25, replacing the old flat +£45 placeholder after checking the
-// Point 101 wizard). `isFloat` marks a tray-framed edge; the money comes from
-// FLOAT_EDGE_SURCHARGE_PENCE × tier. Mirrored in api/checkout.ts — gotcha #9.
-// A curated THREE canvas finishes (Hugo 2026-08-06: reduce the canvas choices
-// too). One included colour-wrap plus two slim float frames — the plain white-
-// edge, white-float and wenge-float were cut to keep the choice simple.
+// CANVAS — a single stretched, ready-to-hang product. The canvas is printed raw
+// (Hahnemühle 370gsm art canvas) and hand-stretched over a solid wooden frame
+// with a gallery wrap (the artwork's own background carried around the four
+// edges). There is NO edge-finish choice and NO surcharge — the old float/tray-
+// frame options were removed (they were modelled on a different supplier and
+// were never a real product here). CANVAS_EDGES is kept as a one-entry list so
+// existing basket / checkout plumbing that passes a canvas-edge value stays valid.
 export const CANVAS_EDGES = [
   {
     id: "mirror",
     label: "Gallery wrap",
     isFloat: false,
-    note: "The artwork continues around all four wrapped edges — the painting's own background (its sky, stars and colour) carries over the sides of the stretcher. A true gallery wrap, ready to hang. Included.",
-  },
-  {
-    id: "float-black",
-    label: "Black float frame",
-    isFloat: true,
-    note: "Set inside a slim matt-black tray frame with a fine shadow-gap reveal — a crisp gallery float. Comes ready to hang.",
-  },
-  {
-    id: "float-white",
-    label: "White float frame",
-    isFloat: true,
-    note: "Set inside a slim matt-white tray frame with a fine shadow-gap reveal — bright and contemporary. Comes ready to hang.",
-  },
-  {
-    id: "float-oak",
-    label: "Oak float frame",
-    isFloat: true,
-    note: "Set inside a slim oak-veneer tray frame with a fine shadow-gap reveal — natural and warm. Comes ready to hang.",
+    note: "Hand-stretched over a solid wooden frame with the artwork's own background carried around all four edges — ready to hang. Included.",
   },
 ] as const;
 export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];
@@ -526,62 +502,29 @@ export const canvasEdgeLabel = (id: string | undefined): string =>
   CANVAS_EDGES.find((e) => e.id === id)?.label ?? CANVAS_EDGES[0].label;
 
 /**
- * SIZE-SCALED float-frame edge surcharge (pence), per tier. A float (tray)
- * frame is a real hand-built surround that costs more the bigger the canvas —
- * so the premium climbs with size. Applies to any float edge; mirror wrap = 0.
- * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts FLOAT_EDGE_SURCHARGE_PENCE.
- */
-export const FLOAT_EDGE_SURCHARGE_PENCE: Record<PrintTier["id"], number> = {
-  atelier: 7500, //          A3 float frame — +£75
-  collector: 9500, //        A2 float frame — +£95
-  "atelier-grande": 14500, // A1 float frame — +£145
-  heirloom: 19500, //        A0 float frame — +£195
-  studio: 14500, //          one-off (A1-size) — +£145
-};
-
-/**
- * Surcharge (pence) for a canvas edge finish at a given tier — a float frame
- * adds a real tray frame at Point 101 that scales with size, so pass the tier
- * id to get the right premium. Mirror wrap (or unknown) = 0.
- * ⚠️ MONEY (gotcha #9): mirrored in api/checkout.ts.
+ * Canvas has no edge-finish upsell — it is one stretched, ready-to-hang product
+ * — so the edge surcharge is always 0. Kept with its old signature so existing
+ * callers stay valid. ⚠️ MONEY (gotcha #9): the mirror in api/checkout.ts also
+ * resolves to 0.
  */
 export const getCanvasEdgeSurchargePence = (
-  id: string | undefined,
-  tierId?: string,
-): number => {
-  const edge = CANVAS_EDGES.find((e) => e.id === id);
-  if (!edge || !edge.isFloat) return 0;
-  return (
-    FLOAT_EDGE_SURCHARGE_PENCE[tierId as PrintTier["id"]] ??
-    FLOAT_EDGE_SURCHARGE_PENCE.collector
-  );
-};
+  _id?: string,
+  _tierId?: string,
+): number => 0;
 
-// ── Point 101 framing finishes ───────────────────────────────────────────────
-// The Framed product offers Point 101's full range of museum-grade mouldings,
-// grouped by category the way Point 101 present them, PLUS a choice of glazing.
+// ── Framing finishes ─────────────────────────────────────────────────────────
+// The Framed product offers the supplier's real solid-wood frame colours —
+// Black, White and Oak — at ONE framed price. There is no premium frame tier:
+// the gilt / box "Signature" and "Ornate" mouldings were removed (they were a
+// different supplier's range and were never a real product here), so every frame
+// is `classic` and carries no surcharge.
 //
-// PRICING (2026-07-24, Hugo — "price the good frames higher"): frames sit in
-// THREE tiers. `classic` is included in the base framing price (£345 A2 / £445
-// A1, from the print tier). `signature` and `ornate` add a FLAT, size-
-// independent surcharge on top (Recommended ladder: +£50 / +£120), shown to the
-// buyer as ONE clean total per tier — never an additive "+£50" line. The cost
-// gap to the estate between a classic and an ornate moulding is only ~£15–26, so
-// the surcharge is almost all margin (the point of the exercise).
-//
-// ⚠️ The surcharge is MONEY, so it now falls under gotcha #9: FRAME_TIERS'
-// surcharge pence is mirrored in api/checkout.ts (the charge), and the framing
-// line in the confirmation / saved-basket emails must reflect it too. Frame
-// LABELS are mirrored (as before) in api/checkout.ts. Keep them in sync.
-//
-// `ar: true` marks the four frames that have baked 3D wall models
-// (src/lib/wallModels.ts) — only those are offered in the "See it on your wall"
-// AR picker, so a frame without a model can never silently fall back to a
-// frameless preview. The rest render in the flat PDP frame preview only.
+// `ar: true` marks frames with a baked 3D wall model (src/lib/wallModels.ts) for
+// the "See it on your wall" picker; the rest render in the flat PDP frame preview
+// only. Frame LABELS are mirrored in api/checkout.ts — a LABEL mirror, not a
+// money mirror (there is no frame surcharge to keep in sync).
 export const FRAME_TIERS = {
   classic: { label: "Classic", surchargePence: 0 },
-  signature: { label: "Signature", surchargePence: 9500 },
-  ornate: { label: "Ornate", surchargePence: 24500 },
 } as const;
 export type FrameTier = keyof typeof FRAME_TIERS;
 
@@ -598,29 +541,15 @@ export const FRAME_CATEGORY_ORDER = [
 ] as const;
 export type FrameCategory = (typeof FRAME_CATEGORY_ORDER)[number];
 
-// Every DISTINCT Point 101 finish (colour/material/style). Millimetre-only
-// width variants of the same finish are deliberately folded into one entry —
-// they render identically in the preview and price the same within a tier, so
-// separate rows would be pure noise (Hugo, 2026-07-24). `ar` is present on the
-// four finishes with baked wall models.
-// A tight, curated set of just THREE finishes (Hugo 2026-08-06: cut the range
-// right down, drop the poor black-lacquer sample, "don't overwhelm the
-// customers"). The three whose physical samples read best — a warm light oak, a
-// rich dark walnut, and a clean white — every one solid wood with a baked AR
-// wall model. Deliberately NOT Point 101's full trade range.
+// The three real wood frame colours the supplier offers — Oak, White and Black
+// — each solid wood, one framed price (no premium tier). Every entry has a
+// photoreal moulding asset in FramedPreview's FRAME_ASSET map. `ar` marks the
+// frames with a baked wall model. The old premium box / hand-gilt frames were
+// removed — they were a different supplier's range and were never real here.
 export const FRAME_STYLES = [
-  // Light Wood
   { id: "natural-oak", label: "Oak", note: "Warm, light solid oak", swatch: "#c9a368", category: "Light Wood", tier: "classic", ar: true },
-  // Dark Wood
-  { id: "walnut-tray", label: "Walnut", note: "Warm, rich solid walnut", swatch: "#5a4030", category: "Dark Wood", tier: "classic", ar: true },
-  // White
   { id: "white", label: "White", note: "Clean painted white", swatch: "#ede9e2", category: "White", tier: "classic", ar: true },
-  // Upsell tiers (Hugo 2026-08-06: "of course I need to upsell of framing
-  // options") — a premium deep box and a hand-gilt statement frame that step the
-  // framed price up (Signature +£95 / Ornate +£245). Kept to ONE each so the
-  // ladder is clear without overwhelming the three included woods above.
-  { id: "box-oak", label: "Oak box", note: "Deep oak box-frame with a float rebate — the print floats within the moulding", swatch: "#c3a473", category: "Box Frames", tier: "signature", ar: false },
-  { id: "ayous-gold", label: "Gold edge", note: "Stained ayous with a hand-gilt gold highlight — a quiet statement frame", swatch: "#b98f4e", category: "Ornate", tier: "ornate", ar: false },
+  { id: "stained-black", label: "Black", note: "Deep matt-black solid wood", swatch: "#1c1b1a", category: "Black", tier: "classic", ar: false },
 ] as const;
 
 // White window-mat (passe-partout) around FRAMED PAPER prints only (Hugo
@@ -632,21 +561,16 @@ export const FRAME_STYLES = [
 // copy, so NO price mirror (gotcha #9) is engaged.
 export const MAT_BORDER_RATIO = 0.08;
 
-// GLAZING — TWO real finishes, described to match the print house's own spec.
-// Which one a framed piece receives is decided by SIZE, not a buyer picker
-// (`includedGlazingId` below): anti-reflective art glass only ships up to the
-// 610mm glazed-delivery cap, so the largest framed size is glazed with
-// shatter-safe acrylic instead — the only glazing deliverable at that size.
+// GLAZING — one real finish. Every framed piece is glazed with clear, edge-
+// polished float glass in a solid wood frame, ready to hang. (The old size-
+// dependent "anti-reflective art glass / acrylic" split was a different
+// supplier's spec and was removed.) The id is kept as "museum-glass" so stored
+// baskets and the FramedPreview sheen keep resolving.
 export const GLAZING_OPTIONS = [
   {
     id: "museum-glass",
-    label: "Anti-reflective glass",
-    note: "Anti-reflective art glass (Artglass AR 70) — an anti-reflective coating reduces reflections to under 1%, revealing the artwork's true colour and texture with no green tint or optical distortion, and filters UV. Used on framed prints up to 610mm.",
-  },
-  {
-    id: "art-acrylic",
-    label: "Clear acrylic",
-    note: "Ultra-clear PMMA acrylic safety glazing — the same clarity and appearance as glass, filtering 99% of UV light. Shatter-resistant and lightweight, so larger frames ship safely at any size.",
+    label: "Glass",
+    note: "Clear, edge-polished float glass set in a solid wood frame — ready to hang.",
   },
 ] as const;
 
@@ -694,14 +618,11 @@ export const glazingLabel = (id: string | undefined): string =>
   GLAZING_OPTIONS.find((g) => g.id === id)?.label ?? GLAZING_OPTIONS[0].label;
 
 /**
- * The glazing INCLUDED at a given size. Anti-reflective art glass only ships up
- * to the 610mm glazed-delivery cap (A3/A2), so the largest framed size — A1
- * (841mm) — is glazed with ultra-clear, shatter-safe acrylic instead, the only
- * glazing deliverable at that size. Rides to checkout so the estate orders the
- * right glazing per size. A0 isn't framed at all (canvas only).
+ * The glazing INCLUDED on a framed piece — one finish (clear float glass) at
+ * every size. Kept as a function so existing callers stay valid. A0 isn't
+ * framed at all (canvas only).
  */
-export const includedGlazingId = (tierId: string | undefined): GlazingId =>
-  tierId === "atelier-grande" ? "art-acrylic" : "museum-glass";
+export const includedGlazingId = (_tierId?: string): GlazingId => "museum-glass";
 export const paperFinishLabel = (id: string | undefined): string =>
   PAPER_FINISHES.find((p) => p.id === id)?.label ?? PAPER_FINISHES[0].label;
 

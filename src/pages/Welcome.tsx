@@ -294,7 +294,7 @@ export const Welcome = () => {
           suffix). ⚠️ "estate-stamped", never "signed" — Stephen is deceased. */}
       <Seo
         title="Mandala & Sacred Geometry Art Prints — The Art of Stephen Meakin"
-        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order in London — free delivery worldwide."
+        description="Estate-stamped giclée prints of British mandala artist Stephen Meakin's sacred-geometry paintings. Made to order on the Sussex coast — free delivery worldwide."
       />
       {/* Nav overlays the intro video (fixed) so the logo + links stay pinned
           to the top of the screen from the very first frame — and remain there
@@ -1252,8 +1252,8 @@ export const Welcome = () => {
                 {[
                   ["Time", "Hundreds of hours per canvas"],
                   ["Edition", "Individually made to order"],
-                  ["Surface", "350gsm archival canvas"],
-                  ["Frame", "Hand-stretched, deep wooden"],
+                  ["Surface", "370gsm archival canvas"],
+                  ["Frame", "Hand-stretched, solid wooden"],
                   ["Tools", "Compass · rule · brush"],
                   ["Pigment", "Hand-pressed oils + pigment inks"],
                 ].map(([label, value]) => (

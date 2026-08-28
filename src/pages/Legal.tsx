@@ -365,7 +365,7 @@ const TERMS: Section[] = [
       {
         kind: "ul",
         items: [
-          <><strong>Framed, estate-stamped</strong> — approximately two weeks to dispatch (choice of frame finish, with shatter-safe or anti-reflective glazing).</>,
+          <><strong>Framed, estate-stamped</strong> — approximately two weeks to dispatch (choice of frame finish, glazed with float glass).</>,
           <><strong>Gallery-wrapped canvas</strong> — approximately two weeks to dispatch, ready to hang.</>,
           <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],

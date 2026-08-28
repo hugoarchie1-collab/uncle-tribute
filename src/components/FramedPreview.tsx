@@ -310,9 +310,9 @@ export const FrameWrap = ({
       }}
     >
       {/* WHITE WINDOW-MAT (Hugo 2026-08-06: "a white border … so the frame
-          doesn't go to the edge of the painting … ignore for canvas"). A hand-
-          cut, acid-free conservation mount between the moulding and the print —
-          already sold as "included" in the framed copy, now shown. Framed PAPER
+          doesn't go to the edge of the painting … ignore for canvas"). A white
+          window mount between the moulding and the print — included in the framed
+          price and shown here. Framed PAPER
           only; CanvasWrap has no mat, so canvas is excluded by construction. The
           board is an even ivory border sized to MAT_BORDER_RATIO of the window
           width on all four sides (the works are ~square, so an even border reads

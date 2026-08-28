@@ -80,9 +80,8 @@ const FAQS: QA[] = [
       <>
         As standard, every print is made on <strong>Hahnemühle Photo Rag —
         308gsm, 100% cotton archival paper</strong>, printed with pigment inks on a 12-colour
-        large-format giclée press. Each is made to order in London, at
-        a Hahnemühle Certified Studio used by museums and contemporary artists
-        alike. Under normal display conditions it carries archival,
+        large-format giclée press. Each is made to order on the Sussex coast, at
+        a Hahnemühle Certified Studio. Under normal display conditions it carries archival,
         museum-grade lightfastness rated by the paper manufacturer.
         <br />
         <br />
@@ -134,16 +133,13 @@ const FAQS: QA[] = [
     answer: (
       <>
         Every piece arrives framed and ready to hang — the edition price already
-        includes a hand-cut mount, a solid-wood or tray frame and glazing, so
-        there is no unframed option and no separate framing charge. Choose your{" "}
-        <strong>finish</strong> on the product page — a solid-wood or contemporary
-        tray frame (natural oak, stained black, white or walnut tray), with
-        Signature and Ornate mouldings available for a small supplement. Glazing is
-        matched to the size: anti-reflective art glass up to the Collector size,
-        and ultra-clear, UV-filtering, shatter-safe acrylic on the largest framed
-        size. Prefer canvas? Every piece is also offered gallery-wrapped, ready to
-        hang, at the same price. Framed and canvas orders are made to order — allow
-        roughly two weeks; delivery is free worldwide.
+        includes a white window mount, a solid-wood frame and glazing, so there
+        is no unframed option and no separate framing charge. Choose your{" "}
+        <strong>frame</strong> on the product page — solid wood in oak, white or
+        black, glazed with clear, edge-polished float glass. Prefer canvas? Every
+        piece is also offered gallery-wrapped, ready to hang, at the same price.
+        Framed and canvas orders are made to order — allow roughly two weeks;
+        delivery is free worldwide.
       </>
     ),
   },

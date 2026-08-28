@@ -429,10 +429,10 @@ const renderBasketSavedHtml = (p: {
     + `</td></tr>`
     // ---- reassurance + estate authentication cluster ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:32px 40px 0 40px;">`
-    + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order at a leading giclée atelier in London and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
+    + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order by a specialist giclée studio on the Sussex coast and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:24px;border-top:1px solid ${C.line};">`
     + `<tr>${authCell("Estate-stamped", "By The Mandala Company")}${authCell("Hand-numbered", "Within its edition")}</tr>`
-    + `<tr>${authCell("Certificate", "A unique Certificate ID")}${authCell("Atelier giclée", "Printed in London")}</tr>`
+    + `<tr>${authCell("Certificate", "A unique Certificate ID")}${authCell("Studio giclée", "Printed on the Sussex coast")}</tr>`
     + `</table>`
     + `</td></tr>`
     // ---- sign-off ----

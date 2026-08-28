@@ -57,8 +57,8 @@ const OFFERINGS: Offering[] = [
     body: (
       <>
         Every work in the catalogue is available as an estate-stamped giclée
-        print, numbered within its edition, on 350gsm Hahnemühle archival paper,
-        printed to order at our London atelier. For multi-room schemes, repeat
+        print, numbered within its edition, on 308gsm Hahnemühle archival cotton
+        paper, printed to order by a specialist studio on the Sussex coast. For multi-room schemes, repeat
         placements or a full suite across a property, volume and project
         pricing is offered <strong>on account</strong> — tell us the spaces
         and the scale and we will prepare a considered quotation.
@@ -72,9 +72,8 @@ const OFFERINGS: Offering[] = [
     body: (
       <>
         Prints can be supplied framed in a choice of solid-wood
-        finishes (natural oak, stained black, white or walnut), with
-        shatter-safe acrylic or an anti-reflective glass upgrade —
-        specified for safe transit and ready to hang on install. Sizing,
+        finishes (oak, white or black), glazed with clear, edge-polished
+        float glass — specified for safe transit and ready to hang on install. Sizing,
         glazing and finish can be tailored to a project's specification; we
         will quote framing and crated delivery alongside the edition.
       </>

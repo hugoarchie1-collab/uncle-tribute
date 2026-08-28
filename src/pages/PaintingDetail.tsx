@@ -34,8 +34,6 @@ import {
   EMBELLISHMENT_NOTE,
   ESTATE_AUTHENTICATION,
   FRAME_STYLES,
-  FRAME_STYLE_GROUPS,
-  FRAME_TIERS,
   CANVAS_EDGES,
   DEFAULT_FRAME_STYLE,
   DEFAULT_GLAZING,
@@ -47,7 +45,6 @@ import {
   getEmbellishmentPricePence,
   getFramingPricePence,
   getFrameSurchargePence,
-  getFrameTier,
   getCanvasPricePence,
   getLowestTierPricePence,
   getPaintingById,
@@ -1009,7 +1006,6 @@ const BuyBox = ({
   onEmbellishedChange,
   onCanvasChange,
   onFrameStyleChange,
-  onCanvasEdgeChange,
   onReset,
   orderSentinelRef,
   orderEndSentinelRef,
@@ -1034,7 +1030,6 @@ const BuyBox = ({
   onEmbellishedChange: (next: boolean) => void;
   onCanvasChange: (next: boolean) => void;
   onFrameStyleChange: (next: string) => void;
-  onCanvasEdgeChange: (next: string) => void;
   onReset: () => void;
   orderSentinelRef: React.RefObject<HTMLDivElement | null>;
   /** END-of-order sentinel — see StickyAddBar. Sits after the final buy
@@ -1096,7 +1091,6 @@ const BuyBox = ({
   // framing price for the SELECTED frame. Classic frames → 0. MONEY: mirrored
   // server-side in api/checkout.ts (gotcha #9).
   const frameSurchargePence = getFrameSurchargePence(frameStyle);
-  const frameTier = getFrameTier(frameStyle);
   // The FULL framed price for the CHOSEN frame — print + frame + any premium
   // surcharge — the single clean number the buyer commits to (Hugo: no bare
   // "+£345" framing-only figures anywhere).
@@ -1308,7 +1302,7 @@ const BuyBox = ({
         )}
         {painting.size && (
           <>
-            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Size</dt>
+            <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Original size</dt>
             <dd className={cn(SPEC_VALUE, "m-0")}>{painting.size}</dd>
           </>
         )}
@@ -1359,11 +1353,9 @@ const BuyBox = ({
             always a real, buyable price. Mirrors the £0 delivery rate
             api/checkout.ts charges in every region (mirror invariant #9). */}
         <p className={cn(META, "m-0 mb-4")}>
-          {canvasActive
-            ? "Ready to hang · free delivery"
-            : framingActive
-              ? "Ready to hang · free delivery"
-              : "Free delivery"}
+          {canvasActive || framingActive
+            ? "Ready to hang · free delivery worldwide"
+            : "Free delivery worldwide"}
         </p>
 
         {/* Dimension chip — instant size reassurance, updates with the tier. */}
@@ -1554,8 +1546,8 @@ const BuyBox = ({
                     </span>
                     <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
                       Museum giclée on Hahnemühle Photo Rag — 308gsm, 100% cotton
-                      archival paper — set within a hand-cut conservation mount,
-                      hand-framed in solid wood, glazed and ready to hang.
+                      archival paper — set within a white window mount, hand-framed
+                      in solid wood behind glass, ready to hang.
                     </span>
                   </button>
                 )}
@@ -1575,67 +1567,21 @@ const BuyBox = ({
                       </strong>
                     </span>
                     <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
-                      Printed on bright 350gsm textured fine-art canvas, hand-stretched
-                      over a 39mm-deep solid wooden gallery frame — ready to hang, no
-                      glass. Choose your edge finish below.
+                      Printed on Hahnemühle 370gsm fine-art art canvas, hand-stretched
+                      over a solid wooden frame with a gallery wrap — ready to hang,
+                      no glass.
                     </span>
                   </button>
                 )}
               </div>
 
-              {/* CANVAS EDGE PICKER — how the sides of the stretched canvas are
-                  finished (mirror-wrap default, or a slim float/tray frame),
-                  mirroring Point 101's canvas options. Mirror wrap is included;
-                  a float frame is a real added tray frame at Point 101, so it
-                  carries a surcharge (Hugo 2026-07-24). A colour swatch previews
-                  each float. The choice rides to checkout. Monochrome (#7). */}
+              {/* CANVAS DETAIL — one stretched, ready-to-hang product. There is
+                  no edge-finish choice (the float/tray-frame options were removed —
+                  they were never a real product here). Shows the clean canvas total. */}
               {canvasActive && (
                 <div className="flex flex-col gap-2 ring-1 ring-line px-4 py-3.5">
-                  <span className={EYEBROW_TIGHT}>Edge finish</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CANVAS_EDGES.map((e) => {
-                      const sur = getCanvasEdgeSurchargePence(e.id, selectedTier.id);
-                      const swatch = ({
-                        "float-black": "#17161a",
-                        "float-white": "#ede9e2",
-                        "float-wenge": "#2e211a",
-                        "float-oak": "#c9a368",
-                      } as Record<string, string>)[e.id];
-                      return (
-                        <button
-                          key={e.id}
-                          type="button"
-                          onClick={() => onCanvasEdgeChange(e.id)}
-                          aria-pressed={canvasEdge === e.id}
-                          title={e.note}
-                          className={cn(
-                            "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none min-h-[44px] px-3 py-2.5 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                            canvasEdge === e.id
-                              ? "ring-ink text-ink"
-                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                          )}
-                        >
-                          {swatch && (
-                            <span
-                              aria-hidden="true"
-                              className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
-                              style={{ backgroundColor: swatch }}
-                            />
-                          )}
-                          {e.label}
-                          {sur > 0 && (
-                            <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted tabular-nums">
-                              +{fmtP(sur)}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {/* Chosen edge — plain-language note + the clean canvas total it
-                      resolves to (one clear number, mirroring the framed detail). */}
-                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mt-0.5">
-                    {(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).note}
+                  <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
+                    {CANVAS_EDGES[0].note}
                     {` Canvas: ${fmtP(finishTotalPence)}.`}
                   </p>
                 </div>
@@ -1655,60 +1601,41 @@ const BuyBox = ({
               {framingActive && (
                 <div className="flex flex-col gap-3 ring-1 ring-line px-4 py-3.5">
                   <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-[1.5] text-ink-muted m-0">
-                    Choose your frame — the full atelier range. Classic frames
-                    are included; Signature and Ornate mouldings step the framed
-                    price up.
+                    Choose your frame — solid wood in three colours, each included
+                    in the framed price.
                   </p>
-                  {/* Grouped Point-101-style: one labelled row per category so
-                      the full range never reads as a flat wall of swatches. A
-                      premium frame shows its tier's surcharge inline; the running
-                      total below still resolves to one clean framed price. */}
+                  {/* A flat row of the three real wood colours (no premium tier,
+                      no surcharge) — one clean framed price whichever you pick. */}
                   <div className="flex flex-col gap-3">
-                    {FRAME_STYLE_GROUPS.map((group) => (
-                      <div key={group.category} className="flex flex-col gap-1.5">
-                        <span className={EYEBROW_TIGHT}>{group.category}</span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {group.frames.map((f) => {
-                            const surcharge = FRAME_TIERS[f.tier].surchargePence;
-                            return (
-                              <button
-                                key={f.id}
-                                type="button"
-                                onClick={() => onFrameStyleChange(f.id)}
-                                aria-pressed={frameStyle === f.id}
-                                title={f.note}
-                                className={cn(
-                                  "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none min-h-[44px] px-3 py-2.5 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-                                  frameStyle === f.id
-                                    ? "ring-ink text-ink"
-                                    : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
-                                )}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
-                                  style={{ backgroundColor: f.swatch }}
-                                />
-                                {f.label}
-                                {surcharge > 0 && (
-                                  <span className="text-[13px] 3xl:text-[16px] 4xl:text-[19px] text-ink-muted tabular-nums">
-                                    +{fmtP(surcharge)}
-                                  </span>
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                    {/* Visible detail of the CHOSEN frame — note + tier + the
-                        clean framed total it resolves to (Hugo: one clear
-                        number, and no info hidden behind a hover). */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {FRAME_STYLES.map((f) => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => onFrameStyleChange(f.id)}
+                          aria-pressed={frameStyle === f.id}
+                          title={f.note}
+                          className={cn(
+                            "inline-flex items-center gap-2 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leading-none min-h-[44px] px-3 py-2.5 ring-1 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+                            frameStyle === f.id
+                              ? "ring-ink text-ink"
+                              : "ring-line text-ink/60 hover:ring-ink/40 hover:text-ink/85",
+                          )}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="h-3.5 w-3.5 rounded-full ring-1 ring-ink/15 shrink-0"
+                            style={{ backgroundColor: f.swatch }}
+                          />
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Visible detail of the CHOSEN frame — note + the clean framed
+                        total it resolves to (one clear number, nothing behind a hover). */}
                     <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0 mt-0.5">
                       {FRAME_STYLES.find((f) => f.id === frameStyle)?.note}
-                      {frameTier !== "classic"
-                        ? ` — ${FRAME_TIERS[frameTier].label} frame`
-                        : " — included in the framed price"}
+                      {" — included in the framed price"}
                       {framedTotalLabel ? `. Framed: ${framedTotalLabel}.` : "."}
                     </p>
                   </div>
@@ -1722,30 +1649,13 @@ const BuyBox = ({
                     Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival
                     fine-art paper, the house stock for every framed print.
                   </p>
-                  {/* Glazing is INCLUDED, but SIZE-DEPENDENT (Hugo 2026-07-24):
-                      anti-reflective art glass only ships up to the 610mm
-                      delivery cap, so the largest framed size (A1, 841mm) is
-                      glazed with ultra-clear shatter-safe acrylic — the only
-                      glazing deliverable at that size. `glazing` tracks the
-                      selected size (includedGlazingId) and rides to checkout so
-                      the estate orders the right glazing. Copy matches the print
-                      house's own spec. */}
+                  {/* Glazing — one real finish (clear edge-polished float glass)
+                      at every framed size. `glazing` stays at the single included
+                      value and still rides to checkout. */}
                   <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
-                    Set within a hand-cut, acid-free conservation mount — included.
+                    Glazed with clear, edge-polished float glass and finished with a
+                    sturdy backing and hanger — ready to hang. Included.
                   </p>
-                  {selectedTier.id === "atelier-grande" ? (
-                    <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
-                      Glazed with ultra-clear acrylic — the clarity of glass,
-                      UV-filtering, shatter-safe and lightweight so it ships
-                      safely at this size. Included.
-                    </p>
-                  ) : (
-                    <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
-                      Glazed with anti-reflective art glass — reflections reduced
-                      to under 1%, revealing the artwork's true colour with no
-                      green tint. Included.
-                    </p>
-                  )}
                 </div>
               )}
 
@@ -1771,7 +1681,7 @@ const BuyBox = ({
                   />
                   <span className="flex flex-col gap-1.5 font-sans min-w-0">
                     <span className={cn(EYEBROW_TIGHT, "text-ink-muted")}>
-                      The hand-finished edition
+                      Finished by hand
                     </span>
                     <span className="flex items-baseline justify-between gap-3">
                       <strong className="text-ink text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.3]">
@@ -1829,8 +1739,8 @@ const BuyBox = ({
             buyer always knows EXACTLY what they have configured before they
             commit (Hugo 2026-07-31: "customers can't identify clearly what
             they've selected"). It reads live from the SAME state the CTAs
-            submit + the SAME finishTotalPence the price figure shows, so it can
-            never disagree with the Stripe charge. Monochrome, wall-label idiom
+            submit and totals via lineTotalPence (every add-on included), so it
+            can never disagree with the Stripe charge. Monochrome, wall-label idiom
             to match the rest of the column. */}
         <div className={cn("mt-6", CARD)}>
           <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your selection</p>
@@ -1853,7 +1763,7 @@ const BuyBox = ({
             </dd>
             {embellishActive && (
               <>
-                <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Finish</dt>
+                <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Hand-finishing</dt>
                 <dd className={cn(SPEC_VALUE, "m-0")}>Hand-finished by Polly</dd>
               </>
             )}
@@ -1872,7 +1782,7 @@ const BuyBox = ({
               className="font-display font-semibold tracking-[-0.02em] text-[26px] 3xl:text-[34px] 4xl:text-[40px] text-ink whitespace-nowrap"
               style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
             >
-              {fmtP(finishTotalPence * quantity)}
+              {fmtP(lineTotalPence * quantity)}
             </span>
           </div>
           <p className={cn(META, "m-0 mt-2")}>
@@ -2202,9 +2112,9 @@ const Story = ({ painting }: { painting: Painting }) => (
       </dl>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 m-0 mt-6 pt-5 border-t border-line">
         <p className={cn(META, "text-ink-muted m-0")}>
-          {ESTATE_AUTHENTICATION.printer} &mdash; made to order in London and
-          checked by hand, never warehoused; dispatched flat up to A3, boxed for
-          larger sizes, with free delivery.
+          {ESTATE_AUTHENTICATION.printer} &mdash; made to order and checked by
+          hand, never warehoused; dispatched flat up to A3, boxed for larger
+          sizes, with free delivery.
         </p>
         <p className={cn(META, "text-ink-muted m-0")}>{ORIGINAL_PRINT_SPEC}</p>
       </div>
@@ -2614,6 +2524,9 @@ export const PaintingDetail = () => {
   const [frameStyle, setFrameStyle] = useState<string>(DEFAULT_FRAME_STYLE);
   const [glazing, setGlazing] = useState<string>(DEFAULT_GLAZING);
   const [paperFinish, setPaperFinish] = useState<string>(DEFAULT_PAPER_FINISH);
+  // Canvas is a single stretched product now — no edge picker — so this only
+  // ever holds the default (reset by resetOptions); kept as state so the value
+  // still flows to checkout.
   const [canvasEdge, setCanvasEdge] = useState<string>(DEFAULT_CANVAS_EDGE);
   // Canvas + framing are mutually exclusive (a canvas isn't glazed-framed):
   // ticking one clears the other. Canvas ALSO clears hand-finishing — its
@@ -3253,7 +3166,6 @@ export const PaintingDetail = () => {
                 onEmbellishedChange={setEmbellished}
                 onCanvasChange={selectCanvas}
                 onFrameStyleChange={setFrameStyle}
-                onCanvasEdgeChange={setCanvasEdge}
                 onReset={resetOptions}
                 orderSentinelRef={orderSentinelRef}
                 orderEndSentinelRef={orderEndSentinelRef}
