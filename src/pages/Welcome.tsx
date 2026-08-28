@@ -632,7 +632,7 @@ export const Welcome = () => {
                   parallax={0}
                   zoom={1}
                   objectPosition="center"
-                  shadow="shadow-[0_40px_110px_rgba(0,0,0,0.55)]"
+                  shadow=""
                   sizes="(min-width: 1400px) 1320px, 92vw"
                 />
               </Reveal>
