@@ -467,6 +467,13 @@ export const ComposeSetCard = () => {
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const [handFinished, setHandFinished] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
+  // Per-painting colourway choice (paintingId → colourway name). Defaults to each
+  // painting's original when unset. MONEY-SAFE: every colourway is the SAME price,
+  // so this never changes the set total — advertised == charged is untouched. It
+  // just chooses which colourway name the line carries into the basket/checkout.
+  const [cw, setCw] = useState<Record<string, string>>({});
+  const chooseCw = (id: string, name: string) =>
+    setCw((prev) => ({ ...prev, [id]: name }));
   const hf = handFinished && setEmbellishOffered(tier);
   const toggle = (id: string) =>
     setPicked((prev) => {
@@ -498,10 +505,11 @@ export const ComposeSetCard = () => {
   const acquireSet = () => {
     PAINTINGS.forEach((p) => {
       if (!picked.has(p.id)) return;
-      const original = coverColourway(p);
+      // The buyer's chosen colourway for this painting (defaults to the original).
+      const chosenName = cw[p.id] ?? coverColourway(p).name;
       // FRAMED bundle line (Hugo 2026-07-27: no unframed prints); embellished:true
       // when hand-finishing is chosen — matches the set price advertised above.
-      if (original) addItem(p.id, original.name, tier.id, true, hf);
+      addItem(p.id, chosenName, tier.id, true, hf);
     });
   };
 
@@ -527,47 +535,83 @@ export const ComposeSetCard = () => {
             mobile / 4-up sm / 6-up 3xl) all divide the 12-painting catalogue
             evenly, so every row is full — no stranded orphan tail — and the
             flex-wrap + justify-center centres the grid within the card. */}
-        <div className="mt-5 md:mt-6 flex flex-wrap justify-center gap-2.5 sm:gap-3 3xl:gap-2">
+        <div className="mt-5 md:mt-6 flex flex-wrap items-start justify-center gap-2.5 sm:gap-3 3xl:gap-2">
           {PAINTINGS.map((p) => {
-            const cover = coverColourway(p);
             const on = picked.has(p.id);
+            const ways = p.colourways.filter((c) => c.available);
+            const chosenName = cw[p.id] ?? coverColourway(p).name;
+            const chosen = ways.find((c) => c.name === chosenName) ?? coverColourway(p);
             return (
-              <button
+              // Fixed per-row widths (2 / 4 / 6 up) matched to the gaps so full
+              // rows fill edge-to-edge; all three divide 12 evenly (6×2 / 3×4 /
+              // 2×6). The wrapper holds the toggle tile + its colourway row.
+              <div
                 key={p.id}
-                type="button"
-                aria-pressed={on}
-                aria-label={`${on ? "Remove" : "Add"} ${p.title} ${on ? "from" : "to"} your set`}
-                onClick={() => toggle(p.id)}
-                title={p.title}
-                className={cn(
-                  // Fixed per-row widths (2 / 4 / 6 up) matched to the gaps so full
-                  // rows fill edge-to-edge; all three divide 12 evenly, so the grid
-                  // is always balanced (6×2 / 3×4 / 2×6) with no stranded last row.
-                  "shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(25%_-_9px)] 3xl:basis-[calc(16.666%_-_7px)]",
-                  "group relative block aspect-square overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                  on ? "ring-2 ring-accent scale-[1.04] shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10" : "ring-line hover:ring-accent/50",
-                )}
+                className="shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(25%_-_9px)] 3xl:basis-[calc(16.666%_-_7px)]"
               >
-                <AssetImage
-                  src={cover.image}
-                  alt={p.title}
-                  loading="lazy"
-                  decoding="async"
-                  sizes="(min-width: 768px) 200px, 30vw"
+                <button
+                  type="button"
+                  aria-pressed={on}
+                  aria-label={`${on ? "Remove" : "Add"} ${p.title} ${on ? "from" : "to"} your set`}
+                  onClick={() => toggle(p.id)}
+                  title={p.title}
                   className={cn(
-                    "absolute inset-0 w-full h-full object-cover transition-all duration-500",
-                    on ? "scale-[1.03]" : "opacity-80 group-hover:opacity-100",
+                    "group relative block aspect-square w-full overflow-hidden rounded-[2px] ring-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    on ? "ring-2 ring-accent scale-[1.04] shadow-[0_12px_30px_rgba(0,0,0,0.5)] z-10" : "ring-line hover:ring-accent/50",
                   )}
-                />
-                {on && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-1.5 right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-bg text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold"
+                >
+                  <AssetImage
+                    src={chosen.image}
+                    alt={p.title}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(min-width: 768px) 200px, 30vw"
+                    className={cn(
+                      "absolute inset-0 w-full h-full object-cover transition-all duration-500",
+                      on ? "scale-[1.03]" : "opacity-80 group-hover:opacity-100",
+                    )}
+                  />
+                  {on && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute top-1.5 right-1.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-bg text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold"
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+                {/* Colourway choice — appears only once the painting is in the set
+                    and has more than one colourway. A deliberate click (NOT a hover
+                    flick — Hugo's rule) chooses which colourway this print is taken
+                    in; it swaps the tile image and carries into the basket. Every
+                    colourway is the same price, so the set total never changes. */}
+                {on && ways.length > 1 && (
+                  <div
+                    role="group"
+                    aria-label={`Colourway for ${p.title}`}
+                    className="mt-1.5 flex flex-wrap items-center justify-center gap-1"
                   >
-                    ✓
-                  </span>
+                    {ways.map((c) => {
+                      const sel = c.name === chosenName;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          aria-pressed={sel}
+                          aria-label={`${p.title} — ${c.name}`}
+                          title={c.name}
+                          onClick={() => chooseCw(p.id, c.name)}
+                          className={cn(
+                            "h-3.5 w-3.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                            sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                        />
+                      );
+                    })}
+                  </div>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
