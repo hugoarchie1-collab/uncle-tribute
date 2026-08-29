@@ -12,6 +12,9 @@ import {
   getLowestTierPricePence,
   getTierAdvertisedPricePence,
   getEmbellishmentPricePence,
+  getFramingPricePence,
+  getCanvasPricePence,
+  FRAME_STYLES,
   getCollectionBundle,
   getCompleteCatalogueBundle,
   bundleDiscountPercentForCount,
@@ -312,12 +315,118 @@ const SetPriceBlock = ({
 const setEmbellishOffered = (tier: PrintTier): boolean =>
   getEmbellishmentPricePence(tier) != null;
 
-// Per-painting configured full retail = the framed advertised floor (base + framing)
-// + hand-finishing when it's ON *and* offered at this size. The client twin of
-// api/checkout.ts's lineRetailPence, so the set total equals the charge.
-const perPaintingConfiguredPence = (tier: PrintTier, handFinished: boolean): number =>
-  getTierAdvertisedPricePence(tier) +
-  (handFinished && setEmbellishOffered(tier) ? getEmbellishmentPricePence(tier)! : 0);
+// The set's presentation: framed paper (default) or stretched canvas — the two
+// finishes the product page offers. Canvas clears framing + hand-finishing (like
+// the PDP), so it's a mutually-exclusive choice, not a stack.
+type SetFinish = "framed" | "canvas";
+
+// Per-painting configured full retail — the client twin of api/checkout.ts's
+// lineRetailPence, so the set total equals the charge. Framed = base + framing
+// (+ hand-finishing when on & offered); canvas = base + canvas. Each finish reads
+// its OWN price helper, so advertised == charged holds even if the framing/canvas
+// prices ever diverge (both are mirrored into api/checkout.ts, gotcha #9). The
+// classic frame colours carry a £0 surcharge, so frame colour never moves the price.
+const perPaintingConfiguredPence = (
+  tier: PrintTier,
+  finish: SetFinish,
+  handFinished: boolean,
+): number => {
+  const base = tier.pricePence;
+  if (finish === "canvas") {
+    return base + (getCanvasPricePence(tier) ?? 0);
+  }
+  const framing = getFramingPricePence(tier) ?? 0;
+  const emb =
+    handFinished && setEmbellishOffered(tier) ? getEmbellishmentPricePence(tier)! : 0;
+  return base + framing + emb;
+};
+
+// Framed ⇄ Canvas — a small two-way segmented control in the same idiom as the
+// size selector (hairline, calm, no black box).
+const SetFinishSelector = ({
+  value,
+  onChange,
+}: {
+  value: SetFinish;
+  onChange: (f: SetFinish) => void;
+}) => {
+  const opts: { id: SetFinish; label: string }[] = [
+    { id: "framed", label: "Framed" },
+    { id: "canvas", label: "Canvas" },
+  ];
+  return (
+    <div className="mt-3 md:mt-4 flex justify-center">
+      <div role="radiogroup" aria-label="Choose the finish for this set" className="inline-flex gap-1.5">
+        {opts.map((o) => {
+          const active = o.id === value;
+          return (
+            <button
+              key={o.id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(o.id)}
+              className={cn(
+                "inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 font-sans text-[14px] md:text-[clamp(14px,0.75vw,15px)] leading-none ring-1 transition-colors duration-300",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                active
+                  ? "bg-ink text-bg ring-ink font-semibold"
+                  : "bg-transparent text-ink-muted ring-line hover:text-ink hover:ring-accent/70",
+              )}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// Frame colour — the three solid-wood classic finishes (Oak / White / Black).
+// £0 surcharge, so it never changes the set price; a deliberate swatch choice
+// that carries into the basket. Only shown when the set is FRAMED.
+const FrameColourPicker = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+}) => (
+  <div className="mt-3 flex items-center justify-center gap-2">
+    <span className="sr-only" id="frame-colour-label">
+      Frame colour
+    </span>
+    <div role="radiogroup" aria-labelledby="frame-colour-label" className="flex items-center gap-2">
+      {FRAME_STYLES.map((f) => {
+        const active = f.id === value;
+        return (
+          <button
+            key={f.id}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={`${f.label} frame`}
+            title={`${f.label} — ${f.note}`}
+            onClick={() => onChange(f.id)}
+            className={cn(
+              "inline-flex items-center gap-1.5 min-h-[36px] pl-1.5 pr-3 py-1 rounded-full ring-1 transition-colors duration-300",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              active ? "ring-accent bg-ink/[0.04]" : "ring-line hover:ring-accent/60",
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 rounded-full ring-1 ring-line/70"
+              style={{ backgroundColor: f.swatch }}
+            />
+            <span className="font-sans text-[13px] text-ink">{f.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
 
 // The calm hand-finish switch — hairline, box-free, centred (no black box). Only
 // renders where hand-finishing is actually offered, so it never advertises a lever
@@ -386,27 +495,31 @@ const CollectionSetCard = ({
 }) => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const [finish, setFinish] = useState<SetFinish>("framed");
+  const [frameStyle, setFrameStyle] = useState<string>(FRAME_STYLES[0].id);
   const [handFinished, setHandFinished] = useState(false);
   const bundle = getCollectionBundle(coll.id, tier.id);
   if (!bundle || items.length <= 1) return null;
   const shortName = coll.title.split(" — ")[0];
-  // hand-finish only where the size offers it; if the buyer switched down to A3
-  // with the toggle on, hf resolves false so nothing phantom is priced/charged.
-  const hf = handFinished && setEmbellishOffered(tier);
+  const framed = finish === "framed";
+  // hand-finish only when framed AND the size offers it; canvas or A3 → false so
+  // nothing phantom is priced/charged.
+  const hf = framed && handFinished && setEmbellishOffered(tier);
   const acquireCollection = () => {
     items.forEach((p) => {
       const original = coverColourway(p);
-      // FRAMED bundle line (Hugo 2026-07-27: no unframed prints); embellished:true
-      // when hand-finishing is chosen — checkout charges the same £595/£895 per
-      // line the advertised total below adds (advertised == charged).
-      if (original) addItem(p.id, original.name, tier.id, true, hf);
+      if (!original) return;
+      // Framed → framing:true (+ embellished + frame colour); Canvas → canvas:true
+      // (clears framing + hand-finishing). Mirrors what checkout charges per line.
+      if (framed) addItem(p.id, original.name, tier.id, true, hf, frameStyle, undefined, false);
+      else addItem(p.id, original.name, tier.id, false, false, undefined, undefined, true);
     });
   };
   // Per-line-converted set figures so advertised == charged in every currency (#7).
-  // fullPricePence is rebuilt from the CONFIGURED per-painting retail (base+framing,
-  // + hand-finishing when on) so the total mirrors what checkout charges per line.
+  // fullPricePence is rebuilt from the CONFIGURED per-painting retail (finish +
+  // hand-finishing) so the total mirrors what checkout charges per line.
   const setFig = bundleMinorFigures(
-    perPaintingConfiguredPence(tier, hf) * bundle.paintingIds.length,
+    perPaintingConfiguredPence(tier, finish, handFinished) * bundle.paintingIds.length,
     bundle.paintingIds.length,
     bundleDiscountPercentForCount(bundle.paintingIds.length),
     convert,
@@ -425,13 +538,16 @@ const CollectionSetCard = ({
         note="Gathered for one home."
       >
         <SetSizeSelector value={tier} onChange={setTier} />
-        <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />
+        <SetFinishSelector value={finish} onChange={setFinish} />
+        {framed && <FrameColourPicker value={frameStyle} onChange={setFrameStyle} />}
+        {framed && <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />}
         <SetPriceBlock
           price={fmtBundle(setFig.bundleMinor)}
           label={
             <>
               all {bundle.paintingIds.length} prints · {editionWord(tier)} edition,{" "}
               {sizeCode(tier)}
+              {framed ? "" : " · canvas"}
               {hf ? " · finished by hand" : ""}
             </>
           }
@@ -465,6 +581,8 @@ const CollectionSetCard = ({
 export const ComposeSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const [finish, setFinish] = useState<SetFinish>("framed");
+  const [frameStyle, setFrameStyle] = useState<string>(FRAME_STYLES[0].id);
   const [handFinished, setHandFinished] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   // Per-painting colourway choice (paintingId → colourway name). Defaults to each
@@ -474,7 +592,8 @@ export const ComposeSetCard = () => {
   const [cw, setCw] = useState<Record<string, string>>({});
   const chooseCw = (id: string, name: string) =>
     setCw((prev) => ({ ...prev, [id]: name }));
-  const hf = handFinished && setEmbellishOffered(tier);
+  const framed = finish === "framed";
+  const hf = framed && handFinished && setEmbellishOffered(tier);
   const toggle = (id: string) =>
     setPicked((prev) => {
       const next = new Set(prev);
@@ -496,9 +615,9 @@ export const ComposeSetCard = () => {
   // at the framed price, so quoting tier.pricePence here under-quoted the buyer by
   // the whole framing add-on. Mirrors CollectionSetCard / CatalogueSetCard, which
   // both build their full price from getTierAdvertisedPricePence.
-  // Configured per-painting retail (base+framing, + hand-finishing when on & offered)
-  // × count — the client twin of what checkout charges per line (advertised==charged).
-  const setFig = bundleMinorFigures(count * perPaintingConfiguredPence(tier, hf), count, percent, convert);
+  // Configured per-painting retail (finish + hand-finishing) × count — the client
+  // twin of what checkout charges per line (advertised == charged).
+  const setFig = bundleMinorFigures(count * perPaintingConfiguredPence(tier, finish, handFinished), count, percent, convert);
   const money = (minor: number) =>
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
 
@@ -507,9 +626,10 @@ export const ComposeSetCard = () => {
       if (!picked.has(p.id)) return;
       // The buyer's chosen colourway for this painting (defaults to the original).
       const chosenName = cw[p.id] ?? coverColourway(p).name;
-      // FRAMED bundle line (Hugo 2026-07-27: no unframed prints); embellished:true
-      // when hand-finishing is chosen — matches the set price advertised above.
-      addItem(p.id, chosenName, tier.id, true, hf);
+      // Framed → framing:true (+ embellished + frame colour); Canvas → canvas:true
+      // (clears framing + hand-finishing) — matches the set price advertised above.
+      if (framed) addItem(p.id, chosenName, tier.id, true, hf, frameStyle, undefined, false);
+      else addItem(p.id, chosenName, tier.id, false, false, undefined, undefined, true);
     });
   };
 
@@ -617,7 +737,11 @@ export const ComposeSetCard = () => {
         </div>
 
         <SetSizeSelector value={tier} onChange={setTier} />
-        {count >= 2 && (
+        {count >= 2 && <SetFinishSelector value={finish} onChange={setFinish} />}
+        {count >= 2 && framed && (
+          <FrameColourPicker value={frameStyle} onChange={setFrameStyle} />
+        )}
+        {count >= 2 && framed && (
           <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />
         )}
 
@@ -628,6 +752,7 @@ export const ComposeSetCard = () => {
               label={
                 <>
                   {count} prints · {editionWord(tier)} edition, {sizeCode(tier)}
+                  {framed ? "" : " · canvas"}
                   {hf ? " · finished by hand" : ""}
                 </>
               }
@@ -662,15 +787,17 @@ export const ComposeSetCard = () => {
 const CatalogueSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
+  const [finish, setFinish] = useState<SetFinish>("framed");
+  const [frameStyle, setFrameStyle] = useState<string>(FRAME_STYLES[0].id);
   const [handFinished, setHandFinished] = useState(false);
   const catalogue = getCompleteCatalogueBundle(tier.id);
-  const hf = handFinished && setEmbellishOffered(tier);
-  const embPer = hf ? getEmbellishmentPricePence(tier)! : 0;
+  const framed = finish === "framed";
+  const hf = framed && handFinished && setEmbellishOffered(tier);
   // Per-line-converted set figures so advertised == charged in every currency (#7).
-  // Add the CONFIGURED hand-finishing per painting to the full price so the total
-  // mirrors what checkout charges per line (advertised == charged).
+  // The full price is the CONFIGURED per-painting retail (finish + hand-finishing)
+  // × count, mirroring what checkout charges per line (advertised == charged).
   const catFig = bundleMinorFigures(
-    catalogue.fullPricePence + embPer * catalogue.paintingCount,
+    perPaintingConfiguredPence(tier, finish, handFinished) * catalogue.paintingCount,
     catalogue.paintingCount,
     catalogue.discountPercent,
     convert,
@@ -678,9 +805,11 @@ const CatalogueSetCard = () => {
   const fmtCatalogue = (minor: number) =>
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
   const acquireCatalogue = () => {
-    catalogue.items.forEach((it) =>
-      addItem(it.paintingId, it.colourwayName, tier.id, true, hf),
-    );
+    catalogue.items.forEach((it) => {
+      if (framed)
+        addItem(it.paintingId, it.colourwayName, tier.id, true, hf, frameStyle, undefined, false);
+      else addItem(it.paintingId, it.colourwayName, tier.id, false, false, undefined, undefined, true);
+    });
   };
   return (
     <Reveal
@@ -700,7 +829,9 @@ const CatalogueSetCard = () => {
         }
       >
         <SetSizeSelector value={tier} onChange={setTier} />
-        <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />
+        <SetFinishSelector value={finish} onChange={setFinish} />
+        {framed && <FrameColourPicker value={frameStyle} onChange={setFrameStyle} />}
+        {framed && <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />}
         <SetPriceBlock
           grand
           price={fmtCatalogue(catFig.bundleMinor)}
@@ -708,6 +839,7 @@ const CatalogueSetCard = () => {
             <>
               all {catalogue.paintingCount} prints · {editionWord(tier)} edition,{" "}
               {sizeCode(tier)}
+              {framed ? "" : " · canvas"}
               {hf ? " · finished by hand" : ""}
             </>
           }
