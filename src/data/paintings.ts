@@ -34,7 +34,7 @@ export interface Colourway {
  * Pricing is in PENCE (integer) — never floats.
  */
 export interface PrintTier {
-  id: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
+  id: "cabinet" | "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
   label: string;                // "Open Edition", "Collector Edition", "Atelier Edition", "Heirloom Edition", "Original — One of One"
   size: string;                 // "29.5 × 29.5 cm"
   pricePence: number;           // integer pence
@@ -204,6 +204,24 @@ export const ESTATE_AUTHENTICATION = {
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
+    // Cabinet — the smallest size and the accessible entry rung below A3 (Hugo
+    // 2026-08-29: "add a budget entry, framed A4 ~£250"). Sold FRAMED or on
+    // CANVAS only — never bare paper. Framed floor = base + framing = £250.
+    // MONEY: mirrored in the 3 /api files (gotcha #9).
+    id: "cabinet",
+    label: "Cabinet Edition",
+    size: "21 × 21 cm",
+    pricePence: 17500, // £175 base
+    editionTotal: null, // Open — unnumbered, issued to order (the funnel entry)
+    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    editionPromise: "issued to order in the current edition",
+    framingPricePence: 7500, // £75 framing (A4) → framed £250
+    canvasPricePence: 7500, // £75 → canvas £250
+    description:
+      "Cabinet Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
+    available: true,
+  },
+  {
     id: "atelier",
     label: "Open Edition",
     size: "29.5 × 29.5 cm",
@@ -321,6 +339,7 @@ export const PRINT_TIERS: PrintTier[] = [
  * 101 is asked to print match this product page. Change all four together.
  */
 const OPHIUCHUS_TIER_SIZE: Record<PrintTier["id"], string> = {
+  cabinet: "25.9 × 21 cm",
   atelier: "36.4 × 29.5 cm",
   collector: "51.8 × 42 cm",
   "atelier-grande": "73.4 × 59.5 cm",
@@ -349,6 +368,7 @@ export const OPHIUCHUS_PRINT_TIERS: PrintTier[] = PRINT_TIERS.map((t) => ({
  * (PAINTING_TIER_SIZE["royal-knot"]). Change all four together.
  */
 const ROYAL_KNOT_TIER_SIZE: Record<PrintTier["id"], string> = {
+  cabinet: "29.7 × 15.5 cm",
   atelier: "42 × 21.9 cm",
   collector: "59.4 × 31 cm",
   "atelier-grande": "84.1 × 43.9 cm",
@@ -680,6 +700,7 @@ export const getEmbellishmentPricePence = (tier: PrintTier): number | null =>
  * ⚠️HUGO: replace with your real Point 101 per-size costs.
  */
 export const COST_FLOOR_PENCE: Record<PrintTier["id"], { printFloor: number }> = {
+  cabinet: { printFloor: 800 }, //  A4 — £8
   atelier: { printFloor: 1200 }, //  A3 — £12  (model £14; range £12–16)
   collector: { printFloor: 2200 }, //  A2 — £22  (model £27; range £22–31)
   "atelier-grande": { printFloor: 4300 }, //  A1 — £43  (model £52; range £43–59)

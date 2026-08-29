@@ -308,6 +308,7 @@ const metaQty = (raw: string | undefined): number => {
 // gotcha #9). Used to render per-line prices in the confirmation email
 // without trusting Stripe to split a total across lines.
 const TIER_PRICE_PENCE: Record<string, number> = {
+  cabinet: 17500,
   atelier: 29500,
   collector: 52500,
   "atelier-grande": 97500,
@@ -315,6 +316,7 @@ const TIER_PRICE_PENCE: Record<string, number> = {
   studio: 265000,
 };
 const TIER_LABEL: Record<string, string> = {
+  cabinet: "Cabinet Edition",
   atelier: "Open Edition",
   collector: "Collector Edition",
   "atelier-grande": "Atelier Edition",
@@ -322,6 +324,7 @@ const TIER_LABEL: Record<string, string> = {
   studio: "Original — One of One",
 };
 const TIER_SIZE: Record<string, string> = {
+  cabinet: "21 × 21 cm",
   atelier: "29.5 × 29.5 cm",
   collector: "42 × 42 cm",
   "atelier-grande": "59.5 × 59.5 cm",
@@ -357,6 +360,7 @@ const sizeFor = (paintingId: string | undefined, tierId: string): string =>
   TIER_SIZE[tierId] ??
   "Limited edition giclée print";
 const TIER_EDITION: Record<string, string> = {
+  cabinet: "Cabinet Edition — unnumbered, issued to order",
   atelier: "Open Edition — unnumbered, issued to order",
   collector: "Collector Edition — edition of 200, hand-numbered",
   "atelier-grande": "Atelier Edition — edition of 75, hand-numbered",
@@ -371,6 +375,7 @@ const TIER_EDITION: Record<string, string> = {
 // hand-finishing charge as its own email sub-line so the per-line
 // breakdown sums to the grand Total (session.amount_total).
 const TIER_FRAMING_PENCE: Record<string, number> = {
+  cabinet: 7500, // £75 (A4) → framed £250 (mirror of paintings.ts, gotcha #9)
   atelier: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price (mirror of paintings.ts, gotcha #9)
   collector: 22500, // £225 (A2) — Hugo 2026-07-27: framed == canvas price
   "atelier-grande": 32500, // £325 (A1) — Hugo 2026-07-27: framed == canvas price
@@ -385,6 +390,7 @@ const TIER_EMBELLISH_PENCE: Record<string, number> = {
 // surcharge (from metadata) is added on top so the canvas sub-line matches the
 // amount charged.
 const TIER_CANVAS_PENCE: Record<string, number> = {
+  cabinet: 7500, // £75 (A4) → canvas £250 (mirror of paintings.ts, gotcha #9)
   atelier: 15000, // £150 (A3)
   collector: 22500, // £225 (A2)
   "atelier-grande": 32500, // £325 (A1)

@@ -56,7 +56,7 @@ import { Resend } from "resend";
 // map in api/checkout.ts. Gotcha #5 (api self-contained) + new gotcha #9
 // (pricing mirror across three files). Update all three in the same commit
 // when tier prices, add-on prices or labels change.
-type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
+type TierId = "cabinet" | "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
 interface EmailTier {
   label: string;
   size: string;
@@ -73,6 +73,15 @@ interface EmailTier {
 // several places; keep this in sync with paintings.ts + api/checkout.ts +
 // api/stripe-webhook.ts). Updated 2026-06-02 to the rethought ladder.
 const TIERS: Record<TierId, EmailTier> = {
+  cabinet: {
+    label: "Cabinet Edition",
+    size: "21 × 21 cm",
+    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    pricePence: 17500, // £175 base (A4) — mirror of paintings.ts (gotcha #9)
+    framingPricePence: 7500, // £75 (A4) → framed £250
+    canvasPricePence: 7500, // £75 (A4) → canvas £250
+    available: true,
+  },
   atelier: {
     label: "Open Edition",
     size: "29.5 × 29.5 cm",

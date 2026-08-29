@@ -20,7 +20,7 @@
 // deleted 2026-07-04 when the wall models unified onto lib/wallModels.ts).
 // =============================================================================
 
-export type ArtworkSizeId = "a3" | "a2" | "a1" | "a0";
+export type ArtworkSizeId = "a4" | "a3" | "a2" | "a1" | "a0";
 
 export interface ArtworkSize {
   /** Stable id used in asset filenames + manifests. */
@@ -38,6 +38,7 @@ export interface ArtworkSize {
 }
 
 export const ARTWORK_SIZES: readonly ArtworkSize[] = [
+  { id: "a4", label: "A4", cm: 21.0, metres: 0.21, tierId: "cabinet" },
   { id: "a3", label: "A3", cm: 29.5, metres: 0.295, tierId: "atelier" },
   { id: "a2", label: "A2", cm: 42.0, metres: 0.42, tierId: "collector", anchor: true },
   { id: "a1", label: "A1", cm: 59.5, metres: 0.595, tierId: "atelier-grande" },

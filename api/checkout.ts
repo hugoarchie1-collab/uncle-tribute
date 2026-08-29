@@ -65,7 +65,7 @@ import Stripe from "stripe";
 // ---- Tier ladder (mirror of src/data/paintings.ts PRINT_TIERS) ----------
 // IMPORTANT: keep prices in sync with src/data/paintings.ts PRINT_TIERS.
 // Gotcha #9 in CLAUDE.md — pricing lives in two places.
-type TierId = "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
+type TierId = "cabinet" | "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
 
 interface TierDef {
   id: TierId;
@@ -83,6 +83,17 @@ interface TierDef {
 }
 
 const TIERS: Record<TierId, TierDef> = {
+  cabinet: {
+    id: "cabinet",
+    label: "Cabinet Edition",
+    size: "21 × 21 cm",
+    pricePence: 17500, // £175 base — mirror of paintings.ts (gotcha #9)
+    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    // A4 entry rung — sold framed or canvas only (never bare paper). Framed £250.
+    framingPricePence: 7500, // £75 (A4) → framed £250
+    canvasPricePence: 7500, // £75 (A4) → canvas £250
+    available: true,
+  },
   atelier: {
     id: "atelier",
     label: "Open Edition",
@@ -181,6 +192,7 @@ const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £495)
 // src/data/paintings.ts COST_FLOOR_PENCE / FRAME_COST_FLOOR_PENCE /
 // EMBELLISH_COST_FLOOR_PENCE (gotcha #9 — pricing lives in two places).
 const COST_FLOOR_PENCE: Record<TierId, { printFloor: number }> = {
+  cabinet: { printFloor: 800 }, //  A4 — £8
   atelier: { printFloor: 1200 }, //  A3 — £12
   collector: { printFloor: 2200 }, //  A2 — £22
   "atelier-grande": { printFloor: 4300 }, //  A1 — £43
@@ -188,6 +200,7 @@ const COST_FLOOR_PENCE: Record<TierId, { printFloor: number }> = {
   studio: { printFloor: 16000 }, //  A1 unique — ⚠️£160+ placeholder (Polly's real hours)
 };
 const FRAME_COST_FLOOR_PENCE: Partial<Record<TierId, number>> = {
+  cabinet: 2500, //  A4 frame cost £25 (LOW end)
   collector: 4500, //  A2 frame cost £45 (LOW end)
   "atelier-grande": 15000, //  A1 frame cost £150 (LOW end)
 };
@@ -808,6 +821,7 @@ const TRADE_TIER_META: Record<
   },
 };
 const TRADE_A_LABEL: Record<TierId, string> = {
+  cabinet: "A4",
   atelier: "A3",
   collector: "A2",
   "atelier-grande": "A1",
@@ -1467,7 +1481,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           ),
           product_data: {
             name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size})`,
-            description: `${finish}, conservation-mounted and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
+            description: `${finish}, set within a white window mount and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
           },
         },
       });

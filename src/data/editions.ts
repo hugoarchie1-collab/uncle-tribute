@@ -51,7 +51,7 @@ export interface Allocation {
   /** Exactly as the colourway is named in paintings.ts. */
   colourwayName: string;
   /** Tier id from the PRINT_TIERS ladder in paintings.ts. */
-  tierId: "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
+  tierId: "cabinet" | "atelier" | "collector" | "atelier-grande" | "heirloom" | "studio";
   /** The hand-written edition number on the print + certificate. */
   number: number;
   /** The certificate number exactly as printed on the COA. */
