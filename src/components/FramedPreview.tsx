@@ -183,31 +183,34 @@ export const CanvasWrap = ({
   // thickness; eight mirrored slices fill the wrapped border (edges + corners); a
   // fold shadow + a float drop-shadow read it as a solid object off the wall.
   if (!floatColor) {
-    // GALLERY WRAP ("mirror") — the artwork bleeds edge-to-edge so the painting's
-    // OWN background (its sky, stars and colour) CONTINUES around all four wrapped
-    // edges of the stretcher (Hugo 2026-08-06: "the colour wrap should show the
-    // continued background — stars around the edge"). The mandala is centred, so
-    // only its backdrop reaches the edges — no mandala on the sides, no flat
-    // colour band. A fold line + edge shading read it as a wrapped canvas.
+    // FLAT CANVAS PRINT — Giclee & Co sell a plain fine-art canvas PRINT (not a
+    // stretched, wrapped, ready-to-hang canvas), so the preview shows the artwork
+    // FLAT with a fine canvas tooth + a soft drop shadow — no 3D depth, no wrapped
+    // edges, no stretcher (Hugo 2026-08-29: "switch to the normal canvas we offer
+    // with Giclee & Co").
     const ar = String(aspectRatio || 1);
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
         <div
           className="relative w-full h-full overflow-hidden"
-          style={{ filter: CANVAS_DEPTH_SHADOW }}
+          style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.35)) drop-shadow(0 18px 34px rgba(0,0,0,0.42))" }}
         >
           {children}
-          {/* fold line at the wrap edge — the stretcher's front rim */}
+          {/* fine canvas tooth — signals a canvas print (vs smooth paper), no 3D */}
           <div
             aria-hidden
-            className="absolute pointer-events-none"
-            style={{ inset: "8.33%", boxShadow: "0 0 0 1px rgba(0,0,0,0.10), 0 3px 14px rgba(0,0,0,0.22)" }}
+            className="absolute inset-0 pointer-events-none mix-blend-multiply opacity-[0.09]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.6) 0 1px, transparent 1px 3px)",
+              backgroundSize: "3px 3px",
+            }}
           />
-          {/* the wrapped sides catch less light */}
+          {/* hairline edge so the print reads as a clean flat sheet */}
           <div
             aria-hidden
             className="absolute inset-0 pointer-events-none"
-            style={{ boxShadow: "inset 0 0 clamp(10px,1.4vw,22px) clamp(3px,0.5vw,8px) rgba(0,0,0,0.18)" }}
+            style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
           />
         </div>
       </div>
