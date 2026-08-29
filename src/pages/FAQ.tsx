@@ -87,10 +87,10 @@ const FAQS: QA[] = [
         <br />
         Every piece is offered two ways, and you choose on the product page:{" "}
         <strong>framed</strong> — the giclée on fine-art paper, hand-mounted and
-        framed in solid wood behind glazing, ready to hang; or{" "}
-        <strong>canvas</strong> — the same image hand-stretched over a gallery
-        frame, a bold, tactile, glass-free surface that reads like an original
-        painting. Both are made to order at the same price — pick whichever suits
+        framed in solid wood behind glass, ready to hang; or{" "}
+        <strong>canvas</strong> — the same image as a fine-art giclée print on
+        heavyweight 370gsm art canvas, a bold, tactile, glass-free surface. Both
+        are made to order at the same price — pick whichever suits
         your wall, or{" "}
         <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           ask us
@@ -104,8 +104,8 @@ const FAQS: QA[] = [
     question: "How long until my print arrives?",
     answer: (
       <>
-        Every piece is made to order — framed in solid wood or gallery-wrapped
-        on canvas — and <strong>dispatched within roughly two weeks</strong> of
+        Every piece is made to order — framed in solid wood, or a fine-art canvas
+        print — and <strong>dispatched within roughly two weeks</strong> of
         your order; with tracked courier transit on top, most orders arrive
         within <strong>two to three weeks</strong>. Delivery is free
         worldwide. Prints hand-finished by Polly (Stephen's sister) dispatch
@@ -119,8 +119,8 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Three tiers, each estate-stamped and ready to hang — framed in solid wood
-        or gallery-wrapped on canvas, with the frame or canvas included in the
+        Three tiers, each estate-stamped — framed in solid wood and ready to hang,
+        or a fine-art canvas print, with the frame or canvas included in the
         price and free delivery worldwide. <strong>Open Edition</strong> at £445 (unnumbered, issued to order — no fixed allocation).{" "}
         <strong>Collector Edition</strong> at £750 (edition of 200).{" "}
         <strong>Atelier Edition</strong> at £1,300 (edition of 75).
@@ -137,7 +137,7 @@ const FAQS: QA[] = [
         is no unframed option and no separate framing charge. Choose your{" "}
         <strong>frame</strong> on the product page — solid wood in oak, white or
         black, glazed with clear, edge-polished float glass. Prefer canvas? Every
-        piece is also offered gallery-wrapped, ready to hang, at the same price.
+        piece is also offered as a fine-art 370gsm canvas print, at the same price.
         Framed and canvas orders are made to order — allow roughly two weeks;
         delivery is free worldwide.
       </>

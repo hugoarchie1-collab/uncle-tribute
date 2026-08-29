@@ -550,8 +550,7 @@ export const Basket = () => {
                             {line.colourwayName}
                             {isCanvas && (
                               <>
-                                {" · "}On stretched canvas ·{" "}
-                                {canvasEdgeLabel(line.item.canvasEdge)} edge · ready to hang
+                                {" · "}Fine-art canvas print · 370gsm
                               </>
                             )}
                             {isFramed && (

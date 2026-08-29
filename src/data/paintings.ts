@@ -479,21 +479,19 @@ export const getCanvasPricePence = (tier: PrintTier): number | null =>
 
 /** Copy for the canvas add-on, mirrored into api/checkout.ts (gotcha #9, label only). */
 export const CANVAS_NOTE =
-  "Printed onto Hahnemühle 370gsm fine-art art canvas, hand-stretched over a solid wooden stretcher and finished ready to hang — no glass, no separate frame. Made to order.";
+  "Printed as a fine-art giclée on Hahnemühle 370gsm art canvas — a smooth, heavyweight canvas print. Made to order.";
 
-// CANVAS — a single stretched, ready-to-hang product. The canvas is printed raw
-// (Hahnemühle 370gsm art canvas) and hand-stretched over a solid wooden frame
-// with a gallery wrap (the artwork's own background carried around the four
-// edges). There is NO edge-finish choice and NO surcharge — the old float/tray-
-// frame options were removed (they were modelled on a different supplier and
-// were never a real product here). CANVAS_EDGES is kept as a one-entry list so
-// existing basket / checkout plumbing that passes a canvas-edge value stays valid.
+// CANVAS — the normal fine-art canvas print Giclee & Co offer (Hahnemühle 370gsm
+// art canvas), printed as a giclée. It is NOT stretched or framed and is NOT sold
+// "ready to hang" — just the canvas print. There is no edge-finish choice and no
+// surcharge. CANVAS_EDGES is kept as a one-entry list so existing basket /
+// checkout plumbing that passes a canvas value stays valid.
 export const CANVAS_EDGES = [
   {
     id: "mirror",
-    label: "Gallery wrap",
+    label: "Canvas print",
     isFloat: false,
-    note: "Hand-stretched over a solid wooden frame with the artwork's own background carried around all four edges — ready to hang. Included.",
+    note: "A fine-art giclée printed on Hahnemühle 370gsm art canvas — smooth, heavyweight and made to order.",
   },
 ] as const;
 export type CanvasEdgeId = (typeof CANVAS_EDGES)[number]["id"];

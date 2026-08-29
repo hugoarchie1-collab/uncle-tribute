@@ -442,7 +442,7 @@ const PAPER_FINISH_LABELS: Record<string, string> = {
 // back to the default (mirror wrap).
 const CANVAS_EDGE_LABELS: Record<string, string> = {
   basic: "Basic canvas (white edge)",
-  mirror: "Gallery wrap",
+  mirror: "Canvas print",
   "float-black": "Black float frame",
   "float-white": "White float frame",
   "float-wenge": "Wenge float frame",
@@ -1146,7 +1146,7 @@ async function handleTradeQuote(
         unit_amount: l.tradeUnitPence,
         product_data: {
           name: `${l.title} — ${l.tierLabel} ${l.size} — ${
-            l.finish === "canvas" ? "Stretched canvas" : "Framed print"
+            l.finish === "canvas" ? "Canvas print" : "Framed print"
           }`,
         },
       });
@@ -1502,9 +1502,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             item.tier.canvasPricePence + item.canvasEdgeSurchargePence,
           ),
           product_data: {
-            name: `Stretched canvas — ${item.title} (${item.tier.label} ${item.tier.size})`,
+            name: `Canvas print — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of CANVAS_NOTE in src/data/paintings.ts.
-            description: `Printed onto Hahnemühle 370gsm fine-art art canvas, hand-stretched over a solid wooden frame with a gallery wrap and finished ready to hang — no glass, no separate frame. Made to order.`,
+            description: `Printed as a fine-art giclée on Hahnemühle 370gsm art canvas — a smooth, heavyweight canvas print. Made to order.`,
           },
         },
       });

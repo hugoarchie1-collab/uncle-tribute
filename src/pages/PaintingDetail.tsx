@@ -1353,7 +1353,7 @@ const BuyBox = ({
             always a real, buyable price. Mirrors the £0 delivery rate
             api/checkout.ts charges in every region (mirror invariant #9). */}
         <p className={cn(META, "m-0 mb-4")}>
-          {canvasActive || framingActive
+          {framingActive
             ? "Ready to hang · free delivery worldwide"
             : "Free delivery worldwide"}
         </p>
@@ -1512,9 +1512,8 @@ const BuyBox = ({
               </span>
             </legend>
             <p className={cn(BODY, "text-ink-muted m-0 mb-4")}>
-              Every piece arrives ready to hang — choose it hand-framed in solid
-              wood, or gallery-wrapped on canvas. Made to order by the estate,
-              delivered free.
+              Choose it hand-framed in solid wood and ready to hang, or as a
+              fine-art canvas print. Made to order by the estate, delivered free.
             </p>
 
             <div className="flex flex-col gap-2.5">
@@ -1567,9 +1566,8 @@ const BuyBox = ({
                       </strong>
                     </span>
                     <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
-                      Printed on Hahnemühle 370gsm fine-art art canvas, hand-stretched
-                      over a solid wooden frame with a gallery wrap — ready to hang,
-                      no glass.
+                      Printed as a fine-art giclée on Hahnemühle 370gsm art canvas —
+                      a smooth, heavyweight canvas print. Made to order.
                     </span>
                   </button>
                 )}
@@ -1756,7 +1754,7 @@ const BuyBox = ({
             <dt className={cn(EYEBROW_TIGHT, "pt-[3px]")}>Presentation</dt>
             <dd className={cn(SPEC_VALUE, "m-0")}>
               {canvasActive
-                ? `Canvas — ${(CANVAS_EDGES.find((x) => x.id === canvasEdge) ?? CANVAS_EDGES[0]).label}`
+                ? "Canvas print · 370gsm"
                 : framingActive
                   ? `Framed — ${FRAME_STYLES.find((f) => f.id === frameStyle)?.label ?? "solid wood"}`
                   : "Fine-art print"}
@@ -1786,7 +1784,7 @@ const BuyBox = ({
             </span>
           </div>
           <p className={cn(META, "m-0 mt-2")}>
-            {canvasActive || framingActive
+            {framingActive
               ? "Ready to hang · free delivery worldwide"
               : "Free delivery worldwide"}
           </p>
