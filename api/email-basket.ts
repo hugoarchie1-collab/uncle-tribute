@@ -74,9 +74,9 @@ interface EmailTier {
 // api/stripe-webhook.ts). Updated 2026-06-02 to the rethought ladder.
 const TIERS: Record<TierId, EmailTier> = {
   cabinet: {
-    label: "Cabinet Edition",
+    label: "Emblem Edition",
     size: "21 × 21 cm",
-    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    editionLabel: "Emblem Edition — unnumbered, issued to order",
     pricePence: 17500, // £175 base (A4) — mirror of paintings.ts (gotcha #9)
     framingPricePence: 7500, // £75 (A4) → framed £250
     canvasPricePence: 7500, // £75 (A4) → canvas £250

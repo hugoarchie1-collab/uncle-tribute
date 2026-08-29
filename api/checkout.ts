@@ -85,10 +85,10 @@ interface TierDef {
 const TIERS: Record<TierId, TierDef> = {
   cabinet: {
     id: "cabinet",
-    label: "Cabinet Edition",
+    label: "Emblem Edition",
     size: "21 × 21 cm",
     pricePence: 17500, // £175 base — mirror of paintings.ts (gotcha #9)
-    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    editionLabel: "Emblem Edition — unnumbered, issued to order",
     // A4 entry rung — sold framed or canvas only (never bare paper). Framed £250.
     framingPricePence: 7500, // £75 (A4) → framed £250
     canvasPricePence: 7500, // £75 (A4) → canvas £250

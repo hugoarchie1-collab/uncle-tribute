@@ -204,21 +204,22 @@ export const ESTATE_AUTHENTICATION = {
  */
 export const PRINT_TIERS: PrintTier[] = [
   {
-    // Cabinet — the smallest size and the accessible entry rung below A3 (Hugo
+    // Emblem Edition (id kept as `cabinet`) — the smallest size and the
+    // accessible entry rung below A3 (Hugo
     // 2026-08-29: "add a budget entry, framed A4 ~£250"). Sold FRAMED or on
     // CANVAS only — never bare paper. Framed floor = base + framing = £250.
     // MONEY: mirrored in the 3 /api files (gotcha #9).
     id: "cabinet",
-    label: "Cabinet Edition",
+    label: "Emblem Edition",
     size: "21 × 21 cm",
     pricePence: 17500, // £175 base
     editionTotal: null, // Open — unnumbered, issued to order (the funnel entry)
-    editionLabel: "Cabinet Edition — unnumbered, issued to order",
+    editionLabel: "Emblem Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
     framingPricePence: 7500, // £75 framing (A4) → framed £250
     canvasPricePence: 7500, // £75 → canvas £250
     description:
-      "Cabinet Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
+      "Emblem Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
     available: true,
   },
   {
