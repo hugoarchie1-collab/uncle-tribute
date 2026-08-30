@@ -336,7 +336,13 @@ const VALID_PAINTING_IDS = new Set<string>([
   "peacock-minerva",
   "ophiuchus",
   "tridecagon-moon-star",
-  "lulin",
+  // NOTE: "lulin" was REMOVED here 2026-08-30 — it had been deleted from
+  // src/data/paintings.ts (PAINTINGS = 12) but left in this allowlist (13), so
+  // CATALOGUE_PAINTING_COUNT read 13 and the complete-set 12% coupon
+  // (bundlePercentOff: distinct >= COUNT) was UNREACHABLE at 12 distinct → the
+  // full catalogue / full compose set advertised 12% but was charged 8%, a ~£360
+  // OVERCHARGE (advertised < charged). Removing it makes COUNT = 12 so the 12%
+  // fires exactly when the client advertises it (gotcha #9 mirror drift, fixed).
   "enneagon-swans",
   // Ancient Canons (added 2026-07-28)
   "celtic-shield",
@@ -359,7 +365,6 @@ const PAINTING_TITLES: Record<string, string> = {
   "peacock-minerva": "Peacock Minerva",
   "ophiuchus": "Ophiuchus",
   "tridecagon-moon-star": "Tridecagon Moon Star",
-  "lulin": "Lulin",
   "enneagon-swans": "Enneagon — The Swans",
   "celtic-shield": "Orbital — Celtic Shield Mandala",
   "twelve-around-three": "12 Around 3 — Flower of Life",
