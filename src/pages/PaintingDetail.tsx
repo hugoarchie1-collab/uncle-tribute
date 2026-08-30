@@ -309,7 +309,7 @@ const SizePicker = ({
               {tier.label}
               {tier.isAnchor && (
                 <span className={cn(EYEBROW_TIGHT, "text-[13px] 3xl:text-[16px] 4xl:text-[19px]")}>
-                  · most chosen
+                  · recommended
                 </span>
               )}
             </span>
@@ -988,6 +988,7 @@ const TrueSizeRoom = ({
 const BuyBox = ({
   painting,
   collection,
+  reviewStats,
   availableColourways,
   selected,
   onSelectColourway,
@@ -1012,6 +1013,7 @@ const BuyBox = ({
 }: {
   painting: Painting;
   collection?: { id: string; title: string };
+  reviewStats: { count: number; average: number };
   availableColourways: Colourway[];
   selected: Colourway;
   onSelectColourway: (name: string) => void;
@@ -1290,6 +1292,38 @@ const BuyBox = ({
       <p className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] tracking-[0.01em] text-ink m-0 mb-5">
         Stephen Meakin <span className="text-ink-muted">· 1966&ndash;2021</span>
       </p>
+      {/* Real review social proof at the buy point — KV-backed (useReviewStats),
+          rendered ONLY when genuine reviews exist (count > 0), never fabricated.
+          Same average the on-page Reviews section shows; links down to it. */}
+      {reviewStats.count > 0 && (
+        <a
+          href="#reviews"
+          aria-label={`Rated ${reviewStats.average.toFixed(1)} out of 5 from ${reviewStats.count} ${reviewStats.count === 1 ? "review" : "reviews"}`}
+          className="group inline-flex items-center gap-2 -mt-3 mb-5 no-underline"
+        >
+          <span className="inline-flex gap-0.5 text-ink" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <svg
+                key={i}
+                viewBox="0 0 20 20"
+                className="h-3.5 w-3.5 3xl:h-4 3xl:w-4"
+                fill={i < Math.round(reviewStats.average) ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth={1.3}
+              >
+                <path
+                  d="M10 1.6l2.47 5.01 5.53.8-4 3.9.94 5.5L10 20.2l-4.94-2.6.94-5.5-4-3.9 5.53-.8z"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ))}
+          </span>
+          <span className={cn(META, "text-ink-muted group-hover:text-ink transition-colors")}>
+            {reviewStats.average.toFixed(1)} · {reviewStats.count}{" "}
+            {reviewStats.count === 1 ? "review" : "reviews"}
+          </span>
+        </a>
+      )}
 
       {/* 2 · KEY FACTS — a legible wall-label spec table: one value size + tone,
           11px cap-labels baseline-aligned to the value, generous row rhythm. */}
@@ -3010,10 +3044,10 @@ export const PaintingDetail = () => {
                     "clean light gallery ground"), instead of the dark reactive
                     wall behind the hero. */}
                 <div
-                  className="relative overflow-hidden rounded-[5px] p-5 sm:p-9 lg:p-11 ring-1 ring-black/[0.07]"
+                  className="relative overflow-hidden rounded-[5px] p-5 sm:p-9 lg:p-11 ring-1 ring-black/[0.08]"
                   style={{
-                    background: "linear-gradient(180deg, #f2ede3 0%, #e7e1d5 100%)",
-                    boxShadow: "inset 0 0 90px rgba(90,70,45,0.05)",
+                    background: "linear-gradient(180deg, #ece5d7 0%, #ded5c3 100%)",
+                    boxShadow: "inset 0 0 90px rgba(90,70,45,0.06)",
                   }}
                 >
                   <button
@@ -3156,6 +3190,7 @@ export const PaintingDetail = () => {
               <BuyBox
                 painting={painting}
                 collection={collection}
+                reviewStats={reviewStats}
                 availableColourways={availableColourways}
                 selected={selected}
                 onSelectColourway={setSelectedName}
@@ -3196,7 +3231,9 @@ export const PaintingDetail = () => {
             via the existing /api/memories-submit (kind:"review"). Never seeded —
             fabricated reviews are illegal (UK ASA / US FTC). Lives below the
             story so it never disturbs the monochrome buy box or pricing. */}
-        <Reviews paintingId={painting.id} paintingTitle={painting.title} />
+        <div id="reviews" className="scroll-mt-24">
+          <Reviews paintingId={painting.id} paintingTitle={painting.title} />
+        </div>
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
         <Footer />
       </div>

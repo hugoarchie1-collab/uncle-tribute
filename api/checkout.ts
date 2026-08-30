@@ -164,6 +164,7 @@ const TIERS: Record<TierId, TierDef> = {
 // the buyer sees and Point 101 is asked to print match the product page.
 const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
   ophiuchus: {
+    cabinet: "25.9 × 21 cm",
     atelier: "36.4 × 29.5 cm",
     collector: "51.8 × 42 cm",
     "atelier-grande": "73.4 × 59.5 cm",
@@ -391,6 +392,7 @@ interface VercelRes {
 }
 
 const isTierId = (v: unknown): v is TierId =>
+  v === "cabinet" ||
   v === "atelier" ||
   v === "collector" ||
   v === "atelier-grande" ||

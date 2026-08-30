@@ -139,6 +139,7 @@ const TIERS: Record<TierId, EmailTier> = {
 // real landscape dimensions, not a square default. Same ids / prices / editions.
 const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
   ophiuchus: {
+    cabinet: "25.9 × 21 cm",
     atelier: "36.4 × 29.5 cm",
     collector: "51.8 × 42 cm",
     "atelier-grande": "73.4 × 59.5 cm",
@@ -147,6 +148,7 @@ const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
   },
   // Royal Knot — landscape 1.916:1 (fills the A long side, height derived).
   "royal-knot": {
+    cabinet: "29.7 × 15.5 cm",
     atelier: "42 × 21.9 cm",
     collector: "59.4 × 31 cm",
     "atelier-grande": "84.1 × 43.9 cm",
