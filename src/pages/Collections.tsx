@@ -918,14 +918,18 @@ const CollectionJumpNav = ({
       aria-label="Jump to a collection"
       className="sticky top-0 z-20 pointer-events-none"
     >
-      {/* Soft top-anchored scrim so the chips read over scrolling artwork without
-          a hard-edged bar — dense at the top, fully transparent by the foot. */}
+      {/* WHISPER scrim — the chips read over scrolling artwork via their own
+          text-shadow (0 1px 8px rgba(0,0,0,0.85)); this is only a faint haze that
+          fades to transparent, NOT a bar. The old 0.9-opaque near-black gradient
+          read as a "black bar" stuck at the top on scroll-down (once the smart-
+          hiding nav slid away) — Hugo's repeated complaint. Now light + short so
+          it never stands out over the art (house rule: no black boxes/bars). */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-[130%] pointer-events-none"
+        className="absolute inset-x-0 top-0 h-[108%] pointer-events-none"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,9,8,0.9) 0%, rgba(10,9,8,0.74) 55%, rgba(10,9,8,0) 100%)",
+            "linear-gradient(180deg, rgba(10,9,8,0.3) 0%, rgba(10,9,8,0.1) 50%, rgba(10,9,8,0) 100%)",
         }}
       />
       {/* w-max + max-w-full + mx-auto: the row is content-width and CENTRES when
