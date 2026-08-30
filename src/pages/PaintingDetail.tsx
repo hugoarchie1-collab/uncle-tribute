@@ -2858,8 +2858,8 @@ export const PaintingDetail = () => {
           "@type": "ShippingDeliveryTime",
           handlingTime: {
             "@type": "QuantitativeValue",
-            minValue: 7,
-            maxValue: 10,
+            minValue: 2,
+            maxValue: 4,
             unitCode: "DAY",
           },
         },

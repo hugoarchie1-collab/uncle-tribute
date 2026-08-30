@@ -112,7 +112,7 @@ const STEPS: { index: string; title: string; body: string }[] = [
   {
     index: "03",
     title: "Made & delivered",
-    body: "Each piece is estate-stamped and made to order, then delivered free worldwide — drop-shipped direct to your client or to site, timed to the install. Allow 7–10 working days; hand-finishing and commissions carry their own confirmed timeline.",
+    body: "Each piece is estate-stamped and made to order, then delivered free worldwide — drop-shipped direct to your client or to site, timed to the install. Allow 2–4 working days; hand-finishing and commissions carry their own confirmed timeline.",
   },
   {
     index: "04",

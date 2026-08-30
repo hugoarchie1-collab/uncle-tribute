@@ -1024,21 +1024,21 @@ const buildShippingOptions = (_items: NormalisedItem[], currency: CurrencyCode) 
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "United Kingdom — free delivery (made to order · ships in 7–10 working days)",
+      display_name: "United Kingdom — free delivery (made to order · ships in 2–4 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "Europe — free delivery (made to order · ships in 7–10 working days)",
+      display_name: "Europe — free delivery (made to order · ships in 2–4 working days)",
     },
   },
   {
     shipping_rate_data: {
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency },
-      display_name: "International — free delivery (made to order · ships in 7–10 working days)",
+      display_name: "International — free delivery (made to order · ships in 2–4 working days)",
     },
   },
 ];

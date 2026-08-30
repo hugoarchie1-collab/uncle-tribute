@@ -60,7 +60,7 @@ export const ReassuranceRow = () => (
       <ParcelIcon className="w-[18px] h-[18px] text-ink/55" />
       <span className={EYEBROW_TIGHT}>Free delivery</span>
       <Link to="/faq" className={cn(META, "underline underline-offset-4 hover:text-ink transition-colors")}>
-        Free delivery · ships in 7–10 days →
+        Free delivery · ships in 2–4 days →
       </Link>
     </div>
   </div>

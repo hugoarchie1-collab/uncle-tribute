@@ -108,7 +108,7 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order at our London atelier.";
+  "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order by a specialist giclée studio on the Sussex coast.";
 
 /**
  * The edition the catalogue is CURRENTLY issuing under. Every artwork is

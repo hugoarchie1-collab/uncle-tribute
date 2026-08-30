@@ -455,7 +455,7 @@ const TradeSheet = ({ sheet }: { sheet: TradeSheetData }) => {
 const TERMS: { title: string; body: string }[] = [
   {
     title: "Lead times",
-    body: "Every piece is made to order and dispatched within 7–10 working days. Hand-finishing adds up to a further two weeks; bespoke commissions are quoted with their own timeline, confirmed before any commitment.",
+    body: "Every piece is made to order and dispatched within 2–4 working days. Hand-finishing adds up to a further two weeks; bespoke commissions are quoted with their own timeline, confirmed before any commitment.",
   },
   {
     title: "Delivery",

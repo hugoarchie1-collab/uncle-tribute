@@ -125,7 +125,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Lead time",
     question: "How long until my print arrives?",
     answer:
-      "Unframed prints are dispatched within 7–10 working days of your order; with tracked courier transit on top, most orders arrive within roughly two to three weeks. Delivery is free to the UK, Europe, North America, Australia and New Zealand. Framed orders add roughly two weeks to that. Prints hand-finished by Polly (Stephen's sister) dispatch within two weeks maximum. You'll receive an email with tracking the moment your print leaves the studio.",
+      "Prints are made to order and dispatched within 2–4 working days; with tracked courier on top, most UK orders arrive within about a week (a few days more overseas). Delivery is free to the UK, Europe, North America, Australia and New Zealand. Prints hand-finished by Polly (Stephen's sister) are completed by hand first, so allow up to two weeks. You'll receive an email with tracking the moment your print ships.",
   },
   {
     eyebrow: "Sizes & editions",

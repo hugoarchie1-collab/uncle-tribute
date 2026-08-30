@@ -105,11 +105,11 @@ const FAQS: QA[] = [
     answer: (
       <>
         Every piece is made to order — framed in solid wood, or a fine-art canvas
-        print — and <strong>dispatched within roughly two weeks</strong> of
-        your order; with tracked courier transit on top, most orders arrive
-        within <strong>two to three weeks</strong>. Delivery is free
-        worldwide. Prints hand-finished by Polly (Stephen's sister) dispatch
-        within two weeks maximum. You'll receive an email with tracking the
+        print — and <strong>dispatched within 2–4 working days</strong> of
+        your order; with tracked courier transit on top, most UK orders arrive
+        within <strong>about a week</strong> (a few days more overseas). Delivery is free
+        worldwide. Prints hand-finished by Polly (Stephen's sister) are completed
+        by hand first, so allow up to two weeks. You'll receive an email with tracking the
         moment your print leaves the studio.
       </>
     ),

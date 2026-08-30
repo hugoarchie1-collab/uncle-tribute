@@ -37,7 +37,7 @@ export const ProvenancePanel = () => (
     <section>
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Shipping &amp; care</p>
       <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
-        <li className={META}>Each print is made to order and ships within 7–10 working days.</li>
+        <li className={META}>Each print is made to order and dispatched within 2–4 working days.</li>
         <li className={META}>Delivery is free worldwide — framed or on canvas — with nothing added at checkout.</li>
         <li className={META}>
           Damaged or lost in transit? See{" "}

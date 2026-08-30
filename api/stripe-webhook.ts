@@ -842,7 +842,7 @@ const renderOrderConfirmationHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
-    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order by a specialist giclée studio on the Sussex coast, and dispatched within <strong style="color:#ede6d6;">seven to ten working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
+    + `<p style="${s.body}">Your order for an estate-stamped giclée from <em>The Art of Stephen Meakin</em> has been received. Each print is individually made to order by a specialist giclée studio on the Sussex coast, and dispatched within <strong style="color:#ede6d6;">two to four working days</strong>. You'll hear from us again when it ships, with a tracking link.</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
