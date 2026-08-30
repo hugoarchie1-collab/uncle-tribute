@@ -734,7 +734,7 @@ export const ComposeSetCard = () => {
               // 2×6). The wrapper holds the toggle tile + its colourway row.
               <div
                 key={p.id}
-                className="shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(33.333%_-_8px)] lg:basis-[calc(25%_-_9px)]"
+                className="shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(25%_-_9px)] 3xl:basis-[calc(16.666%_-_7px)]"
               >
                 <button
                   type="button"
@@ -767,124 +767,176 @@ export const ComposeSetCard = () => {
                     </span>
                   )}
                 </button>
-                {/* PER-PRINT CONFIG — appears once the print is in the set: its own
-                    size, finish (framed/canvas), colourway and frame colour. A
-                    deliberate click, never a hover flick. Size + finish change the
-                    price (summed per print in mixedSetFigures); colourway + frame
-                    colour are price-identical / £0. */}
-                {on && (
-                  <div className="mt-2 flex flex-col items-center gap-1.5">
-                    <div
-                      role="group"
-                      aria-label={`Size for ${p.title}`}
-                      className="flex flex-wrap items-center justify-center gap-1"
-                    >
-                      {BUNDLE_TIERS.map((st) => {
-                        const ssel = sizeOf(p.id).id === st.id;
-                        return (
-                          <button
-                            key={st.id}
-                            type="button"
-                            aria-pressed={ssel}
-                            aria-label={`${p.title} — ${editionWord(st)} (${st.size})`}
-                            title={`${editionWord(st)} · ${st.size}`}
-                            onClick={() => chooseSize(p.id, st.id)}
-                            className={cn(
-                              "px-2 py-0.5 rounded-full font-sans text-[11px] leading-none ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                              ssel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
-                            )}
-                          >
-                            {editionWord(st)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    <div
-                      role="group"
-                      aria-label={`Finish for ${p.title}`}
-                      className="flex items-center justify-center gap-1"
-                    >
-                      {(["framed", "canvas"] as SetFinish[]).map((fin) => {
-                        const fsel = finishOf(p.id) === fin;
-                        return (
-                          <button
-                            key={fin}
-                            type="button"
-                            aria-pressed={fsel}
-                            aria-label={`${p.title} — ${fin === "framed" ? "Framed" : "Canvas"}`}
-                            onClick={() => chooseFinish(p.id, fin)}
-                            className={cn(
-                              "px-2 py-0.5 rounded-full font-sans text-[11px] leading-none capitalize ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                              fsel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
-                            )}
-                          >
-                            {fin}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {ways.length > 1 && (
-                      <div
-                        role="group"
-                        aria-label={`Colourway for ${p.title}`}
-                        className="flex flex-wrap items-center justify-center gap-1"
-                      >
-                        {ways.map((c) => {
-                          const sel = c.name === chosenName;
-                          return (
-                            <button
-                              key={c.name}
-                              type="button"
-                              aria-pressed={sel}
-                              aria-label={`${p.title} — ${c.name}`}
-                              title={c.name}
-                              onClick={() => chooseCw(p.id, c.name)}
-                              className={cn(
-                                "h-3.5 w-3.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                                sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
-                              )}
-                              style={{ backgroundColor: c.hex }}
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
-                    {finishOf(p.id) === "framed" && (
-                      <div
-                        role="group"
-                        aria-label={`Frame colour for ${p.title}`}
-                        className="flex items-center justify-center gap-1"
-                      >
-                        {FRAME_STYLES.map((f) => {
-                          const fsel = (frameByPainting[p.id] ?? FRAME_STYLES[0].id) === f.id;
-                          return (
-                            <button
-                              key={f.id}
-                              type="button"
-                              aria-pressed={fsel}
-                              aria-label={`${p.title} — ${f.label} frame`}
-                              title={`${f.label} frame`}
-                              onClick={() => chooseFrame(p.id, f.id)}
-                              className={cn(
-                                "h-3.5 w-3.5 rounded-[3px] ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                                fsel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
-                              )}
-                              style={{ backgroundColor: f.swatch }}
-                            />
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
 
-        {/* Size · finish · colourway · frame are chosen PER PRINT on each selected
-            tile above — a fully mixed wall. Only hand-finishing stays set-wide (it
-            applies to each print whose size offers it, A2/A1). */}
+        {/* YOUR WALL — the tiles above are pure, even selection (image + check); every
+            per-print control lives here, one roomy row per chosen print, so size ·
+            finish · colourway · frame colour never crowd the grid. Fully mixed: each
+            row carries its OWN size, finish, colourway and frame. Money is summed per
+            print, per part (mixedSetFigures) — advertised == charged (gotcha #9). */}
+        {count > 0 && (
+          <div className="mt-7 md:mt-9 mx-auto w-full max-w-[680px] text-left">
+            <p className="font-sans text-[13px] tracking-[0.28em] uppercase text-ink-muted text-center mb-4">
+              Your wall · {count} {count === 1 ? "print" : "prints"}
+            </p>
+            <ul className="flex flex-col">
+              {selected.map((p) => {
+                const size = sizeOf(p.id);
+                const fin = finishOf(p.id);
+                const framed = fin === "framed";
+                const ways = p.colourways.filter((c) => c.available);
+                const chosenName = cw[p.id] ?? coverColourway(p).name;
+                const chosen = ways.find((c) => c.name === chosenName) ?? coverColourway(p);
+                const perPrint = printPriceParts(size, fin, handFinished).reduce(
+                  (s, x) => s + convert(x),
+                  0,
+                );
+                return (
+                  <li
+                    key={p.id}
+                    className="flex items-start gap-3 md:gap-4 border-t border-line/70 py-4 first:border-t-0"
+                  >
+                    <AssetImage
+                      src={chosen.image}
+                      alt={`${p.title} — ${chosenName}`}
+                      loading="lazy"
+                      decoding="async"
+                      sizes="64px"
+                      className="h-14 w-14 md:h-16 md:w-16 shrink-0 rounded-[2px] object-cover ring-1 ring-line"
+                    />
+                    <div className="min-w-0 flex-1 flex flex-col gap-2.5">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className="min-w-0 truncate font-display italic text-[16px] md:text-[18px] leading-tight text-ink">
+                          {p.title}
+                        </p>
+                        <span className="shrink-0 font-sans text-[14px] md:text-[15px] font-semibold tabular-nums text-ink">
+                          {money(perPrint)}
+                        </span>
+                      </div>
+                      <div
+                        role="group"
+                        aria-label={`Size for ${p.title}`}
+                        className="flex flex-wrap items-center gap-1.5"
+                      >
+                        {BUNDLE_TIERS.map((st) => {
+                          const sel = size.id === st.id;
+                          return (
+                            <button
+                              key={st.id}
+                              type="button"
+                              aria-pressed={sel}
+                              aria-label={`${p.title} — ${editionWord(st)} (${st.size})`}
+                              title={`${editionWord(st)} · ${st.size}`}
+                              onClick={() => chooseSize(p.id, st.id)}
+                              className={cn(
+                                "px-2.5 py-1 rounded-full font-sans text-[12px] leading-none ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                sel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
+                              )}
+                            >
+                              {editionWord(st)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <div
+                          role="group"
+                          aria-label={`Finish for ${p.title}`}
+                          className="flex items-center gap-1.5"
+                        >
+                          {(["framed", "canvas"] as SetFinish[]).map((f) => {
+                            const sel = fin === f;
+                            return (
+                              <button
+                                key={f}
+                                type="button"
+                                aria-pressed={sel}
+                                aria-label={`${p.title} — ${f === "framed" ? "Framed" : "Canvas"}`}
+                                onClick={() => chooseFinish(p.id, f)}
+                                className={cn(
+                                  "px-2.5 py-1 rounded-full font-sans text-[12px] leading-none capitalize ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                  sel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
+                                )}
+                              >
+                                {f}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        {ways.length > 1 && (
+                          <div
+                            role="group"
+                            aria-label={`Colourway for ${p.title}`}
+                            className="flex items-center gap-1.5"
+                          >
+                            {ways.map((c) => {
+                              const sel = c.name === chosenName;
+                              return (
+                                <button
+                                  key={c.name}
+                                  type="button"
+                                  aria-pressed={sel}
+                                  aria-label={`${p.title} — ${c.name}`}
+                                  title={c.name}
+                                  onClick={() => chooseCw(p.id, c.name)}
+                                  className={cn(
+                                    "h-4 w-4 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                    sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                                  )}
+                                  style={{ backgroundColor: c.hex }}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
+                        {framed && (
+                          <div
+                            role="group"
+                            aria-label={`Frame colour for ${p.title}`}
+                            className="flex items-center gap-1.5"
+                          >
+                            {FRAME_STYLES.map((f) => {
+                              const sel = (frameByPainting[p.id] ?? FRAME_STYLES[0].id) === f.id;
+                              return (
+                                <button
+                                  key={f.id}
+                                  type="button"
+                                  aria-pressed={sel}
+                                  aria-label={`${p.title} — ${f.label} frame`}
+                                  title={`${f.label} frame`}
+                                  onClick={() => chooseFrame(p.id, f.id)}
+                                  className={cn(
+                                    "h-4 w-4 rounded-[3px] ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                    sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                                  )}
+                                  style={{ backgroundColor: f.swatch }}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => toggle(p.id)}
+                          aria-label={`Remove ${p.title} from your set`}
+                          className="ml-auto rounded font-sans text-[12px] text-ink-muted underline underline-offset-4 transition-colors hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {/* Only hand-finishing stays set-wide (it applies to each print whose size
+            offers it, A2/A1); every other control is per-print in the list above. */}
         {count >= 2 && (
           <HandFinishToggle tier={DEFAULT_BUNDLE_TIER} value={handFinished} onChange={setHandFinished} />
         )}
