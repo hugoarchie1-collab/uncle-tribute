@@ -3039,17 +3039,10 @@ export const PaintingDetail = () => {
               ) : (
               <>
               <Reveal>
-                {/* Clean light gallery stage — the artwork hangs on a calm, warm
-                    off-white wall so the frame + print pop (Hugo 2026-08-30:
-                    "clean light gallery ground"), instead of the dark reactive
-                    wall behind the hero. */}
-                <div
-                  className="relative overflow-hidden rounded-[5px] p-5 sm:p-9 lg:p-11 ring-1 ring-black/[0.08]"
-                  style={{
-                    background: "linear-gradient(180deg, #ece5d7 0%, #ded5c3 100%)",
-                    boxShadow: "inset 0 0 90px rgba(90,70,45,0.06)",
-                  }}
-                >
+                {/* No background panel behind the frame/canvas — the piece sits
+                    directly on the page (Hugo 2026-08-30: "what is the background
+                    behind framing and canvas — REMOVE IT 100%"). */}
+                <div className="relative overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setViewerOpen(true)}
