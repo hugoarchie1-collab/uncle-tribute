@@ -519,7 +519,7 @@ export const FindAPrint = () => {
           {filtered.map(({ painting, cover }) => (
             <figure
               key={painting.id}
-              className="m-0 min-w-0 flex-[0_1_clamp(280px,30%,420px)]"
+              className="m-0 min-w-0 flex-[0_1_clamp(340px,30%,460px)]"
             >
               <div className="relative">
                 <Link to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`} className="group block" aria-label={`View ${painting.title}`}>
