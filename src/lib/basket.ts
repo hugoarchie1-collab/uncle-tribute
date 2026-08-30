@@ -80,7 +80,7 @@ export interface BasketItem {
    * How many of THIS exact configuration (painting · colourway · tier · add-ons)
    * the buyer wants. Always ≥ 1. Absent on entries written before quantity
    * existed → read as 1, so no storage-version bump is needed. Each unit is a
-   * separately hand-numbered print, so the checkout charges quantity × price and
+   * separately numbered print, so the checkout charges quantity × price and
    * the estate ledger issues quantity certificates for the line.
    */
   quantity: number;

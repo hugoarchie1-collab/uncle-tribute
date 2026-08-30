@@ -8,7 +8,7 @@
 // WHAT THIS IS:
 //   The estate's public register of allocated edition numbers — the
 //   theprintspace / Guardian Print Shop model. Every fulfilled print is
-//   estate-stamped, hand-numbered within its edition, and ships with a
+//   estate-stamped, numbered within its edition, and ships with a
 //   Certificate of Authenticity on estate letterhead. Recording each
 //   allocation here lets any future holder verify their certificate at
 //   /verify, which is what holds resale value.

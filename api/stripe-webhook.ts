@@ -294,7 +294,7 @@ interface EmailLine {
   canvasPrice?: string;
   // The base TIER price (formatted GBP) — the print itself, before add-ons.
   price: string;
-  // How many of this line were ordered (≥ 1). Each is separately hand-numbered.
+  // How many of this line were ordered (≥ 1). Each is separately numbered.
   quantity: number;
 }
 
@@ -364,9 +364,9 @@ const sizeFor = (paintingId: string | undefined, tierId: string): string =>
 const TIER_EDITION: Record<string, string> = {
   cabinet: "Emblem Edition — unnumbered, issued to order",
   atelier: "Gallery Edition — unnumbered, issued to order",
-  collector: "Collector Edition — edition of 200, hand-numbered",
-  "atelier-grande": "Atelier Edition — edition of 75, hand-numbered",
-  heirloom: "Heirloom Edition — edition of 18, hand-numbered",
+  collector: "Collector Edition — edition of 200, numbered",
+  "atelier-grande": "Atelier Edition — edition of 75, numbered",
+  heirloom: "Heirloom Edition — edition of 18, numbered",
   studio: "Unique — one of one",
 };
 // Per-tier ADD-ON price lookups (mirror of framingPricePence /
@@ -776,7 +776,7 @@ const renderOrderConfirmationHtml = (p: {
   const ESTATE = {
     stamp: "Estate-stamped by The Mandala Company",
     numbering: "Numbered within its edition",
-    coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
+    coa: "Issued with a Certificate of Authenticity carrying a unique Certificate ID",
     printer: "Printed and finished by a specialist giclée studio on the Sussex coast",
   };
   // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 — the
@@ -833,7 +833,7 @@ const renderOrderConfirmationHtml = (p: {
             ? priceRow("Hand-finished by Polly Wedge", line.embellishPrice, EMBELLISH)
             : "")
         + (line.quantity > 1
-            ? priceRow("Quantity", `× ${line.quantity}`, "Each print is individually hand-numbered.")
+            ? priceRow("Quantity", `× ${line.quantity}`, "Each print is individually numbered.")
             : "")
         + `</div>`;
     })
@@ -1309,7 +1309,7 @@ const ledgerLinesFromMetadata = (
   m: Stripe.Metadata | null,
 ): Array<{ paintingId: string; tierId: string; colourway: string; title: string }> => {
   if (!m) return [];
-  // Quantity: each unit is a SEPARATELY hand-numbered print, so a line of qty N
+  // Quantity: each unit is a SEPARATELY numbered print, so a line of qty N
   // expands into N ledger units → N sequential certificate numbers. Expansion is
   // deterministic (fixed session metadata), so a Stripe redelivery re-expands
   // identically and each unit's idempotency key (…:<idx>) still lines up.

@@ -39,7 +39,7 @@ export interface PrintTier {
   size: string;                 // "29.5 × 29.5 cm"
   pricePence: number;           // integer pence
   editionTotal: number | null;  // per-edition allocation cap; null = Open Edition (no cap, not numbered)
-  editionLabel: string;         // neutral edition language, e.g. "Collector Edition — edition of 200, hand-numbered"
+  editionLabel: string;         // neutral edition language, e.g. "Collector Edition — edition of 200, numbered"
   /** Provenance line shown on the SELECTED tier — institutional, never scarcity/urgency. */
   editionPromise?: string;
   framingPricePence?: number;   // optional framing surcharge (A2 + A1 only)
@@ -108,7 +108,7 @@ export interface Painting {
  * is Point 101 in London, the UK's leading giclée print atelier.
  */
 export const ORIGINAL_PRINT_SPEC =
-  "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and ships with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order by a specialist giclée studio on the Sussex coast.";
+  "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and issued with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order by a specialist giclée studio on the Sussex coast.";
 
 /**
  * The edition the catalogue is CURRENTLY issuing under. Every artwork is
@@ -174,7 +174,7 @@ export const ESTATE_AUTHENTICATION = {
   stampLabel: "Estate stamp",
   numbering: "Numbered within its edition",
   numberingLabel: "Numbered within the edition",
-  coa: "Ships with a Certificate of Authenticity carrying a unique Certificate ID",
+  coa: "Issued with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
   // NOTE: the print studio is deliberately NOT named to buyers (Hugo, 2026-07-11:
   // naming the printer can read as un-prestigious to snobbier collectors; value sits
@@ -219,7 +219,7 @@ export const PRINT_TIERS: PrintTier[] = [
     framingPricePence: 7500, // £75 framing (A4) → framed £250
     canvasPricePence: 7500, // £75 → canvas £250
     description:
-      "Emblem Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
+      "Emblem Edition, estate-stamped, issued to order, with a Certificate of Authenticity",
     available: true,
   },
   {
@@ -238,7 +238,7 @@ export const PRINT_TIERS: PrintTier[] = [
     framingPricePence: 15000, // £150 framing (A3) — Hugo 2026-07-27: framed priced == canvas (framed A3 = £445), so the framed ENTRY isn't a scary £590
     canvasPricePence: 15000, // £150 — print on stretched canvas (A3)
     description:
-      "Gallery Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
+      "Gallery Edition, estate-stamped, issued to order, with a Certificate of Authenticity",
     available: true,
   },
   {
@@ -247,13 +247,13 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "42 × 42 cm",
     pricePence: 52500, // £525 (2026-07-25 squeeze pass)
     editionTotal: 200, // per-edition allocation
-    editionLabel: "Collector Edition — edition of 200, hand-numbered",
+    editionLabel: "Collector Edition — edition of 200, numbered",
     editionPromise: "allocated within the current edition",
     framingPricePence: 22500, // £225 framing (A2) — Hugo 2026-07-27: framed priced == canvas (framed A2 = £750)
     embellishmentPricePence: 59500, // £595 hand-finishing by Polly Wedge (2026-07-25 squeeze pass — near-100% margin, artist's own hand)
     canvasPricePence: 22500, // £225 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
-      "Collector Edition of 200, estate-stamped, hand-numbered, COA",
+      "Collector Edition of 200, estate-stamped, numbered, COA",
     available: true,
     isAnchor: true,
   },
@@ -263,13 +263,13 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "59.5 × 59.5 cm",
     pricePence: 97500, // £975 (2026-07-25 squeeze pass)
     editionTotal: 75, // per-edition allocation
-    editionLabel: "Atelier Edition — edition of 75, hand-numbered",
+    editionLabel: "Atelier Edition — edition of 75, numbered",
     editionPromise: "allocated within the current edition",
     framingPricePence: 32500, // £325 framing (A1) — Hugo 2026-07-27: framed priced == canvas (framed A1 = £1,300)
     embellishmentPricePence: 89500, // £895 hand-finishing by Polly Wedge (2026-07-25 squeeze pass)
     canvasPricePence: 32500, // £325 — canvas add-on; premium ready-to-hang alternative sitting below the framed total
     description:
-      "Atelier Edition of 75, estate-stamped, hand-numbered, COA",
+      "Atelier Edition of 75, estate-stamped, numbered, COA",
     available: true,
   },
   {
@@ -278,10 +278,10 @@ export const PRINT_TIERS: PrintTier[] = [
     size: "84 × 84 cm",
     pricePence: 199500, // £1,995 (2026-07-25 squeeze pass — cleaner premium figure than £1,895)
     editionTotal: 18, // per-edition allocation
-    editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
+    editionLabel: "Heirloom Edition — edition of 18, numbered",
     editionPromise: "allocated within the current edition",
     description:
-      "Heirloom Edition of 18, estate-stamped, hand-numbered, COA, optional gold-leaf detail",
+      "Heirloom Edition of 18, estate-stamped, numbered, COA, optional gold-leaf detail",
     // Hand-finish enabled on A0 (2026-07-14) — the highest-value buyers can add
     // Polly's hand-finishing (deliverable: it's the print itself). ⚠️ FRAMING is
     // deliberately NOT offered on A0: a glazed A0 frame (84cm) exceeds Point

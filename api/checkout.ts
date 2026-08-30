@@ -111,7 +111,7 @@ const TIERS: Record<TierId, TierDef> = {
     label: "Collector Edition",
     size: "42 × 42 cm",
     pricePence: 52500,
-    editionLabel: "Collector Edition — edition of 200, hand-numbered",
+    editionLabel: "Collector Edition — edition of 200, numbered",
     framingPricePence: 22500, // £225 (A2) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 59500,
     canvasPricePence: 22500, // £225 (A2) — mirror of paintings.ts (gotcha #9)
@@ -122,7 +122,7 @@ const TIERS: Record<TierId, TierDef> = {
     label: "Atelier Edition",
     size: "59.5 × 59.5 cm",
     pricePence: 97500,
-    editionLabel: "Atelier Edition — edition of 75, hand-numbered",
+    editionLabel: "Atelier Edition — edition of 75, numbered",
     framingPricePence: 32500, // £325 (A1) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 89500,
     canvasPricePence: 32500, // £325 (A1) — mirror of paintings.ts (gotcha #9)
@@ -133,7 +133,7 @@ const TIERS: Record<TierId, TierDef> = {
     label: "Heirloom Edition",
     size: "84 × 84 cm",
     pricePence: 199500,
-    editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
+    editionLabel: "Heirloom Edition — edition of 18, numbered",
     // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
     // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
     // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
@@ -257,7 +257,7 @@ const lineRetailPence = (item: NormalisedItem): number => {
 
 // Boilerplate spec line used in Stripe product description.
 const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, numbered within its edition. Ships with a Certificate of Authenticity carrying a unique Certificate ID. Printed at our London atelier.";
+  "Estate-stamped by The Mandala Company, numbered within its edition. Issued with a Certificate of Authenticity carrying a unique Certificate ID. Printed at our London atelier.";
 
 // The edition the catalogue is currently issuing under (mirror of
 // CURRENT_EDITION in src/data/paintings.ts — gotcha #5 forbids importing it
