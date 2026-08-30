@@ -34,10 +34,21 @@ const EXPLORE_LINKS = [
   { to: "/", label: "Home" },
   { to: "/collections", label: "Collections" },
   { to: "/for-you", label: "Find a print" },
-  { to: "/reviews", label: "Reviews" },
   { to: "/trade", label: "Partners" },
   { to: "/gift", label: "Gift cards" },
 ];
+
+/** Each channel's real brand colour — driven onto the icon on hover/focus via a
+ *  CSS var so the socials come alive in colour (Hugo 2026-08-30: the mono icons
+ *  looked dull next to every AI-builder site). TikTok uses its cyan (its black
+ *  would vanish on the dark footer). At rest they stay muted for restraint. */
+const SOCIAL_BRAND: Record<string, string> = {
+  Instagram: "#E4405F",
+  TikTok: "#25F4EE",
+  YouTube: "#FF0000",
+  Facebook: "#1877F2",
+  Pinterest: "#E60023",
+};
 
 const ESTATE_LINKS = [
   { to: "/about", label: "About Stephen" },
@@ -127,11 +138,6 @@ export const Footer = () => (
           >
             info@themandalacompany.com
           </a>
-          <br />
-          213 Elm Drive, Hove, East Sussex, BN3 7JD, UK
-        </p>
-        <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted mt-3 max-w-[280px] m-0">
-          The Mandala Company is a trading name of Hugo Archie Charles Wedge.
         </p>
         {/* Follow the estate — official social profiles (mirrored into the
             Organization sameAs in index.html). Inline SVG glyphs, each in a
@@ -146,7 +152,8 @@ export const Footer = () => (
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${s.label} — The Mandala Company`}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-ink hover:-translate-y-0.5 focus-visible:text-ink"
+                  style={{ ["--brand" as string]: SOCIAL_BRAND[s.label] ?? "currentColor" }}
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-[color:var(--brand)] hover:-translate-y-0.5 focus-visible:text-[color:var(--brand)]"
                 >
                   {s.icon}
                 </a>

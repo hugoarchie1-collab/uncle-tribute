@@ -1,72 +1,60 @@
+import type { ReactNode } from "react";
 import { cn } from "../lib/cn";
 
 /**
- * PaymentMarks — the monochrome card / wallet acceptance-mark row.
+ * PaymentMarks — full-colour card / wallet acceptance marks on white chips.
  *
- * Every top-tier storefront (Stripe, Apple, Nike) shows the networks it accepts
- * as recognisable MARKS, not just the words "Visa, Mastercard…". Until now this
- * site asserted the brands in prose only (Basket trust cluster, ReassuranceRow)
- * with no glyphs. This is the single reusable component that renders them, so
- * the Footer, Basket and PDP all draw from ONE source and never drift.
- *
- * DESIGN CONTRACT (matches the site's strictly-monochrome trust convention):
- *  • Each mark is a functional acceptance indicator — NOT a colour brand badge.
- *    Rendered in `currentColor` inside a hairline `border-line` chip so the row
- *    inherits whatever ink tone its parent sets (footer = text-ink-muted →
- *    hover:text-ink, basket = text-ink/70). No garish network colours.
- *  • Uniform chip height (h-6) + baseline so wordmarks (VISA/AMEX) and symbols
- *    (Mastercard rings, Apple) sit on one optical line — the authentic mixed
- *    row every checkout shows.
- *  • ONLY the networks actually enabled in Stripe: Visa, Mastercard, Amex,
- *    Apple Pay, Google Pay. Klarna / Clearpay are a dashboard toggle that is NOT
- *    live in the UI — do not add their marks until Hugo confirms the toggle.
- *  • Decorative: the row carries one visually-hidden label for screen readers
- *    ("Accepted payment methods: …") and each chip is aria-hidden, so assistive
- *    tech reads the list once, not eleven glyph fragments.
+ * Colourised 2026-08-30 (Hugo: "the card symbols have no colour … they look so
+ * much better" on other sites). Per the design-director agent, real full-colour
+ * brand logos on small WHITE chips is BOTH what he wants AND the correct/compliant
+ * answer — network brand guidelines (esp. Mastercard) mandate unmodified full
+ * colour, and flat mono is exactly why the old row read dull. Each brand sits on
+ * its own restrained white rounded chip so the true colours read crisp on the
+ * dark footer, exactly like a real checkout. Only the networks live in Stripe:
+ * Visa, Mastercard, Amex, Apple Pay, Google Pay. Used by Footer, Basket and PDP.
  */
 
-type MarkProps = { className?: string };
-
-/** Wordmark chip helper — VISA / AMEX set in the site sans, tightly tracked. */
-const WordMark = ({
-  children,
-  italic,
-  className,
-}: {
-  children: string;
-  italic?: boolean;
-  className?: string;
-}) => (
-  <span
-    className={cn(
-      "font-sans font-bold leading-none text-[12px] tracking-[0.02em]",
-      italic && "italic",
-      className,
-    )}
-  >
-    {children}
+const Visa = () => (
+  <span className="font-sans font-bold italic text-[13px] tracking-[0.02em] leading-none text-[#1434CB]">
+    VISA
   </span>
 );
 
-/** Mastercard — the two interlocking discs, the mark that reads even in mono. */
-const Mastercard = ({ className }: MarkProps) => (
-  <svg viewBox="0 0 30 18" className={className} fill="currentColor" aria-hidden="true">
-    <circle cx="12" cy="9" r="7" opacity="0.85" />
-    <circle cx="18" cy="9" r="7" opacity="0.45" />
+/** Mastercard — the interlocking red + amber discs, the mark that reads at any size. */
+const Mastercard = () => (
+  <svg viewBox="0 0 32 20" className="h-[15px] w-auto" aria-hidden="true">
+    <circle cx="13" cy="10" r="8" fill="#EB001B" />
+    <circle cx="19" cy="10" r="8" fill="#F79E1B" fillOpacity="0.9" />
   </svg>
 );
 
-/** Apple logo glyph — paired with a "Pay" wordmark for the Apple Pay mark. */
-const AppleGlyph = ({ className }: MarkProps) => (
-  <svg viewBox="0 0 22 24" className={className} fill="currentColor" aria-hidden="true">
-    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 8.02 7.37c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.5 4.02zM13.15 4.3c.09 2.24-1.79 4.1-3.79 3.85-.24-1.99 1.85-4.15 3.79-3.85z" />
-  </svg>
+/** American Express — the white wordmark reversed out of the network blue. */
+const Amex = () => (
+  <span className="inline-flex items-center rounded-[3px] bg-[#1F72CD] px-1 py-[2px] leading-none">
+    <span className="font-sans font-bold text-[9px] tracking-[0.04em] text-white">AMEX</span>
+  </span>
 );
 
-/** One hairline chip wrapper — uniform height, houses a wordmark or symbol. */
-const Chip = ({ children, label }: { children: React.ReactNode; label: string }) => (
+const ApplePay = () => (
+  <span className="inline-flex items-center gap-[3px] leading-none text-[#111]">
+    <svg viewBox="0 0 22 24" className="h-[14px] w-auto" fill="currentColor" aria-hidden="true">
+      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 8.02 7.37c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.5 4.02zM13.15 4.3c.09 2.24-1.79 4.1-3.79 3.85-.24-1.99 1.85-4.15 3.79-3.85z" />
+    </svg>
+    <span className="font-sans font-semibold text-[12px] leading-none">Pay</span>
+  </span>
+);
+
+const GooglePay = () => (
+  <span className="inline-flex items-center gap-[2px] leading-none">
+    <span className="font-sans font-bold text-[13px] leading-none text-[#4285F4]">G</span>
+    <span className="font-sans font-medium text-[12px] leading-none text-[#5F6368]">Pay</span>
+  </span>
+);
+
+/** One white chip — uniform height, houses a colour brand mark. */
+const Chip = ({ children, label }: { children: ReactNode; label: string }) => (
   <span
-    className="inline-flex h-6 min-w-[38px] items-center justify-center rounded-[4px] border border-line px-1.5"
+    className="inline-flex h-7 min-w-[42px] items-center justify-center rounded-[5px] bg-white px-2 ring-1 ring-black/5"
     aria-hidden="true"
     data-payment-mark={label}
   >
@@ -74,32 +62,20 @@ const Chip = ({ children, label }: { children: React.ReactNode; label: string })
   </span>
 );
 
-const MARKS: { label: string; node: React.ReactNode }[] = [
-  { label: "Visa", node: <WordMark italic>VISA</WordMark> },
-  { label: "Mastercard", node: <Mastercard className="h-[15px] w-auto" /> },
-  { label: "American Express", node: <WordMark className="tracking-[0.02em]">AMEX</WordMark> },
-  {
-    label: "Apple Pay",
-    node: (
-      <span className="inline-flex items-center gap-[3px] leading-none">
-        <AppleGlyph className="h-[13px] w-auto" />
-        <WordMark className="text-[11px] font-semibold">Pay</WordMark>
-      </span>
-    ),
-  },
-  {
-    label: "Google Pay",
-    node: (
-      <span className="inline-flex items-center gap-[3px] leading-none">
-        <WordMark className="text-[12px]">G</WordMark>
-        <WordMark className="text-[11px] font-semibold">Pay</WordMark>
-      </span>
-    ),
-  },
+const MARKS: { label: string; node: ReactNode }[] = [
+  { label: "Visa", node: <Visa /> },
+  { label: "Mastercard", node: <Mastercard /> },
+  { label: "American Express", node: <Amex /> },
+  { label: "Apple Pay", node: <ApplePay /> },
+  { label: "Google Pay", node: <GooglePay /> },
 ];
 
 export const PaymentMarks = ({ className }: { className?: string }) => (
-  <div className={cn("flex flex-wrap items-center gap-1.5", className)} role="img" aria-label="Accepted payment methods: Visa, Mastercard, American Express, Apple Pay and Google Pay">
+  <div
+    className={cn("flex flex-wrap items-center gap-2", className)}
+    role="img"
+    aria-label="Accepted payment methods: Visa, Mastercard, American Express, Apple Pay and Google Pay"
+  >
     {MARKS.map((m) => (
       <Chip key={m.label} label={m.label}>
         {m.node}
