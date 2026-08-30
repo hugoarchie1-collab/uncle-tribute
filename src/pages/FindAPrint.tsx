@@ -8,26 +8,14 @@ import { AssetImage } from "../components/AssetImage";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
-import { EYEBROW, EYEBROW_TIGHT, SUBTITLE, BTN_SECONDARY } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_TIGHT, EYEBROW_MUTED, SUBTITLE, META, BTN_SECONDARY } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
-  PRINT_TIERS,
-  parseSizeCm,
-  getTierAdvertisedPricePence,
-  type PrintTier,
+  getLowestTierPricePence,
+  paintingImageAlt,
 } from "../data/paintings";
-
-// The editioned print sizes (A3–A0), newest→largest — the same ladder the
-// Collections size selector uses. Drives the browse-price "show me this size".
-const BROWSE_TIERS: PrintTier[] = PRINT_TIERS.filter((t) => t.available && !t.isOneOff);
-// Compact size chip = the square edge in cm (Hugo 2026-07-24: A-labels scrapped
-// — the works are square, not rectangular A-sheets). e.g. "42 cm".
-const sizeCode = (t: PrintTier): string => {
-  const d = parseSizeCm(t.size);
-  return d ? `${d.w} cm` : t.size;
-};
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
 
 // The intention lens — what a piece can cultivate, mapped ONLY to the paintings
@@ -154,10 +142,11 @@ const LensHeading = ({ label }: { label: string }) => (
 export const FindAPrint = () => {
   const [active, setActive] = useState<Set<ColourFamily>>(new Set());
   const [intent, setIntent] = useState<Set<IntentionKey>>(new Set());
-  // Which size's price the browse grid shows — defaults to the A2 anchor.
-  const [browseTier, setBrowseTier] = useState<PrintTier>(
-    BROWSE_TIERS.find((t) => t.isAnchor) ?? BROWSE_TIERS[0],
-  );
+  // The buyer's chosen colourway per painting (set on the tile dots) — swaps the
+  // tile image and deep-links the PDP, exactly like the Collections tiles.
+  const [cwChoice, setCwChoice] = useState<Record<string, string>>({});
+  const chooseTileCw = (id: string, name: string) =>
+    setCwChoice((prev) => ({ ...prev, [id]: name }));
   const { formatPretty: fmtP } = useCurrency();
   const [searchParams] = useSearchParams();
   // The guided quiz now lives INSIDE this page (Hugo 2026-08-06: "I want the quiz
@@ -215,32 +204,27 @@ export const FindAPrint = () => {
     return ids;
   }, [intent]);
 
-  // Every AVAILABLE colourway as its OWN browsable image — Stephen left several
-  // colourways of each mandala, so "see all" shows them all as separate,
-  // clickable tiles (Hugo 2026-08-30: "see all colourways as separate images"),
-  // grouped by painting in catalogue order. Each tile is a FIXED colourway, so
-  // hover is a gentle zoom only — never a flick to another colourway.
-  const colourwayEntries = useMemo(
-    () =>
-      entries.flatMap((e) =>
-        e.avail.map((c) => ({
-          painting: e.painting,
-          colourway: c,
-          family: colourwayFamily(c.name, c.hex),
-        })),
-      ),
-    [entries],
-  );
-  const totalColourways = colourwayEntries.length;
-
-  // Colour lens keeps only the colourways in the chosen family; the intention
-  // lens keeps only colourways whose painting carries that intention.
+  // Per-PAINTING browse — UNISON with the Collections tiles (Hugo 2026-08-31:
+  // "base it all on collections tab, full site design unison"): each painting is
+  // ONE tile with interactive colourway dots (the dots still let you see & click
+  // every colourway, exactly like Collections). The colour lens keeps paintings
+  // that HAVE a colourway in the chosen family and shows that colourway as the
+  // cover; the intention lens keeps paintings that carry the chosen intention.
   const filtered = useMemo(
     () =>
-      colourwayEntries
-        .filter((e) => active.size === 0 || active.has(e.family))
-        .filter((e) => !intentPaintings || intentPaintings.has(e.painting.id)),
-    [colourwayEntries, active, intentPaintings],
+      entries
+        .filter((e) => active.size === 0 || [...active].some((f) => e.families.has(f)))
+        .filter((e) => !intentPaintings || intentPaintings.has(e.painting.id))
+        .map((e) => {
+          const matched =
+            active.size > 0
+              ? e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex)))?.name
+              : undefined;
+          // Prefer the buyer's dot choice; else the colour-lens match; else original.
+          const chosenName = cwChoice[e.painting.id] ?? matched ?? e.original.name;
+          return { painting: e.painting, avail: e.avail, chosenName };
+        }),
+    [entries, active, intentPaintings, cwChoice],
   );
 
   return (
@@ -477,7 +461,7 @@ export const FindAPrint = () => {
               className={cn(EYEBROW_TIGHT, "m-0")}
               style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
             >
-              Showing {filtered.length} of {totalColourways} colourways
+              Showing {filtered.length} of {PAINTINGS.length}
             </p>
             {(active.size > 0 || intent.size > 0) && (
               <button
@@ -492,7 +476,7 @@ export const FindAPrint = () => {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
                 )}
               >
-                Show all {totalColourways}
+                Show all {PAINTINGS.length}
               </button>
             )}
           </Reveal>
@@ -503,94 +487,100 @@ export const FindAPrint = () => {
             grid sits tight under the masthead's hairline — no min-h spacer, no
             big gap — so the page reads as one dense editorial block. */}
         <section className="mt-8 md:mt-10">
-        {/* Size / edition selector — the price on every tile follows the size
-            you pick (A3 → A0), instead of a flat "from £…". Mirrors the size
-            selector on Collections. */}
-        <div className="mb-7 md:mb-9 flex flex-wrap items-center justify-center gap-3">
-          <span className={cn(EYEBROW, "m-0")}>Prices for</span>
-          <div role="radiogroup" aria-label="Show prices for print size" className="flex flex-wrap justify-center gap-2">
-            {BROWSE_TIERS.map((t) => {
-              const sel = t.id === browseTier.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={sel}
-                  onClick={() => setBrowseTier(t)}
-                  className={cn(
-                    "inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-4 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.02em] outline-none ring-1 transition-colors focus-visible:ring-2 focus-visible:ring-accent",
-                    sel ? "bg-ink text-bg ring-ink" : "text-ink-muted ring-line hover:text-ink",
-                  )}
-                >
-                  {sizeCode(t)}
-                  <span className={cn("font-semibold", sel ? "text-bg/70" : "text-ink/55")}>{fmtP(getTierAdvertisedPricePence(t))}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        {/* Results — a LEFT-aligned auto-fill grid (matching the left-aligned
-            masthead) so the tiles fill the full width edge-to-edge instead of
-            floating centred with dead gutters. auto-fill + minmax keeps the old
-            ≈1/2/3-up cadence; a partial last row left-aligns under the title
-            rather than orphaning to the centre. */}
-        {/* Flex-wrap so a partial last row sits CENTRED (Hugo: the odd tile must
-            never orphan to the left). Items still GROW to fill full rows (no dead
-            gutters — feedback_fill_screen), but a per-breakpoint max-width caps the
-            column count (2-up ≥sm, 3-up ≥lg) so a lone tile centres at tile size
-            instead of stretching across the whole row. */}
-        <div className="flex flex-wrap justify-center gap-x-5 md:gap-x-6 gap-y-6 md:gap-y-8">
-          {filtered.map(({ painting, colourway }) => {
-            const to = `/collections/${painting.id}?c=${encodeURIComponent(colourway.name)}`;
-            const label = `View ${painting.title} — ${colourway.name}`;
+        {/* Results — per-painting tiles, IDENTICAL to the Collections tiles for
+            full-site design unison (Hugo 2026-08-31): image (the chosen colourway)
+            · title · year · "Estate-stamped giclée, framed · from £{floor}" ·
+            interactive colourway dots. No size selector here — the floor price is
+            quoted, exactly like Collections (simpler, one language everywhere).
+            Flex-wrap + justify-center + a clamped basis so a partial last row
+            centres; floor 340px fills a phone. */}
+        <div className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6">
+          {filtered.map(({ painting, avail, chosenName }) => {
+            const original = avail.find((c) => c.isOriginal) ?? avail[0];
+            const chosen = avail.find((c) => c.name === chosenName) ?? original;
+            const to = `/collections/${painting.id}${
+              chosen.name !== original.name ? `?c=${encodeURIComponent(chosen.name)}` : ""
+            }`;
+            const hasYear = !!painting.year && painting.year !== "[ DATE ]";
             return (
-              <figure
-                key={`${painting.id}-${colourway.name}`}
-                className="m-0 min-w-0 flex-[0_1_clamp(340px,30%,460px)]"
-              >
-                <div className="relative">
-                  <Link to={to} className="group block" aria-label={label}>
-                    <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
-                      {/* Gentle zoom on hover only — a small scale-up of THIS
-                          colourway. Hugo: hover should zoom in a little, never
-                          flick to another colourway (each tile is one colourway). */}
-                      <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
-                        <AssetImage
-                          src={colourway.image}
-                          alt={`${painting.title} — ${colourway.name}`}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+              <figure key={painting.id} className="m-0 min-w-0 flex-[0_1_clamp(340px,31%,680px)]">
+                <Link to={to} className="group block" aria-label={`View ${painting.title}`}>
+                  <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-liftLg">
+                    {/* Gentle zoom on hover only — the colourway changes only on a
+                        deliberate dot click, never a hover flick (Hugo's rule). */}
+                    <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
+                      <AssetImage
+                        src={chosen.image}
+                        alt={paintingImageAlt(painting.title, chosen.name)}
+                        loading="lazy"
+                        decoding="async"
+                        sizes="(min-width:1024px) 31vw, (min-width:640px) 46vw, 90vw"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  </Link>
-                </div>
-                <Link to={to} className="group block" aria-label={label}>
+                  </div>
                   <figcaption className="pt-3 md:pt-4 text-center">
-                    <h2
-                      className="font-display font-bold text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors duration-300"
-                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
+                    <h3
+                      className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.025em] text-ink m-0 min-h-[2.4em] flex items-center justify-center transition-colors duration-300 group-hover:text-accent"
+                      style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
                     >
                       {painting.title}
-                    </h2>
-                    {/* The colourway's own name — so every separate image says
-                        which of Stephen's variations it is. */}
+                    </h3>
+                    {/* Year — always occupies its line so the price row keeps a
+                        shared baseline across a mixed row (some works are undated). */}
                     <p
-                      className="mt-1.5 font-display italic text-[15px] md:text-[clamp(16px,0.82vw,18px)] leading-[1.2] text-ink/90 m-0 min-h-[1.2em] group-hover:text-accent transition-colors duration-300"
-                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
+                      className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                      aria-hidden={!hasYear}
+                      style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                     >
-                      {colourway.name}
+                      {hasYear ? painting.year : " "}
                     </p>
-                    <p
-                      className="mt-2 font-sans text-[13px] md:text-[clamp(14px,0.74vw,15px)] font-bold tracking-[0.02em] text-ink-muted m-0"
-                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
-                    >
-                      Estate-stamped giclée · {sizeCode(browseTier)} from {fmtP(getTierAdvertisedPricePence(browseTier))}
+                    <p className={cn(META, "mt-2 m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+                      Estate-stamped giclée, framed · from{" "}
+                      <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                        {fmtP(getLowestTierPricePence(painting))}
+                      </span>
                     </p>
                   </figcaption>
                 </Link>
+                {/* Interactive colourway dots — a deliberate click swaps the tile
+                    image + deep-links the PDP (?c=). Sits OUTSIDE the Link (buttons
+                    can't nest in an anchor). Reserved height keeps baselines aligned.
+                    IDENTICAL to the Collections tiles. */}
+                {avail.length > 1 ? (
+                  <div
+                    role="group"
+                    aria-label={`Colourway for ${painting.title}`}
+                    className="mt-2.5 flex h-5 items-center justify-center gap-1.5"
+                  >
+                    {avail.slice(0, 5).map((c) => {
+                      const sel = c.name === chosenName;
+                      return (
+                        <button
+                          key={c.name}
+                          type="button"
+                          aria-pressed={sel}
+                          aria-label={`${painting.title} — ${c.name}`}
+                          title={c.name}
+                          onClick={() => chooseTileCw(painting.id, c.name)}
+                          className={cn(
+                            "block h-2.5 w-2.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                            sel ? "ring-2 ring-accent scale-125" : "ring-line/80 hover:ring-accent/60",
+                          )}
+                          style={{ backgroundColor: c.hex }}
+                        />
+                      );
+                    })}
+                    <span
+                      className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
+                      style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                    >
+                      {avail.length} colourways
+                    </span>
+                  </div>
+                ) : (
+                  <div aria-hidden="true" className="mt-2.5 h-5" />
+                )}
               </figure>
             );
           })}
@@ -607,7 +597,7 @@ export const FindAPrint = () => {
               }}
               className="text-accent underline underline-offset-4 hover:text-ink transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
-              show all {totalColourways}
+              show all {PAINTINGS.length}
             </button>
             .
           </p>
