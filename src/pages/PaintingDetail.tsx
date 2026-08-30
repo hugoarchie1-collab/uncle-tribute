@@ -3005,7 +3005,17 @@ export const PaintingDetail = () => {
               ) : (
               <>
               <Reveal>
-                <div className="relative overflow-hidden">
+                {/* Clean light gallery stage — the artwork hangs on a calm, warm
+                    off-white wall so the frame + print pop (Hugo 2026-08-30:
+                    "clean light gallery ground"), instead of the dark reactive
+                    wall behind the hero. */}
+                <div
+                  className="relative overflow-hidden rounded-[5px] p-5 sm:p-9 lg:p-11 ring-1 ring-black/[0.07]"
+                  style={{
+                    background: "linear-gradient(180deg, #f2ede3 0%, #e7e1d5 100%)",
+                    boxShadow: "inset 0 0 90px rgba(90,70,45,0.05)",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => setViewerOpen(true)}
