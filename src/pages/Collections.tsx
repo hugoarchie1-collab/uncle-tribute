@@ -347,6 +347,44 @@ const perPaintingConfiguredPence = (
   return base + framing + emb;
 };
 
+// The GBP-pence price PARTS of one configured print — EXACTLY the parts
+// api/checkout.ts turns into Stripe line items (checkout.ts:1741–1753): framed →
+// [base, framing]; canvas → [base, canvas]; + embellishment when hand-finished.
+// Classic frame colours carry a £0 surcharge, so frame colour adds no part.
+const printPriceParts = (
+  tier: PrintTier,
+  finish: SetFinish,
+  handFinished: boolean,
+): number[] => {
+  const base = tier.pricePence;
+  if (finish === "canvas") return [base, getCanvasPricePence(tier) ?? 0].filter((p) => p > 0);
+  const parts = [base, getFramingPricePence(tier) ?? 0];
+  if (handFinished && setEmbellishOffered(tier)) parts.push(getEmbellishmentPricePence(tier)!);
+  return parts.filter((p) => p > 0);
+};
+
+// Set figures for a MIXED-config set (each print its OWN size/finish) — mirrors
+// checkout.ts's discount loop EXACTLY: convert each price part, discount =
+// round(convertedPart × percent / 100) per part, summed. So advertised == charged
+// to the penny in every currency (bundles are quantity 1 per line). bundleMinorFigures
+// can't be used here — it assumes a uniform per-line amount, which mixed configs break.
+const mixedSetFigures = (
+  printsParts: number[][],
+  percent: number,
+  convert: (p: number) => number,
+) => {
+  let fullMinor = 0;
+  let saveMinor = 0;
+  for (const parts of printsParts) {
+    for (const gbpPart of parts) {
+      const conv = convert(gbpPart);
+      fullMinor += conv;
+      saveMinor += Math.round((conv * percent) / 100);
+    }
+  }
+  return { fullMinor, bundleMinor: fullMinor - saveMinor, saveMinor };
+};
+
 // Framed ⇄ Canvas — a small two-way segmented control in the same idiom as the
 // size selector (hairline, calm, no black box).
 const SetFinishSelector = ({
@@ -592,22 +630,35 @@ const CollectionSetCard = ({
 // painting so checkout derives the identical % — advertised == charged (gotcha #9).
 export const ComposeSetCard = () => {
   const { convert, code } = useCurrency();
-  const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
-  const [finish, setFinish] = useState<SetFinish>("framed");
-  const [handFinished, setHandFinished] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  // FULL per-print mix-n-match — paintingId → colourway name, and paintingId →
-  // frame-colour id. Both MONEY-SAFE: every colourway is the same price and the
-  // classic frame colours are £0, so neither ever changes the set total; they only
-  // set which colourway/frame each line carries. Default to original / Oak.
+  // FULL per-print mix-n-match — each selected print carries its OWN size, finish
+  // (framed/canvas), colourway and frame colour. All default to Collector · Framed ·
+  // original · Oak. MONEY: colourway is price-identical and classic frames are £0;
+  // size + finish DO change the price, so the set total is summed per print, per
+  // part, and discounted exactly as checkout does (mixedSetFigures) — advertised ==
+  // charged in every currency.
   const [cw, setCw] = useState<Record<string, string>>({});
   const chooseCw = (id: string, name: string) =>
     setCw((prev) => ({ ...prev, [id]: name }));
   const [frameByPainting, setFrameByPainting] = useState<Record<string, string>>({});
   const chooseFrame = (id: string, fid: string) =>
     setFrameByPainting((prev) => ({ ...prev, [id]: fid }));
-  const framed = finish === "framed";
-  const hf = framed && handFinished && setEmbellishOffered(tier);
+  const [sizeByPainting, setSizeByPainting] = useState<Record<string, PrintTier["id"]>>({});
+  const chooseSize = (id: string, tid: PrintTier["id"]) =>
+    setSizeByPainting((prev) => ({ ...prev, [id]: tid }));
+  const [finishByPainting, setFinishByPainting] = useState<Record<string, SetFinish>>({});
+  const chooseFinish = (id: string, f: SetFinish) =>
+    setFinishByPainting((prev) => ({ ...prev, [id]: f }));
+  // Set-wide hand-finishing (an upsell) — applies to each print whose chosen size
+  // actually offers it (A2/A1), skipped elsewhere.
+  const [handFinished, setHandFinished] = useState(false);
+
+  // Per-print resolvers (default Collector · Framed).
+  const sizeOf = (id: string): PrintTier =>
+    BUNDLE_TIERS.find((t) => t.id === (sizeByPainting[id] ?? DEFAULT_BUNDLE_TIER.id)) ??
+    DEFAULT_BUNDLE_TIER;
+  const finishOf = (id: string): SetFinish => finishByPainting[id] ?? "framed";
+
   const toggle = (id: string) =>
     setPicked((prev) => {
       const next = new Set(prev);
@@ -623,28 +674,29 @@ export const ComposeSetCard = () => {
       : count >= 2
         ? bundleDiscountPercentForCount(count)
         : 0;
-  // Per-line-converted set figures so advertised == charged in every currency (#7).
-  // ⚠️ MONEY: price on the FRAMED advertised price (base + framing), NOT the bare
-  // base — acquireSet adds framed lines (addItem(..., true)) which checkout charges
-  // at the framed price, so quoting tier.pricePence here under-quoted the buyer by
-  // the whole framing add-on. Mirrors CollectionSetCard / CatalogueSetCard, which
-  // both build their full price from getTierAdvertisedPricePence.
-  // Configured per-painting retail (finish + hand-finishing) × count — the client
-  // twin of what checkout charges per line (advertised == charged).
-  const setFig = bundleMinorFigures(count * perPaintingConfiguredPence(tier, finish, handFinished), count, percent, convert);
+  // Each selected print priced at its OWN size + finish (+ the set-wide hand-finish
+  // where that print's size offers it), summed per print, per part, discounted
+  // exactly as checkout — advertised == charged to the penny in every currency.
+  const selected = PAINTINGS.filter((p) => picked.has(p.id));
+  const printsParts = selected.map((p) =>
+    printPriceParts(sizeOf(p.id), finishOf(p.id), handFinished),
+  );
+  const setFig = mixedSetFigures(printsParts, percent, convert);
   const money = (minor: number) =>
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
 
   const acquireSet = () => {
-    PAINTINGS.forEach((p) => {
-      if (!picked.has(p.id)) return;
-      // The buyer's chosen colourway for this painting (defaults to the original).
+    selected.forEach((p) => {
+      const size = sizeOf(p.id);
+      const fin = finishOf(p.id);
       const chosenName = cw[p.id] ?? coverColourway(p).name;
-      // Framed → framing:true (+ embellished + frame colour); Canvas → canvas:true
-      // (clears framing + hand-finishing) — matches the set price advertised above.
-      if (framed)
-        addItem(p.id, chosenName, tier.id, true, hf, frameByPainting[p.id] ?? FRAME_STYLES[0].id, undefined, false);
-      else addItem(p.id, chosenName, tier.id, false, false, undefined, undefined, true);
+      if (fin === "framed") {
+        // hand-finish applies only where this print's SIZE offers it (A2/A1).
+        const hfP = handFinished && setEmbellishOffered(size);
+        addItem(p.id, chosenName, size.id, true, hfP, frameByPainting[p.id] ?? FRAME_STYLES[0].id, undefined, false);
+      } else {
+        addItem(p.id, chosenName, size.id, false, false, undefined, undefined, true);
+      }
     });
   };
 
@@ -682,7 +734,7 @@ export const ComposeSetCard = () => {
               // 2×6). The wrapper holds the toggle tile + its colourway row.
               <div
                 key={p.id}
-                className="shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(25%_-_9px)] 3xl:basis-[calc(16.666%_-_7px)]"
+                className="shrink-0 grow-0 basis-[calc(50%_-_5px)] sm:basis-[calc(33.333%_-_8px)] lg:basis-[calc(25%_-_9px)]"
               >
                 <button
                   type="button"
@@ -715,65 +767,114 @@ export const ComposeSetCard = () => {
                     </span>
                   )}
                 </button>
-                {/* Colourway choice — appears only once the painting is in the set
-                    and has more than one colourway. A deliberate click (NOT a hover
-                    flick — Hugo's rule) chooses which colourway this print is taken
-                    in; it swaps the tile image and carries into the basket. Every
-                    colourway is the same price, so the set total never changes. */}
-                {on && ways.length > 1 && (
-                  <div
-                    role="group"
-                    aria-label={`Colourway for ${p.title}`}
-                    className="mt-1.5 flex flex-wrap items-center justify-center gap-1"
-                  >
-                    {ways.map((c) => {
-                      const sel = c.name === chosenName;
-                      return (
-                        <button
-                          key={c.name}
-                          type="button"
-                          aria-pressed={sel}
-                          aria-label={`${p.title} — ${c.name}`}
-                          title={c.name}
-                          onClick={() => chooseCw(p.id, c.name)}
-                          className={cn(
-                            "h-3.5 w-3.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                            sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
-                          )}
-                          style={{ backgroundColor: c.hex }}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-                {/* Per-print FRAME COLOUR — square swatches (vs round colourway dots)
-                    so each print in the set can take its own frame. Only when the
-                    print is in the set AND the set is framed (canvas has no frame).
-                    Classic frames are £0, so this never changes the set total. */}
-                {on && framed && (
-                  <div
-                    role="group"
-                    aria-label={`Frame colour for ${p.title}`}
-                    className="mt-1 flex items-center justify-center gap-1"
-                  >
-                    {FRAME_STYLES.map((f) => {
-                      const fsel = (frameByPainting[p.id] ?? FRAME_STYLES[0].id) === f.id;
-                      return (
-                        <button
-                          key={f.id}
-                          type="button"
-                          aria-pressed={fsel}
-                          aria-label={`${p.title} — ${f.label} frame`}
-                          title={`${f.label} frame`}
-                          onClick={() => chooseFrame(p.id, f.id)}
-                          className={cn(
-                            "h-3.5 w-3.5 rounded-[3px] ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                            fsel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
-                          )}
-                          style={{ backgroundColor: f.swatch }}
-                        />
-                      );
-                    })}
+                {/* PER-PRINT CONFIG — appears once the print is in the set: its own
+                    size, finish (framed/canvas), colourway and frame colour. A
+                    deliberate click, never a hover flick. Size + finish change the
+                    price (summed per print in mixedSetFigures); colourway + frame
+                    colour are price-identical / £0. */}
+                {on && (
+                  <div className="mt-2 flex flex-col items-center gap-1.5">
+                    <div
+                      role="group"
+                      aria-label={`Size for ${p.title}`}
+                      className="flex flex-wrap items-center justify-center gap-1"
+                    >
+                      {BUNDLE_TIERS.map((st) => {
+                        const ssel = sizeOf(p.id).id === st.id;
+                        return (
+                          <button
+                            key={st.id}
+                            type="button"
+                            aria-pressed={ssel}
+                            aria-label={`${p.title} — ${editionWord(st)} (${st.size})`}
+                            title={`${editionWord(st)} · ${st.size}`}
+                            onClick={() => chooseSize(p.id, st.id)}
+                            className={cn(
+                              "px-2 py-0.5 rounded-full font-sans text-[11px] leading-none ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                              ssel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
+                            )}
+                          >
+                            {editionWord(st)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div
+                      role="group"
+                      aria-label={`Finish for ${p.title}`}
+                      className="flex items-center justify-center gap-1"
+                    >
+                      {(["framed", "canvas"] as SetFinish[]).map((fin) => {
+                        const fsel = finishOf(p.id) === fin;
+                        return (
+                          <button
+                            key={fin}
+                            type="button"
+                            aria-pressed={fsel}
+                            aria-label={`${p.title} — ${fin === "framed" ? "Framed" : "Canvas"}`}
+                            onClick={() => chooseFinish(p.id, fin)}
+                            className={cn(
+                              "px-2 py-0.5 rounded-full font-sans text-[11px] leading-none capitalize ring-1 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                              fsel ? "bg-ink text-bg ring-ink font-semibold" : "text-ink-muted ring-line hover:ring-accent/60",
+                            )}
+                          >
+                            {fin}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {ways.length > 1 && (
+                      <div
+                        role="group"
+                        aria-label={`Colourway for ${p.title}`}
+                        className="flex flex-wrap items-center justify-center gap-1"
+                      >
+                        {ways.map((c) => {
+                          const sel = c.name === chosenName;
+                          return (
+                            <button
+                              key={c.name}
+                              type="button"
+                              aria-pressed={sel}
+                              aria-label={`${p.title} — ${c.name}`}
+                              title={c.name}
+                              onClick={() => chooseCw(p.id, c.name)}
+                              className={cn(
+                                "h-3.5 w-3.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                sel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                              )}
+                              style={{ backgroundColor: c.hex }}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                    {finishOf(p.id) === "framed" && (
+                      <div
+                        role="group"
+                        aria-label={`Frame colour for ${p.title}`}
+                        className="flex items-center justify-center gap-1"
+                      >
+                        {FRAME_STYLES.map((f) => {
+                          const fsel = (frameByPainting[p.id] ?? FRAME_STYLES[0].id) === f.id;
+                          return (
+                            <button
+                              key={f.id}
+                              type="button"
+                              aria-pressed={fsel}
+                              aria-label={`${p.title} — ${f.label} frame`}
+                              title={`${f.label} frame`}
+                              onClick={() => chooseFrame(p.id, f.id)}
+                              className={cn(
+                                "h-3.5 w-3.5 rounded-[3px] ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                fsel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                              )}
+                              style={{ backgroundColor: f.swatch }}
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -781,13 +882,11 @@ export const ComposeSetCard = () => {
           })}
         </div>
 
-        <SetSizeSelector value={tier} onChange={setTier} />
-        {count >= 2 && <SetFinishSelector value={finish} onChange={setFinish} />}
-        {/* Frame colour is chosen PER PRINT on each selected tile above (the square
-            swatches) — no set-level frame picker here, so a composed set can mix
-            frames as well as colourways. */}
-        {count >= 2 && framed && (
-          <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />
+        {/* Size · finish · colourway · frame are chosen PER PRINT on each selected
+            tile above — a fully mixed wall. Only hand-finishing stays set-wide (it
+            applies to each print whose size offers it, A2/A1). */}
+        {count >= 2 && (
+          <HandFinishToggle tier={DEFAULT_BUNDLE_TIER} value={handFinished} onChange={setHandFinished} />
         )}
 
         {count >= 2 ? (
@@ -796,9 +895,8 @@ export const ComposeSetCard = () => {
               price={money(setFig.bundleMinor)}
               label={
                 <>
-                  {count} prints · {editionWord(tier)} edition, {sizeCode(tier)}
-                  {framed ? "" : " · canvas"}
-                  {hf ? " · finished by hand" : ""}
+                  {count} prints · a wall of your own — each in the size, finish and
+                  colourway you choose
                 </>
               }
               anchor={
