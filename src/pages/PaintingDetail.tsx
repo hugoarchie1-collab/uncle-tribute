@@ -2939,7 +2939,7 @@ export const PaintingDetail = () => {
     // creating a scroll container, so the sticky painting (below) still works.
     // overflow-hidden here silently disabled position:sticky and left a large
     // dark void beside the buy box on desktop. html/body already clip the X axis.
-    <div className="relative overflow-x-clip bg-[#f4f1ea]">
+    <div className="relative overflow-x-clip">
       <Seo
         title={pageTitleText}
         description={metaDescription}
@@ -2956,7 +2956,7 @@ export const PaintingDetail = () => {
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="pdp-light mx-auto max-w-[1200px] px-6 md:px-10 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
+        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}

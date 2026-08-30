@@ -191,10 +191,7 @@ export const CanvasWrap = ({
     const ar = String(aspectRatio || 1);
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
-        <div
-          className="relative w-full h-full overflow-hidden"
-          style={{ filter: "drop-shadow(0 18px 34px rgba(28,26,23,0.16))" }}
-        >
+        <div className="relative w-full h-full overflow-hidden">
           {children}
           {/* fine canvas tooth — signals a canvas print (vs smooth paper), no 3D */}
           <div
@@ -304,11 +301,8 @@ export const FrameWrap = ({
         borderImageSlice: `${FRAME_SLICE}`,
         borderImageWidth: moulding,
         borderImageRepeat: "stretch",
-        // Soft gallery shadow — lifts the framed piece off the LIGHT gallery
-        // wall like a real hung frame (subtle, warm, low-alpha). This is NOT the
-        // heavy dark halo removed earlier — on a light ground a gentle shadow is
-        // natural gallery lighting, not a "black background".
-        filter: "drop-shadow(0 18px 34px rgba(28,26,23,0.16))",
+        // No cast shadow — on the site's dark ambient mesh a drop-shadow reads as
+        // a dark halo (Hugo: "remove it"). The piece sits clean against the wall.
         borderRadius: "1px",
       }}
     >
