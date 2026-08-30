@@ -50,7 +50,10 @@ const SOFT_EDGE_CLASS: Record<NonNullable<AssetImageProps["softEdge"]>, string> 
 
 export const AssetImage = ({ src, sizes = "100vw", softEdge = "none", ...rest }: AssetImageProps) => {
   const srcSet = webpSrcSet(src);
-  const img = <img src={asset(src)} {...rest} />;
+  // Default to async decode so image decoding never blocks the main thread mid-
+  // scroll (a real source of scroll hitch + "pop-in"); a caller can still pass
+  // decoding="sync" (e.g. an LCP hero) since {...rest} spreads after this.
+  const img = <img src={asset(src)} decoding="async" {...rest} />;
   const maskClass = SOFT_EDGE_CLASS[softEdge];
   return (
     <picture style={{ display: "contents" }}>
