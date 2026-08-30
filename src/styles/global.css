@@ -73,6 +73,19 @@
        rgba() — consumed whole via border-line / ring-line, never with a /N. */
     --line: rgba(237, 230, 214, 0.12);
   }
+  /* PDP LIGHT GALLERY THEME (2026-08-30 — design-director agent decision + Hugo
+     "clean simple professional like Dribbble"): the product page hangs the art
+     on a calm warm-neutral gallery wall, art the only colour. Scoped to the PDP
+     <main> so the frozen dark home + Nav/Footer stay dark. Overriding the RGB-
+     channel vars flips every rgb(var(--x)/α) token to light automatically. */
+  .pdp-light {
+    color-scheme: light;
+    --bg: 244 241 234;                  /* #F4F1EA warm gallery off-white */
+    --ink: 28 26 23;                    /* #1C1A17 warm near-black */
+    --accent: 58 54 49;                 /* #3A3631 deep charcoal (not a colour) */
+    --ink-muted: rgba(107, 100, 89, 1); /* #6B6459 warm grey */
+    --line: rgba(28, 26, 23, 0.12);     /* subtle dark hairline */
+  }
   html, body, #root { margin: 0; padding: 0; }
   /* `overflow-x: clip` (not `hidden`) is the no-scrollbar, no-scroll-container
      guard against ANY descendant painting past the viewport edge — it does NOT

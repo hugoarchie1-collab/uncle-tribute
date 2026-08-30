@@ -70,7 +70,6 @@ import { nextNumber } from "../data/editions";
 import { useCurrency } from "../lib/currency";
 import { useConsent } from "../lib/consent";
 import { asset, webp, webpSrcSet } from "../lib/asset";
-import { COLOURWAY_TINTS, DEFAULT_TINT } from "../lib/colourwayTints";
 import { cn } from "../lib/cn";
 import { addItem, subscribeToAdds } from "../lib/basket";
 import { ANCHOR_ARTWORK_SIZE, artworkSizeForTierId, isArtworkSizeId } from "../lib/artworkSizes";
@@ -498,7 +497,7 @@ const CustomSizeRequest = ({
 
   const fieldId = (k: string) => `custom-${k}-${paintingId}`;
   const INPUT =
-    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade focus:outline-none transition-shadow";
+    "w-full bg-transparent ring-1 ring-line focus:ring-ink/40 px-3 py-2.5 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-muted focus:outline-none transition-shadow";
 
   return (
     <div className="mt-3">
@@ -592,7 +591,7 @@ const CustomSizeRequest = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label htmlFor={fieldId("name")} className={cn(META, "block mb-1.5")}>
-                    Your name <span className="text-ink-fade">(optional)</span>
+                    Your name <span className="text-ink-muted">(optional)</span>
                   </label>
                   <input
                     id={fieldId("name")}
@@ -621,7 +620,7 @@ const CustomSizeRequest = ({
               </div>
               <div>
                 <label htmlFor={fieldId("message")} className={cn(META, "block mb-1.5")}>
-                  Anything else <span className="text-ink-fade">(optional)</span>
+                  Anything else <span className="text-ink-muted">(optional)</span>
                 </label>
                 <textarea
                   id={fieldId("message")}
@@ -1833,7 +1832,7 @@ const BuyBox = ({
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
               aria-label="Decrease quantity"
-              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-l-full hover:bg-white/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-l-full hover:bg-ink/[0.04] disabled:opacity-35 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               −
             </button>
@@ -1847,7 +1846,7 @@ const BuyBox = ({
               type="button"
               onClick={() => setQuantity((q) => Math.min(99, q + 1))}
               aria-label="Increase quantity"
-              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-r-full hover:bg-white/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="flex h-11 w-11 items-center justify-center text-ink text-[18px] 3xl:text-[24px] 4xl:text-[29px] leading-none rounded-r-full hover:bg-ink/[0.04] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
             >
               +
             </button>
@@ -2721,8 +2720,6 @@ export const PaintingDetail = () => {
 
   // The page atmosphere follows the SELECTED colourway via two build-time
   // tints (hue from the artwork, house lightness/chroma); the registered
-  // --pd-* vars re-tint the wall/halo/wash in one 0.9s ease on switch.
-  const tint = COLOURWAY_TINTS[selected.image] ?? DEFAULT_TINT;
 
   // "See on Your Wall": the modal opens on the tier's physical size (a one-off /
   // unsized tier falls back to the A2 anchor). The panel manages its own
@@ -2942,10 +2939,7 @@ export const PaintingDetail = () => {
     // creating a scroll container, so the sticky painting (below) still works.
     // overflow-hidden here silently disabled position:sticky and left a large
     // dark void beside the buy box on desktop. html/body already clip the X axis.
-    <div
-      className="pd-atmosphere relative overflow-x-clip"
-      style={{ "--pd-wall": tint.wall, "--pd-halo": tint.halo } as React.CSSProperties}
-    >
+    <div className="relative overflow-x-clip bg-[#f4f1ea]">
       <Seo
         title={pageTitleText}
         description={metaDescription}
@@ -2954,27 +2948,15 @@ export const PaintingDetail = () => {
         type="product"
         jsonLd={[productJsonLd, visualArtworkJsonLd, breadcrumbJsonLd]}
       />
-      {/* REACTIVE COLOUR ATMOSPHERE (Hugo 2026-08-03: "why is every product page
-          black — I want the dynamic, Awwwards-level, iPhone-like background
-          reactive to the colours on screen, based on the print image"). The flat
-          near-black CALM ground is replaced by the authored painted-wall tint
-          layers, driven by the --pd-wall / --pd-halo <color> vars that are set
-          from the SELECTED colourway's own hue (colourwayTints, from the artwork)
-          — so switching a colourway RE-TINTS the whole page over a 0.9s ease, and
-          the app-root reactive AmbientBackground shows through the transparent
-          mid-page so the product page belongs to the same living-colour system as
-          every other page. Clean authored gradients — NOT the blurred image echo
-          Hugo rejected as "a blurry mess"; the wall stays dark at the top so the
-          cream title + monochrome buy copy stay perfectly legible. */}
-      <div className="pd-wash" aria-hidden />
-      <div className="pd-wall" aria-hidden />
-      <div className="pd-reprise" aria-hidden />
-      <div className="pd-halo" aria-hidden />
-
+      {/* Light gallery ground (2026-08-30, design-director agent decision + Hugo
+          "clean simple professional like Dribbble"): the reactive dark colour-
+          atmosphere layers were removed for the PDP — the art is the only colour,
+          hung on a calm warm-neutral wall (bg-[#f4f1ea] on the root). Nav/Footer
+          keep the site's dark palette; only <main> is scoped .pdp-light. */}
       <div className="relative z-[1] isolate">
         <Nav />
 
-        <main className="mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
+        <main className="pdp-light mx-auto max-w-[1200px] px-6 md:px-10 pt-8 md:pt-10 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-12">
           {/* Back link + jump-to-order strip — price floor stays visible from
               the top; the CTA scrolls to the buy box rather than duplicating
               the purchase actions (basket flow is the single source of truth). */}
@@ -3166,7 +3148,7 @@ export const PaintingDetail = () => {
                   onClick={() => setWallOpen(true)}
                   onPointerEnter={() => void importSeeOnYourWall()}
                   onFocus={() => void importSeeOnYourWall()}
-                  className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.01em] text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
+                  className="press mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full ring-1 ring-line px-6 font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] font-bold tracking-[0.01em] text-ink outline-none transition-colors duration-300 hover:ring-ink/40 hover:bg-ink/[0.03] focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
                     <path d="M10 2.2 17 6v8l-7 3.8L3 14V6l7-3.8Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
