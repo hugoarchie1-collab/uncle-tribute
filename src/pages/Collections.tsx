@@ -489,9 +489,13 @@ const HandFinishToggle = ({
 const CollectionSetCard = ({
   coll,
   items,
+  cwChoice,
 }: {
   coll: (typeof COLLECTIONS)[number];
   items: (typeof PAINTINGS)[number][];
+  // Page-level colourway choice (set on the browse tiles). Price-identical, so it
+  // never changes the set total — it only picks which colourway each line carries.
+  cwChoice: Record<string, string>;
 }) => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
@@ -509,10 +513,12 @@ const CollectionSetCard = ({
     items.forEach((p) => {
       const original = coverColourway(p);
       if (!original) return;
+      // The colourway the buyer chose on this painting's tile (defaults to original).
+      const chosenName = cwChoice[p.id] ?? original.name;
       // Framed → framing:true (+ embellished + frame colour); Canvas → canvas:true
       // (clears framing + hand-finishing). Mirrors what checkout charges per line.
-      if (framed) addItem(p.id, original.name, tier.id, true, hf, frameStyle, undefined, false);
-      else addItem(p.id, original.name, tier.id, false, false, undefined, undefined, true);
+      if (framed) addItem(p.id, chosenName, tier.id, true, hf, frameStyle, undefined, false);
+      else addItem(p.id, chosenName, tier.id, false, false, undefined, undefined, true);
     });
   };
   // Per-line-converted set figures so advertised == charged in every currency (#7).
@@ -817,7 +823,12 @@ export const ComposeSetCard = () => {
 // The flagship "complete catalogue" set — its own size state + scroll-across
 // selector. getCompleteCatalogueBundle is pure; acquireCatalogue adds one of every
 // painting at the SAME tier so checkout's 12% applies — advertised == charged.
-const CatalogueSetCard = () => {
+const CatalogueSetCard = ({
+  cwChoice,
+}: {
+  // Page-level colourway choice from the browse tiles (price-identical).
+  cwChoice: Record<string, string>;
+}) => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const [finish, setFinish] = useState<SetFinish>("framed");
@@ -839,9 +850,12 @@ const CatalogueSetCard = () => {
     formatMinorUnits(minor, code, { pretty: minor % 100 === 0 });
   const acquireCatalogue = () => {
     catalogue.items.forEach((it) => {
+      // The colourway chosen on this painting's browse tile (defaults to the
+      // catalogue's canonical colourway) — price-identical, advertised == charged.
+      const chosenName = cwChoice[it.paintingId] ?? it.colourwayName;
       if (framed)
-        addItem(it.paintingId, it.colourwayName, tier.id, true, hf, frameStyle, undefined, false);
-      else addItem(it.paintingId, it.colourwayName, tier.id, false, false, undefined, undefined, true);
+        addItem(it.paintingId, chosenName, tier.id, true, hf, frameStyle, undefined, false);
+      else addItem(it.paintingId, chosenName, tier.id, false, false, undefined, undefined, true);
     });
   };
   return (
@@ -1010,6 +1024,16 @@ export const Collections = () => {
   // (".00" stripped). The GBP pence figures from paintings.ts stay the single
   // source of truth; only the presentation converts — advertised == charged.
   const { formatPretty: fmtP } = useCurrency();
+
+  // PAGE-LEVEL colourway choice (paintingId → colourway name). Chosen on a browse
+  // tile's colour dots and consumed by BOTH the per-collection "complete collection"
+  // card and the complete-catalogue card, so "Add the complete X" takes each print
+  // in the colourway the buyer picked on the tile. Defaults to each painting's
+  // original when unset. MONEY-SAFE: every colourway is the same price, so this
+  // never changes any set total — advertised == charged is untouched.
+  const [cwChoice, setCwChoice] = useState<Record<string, string>>({});
+  const chooseTileCw = (id: string, name: string) =>
+    setCwChoice((prev) => ({ ...prev, [id]: name }));
 
   // Bundle SIZE is now PER-CARD: each <CollectionSetCard> + the <CatalogueSetCard>
   // holds its own size + scroll-across selector (Hugo's "scroll across on each
@@ -1283,6 +1307,13 @@ export const Collections = () => {
                 >
                   {items.map((painting, tileIndex) => {
                     const cover = coverColourway(painting);
+                    const availWays = painting.colourways.filter((c) => c.available);
+                    // The buyer's chosen colourway for this painting (page-level, set
+                    // on the dots below) — swaps the tile image, deep-links the PDP to
+                    // it, and is what the set cards add. Defaults to the original.
+                    const chosenName = cwChoice[painting.id] ?? cover.name;
+                    const chosen =
+                      availWays.find((c) => c.name === chosenName) ?? cover;
                     // sizes MUST mirror the count-aware flex-basis below, or the
                     // browser picks a source for the wrong slot width — over-fetching
                     // on 3-up laptop tiles and, worse, under-serving (soft) the large
@@ -1344,18 +1375,22 @@ export const Collections = () => {
                         }}
                       >
                         <Link
-                          to={`/collections/${painting.id}`}
+                          to={`/collections/${painting.id}${
+                            chosenName !== cover.name
+                              ? `?c=${encodeURIComponent(chosenName)}`
+                              : ""
+                          }`}
                           className="group block"
                           aria-label={`View ${painting.title}`}
                         >
                           <div className="aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-liftLg">
                             {/* Gentle zoom on hover only — a small scale-up of the
-                                cover. Hugo: hover should zoom in a little, never
-                                flick to another colourway. */}
+                                chosen colourway. Hugo: hover zooms, never flicks —
+                                the colourway only changes on a deliberate dot click. */}
                             <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
                               <AssetImage
-                                src={cover.image}
-                                alt={paintingImageAlt(painting.title, cover.name)}
+                                src={chosen.image}
+                                alt={paintingImageAlt(painting.title, chosen.name)}
                                 loading={eager ? "eager" : "lazy"}
                                 decoding="async"
                                 sizes={tileSizes}
@@ -1402,50 +1437,50 @@ export const Collections = () => {
                                 {fmtP(getLowestTierPricePence(painting))}
                               </span>
                             </p>
-                            {/* Colourway depth — Stephen left several of his own
-                                colourways of most mandalas. A quiet row of real
-                                colour dots (each a colourway's own hex) + a factual
-                                count surfaces that range on the browse tile without
-                                exploding the grid into 27 cards, and without any
-                                hover flick (Hugo: hover zooms, never flicks). The
-                                dots are non-interactive; the tile links to the PDP.
-                                Only shown when there's more than one to show. */}
-                            {(() => {
-                              const ways = painting.colourways.filter(
-                                (c) => c.available,
-                              );
-                              // Reserve the row's height ALWAYS (h-5) so captions in a
-                              // mixed row keep a shared baseline — a single-colourway
-                              // work renders an invisible spacer of the same height
-                              // rather than pulling its rowmates' text up 28px.
-                              if (ways.length < 2) {
-                                return <div aria-hidden="true" className="mt-2.5 h-5" />;
-                              }
-                              return (
-                                <div
-                                  className="mt-2.5 flex h-5 items-center justify-center gap-1.5"
-                                  aria-label={`${ways.length} colourways`}
-                                >
-                                  {ways.slice(0, 5).map((c) => (
-                                    <span
-                                      key={c.name}
-                                      aria-hidden="true"
-                                      title={c.name}
-                                      className="block h-2.5 w-2.5 rounded-full ring-1 ring-line/80"
-                                      style={{ backgroundColor: c.hex }}
-                                    />
-                                  ))}
-                                  <span
-                                    className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
-                                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-                                  >
-                                    {ways.length} colourways
-                                  </span>
-                                </div>
-                              );
-                            })()}
                           </figcaption>
                         </Link>
+                        {/* INTERACTIVE colourway — choose which colourway this print
+                            is taken in. A deliberate click (NOT a hover flick — Hugo's
+                            rule) swaps the tile image, deep-links the PDP (?c=), and is
+                            the colourway the "complete collection" + "full collection"
+                            set cards add. Sits OUTSIDE the Link (buttons can't nest in
+                            an anchor). Reserved height (h-5) keeps captions baseline-
+                            aligned. Price-identical across colourways → set totals never
+                            move. */}
+                        {availWays.length > 1 ? (
+                          <div
+                            role="group"
+                            aria-label={`Colourway for ${painting.title}`}
+                            className="mt-2.5 flex h-5 items-center justify-center gap-1.5"
+                          >
+                            {availWays.slice(0, 5).map((c) => {
+                              const sel = c.name === chosenName;
+                              return (
+                                <button
+                                  key={c.name}
+                                  type="button"
+                                  aria-pressed={sel}
+                                  aria-label={`${painting.title} — ${c.name}`}
+                                  title={c.name}
+                                  onClick={() => chooseTileCw(painting.id, c.name)}
+                                  className={cn(
+                                    "block h-2.5 w-2.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                    sel ? "ring-2 ring-accent scale-125" : "ring-line/80 hover:ring-accent/60",
+                                  )}
+                                  style={{ backgroundColor: c.hex }}
+                                />
+                              );
+                            })}
+                            <span
+                              className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
+                              style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                            >
+                              {availWays.length} colourways
+                            </span>
+                          </div>
+                        ) : (
+                          <div aria-hidden="true" className="mt-2.5 h-5" />
+                        )}
                       </motion.figure>
                     );
                   })}
@@ -1453,7 +1488,7 @@ export const Collections = () => {
 
                 {/* COMPLETE-COLLECTION CARD — its own size + scroll-across
                     selector; getCollectionBundle keeps advertised == charged. */}
-                <CollectionSetCard coll={coll} items={items} />
+                <CollectionSetCard coll={coll} items={items} cwChoice={cwChoice} />
               </div>
             </section>
           );
@@ -1471,7 +1506,7 @@ export const Collections = () => {
 
         {/* COMPLETE CATALOGUE — flagship set, its own size + scroll-across
             selector; getCompleteCatalogueBundle keeps advertised == charged. */}
-        <CatalogueSetCard />
+        <CatalogueSetCard cwChoice={cwChoice} />
       </main>
 
       <Footer />
