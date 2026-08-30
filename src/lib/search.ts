@@ -107,7 +107,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Provenance",
     question: "Are the prints signed?",
     answer:
-      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company and numbered within its edition. Each ships with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
+      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company and numbered within its edition. Each is issued with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
   },
   {
     eyebrow: "Verification",
@@ -131,13 +131,13 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Sizes & editions",
     question: "What sizes do you offer?",
     answer:
-      "Three tiers, each estate-stamped and issued within the estate's edition cycle. Open Edition at £445 (issued within each edition, no fixed allocation). Collector Edition at £750 (200 allocated per edition). Atelier Edition at £1,300 (75 per edition). Every price includes free delivery.",
+      "Four sizes, each estate-stamped and issued within the estate's edition cycle. Emblem Edition at £250 (the accessible entry, no fixed allocation). Gallery Edition at £445 (issued within each edition, no fixed allocation). Collector Edition at £750 (200 allocated per edition). Atelier Edition at £1,300 (75 per edition). Every price includes free delivery.",
   },
   {
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Yes — framing is offered on the Open, Collector and Atelier editions. Choose a solid-wood frame in oak, white or black, glazed with clear, edge-polished float glass and finished ready to hang — the frame is included in the framing price. Add £150 on the Open edition, £225 on Collector and £325 on Atelier. Delivery is free, framed or unframed — there is no framing surcharge at checkout. Framed orders add roughly two weeks to the lead time.",
+      "Every piece arrives framed and ready to hang — the edition price already includes a white window mount, a solid-wood frame and glazing, so there is no unframed option and no separate framing charge. Choose your frame on the product page — solid wood in oak, white or black, glazed with clear, edge-polished float glass. Prefer canvas? Every piece is also offered as a fine-art 370gsm canvas print, at the same price. Framed and canvas orders are made to order — allow roughly two weeks; delivery is free worldwide.",
   },
   {
     eyebrow: "Hand-finishing",

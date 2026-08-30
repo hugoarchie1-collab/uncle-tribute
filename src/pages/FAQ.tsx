@@ -44,7 +44,7 @@ const FAQS: QA[] = [
       <>
         No — Stephen passed in 2021, so prints cannot be signed in his hand.
         Every print is <strong>estate-stamped</strong> by The Mandala Company
-        and numbered within its edition. Each ships with a Certificate
+        and numbered within its edition. Each is issued with a Certificate
         of Authenticity carrying a unique Certificate ID. This is the convention
         used by the estates of Picasso, Hepworth and Hilma af Klint, and
         is the standard for works released posthumously by an estate.
@@ -119,9 +119,10 @@ const FAQS: QA[] = [
     question: "What sizes do you offer?",
     answer: (
       <>
-        Three tiers, each estate-stamped — framed in solid wood and ready to hang,
+        Four sizes, each estate-stamped — framed in solid wood and ready to hang,
         or a fine-art canvas print, with the frame or canvas included in the
-        price and free delivery worldwide. <strong>Open Edition</strong> at £445 (unnumbered, issued to order — no fixed allocation).{" "}
+        price and free delivery worldwide. <strong>Emblem Edition</strong> at £250 (the accessible entry, unnumbered — issued to order).{" "}
+        <strong>Gallery Edition</strong> at £445 (unnumbered, issued to order — no fixed allocation).{" "}
         <strong>Collector Edition</strong> at £750 (edition of 200).{" "}
         <strong>Atelier Edition</strong> at £1,300 (edition of 75).
       </>

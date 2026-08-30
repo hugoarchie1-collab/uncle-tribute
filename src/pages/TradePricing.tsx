@@ -133,7 +133,7 @@ export const TradePricing = () => {
             { id: "key", label: "Key / hospitality account", shortLabel: "Key account", discountPercent: 40, note: "Key or hospitality account — retail value £15,000 or more" },
           ],
           rows: [
-            { aLabel: "A3", size: "29.5 × 29.5 cm", tierLabel: "Open Edition", finishLabel: "Framed or canvas", retailPence: 44500, prices: { standard: 31150, project: 28925, key: 26700 } },
+            { aLabel: "A3", size: "29.5 × 29.5 cm", tierLabel: "Gallery Edition", finishLabel: "Framed or canvas", retailPence: 44500, prices: { standard: 31150, project: 28925, key: 26700 } },
             { aLabel: "A2", size: "42 × 42 cm", tierLabel: "Collector Edition", finishLabel: "Framed or canvas", retailPence: 75000, prices: { standard: 52500, project: 48750, key: 45000 } },
             { aLabel: "A1", size: "59.5 × 59.5 cm", tierLabel: "Atelier Edition", finishLabel: "Framed or canvas", retailPence: 130000, prices: { standard: 91000, project: 84500, key: 78000 } },
           ],
