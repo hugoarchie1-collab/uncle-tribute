@@ -294,22 +294,34 @@ export const FindAPrint = () => {
             </h1>
           </Reveal>
 
-          {/* Guidance — the page subtitle: one centred reading measure sitting a
-              clear, generous step below the headline (canonical heading→subtitle
-              gap), under a hairline. Sized in proportion to the masthead as a true
-              lead, not a caption. The verbatim copy is unchanged. */}
+          {/* THE DIFFERENTIATOR — the one thing no competitor can claim: these are
+              STEPHEN'S OWN colour variations, discovered on his studio computer and
+              offered exactly as he left them. So his words LEAD the page as a
+              weighted statement (verbatim — only split from the practical guidance,
+              which drops to a quieter second line); the poignant close lands in the
+              page's own Fraunces-italic idiom, echoing the masthead. */}
           <div className="mt-6 md:mt-7 border-t border-line pt-5 md:pt-6">
             <Reveal as="div">
               <p
-                className={cn(SUBTITLE, "mx-auto max-w-[88ch] text-pretty m-0")}
+                className="mx-auto max-w-[54ch] text-ink font-sans font-medium text-balance text-pretty m-0 text-[clamp(20px,0.7vw+15px,30px)] leading-[1.42]"
                 style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
               >
                 Stephen left several colourways of each mandala. Each colourway was
                 created by Stephen himself and discovered on his computer in his
-                studio — these are his own colour variations of the work, exactly as
-                he left them. Choose the tones you are naturally drawn to, or that
-                fit the ambience of the room around it. There is no wrong answer. You
-                can also{" "}
+                studio — these are his own colour variations of the work,{" "}
+                <em
+                  className="font-display italic font-normal"
+                  style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
+                >
+                  exactly as he left them.
+                </em>
+              </p>
+              <p
+                className={cn(SUBTITLE, "mx-auto max-w-[64ch] text-pretty mt-5 md:mt-6")}
+                style={{ textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)" }}
+              >
+                Choose the tones you are naturally drawn to, or that fit the ambience
+                of the room around it. There is no wrong answer. You can also{" "}
                 <Link
                   to="/collections"
                   className="text-accent underline underline-offset-4 hover:text-ink transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
@@ -344,10 +356,13 @@ export const FindAPrint = () => {
               the grid). */}
           <Reveal as="div" className="mt-7 md:mt-9 border-t border-line pt-6 md:pt-8">
             <LensHeading label="The colour lens" />
+            {/* 8 families laid out on a SYMMETRIC grid — 2×4 on mobile, 4+4 on
+                desktop — so it never orphans a lone pill to a second row (the old
+                flex-wrap left "Dark & indigo" alone). Centred, axis-balanced. */}
             <div
               role="group"
               aria-label="Filter by colour"
-              className="mt-5 md:mt-6 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
+              className="mx-auto mt-5 md:mt-6 grid max-w-[440px] grid-cols-2 justify-items-center gap-2.5 sm:max-w-[760px] sm:grid-cols-4 sm:gap-3"
             >
               {COLOUR_FAMILIES.map((f) => {
                 const on = active.has(f.key);
