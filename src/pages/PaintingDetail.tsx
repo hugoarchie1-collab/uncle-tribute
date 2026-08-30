@@ -142,7 +142,7 @@ const TRUESIZE_PAINTING_IDS = new Set<string>([]);
 // This is the museum wall-label idiom: the work's name in TRUE Fraunces italic
 // at a controlled opsz 40 (clean strokes, gotcha #7), one tier above the price.
 const PDP_TITLE =
-  "font-display italic font-semibold tracking-[-0.02em] text-[clamp(34px,3.6vw,84px)] leading-[1.05] text-ink text-balance";
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(34px,3.6vw,84px)] leading-[1.05] text-ink text-balance";
 // One ledger-card geometry for every secondary buy-box card (one-off / custom
 // size / colourway set / finish) so the column reads as one authored system.
 const CARD = "ring-1 ring-line px-5 py-5";
@@ -319,7 +319,7 @@ const SizePicker = ({
           </span>
           <span
             className={cn(
-              "font-display font-semibold tracking-[-0.01em] text-ink justify-self-end",
+              "font-sans font-semibold tracking-[-0.01em] text-ink justify-self-end",
               isSelected ? "text-[22px] 3xl:text-[30px] 4xl:text-[35px]" : "text-[19px] 3xl:text-[26px] 4xl:text-[30px]",
             )}
             style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
@@ -408,7 +408,7 @@ const OneOffCard = ({
       <span className={EYEBROW_TIGHT}>
         Unique · one of one
       </span>
-      <span className="font-display font-semibold tracking-[-0.01em] text-[20px] 3xl:text-[27px] 4xl:text-[32px] text-ink whitespace-nowrap">
+      <span className="font-sans font-semibold tracking-[-0.01em] text-[20px] 3xl:text-[27px] 4xl:text-[32px] text-ink whitespace-nowrap">
         {fmtP(tier.pricePence)}
       </span>
     </span>
@@ -519,7 +519,7 @@ const CustomSizeRequest = ({
               <span className={EYEBROW_TIGHT}>
                 Bespoke · by request
               </span>
-              <span className="font-display font-semibold tracking-[-0.01em] text-[18px] 3xl:text-[24px] 4xl:text-[29px] text-ink whitespace-nowrap">
+              <span className="font-sans font-semibold tracking-[-0.01em] text-[18px] 3xl:text-[24px] 4xl:text-[29px] text-ink whitespace-nowrap">
                 Price on application
               </span>
             </span>
@@ -1374,7 +1374,7 @@ const BuyBox = ({
             with the opsz-40 figure) was removed. */}
         <div className="mb-3">
           <p
-            className="font-display font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
+            className="font-sans font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
             {fmtP(finishTotalPence)}
@@ -1454,7 +1454,7 @@ const BuyBox = ({
               colours exactly as he left them.
             </p>
             <p className={cn(META, "text-ink m-0 mb-1.5")}>
-              <span className="font-display font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] mr-2.5">
+              <span className="font-sans font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] mr-2.5">
                 {fmtP(colourwaySet.bundlePricePence)}
               </span>
               the complete set, together
@@ -1758,7 +1758,7 @@ const BuyBox = ({
                     Made to order · allow {leadWeeks} weeks
                   </span>
                 </span>
-                <span className="font-display font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] text-ink whitespace-nowrap">
+                <span className="font-sans font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] text-ink whitespace-nowrap">
                   {fmtP(lineTotalPence)}
                 </span>
               </div>
@@ -1810,7 +1810,7 @@ const BuyBox = ({
               Total{quantity > 1 ? ` · ${quantity} pieces` : ""}
             </span>
             <span
-              className="font-display font-semibold tracking-[-0.02em] text-[26px] 3xl:text-[34px] 4xl:text-[40px] text-ink whitespace-nowrap"
+              className="font-sans font-semibold tracking-[-0.02em] text-[26px] 3xl:text-[34px] 4xl:text-[40px] text-ink whitespace-nowrap"
               style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
             >
               {fmtP(lineTotalPence * quantity)}
@@ -1838,7 +1838,7 @@ const BuyBox = ({
             </button>
             <span
               aria-live="polite"
-              className="min-w-[2.75ch] text-center font-display text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]"
+              className="min-w-[2.75ch] text-center font-sans font-semibold text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]"
             >
               {quantity}
             </span>
@@ -2042,7 +2042,7 @@ const CompanionWorks = ({
                     className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>
-                <h3 className="font-display font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 mb-1 group-hover:text-ink transition-colors duration-300">
+                <h3 className="font-sans font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 mb-1 group-hover:text-ink transition-colors duration-300">
                   {p.title}
                 </h3>
               </Link>
@@ -2365,7 +2365,7 @@ const StickyAddBar = ({
             <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]">
+            <span className="font-sans font-semibold tracking-[-0.01em] text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink [font-variant-numeric:tabular-nums]">
               {fmtP(barTotalPence)}
             </span>
           </span>
@@ -2407,7 +2407,7 @@ const StickyAddBar = ({
             <span className={cn(EYEBROW_TIGHT, "truncate")}>
               {selected.name}
             </span>
-            <span className="font-display font-semibold tracking-[-0.01em] text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink">
+            <span className="font-sans font-semibold tracking-[-0.01em] text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink">
               {fmtP(barTotalPence)}
             </span>
           </span>
@@ -2973,7 +2973,7 @@ export const PaintingDetail = () => {
               className="inline-flex items-center gap-2 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] text-ink-muted hover:text-ink transition-colors duration-300 whitespace-nowrap lg:hidden"
               aria-label="Jump to print order options"
             >
-              <span className="font-display font-semibold tracking-[-0.01em] text-ink normal-case text-[14px] 3xl:text-[17px] 4xl:text-[20px]">
+              <span className="font-sans font-semibold tracking-[-0.01em] text-ink normal-case text-[14px] 3xl:text-[17px] 4xl:text-[20px]">
                 <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold text-ink-muted mr-1">from</span>
                 {fmtP(pricePence)}
               </span>
