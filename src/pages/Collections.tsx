@@ -582,16 +582,18 @@ export const ComposeSetCard = () => {
   const { convert, code } = useCurrency();
   const [tier, setTier] = useState<PrintTier>(DEFAULT_BUNDLE_TIER);
   const [finish, setFinish] = useState<SetFinish>("framed");
-  const [frameStyle, setFrameStyle] = useState<string>(FRAME_STYLES[0].id);
   const [handFinished, setHandFinished] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  // Per-painting colourway choice (paintingId → colourway name). Defaults to each
-  // painting's original when unset. MONEY-SAFE: every colourway is the SAME price,
-  // so this never changes the set total — advertised == charged is untouched. It
-  // just chooses which colourway name the line carries into the basket/checkout.
+  // FULL per-print mix-n-match — paintingId → colourway name, and paintingId →
+  // frame-colour id. Both MONEY-SAFE: every colourway is the same price and the
+  // classic frame colours are £0, so neither ever changes the set total; they only
+  // set which colourway/frame each line carries. Default to original / Oak.
   const [cw, setCw] = useState<Record<string, string>>({});
   const chooseCw = (id: string, name: string) =>
     setCw((prev) => ({ ...prev, [id]: name }));
+  const [frameByPainting, setFrameByPainting] = useState<Record<string, string>>({});
+  const chooseFrame = (id: string, fid: string) =>
+    setFrameByPainting((prev) => ({ ...prev, [id]: fid }));
   const framed = finish === "framed";
   const hf = framed && handFinished && setEmbellishOffered(tier);
   const toggle = (id: string) =>
@@ -628,7 +630,8 @@ export const ComposeSetCard = () => {
       const chosenName = cw[p.id] ?? coverColourway(p).name;
       // Framed → framing:true (+ embellished + frame colour); Canvas → canvas:true
       // (clears framing + hand-finishing) — matches the set price advertised above.
-      if (framed) addItem(p.id, chosenName, tier.id, true, hf, frameStyle, undefined, false);
+      if (framed)
+        addItem(p.id, chosenName, tier.id, true, hf, frameByPainting[p.id] ?? FRAME_STYLES[0].id, undefined, false);
       else addItem(p.id, chosenName, tier.id, false, false, undefined, undefined, true);
     });
   };
@@ -731,6 +734,36 @@ export const ComposeSetCard = () => {
                     })}
                   </div>
                 )}
+                {/* Per-print FRAME COLOUR — square swatches (vs round colourway dots)
+                    so each print in the set can take its own frame. Only when the
+                    print is in the set AND the set is framed (canvas has no frame).
+                    Classic frames are £0, so this never changes the set total. */}
+                {on && framed && (
+                  <div
+                    role="group"
+                    aria-label={`Frame colour for ${p.title}`}
+                    className="mt-1 flex items-center justify-center gap-1"
+                  >
+                    {FRAME_STYLES.map((f) => {
+                      const fsel = (frameByPainting[p.id] ?? FRAME_STYLES[0].id) === f.id;
+                      return (
+                        <button
+                          key={f.id}
+                          type="button"
+                          aria-pressed={fsel}
+                          aria-label={`${p.title} — ${f.label} frame`}
+                          title={`${f.label} frame`}
+                          onClick={() => chooseFrame(p.id, f.id)}
+                          className={cn(
+                            "h-3.5 w-3.5 rounded-[3px] ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                            fsel ? "ring-2 ring-accent scale-110" : "ring-line/80 hover:ring-accent/60",
+                          )}
+                          style={{ backgroundColor: f.swatch }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -738,9 +771,9 @@ export const ComposeSetCard = () => {
 
         <SetSizeSelector value={tier} onChange={setTier} />
         {count >= 2 && <SetFinishSelector value={finish} onChange={setFinish} />}
-        {count >= 2 && framed && (
-          <FrameColourPicker value={frameStyle} onChange={setFrameStyle} />
-        )}
+        {/* Frame colour is chosen PER PRINT on each selected tile above (the square
+            swatches) — no set-level frame picker here, so a composed set can mix
+            frames as well as colourways. */}
         {count >= 2 && framed && (
           <HandFinishToggle tier={tier} value={handFinished} onChange={setHandFinished} />
         )}
