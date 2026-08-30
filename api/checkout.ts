@@ -96,10 +96,10 @@ const TIERS: Record<TierId, TierDef> = {
   },
   atelier: {
     id: "atelier",
-    label: "Open Edition",
+    label: "Gallery Edition",
     size: "29.5 × 29.5 cm",
     pricePence: 29500,
-    editionLabel: "Open Edition — unnumbered, issued to order",
+    editionLabel: "Gallery Edition — unnumbered, issued to order",
     // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
     // 2026-07-25 squeeze pass: base £295, framing £295, canvas £150.
     framingPricePence: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price

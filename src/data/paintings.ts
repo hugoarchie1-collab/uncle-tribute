@@ -224,11 +224,11 @@ export const PRINT_TIERS: PrintTier[] = [
   },
   {
     id: "atelier",
-    label: "Open Edition",
+    label: "Gallery Edition",
     size: "29.5 × 29.5 cm",
     pricePence: 29500, // £295 (2026-07-25 squeeze pass)
     editionTotal: null, // Open Edition — no allocation cap, not numbered
-    editionLabel: "Open Edition — unnumbered, issued to order",
+    editionLabel: "Gallery Edition — unnumbered, issued to order",
     editionPromise: "issued to order in the current edition",
     // A3 is a FRAMED product like every other size (Hugo 2026-07-24: "every
     // product has to be framed including A3"). Prices CONFIRMED 2026-07-24
@@ -238,7 +238,7 @@ export const PRINT_TIERS: PrintTier[] = [
     framingPricePence: 15000, // £150 framing (A3) — Hugo 2026-07-27: framed priced == canvas (framed A3 = £445), so the framed ENTRY isn't a scary £590
     canvasPricePence: 15000, // £150 — print on stretched canvas (A3)
     description:
-      "Open Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
+      "Gallery Edition, estate-stamped, issued to order, ships with a Certificate of Authenticity",
     available: true,
   },
   {

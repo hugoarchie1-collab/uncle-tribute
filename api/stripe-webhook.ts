@@ -317,7 +317,7 @@ const TIER_PRICE_PENCE: Record<string, number> = {
 };
 const TIER_LABEL: Record<string, string> = {
   cabinet: "Emblem Edition",
-  atelier: "Open Edition",
+  atelier: "Gallery Edition",
   collector: "Collector Edition",
   "atelier-grande": "Atelier Edition",
   heirloom: "Heirloom Edition",
@@ -363,7 +363,7 @@ const sizeFor = (paintingId: string | undefined, tierId: string): string =>
   "Limited edition giclée print";
 const TIER_EDITION: Record<string, string> = {
   cabinet: "Emblem Edition — unnumbered, issued to order",
-  atelier: "Open Edition — unnumbered, issued to order",
+  atelier: "Gallery Edition — unnumbered, issued to order",
   collector: "Collector Edition — edition of 200, hand-numbered",
   "atelier-grande": "Atelier Edition — edition of 75, hand-numbered",
   heirloom: "Heirloom Edition — edition of 18, hand-numbered",

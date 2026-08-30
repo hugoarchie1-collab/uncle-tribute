@@ -83,9 +83,9 @@ const TIERS: Record<TierId, EmailTier> = {
     available: true,
   },
   atelier: {
-    label: "Open Edition",
+    label: "Gallery Edition",
     size: "29.5 × 29.5 cm",
-    editionLabel: "Open Edition — unnumbered, issued to order",
+    editionLabel: "Gallery Edition — unnumbered, issued to order",
     pricePence: 29500,
     framingPricePence: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price (mirror, gotcha #9)
     canvasPricePence: 15000, // £150 (A3) — mirror of paintings.ts (gotcha #9)
