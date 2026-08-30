@@ -191,10 +191,7 @@ export const CanvasWrap = ({
     const ar = String(aspectRatio || 1);
     return (
       <div className={CANVAS_SIZER} style={{ aspectRatio: ar }}>
-        <div
-          className="relative w-full h-full overflow-hidden"
-          style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.35)) drop-shadow(0 18px 34px rgba(0,0,0,0.42))" }}
-        >
+        <div className="relative w-full h-full overflow-hidden">
           {children}
           {/* fine canvas tooth — signals a canvas print (vs smooth paper), no 3D */}
           <div
@@ -304,11 +301,9 @@ export const FrameWrap = ({
         borderImageSlice: `${FRAME_SLICE}`,
         borderImageWidth: moulding,
         borderImageRepeat: "stretch",
-        // Cast shadow — the framed piece floats off the wall: a tight contact
-        // shadow + a soft ambient drop. (Invisible on a pure-black wall, present
-        // on light walls / the PDP's tinted wall.)
-        filter:
-          "drop-shadow(0 2px 3px rgba(0,0,0,0.45)) drop-shadow(0 26px 44px rgba(0,0,0,0.5))",
+        // No cast shadow — the heavy drop read as a dark "black background" halo
+        // on the tinted PDP wall (Hugo 2026-08-30: "remove it, unneeded on
+        // everyone"). The piece sits clean against the wall.
         borderRadius: "1px",
       }}
     >
