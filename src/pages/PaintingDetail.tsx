@@ -2071,9 +2071,12 @@ const CompanionWorks = ({
  * paintings.ts (artistQuote / description) — never re-typed or reworded.
  */
 const Story = ({ painting }: { painting: Painting }) => (
-  <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto">
+  // One clean, centred content column — uniform width, no left-hug asymmetry or
+  // stranded right-side gap on wide screens (Hugo 2026-08-30: "huge gap, nothing
+  // uniform, symmetry — clean simple professional").
+  <div className="max-w-[1000px] 2xl:max-w-[1120px] mx-auto">
     {painting.artistQuote && (
-      <Reveal as="div" className="max-w-[940px] 2xl:max-w-[1040px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
+      <Reveal as="div">
         {/* Muted-ink eyebrow, then the artist quote lifted to a confident
             Fraunces statement (opsz ≤48, real italic 400) — the page's bold
             prose header. Sections separate by whitespace, not rules (Hugo:
@@ -2098,7 +2101,7 @@ const Story = ({ painting }: { painting: Painting }) => (
         info stacks BELOW as a horizontal card, so nothing dangles. */}
     <Reveal
       as="div"
-      className="mt-8 md:mt-10 max-w-[80ch] flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink-muted"
+      className="mt-8 md:mt-10 flex flex-col gap-3.5 md:gap-4 font-sans font-normal text-[clamp(17px,1.05vw,22px)] leading-[1.65] text-ink-muted"
     >
       {painting.description.split("\n\n").map((para, i) => (
         <p key={i} className="m-0">{para}</p>
