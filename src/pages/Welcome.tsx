@@ -13,7 +13,7 @@ import { PAINTINGS, getLowestTierPricePence, paintingImageAlt, EMBELLISHMENT_NOT
 import { asset } from "../lib/asset";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
-import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT } from "../components/ui/tokens";
+import { EYEBROW, TITLE, SUBTITLE, EYEBROW_TIGHT, EYEBROW_MUTED, META } from "../components/ui/tokens";
 import { Seo } from "../components/Seo";
 
 // The home backdrop is the shared PavoBackdrop tapestry (see
@@ -256,6 +256,12 @@ export const Welcome = () => {
       return { painting, cover };
     })
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
+  // The buyer's chosen colourway per featured tile (set on the dots) — swaps the
+  // tile image + deep-links the PDP, IDENTICAL to the Collections tiles (full-site
+  // tile unison, Hugo 2026-08-31). Defaults to the tile's drawn cover.
+  const [featuredCw, setFeaturedCw] = useState<Record<string, string>>({});
+  const chooseFeaturedCw = (id: string, name: string) =>
+    setFeaturedCw((prev) => ({ ...prev, [id]: name }));
 
   // "A reminder" lead — split reminderLong[0] at its first sentence so the
   // opening CLAUSE can be set as a large flush-left display lede (illuminated by
@@ -951,59 +957,99 @@ export const Welcome = () => {
                 // which made that one card the odd one out. Now a missing year
                 // simply shows no subtitle. ⚠️ enneagon-swans still has a
                 // "[ DATE ]" placeholder — needs Polly's real year to match.
+                // Full-site tile UNISON (Hugo 2026-08-31: "base it all on
+                // collections tab") — this tile is now IDENTICAL to the Collections
+                // tile: centred caption, floor price, interactive colourway dots.
+                const avail = painting.colourways.filter((c) => c.available);
+                const original = avail.find((c) => c.isOriginal) ?? avail[0] ?? cover;
+                const chosenName = featuredCw[painting.id] ?? cover.name;
+                const chosen = avail.find((c) => c.name === chosenName) ?? cover;
                 const hasYear = painting.year && painting.year !== "[ DATE ]";
                 const fromPrice = getLowestTierPricePence(painting);
                 return (
-                  <Link
-                    key={painting.id}
-                    // Carry the colourway shown on THIS card through to the
-                    // detail page (?c=…) so clicking e.g. the Blood Moon Red
-                    // peacock lands on that exact colourway, not the original.
-                    to={`/collections/${painting.id}?c=${encodeURIComponent(cover.name)}`}
-                    // Spell the price into the link's accessible name — the visual
-                    // price chip below is aria-hidden (it animates in), so without
-                    // this a screen-reader user would get no price for any tile.
-                    aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
-                    // Uniform tile — every painting the same size in a clean grid
-                    // (Hugo wants even rows, not a scaled salon hang).
-                    className="group block min-w-0"
-                  >
-                    {/* Quiet gallery frame — only the ring warms to accent on
-                        hover; no lift-shadow, no zoom (restraint pass). */}
-                    <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-[box-shadow] duration-500 group-hover:ring-accent/50">
-                      <AssetImage
-                        src={cover.image}
-                        alt={paintingImageAlt(painting.title, cover.name)}
-                        loading="lazy"
-                        decoding="async"
-                        sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    </div>
-                    {/* Museum WALL-LABEL (2026-06-28 bold redesign) — the price
-                        comes OFF the image (the floating rounded pill was the one
-                        Shopify-template tell on the page) and folds into a quiet
-                        typographic caption: title + year/collection on the left,
-                        the existing "From £…" as a tabular figure on the right,
-                        across a hairline rule. The Link's aria-label still spells
-                        the price, so a11y is unchanged. */}
-                    <div className="pt-4 border-t border-line">
-                      <h3 className="font-display font-bold text-[18px] md:text-[22px] 2xl:text-[26px] 3xl:text-[30px] tracking-[-0.015em] text-ink m-0 leading-[1.2] group-hover:text-accent transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)]">
-                        {painting.title}
-                      </h3>
-                      {/* Gallery caption — the WORK leads: title + year only. The
-                          repeated "From £445" price chip was dropped from the home
-                          tiles (Hugo 2026-07-29: a gallery leads with the art, not a
-                          shop shelf of identical prices) — the price still lives on
-                          the PDP + Collections, and the Link's aria-label still
-                          spells it (`fromPrice`), so a11y is unchanged. */}
-                      {hasYear && (
-                        <p className={cn(EYEBROW_TIGHT, "tracking-[0.02em] m-0 mt-2")}>
-                          {painting.year}
+                  <figure key={painting.id} className="m-0 min-w-0">
+                    <Link
+                      to={`/collections/${painting.id}${
+                        chosen.name !== original.name ? `?c=${encodeURIComponent(chosen.name)}` : ""
+                      }`}
+                      aria-label={`${painting.title}${hasYear ? `, ${painting.year}` : ""} — from ${fmtPrice(fromPrice)}`}
+                      className="group block"
+                    >
+                      <div className="relative aspect-square overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-liftLg">
+                        {/* Gentle zoom on hover only — the colourway changes only on
+                            a deliberate dot click, never a hover flick (Hugo's rule). */}
+                        <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
+                          <AssetImage
+                            src={chosen.image}
+                            alt={paintingImageAlt(painting.title, chosen.name)}
+                            loading="lazy"
+                            decoding="async"
+                            sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      {/* Caption — IDENTICAL to the Collections tile: title · year ·
+                          "Estate-stamped giclée, framed · from £{floor}", centred. */}
+                      <figcaption className="pt-3 md:pt-4 text-center">
+                        <h3
+                          className="font-display font-semibold text-[clamp(20px,1.45vw,30px)] leading-[1.2] tracking-[-0.025em] text-ink m-0 min-h-[2.4em] flex items-center justify-center transition-colors duration-300 group-hover:text-accent"
+                          style={{ textShadow: "0 2px 14px rgba(0,0,0,0.8)" }}
+                        >
+                          {painting.title}
+                        </h3>
+                        <p
+                          className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                          aria-hidden={!hasYear}
+                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                        >
+                          {hasYear ? painting.year : " "}
                         </p>
-                      )}
-                    </div>
-                  </Link>
+                        <p className={cn(META, "mt-2 m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
+                          Estate-stamped giclée, framed · from{" "}
+                          <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                            {fmtPrice(fromPrice)}
+                          </span>
+                        </p>
+                      </figcaption>
+                    </Link>
+                    {/* Interactive colourway dots — IDENTICAL to Collections. Sit
+                        OUTSIDE the Link (buttons can't nest in an anchor). */}
+                    {avail.length > 1 ? (
+                      <div
+                        role="group"
+                        aria-label={`Colourway for ${painting.title}`}
+                        className="mt-2.5 flex h-5 items-center justify-center gap-1.5"
+                      >
+                        {avail.slice(0, 5).map((c) => {
+                          const sel = c.name === chosenName;
+                          return (
+                            <button
+                              key={c.name}
+                              type="button"
+                              aria-pressed={sel}
+                              aria-label={`${painting.title} — ${c.name}`}
+                              title={c.name}
+                              onClick={() => chooseFeaturedCw(painting.id, c.name)}
+                              className={cn(
+                                "block h-2.5 w-2.5 rounded-full ring-1 transition-transform duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                                sel ? "ring-2 ring-accent scale-125" : "ring-line/80 hover:ring-accent/60",
+                              )}
+                              style={{ backgroundColor: c.hex }}
+                            />
+                          );
+                        })}
+                        <span
+                          className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
+                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                        >
+                          {avail.length} colourways
+                        </span>
+                      </div>
+                    ) : (
+                      <div aria-hidden="true" className="mt-2.5 h-5" />
+                    )}
+                  </figure>
                 );
               })}
             </Reveal>
