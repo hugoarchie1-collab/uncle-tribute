@@ -4,9 +4,11 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
+import { FrameWrap } from "../components/FramedPreview";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { useCurrency } from "../lib/currency";
 import { PAINTINGS, getAnchorTier, getTierAdvertisedPricePence } from "../data/paintings";
 import { addItem } from "../lib/basket";
@@ -313,6 +315,19 @@ export const PrintQuiz = ({
   const whisperAns = whisperIdx >= 0 ? answers[whisperIdx] : null;
   const whisperWord =
     whisperAns != null ? QUESTIONS[whisperIdx].options[whisperAns]?.label ?? null : null;
+  // Their full reading — every answered question mapped TOPIC → THEIR choice, a
+  // visible personalised readout (verbatim their own picks) that proves the
+  // recommendation was earned, not random. Empty on a shared deep link.
+  const answerLedger = answers
+    .map((a, qi) =>
+      a != null
+        ? {
+            topic: QUESTIONS[qi].kicker.split("·").pop()?.trim() ?? "",
+            choice: QUESTIONS[qi].options[a].label,
+          }
+        : null,
+    )
+    .filter((x): x is { topic: string; choice: string } => x != null);
   // Staged reveal — each beat settles up a touch later (name → piece → reading).
   // NB: animate Y ONLY, never opacity — content must stay visible even if the
   // animation never runs (throttled rAF / reduced motion), so it can never get
@@ -403,7 +418,14 @@ export const PrintQuiz = ({
         </div>
       )}
 
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[900px] px-4 sm:px-6 md:px-8 pt-8 md:pt-12 pb-16 md:pb-24 flex flex-col justify-center">
+      <main
+        className={cn(
+          "relative z-10 flex-1 mx-auto w-full px-4 sm:px-6 md:px-8 pt-8 md:pt-12 pb-16 md:pb-24 flex flex-col justify-center",
+          // The composed result panel needs room for its 2-column hero+dossier;
+          // the intro/quiz/reading stay a focused reading column.
+          phase === "result" ? "max-w-[1180px]" : "max-w-[900px]",
+        )}
+      >
         <AnimatePresence mode="wait">
           {/* ── INTRO ─────────────────────────────────────────────────────── */}
           {phase === "intro" && (
@@ -538,174 +560,221 @@ export const PrintQuiz = ({
             </motion.section>
           )}
 
-          {/* ── RESULT — a centred, gallery-grade reveal ───────────────────────
-              The mandala is the hero on the black ground, haloed in its own
-              colour; the person's own answer is echoed back as an epigraph; the
-              reading, price and one clear step follow in a single calm column.
-              Staged beats (name → piece → reading) via beat(n). */}
+          {/* ── RESULT — a composed, elevated "certificate" panel (rebuilt to a
+              Dribbble-tier standard): a 2-column hero + dossier — the piece FRAMED
+              and hung on the left, the reveal + a "because you chose" reading of
+              THEIR answers + one bounded action block on the right — all bound in
+              one surface with depth and the artwork's own colour glow. A designed
+              runner-up rail below. Beats settle Y-only (never opacity → never
+              stuck hidden); reduced-motion safe. */}
           {phase === "result" && result && winnerPainting && (
-            <motion.section key="result" {...fade} className="mx-auto w-full max-w-[840px] text-center">
-              <motion.p {...beat(0)} className={cn(EYEBROW, "m-0")}>
-                Your mandala
-              </motion.p>
-
-              {whisperWord && (
-                <motion.p
-                  {...beat(1)}
-                  className="mx-auto mt-4 max-w-[36ch] font-display italic text-ink-muted text-[clamp(16px,0.7vw+11px,22px)] leading-[1.4]"
-                  style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
+            <motion.section key="result" {...fade} className="mx-auto w-full">
+              {/* Result header bar — frames the panel like a gallery label */}
+              <div className="mb-5 md:mb-7 flex items-center justify-between border-b border-line pb-3">
+                <p className={cn(EYEBROW, "m-0")}>Your result</p>
+                <button
+                  type="button"
+                  onClick={restart}
+                  className="font-sans text-[13px] font-semibold text-ink-muted transition-colors hover:text-accent"
                 >
-                  You asked your home to whisper {whisperWord}.
-                </motion.p>
-              )}
+                  Retake
+                </button>
+              </div>
 
-              <motion.h2
-                {...beat(2)}
-                className="mx-auto mt-3 max-w-[15ch] font-display font-bold text-ink text-[clamp(34px,4.6vw,72px)] leading-[1.0] tracking-[-0.03em] text-balance"
-                style={{ fontVariationSettings: '"opsz" 72, "wght" 700', textShadow: "0 2px 26px rgba(0,0,0,0.5)" }}
-              >
-                {winnerPainting.title}
-              </motion.h2>
-              <motion.p
-                {...beat(2)}
-                className="mt-3 font-display italic text-ink/80 text-[clamp(17px,0.8vw+11px,26px)]"
-                style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
-              >
-                in {result.colourwayName}
-              </motion.p>
-
-              {/* Hero — the piece, haloed in its own colour */}
-              <motion.div {...beat(3)} className="relative mx-auto mt-9 md:mt-12 w-full max-w-[500px]">
+              {/* HERO PANEL — one elevated surface, hairline border, long shadow,
+                  the recommended piece's own colour bled in behind it. */}
+              <div className="relative overflow-hidden rounded-[6px] ring-1 ring-[rgba(237,230,214,0.09)] bg-[#12100e] shadow-[0_50px_120px_-24px_rgba(0,0,0,0.75)]">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -inset-12 -z-10 rounded-full opacity-60 blur-3xl"
-                  style={{ background: `radial-gradient(closest-side, ${haloHex}, transparent 72%)` }}
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: `radial-gradient(90% 80% at 26% 34%, ${haloHex}26, transparent 68%)` }}
                 />
-                <Link
-                  to={pdpTo}
-                  className="group block aspect-square overflow-hidden rounded-[2px] ring-1 ring-line shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
-                  aria-label={`View ${winnerPainting.title}`}
-                >
-                  <AssetImage
-                    src={result.colourwayImage}
-                    alt={`${winnerPainting.title} — ${result.colourwayName}`}
-                    loading="eager"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05]"
-                  />
-                </Link>
-              </motion.div>
-
-              {/* The reading */}
-              <motion.p
-                {...beat(4)}
-                className="mx-auto mt-9 md:mt-12 max-w-[34ch] font-display text-ink text-[clamp(21px,0.9vw+15px,32px)] leading-[1.42] text-balance"
-                style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
-              >
-                {REASONS[result.paintingId] ??
-                  "A piece from Stephen's catalogue chosen to fit your answers."}
-              </motion.p>
-
-              {/* One clear next step — after the reading has landed */}
-              <motion.div {...beat(5)} className="mt-10 md:mt-12">
-                <p className={cn(EYEBROW_MUTED, "m-0")}>
-                  Estate-stamped giclée · made to order{anchorPrice ? ` · from ${anchorPrice}` : ""}
-                </p>
-                <div className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5">
-                  {added ? (
-                    <Link to="/basket" className={cn(BTN_PRIMARY, "justify-center")}>
-                      Added ✓ View basket
-                      <span aria-hidden="true" className="ml-2">→</span>
-                    </Link>
-                  ) : (
-                    <button type="button" onClick={addResultToBasket} className={cn(BTN_PRIMARY, "justify-center")}>
-                      Add to basket
-                      <span aria-hidden="true" className="ml-2">→</span>
-                    </button>
-                  )}
-                  <Link to={pdpTo} className={cn(BTN_SECONDARY, "justify-center")}>
-                    See this print
-                  </Link>
-                </div>
-
-                {/* Quiet actions */}
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-                  <button
-                    type="button"
-                    onClick={shareResult}
-                    className="font-sans text-[14px] font-semibold text-ink-muted hover:text-accent transition-colors"
+                <div className="relative grid md:grid-cols-[1.02fr_0.98fr]">
+                  {/* LEFT — the piece, FRAMED and hung */}
+                  <div
+                    className="relative flex items-center justify-center border-b border-[rgba(237,230,214,0.07)] p-7 sm:p-9 md:border-b-0 md:border-r md:p-10 lg:p-12"
+                    style={{ background: `radial-gradient(120% 100% at 50% 32%, ${haloHex}1f, rgba(0,0,0,0.28))` }}
                   >
-                    {copied ? "Link copied ✓" : "Share your result"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={restart}
-                    className="font-sans text-[14px] font-semibold text-ink-muted hover:text-accent transition-colors"
-                  >
-                    Retake the quiz
-                  </button>
-                </div>
+                    <motion.div {...beat(2)} className="w-full max-w-[400px]">
+                      <Link
+                        to={pdpTo}
+                        className="group block drop-shadow-[0_34px_60px_rgba(0,0,0,0.6)] transition-transform duration-700 hover:scale-[1.015]"
+                        aria-label={`View ${winnerPainting.title}`}
+                      >
+                        <FrameWrap active frameStyle="natural-oak" glazing="museum-glass" aspectRatio={1} src={result.colourwayImage}>
+                          <img
+                            src={asset(result.colourwayImage)}
+                            alt={`${winnerPainting.title} — ${result.colourwayName}, framed`}
+                            decoding="async"
+                            className="block h-full w-full object-contain"
+                          />
+                        </FrameWrap>
+                      </Link>
+                    </motion.div>
+                  </div>
 
-                {/* Keepsake — a quiet hairline line, never a boxed form */}
-                {emailStatus === "done" ? (
-                  <p className={cn(EYEBROW_MUTED, "m-0 mt-6")}>
-                    Sent — we've noted the piece that fits you. Keep an eye on your inbox.
-                  </p>
-                ) : (
-                  <form
-                    onSubmit={emailResult}
-                    className="mx-auto mt-7 flex max-w-[360px] items-end gap-3 border-b border-line transition-colors focus-within:border-accent"
-                  >
-                    <label htmlFor="quiz-email" className="sr-only">
-                      Email me my result
-                    </label>
-                    <input
-                      id="quiz-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email me my result"
-                      autoComplete="email"
-                      className="min-w-0 flex-1 bg-transparent py-2.5 font-sans text-[15px] text-ink placeholder:text-ink/35 focus:outline-none"
-                    />
-                    <button
-                      type="submit"
-                      disabled={emailStatus === "sending"}
-                      className="shrink-0 pb-2.5 font-sans text-[12.5px] font-bold uppercase tracking-[0.14em] text-ink-muted transition-colors hover:text-accent disabled:opacity-50"
+                  {/* RIGHT — the dossier */}
+                  <div className="flex flex-col justify-center p-7 sm:p-9 text-left md:p-10 lg:p-12">
+                    <motion.p {...beat(0)} className={cn(EYEBROW, "m-0")}>
+                      Matched to you
+                    </motion.p>
+                    {whisperWord && (
+                      <motion.p
+                        {...beat(1)}
+                        className="mt-3 font-display italic text-ink-muted text-[15px] leading-[1.4] md:text-[17px]"
+                        style={{ fontVariationSettings: '"opsz" 28, "wght" 400' }}
+                      >
+                        You asked your home to whisper {whisperWord}.
+                      </motion.p>
+                    )}
+                    <motion.h2
+                      {...beat(1)}
+                      className="mt-2 font-display font-bold text-ink text-[clamp(28px,2.7vw,48px)] leading-[1.02] tracking-[-0.03em]"
+                      style={{ fontVariationSettings: '"opsz" 60, "wght" 700', textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}
                     >
-                      {emailStatus === "sending" ? "…" : "Send"}
-                    </button>
-                  </form>
-                )}
-                {emailStatus === "error" && (
-                  <p className="font-sans text-[13px] text-accent m-0 mt-2">Couldn't send just now — try again.</p>
-                )}
-              </motion.div>
+                      {winnerPainting.title}
+                    </motion.h2>
+                    <motion.p
+                      {...beat(1)}
+                      className="mt-1.5 font-display italic text-ink/75 text-[clamp(15px,0.6vw+10px,20px)]"
+                      style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
+                    >
+                      in {result.colourwayName}
+                    </motion.p>
 
-              {/* Runners-up — quiet, curated, far smaller than the hero */}
+                    {/* Data strip — the UI/craft register beneath the display serif */}
+                    <motion.p
+                      {...beat(2)}
+                      className="mt-4 font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted"
+                    >
+                      Framed · Estate-stamped giclée{anchorPrice ? ` · from ${anchorPrice}` : ""}
+                    </motion.p>
+
+                    {/* The reading */}
+                    <motion.p
+                      {...beat(3)}
+                      className="mt-5 font-display text-ink text-[clamp(16px,0.4vw+13px,21px)] leading-[1.5]"
+                      style={{ fontVariationSettings: '"opsz" 32, "wght" 400' }}
+                    >
+                      {REASONS[result.paintingId] ??
+                        "A piece from Stephen's catalogue chosen to fit your answers."}
+                    </motion.p>
+
+                    {/* Your reading — every answer mapped topic → your own choice */}
+                    {answerLedger.length > 0 && (
+                      <motion.div {...beat(4)} className="mt-6">
+                        <p className="mb-1 font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted/80">
+                          Because you chose
+                        </p>
+                        <dl className="m-0">
+                          {answerLedger.map((row, i) => (
+                            <div
+                              key={i}
+                              className="flex items-baseline justify-between gap-4 border-t border-[rgba(237,230,214,0.08)] py-2"
+                            >
+                              <dt className="shrink-0 font-sans text-[11px] uppercase tracking-[0.12em] text-ink-muted">
+                                {row.topic}
+                              </dt>
+                              <dd className="m-0 text-right font-display italic text-ink/90 text-[13.5px] leading-[1.3] md:text-[15px]">
+                                {row.choice}
+                              </dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </motion.div>
+                    )}
+
+                    {/* Action block — bounded, not a lone button */}
+                    <motion.div {...beat(5)} className="mt-7 border-t border-[rgba(237,230,214,0.1)] pt-6">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                        {added ? (
+                          <Link to="/basket" className={cn(BTN_PRIMARY, "justify-center")}>
+                            Added ✓ View basket
+                            <span aria-hidden="true" className="ml-2">→</span>
+                          </Link>
+                        ) : (
+                          <button type="button" onClick={addResultToBasket} className={cn(BTN_PRIMARY, "justify-center")}>
+                            Add framed print{anchorPrice ? ` — ${anchorPrice}` : ""}
+                            <span aria-hidden="true" className="ml-2">→</span>
+                          </button>
+                        )}
+                        <Link to={pdpTo} className={cn(BTN_SECONDARY, "justify-center")}>
+                          See the piece
+                        </Link>
+                      </div>
+                      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                        <button
+                          type="button"
+                          onClick={shareResult}
+                          className="shrink-0 font-sans text-[13.5px] font-semibold text-ink-muted transition-colors hover:text-accent"
+                        >
+                          {copied ? "Link copied ✓" : "Share result"}
+                        </button>
+                        {emailStatus === "done" ? (
+                          <span className="font-sans text-[13.5px] text-ink-muted">Emailed to you ✓</span>
+                        ) : (
+                          <form
+                            onSubmit={emailResult}
+                            className="flex min-w-0 flex-1 items-end gap-2 border-b border-line transition-colors focus-within:border-accent"
+                          >
+                            <label htmlFor="quiz-email" className="sr-only">
+                              Email me my result
+                            </label>
+                            <input
+                              id="quiz-email"
+                              type="email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="Email me my result"
+                              autoComplete="email"
+                              className="min-w-0 flex-1 bg-transparent py-1.5 font-sans text-[14px] text-ink placeholder:text-ink/35 focus:outline-none"
+                            />
+                            <button
+                              type="submit"
+                              disabled={emailStatus === "sending"}
+                              className="shrink-0 pb-1.5 font-sans text-[12px] font-bold uppercase tracking-[0.12em] text-ink-muted transition-colors hover:text-accent disabled:opacity-50"
+                            >
+                              {emailStatus === "sending" ? "…" : "Send"}
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                      {emailStatus === "error" && (
+                        <p className="m-0 mt-2 font-sans text-[13px] text-accent">Couldn't send just now — try again.</p>
+                      )}
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Runner-up rail — designed cards, subordinate to the hero */}
               {result.runnersUp.length > 0 && (
-                <motion.div {...beat(6)} className="mx-auto mt-16 md:mt-24 max-w-[520px] border-t border-line pt-8 md:pt-10">
-                  <p className={cn(EYEBROW, "m-0 mb-6")}>Also close to you</p>
-                  <div className="grid grid-cols-2 gap-5 md:gap-6">
+                <motion.div {...beat(6)} className="mt-9 md:mt-12">
+                  <p className={cn(EYEBROW, "m-0 mb-5")}>Also matched to you</p>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:max-w-[660px] md:gap-5">
                     {result.runnersUp.map((r) => (
                       <Link
                         key={r.id}
                         to={`/collections/${r.id}?c=${encodeURIComponent(r.name)}`}
-                        className="group block"
+                        className="group flex items-center gap-4 rounded-[4px] ring-1 ring-[rgba(237,230,214,0.09)] bg-[#100e0c] p-3 transition-all duration-300 hover:ring-accent/50"
                         aria-label={`View ${r.title}`}
                       >
-                        <div className="aspect-square overflow-hidden rounded-[2px] ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50 group-hover:shadow-lift">
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[2px] ring-1 ring-line">
                           <AssetImage
                             src={r.image}
                             alt={`${r.title} — ${r.name}`}
                             loading="lazy"
                             decoding="async"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                            sizes="64px"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
                           />
                         </div>
-                        <p className="mt-3 font-display font-bold text-[15px] md:text-[17px] tracking-[-0.015em] text-ink m-0 group-hover:text-accent transition-colors">
-                          {r.title}
-                        </p>
+                        <div className="min-w-0">
+                          <p className="m-0 font-display font-semibold text-[14px] leading-[1.2] tracking-[-0.015em] text-ink transition-colors group-hover:text-accent md:text-[15px]">
+                            {r.title}
+                          </p>
+                          <p className="m-0 mt-1 font-sans text-[12px] text-ink-muted">{r.name}</p>
+                        </div>
                       </Link>
                     ))}
                   </div>
