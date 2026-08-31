@@ -5,6 +5,7 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../lib/cn";
 import { EYEBROW, EYEBROW_MUTED, BTN_PRIMARY } from "./ui/tokens";
@@ -361,7 +362,14 @@ export const ReviewForm = ({
   const INPUT =
     "w-full bg-bg ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] md:text-[clamp(16px,0.9vw,20px)] text-ink placeholder:text-ink/30 transition-shadow";
 
-  return (
+  // Portal the modal to <body> so it can NEVER inherit a transformed ancestor's
+  // containing block. It mounts inside <Reviews>, which is wrapped in <Reveal>
+  // (that applies transform: translateY(0)); a non-none transform re-bases
+  // position:fixed descendants to that box, so without the portal the "fixed
+  // inset-0" overlay sized itself to the short Reviews section — the modal was
+  // cut off, wouldn't scroll, and the page showed through beneath it.
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -580,6 +588,7 @@ export const ReviewForm = ({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
