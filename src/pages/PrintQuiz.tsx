@@ -4,11 +4,9 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
-import { FrameWrap } from "../components/FramedPreview";
 import { Seo } from "../components/Seo";
 import { EYEBROW, EYEBROW_MUTED, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
-import { asset } from "../lib/asset";
 import { useCurrency } from "../lib/currency";
 import { PAINTINGS, getAnchorTier, getTierAdvertisedPricePence } from "../data/paintings";
 import { addItem } from "../lib/basket";
@@ -308,13 +306,6 @@ export const PrintQuiz = ({
   const pdpTo = result
     ? `/collections/${result.paintingId}?c=${encodeURIComponent(result.colourwayName)}`
     : "/collections";
-  // Their own answer to "a word you'd like your home to whisper" (Q3), echoed
-  // back as a personal epigraph so the reveal reads as a response to THEM — only
-  // when they actually took the quiz (a shared deep link carries no answers).
-  const whisperIdx = QUESTIONS.findIndex((q) => /whisper/i.test(q.prompt));
-  const whisperAns = whisperIdx >= 0 ? answers[whisperIdx] : null;
-  const whisperWord =
-    whisperAns != null ? QUESTIONS[whisperIdx].options[whisperAns]?.label ?? null : null;
   // Their full reading — every answered question mapped TOPIC → THEIR choice, a
   // visible personalised readout (verbatim their own picks) that proves the
   // recommendation was earned, not random. Empty on a shared deep link.
@@ -569,18 +560,6 @@ export const PrintQuiz = ({
               stuck hidden); reduced-motion safe. */}
           {phase === "result" && result && winnerPainting && (
             <motion.section key="result" {...fade} className="mx-auto w-full">
-              {/* Result header bar — frames the panel like a gallery label */}
-              <div className="mb-5 md:mb-7 flex items-center justify-between border-b border-line pb-3">
-                <p className={cn(EYEBROW, "m-0")}>Your result</p>
-                <button
-                  type="button"
-                  onClick={restart}
-                  className="font-sans text-[13px] font-semibold text-ink-muted transition-colors hover:text-accent"
-                >
-                  Retake
-                </button>
-              </div>
-
               {/* HERO PANEL — one elevated surface, hairline border, long shadow,
                   the recommended piece's own colour bled in behind it. */}
               <div className="relative overflow-hidden rounded-[6px] ring-1 ring-[rgba(237,230,214,0.09)] bg-[#12100e] shadow-[0_50px_120px_-24px_rgba(0,0,0,0.75)]">
@@ -589,26 +568,29 @@ export const PrintQuiz = ({
                   className="pointer-events-none absolute inset-0"
                   style={{ background: `radial-gradient(90% 80% at 26% 34%, ${haloHex}26, transparent 68%)` }}
                 />
-                <div className="relative grid md:grid-cols-[1.02fr_0.98fr]">
-                  {/* LEFT — the piece, FRAMED and hung */}
+                <div className="relative grid md:grid-cols-[1.12fr_0.88fr]">
+                  {/* LEFT — the print that matches you: the ARTWORK ITSELF, large,
+                      NOT framed (Hugo: "no framing — just show what print matches;
+                      framing/size are customised on the product page"). Fills the
+                      column so there's no void; hover zoom, links to the PDP. */}
                   <div
-                    className="relative flex items-center justify-center border-b border-[rgba(237,230,214,0.07)] p-7 sm:p-9 md:border-b-0 md:border-r md:p-10 lg:p-12"
-                    style={{ background: `radial-gradient(120% 100% at 50% 32%, ${haloHex}1f, rgba(0,0,0,0.28))` }}
+                    className="relative flex items-center justify-center border-b border-[rgba(237,230,214,0.07)] p-5 sm:p-6 md:border-b-0 md:border-r md:p-7 lg:p-8"
+                    style={{ background: `radial-gradient(120% 100% at 50% 32%, ${haloHex}26, rgba(0,0,0,0.32))` }}
                   >
-                    <motion.div {...beat(2)} className="w-full max-w-[400px]">
+                    <motion.div {...beat(2)} className="w-full max-w-[600px]">
                       <Link
                         to={pdpTo}
-                        className="group block drop-shadow-[0_34px_60px_rgba(0,0,0,0.6)] transition-transform duration-700 hover:scale-[1.015]"
+                        className="group block aspect-square overflow-hidden rounded-[3px] ring-1 ring-[rgba(237,230,214,0.16)] shadow-[0_36px_80px_-12px_rgba(0,0,0,0.72)]"
                         aria-label={`View ${winnerPainting.title}`}
                       >
-                        <FrameWrap active frameStyle="natural-oak" glazing="museum-glass" aspectRatio={1} src={result.colourwayImage}>
-                          <img
-                            src={asset(result.colourwayImage)}
-                            alt={`${winnerPainting.title} — ${result.colourwayName}, framed`}
-                            decoding="async"
-                            className="block h-full w-full object-contain"
-                          />
-                        </FrameWrap>
+                        <AssetImage
+                          src={result.colourwayImage}
+                          alt={`${winnerPainting.title} — ${result.colourwayName}`}
+                          loading="eager"
+                          decoding="async"
+                          sizes="(min-width:768px) 46vw, 90vw"
+                          className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+                        />
                       </Link>
                     </motion.div>
                   </div>
@@ -618,18 +600,9 @@ export const PrintQuiz = ({
                     <motion.p {...beat(0)} className={cn(EYEBROW, "m-0")}>
                       Matched to you
                     </motion.p>
-                    {whisperWord && (
-                      <motion.p
-                        {...beat(1)}
-                        className="mt-3 font-display italic text-ink-muted text-[15px] leading-[1.4] md:text-[17px]"
-                        style={{ fontVariationSettings: '"opsz" 28, "wght" 400' }}
-                      >
-                        You asked your home to whisper {whisperWord}.
-                      </motion.p>
-                    )}
                     <motion.h2
                       {...beat(1)}
-                      className="mt-2 font-display font-bold text-ink text-[clamp(28px,2.7vw,48px)] leading-[1.02] tracking-[-0.03em]"
+                      className="mt-3 font-display font-bold text-ink text-[clamp(28px,2.7vw,48px)] leading-[1.02] tracking-[-0.03em]"
                       style={{ fontVariationSettings: '"opsz" 60, "wght" 700', textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}
                     >
                       {winnerPainting.title}
@@ -647,7 +620,7 @@ export const PrintQuiz = ({
                       {...beat(2)}
                       className="mt-4 font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted"
                     >
-                      Framed · Estate-stamped giclée{anchorPrice ? ` · from ${anchorPrice}` : ""}
+                      Estate-stamped giclée · made to order{anchorPrice ? ` · from ${anchorPrice}` : ""}
                     </motion.p>
 
                     {/* The reading */}
@@ -670,7 +643,7 @@ export const PrintQuiz = ({
                           {answerLedger.map((row, i) => (
                             <div
                               key={i}
-                              className="flex items-baseline justify-between gap-4 border-t border-[rgba(237,230,214,0.08)] py-2"
+                              className="flex items-baseline justify-between gap-4 border-t border-[rgba(237,230,214,0.08)] py-1.5"
                             >
                               <dt className="shrink-0 font-sans text-[11px] uppercase tracking-[0.12em] text-ink-muted">
                                 {row.topic}
@@ -686,21 +659,23 @@ export const PrintQuiz = ({
 
                     {/* Action block — bounded, not a lone button */}
                     <motion.div {...beat(5)} className="mt-7 border-t border-[rgba(237,230,214,0.1)] pt-6">
+                      {/* Primary = the product page, where framing, size and
+                          colourway are chosen and bought; secondary = a quick add
+                          of the recommended print. Hugo: easily buy + customise. */}
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                        <Link to={pdpTo} className={cn(BTN_PRIMARY, "justify-center")}>
+                          See &amp; customise{anchorPrice ? ` — from ${anchorPrice}` : ""}
+                          <span aria-hidden="true" className="ml-2">→</span>
+                        </Link>
                         {added ? (
-                          <Link to="/basket" className={cn(BTN_PRIMARY, "justify-center")}>
-                            Added ✓ View basket
-                            <span aria-hidden="true" className="ml-2">→</span>
+                          <Link to="/basket" className={cn(BTN_SECONDARY, "justify-center")}>
+                            Added ✓ Basket
                           </Link>
                         ) : (
-                          <button type="button" onClick={addResultToBasket} className={cn(BTN_PRIMARY, "justify-center")}>
-                            Add framed print{anchorPrice ? ` — ${anchorPrice}` : ""}
-                            <span aria-hidden="true" className="ml-2">→</span>
+                          <button type="button" onClick={addResultToBasket} className={cn(BTN_SECONDARY, "justify-center")}>
+                            Add to basket
                           </button>
                         )}
-                        <Link to={pdpTo} className={cn(BTN_SECONDARY, "justify-center")}>
-                          See the piece
-                        </Link>
                       </div>
                       <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                         <button
@@ -709,6 +684,13 @@ export const PrintQuiz = ({
                           className="shrink-0 font-sans text-[13.5px] font-semibold text-ink-muted transition-colors hover:text-accent"
                         >
                           {copied ? "Link copied ✓" : "Share result"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={restart}
+                          className="shrink-0 font-sans text-[13.5px] font-semibold text-ink-muted transition-colors hover:text-accent"
+                        >
+                          Retake
                         </button>
                         {emailStatus === "done" ? (
                           <span className="font-sans text-[13.5px] text-ink-muted">Emailed to you ✓</span>
