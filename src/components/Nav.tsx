@@ -486,7 +486,19 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             aria-controls={menuOpen ? "mobile-menu" : undefined}
-            onClick={() => setMenuOpen((o) => !o)}
+            onClick={() => {
+              // ⚠️ Opening the drawer CLOSES the header search reveal. Both
+              // mount a SearchBar, and both pass SEARCH.landmarkHeader, so with
+              // the two open together a screen reader announced two identical
+              // unnamed-apart `role="search"` landmarks with two identically
+              // labelled inputs — the exact defect the labelling was added to
+              // fix, relocated. The flags were independent and neither effect
+              // touched the other.
+              setMenuOpen((o) => {
+                if (!o) setSearchOpen(false);
+                return !o;
+              });
+            }}
             className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/60 hover:text-ink transition-colors"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
