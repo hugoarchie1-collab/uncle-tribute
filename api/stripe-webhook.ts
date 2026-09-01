@@ -2116,10 +2116,22 @@ async function readMintedCodes(sessionId: string): Promise<MintedCodeRef[]> {
  * to scanning recent promotion codes for the session id in their metadata.
  * Entirely fail-open — every step is caught, and the handler still 200s.
  */
+/**
+ * Deactivate every code minted for a session.
+ *
+ * ⚠️ `permanent` decides whether the underlying COUPON is deleted, and that
+ * choice is irreversible. `charge.dispute.created` fires when a dispute is
+ * OPENED — including a mere inquiry the estate may well win — and deleting the
+ * coupon there left a paying customer holding a dead card with no way back,
+ * because `coupons.del` cannot be undone. Deactivating the promotion code is
+ * reversible and is enough to stop redemption, so a dispute only ever
+ * deactivates; deletion is reserved for a settled FULL refund.
+ */
 async function revokeSessionCodes(
   stripe: Stripe,
   sessionId: string,
   reason: string,
+  permanent = false,
 ): Promise<number> {
   let refs = await readMintedCodes(sessionId);
   if (refs.length === 0) {
@@ -2176,7 +2188,10 @@ async function revokeSessionCodes(
         { session_id: sessionId, code: ref.code },
       );
     }
-    if (!ref.coupon_id) continue;
+    // ⚠️ IRREVERSIBLE — only on a settled full refund. See the note on
+    // `permanent` above: a dispute can be won, and a deleted coupon cannot be
+    // restored. Deactivating the promotion code above already stops redemption.
+    if (!permanent || !ref.coupon_id) continue;
     try {
       // Deleting the coupon closes the `discounts:[{coupon}]` route too. Already
       // completed redemptions are unaffected (Stripe's documented behaviour).
@@ -2190,6 +2205,31 @@ async function revokeSessionCodes(
     }
   }
   return revoked;
+}
+
+/**
+ * Bring back the codes deactivated when a dispute was opened, after the estate
+ * WINS it. Only possible because the dispute path never deletes the coupon.
+ */
+async function reactivateSessionCodes(
+  stripe: Stripe,
+  sessionId: string,
+): Promise<number> {
+  const refs = await readMintedCodes(sessionId);
+  let restored = 0;
+  for (const ref of refs) {
+    try {
+      await stripe.promotionCodes.update(ref.promotion_code_id, { active: true });
+      restored += 1;
+    } catch (err) {
+      console.error(
+        "[stripe-webhook] promotion code reactivation failed:",
+        err instanceof Error ? err.message : err,
+        { session_id: sessionId, code: ref.code },
+      );
+    }
+  }
+  return restored;
 }
 
 // ---------------------------------------------------------------------------
@@ -3238,17 +3278,101 @@ async function dispatchEvent(
           );
           break;
         }
-        const revoked = await revokeSessionCodes(stripe, sessionId, event.type);
+        // ⚠️ Only a settled FULL refund deletes the coupon. A dispute has not
+        // been decided yet and the estate may win it, so it deactivates only —
+        // see reactivateSessionCodes and charge.dispute.closed below.
+        const permanent = event.type === "charge.refunded";
+        const revoked = await revokeSessionCodes(
+          stripe,
+          sessionId,
+          event.type,
+          permanent,
+        );
         console.log("[stripe-webhook] refund/dispute code revocation complete", {
           type: event.type,
           session_id: sessionId,
           codes_deactivated: revoked,
+          coupons_deleted: permanent,
         });
+        // Every other exceptional branch in this file alerts the estate; this
+        // one used to be console-only, so codes could be pulled from a paying
+        // customer with nothing to tell Hugo it had happened.
+        if (revoked > 0) {
+          await sendEstateAlert({
+            subject: `Codes deactivated · ${event.type} · order ${sessionId.slice(0, 12)}…`,
+            html: renderEstateAlertHtml({
+              headline:
+                permanent
+                  ? "A fully-refunded order's codes have been revoked"
+                  : "A disputed order's codes have been suspended",
+              orderRef: sessionId,
+              rows: [
+                ["Reason", event.type],
+                ["Codes deactivated", String(revoked)],
+                ["Coupons deleted", permanent ? "yes" : "no — reversible"],
+              ],
+              action: permanent
+                ? "The money has been returned and every code minted for this order is now dead."
+                : "The dispute is not yet decided, so the codes are suspended rather than deleted. If the dispute is won they are restored automatically when Stripe sends charge.dispute.closed.",
+            }),
+            context: { session_id: sessionId },
+          });
+        }
       } catch (err) {
         console.error(
           "[stripe-webhook] refund/dispute revocation failed:",
           err instanceof Error ? err.message : err,
           { type: event.type },
+        );
+      }
+      break;
+    }
+    case "charge.dispute.closed": {
+      // ⚠️ The other half of the reversible-dispute design. A dispute the estate
+      // WINS must give the customer their card back — without this handler the
+      // suspension from charge.dispute.created would be permanent in practice,
+      // which is the very outcome the reversible path exists to avoid.
+      try {
+        const dispute = event.data.object;
+        if (dispute.status !== "won") {
+          console.log("[stripe-webhook] dispute closed but not won — codes stay suspended", {
+            dispute_id: dispute.id,
+            status: dispute.status,
+          });
+          break;
+        }
+        const paymentIntent = dispute.payment_intent;
+        const piId =
+          typeof paymentIntent === "string" ? paymentIntent : paymentIntent?.id ?? null;
+        if (!piId) break;
+        const sessions = await stripe.checkout.sessions.list({
+          payment_intent: piId,
+          limit: 1,
+        });
+        const sessionId = sessions.data[0]?.id ?? null;
+        if (!sessionId) break;
+        const restored = await reactivateSessionCodes(stripe, sessionId);
+        console.log("[stripe-webhook] dispute won — codes restored", {
+          session_id: sessionId,
+          codes_restored: restored,
+        });
+        if (restored > 0) {
+          await sendEstateAlert({
+            subject: `Dispute won — codes restored · order ${sessionId.slice(0, 12)}…`,
+            html: renderEstateAlertHtml({
+              headline: "A won dispute's codes have been restored",
+              orderRef: sessionId,
+              rows: [["Codes restored", String(restored)]],
+              action:
+                "The dispute was resolved in the estate's favour, so the codes suspended when it opened are live again.",
+            }),
+            context: { session_id: sessionId },
+          });
+        }
+      } catch (err) {
+        console.error(
+          "[stripe-webhook] dispute-won reactivation failed:",
+          err instanceof Error ? err.message : err,
         );
       }
       break;

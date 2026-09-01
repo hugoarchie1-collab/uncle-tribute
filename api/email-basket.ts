@@ -94,7 +94,7 @@ const TIERS: Record<TierId, EmailTier> = {
   collector: {
     label: "Collector Edition",
     size: "42 × 42 cm",
-    editionLabel: "Collector Edition — edition of 200, hand-numbered",
+    editionLabel: "Collector Edition — edition of 200, numbered",
     pricePence: 52500,
     framingPricePence: 22500, // £225 (A2) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 59500,
@@ -104,7 +104,7 @@ const TIERS: Record<TierId, EmailTier> = {
   "atelier-grande": {
     label: "Atelier Edition",
     size: "59.5 × 59.5 cm",
-    editionLabel: "Atelier Edition — edition of 75, hand-numbered",
+    editionLabel: "Atelier Edition — edition of 75, numbered",
     pricePence: 97500,
     framingPricePence: 32500, // £325 (A1) — Hugo 2026-07-27: framed == canvas price
     embellishmentPricePence: 89500,
@@ -114,13 +114,18 @@ const TIERS: Record<TierId, EmailTier> = {
   heirloom: {
     label: "Heirloom Edition",
     size: "84 × 84 cm",
-    editionLabel: "Heirloom Edition — edition of 18, hand-numbered",
+    editionLabel: "Heirloom Edition — edition of 18, numbered",
     pricePence: 199500,
     embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
-    // ENABLED 2026-06-06 (mirror fix): must match paintings.ts + checkout.ts,
-    // both available:true. When this read false, a saved A0 basket was
-    // silently downgraded to the A2 anchor in the email (£495 vs £1,895).
+    // ⚠️ HIDDEN from buyers — paintings.ts has `available: false` (Heirloom /
+    // A0 was retired). This row stays `available: true` DELIBERATELY, mirroring
+    // the identical decision and rationale in api/checkout.ts: it exists only
+    // so a stale in-flight client holding an A0 line is priced correctly rather
+    // than being silently downgraded to the Collector anchor. Do NOT "fix" this
+    // to match paintings.ts — the divergence is the point, and the same comment
+    // sits beside the checkout.ts row. (The old note here cited £495 vs £1,895,
+    // two price revisions out of date.)
     available: true,
   },
   studio: {
@@ -426,7 +431,7 @@ const renderBasketSavedHtml = (p: {
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${C.card}" style="width:100%;background-color:${C.card};border:1px solid ${C.line};"><tr><td style="padding:22px 24px;">`
     + `<div style="font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${C.rust};margin-bottom:10px;">The First Edition — now open</div>`
     + `<div style="font-family:${DISPLAY};font-style:italic;font-size:21px;line-height:1.3;color:${C.cream};margin-bottom:10px;">Founding collectors receive the lowest numbers.</div>`
-    + `<div style="font-family:${SANS};font-size:13.5px;line-height:1.65;color:${C.muted};">Stephen's work has just opened as hand-numbered editions — Collector of 200, Atelier of 75, Heirloom of only 18. The earliest collectors take the lowest numbers, recorded in the estate register. Your basket is held — complete it whenever you're ready, and your numbers are among the first.</div>`
+    + `<div style="font-family:${SANS};font-size:13.5px;line-height:1.65;color:${C.muted};">Stephen's work has just opened as numbered editions — Collector of 200, Atelier of 75. The earliest collectors take the lowest numbers, recorded in the estate register. Your basket is held — complete it whenever you're ready, and your numbers are among the first.</div>`
     + `</td></tr></table>`
     + `</td></tr>`
     // ---- CTA ----
@@ -440,7 +445,7 @@ const renderBasketSavedHtml = (p: {
     + `</td></tr>`
     // ---- reassurance + estate authentication cluster ----
     + `<tr><td bgcolor="${C.bg}" style="background-color:${C.bg};padding:32px 40px 0 40px;">`
-    + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order by a specialist giclée studio on the Sussex coast and estate-stamped by The Mandala Company, hand-numbered within its edition. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
+    + `<div style="font-family:${SANS};font-size:14px;line-height:1.7;color:${C.muted};">Each print is individually made to order by a specialist giclée studio on the Sussex coast and estate-stamped by The Mandala Company, numbered within its edition where that edition is numbered. If a colourway sells out between now and your visit, the basket will quietly drop the line and the rest will be waiting.</div>`
     + `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;margin-top:24px;border-top:1px solid ${C.line};">`
     + `<tr>${authCell("Estate-stamped", "By The Mandala Company")}${authCell("Hand-numbered", "Within its edition")}</tr>`
     + `<tr>${authCell("Certificate", "A unique Certificate ID")}${authCell("Studio giclée", "Printed on the Sussex coast")}</tr>`
@@ -577,14 +582,23 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if (canvas) tail.push("stretched canvas");
     if (framing) tail.push("hand-made frame");
     if (embellished) tail.push("hand-finished by Polly");
+    // ⚠️ QUANTITY. `subtotalPence += linePence` priced a line of three as one,
+    // so a buyer who saved a basket with multiples was emailed a subtotal well
+    // below what Stripe would charge — and the restore link round-trips the
+    // quantity, so the figure they came back to did not match the figure they
+    // had been sent. Clamped to the same 1..99 window checkout.ts enforces.
+    const rawQty = typeof raw?.quantity === "number" ? Math.floor(raw.quantity) : 1;
+    const quantity = Number.isFinite(rawQty) ? Math.min(99, Math.max(1, rawQty)) : 1;
     lines.push({
       title: PAINTING_TITLES[id] ?? id,
       colourway,
-      size: `${tier.label} · ${sizeFor(id, tierId)} · ${tail.join(" · ")}`,
-      price: formatGBP(linePence),
+      size:
+        `${tier.label} · ${sizeFor(id, tierId)} · ${tail.join(" · ")}` +
+        (quantity > 1 ? ` · ×${quantity}` : ""),
+      price: formatGBP(linePence * quantity),
       image: PAINTING_COVERS[id],
     });
-    subtotalPence += linePence;
+    subtotalPence += linePence * quantity;
 
     const postedColourway = (raw?.colourwayName ?? "").toString().trim();
     const restoreItem: (typeof restoreItems)[number] = { paintingId: id };
