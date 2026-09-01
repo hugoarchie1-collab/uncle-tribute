@@ -6,13 +6,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/check-faq-mirror.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "build:qr": "node scripts/build-qr.mjs",
     "build:wall": "node scripts/build-wall-models.mjs",
     "validate:wall": "node scripts/validate-wall-models.mjs --deep",
-    "test:wall": "node scripts/test-wall.mjs"
+    "test:wall": "node scripts/test-wall.mjs",
+    "check:faq": "node scripts/check-faq-mirror.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
