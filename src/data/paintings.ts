@@ -39,7 +39,12 @@ export interface Colourway {
   sizing?: string;        // [TBD] e.g. "Limited edition giclée print, A1 (594 × 841 mm)"
   framing?: string;       // [TBD] e.g. "Hand-finished oak frame with museum glass"
   price?: string;         // [TBD] e.g. "£450"
-  editionSize?: string;   // [TBD] e.g. "Limited to 50, hand-signed"
+  // ⚠️ NEVER write "signed" or "hand-signed" here. Stephen died in 2021 and
+  // /faq states plainly that prints cannot be signed in his hand — this example
+  // read "Limited to 50, hand-signed", which is a falsehood waiting for the
+  // first person who fills the field in. Match the live editionLabel register:
+  // "edition of 200, numbered", or "unnumbered, issued to order".
+  editionSize?: string;   // [TBD] e.g. "Edition of 50, numbered"
   colourwayNote?: string; // [TBD] the story of why this colourway exists (Stephen's studio files)
 }
 
