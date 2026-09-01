@@ -49,8 +49,8 @@ const QUESTIONS: Question[] = [
     kicker: "Question 1 · Why art",
     prompt: "What would you most want a piece to do in your home?",
     options: [
-      { label: "Steady me — make the room feel safe", weights: { "wild-rose": 3, "ophiuchus": 2, "peacock-minerva": 1 } },
-      { label: "Move me forward — mark a new chapter", weights: { "flower-of-life": 3, "tridecagon-moon-star": 2, "peacock-minerva": 1 } },
+      { label: "Steady me — make the room feel safe", weights: { "wild-rose": 3, "ophiuchus": 2, "peacock-minerva": 1, "celtic-shield": 3 } },
+      { label: "Move me forward — mark a new chapter", weights: { "flower-of-life": 3, "tridecagon-moon-star": 2, "peacock-minerva": 1, "persian-flower-of-life": 2 } },
       { label: "Hold a memory of someone", weights: { "enneagon-swans": 3 } },
       { label: "Fill the room with life", weights: { "english-bluebells": 3, "slipper-orchids": 2, "wild-rose": 1 } },
     ],
@@ -60,7 +60,7 @@ const QUESTIONS: Question[] = [
     prompt: "Pick the light you'd want to wake up in.",
     options: [
       { label: "Warm rose and firelight", sub: "Reds, pinks, warm gold", colours: ["reds", "oranges"], weights: { "wild-rose": 1 } },
-      { label: "Clear morning sky", sub: "Blues, teals, cool light", colours: ["blues"], weights: { "tridecagon-moon-star": 1 } },
+      { label: "Clear morning sky", sub: "Blues, teals, cool light", colours: ["blues"], weights: { "tridecagon-moon-star": 1, "persian-flower-of-life": 2 } },
       { label: "Deep dusk and indigo", sub: "Dark, violet, night", colours: ["dark", "purples"], weights: { "ophiuchus": 1 } },
       { label: "Meadow green and sand", sub: "Greens, neutrals, calm", colours: ["greens", "neutrals"], weights: { "english-bluebells": 1 } },
     ],
@@ -69,8 +69,8 @@ const QUESTIONS: Question[] = [
     kicker: "Question 3 · Temperament",
     prompt: "A word you'd like your home to whisper.",
     options: [
-      { label: "Wholeness", weights: { "orchis-7": 3, "flower-of-life": 2, "twelve-around-three": 2, "persian-flower-of-life": 2 } },
-      { label: "Protection", weights: { "wild-rose": 2, "peacock-minerva": 2, "ophiuchus": 1, "celtic-shield": 2 } },
+      { label: "Wholeness", weights: { "orchis-7": 3, "flower-of-life": 2, "twelve-around-three": 3, "persian-flower-of-life": 3 } },
+      { label: "Protection", weights: { "wild-rose": 2, "peacock-minerva": 2, "ophiuchus": 1, "celtic-shield": 3 } },
       { label: "Connection", weights: { "enneagon-swans": 3, "ophiuchus": 1 } },
       { label: "Abundance", weights: { "english-bluebells": 2, "slipper-orchids": 2, "wild-rose": 1 } },
     ],
@@ -82,7 +82,7 @@ const QUESTIONS: Question[] = [
       { label: "Quiet, candlelit, a good book", weights: { "ophiuchus": 2, "orchis-7": 2 } },
       { label: "The night sky and a long walk", weights: { "tridecagon-moon-star": 3 } },
       { label: "A full table of people you love", weights: { "enneagon-swans": 2, "english-bluebells": 1, "wild-rose": 1 } },
-      { label: "Making something with your hands", weights: { "flower-of-life": 2, "slipper-orchids": 2 } },
+      { label: "Making something with your hands", weights: { "flower-of-life": 2, "slipper-orchids": 2, "twelve-around-three": 3 } },
     ],
   },
   {
@@ -90,7 +90,7 @@ const QUESTIONS: Question[] = [
     prompt: "Which pattern does your eye rest on?",
     options: [
       { label: "Petals opening from a still centre", weights: { "wild-rose": 2, "english-bluebells": 1, "slipper-orchids": 1 } },
-      { label: "Interlocking circles — the seed of life", weights: { "flower-of-life": 3, "orchis-7": 1, "twelve-around-three": 2, "persian-flower-of-life": 2 } },
+      { label: "Interlocking circles — the seed of life", weights: { "flower-of-life": 2, "orchis-7": 1, "twelve-around-three": 3, "persian-flower-of-life": 3 } },
       { label: "A star held inside a ring", weights: { "tridecagon-moon-star": 2 } },
       { label: "Feathers and watchful eyes", weights: { "peacock-minerva": 3 } },
     ],
@@ -99,7 +99,7 @@ const QUESTIONS: Question[] = [
     kicker: "Question 6 · Presence",
     prompt: "When you walk in, you want to be met by…",
     options: [
-      { label: "Something that quietly protects the room", weights: { "wild-rose": 2, "ophiuchus": 2 } },
+      { label: "Something that quietly protects the room", weights: { "wild-rose": 2, "ophiuchus": 2, "celtic-shield": 3 } },
       { label: "A piece with real presence that holds the wall", weights: { "peacock-minerva": 3, "flower-of-life": 1 } },
       { label: "A soft, blooming warmth", weights: { "english-bluebells": 2, "slipper-orchids": 2 } },
       { label: "A calm reminder of what matters", weights: { "enneagon-swans": 2, "orchis-7": 1 } },
