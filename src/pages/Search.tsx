@@ -129,7 +129,14 @@ const relevant = (results: SearchResult[]): SearchResult[] => {
   const floor = top * RELEVANCE_FLOOR_RATIO;
   const kept = results.filter((r) => r.score >= floor);
   const minimum = Math.min(MIN_KEPT, results.length);
-  return kept.length >= minimum ? kept : results.slice(0, minimum);
+  if (kept.length >= minimum) return kept;
+  // ⚠️ TOP `minimum`, not the FIRST `minimum`. This read
+  // `results.slice(0, minimum)`, which contradicts this function's own promise
+  // three lines up that it makes no assumption about the array being sorted —
+  // on an unsorted list it would pad with whatever happened to come first
+  // rather than with the best remaining matches. Sorted on a COPY so the
+  // caller's array is never mutated.
+  return [...results].sort((a, b) => b.score - a.score).slice(0, minimum);
 };
 
 /**
@@ -245,7 +252,7 @@ const ResultRow = ({ result }: { result: SearchResult }) => {
           "mt-1 inline-flex shrink-0 items-center rounded-full px-3 py-1 ring-1 ring-line reading-shadow",
         )}
       >
-        {SEARCH_TYPE_LABELS[doc.type]}
+        {SEARCH_TYPE_LABELS[doc.type] ?? doc.type}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline gap-2">
@@ -324,7 +331,7 @@ const ArtworkTile = ({
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-bg-soft">
-                <span className={EYEBROW_MUTED}>{SEARCH_TYPE_LABELS[doc.type]}</span>
+                <span className={EYEBROW_MUTED}>{SEARCH_TYPE_LABELS[doc.type] ?? doc.type}</span>
               </div>
             )}
           </div>

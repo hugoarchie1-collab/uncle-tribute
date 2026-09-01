@@ -3,6 +3,25 @@
 // =============================================================================
 // This file is the source of truth for every painting on the site.
 //
+// ⚠️ "POINT 101" IN THE COMMENTS BELOW IS HISTORICAL — READ THIS FIRST.
+// The 2026-08-28 supplier-truth pass established that the printer is Giclee &
+// Co (Brighton), NOT Point 101, and that the printer is NEVER NAMED in
+// buyer-facing copy. The approved public wording is ESTATE.printer, "a
+// specialist giclée studio on the Sussex coast".
+//
+// Around a dozen comments in this file still say "Point 101" — in cost notes
+// (`printFloor = what Point 101 actually charges you`), in sizing rationale and
+// in picker ordering. They are left as written because they record real
+// historical decisions and cost figures that only Hugo can restate, and
+// rewriting them from guesswork would destroy that context. Treat every one as
+// a note about the OLD supplier.
+//
+// What matters: none of them is buyer-visible, and none may become so. A stale
+// comment naming a supplier is exactly how the Point 101 fiction survived in
+// shipped copy for months (it was still in ORIGINAL_PRINT_SPEC's docblock and
+// in Legal.tsx as late as 2026-09-01). Never copy a printer name from these
+// comments into a string a customer can read.
+//
 // HOW TO EDIT:
 //   - Edit any text in quotes (titles, descriptions, dates)
 //   - Replace "[TBD]" placeholders with real values when ready

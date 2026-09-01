@@ -415,7 +415,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={searchOpen}
             aria-controls={searchOpen ? "header-search-reveal" : undefined}
             onClick={() => setSearchOpen((o) => !o)}
-            className="press inline-flex items-center justify-center w-10 sm:w-11 h-11 text-ink/55 hover:text-ink transition-colors"
+            className="press inline-flex items-center justify-center w-11 h-11 text-ink/55 hover:text-ink transition-colors"
           >
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               {searchOpen ? (

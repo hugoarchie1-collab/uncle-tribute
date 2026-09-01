@@ -591,7 +591,7 @@ export const SearchBar = ({
                             "inline-flex shrink-0 items-center rounded-full px-2 py-1 ring-1 ring-line",
                           )}
                         >
-                          {SEARCH_TYPE_LABELS[doc.type]}
+                          {SEARCH_TYPE_LABELS[doc.type] ?? doc.type}
                         </span>
                       )}
 
