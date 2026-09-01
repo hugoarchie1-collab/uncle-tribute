@@ -410,10 +410,14 @@ const giftText = (v: unknown, max: number): string =>
         v
           // eslint-disable-next-line no-control-regex
         .replace(/[\u0000-\u001f\u007f]+/g, " ")
-          // ⚠️ BOTH separators. `|` joins the gift slots, and the webhook's
-          // gift_labels parser also splits on `,` — so a comma in user text
-          // would add a phantom slot and shift every later label by one.
-          .replace(/[|,]/g, "/")
+          // ⚠️ ONLY the pipe. `|` is the slot separator, so it must go — but
+          // the comma MUST NOT. Neutralising it corrupted every buyer's
+          // message: "Happy birthday, Mum. With all my love, from Hugo" was
+          // delivered as "Happy birthday/ Mum. With all my love/ from Hugo".
+          // The comma was only ever needed because the webhook's gift_labels
+          // parser split on /[|,]/; that parser is now pipe-first like every
+          // other gift array, so user text can keep its punctuation.
+          .replace(/\|/g, "/")
           .replace(/\s+/g, " ")
           .trim(),
         max,

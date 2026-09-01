@@ -209,6 +209,12 @@ export const Basket = () => {
   const { formatPretty: fmtP, convert, code: currencyCode } = useCurrency();
   const items = useBasket();
   const lines = resolveLines(items);
+  // ⚠️ Only claim numbering when EVERY line is a numbered tier. `editionTotal`
+  // null means "unnumbered, issued to order" (Emblem, Gallery) — see
+  // PRINT_TIERS. Mirrors numberingLineFor in api/stripe-webhook.ts, which
+  // applies the identical rule to the confirmation email.
+  const allLinesNumbered =
+    lines.length > 0 && lines.every((l) => l.tier.editionTotal !== null);
 
   // Saved-basket pickup (contract C2) — the save-basket email links back to
   // /basket?restore=<base64url payload>. On mount: decode, validate every
@@ -1035,10 +1041,16 @@ export const Basket = () => {
                     at least one physical line, exactly like the delivery panel
                     above. The Stripe security line above is NOT gated — it's
                     true of any payment. */}
+                {/* ⚠️ …and the NUMBERING half is gated again, on the tiers
+                    actually in the basket. Emblem and Gallery are
+                    `editionTotal: null` — "unnumbered, issued to order" — so an
+                    Emblem-only basket claimed a numbering the estate does not
+                    perform, on the money page. Same falsehood numberingLineFor
+                    was written to remove from the confirmation email. */}
                 {lines.length > 0 && (
                   <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
-                    Estate-stamped &amp; numbered within the edition · Free delivery ·
-                    Damaged-in-transit replacement
+                    Estate-stamped{allLinesNumbered ? " & numbered within the edition" : ""} · Free
+                    delivery · Damaged-in-transit replacement
                   </p>
                 )}
                 {/* The wallet/card marks Stripe presents, shown as glyphs (not

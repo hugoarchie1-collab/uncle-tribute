@@ -2899,9 +2899,20 @@ async function processGiftCards(
   }> = [];
   // Labels are positional like every other gift array (see parseGiftCards).
   // Display-only — an absent slot just leaves the card unlabelled.
-  const giftLabels = (m.gift_labels || "")
-    .split(/[|,]/)
-    .map((t) => t.trim());
+  // ⚠️ Pipe-first, like every other gift array. This used to split on
+  // /[|,]/ unconditionally, which forced giftText to neutralise EVERY comma in
+  // the buyer's text — so "Happy birthday, Mum. With all my love, from Hugo"
+  // was delivered as "Happy birthday/ Mum. With all my love/ from Hugo" on a
+  // memorial estate's gift card. joinGiftSlots always emits n-1 pipes for
+  // n >= 2, so pipe-first is correct; the comma branch is kept only for
+  // sessions created before 2026-09-01.
+  const giftLabels = (() => {
+    const raw = m.gift_labels || "";
+    if (raw.includes("|") || giftCards.length <= 1) {
+      return raw.split("|").map((t) => t.trim());
+    }
+    return raw.split(",").map((t) => t.trim());
+  })();
   if (giftCards.length > 0) {
     const resendKeyGift = process.env.RESEND_API_KEY;
     const fromEmailGift = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;

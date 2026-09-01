@@ -100,12 +100,19 @@ export const ExitSaveBasket = ({ items }: ExitSaveBasketProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          // ⚠️ Send the WHOLE line. This posted neither `quantity` nor
+          // `canvas`, so the saved-basket email priced a x3 line as one and
+          // valued a canvas line at the bare base (£525 against a real £750) —
+          // quoting BELOW what Stripe charges — and the restore link rebuilt a
+          // downgraded product. api/email-basket.ts reads all of these.
           items: items.map((item) => ({
             paintingId: item.paintingId,
             colourwayName: item.colourwayName,
             tierId: item.tierId,
             framing: item.framing,
+            canvas: item.canvas,
             embellished: item.embellished,
+            quantity: item.quantity,
           })),
         }),
       });

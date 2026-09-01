@@ -66,7 +66,13 @@ const formatGBP = (
 // A human, NON-leaky status from the Stripe session fields.
 const humanStatus = (s: Stripe.Checkout.Session): string => {
   if (s.status === "expired") return "Checkout expired";
-  if (s.payment_status === "unpaid" || s.payment_status === "no_payment_required") {
+  // ⚠️ "no_payment_required" is PAID, not pending. It is a £0 session — a gift
+  // code covering the whole total — and api/stripe-webhook.ts's isSessionPaid
+  // treats it as paid and fulfillable, mints the certificate and places the
+  // order. Lumping it in with "unpaid" told a buyer whose order was already in
+  // production that it was "Awaiting payment". Reachable today: a £750 card
+  // against a £750 print.
+  if (s.payment_status === "unpaid") {
     return "Awaiting payment";
   }
   // Paid. We don't track dispatch in Stripe, so present the made-to-order state.
