@@ -27,6 +27,7 @@ const CloserLook = lazy(() =>
 import { EnquireModal } from "../components/EnquireModal";
 import { Reviews } from "../components/Reviews";
 import { FaqAccordion } from "../components/FaqAccordion";
+import { CraftHighlights } from "../components/CraftHighlights";
 import { useReviewStats } from "../lib/useReviewStats";
 import { AssetImage } from "../components/AssetImage";
 import {
@@ -3238,6 +3239,9 @@ export const PaintingDetail = () => {
             <ProvenancePanel />
           </div>
         </main>
+        {/* CRAFT HIGHLIGHTS — DROOL-style scannable quality + frame tick-lists,
+            high on the page so the craft reads at a glance. Honest, vetted copy. */}
+        <CraftHighlights />
         {/* REVIEWS — genuine, moderated customer reviews of THIS print, keyed by
             the painting id. Strictly additive: it ships EMPTY (a dignified
             "be the first to review" state) and fills only from real submissions
