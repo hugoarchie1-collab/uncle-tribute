@@ -76,18 +76,60 @@ const humanStatus = (s: Stripe.Checkout.Session): string => {
 // Lift a short, public line-summary out of the session metadata (the checkout
 // handler writes painting_title(s) / colourway_name(s)). Titles only — no
 // addresses, no internal ids.
+/**
+ * The gift-card lines of an order, one entry per card, valued in the currency
+ * the buyer was actually charged in.
+ *
+ * ⚠️ Gift cards are ADDITIVE to prints, never an alternative to them — see the
+ * `has_gift` block in api/checkout.ts, whose own comment reads "gift-only OR
+ * mixed with prints". This used to be a trailing `if` after two early returns
+ * for paintings, so on a MIXED basket the gift card was never reached and
+ * vanished from the order lookup entirely. Always append; never return early
+ * past them. (Mirrors the identical helper in api/my-orders.ts — these
+ * functions are deliberately duplicated because every /api file is
+ * self-contained; change one, change both.)
+ */
+const giftSummary = (m: Stripe.Metadata): string[] => {
+  // `gift_amounts_minor` + `gift_currency` are what was CHARGED;
+  // `gift_amounts_pence` is the GBP catalogue value and the older key, kept as
+  // a fallback for sessions created before that pair existed. Both are
+  // pipe-joined and fixed-arity (comma tolerated for pre-2026-09-01 sessions).
+  const split = (v: string | undefined) =>
+    (v || "").split(v && v.includes("|") ? "|" : ",").map((s) => s.trim());
+
+  const minor = split(m.gift_amounts_minor).filter(Boolean);
+  const currency = m.gift_currency || "GBP";
+  const amounts = minor.length > 0 ? minor : split(m.gift_amounts_pence).filter(Boolean);
+  const inGbp = minor.length === 0;
+
+  if (amounts.length > 0) {
+    return amounts.map((raw) => {
+      const n = Number.parseInt(raw, 10);
+      return Number.isFinite(n)
+        ? `Gift card — ${formatGBP(n, inGbp ? "GBP" : currency)}`
+        : "Gift card";
+    });
+  }
+  const count = Number.parseInt(m.gift_count || "", 10);
+  return Array.from({ length: Number.isFinite(count) && count > 0 ? count : 1 }, () => "Gift card");
+};
+
 const itemSummary = (m: Stripe.Metadata | null): string[] => {
   if (!m) return [];
+  const items: string[] = [];
   if (m.painting_titles) {
     const titles = m.painting_titles.split(",").map((t) => t.trim()).filter(Boolean);
     const cols = (m.colourway_names || "").split(",").map((c) => c.trim());
-    return titles.map((t, i) => (cols[i] ? `${t} — ${cols[i]}` : t));
+    items.push(...titles.map((t, i) => (cols[i] ? `${t} — ${cols[i]}` : t)));
+  } else if (m.painting_title) {
+    items.push(
+      m.colourway_name ? `${m.painting_title} — ${m.colourway_name}` : m.painting_title,
+    );
   }
-  if (m.painting_title) {
-    return [m.colourway_name ? `${m.painting_title} — ${m.colourway_name}` : m.painting_title];
+  if (m.has_gift === "yes" || m.gift_amounts_pence || m.gift_amounts_minor) {
+    items.push(...giftSummary(m));
   }
-  if (m.gift_amounts_pence || m.gift_cards) return ["Gift card"];
-  return [];
+  return items;
 };
 
 export default async function handler(req: VercelReq, res: VercelRes) {
