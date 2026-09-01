@@ -26,6 +26,7 @@ const CloserLook = lazy(() =>
 );
 import { EnquireModal } from "../components/EnquireModal";
 import { Reviews } from "../components/Reviews";
+import { FaqAccordion } from "../components/FaqAccordion";
 import { useReviewStats } from "../lib/useReviewStats";
 import { AssetImage } from "../components/AssetImage";
 import {
@@ -3245,6 +3246,12 @@ export const PaintingDetail = () => {
             story so it never disturbs the monochrome buy box or pricing. */}
         <div id="reviews" className="scroll-mt-24">
           <Reviews paintingId={painting.id} paintingTitle={painting.title} />
+        </div>
+        {/* FAQ on the product page — the DROOL move: everything a buyer needs to
+            decide is here, so they never leave for a separate /faq page. Same
+            verbatim Q&As as /faq (shared FAQS array). */}
+        <div id="faq" className="scroll-mt-24">
+          <FaqAccordion />
         </div>
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
         <Footer />

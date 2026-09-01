@@ -30,13 +30,16 @@ import { cn } from "../lib/cn";
 const SECTION =
   "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
-interface QA {
+export interface QA {
   eyebrow: string;
   question: string;
   answer: React.ReactNode;
 }
 
-const FAQS: QA[] = [
+// Exported so the product page can render the SAME verbatim Q&As inline (a DROOL-
+// style on-page FAQ accordion, src/components/FaqAccordion.tsx) — one source of
+// truth, so the two surfaces can never drift. Never duplicate/rewrite this copy.
+export const FAQS: QA[] = [
   {
     eyebrow: "Provenance",
     question: "Are the prints signed?",
