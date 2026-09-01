@@ -438,18 +438,39 @@ const GIFT_EMAIL_RE = /^[^\s@,;|]+@[^\s@,;|.]+(\.[^\s@,;|.]+)+$/;
  */
 const joinGiftSlots = (values: string[]): string => {
   if (values.length === 0) return "";
-  // (n − 1) separators + n slots must fit inside the per-value cap.
-  const budget = Math.max(
-    1,
-    Math.floor(
-      (STRIPE_METADATA_VALUE_LIMIT - (values.length - 1)) / values.length,
-    ),
-  );
-  // ⚠️ sliceSafe, never a bare .slice — the per-slot budget is arbitrary (249
-  // for 2 gifts, 166 for 3, 99 for 5) and lands mid-emoji often enough to
-  // matter: a lone surrogate here throws URIError inside stripe-node's form
-  // encoder and the buyer loses the whole checkout. See sliceSafe above.
-  return values.map((v) => sliceSafe(v, budget)).join("|");
+  const separators = values.length - 1;
+  const capacity = Math.max(values.length, STRIPE_METADATA_VALUE_LIMIT - separators);
+
+  // ⚠️ FAIR SHARE, not an equal split. An equal split gave every slot
+  // floor((500 - (n-1)) / n) characters — 40 at 12 gifts, 24 at 20 — which
+  // TRUNCATES A RECIPIENT'S EMAIL ADDRESS (a 37-char address is cut from 13
+  // cards up). Two outcomes, both bad: Resend rejects and the code is minted
+  // but never delivered, or the cut lands on a still-valid address
+  // (…@gmail.com.au -> …@gmail.com) and a bearer instrument worth up to £5,000
+  // goes to a stranger.
+  //
+  // Short values now subsidise long ones: give everyone their full length if it
+  // fits, otherwise raise a common ceiling until the total fits, so ONLY the
+  // longest values are trimmed. A 400-char message shares with a 37-char email
+  // by shortening the message, never the address.
+  const lengths = values.map((v) => [...v].length);
+  let cap = Math.max(...lengths, 0);
+  if (lengths.reduce((a, b) => a + b, 0) > capacity) {
+    // Largest cap where the sum fits. Binary search keeps this O(n log L).
+    let lo = 1;
+    let hi = cap;
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      const total = lengths.reduce((sum, len) => sum + Math.min(len, mid), 0);
+      if (total <= capacity) lo = mid;
+      else hi = mid - 1;
+    }
+    cap = lo;
+  }
+  // ⚠️ sliceSafe, never a bare .slice — a cap can land mid-emoji, and a lone
+  // surrogate throws URIError inside stripe-node's form encoder, losing the
+  // whole checkout. See sliceSafe above.
+  return values.map((v) => sliceSafe(v, cap)).join("|");
 };
 
 // Allowlist of valid painting IDs so a malicious caller can't create a
@@ -650,10 +671,33 @@ const normaliseItem = (
   const title = PAINTING_TITLES[paintingId] ?? paintingId;
   // Canvas requested only counts if the tier offers it; canvas is ready-to-hang
   // and NOT framed, so it takes precedence over (and disables) framing.
-  const canvas = canvasRaw === true && typeof tier.canvasPricePence === "number";
+  const canvasAsked = canvasRaw === true && typeof tier.canvasPricePence === "number";
   // Framing requested only counts if the tier offers it AND canvas isn't chosen.
-  const framing =
-    !canvas && framingRaw === true && typeof tier.framingPricePence === "number";
+  const framingAsked =
+    !canvasAsked && framingRaw === true && typeof tier.framingPricePence === "number";
+
+  // ⚠️ A LINE WITH NO FINISH IS NOT SELLABLE — do not remove this default.
+  // paintings.ts states a tier offering framing/canvas is "sold FRAMED or on
+  // CANVAS only — never bare paper", and getTierAdvertisedPricePence exists
+  // precisely because the bare base is a GHOST price. A crafted POST of
+  // {paintingId, tierId:"cabinet"} with NEITHER flag charged £175 for a product
+  // advertised at £250 — which also made paintings.ts's own claim that "no one
+  // could check out at it" false. Fall back to the CHEAPEST finish, which is
+  // exactly what the advertised price is computed from, so the floor a buyer is
+  // quoted is the floor they can actually be charged.
+  const framePence = tier.framingPricePence;
+  const canvasPence = tier.canvasPricePence;
+  const cheapestIsFraming =
+    typeof framePence === "number" &&
+    (typeof canvasPence !== "number" || framePence <= canvasPence);
+  const needsDefaultFinish =
+    !canvasAsked &&
+    !framingAsked &&
+    (typeof framePence === "number" || typeof canvasPence === "number");
+
+  const canvas = canvasAsked || (needsDefaultFinish && !cheapestIsFraming);
+  const framing = framingAsked || (needsDefaultFinish && cheapestIsFraming);
+
   // Hand-embellishment requested only counts if the tier actually offers it.
   const embellished =
     embellishedRaw === true && typeof tier.embellishmentPricePence === "number";
@@ -1987,9 +2031,30 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     metadata.gift_recipient_names = joinGiftSlots(
       gifts.map((g) => g.recipientName),
     );
-    metadata.gift_recipient_emails = joinGiftSlots(
-      gifts.map((g) => g.recipientEmail),
-    );
+    // ⚠️ ADDRESSES ARE NEVER TRUNCATED — fail the checkout instead.
+    // Every other slot can be shortened harmlessly; an email cannot. A cut
+    // address either bounces (the code is minted and the recipient never told)
+    // or — far worse — lands on a still-valid address (…@gmail.com.au becomes
+    // …@gmail.com) and a bearer instrument worth up to £5,000 goes to a
+    // stranger. Stripe's 500-char value cap makes ~13 addresses the physical
+    // ceiling, so beyond that the honest answer is to refuse the order rather
+    // than quietly mis-deliver it.
+    const recipientEmails = gifts.map((g) => g.recipientEmail);
+    const joinedEmails = joinGiftSlots(recipientEmails);
+    const emailsIntact =
+      joinedEmails.split("|").length === recipientEmails.length &&
+      joinedEmails
+        .split("|")
+        .every((slot, i) => slot === recipientEmails[i]);
+    if (!emailsIntact) {
+      return send(400, {
+        error:
+          "This order has too many gift-card recipients to record their " +
+          "addresses safely. Please split it into two orders, or email " +
+          "info@themandalacompany.com and the estate will arrange it for you.",
+      });
+    }
+    metadata.gift_recipient_emails = joinedEmails;
     // The buyer's personal message, one slot per gift. ⚠️ This was written as a
     // singular `gift_message` key, and only when the basket held exactly ONE
     // card — while the webhook reads `gift_messages` (plural, pipe-joined). The

@@ -1106,6 +1106,10 @@ const renderOrderConfirmationHtml = (p: {
    *  null when the order carried no bundle discount. Rendered between the
    *  lines and the total — the lines are catalogue prices, so without this row
    *  they sum to MORE than the total and the invoice cannot be reconciled. */
+  /** Gift cards on this order, valued in the currency actually charged. They
+   *  are part of amount_total but are NOT print lines, so without a row each a
+   *  mixed basket showed lines that did not sum to the stated total. */
+  giftLines?: { label: string; value: string }[];
   discount: { label: string; value: string } | null;
   total: string;
   /**
@@ -1202,6 +1206,12 @@ const renderOrderConfirmationHtml = (p: {
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
+    + ((p.giftLines ?? [])
+        .map(
+          (g) =>
+            `<p style="font-family:${SANS};font-size:14px;margin:0 0 6px 0;"><span style="color:rgba(237,230,214,0.55);">${esc(g.label)}</span> &nbsp; <strong style="color:#ede6d6;">${esc(g.value)}</strong></p>`,
+        )
+        .join(""))
     + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
     + (p.discount
         ? `<p style="font-family:${SANS};font-size:14px;margin:0 0 8px 0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">${esc(p.discount.label)}</span> &nbsp; <strong style="color:#ede6d6;">− ${esc(p.discount.value)}</strong></p>`
@@ -1415,7 +1425,11 @@ const renderGiftOrderConfirmationHtml = (p: {
               + (c.expiresLabel
                   ? `<p style="${s.meta}">Valid until ${esc(c.expiresLabel)}.</p>`
                   : "")
-            : `<p style="${s.meta}">The code for this card is being issued — we'll send it on shortly.</p>`)
+            // ⚠️ Do NOT restore "is being issued — we'll send it on shortly".
+            // Nothing retries a failed mint, so that sentence was simply untrue.
+            // The estate is alerted (see processGiftCards) and picks it up by
+            // hand; this tells the buyer the truth and gives them a route.
+            : `<p style="${s.meta}">We could not issue the code for this card. The estate has been notified and will send it on — or write to ${esc(p.estateEmail)}.</p>`)
         // ⚠️ The buyer's own copy of what they wrote. /gift invites the buyer to
         // leave the recipient fields blank "to pass on by hand", and in that
         // case the note reached NOBODY: the recipient email's note block is
@@ -2773,10 +2787,16 @@ async function processPrintFulfilment(
       session.currency,
     );
     const bundle = bundleDiscountMinor(m, emailLines);
-    const orderTierIds = (m.tier_ids || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    // ⚠️ BOTH metadata shapes. `tier_ids` (plural) is written only on the
+    // MULTI-item shape; a single-item order writes `tier_id`. Reading only the
+    // plural meant orderTierIds was always [] on the commonest order shape, so
+    // numberingLineFor returned null and every single-print order silently lost
+    // the estate's numbering claim from its confirmation.
+    const orderTierIds = m.tier_ids
+      ? m.tier_ids.split(",").map((t) => t.trim()).filter(Boolean)
+      : m.tier_id
+        ? [m.tier_id.trim()].filter(Boolean)
+        : [];
 
     const sendResult = await resend.emails.send({
       from: `${FROM_NAME} <${fromEmail}>`,
@@ -2799,6 +2819,20 @@ async function processPrintFulfilment(
                 value: `− ${formatGBP(bundle.minor, session.currency)}`,
               }
             : null,
+        // ⚠️ Gift cards are part of amount_total but are NOT print lines, so a
+        // MIXED order used to show (say) £250 of lines under a £5,350 total
+        // with nothing explaining the £5,100. Every gift card on the order now
+        // gets its own row, valued in the currency actually charged, so the
+        // invoice reconciles for mixed baskets as it already did for print-only.
+        giftLines: parseGiftCards(m).map((g) => ({
+          // GiftCard carries no label — the denomination label lives in the
+          // gift_labels metadata array, which is parsed separately for the
+          // gift emails. A plain "Gift card" row is enough here: this block
+          // exists to make the invoice ADD UP, and the value is the figure
+          // that was charged.
+          label: "Gift card",
+          value: formatGBP(g.chargedMinor, g.chargedCurrency),
+        })),
         total: formatGBP(session.amount_total, session.currency),
         // Only claimed when EVERY print line is a numbered tier — Emblem and
         // Gallery are "unnumbered, issued to order".
@@ -2913,6 +2947,29 @@ async function processGiftCards(
         console.error("[stripe-webhook] gift card mint failed:", message, {
           session_id: session.id,
           gift_index: i,
+        });
+        // ⚠️ ALERT THE ESTATE. This was the ONLY exceptional branch in this
+        // file that logged and moved on — every other one emails Hugo, and the
+        // refund handler's own comment says so. Nothing retries this: the
+        // event is promoted to done and the session's gift concern is claimed,
+        // so without an alert a paid card that failed to mint is invisible to
+        // everyone. Worse on a MIXED order, where no gift confirmation is sent
+        // at all, so the buyer is never even told a code is missing.
+        await sendEstateAlert({
+          subject: `⚠️ Gift code NOT issued · order ${session.id.slice(0, 12)}…`,
+          html: renderEstateAlertHtml({
+            headline: "A paid gift card could not be issued",
+            orderRef: session.id,
+            rows: [
+              ["Card", giftLabel],
+              ["Value", formatGBP(gift.chargedMinor, gift.chargedCurrency)],
+              ["Recipient", gift.recipientEmail ?? gift.recipientName ?? "— (buyer to pass on)"],
+              ["Error", message],
+            ],
+            action:
+              "The buyer has PAID for this card and no code exists. Nothing will retry it. Issue a code manually in Stripe and send it on, or refund the line.",
+          }),
+          context: { session_id: session.id, gift_index: i },
         });
         giftSummaries.push({
           label: giftLabel,
