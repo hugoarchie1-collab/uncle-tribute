@@ -521,8 +521,14 @@ const TERMS: Section[] = [
         kind: "p",
         text: (
           <>
+            {/* ⚠️ ESTATE TRUTH: this said "produced by our atelier". The estate
+                does not own a studio — the approved wording, verbatim from
+                ESTATE.printer in src/data/paintings.ts, is "a specialist giclée
+                studio on the Sussex coast", and the printer is never named in
+                buyer copy. This was the last surviving instance in src/. */}
             <strong>Every piece is made to order.</strong>{" "}
-            Each work is produced by our atelier only after you order it —
+            Each work is produced by a specialist giclée studio on the Sussex
+            coast only after you order it —
             printed in the colourway and size you choose, then either hand-framed
             in solid wood behind glazing or hand-stretched onto a gallery canvas.
             Nothing is held in stock, and there is no plain, unframed option: the

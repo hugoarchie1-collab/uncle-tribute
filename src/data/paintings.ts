@@ -104,8 +104,15 @@ export interface Painting {
  * Centralised here so editing once propagates to every painting page.
  *
  * Updated 2026-05-28: reflects estate-stamped reality (Stephen deceased,
- * authentication via estate stamp + COA, not hand signature). Printer
- * is Point 101 in London, the UK's leading giclée print atelier.
+ * authentication via estate stamp + COA, not hand signature).
+ *
+ * ⚠️ 2026-09-01: this comment claimed "Printer is Point 101 in London". That is
+ * the supplier fiction the 2026-08-28 truth pass removed — the printer is
+ * Giclee & Co (Brighton), and it is NEVER named in buyer copy. The approved
+ * public wording is ESTATE.printer, "a specialist giclée studio on the Sussex
+ * coast", which the string below already uses. A stale comment naming a
+ * supplier is exactly how that fiction survived in shipped copy for months;
+ * do not reintroduce a printer name here.
  */
 export const ORIGINAL_PRINT_SPEC =
   "Printed on Hahnemühle Photo Rag — 308gsm, 100% cotton archival fine-art paper — using pigment inks. Each print is estate-stamped by The Mandala Company, numbered within its edition, and issued with a Certificate of Authenticity carrying a unique Certificate ID. Individually made to order by a specialist giclée studio on the Sussex coast.";

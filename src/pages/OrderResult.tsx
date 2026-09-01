@@ -273,10 +273,104 @@ const CompleteTheSet = ({ justBought }: { justBought: BasketItem[] }) => {
   );
 };
 
+/* =============================================================================
+ * WHAT WAS ACTUALLY BOUGHT — the gift branch
+ * -----------------------------------------------------------------------------
+ * ⚠️ This page used to state THREE things that are false after a gift-card-only
+ * order: (a) that a print is being placed with a studio and shipped to the
+ * address given at checkout, (b) a "companion piece" block written around "the
+ * one you've just taken home", and (c) that the order carries a thank-you code.
+ * None of them hold: a gift order has no print, no address, and — by design —
+ * no thank-you code (api/stripe-webhook.ts: `skipThankYou = isGiftOrder || …`,
+ * the second half of the gift-farming guard).
+ *
+ * The page holds only `session_id`, so it asks the EXISTING public lookup what
+ * the session contains: GET /api/order-status?ref=<session_id> resolves a
+ * session to a safe, public item summary that is gift-aware (`giftSummary` in
+ * api/order-status.ts appends "Gift card — <amount>" lines). No new serverless
+ * function — the project is AT Vercel's 12-function cap.
+ *
+ * FAILURE MUST DEGRADE TO SOMETHING TRUE. A failed / slow / not-found lookup
+ * never falls back to the print copy: it falls back to the one line that holds
+ * for every order. The only exception is a LOCAL fact that needs no network —
+ * a non-empty basket snapshot at redirect time proves the session carried
+ * prints (a gift-only checkout leaves getBasket() empty), so print copy is
+ * still correct in that case.
+ * ========================================================================== */
+
+/** A gift line as api/order-status.ts formats it ("Gift card — £250.00"). */
+const GIFT_LINE_RE = /^Gift card\b/;
+
+type OrderLookup =
+  | { phase: "loading" }
+  /** The lookup answered: these are the order's public line summaries. */
+  | { phase: "found"; items: string[]; total: string }
+  /** No answer we can trust (network error, timeout, unknown reference). */
+  | { phase: "unknown" };
+
+/**
+ * Resolve the Stripe session to its public line summary. Read-only, public,
+ * and already deployed (the /orders tracking page uses the same endpoint), so
+ * this adds a GET and nothing else to what the client sends.
+ */
+const useOrderLookup = (sessionId: string | null): OrderLookup => {
+  // The no-session case is DERIVED, not set from inside the effect — calling
+  // setState synchronously in an effect body triggers a cascading render (and
+  // trips react-hooks/set-state-in-effect). `sessionId` is read once from the
+  // URL on mount and cannot change while this page is alive, so a lazy initial
+  // value is the whole answer.
+  const [state, setState] = useState<OrderLookup>(() =>
+    sessionId ? { phase: "loading" } : { phase: "unknown" },
+  );
+  useEffect(() => {
+    if (!sessionId) return;
+    let live = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const run = async () => {
+      try {
+        const res = await fetch(
+          `/api/order-status?ref=${encodeURIComponent(sessionId)}`,
+          { signal: controller.signal },
+        );
+        const body = (await res.json()) as {
+          found?: boolean;
+          order?: { items?: unknown; total?: unknown };
+        };
+        if (!live) return;
+        const rawItems = body.order?.items;
+        if (res.ok && body.found && body.order) {
+          setState({
+            phase: "found",
+            items: Array.isArray(rawItems)
+              ? rawItems.filter((i): i is string => typeof i === "string" && i.trim() !== "")
+              : [],
+            total: typeof body.order.total === "string" ? body.order.total : "",
+          });
+        } else {
+          setState({ phase: "unknown" });
+        }
+      } catch {
+        if (live) setState({ phase: "unknown" });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    };
+    void run();
+    return () => {
+      live = false;
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [sessionId]);
+  return state;
+};
+
 /**
  * Post-checkout confirmation page. Stripe redirects here on a successful
  * payment with ?session_id=cs_… in the URL. The Stripe receipt email is
- * sent automatically by Stripe; we just acknowledge the order here.
+ * sent automatically by Stripe; we just acknowledge the order here — and,
+ * since 2026-09-01, we acknowledge the RIGHT order (print / gift / both).
  */
 export const OrderSuccess = () => {
   usePageTitle("Order confirmed — The Art of Stephen Meakin");
@@ -298,6 +392,34 @@ export const OrderSuccess = () => {
     if (sessionId) clearBasket();
   }, [sessionId]);
 
+  // Ask the existing public lookup what this session actually contains.
+  const lookup = useOrderLookup(sessionId);
+
+  // A non-empty basket snapshot at redirect time is LOCAL PROOF the session
+  // carried prints — a gift-only checkout leaves getBasket() empty (gift lines
+  // are a separate list, see getGiftCards in lib/basket.ts). It is therefore
+  // safe to keep the print copy even when the network lookup fails.
+  const hadPrintsLocally = justBought.length > 0;
+  const giftLines =
+    lookup.phase === "found" ? lookup.items.filter((l) => GIFT_LINE_RE.test(l)) : [];
+  const printLines =
+    lookup.phase === "found" ? lookup.items.filter((l) => !GIFT_LINE_RE.test(l)) : [];
+
+  // Print copy: whenever we KNOW there is a print, or can prove it locally.
+  const showPrintCopy =
+    lookup.phase === "found" ? printLines.length > 0 : hadPrintsLocally;
+  // Gift copy: only on a confirmed gift line. Never inferred.
+  const showGiftCopy = giftLines.length > 0;
+  // Neither → say only what holds for every order.
+  const showNeutralCopy = !showPrintCopy && !showGiftCopy;
+
+  // ⚠️ The thank-you code is minted server-side for every order EXCEPT a
+  // gift-only one (`skipThankYou = isGiftOrder || amount_total === 0`), and
+  // `order_kind: "gift"` is written only for a gift-ONLY basket. So the block
+  // that references it — and the companion suggestions written around a print
+  // the buyer "just took home" — ride on exactly the print condition.
+  const showCompanions = showPrintCopy;
+
   // …and such an arrival must never show a false "payment received" — bounce it
   // home rather than confirm a payment that never happened. (Every real Stripe /
   // "Buy now" redirect carries session_id, so the happy path is unchanged.)
@@ -307,7 +429,7 @@ export const OrderSuccess = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order confirmed
@@ -318,7 +440,7 @@ export const OrderSuccess = () => {
           >
             Thank you.
           </h1>
-          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
           {/* ⚠️ SUPPLIER TRUTH (2026-08-28). The printer is NEVER named, and
@@ -327,13 +449,70 @@ export const OrderSuccess = () => {
               the old fiction, on the one page every buyer sees after paying.
               The wording below is the approved phrasing already used verbatim
               in paintings.ts (ESTATE_AUTHENTICATION.printer), FAQ.tsx and
-              CraftHighlights.tsx. Do not re-name or re-place it. */}
-          <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
-            Each print is made to order. We place yours with a specialist giclée
-            studio on the Sussex coast within two working days, then ship to the
-            address you gave at checkout. A tracking link follows the moment it
-            leaves the studio.
-          </p>
+              CraftHighlights.tsx. Do not re-name or re-place it.
+              ⚠️ AND it is now GATED (2026-09-01): a gift-card order has no
+              print and no shipping address, so this paragraph must never be
+              the default. See the gift branch below. */}
+          {showPrintCopy && (
+            <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
+              Each print is made to order. We place yours with a specialist giclée
+              studio on the Sussex coast within two working days, then ship to the
+              address you gave at checkout. A tracking link follows the moment it
+              leaves the studio.
+            </p>
+          )}
+          {/* GIFT BRANCH. Every clause below is checked against the gift
+              minter + sender in api/stripe-webhook.ts (createGiftCard with
+              GIFT_VALID_DAYS = 365 and a single-use GIFT-XXXXXX code;
+              processGiftCards sends to gift.recipientEmail when present, with
+              the buyer's note, and the buyer ALWAYS receives their own copy —
+              via `needsBuyerCopy` on a mixed basket, or the gift-only
+              confirmation that "restates every code"). There is NO scheduled
+              send and NO thank-you code. The wording reuses the vetted /gift
+              "What the recipient receives" copy. */}
+          {showGiftCopy && (
+            <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
+              There is nothing to ship. An email carrying a single-use gift code,
+              valid for twelve months from the day you buy it, is sent as soon as
+              your payment goes through — to the recipient&rsquo;s inbox if you
+              gave their email, with your message in it, and a copy comes to you
+              either way. The code is entered at checkout and the gift value
+              comes off the order total.
+            </p>
+          )}
+          {/* Nothing confirmed either way (lookup still in flight, or it
+              failed / didn't recognise the reference, on a session we can't
+              prove locally). Say only what holds for EVERY order. */}
+          {showNeutralCopy && (
+            <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
+              A confirmation from the estate follows by email with the details of
+              this order.
+            </p>
+          )}
+          {/* What the session actually holds, in the currency it was charged
+              in — straight from the lookup, never re-typed or re-priced here.
+              (api/order-status.ts formats both the lines and the total from the
+              Stripe session itself, so advertised == charged is preserved.) */}
+          {lookup.phase === "found" && lookup.items.length > 0 && (
+            <div className="mt-7 md:mt-8 mb-6 mx-auto max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px] text-left ring-1 ring-line rounded-[12px] px-5 py-5 md:px-7 md:py-6">
+              <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your order</p>
+              <ul className="m-0 p-0 list-none flex flex-col gap-1.5">
+                {lookup.items.map((line, i) => (
+                  <li key={`${line}-${i}`} className={cn(META, "m-0")}>
+                    {line}
+                  </li>
+                ))}
+              </ul>
+              {lookup.total && (
+                <p className="m-0 mt-3 border-t border-line pt-3 flex items-baseline justify-between gap-4">
+                  <span className={cn(EYEBROW_MUTED)}>Total</span>
+                  <span className="font-sans font-semibold text-[15px] 3xl:text-[17px] 4xl:text-[19px] text-ink [font-variant-numeric:tabular-nums]">
+                    {lookup.total}
+                  </span>
+                </p>
+              )}
+            </div>
+          )}
           {sessionId && (
             <p className="font-sans text-[14.5px] leading-[1.6] text-ink-muted m-0 mb-6">
               Reference: {sessionId.slice(0, 18)}…
@@ -360,8 +539,10 @@ export const OrderSuccess = () => {
             Each card starts a FRESH single-item Stripe Checkout via the same
             /api/checkout client path, so the new session is server-priced
             (advertised == charged). Renders nothing if there's nothing honest
-            to suggest. */}
-        <CompleteTheSet justBought={justBought} />
+            to suggest — and nothing at all unless the order really did carry a
+            print: its copy ("the one you've just taken home") and its closing
+            thank-you-code line are both false on a gift-only order. */}
+        {showCompanions && <CompleteTheSet justBought={justBought} />}
       </main>
       <Footer />
     </div>
@@ -387,7 +568,7 @@ export const OrderCancel = () => {
     <div className="relative min-h-[100svh] flex flex-col">
       <SceneBackdrop src="/img/scenes/order-nile-scene-v4.webp" />
       <Nav />
-      <main className="relative z-10 flex-1 mx-auto max-w-[820px] 2xl:max-w-[960px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
+      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-12 md:pb-14 text-center">
         <Reveal>
           <p className={cn(EYEBROW, "m-0 mb-4")}>
             Order cancelled
@@ -398,7 +579,7 @@ export const OrderCancel = () => {
           >
             No charge taken.
           </h1>
-          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-8 mx-auto text-center max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
+          <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-8 mx-auto text-center max-w-[640px] 2xl:max-w-[740px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
             You left checkout before completing the order, so nothing was charged.
             {hasBasket && " Your basket is saved — return when you're ready."}
             {" "}If a detail was unclear, or you would like help choosing a

@@ -23,6 +23,24 @@
 // at once). `initialQuery` seeds AND re-seeds the field — /search passes ?q=.
 //
 // Every buyer-visible word here comes from SEARCH in src/data/content.ts.
+//
+// ⚠️ That claim was FALSE until 2026-09-01. Three strings were hardcoded here:
+// the two placeholders ("Search artworks, collections, anything…" / "Search
+// artworks…") and the footer row's "Search everything for". The first was a
+// near-verbatim survivor of one of the five invented lines the /search rebuild
+// deleted, still shipping in the placeholder of BOTH search fields. They are
+// now drawn from strings that already exist:
+//   · placeholder  → this instance's own `label` (SEARCH.landmarkHeader
+//                    "Search" / SEARCH.landmarkRefine "Refine search") — the
+//                    plain functional name the landmark and the input already
+//                    carry, so the field says what it is and nothing more.
+//   · footer row   → SEARCH.resultsFor + the quoted query, i.e. VERBATIM the
+//                    h1 of the page that row navigates to (Search.tsx renders
+//                    `Results for` above “<query>”). It previews the
+//                    destination instead of describing it in new words.
+// If the estate would rather have purpose-written copy, add it to the SEARCH
+// block in content.ts (see the TODO at the placeholder) — do NOT re-invent it
+// here.
 
 import {
   useCallback,
@@ -34,9 +52,15 @@ import {
   type KeyboardEvent,
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { searchSite, SEARCH_TYPE_LABELS, type SearchResult } from "../lib/search";
+import {
+  searchSite,
+  hasScorableTerms,
+  SEARCH_TYPE_LABELS,
+  type SearchResult,
+} from "../lib/search";
 import { AssetImage } from "./AssetImage";
 import { SEARCH } from "../data/content";
+import { EYEBROW_MUTED } from "./ui/tokens";
 import { cn } from "../lib/cn";
 
 interface SearchBarProps {
@@ -243,7 +267,16 @@ export const SearchBar = ({
   // a query — it lives at index === results.length. With results it commits the
   // query to the full page; with NO results it is the browse-all recovery.
   const footerIndex = results.length;
-  const noMatches = debounced.length > 0 && results.length === 0;
+  // ⚠️ Gated on hasScorableTerms, not just on an empty result set. Every token
+  // of "an" / "in" / "is it" is a stop word or a single character, so
+  // expandQuery correctly yields no terms and searchSite correctly returns
+  // nothing — but rendering "No matches" for that reads as a dead end while the
+  // visitor is still two characters into a real word. "Nothing to ask yet" and
+  // "the index has nothing for this" are different states and must look it.
+  const noMatches =
+    debounced.length > 0 &&
+    results.length === 0 &&
+    hasScorableTerms(debounced);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -408,7 +441,11 @@ export const SearchBar = ({
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="search"
-          placeholder={isPage ? "Search artworks, collections, anything…" : "Search artworks…"}
+          // TODO(content.ts): if the estate wants a written placeholder rather
+          // than the landmark's own name, add e.g. `SEARCH.placeholder` to the
+          // SEARCH block and read it here. It must be a plain functional label,
+          // not the deleted "Search artworks, collections, anything…" register.
+          placeholder={label}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -542,11 +579,16 @@ export const SearchBar = ({
                           />
                         </span>
                       ) : (
+                        // Tokenised (EYEBROW_MUTED = Fraunces) to match the
+                        // /search results page, which moved to the shared token
+                        // in the same rebuild. The two surfaces render the SAME
+                        // labels from SEARCH_TYPE_LABELS, so a bespoke
+                        // Schibsted-Grotesk-700 pill here and a Fraunces one
+                        // there was the same tag in two typefaces.
                         <span
                           className={cn(
-                            "inline-flex shrink-0 items-center rounded-full px-2 py-1",
-                            "font-sans text-[13px] font-bold tracking-[0.02em]",
-                            "text-ink-muted ring-1 ring-line",
+                            EYEBROW_MUTED,
+                            "inline-flex shrink-0 items-center rounded-full px-2 py-1 ring-1 ring-line",
                           )}
                         >
                           {SEARCH_TYPE_LABELS[doc.type]}
@@ -626,9 +668,14 @@ export const SearchBar = ({
                   )}
                 >
                   <MagnifierIcon className="h-4 w-4 shrink-0 text-ink-muted" />
+                  {/* VERBATIM the h1 of the page this row opens (Search.tsx:
+                      SEARCH.resultsFor above the quoted query) — a preview of
+                      the destination, not new copy. See the file header. */}
                   <span className="min-w-0 flex-1 truncate font-sans text-[13px] text-ink-muted">
-                    Search everything for{" "}
-                    <span className="font-semibold text-ink">{query.trim()}</span>
+                    {SEARCH.resultsFor}{" "}
+                    <span className="font-semibold text-ink">
+                      {`“${query.trim()}”`}
+                    </span>
                   </span>
                   <span
                     aria-hidden="true"

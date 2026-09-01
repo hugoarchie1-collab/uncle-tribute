@@ -27,13 +27,21 @@
  * or malformed `utm` is silently ignored — it never blocks checkout.
  *
  * Pricing: `tierId` selects a rung on the canonical PRINT_TIERS ladder
- * (mirrored inline below — gotcha #5). Missing `tierId` defaults to the
- * anchor ("collector" = A2 £495). Framing is an OPTIONAL separate Stripe
- * line item priced from the tier's `framingPricePence` — only A2 + A1
- * carry a framing price; passing `framing: true` on a tier that doesn't
- * offer framing is silently ignored. The same pattern applies to
- * `embellished` — Polly Wedge hand-finishes A2 + A1 only at
- * `embellishmentPricePence` (£350 / £495); ignored on A3 / A0.
+ * (mirrored inline below — gotcha #5). Missing `tierId` defaults to the anchor
+ * ("collector" — Collector Edition, £525 base, £750 framed or canvas). Framing
+ * is an OPTIONAL separate Stripe line item priced from the tier's
+ * `framingPricePence`; every tier except Heirloom carries one (Heirloom is
+ * canvas-only), and passing `framing: true` on a tier that doesn't offer
+ * framing is silently ignored. The same pattern applies to `embellished` —
+ * Polly Wedge hand-finishes Collector / Atelier / Heirloom only, at
+ * `embellishmentPricePence` (£595 / £895 / £1,295); ignored on the Emblem and
+ * Gallery rungs.
+ *
+ * ⚠️ The buyable price floors are Emblem £250 / Gallery £445 / Collector £750 /
+ * Atelier £1,300 — the framed-or-canvas totals a buyer can actually reach. The
+ * bare `pricePence` figures (£175 / £295 / £525 / £975) are BASE components, not
+ * prices anyone can check out at: Emblem and Gallery are never sold as bare
+ * paper. Don't quote them anywhere a person will read them.
  *
  * Bundle discount: when the basket holds ≥ 2 lines the saving is applied as a
  * PER-UNIT reduction on each print line item — NOT as a session-level coupon,
@@ -47,7 +55,9 @@
  *   • all lines a SINGLE painting (complete colourway set) → 10%
  *   • 3+ mixed paintings → 8%; 2 mixed → 5%.
  * Mirrors src/data/paintings.ts + src/pages/Basket.tsx bundlePercentOff —
- * gotcha #9. Failures are swallowed — never block checkout on a mint failure.
+ * gotcha #9. ⚠️ A failed coupon mint NO LONGER proceeds at full price: the
+ * saving moves back onto the line items instead (see the mint block), because
+ * charging more than /basket advertised is worse than losing the promo field.
  *
  * Response 200: { url: string }      — redirect the browser here
  *          400: { error: string }    — validation failure
@@ -104,8 +114,9 @@ const TIERS: Record<TierId, TierDef> = {
     size: "29.5 × 29.5 cm",
     pricePence: 29500,
     editionLabel: "Gallery Edition — unnumbered, issued to order",
-    // A3 is a framed product now (mirror of paintings.ts — gotcha #9).
-    // 2026-07-25 squeeze pass: base £295, framing £295, canvas £150.
+    // Gallery is a framed product now (mirror of paintings.ts — gotcha #9).
+    // Base £295 + £150 finish → the £445 a buyer actually pays. It is never
+    // sold as bare paper, so £295 is not a price anyone can check out at.
     framingPricePence: 15000, // £150 (A3) — Hugo 2026-07-27: framed == canvas price
     canvasPricePence: 15000,
     available: true,
@@ -138,10 +149,11 @@ const TIERS: Record<TierId, TierDef> = {
     size: "84 × 84 cm",
     pricePence: 199500,
     editionLabel: "Heirloom Edition — edition of 18, numbered",
-    // ENABLED 2026-06-06 — Point 101 A0 fulfilment confirmed. £1,895 charged
-    // price; mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].pricePence.
-    // Hand-finish enabled on A0 (2026-07-14); FRAMING intentionally NOT offered
-    // (glazed A0 exceeds Point 101's 610mm delivery cap — see paintings.ts).
+    // £1,995 base — mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].
+    // ⚠️ HIDDEN from buyers (paintings.ts `available:false`); this row stays
+    // `available:true` here only so a stale in-flight client can't crash
+    // checkout. Hand-finish enabled; FRAMING intentionally NOT offered (a glazed
+    // 84cm frame exceeds the supplier's ship cap — see paintings.ts).
     embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     available: true,
@@ -182,7 +194,7 @@ const PAINTING_TIER_SIZE: Record<string, Partial<Record<TierId, string>>> = {
 const sizeFor = (paintingId: string, tier: TierDef): string =>
   PAINTING_TIER_SIZE[paintingId]?.[tier.id] ?? tier.size;
 
-const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier (A2 £495)
+const DEFAULT_TIER_ID: TierId = "collector"; // anchor tier — Collector, £750 framed/canvas
 
 // ---- Cost floors (#13) — mirror of src/data/paintings.ts ------------------
 // ⚠️⚠️⚠️ HUGO: EVERY NUMBER HERE IS A RESEARCH ESTIMATE, NOT A REAL INVOICE.
@@ -254,7 +266,7 @@ const lineRetailPence = (item: NormalisedItem): number => {
     total += item.tier.embellishmentPricePence;
   }
   if (item.canvas && typeof item.tier.canvasPricePence === "number") {
-    total += item.tier.canvasPricePence + item.canvasEdgeSurchargePence;
+    total += item.tier.canvasPricePence;
   }
   return total;
 };
@@ -266,8 +278,32 @@ const lineRetailPence = (item: NormalisedItem): number => {
 // giclée studio on the Sussex coast" (same sentence as the ESTATE.printer line
 // in api/stripe-webhook.ts). It read "Printed at our London atelier." until
 // this pass, which was both a fiction and a place the estate does not have.
-const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, numbered within its edition. Issued with a Certificate of Authenticity carrying a unique Certificate ID. Printed and finished by a specialist giclée studio on the Sussex coast.";
+// ⚠️ ESTATE TRUTH: the numbering clause is now PER TIER. This string was a flat
+// constant claiming "numbered within its edition" on every order — untrue for
+// the Emblem and Gallery rungs, which src/data/paintings.ts issues as
+// "unnumbered, issued to order". It printed that claim on the buyer's Stripe
+// receipt for the two cheapest editions. Nothing is signed, ever — Stephen died
+// in 2021 and the FAQ says so plainly; don't reintroduce the word.
+// Wording is verbatim from ESTATE_AUTHENTICATION in src/data/paintings.ts.
+const PRINT_SPEC_STAMP = "Estate-stamped by The Mandala Company";
+const PRINT_SPEC_NUMBERING = "numbered within its edition";
+const PRINT_SPEC_TAIL =
+  "Issued with a Certificate of Authenticity carrying a unique Certificate ID. Printed and finished by a specialist giclée studio on the Sussex coast.";
+
+/**
+ * True only for the capped, numbered editions (Collector / Atelier / Heirloom).
+ * Derived from the tier's own `editionLabel` rather than a separate boolean, so
+ * the receipt can never contradict the edition line printed beside it — one
+ * fewer thing to keep in sync (gotcha #9).
+ */
+const isNumberedTier = (tier: TierDef): boolean =>
+  !tier.editionLabel.toLowerCase().includes("unnumbered") &&
+  tier.editionLabel.toLowerCase().includes("numbered");
+
+const printSpecFor = (tier: TierDef): string =>
+  isNumberedTier(tier)
+    ? `${PRINT_SPEC_STAMP}, ${PRINT_SPEC_NUMBERING}. ${PRINT_SPEC_TAIL}`
+    : `${PRINT_SPEC_STAMP}. ${PRINT_SPEC_TAIL}`;
 
 // The edition the catalogue is currently issuing under (mirror of
 // CURRENT_EDITION in src/data/paintings.ts — gotcha #5 forbids importing it
@@ -275,8 +311,12 @@ const PRINT_SPEC =
 // Edition".
 const EDITION_LABEL = "First Edition";
 
-// Hard cap on a single Stripe checkout — sane upper bound for a 10-painting
+// Hard cap on a single Stripe checkout — a sane upper bound for a 12-painting
 // catalogue; protects against an absurd POST body from a broken client.
+// ⚠️ This counts EVERY line on the body — print lines AND gift cards together —
+// so a big mixed basket can trip it well below 20 of either. The 400 says so
+// explicitly (see the check in the handler); don't shorten it back to a bare
+// "Too many items".
 const MAX_ITEMS = 20;
 
 // ---- Presentment currency (mirror of src/lib/currency.tsx) ----------------
@@ -514,21 +554,18 @@ const FRAME_STYLE_LABELS: Record<string, string> = {
   "ayous-gold": "Ayous, gold edge",
   "ornate-gold": "Ornate gold",
 };
-// ⚠️ MONEY (gotcha #9): the premium-frame surcharge, in pence, added on top of
-// the base framingPricePence. Mirror of FRAME_TIERS' surchargePence + each
-// frame's tier in src/data/paintings.ts. Classic frames (and any unknown id)
-// → 0. Signature +£50, Ornate +£120. advertised == charged depends on this
-// matching the PDP's getFrameSurchargePence exactly.
-// 2026-07-25 squeeze pass: Signature 5000→9500, Ornate 12000→24500 (mirror of
-// FRAME_TIERS in src/data/paintings.ts).
-const FRAME_SURCHARGE_PENCE: Record<string, number> = {
-  "silver-aluminium": 9500,
-  "black-aluminium": 9500,
-  "box-black": 9500,
-  "box-oak": 9500,
-  "ayous-gold": 24500,
-  "ornate-gold": 24500,
-};
+// ⚠️ REMOVED 2026-09-01 — FRAME_SURCHARGE_PENCE (Signature +£95 / Ornate +£245).
+// The premium frame tiers were retired with the supplier truth pass: every live
+// frame is Oak / White / Black, all `classic`, and src/data/paintings.ts now has
+// FRAME_TIERS = { classic: { surchargePence: 0 } } — so the CLIENT surcharge is
+// 0 for every frame a buyer can actually pick. The map was kept here "dead but
+// harmless"; it was neither. Nothing clamped `frameStyle`, so a crafted POST
+// asking for `ornate-gold` still added £245 to the framing line — a silent
+// OVERCHARGE above the advertised price (advertised < charged, the one rule that
+// outranks everything here). Deleted, along with every code path that read it.
+// ⚠️ If a real premium frame tier is ever reintroduced, it is a MONEY MIRROR:
+// paintings.ts FRAME_TIERS + this file must be added back in the SAME commit
+// (gotcha #9), and the PDP running total must advertise it before it is charged.
 const GLAZING_LABELS: Record<string, string> = {
   "art-acrylic": "Clear acrylic",
   "museum-glass": "Float glass",
@@ -556,18 +593,13 @@ const CANVAS_EDGE_LABELS: Record<string, string> = {
   "float-wenge": "Wenge float frame",
   "float-oak": "Oak float frame",
 };
-// MONEY MIRROR (gotcha #9) of FLOAT_EDGE_SURCHARGE_PENCE in
-// src/data/paintings.ts — a float (tray) frame is a real hand-built surround at
-// Point 101 that costs MORE the bigger the canvas, so the surcharge is
-// SIZE-SCALED per tier (Hugo 2026-07-25, replacing the old flat +£45). Any
-// float-* edge id gets the tier's premium; mirror wrap = 0.
-const FLOAT_EDGE_SURCHARGE_PENCE: Record<string, number> = {
-  atelier: 7500, //          A3 float frame — +£75
-  collector: 9500, //        A2 float frame — +£95
-  "atelier-grande": 14500, // A1 float frame — +£145
-  heirloom: 19500, //        A0 float frame — +£195
-  studio: 14500, //          one-off (A1-size) — +£145
-};
+// ⚠️ REMOVED 2026-09-01 — FLOAT_EDGE_SURCHARGE_PENCE (+£75…+£195 by size).
+// Canvas is now the plain 370gsm giclée canvas PRINT: no stretching, no float
+// (tray) frame, no edge choice. src/data/paintings.ts keeps a one-entry
+// CANVAS_EDGES list and `getCanvasEdgeSurchargePence` hard-returns 0, so the
+// client never advertises an edge premium — but this map still charged one on
+// any `canvasEdge` string starting with "float", i.e. a crafted POST paid up to
+// £195 above the advertised canvas price. Deleted with every path that read it.
 
 interface NormalisedItem {
   paintingId: string;
@@ -590,12 +622,6 @@ interface NormalisedItem {
   // Curated canvas edge (display label) — only set when canvas === true. Named
   // on the canvas line so the estate orders the right wrap.
   canvasEdge?: string;
-  // Premium-frame surcharge (pence) for the chosen frame — 0 for classic frames
-  // and whenever framing is off. Added to framingPricePence on the framing line.
-  frameSurchargePence: number;
-  // Canvas float-frame surcharge (pence) — 0 for a plain mirror wrap / non-canvas.
-  // Added to canvasPricePence on the canvas line.
-  canvasEdgeSurchargePence: number;
 }
 
 const normaliseItem = (
@@ -649,19 +675,12 @@ const normaliseItem = (
   const canvasEdge = canvas
     ? (CANVAS_EDGE_LABELS[String(canvasEdgeRaw)] ?? CANVAS_EDGE_LABELS["mirror"])
     : undefined;
-  // Premium-frame surcharge keyed off the RAW frame id (before it became a
-  // label). 0 when framing is off or the frame is classic / unknown.
-  const frameSurchargePence = framing
-    ? (FRAME_SURCHARGE_PENCE[String(frameStyleRaw)] ?? 0)
-    : 0;
-  // Canvas float-frame surcharge — SIZE-SCALED by tier (a float tray frame
-  // costs more the bigger the canvas). Any float-* edge gets the tier's
-  // premium; a plain mirror wrap (or non-canvas line) = 0.
-  const isFloatEdge =
-    canvas && typeof canvasEdgeRaw === "string" && canvasEdgeRaw.startsWith("float");
-  const canvasEdgeSurchargePence = isFloatEdge
-    ? (FLOAT_EDGE_SURCHARGE_PENCE[tier.id] ?? FLOAT_EDGE_SURCHARGE_PENCE.collector)
-    : 0;
+  // ⚠️ NO finish surcharges exist any more. Frame style and canvas edge are
+  // PRESENTATION only: every live frame is `classic` (£0) and canvas is a plain
+  // print with no edge option, so a line's price is fully determined by the tier
+  // + which finish (framed / canvas / hand-finish) was bought. Nothing derived
+  // from `frameStyleRaw` / `canvasEdgeRaw` may ever add money again without a
+  // matching advertised figure on the PDP (gotcha #9).
   // Quantity — whole units, clamped to a sane 1–99 so a malformed / hostile
   // client can never mint an absurd Stripe line quantity.
   const quantity =
@@ -681,8 +700,6 @@ const normaliseItem = (
     glazing,
     paperFinish,
     canvasEdge,
-    frameSurchargePence,
-    canvasEdgeSurchargePence,
   };
 };
 
@@ -825,10 +842,15 @@ const refMetadata = (raw: unknown): Record<string, string> => {
 /**
  * The bundle discount percent for a basket, derived from its CONTENTS (never
  * trusted from the client). Mirrors src/data/paintings.ts (gotcha #9):
- *   • every painting present (distinct ids === whole catalogue) → 15%
- *   • all lines one painting (a complete colourway set)         → 12%
- *   • 3+ mixed paintings → 10%; 2 → 5%; fewer → 0 (no bundle).
+ *   • every painting present (distinct ids === whole catalogue) → 12%
+ *   • all lines one painting (a complete colourway set)         → 10%
+ *   • 3+ mixed paintings → 8%; 2 → 5%; fewer → 0 (no bundle).
  * Returns the single best-qualifying percent.
+ * ⚠️ These four numbers are what the site ADVERTISES on the collection cards
+ * and at /basket. The docblock read 15/12/10 for weeks after the 2026-07-25
+ * squeeze pass changed the code to 12/10/8 — which is exactly how a stale
+ * price stays invisible. If you edit the returns, edit this list in the same
+ * keystroke, and re-check paintings.ts + Basket.tsx.
  */
 const bundlePercentOff = (items: NormalisedItem[]): number => {
   const count = items.length;
@@ -1487,8 +1509,19 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   if (rawItems.length === 0) {
     return send(400, { error: "Basket is empty." });
   }
+  // ⚠️ MAX_ITEMS counts PRINT LINES AND GIFT CARDS TOGETHER — 12 prints + 12
+  // gift cards trips it. The old message ("Too many items (max 20)") named
+  // neither the count nor the fact that gifts share the allowance, so a buyer
+  // with a legitimately large order (and the estate reading the support email)
+  // had no way to understand what to do. Say what was sent and what the limit is.
   if (rawItems.length > MAX_ITEMS) {
-    return send(400, { error: `Too many items (max ${MAX_ITEMS}).` });
+    return send(400, {
+      error:
+        `This basket has ${rawItems.length} lines. A single checkout can carry ` +
+        `${MAX_ITEMS} lines in total — prints and gift cards counted together. ` +
+        "Please split it into two orders, or email info@themandalacompany.com " +
+        "and the estate will arrange it for you.",
+    });
   }
 
   // Presentment currency — validated against the mirror table; anything else
@@ -1609,17 +1642,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   const unitAmountsFor = (item: NormalisedItem): number[] => {
     const amounts = [toMinor(item.tier.pricePence)];
     if (item.framing && typeof item.tier.framingPricePence === "number") {
-      // Include the premium-frame surcharge — the framing LINE ITEM charges
-      // framingPricePence + frameSurchargePence, so the discount base must too.
-      amounts.push(toMinor(item.tier.framingPricePence + item.frameSurchargePence));
+      amounts.push(toMinor(item.tier.framingPricePence));
     }
     if (item.embellished && typeof item.tier.embellishmentPricePence === "number") {
       amounts.push(toMinor(item.tier.embellishmentPricePence));
     }
     if (item.canvas && typeof item.tier.canvasPricePence === "number") {
-      // Include the canvas float-edge surcharge — the canvas line item charges
-      // canvasPricePence + canvasEdgeSurchargePence.
-      amounts.push(toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence));
+      amounts.push(toMinor(item.tier.canvasPricePence));
     }
     return amounts;
   };
@@ -1650,7 +1679,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       }
     }
   }
-  const bundleOnLines =
+  // NOT const: if the coupon fallback below fails to mint, this flips back to
+  // true so the saving still reaches the buyer (see the mint block).
+  let bundleOnLines =
     percentOff > 0 && perUnitBundleMinor === expectedBundleMinor;
   if (percentOff > 0 && !bundleOnLines) {
     console.warn(
@@ -1662,10 +1693,76 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         "api/checkout.ts (gotcha #9).",
     );
   }
+
+  // Note: `new Stripe(secret)` with no apiVersion — pinning a version literal
+  // like "2025-09-30.clover" can mismatch the SDK's exported type union (gotcha
+  // #6 in CLAUDE.md). Let the SDK use its pinned default.
+  // ⚠️ Constructed HERE, before the line items are priced, because the coupon
+  // mint below can change HOW the saving is applied — and therefore the unit
+  // amounts. It used to run after the line items were already built at full
+  // price, which is exactly how a failed mint could overcharge.
+  const stripe = new Stripe(secret);
+
+  // ---- Bundle discount — FALLBACK coupon path only ------------------------
+  // The bundle saving is normally applied as a per-unit reduction on the print
+  // line items (see bundleNet below) precisely so `allow_promotion_codes` can
+  // stay on. This coupon path runs ONLY when the per-unit reduction could not
+  // reproduce the advertised saving to the penny (bundleOnLines === false) —
+  // money exactness outranks the promo field.
+  let discounts: Array<{ coupon: string }> | undefined;
+  // True only on the "mint failed, saving moved back onto the lines" path.
+  // Rounds each per-unit reduction UP so the charge can never exceed what
+  // /basket advertised (see the catch block).
+  let bundleRoundUp = false;
+  if (!bundleOnLines && expectedBundleMinor > 0) {
+    try {
+      const coupon = await stripe.coupons.create({
+        amount_off: expectedBundleMinor,
+        currency: currencyCode,
+        duration: "once",
+        name: "Estate bundle thank-you",
+        metadata: {
+          source: "bundle_discount",
+          item_count: String(normalised.length),
+          percent_off: String(percentOff),
+          amount_off_minor: String(expectedBundleMinor),
+        },
+      });
+      discounts = [{ coupon: coupon.id }];
+    } catch (err) {
+      // ⚠️ MONEY — DO NOT "just log and carry on" here. This catch used to leave
+      // `discounts` undefined and let checkout proceed, so the buyer paid the
+      // FULL total while /basket had advertised a saving: advertised < charged,
+      // the one rule that outranks everything else in this codebase. (The old
+      // comment — "never block checkout on a mint failure" — was the wrong
+      // trade: the sale is worth less than charging someone more than we quoted.)
+      // We now move the saving back ONTO the line items. That path is only
+      // reached when the per-unit reduction did not reproduce the advertised
+      // figure to the penny, so we round each per-unit reduction UP: the drift
+      // is then at most one minor unit per sub-amount and always in the BUYER's
+      // favour — never above the advertised price.
+      bundleOnLines = true;
+      bundleRoundUp = true;
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(
+        "[/api/checkout] ⚠️ bundle coupon mint FAILED — applying the saving as a " +
+          `per-unit line reduction instead (${percentOff}%, rounded up, vs the ` +
+          `advertised ${expectedBundleMinor} ${currencyCode}). The buyer is never ` +
+          "charged more than advertised; the promo-code field stays available:",
+        message,
+      );
+    }
+  }
+
   /** A print line item's unit amount, net of the bundle saving. Gift lines and
-   *  the fallback-coupon path pass through at full price. */
-  const bundleNet = (unitMinor: number): number =>
-    bundleOnLines ? unitMinor - Math.round((unitMinor * percentOff) / 100) : unitMinor;
+   *  the coupon path pass through at full price. */
+  const bundleNet = (unitMinor: number): number => {
+    if (!bundleOnLines) return unitMinor;
+    const cut = bundleRoundUp
+      ? Math.ceil((unitMinor * percentOff) / 100)
+      : Math.round((unitMinor * percentOff) / 100);
+    return unitMinor - cut;
+  };
   // Named on each reduced print line so the buyer's receipt says WHY the figure
   // is below the catalogue price. Reuses the coupon's own existing name.
   const BUNDLE_NOTE = bundleOnLines
@@ -1698,7 +1795,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           // The chosen paper finish (framed prints only) is named on the print
           // line so it lands in the estate's Stripe order — that's how the
           // estate knows which stock to order from the print house.
-          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`}${item.paperFinish ? ` Paper: ${item.paperFinish}.` : ""} ${PRINT_SPEC}${BUNDLE_NOTE}`,
+          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`}${item.paperFinish ? ` Paper: ${item.paperFinish}.` : ""} ${printSpecFor(item.tier)}${BUNDLE_NOTE}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).
@@ -1708,9 +1805,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     if (item.framing && typeof item.tier.framingPricePence === "number") {
       // The buyer's chosen finish (frame style + glazing) is named on the line
       // so it appears on Stripe checkout, the receipt AND the dashboard order
-      // the estate works from when placing the Point 101 frame order. Premium
-      // frames (Signature / Ornate) add a surcharge on top of the base framing
-      // price — folded into this SAME line so the buyer sees one framed figure.
+      // the estate works from when placing the frame order. Every live frame is
+      // one framed price — Oak / White / Black carry no surcharge.
       const finish =
         item.frameStyle && item.glazing
           ? `${item.frameStyle} frame · ${item.glazing}`
@@ -1719,9 +1815,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: bundleNet(
-            toMinor(item.tier.framingPricePence + item.frameSurchargePence),
-          ),
+          unit_amount: bundleNet(toMinor(item.tier.framingPricePence)),
           product_data: {
             name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size})`,
             description: `${finish}, set within a white window mount and ready to hang. Hand-finished for the ${item.tier.label} edition.${BUNDLE_NOTE}`,
@@ -1756,9 +1850,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: bundleNet(
-            toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence),
-          ),
+          unit_amount: bundleNet(toMinor(item.tier.canvasPricePence)),
           product_data: {
             name: `Canvas print — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of CANVAS_NOTE in src/data/paintings.ts.
@@ -1817,14 +1909,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       size: sizeFor(normalised[0].paintingId, normalised[0].tier),
       framing: normalised[0].framing ? "yes" : "no",
       embellished: normalised[0].embellished ? "yes" : "no",
-      // Premium-frame surcharge (pence) so the confirmation email itemises the
-      // framing sub-line at the amount actually charged (gotcha #9).
-      frame_surcharge_pence: String(normalised[0].frameSurchargePence),
+      // ⚠️ `frame_surcharge_pence` / `canvas_edge_surcharge_pence` are no longer
+      // emitted — there is no finish surcharge to report (both maps deleted
+      // 2026-09-01). api/stripe-webhook.ts reads them as `Number(m.x) || 0`, so
+      // an absent key is already the correct 0.
       // Canvas substrate so the confirmation email itemises it AND the estate's
-      // fulfilment payload flags stretched-canvas (not paper) + the edge finish.
+      // fulfilment payload flags canvas (not paper).
       canvas: normalised[0].canvas ? "yes" : "no",
       canvas_edge: normalised[0].canvasEdge ?? "",
-      canvas_edge_surcharge_pence: String(normalised[0].canvasEdgeSurchargePence),
       quantity: String(normalised[0].quantity),
       item_count: "1",
     };
@@ -1839,16 +1931,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       framing_flags: truncateMetadata(
         normalised.map((i) => (i.framing ? "y" : "n")),
       ),
-      frame_surcharges: truncateMetadata(
-        normalised.map((i) => String(i.frameSurchargePence)),
-      ),
+      // ⚠️ `frame_surcharges` / `canvas_edge_surcharges` are no longer emitted —
+      // there is no finish surcharge (both maps deleted 2026-09-01). The webhook
+      // parses these positionally as `Number(x) || 0`, so an absent key is
+      // already the correct 0 for every line.
       canvas_flags: truncateMetadata(
         normalised.map((i) => (i.canvas ? "y" : "n")),
       ),
       canvas_edges: truncateMetadata(normalised.map((i) => i.canvasEdge ?? "")),
-      canvas_edge_surcharges: truncateMetadata(
-        normalised.map((i) => String(i.canvasEdgeSurchargePence)),
-      ),
       embellished_flags: truncateMetadata(
         normalised.map((i) => (i.embellished ? "y" : "n")),
       ),
@@ -1917,48 +2007,17 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // Partner referral — written as a single `partner_ref` key (see refMetadata).
   Object.assign(metadata, refMetadata(body.ref));
 
-  // Note: `new Stripe(secret)` with no apiVersion — pinning a version
-  // literal like "2025-09-30.clover" can mismatch the SDK's exported type
-  // union (gotcha #6 in CLAUDE.md). Let the SDK use its pinned default.
-  const stripe = new Stripe(secret);
-
-  // ---- Bundle discount — FALLBACK coupon path only ------------------------
-  // The bundle saving is normally applied as a per-unit reduction on the print
-  // line items (see bundleNet above) precisely so `allow_promotion_codes` can
-  // stay on. This coupon path runs ONLY when the per-unit reduction could not
-  // reproduce the advertised saving to the penny (bundleOnLines === false) —
-  // money exactness outranks the promo field. Failures are swallowed; never
-  // block checkout on a mint failure.
-  let discounts: Array<{ coupon: string }> | undefined;
-  if (!bundleOnLines && expectedBundleMinor > 0) {
-    try {
-      const coupon = await stripe.coupons.create({
-        amount_off: expectedBundleMinor,
-        currency: currencyCode,
-        duration: "once",
-        name: "Estate bundle thank-you",
-        metadata: {
-          source: "bundle_discount",
-          item_count: String(normalised.length),
-          percent_off: String(percentOff),
-          amount_off_minor: String(expectedBundleMinor),
-        },
-      });
-      discounts = [{ coupon: coupon.id }];
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.warn(
-        "[/api/checkout] bundle coupon mint failed, proceeding without discount:",
-        message,
-      );
-    }
-  }
   // Recorded on the session so the estate can see the saving that was applied
-  // and HOW, without re-deriving it from the line items.
+  // and HOW, without re-deriving it from the line items. (The coupon was minted
+  // BEFORE the line items were priced — see the mint block above.)
   if (percentOff > 0) {
     metadata.bundle_percent_off = String(percentOff);
     metadata.bundle_discount_minor = String(expectedBundleMinor);
-    metadata.bundle_applied_as = bundleOnLines ? "line_items" : "coupon";
+    metadata.bundle_applied_as = discounts
+      ? "coupon"
+      : bundleRoundUp
+        ? "line_items_coupon_mint_failed"
+        : "line_items";
   }
 
   // Shipping is collected ONLY when there's a physical print to post. A basket
@@ -2073,7 +2132,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       giftTotalPence: gifts.reduce((sum, g) => sum + g.amountPence, 0),
       giftOnly,
       bundleDiscount: percentOff > 0 ? `${percentOff}%` : "no",
-      bundleAppliedAs: percentOff > 0 ? (bundleOnLines ? "line_items" : "coupon") : "none",
+      bundleAppliedAs:
+        percentOff === 0
+          ? "none"
+          : discounts
+            ? "coupon"
+            : bundleRoundUp
+              ? "line_items_coupon_mint_failed"
+              : "line_items",
       promoCodeField: discounts ? false : gifts.length === 0,
     });
     return send(200, { url: session.url });

@@ -24,21 +24,41 @@
  *     mint arrives on `checkout.session.async_payment_succeeded`; meanwhile the
  *     estate is emailed an alert so a pending code is visible, not silent.
  * `checkout.session.async_payment_failed` revokes the codes the print path
- * already issued and tells the estate not to fulfil. `charge.refunded` (in
- * full) / `charge.dispute.created` deactivate every code minted for that order
- * — otherwise the estate returns the money AND honours the card.
+ * already issued, VOIDS the ledger entries it burned, and tells the estate not
+ * to fulfil. `charge.refunded` (in full) / `charge.dispute.created` deactivate
+ * every code minted for that order — otherwise the estate returns the money AND
+ * honours the card. ⚠️ A DISPUTE ONLY DEACTIVATES (reversible): the coupon is
+ * deleted only on a settled full refund or a LOST dispute, and
+ * `charge.dispute.closed` with status "won" REACTIVATES the codes.
  *
  * Duplicate-delivery protection (Stripe redelivers the same event id after
  * network blips / slow responses): each verified event id is claimed
- * atomically in Vercel KV / Upstash — "SET stripe_evt:<id> 1 NX EX 86400",
- * one REST round-trip — BEFORE any side effects run, so a retry can't re-send
- * the confirmation email or re-mint thank-you/gift codes even across cold
- * starts and regions. FAIL-OPEN: if the KV env vars are absent, or KV errors
- * or times out (~2s), we fall back to the best-effort in-memory dedup and
- * still process the event — KV can never block or fail the webhook. The
- * in-memory Map is kept as a second layer regardless. (This resolves the
- * CLAUDE.md P2 "durable webhook dedup" caveat whenever the KV env vars are
- * configured; without them, dedup is in-memory best-effort as before.)
+ * atomically in Vercel KV / Upstash — one REST round-trip — BEFORE any side
+ * effects run, so a retry can't re-send the confirmation email or re-mint
+ * thank-you/gift codes even across cold starts and regions.
+ *
+ * ⚠️ THE CLAIM IS TWO-PHASE, on purpose. It is written as
+ * "SET stripe_evt:<id> processing NX EX 120" — a SHORT-lived marker — and is
+ * promoted to "done" (EX 86400) only once the work has actually finished, and
+ * DELETED if the handler throws. A single long-lived claim taken before the
+ * work meant that a lambda which died or timed out mid-mint (processGiftCards
+ * makes ~6 sequential round trips per card, for up to 20 cards, AFTER print
+ * fulfilment, and vercel.json sets no maxDuration) left the key behind: Stripe
+ * retried, saw the key, returned 200 "duplicate", and the buyer's paid gift
+ * card was NEVER minted, with nothing logged. The short TTL is the staleness
+ * mechanism — no invocation can outlive it, so a marker still present is a
+ * genuinely live delivery, and a later Stripe retry finds it expired and does
+ * the work. A retry may therefore re-SEND an email; the code it carries is
+ * byte-identical (every mint is idempotency-keyed), and a duplicate email is
+ * far cheaper than a card that never arrives.
+ *
+ * FAIL-OPEN: if the KV env vars are absent, or KV errors or times out (~2s),
+ * we fall back to the best-effort in-memory dedup and still process the event
+ * — KV can never block or fail the webhook. The in-memory layer is kept
+ * regardless, and mirrors the same two-phase shape (in-flight vs done).
+ * (This resolves the CLAUDE.md P2 "durable webhook dedup" caveat whenever the
+ * KV env vars are configured; without them, dedup is in-memory best-effort as
+ * before.)
  *
  * Critical contract with Stripe: this endpoint MUST return 200 quickly, even
  * if our downstream actions (Resend, coupon creation) fail. Stripe retries
@@ -60,6 +80,8 @@
  *   checkout.session.async_payment_failed
  *   charge.refunded
  *   charge.dispute.created
+ *   charge.dispute.closed          ← REQUIRED, or a WON dispute leaves the
+ *                                    buyer's deactivated gift card dead
  * Prints are fulfilled without any of these (the `completed` event alone is
  * enough), but without async_payment_succeeded a GIFT CODE bought via Klarna /
  * Clearpay is never issued — the estate is emailed an alert in that case so it
@@ -163,9 +185,16 @@ async function readRawBody(req: IncomingMessage): Promise<Buffer> {
 //
 // We bound the set's size + age so a long-running warm instance can't grow
 // the set unboundedly under attack.
+//
+// ⚠️ TWO-PHASE, like the KV claim: `seenEvents` records only events whose work
+// COMPLETED, and `inFlightEvents` holds the ids currently being processed on
+// this instance (cleared in a finally). Recording an id up-front, as this layer
+// used to, reproduced the KV bug locally — a warm instance that timed out
+// mid-mint answered the retry "duplicate" and the gift card was never minted.
 const SEEN_EVENT_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 const SEEN_EVENT_MAX = 5000;
 const seenEvents = new Map<string, number>();
+const inFlightEvents = new Set<string>();
 const cleanSeenEvents = () => {
   const cutoff = Date.now() - SEEN_EVENT_TTL_MS;
   for (const [id, t] of seenEvents) {
@@ -187,12 +216,21 @@ const cleanSeenEvents = () => {
 // Event-id deduplication — layer 1: durable Vercel KV / Upstash claim
 // ---------------------------------------------------------------------------
 // One atomic REST round-trip per verified event:
-//   SET stripe_evt:<event.id> 1 NX EX 86400
+//   SET stripe_evt:<event.id> processing NX EX 120
 // NX makes the write a claim — exactly one delivery wins the key; every retry
 // (including on a different instance / region / after a cold start) sees
 // "already exists" and is dropped before any side effects (Resend email,
-// coupon mints) can re-run. EX 86400 (24h) self-expires the key, matching
-// SEEN_EVENT_TTL_MS — Stripe's retry window is well inside it.
+// coupon mints) can re-run.
+//
+// ⚠️ THE CLAIM IS RELEASED IF THE WORK DOESN'T FINISH — do not collapse this
+// back into a single long-lived SET. The marker's TTL is SHORT (120s, longer
+// than any possible invocation, far shorter than Stripe's retry window) and is
+// promoted to "done" EX 86400 (matching SEEN_EVENT_TTL_MS) only once the event
+// has been fully processed; a thrown handler deletes it outright. Before this,
+// a lambda that died between the claim and the mint left the key behind and
+// every Stripe retry was answered "duplicate" — the buyer paid and no gift code
+// was ever issued, silently. An expired "processing" marker IS the stale case:
+// the key is simply gone, so the retry does the work.
 //
 // Inlined raw-fetch Upstash REST call — mirror of api/memories-submit.ts's
 // working kvCommand shape (POST {url} with a JSON array command body + bearer
@@ -206,6 +244,13 @@ const cleanSeenEvents = () => {
 // fail the webhook, which must ALWAYS 200 on verified events.
 const KV_DEDUP_PREFIX = "stripe_evt:";
 const KV_DEDUP_TTL_SECONDS = 86_400; // 24h — matches SEEN_EVENT_TTL_MS
+// ⚠️ The in-flight marker's life. Must comfortably exceed the longest possible
+// invocation (so two live deliveries never both process an event) and stay far
+// under Stripe's retry window (so a killed lambda's claim is gone by the time
+// the retry lands). Vercel caps a Node function at 60s; 120s is both.
+const KV_PROCESSING_TTL_SECONDS = 120;
+const KV_PROCESSING_MARKER = "processing";
+const KV_DONE_MARKER = "done";
 const KV_DEDUP_TIMEOUT_MS = 2_000;
 
 const kvDedupConfig = (): { url: string; token: string } | null => {
@@ -227,10 +272,10 @@ async function kvClaimEventId(eventId: string): Promise<KvClaimOutcome> {
       body: JSON.stringify([
         "SET",
         `${KV_DEDUP_PREFIX}${eventId}`,
-        "1",
+        KV_PROCESSING_MARKER,
         "NX",
         "EX",
-        String(KV_DEDUP_TTL_SECONDS),
+        String(KV_PROCESSING_TTL_SECONDS),
       ]),
       signal: AbortSignal.timeout(KV_DEDUP_TIMEOUT_MS),
     });
@@ -267,6 +312,31 @@ async function kvClaimEventId(eventId: string): Promise<KvClaimOutcome> {
     );
     return "unavailable";
   }
+}
+
+/**
+ * Phase 2 of the event claim: the work finished, so the short "processing"
+ * marker becomes a 24h "done" marker and later retries are dropped for good.
+ * Fail-open — a failed promotion just means the claim expires in 120s and a
+ * Stripe retry re-does work that is idempotent anyway.
+ */
+async function kvPromoteEventId(eventId: string): Promise<void> {
+  await kvCmd([
+    "SET",
+    `${KV_DEDUP_PREFIX}${eventId}`,
+    KV_DONE_MARKER,
+    "EX",
+    String(KV_DEDUP_TTL_SECONDS),
+  ]);
+}
+
+/**
+ * Release the claim because the work threw. ⚠️ Without this a failed delivery
+ * would hold the key for its full TTL and Stripe's retry — the only chance the
+ * order has — would be answered "duplicate".
+ */
+async function kvReleaseEventId(eventId: string): Promise<void> {
+  await kvCmd(["DEL", `${KV_DEDUP_PREFIX}${eventId}`]);
 }
 
 // Defaults — kept in code (not env) so missing env vars don't break the
@@ -323,10 +393,15 @@ interface EmailLine {
   // Canvas add-on (formatted GBP; canvas price + any float-frame edge surcharge)
   // — present only on a stretched-canvas line so the email itemises it.
   canvasPrice?: string;
-  // The base TIER price (formatted GBP) — the print itself, before add-ons.
+  // The base TIER price (formatted) — the print itself, before add-ons.
   price: string;
   // How many of this line were ordered (≥ 1). Each is separately numbered.
   quantity: number;
+  /** Every sub-amount of ONE unit of this line (print + add-ons), in the
+   *  session's presentment currency, BEFORE any bundle saving. Numeric twin of
+   *  the formatted strings above — used only to derive the discount row when
+   *  the session metadata doesn't carry `bundle_discount_minor`. */
+  unitMinor: number;
 }
 
 /** Parse a metadata quantity string → whole units, 1–99. */
@@ -400,6 +475,29 @@ const TIER_EDITION: Record<string, string> = {
   heirloom: "Heirloom Edition — edition of 18, numbered",
   studio: "Unique — one of one",
 };
+// ⚠️ ESTATE TRUTH (mirror of PRINT_TIERS editionTotal in src/data/paintings.ts,
+// gotcha #9). Emblem + Gallery are OPEN — "unnumbered, issued to order" — and
+// the studio one-off is unique rather than numbered within an edition. The
+// confirmation email asserted "Numbered within its edition" on every order,
+// including orders that carry no numbered print at all.
+const TIER_NUMBERED: Record<string, boolean> = {
+  cabinet: false,
+  atelier: false,
+  collector: true,
+  "atelier-grande": true,
+  heirloom: true,
+  studio: false,
+};
+// Verbatim from ESTATE_AUTHENTICATION.numbering in src/data/paintings.ts — the
+// single source of truth for the estate-stamp / COA / numbering language.
+const NUMBERING_CLAIM = "Numbered within its edition";
+/** The numbering bullet for an order, or null. Only claimed when EVERY print
+ *  line is a numbered tier; on a mixed or open-edition order the per-line
+ *  edition labels ("… unnumbered, issued to order") carry the truth instead. */
+const numberingLineFor = (tierIds: string[]): string | null =>
+  tierIds.length > 0 && tierIds.every((t) => TIER_NUMBERED[t] === true)
+    ? NUMBERING_CLAIM
+    : null;
 // Per-tier ADD-ON price lookups (mirror of framingPricePence /
 // embellishmentPricePence in src/data/paintings.ts PRINT_TIERS +
 // api/checkout.ts TIERS + api/email-basket.ts TIERS — gotcha #9; keep all
@@ -430,11 +528,35 @@ const TIER_CANVAS_PENCE: Record<string, number> = {
   heirloom: 42500, // £425 (A0)
 };
 
+// ⚠️ MONEY / LEGIBILITY. Every per-line figure is converted into the session's
+// PRESENTMENT currency before it is formatted. The catalogue is priced in GBP
+// pence and these lookups are GBP mirrors, so a USD buyer used to receive an
+// invoice whose lines read "£525" under a total reading "$693" — two currencies
+// on one document, neither reconciling with the other. The conversion is the
+// same convertFromGbpMinor mirror the charge itself used, so the line figures
+// are the ones Stripe billed. The BUNDLE saving is NOT applied per line: the
+// lines carry catalogue prices and the saving is rendered as its own explicit
+// row (see `discount` in renderOrderConfirmationHtml), because that is the only
+// shape in which the buyer can see WHY the total is below the sum of the lines.
 const linesFromMetadata = (
   m: Stripe.Metadata | null,
   amountSubtotal: number | null | undefined,
+  sessionCurrency: string | null | undefined,
 ): EmailLine[] => {
   if (!m) return [];
+  // An unsupported code can only mean a currency was added to the site and not
+  // to this file's mirror; fall back to GBP figures rather than throwing into
+  // the confirmation email. processPrintFulfilment alerts the estate separately.
+  const cur = isSupportedCurrency(sessionCurrency)
+    ? (sessionCurrency as string).toLowerCase()
+    : "gbp";
+  /** A GBP-pence catalogue figure → this session's currency, formatted. */
+  const money = (gbpPence: number | null | undefined): string =>
+    typeof gbpPence === "number"
+      ? formatGBP(convertFromGbpMinor(gbpPence, cur), cur)
+      : "—";
+  const minor = (gbpPence: number | null | undefined): number =>
+    typeof gbpPence === "number" ? convertFromGbpMinor(gbpPence, cur) : 0;
   // Single-item shape
   if (m.painting_title && !m.painting_titles) {
     const tierId = m.tier_id || "collector";
@@ -443,6 +565,21 @@ const linesFromMetadata = (
     // Premium-frame surcharge (pence) folded into the framing sub-line so it
     // matches the amount charged (mirror of api/checkout.ts, gotcha #9).
     const frameSurcharge = Number(m.frame_surcharge_pence) || 0;
+    const canvasSurcharge = Number(m.canvas_edge_surcharge_pence) || 0;
+    // GBP-pence sub-amounts of ONE unit, in the order the email renders them.
+    const framingGbp =
+      framing && tierId in TIER_FRAMING_PENCE
+        ? TIER_FRAMING_PENCE[tierId] + frameSurcharge
+        : null;
+    const canvasGbp =
+      m.canvas === "yes" && tierId in TIER_CANVAS_PENCE
+        ? TIER_CANVAS_PENCE[tierId] + canvasSurcharge
+        : null;
+    const embellishGbp =
+      embellished && tierId in TIER_EMBELLISH_PENCE
+        ? TIER_EMBELLISH_PENCE[tierId]
+        : null;
+    const baseGbp = TIER_PRICE_PENCE[tierId] ?? amountSubtotal ?? null;
     return [
       {
         title: m.painting_title,
@@ -453,25 +590,16 @@ const linesFromMetadata = (
         framing,
         embellished,
         // Itemise the add-on only when it applies on this tier AND was bought
-        // (the tier lookup is undefined on A3 / A0 / studio, so framingPrice /
-        // embellishPrice stay absent and no sub-line renders).
-        framingPrice:
-          framing && tierId in TIER_FRAMING_PENCE
-            ? formatGBP(TIER_FRAMING_PENCE[tierId] + frameSurcharge)
-            : undefined,
-        embellishPrice:
-          embellished && tierId in TIER_EMBELLISH_PENCE
-            ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
-            : undefined,
-        canvasPrice:
-          m.canvas === "yes" && tierId in TIER_CANVAS_PENCE
-            ? formatGBP(
-                TIER_CANVAS_PENCE[tierId] +
-                  (Number(m.canvas_edge_surcharge_pence) || 0),
-              )
-            : undefined,
-        price: formatGBP(TIER_PRICE_PENCE[tierId] ?? amountSubtotal ?? null),
+        // (the tier lookup is undefined on the Gallery / Heirloom / studio
+        // tiers, so framingPrice / embellishPrice stay absent and no sub-line
+        // renders).
+        framingPrice: framingGbp !== null ? money(framingGbp) : undefined,
+        embellishPrice: embellishGbp !== null ? money(embellishGbp) : undefined,
+        canvasPrice: canvasGbp !== null ? money(canvasGbp) : undefined,
+        price: money(baseGbp),
         quantity: metaQty(m.quantity),
+        unitMinor:
+          minor(baseGbp) + minor(framingGbp) + minor(canvasGbp) + minor(embellishGbp),
       },
     ];
   }
@@ -492,6 +620,19 @@ const linesFromMetadata = (
     const framing = framingFlags[idx] === "y";
     const embellished = embellishedFlags[idx] === "y";
     const frameSurcharge = Number(frameSurcharges[idx]) || 0;
+    const framingGbp =
+      framing && tierId in TIER_FRAMING_PENCE
+        ? TIER_FRAMING_PENCE[tierId] + frameSurcharge
+        : null;
+    const canvasGbp =
+      canvasFlags[idx] === "y" && tierId in TIER_CANVAS_PENCE
+        ? TIER_CANVAS_PENCE[tierId] + (Number(canvasEdgeSurcharges[idx]) || 0)
+        : null;
+    const embellishGbp =
+      embellished && tierId in TIER_EMBELLISH_PENCE
+        ? TIER_EMBELLISH_PENCE[tierId]
+        : null;
+    const baseGbp = TIER_PRICE_PENCE[tierId] ?? null;
     return {
       title,
       colourway: colourways[idx] || "Original",
@@ -501,24 +642,43 @@ const linesFromMetadata = (
       framing,
       embellished,
       // Itemise the add-on only when it applies on this tier AND was bought.
-      framingPrice:
-        framing && tierId in TIER_FRAMING_PENCE
-          ? formatGBP(TIER_FRAMING_PENCE[tierId] + frameSurcharge)
-          : undefined,
-      embellishPrice:
-        embellished && tierId in TIER_EMBELLISH_PENCE
-          ? formatGBP(TIER_EMBELLISH_PENCE[tierId])
-          : undefined,
-      canvasPrice:
-        canvasFlags[idx] === "y" && tierId in TIER_CANVAS_PENCE
-          ? formatGBP(
-              TIER_CANVAS_PENCE[tierId] + (Number(canvasEdgeSurcharges[idx]) || 0),
-            )
-          : undefined,
-      price: formatGBP(TIER_PRICE_PENCE[tierId] ?? null),
+      framingPrice: framingGbp !== null ? money(framingGbp) : undefined,
+      embellishPrice: embellishGbp !== null ? money(embellishGbp) : undefined,
+      canvasPrice: canvasGbp !== null ? money(canvasGbp) : undefined,
+      price: money(baseGbp),
       quantity: metaQty(quantities[idx]),
+      unitMinor:
+        minor(baseGbp) + minor(framingGbp) + minor(canvasGbp) + minor(embellishGbp),
     };
   });
+};
+
+/**
+ * The bundle saving actually applied to this order, in the session's currency.
+ *
+ * ⚠️ MONEY. api/checkout.ts bakes the saving into the PRINT LINE unit amounts
+ * (so the promo-code field stays available) and records what it took off as
+ * `bundle_discount_minor`, with the percent in `bundle_percent_off`. The email
+ * therefore prices its lines at catalogue value and subtracts this figure —
+ * without it a 2+ print order showed lines summing to MORE than the total, with
+ * nothing to explain the gap. Prefer the recorded figure; the percent-derived
+ * fallback only runs on a session created before that key existed.
+ */
+const bundleDiscountMinor = (
+  m: Stripe.Metadata | null,
+  lines: EmailLine[],
+): { percentOff: number; minor: number } => {
+  const percentOff = Number(m?.bundle_percent_off) || 0;
+  if (percentOff <= 0) return { percentOff: 0, minor: 0 };
+  const recorded = Number(m?.bundle_discount_minor);
+  if (Number.isFinite(recorded) && recorded > 0) {
+    return { percentOff, minor: Math.round(recorded) };
+  }
+  const derived = lines.reduce(
+    (sum, l) => sum + Math.round((l.unitMinor * l.quantity * percentOff) / 100),
+    0,
+  );
+  return { percentOff, minor: derived };
 };
 
 // ---------------------------------------------------------------------------
@@ -651,6 +811,11 @@ const GIFT_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 // CURRENCY_RATES / convertFromGbpMinor in api/checkout.ts and
 // CURRENCIES[*].rate / convertFromGbpPence in src/lib/currency.tsx — change all
 // three in the same commit or the gift's value drifts between currencies.
+//
+// ⚠️ THIS TABLE IS ONE OF THREE COPIES. It is a MONEY MIRROR of
+// CURRENCY_RATES / convertFromGbpMinor in api/checkout.ts and
+// CURRENCIES[*].rate / convertFromGbpPence in src/lib/currency.tsx. Adding a
+// currency to the site means adding it in ALL THREE files, in the same commit.
 const CURRENCY_RATES: Record<string, number> = {
   gbp: 1,
   usd: 1.32,
@@ -658,10 +823,28 @@ const CURRENCY_RATES: Record<string, number> = {
   aud: 2.0,
   cad: 1.82,
 };
+/** Is `code` a currency THIS file can price in? Callers that must not throw
+ *  (the invoice renderer, the Klaviyo payload) check this first and fall back
+ *  to GBP figures + an estate alert. */
+const isSupportedCurrency = (code: string | null | undefined): boolean =>
+  typeof code === "string" &&
+  Object.prototype.hasOwnProperty.call(CURRENCY_RATES, code.toLowerCase());
+
 const convertFromGbpMinor = (gbpPence: number, code: string): number => {
   if (code === "gbp") return Math.round(gbpPence);
   const rate = CURRENCY_RATES[code];
-  if (!rate) return Math.round(gbpPence);
+  // ⚠️ THROW, never fall through. This used to `return Math.round(gbpPence)`
+  // on an unrecognised code — GBP pence relabelled as the new currency. Add a
+  // currency to the site, forget this third copy, and every gift card mints at
+  // the GBP figure while every EXISTING card becomes unredeemable in it, with
+  // nothing logged. A throw is caught by the caller, alerts the estate, and
+  // costs one card instead of silently mispricing all of them.
+  if (!rate) {
+    throw new Error(
+      `Unsupported currency "${code}" in api/stripe-webhook.ts CURRENCY_RATES — ` +
+        "add it here AND in api/checkout.ts AND in src/lib/currency.tsx (money mirror).",
+    );
+  }
   return Math.ceil((gbpPence * rate) / 100) * 100; // whole major unit
 };
 
@@ -919,7 +1102,22 @@ const renderOrderConfirmationHtml = (p: {
    */
   orderRef: string;
   lines: EmailLine[];
+  /** The bundle saving row, already formatted in the session's currency, or
+   *  null when the order carried no bundle discount. Rendered between the
+   *  lines and the total — the lines are catalogue prices, so without this row
+   *  they sum to MORE than the total and the invoice cannot be reconciled. */
+  discount: { label: string; value: string } | null;
   total: string;
+  /**
+   * The numbering claim for THIS order, or null.
+   *
+   * ⚠️ ESTATE TRUTH. This was asserted unconditionally as "Numbered within its
+   * edition", but the Emblem and Gallery editions are "unnumbered, issued to
+   * order" (src/data/paintings.ts PRINT_TIERS editionTotal === null). The
+   * caller passes the line only when EVERY print line on the order is a
+   * numbered tier; otherwise the per-line edition labels carry the truth.
+   */
+  numberingLine: string | null;
   // Null when no Family & Friends code was minted for this order (a £0 order —
   // a gift code covering the total — never mints one; see the farming guard in
   // processCompletedSession). The card block is then omitted entirely.
@@ -934,7 +1132,6 @@ const renderOrderConfirmationHtml = (p: {
   })();
   const ESTATE = {
     stamp: "Estate-stamped by The Mandala Company",
-    numbering: "Numbered within its edition",
     coa: "Issued with a Certificate of Authenticity carrying a unique Certificate ID",
     printer: "Printed and finished by a specialist giclée studio on the Sussex coast",
   };
@@ -1006,12 +1203,17 @@ const renderOrderConfirmationHtml = (p: {
     + `<p style="${s.eyebrow}">Your order</p>`
     + `<div style="${s.card}">${lineHtml}`
     + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
+    + (p.discount
+        ? `<p style="font-family:${SANS};font-size:14px;margin:0 0 8px 0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">${esc(p.discount.label)}</span> &nbsp; <strong style="color:#ede6d6;">− ${esc(p.discount.value)}</strong></p>`
+        : "")
     + `<p style="font-family:${SANS};font-size:14px;margin:0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Total (incl. shipping)</span> &nbsp; <strong style="color:#ede6d6;font-size:16px;">${esc(p.total)}</strong></p>`
     + `</div>`
     + `<p style="${s.eyebrow}margin-top:28px;">Authentication</p>`
     + `<div style="${s.card}">`
     + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.stamp}</p>`
-    + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.numbering}</p>`
+    + (p.numberingLine
+        ? `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${esc(p.numberingLine)}</p>`
+        : "")
     + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.coa}</p>`
     + `<p style="${s.meta}color:rgba(237,230,214,0.78);">· ${ESTATE.printer}</p>`
     + `</div>`
@@ -1093,13 +1295,22 @@ const renderGiftHtml = (p: {
     ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards an estate-stamped giclée print of one of Stephen's mandalas, each one made to order by a specialist giclée studio on the Sussex coast.</p>`
     : `<p style="${s.body}">Your gift card for <em>The Art of Stephen Meakin</em> is ready. Below is the code and how it's redeemed — forward this email to whomever it's for, or keep it for yourself.</p>`;
 
-  const noteHtml =
-    p.toRecipient && cleanStr(p.giftMessage ?? undefined)
-      ? `<div style="${s.noteCard}">`
-        + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">A note from ${buyerLabel}</p>`
-        + `<p style="${s.note}">${esc((p.giftMessage ?? "").trim())}</p>`
-        + `</div>`
-      : "";
+  // ⚠️ The note is rendered on BOTH variants. It used to be gated on
+  // `p.toRecipient`, so a buyer who left the recipient email blank — the path
+  // /gift explicitly invites ("Leave these blank to gift the card to yourself
+  // to pass on by hand") — had up to 400 characters validated, capped, shown
+  // back in the basket, sent to Stripe, and then rendered to NOBODY. On the
+  // buyer-addressed copy it is labelled with the /gift form's own field label
+  // (src/pages/Gift.tsx, "A personal message"), because on that copy the note
+  // is the buyer's own words coming back to them to pass on.
+  const noteHtml = cleanStr(p.giftMessage ?? undefined)
+    ? `<div style="${s.noteCard}">`
+      + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">${
+          p.toRecipient ? `A note from ${buyerLabel}` : "A personal message"
+        }</p>`
+      + `<p style="${s.note}">${esc((p.giftMessage ?? "").trim())}</p>`
+      + `</div>`
+    : "";
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>A gift from the Stephen Meakin estate</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
@@ -1156,6 +1367,10 @@ const renderGiftOrderConfirmationHtml = (p: {
     expiresLabel: string | null;
     recipientName?: string | null;
     recipientEmail?: string | null;
+    /** The buyer's own note for this card. ⚠️ Rendered here too: a gift-only
+     *  order with no recipient email is the one case where NO other email
+     *  carries it, and this confirmation is the buyer's copy of the card. */
+    giftMessage?: string | null;
   }>;
   total: string;
   estateEmail: string;
@@ -1175,6 +1390,7 @@ const renderGiftOrderConfirmationHtml = (p: {
     card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
     code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:20px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 6px 0;display:block;`,
     meta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
+    note: `font-family:${DISPLAY};font-style:italic;font-size:15px;line-height:1.6;color:#ede6d6;margin:0;`,
     signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
     footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
     link: `color:#c97844;text-decoration:underline;`,
@@ -1184,6 +1400,13 @@ const renderGiftOrderConfirmationHtml = (p: {
       const sentTo = c.recipientEmail
         ? `Sent to ${esc(c.recipientName || c.recipientEmail)} · ${esc(c.recipientEmail)}`
         : "Kept for you to pass on by hand.";
+      // The buyer's note, in the /gift form's own words for the field
+      // (src/pages/Gift.tsx, "A personal message").
+      const note = (c.giftMessage ?? "").trim();
+      const noteHtml = note
+        ? `<p style="${s.meta}margin-top:10px;">A personal message</p>`
+          + `<p style="${s.note}margin-top:4px;">${esc(note)}</p>`
+        : "";
       return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
         + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#ede6d6;">Gift card${c.label ? ` — ${esc(c.label)}` : ""}</strong> &nbsp;·&nbsp; <strong style="color:#ede6d6;">${esc(c.amountLabel)}</strong></p>`
         + `<p style="${s.meta}margin-top:4px;">${sentTo}</p>`
@@ -1193,6 +1416,13 @@ const renderGiftOrderConfirmationHtml = (p: {
                   ? `<p style="${s.meta}">Valid until ${esc(c.expiresLabel)}.</p>`
                   : "")
             : `<p style="${s.meta}">The code for this card is being issued — we'll send it on shortly.</p>`)
+        // ⚠️ The buyer's own copy of what they wrote. /gift invites the buyer to
+        // leave the recipient fields blank "to pass on by hand", and in that
+        // case the note reached NOBODY: the recipient email's note block is
+        // gated on there being a recipient, and this confirmation never
+        // rendered it at all. So a buyer could write 400 characters, watch the
+        // basket quote them back, pay, and have them silently discarded.
+        + noteHtml
         + `</div>`;
     })
     .join("");
@@ -2129,7 +2359,11 @@ async function processPrintFulfilment(
       );
     } else {
       try {
-        const klaviyoLines = linesFromMetadata(m, session.amount_subtotal);
+        const klaviyoLines = linesFromMetadata(
+          m,
+          session.amount_subtotal,
+          session.currency,
+        );
         await klaviyoPlacedOrderEvent(klaviyoKey, {
           email: buyerEmail,
           name: buyerName,
@@ -2400,6 +2634,25 @@ async function processPrintFulfilment(
     const bccEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
     const resend = new Resend(resendKey);
 
+    // ⚠️ Priced in the SESSION's currency, not GBP. The lines used to render
+    // `formatGBP(catalogue pence)` with the currency argument omitted, so a USD
+    // buyer received an invoice whose lines read "£525" above a total reading
+    // "$693". They are catalogue prices, so the bundle saving must then be
+    // subtracted explicitly — without that row a 2+ print order shows lines
+    // summing to MORE than the total with nothing to explain the gap. (The
+    // saving is baked into the Stripe line unit amounts so the promo-code field
+    // stays available for a gift code; the email has to re-state it.)
+    const emailLines = linesFromMetadata(
+      m,
+      session.amount_subtotal,
+      session.currency,
+    );
+    const bundle = bundleDiscountMinor(m, emailLines);
+    const orderTierIds = (m.tier_ids || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const sendResult = await resend.emails.send({
       from: `${FROM_NAME} <${fromEmail}>`,
       to: [buyerEmail],
@@ -2413,8 +2666,18 @@ async function processPrintFulfilment(
       html: renderOrderConfirmationHtml({
         buyerName,
         orderRef: session.id,
-        lines: linesFromMetadata(m, session.amount_subtotal),
+        lines: emailLines,
+        discount:
+          bundle.minor > 0
+            ? {
+                label: `Estate bundle thank-you (${bundle.percentOff}%)`,
+                value: `− ${formatGBP(bundle.minor, session.currency)}`,
+              }
+            : null,
         total: formatGBP(session.amount_total, session.currency),
+        // Only claimed when EVERY print line is a numbered tier — Emblem and
+        // Gallery are "unnumbered, issued to order".
+        numberingLine: numberingLineFor(orderTierIds),
         thankYouCode: thankYou?.code ?? null,
         thankYouValue: thankYou?.valueLabel ?? null,
         thankYouExpiry: thankYou?.expiresLabel ?? null,
@@ -2763,7 +3026,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // event id on this warm instance, return 200 immediately without re-running
   // side effects (Resend send, coupon mint). Stripe stops retrying on a 200.
   cleanSeenEvents();
-  if (seenEvents.has(event.id)) {
+  if (seenEvents.has(event.id) || inFlightEvents.has(event.id)) {
     console.log("[stripe-webhook] duplicate event id, skipping", {
       event_id: event.id,
       type: event.type,
@@ -2771,8 +3034,45 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     });
     return ok();
   }
+  // ⚠️ TWO-PHASE — do NOT collapse this back into a single `seenEvents.set()`
+  // before the switch. Both dedup layers used to claim the event BEFORE doing
+  // the work and never released it: if the lambda died or timed out between the
+  // claim and the mint, Stripe's retry — the only chance the order had — found
+  // the key already present and was answered "duplicate", so a PAID gift card
+  // was silently never issued, with no code, no email and no alert.
+  //
+  // Reachable, not theoretical: processGiftCards runs ~6 sequential round trips
+  // per card (coupon, promo, RPUSH, EXPIRE, up to 2 sends) for up to 20 cards,
+  // AFTER processPrintFulfilment in the same invocation.
+  //
+  // The id is now marked in-flight, promoted to "done" only once the work
+  // completes, and RELEASED on a throw so the retry can do the work. Everything
+  // stays fail-open: Stripe is still always answered 200.
+  inFlightEvents.add(event.id);
+  try {
+    await dispatchEvent(event, stripe);
+  } catch (err) {
+    inFlightEvents.delete(event.id);
+    await kvReleaseEventId(event.id).catch(() => {});
+    console.error(
+      "[stripe-webhook] handler threw — claim released so Stripe's retry can re-run it:",
+      err instanceof Error ? err.message : err,
+      { event_id: event.id, type: event.type },
+    );
+    return ok();
+  }
+  inFlightEvents.delete(event.id);
   seenEvents.set(event.id, Date.now());
+  await kvPromoteEventId(event.id).catch(() => {});
+  return ok();
+}
 
+/** The per-event work. Split out so the caller can own the two-phase claim
+ *  (mark in-flight → run → promote, or release on a throw). */
+async function dispatchEvent(
+  event: Stripe.Event,
+  stripe: Stripe,
+): Promise<void> {
   switch (event.type) {
     // ⚠️ SPLIT GATE — read the block comment above processPrintFulfilment
     // before changing this. `checkout.session.completed` fires when the buyer
@@ -3032,6 +3332,4 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     default:
       console.log(`[stripe-webhook] Unhandled event: ${event.type}`);
   }
-
-  return ok();
 }

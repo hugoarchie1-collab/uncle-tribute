@@ -187,10 +187,23 @@ export const Gift = () => {
   // buyer will actually be charged in, using the same conversion the server
   // applies (currency.ts / checkout.ts share CURRENCY_FX_VERSION).
   const gbpRangeLabel = `£${MIN_POUNDS_LABEL} to £${MAX_POUNDS_LABEL}`;
+  const chargedRangeLabel = `${fmtP(GIFT_MIN_PENCE)} to ${fmtP(GIFT_MAX_PENCE)}`;
   const amountConstraint =
     code === "GBP"
       ? `Whole pounds, from ${gbpRangeLabel}.`
-      : `Whole pounds, from ${gbpRangeLabel} — charged as ${fmtP(GIFT_MIN_PENCE)} to ${fmtP(GIFT_MAX_PENCE)} in ${code}.`;
+      : `Whole pounds, from ${gbpRangeLabel} — charged as ${chargedRangeLabel} in ${code}.`;
+  // ⚠️ THE ADVERTISED RANGE MUST AGREE WITH THE FIELD.
+  // The caption rail used to advertise the window in the buyer's currency ALONE
+  // ("$33 – $6,600"), while the only place you can type an amount is a GBP field
+  // the server validates in whole pounds. A US buyer read the dollar ceiling,
+  // typed 6000 — inside it — and was refused. The rail now LEADS in the unit the
+  // field accepts and carries the converted window after it, so the ceiling a
+  // buyer reads is the ceiling they can type. (Money unchanged: the converted
+  // figures are still what Stripe charges.)
+  const windowRailLabel =
+    code === "GBP"
+      ? `£${MIN_POUNDS_LABEL} – £${MAX_POUNDS_LABEL}`
+      : `£${MIN_POUNDS_LABEL} – £${MAX_POUNDS_LABEL} · charged as ${fmtP(GIFT_MIN_PENCE)} – ${fmtP(GIFT_MAX_PENCE)}`;
 
   // Resolve the currently-chosen amount (pence) + display label, or null when
   // the custom field is empty / invalid. This is the SINGLE source of the
@@ -223,7 +236,14 @@ export const Gift = () => {
   const customInvalid =
     selection.kind === "custom" && customAmount.trim() !== "" && resolved === null;
   const showCustomError = customInvalid && customTouched;
-  const amountErrorText = `Please enter a whole-pound amount between £${MIN_POUNDS_LABEL} and £${MAX_POUNDS_LABEL}.`;
+  // The message speaks in the SAME unit as the field it belongs to (whole
+  // pounds), and — off GBP — restates the converted window so a buyer who was
+  // refused can see immediately what their currency ceiling really is. Reuses
+  // the "charged as … in <code>" construction already used at the field.
+  const amountErrorText =
+    code === "GBP"
+      ? `Please enter a whole-pound amount between £${MIN_POUNDS_LABEL} and £${MAX_POUNDS_LABEL}.`
+      : `Please enter a whole-pound amount between £${MIN_POUNDS_LABEL} and £${MAX_POUNDS_LABEL} — charged as ${chargedRangeLabel} in ${code}.`;
 
   // ---- Denomination ladder as a real radio group ---------------------------
   // Was a row of `aria-pressed` toggle buttons: nothing announced the group's
@@ -402,10 +422,13 @@ export const Gift = () => {
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7]")}>
                   A digital gift card · redeemed against any edition
                 </p>
-                {/* The gift window, LIVE from GIFT_MIN/MAX_PENCE in the buyer's
-                    currency — never re-typed. */}
+                {/* The gift window, LIVE from GIFT_MIN/MAX_PENCE — never
+                    re-typed. ⚠️ Leads in the unit the FIELD accepts (see
+                    windowRailLabel): advertising "$33 – $6,600" over a GBP
+                    input meant a US buyer read the dollar ceiling, typed 6000,
+                    and was refused. */}
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7] sm:text-center tabular-nums")}>
-                  {fmtP(GIFT_MIN_PENCE)} – {fmtP(GIFT_MAX_PENCE)}
+                  {windowRailLabel}
                 </p>
                 <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.7] sm:text-right")}>
                   Estate-stamped giclée · free delivery

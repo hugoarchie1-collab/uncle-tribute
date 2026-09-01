@@ -1,9 +1,10 @@
 /**
  * POST /api/admin/order-shipped
  *
- * Manually-triggered "your print has shipped" email. Hugo hits this once a
- * Point 101 dispatch lands on his desk with a tracking number, and the buyer
- * gets the estate-branded shipped notification via Resend.
+ * Manually-triggered "your print has shipped" email. Hugo hits this once the
+ * supplier's dispatch lands on his desk with a tracking number, and the buyer
+ * gets the estate-branded shipped notification via Resend. (The supplier is
+ * Giclee & Co, Brighton — NEVER named to the buyer; see the copy note below.)
  *
  * Authenticated with a shared secret env var (ADMIN_API_KEY). No login UI —
  * Hugo's expected to curl this or paste into a future tiny admin form.
@@ -103,6 +104,9 @@ const formatDispatchedAt = (date: Date): string =>
 interface ShippedLine {
   title: string;
   colourway: string;
+  // The painting id, when the metadata carries it — used to point the "Leave a
+  // review" link at the right product page (see reviewUrl below).
+  paintingId?: string;
 }
 const linesFromMetadata = (m: Stripe.Metadata | null): ShippedLine[] => {
   if (!m) return [];
@@ -111,6 +115,7 @@ const linesFromMetadata = (m: Stripe.Metadata | null): ShippedLine[] => {
       {
         title: m.painting_title,
         colourway: m.colourway_name || "Original",
+        paintingId: m.painting_id || undefined,
       },
     ];
   }
@@ -122,10 +127,15 @@ const linesFromMetadata = (m: Stripe.Metadata | null): ShippedLine[] => {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+  const paintingIds = (m.painting_ids || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
   if (titles.length === 0) return [];
   return titles.map((title, idx) => ({
     title,
     colourway: colourways[idx] || "Original",
+    paintingId: paintingIds[idx] || undefined,
   }));
 };
 
@@ -157,6 +167,14 @@ const renderOrderShippedHtml = (p: {
     const t = (p.buyerName ?? "").trim();
     return t ? esc(t.split(/\s+/)[0]) : "there";
   })();
+  // ⚠️ /reviews was DELETED (2026-08-31) — reviews now live as the `#reviews`
+  // section on each product page. This link still pointed at /reviews, so every
+  // buyer who followed it after their print shipped landed on a 404. Point it at
+  // the product page they actually bought (route: /collections/:id), falling
+  // back to /collections when the session metadata carries no painting id.
+  const reviewUrl = p.lines[0]?.paintingId
+    ? `${p.siteUrl}/collections/${p.lines[0].paintingId}#reviews`
+    : `${p.siteUrl}/collections`;
   const s = {
     page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
     shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
@@ -182,7 +200,12 @@ const renderOrderShippedHtml = (p: {
     + `<body style="${s.page}"><div style="${s.shell}">`
     + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
     + `<h1 style="${s.heading}">Your print is on its way, ${first}.</h1>`
-    + `<p style="${s.body}">Your giclée left the atelier on <strong style="color:#ede6d6;">${esc(p.dispatchedAt)}</strong> via ${esc(p.carrier)}. You can follow it from here:</p>`
+    // ⚠️ ESTATE TRUTH: this read "Your giclée left the atelier". The estate has
+    // no atelier — it owns no studio at all. The approved buyer wording for
+    // where prints are made is ESTATE_AUTHENTICATION.printer in
+    // src/data/paintings.ts, reused verbatim below: "a specialist giclée studio
+    // on the Sussex coast" (the supplier is never named to buyers).
+    + `<p style="${s.body}">Your print left a specialist giclée studio on the Sussex coast on <strong style="color:#ede6d6;">${esc(p.dispatchedAt)}</strong> via ${esc(p.carrier)}. You can follow it from here:</p>`
     + `<div style="${s.giftCard}">`
     + `<p style="${s.small}margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.18em;">Tracking</p>`
     + `<a href="${esc(p.trackingUrl)}" style="${s.link}font-size:15px;">${esc(p.trackingUrl)}</a>`
@@ -194,7 +217,7 @@ const renderOrderShippedHtml = (p: {
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.eyebrow}">When it's on the wall</p>`
     + `<p style="${s.body}">If it brings you even a little of what it brought Stephen to make, we'd be honoured to hear how it lives with you — and your words help the next person choose. It takes a moment.</p>`
-    + `<p style="margin:8px 0 4px 0;"><a href="${esc(p.siteUrl)}/reviews" style="${s.link}font-weight:700;">Leave a review →</a></p>`
+    + `<p style="margin:8px 0 4px 0;"><a href="${esc(reviewUrl)}" style="${s.link}font-weight:700;">Leave a review →</a></p>`
     + `<p style="${s.signoff}">With warmth,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`

@@ -45,7 +45,9 @@
 //     · The query is lowercased, diacritic-folded, tokenised, stop-worded,
 //       deduped and capped (MAX_QUERY_TOKENS) — so a pasted essay can't turn
 //       into thousands of scoring passes, and "kepler's" can't leak a bare "s"
-//       token that matches every document on the site.
+//       token that matches every document on the site. Over the cap the
+//       survivors are the RAREST tokens by posting-list length, not the first
+//       twelve in reading order (see MAX_QUERY_TOKENS).
 //     · Each term scores against the precomputed title (×5) / subtitle (×3) /
 //       body (×1) tf-maps — NEVER by re-splitting the raw text with a regex.
 //     · Per-term IDF is computed from the number of docs the term actually
@@ -114,7 +116,14 @@ export interface SearchDoc {
  * when no clean sentence-bounded excerpt could be produced.
  */
 export interface SearchSnippet {
-  field: "title" | "subtitle" | "body";
+  /** Always "body" — `buildSnippet` excerpts the body field and nothing else
+   *  (the title and subtitle are already rendered in full beside the snippet,
+   *  so excerpting them would only restate what is on screen). Declared as a
+   *  one-member union rather than dropped so a caller can still switch on it
+   *  if a second field is ever excerpted, and so the shape stays self-
+   *  describing. ⚠️ It used to declare all three, which was a promise the
+   *  implementation could never keep. */
+  field: "body";
   text: string;
   offset: number;
   leadingEllipsis: boolean;
@@ -245,7 +254,9 @@ interface IndexSeed {
  * Until then: every string below is VERBATIM from FAQ.tsx's `FAQS`, in the same
  * order, with JSX flattened to text (a `<br/><br/>` becomes a space). Re-copy
  * it whenever FAQ.tsx changes — never paraphrase, never re-word, never invent.
- * Last reconciled against FAQ.tsx: 2026-09-01 (10 questions).
+ * Last reconciled against FAQ.tsx: 2026-09-01 (13 questions — the count read
+ * "10" while the array held 13; `npm run check:faq` verifies the CONTENT, not
+ * this comment, so only a reader was being misled).
  */
 interface FaqSeed {
   /** Stable id suffix — used instead of the array index so the keyword blobs
@@ -300,8 +311,19 @@ const FAQ_SEEDS: FaqSeed[] = [
     // The ONE document that owns the ladder (see the header note) — plus the
     // money-intent words a buyer actually types. Derived rungs are appended
     // from TIER_KEYWORDS at build time.
+    //
+    // ⚠️ "cost"/"costs" are DELIBERATELY ABSENT. `cost` also expands (SYNONYMS)
+    // to price / pricing / "how much", so carrying the literal word here made
+    // this blob collect the query token AND three synonyms at the keywords
+    // weight — and `delivery cost` returned THIS answer (16.12) above the
+    // shipping answer (14.85) that actually owns free delivery. Money words
+    // that are about DELIVERY belong to the shipping seed; the ladder keeps
+    // price/pricing, which is what it really answers.
+    // "cheapest / least expensive / entry / budget" route the bottom-of-ladder
+    // question here (the Emblem Edition at £250 IS the answer, and it is in the
+    // verbatim answer above). Index-only, so no claim is made in buyer copy.
     keywords:
-      "price prices pricing cost costs how much dimensions measurements size chart ladder tier tiers edition editions",
+      "price prices pricing how much cheapest least expensive entry budget affordable dimensions measurements size chart ladder tier tiers edition editions",
   },
   {
     id: "framing",
@@ -598,8 +620,17 @@ const MIN_TOKEN_LENGTH = 2;
 /** Hard cap on scored query tokens. A pasted paragraph is a query someone can
  *  put in a shareable URL — it must not be able to cost the main thread more
  *  than a keystroke does. Twelve distinct terms is far more than any real
- *  search, and the cap is applied AFTER stop-wording so the survivors are the
- *  meaningful ones. */
+ *  search.
+ *
+ *  ⚠️ WHICH twelve matters. The cap used to keep the first twelve in READING
+ *  ORDER and the comment claimed those were "the meaningful ones" — they are
+ *  not: in English the payload noun lands LAST. A query ending "…artwork known
+ *  widely as Keplers Key" kept `please tell about wonderful beautiful amazing
+ *  incredible stunning gorgeous magnificent artwork known` and DISCARDED
+ *  `widely / keplers / key`, so it returned the Academy and biography pages
+ *  instead of the painting that the short query `keplers key` finds first.
+ *  `expandQuery` now ranks the candidates by RARITY before slicing (see there).
+ *  The cap itself is unchanged — it is what bounds the DoS surface. */
 const MAX_QUERY_TOKENS = 12;
 
 /** Hard cap on total scored terms (query tokens + their synonym expansions). */
@@ -664,7 +695,14 @@ const toIndexed = (seed: IndexSeed): IndexedDoc => {
   const subtitle = buildField(doc.subtitle);
   const body = buildField(doc.body);
   const kw = buildField(keywords);
+  // ⚠️ A `snippetFrom` MISS FAILS SAFE, not open. It used to fail OPEN: a
+  // snippetFrom that `indexOf` couldn't find (a data edit upstream, a changed
+  // separator) silently widened the window to the WHOLE body — so a seed
+  // written specifically to skip an eyebrow, a heading, or a passage that must
+  // never be excerpted would quietly start excerpting exactly that. The window
+  // is an exclusion, so a broken exclusion must mean NO snippet.
   const at = seed.snippetFrom ? doc.body.indexOf(seed.snippetFrom) : 0;
+  const windowFound = !seed.snippetFrom || at >= 0;
   return {
     doc,
     titleLc: foldDiacritics(doc.title.toLowerCase()),
@@ -675,10 +713,11 @@ const toIndexed = (seed: IndexSeed): IndexedDoc => {
     body,
     keywords: kw,
     docLen: title.len + subtitle.len + body.len + kw.len,
-    snippetable: seed.snippetable,
-    snippetStart: at > 0 ? at : 0,
-    snippetEnd:
-      at >= 0 && seed.snippetFrom
+    snippetable: seed.snippetable && windowFound,
+    snippetStart: windowFound ? Math.max(at, 0) : 0,
+    snippetEnd: !windowFound
+      ? 0
+      : seed.snippetFrom
         ? at + seed.snippetFrom.length
         : doc.body.length,
   };
@@ -779,6 +818,8 @@ function buildIndex(): IndexedDoc[] {
     title: string;
     body: string;
     snippetable: boolean;
+    /** See IndexSeed.snippetFrom — the PROSE part an excerpt may come from. */
+    snippetFrom?: string;
   }[] = [
     {
       // WELCOME.bio is folded in here rather than carried as its own doc.
@@ -822,6 +863,17 @@ function buildIndex(): IndexedDoc[] {
     {
       // The Academy + the letter he left every student. studentsLetter was
       // unindexed; it folds in here rather than inventing a heading for it.
+      //
+      // ⚠️ FINDABLE, EXCERPTED ONLY FROM THE EDITORIAL INTRO. The body ends
+      // with STEPHEN'S LETTER TO HIS STUDENTS — his own voice, addressed to
+      // them. It is published prose on /about, so unlike Polly's tribute it is
+      // not walled off entirely; but 75 distinct single-word queries were
+      // rendering a fragment of the letter itself ("…Relax because the real
+      // work you will need to do will be the work you do on 'yourself'…") in a
+      // result list beside priced painting tiles. `snippetFrom` narrows the
+      // excerpt window to `ABOUT.academyQuote` — the estate's own factual
+      // description of TAGA — so the doc still ranks and still routes to
+      // /about, and the letter is read where it was written to be read.
       id: "about-academy",
       title: "The Art of Geometry Academy",
       body: joinBody(
@@ -829,6 +881,7 @@ function buildIndex(): IndexedDoc[] {
         ABOUT.studentsIntro,
         ABOUT.studentsLetter,
       ),
+      snippetFrom: ABOUT.academyQuote,
       snippetable: true,
     },
     {
@@ -841,6 +894,12 @@ function buildIndex(): IndexedDoc[] {
       // INTERVIEW — the January 2011 Time Out Dubai interview. Stephen's own
       // answers, verbatim. This is the single richest thing in the archive for
       // someone searching a place, a tradition or a phrase he used.
+      //
+      // ⚠️ Same treatment as about-academy: the Q&A is Stephen ANSWERING, "word
+      // for word as he gave them" (INTERVIEW.context says so). The excerpt
+      // window is narrowed to the estate's editorial framing of the piece, so
+      // the whole interview stays searchable and rankable while a result list
+      // never puts half a sentence of his answer next to a price.
       id: "about-interview",
       title: INTERVIEW.eyebrow,
       body: joinBody(
@@ -851,6 +910,7 @@ function buildIndex(): IndexedDoc[] {
         INTERVIEW.source.date,
         INTERVIEW.source.note,
       ),
+      snippetFrom: INTERVIEW.context.join(" "),
       snippetable: true,
     },
     {
@@ -876,6 +936,7 @@ function buildIndex(): IndexedDoc[] {
         url: "/about",
         body: s.body,
       },
+      snippetFrom: s.snippetFrom,
       snippetable: s.snippetable,
     });
   }
@@ -1057,12 +1118,37 @@ const PHRASE_BONUS = 4;
 const BM25_K1 = 1.2;
 const BM25_B = 0.65;
 
-/** Length-normalisation strength for the KEYWORDS field. Zero — i.e. none.
- *  BM25's `b` exists to stop an author padding a document to game the score;
- *  the keyword blobs are authored in THIS file, are never displayed, and are
- *  long only because a question legitimately has many phrasings. Penalising
- *  them for that pushed "how much is a print" off the sizes answer. */
-const BM25_B_KEYWORDS = 0;
+/** Length-normalisation strength for the KEYWORDS field.
+ *
+ *  ⚠️ This was 0 — no length penalty AT ALL — on the reasoning that the blobs
+ *  are authored here and never displayed, so there is no one to game the score.
+ *  True, but it made a long blob strictly better than a short one: the sizes
+ *  blob is by far the longest in the file and every term it happened to contain
+ *  scored at full keywords weight, which is how `delivery cost` put the sizes
+ *  answer above the shipping answer. A SMALL b restores the ordinary "a term in
+ *  a 40-word blob is weaker evidence than the same term in a 6-word blob"
+ *  discount without the full BM25_B penalty a prose field takes — the blobs are
+ *  still legitimately long because a question has many phrasings. */
+const BM25_B_KEYWORDS = 0.35;
+
+/**
+ * Per-doc-type multiplier applied to the BM25 total (NOT to the phrase bonus).
+ *
+ * ⚠️ COMMERCIAL, not cosmetic. A News doc is an ANNOUNCEMENT — "Coming soon",
+ * a release date — and it is not purchasable. Its body is one short summary,
+ * so BM25's length normalisation flattered it hard: `gold` returned the "Orchis
+ * 7 — Aquamarine · Coming soon" announcement ABOVE four buyable paintings that
+ * carry real Cygnus Gold / Saffron Gold colourways, and `orchi` put it above
+ * both Orchid works. On a browse query the buyable work must lead.
+ *
+ * The discount is small and deliberately does NOT touch `phraseBonus`, so a
+ * visitor typing a news headline verbatim still gets the news item first — the
+ * headline match is worth up to PHRASE_BONUS * 2 undemoted, which no browse
+ * query can produce. Everything unlisted scores at 1.
+ */
+const TYPE_WEIGHT: Partial<Record<SearchDoc["type"], number>> = {
+  news: 0.75,
+};
 
 /** A result must score at least this fraction of the best hit to be returned.
  *  Cuts the "shares one common word and nothing else" tail. */
@@ -1192,14 +1278,37 @@ const expandQuery = (query: string): ScoredTerm[] => {
   );
   if (source.length === 0) return [];
 
-  const seen = new Set<string>();
-  const tokens: string[] = [];
+  const candidates: string[] = [];
+  const deduped = new Set<string>();
   for (const t of source) {
-    if (seen.has(t)) continue;
-    seen.add(t);
-    tokens.push(t);
-    if (tokens.length >= MAX_QUERY_TOKENS) break;
+    if (deduped.has(t)) continue;
+    deduped.add(t);
+    candidates.push(t);
   }
+
+  // ⚠️ RARITY, not reading order. Over the cap, keep the tokens that carry the
+  // most information: a token ABSENT from the vocabulary (df 0 — a proper noun
+  // the corpus spells differently, or a typo the fuzzy pass will rescue) or
+  // with a short posting list discriminates; a token in half the site does not.
+  // Slicing the first twelve in document order threw the payload noun away —
+  // see MAX_QUERY_TOKENS. `VOCAB.get(t).length` is the (doc, field) posting
+  // count, a slightly coarser proxy than true document frequency but built and
+  // free; the tie-break on original position keeps the ordering stable, and the
+  // survivors are re-sorted back into query order so snippet matchers still
+  // scan the prose left to right.
+  const tokens =
+    candidates.length <= MAX_QUERY_TOKENS
+      ? candidates
+      : candidates
+          .map((term, at) => ({ term, at, df: VOCAB.get(term)?.length ?? 0 }))
+          .sort((a, b) => a.df - b.df || a.at - b.at)
+          .slice(0, MAX_QUERY_TOKENS)
+          .sort((a, b) => a.at - b.at)
+          .map((c) => c.term);
+
+  // Synonym dedupe is against the tokens that SURVIVED the cap — a token that
+  // was dropped must not go on suppressing a synonym of a token that was kept.
+  const seen = new Set<string>(tokens);
 
   const terms: ScoredTerm[] = tokens.map((term) => ({
     term,
@@ -1547,6 +1656,21 @@ function buildSnippet(
  */
 const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{2,4}[\s_-]+[a-z0-9]{4,10}\s*$/i;
 
+/**
+ * Does this query contain anything the scorer can actually look for?
+ *
+ * ⚠️ Additive — `searchSite()` is unchanged. This exists so a caller can tell
+ * "the index has nothing for this" apart from "there was nothing to ask". Every
+ * token of `an` / `in` / `is it` is a stop word or a single character, so
+ * `expandQuery` correctly returns no terms and `searchSite` correctly returns
+ * no results — but a typeahead that renders "No matches" on those reads as a
+ * dead end while the visitor is still two characters into a real word.
+ * A caller should gate its no-results message on this.
+ */
+export function hasScorableTerms(query: string): boolean {
+  return CERT_ID_RE.test(query) || expandQuery(query).length > 0;
+}
+
 export function searchSite(query: string, limit = 24): SearchResult[] {
   // ⚠️ Certificate IDs are matched BEFORE the scorer, never through it.
   //
@@ -1573,8 +1697,14 @@ export function searchSite(query: string, limit = 24): SearchResult[] {
 
   const results: SearchResult[] = [];
   for (let i = 0; i < INDEX.length; i++) {
-    const score = totals[i] + phraseBonus(INDEX[i], phraseLc);
-    if (score > 0) results.push({ doc: INDEX[i].doc, score });
+    const doc = INDEX[i].doc;
+    // ⚠️ The type weight multiplies the BM25 total ONLY — the phrase bonus is
+    // added AFTER, undemoted, so a verbatim headline query still leads with its
+    // news item while a browse query lets the buyable work through. See
+    // TYPE_WEIGHT.
+    const score =
+      totals[i] * (TYPE_WEIGHT[doc.type] ?? 1) + phraseBonus(INDEX[i], phraseLc);
+    if (score > 0) results.push({ doc, score });
   }
 
   results.sort((a, b) => b.score - a.score);
@@ -1604,3 +1734,4 @@ export function searchSite(query: string, limit = 24): SearchResult[] {
 
   return top;
 }
+
