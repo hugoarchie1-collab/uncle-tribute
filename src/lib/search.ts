@@ -1296,12 +1296,30 @@ const expandQuery = (query: string): ScoredTerm[] => {
   // free; the tie-break on original position keeps the ordering stable, and the
   // survivors are re-sorted back into query order so snippet matchers still
   // scan the prose left to right.
+  // ⚠️ PRESENT tokens outrank ABSENT ones, and only then is rarer better.
+  // Sorting on df alone made df 0 the "rarest" bucket — but df 0 means the word
+  // is nowhere in the corpus, so it can only ever contribute fuzzy noise.
+  // Measured on the long-query case: `tell`, `amazing`, `incredible`,
+  // `gorgeous` and `widely` are all absent, sorted to the front, and consumed
+  // five of the twelve slots — evicting `keplers` (df 5) and `key` (df 6), the
+  // only two tokens that identify the painting. The query returned the Academy
+  // page while the short `keplers key` correctly returned the work.
+  // Absent tokens are kept AFTER the present ones rather than dropped, so a
+  // misspelling still reaches the fuzzy pass when there is room for it.
   const tokens =
     candidates.length <= MAX_QUERY_TOKENS
       ? candidates
       : candidates
           .map((term, at) => ({ term, at, df: VOCAB.get(term)?.length ?? 0 }))
-          .sort((a, b) => a.df - b.df || a.at - b.at)
+          .sort(
+            (a, b) =>
+              // present (df > 0) before absent (df 0) …
+              Number(a.df === 0) - Number(b.df === 0) ||
+              // … then rarer first among the present …
+              a.df - b.df ||
+              // … stable on original position.
+              a.at - b.at,
+          )
           .slice(0, MAX_QUERY_TOKENS)
           .sort((a, b) => a.at - b.at)
           .map((c) => c.term);
