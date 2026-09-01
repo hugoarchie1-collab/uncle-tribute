@@ -1672,7 +1672,7 @@ function buildSnippet(
  * underscores, exactly as api/auth-lookup.ts's `normaliseCert` is — someone
  * typing this is reading it off a printed certificate, possibly badly.
  */
-const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{3}[\s_-]+[0-9a-hjkmnp-tv-z]{6}\s*$/i;
+const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z0-9]{3}[\s_-]+[0-9a-hjkmnp-tv-z]{6}\s*$/i;
 
 /**
  * A cert id always carries a separator or a digit. Plain English never does.
@@ -1689,7 +1689,7 @@ const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{3}[\s_-]+[0-9a-hjkmnp-tv-z]{6}\s*$/i
  * then exactly 6 Crockford base32 characters — Crockford excludes I, L, O and U,
  * which is what `[0-9a-hjkmnp-tv-z]` encodes.
  */
-const looksLikeCertInput = (q: string): boolean => /[-_]/.test(q) || /\d/.test(q);
+const looksLikeCertInput = (q: string): boolean => /[-_\s]/.test(q) || /\d/.test(q);
 
 /**
  * Does this query contain anything the scorer can actually look for?
@@ -1759,9 +1759,19 @@ export function searchSite(query: string, limit = 24): SearchResult[] {
 
   // The registry, when the query is a Certificate ID, leads — then the normal
   // ranked results follow. Deduped so it can never appear twice.
+  // ⚠️ Score it RELATIVE to the real best hit, never an absolute 1000.
+  // Search.tsx's relevance floor is a RATIO of the top score, so an injected
+  // 1000 made the floor 80 while genuine results score 0.4–44 — collapsing the
+  // page to the MIN_KEPT backstop of 8 rows. Measured: "mandala-art-canvas"
+  // (a false positive the gate lets through) went from 49 results to 8, and a
+  // genuine certificate query from ~30 to 8. The comment here used to claim a
+  // false positive "can only ever add a row, never blank the page"; that was
+  // wrong — it removed 42 of 50. Just ahead of the best real hit is enough to
+  // lead without distorting the floor.
+  const certScore = kept.length > 0 ? Math.max(kept[0].score * 1.25, 1) : 1;
   const ranked = certMatch
     ? [
-        { doc: certMatch.doc, score: 1000 },
+        { doc: certMatch.doc, score: certScore },
         ...kept.filter((r) => r.doc.id !== certMatch.doc.id),
       ]
     : kept;

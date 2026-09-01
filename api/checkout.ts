@@ -457,7 +457,15 @@ const joinGiftSlots = (values: string[]): string => {
   // fits, otherwise raise a common ceiling until the total fits, so ONLY the
   // longest values are trimmed. A 400-char message shares with a 37-char email
   // by shortening the message, never the address.
-  const lengths = values.map((v) => [...v].length);
+  // ⚠️ .length (UTF-16 code units), NOT [...v].length (code points). sliceSafe
+  // slices code units and Stripe counts code units, so counting code points
+  // here made the cap short by one unit per astral character — silently
+  // truncating every message or name containing an emoji. Measured: "Happy
+  // birthday Mum 🎂🎁 all my love, Hugo, Polly and the children xxx" lost its
+  // final character, "Grandma 💐" became "Grandma ", and a 200-emoji message
+  // lost half its content. Same defect class as the comma corruption, arrived
+  // at through the length unit.
+  const lengths = values.map((v) => v.length);
   let cap = Math.max(...lengths, 0);
   if (lengths.reduce((a, b) => a + b, 0) > capacity) {
     // Largest cap where the sum fits. Binary search keeps this O(n log L).
@@ -680,27 +688,35 @@ const normaliseItem = (
   const framingAsked =
     !canvasAsked && framingRaw === true && typeof tier.framingPricePence === "number";
 
-  // ⚠️ A LINE WITH NO FINISH IS NOT SELLABLE — do not remove this default.
+  // ⚠️ A LINE WITH NO FINISH IS REFUSED — never silently defaulted.
+  //
   // paintings.ts states a tier offering framing/canvas is "sold FRAMED or on
-  // CANVAS only — never bare paper", and getTierAdvertisedPricePence exists
-  // precisely because the bare base is a GHOST price. A crafted POST of
-  // {paintingId, tierId:"cabinet"} with NEITHER flag charged £175 for a product
-  // advertised at £250 — which also made paintings.ts's own claim that "no one
-  // could check out at it" false. Fall back to the CHEAPEST finish, which is
-  // exactly what the advertised price is computed from, so the floor a buyer is
-  // quoted is the floor they can actually be charged.
-  const framePence = tier.framingPricePence;
-  const canvasPence = tier.canvasPricePence;
-  const cheapestIsFraming =
-    typeof framePence === "number" &&
-    (typeof canvasPence !== "number" || framePence <= canvasPence);
-  const needsDefaultFinish =
-    !canvasAsked &&
-    !framingAsked &&
-    (typeof framePence === "number" || typeof canvasPence === "number");
+  // CANVAS only — never bare paper", so a finish-less line must not be charged
+  // at the bare base (a GHOST price). The first attempt at this DEFAULTED to
+  // the cheapest finish server-side — which was far worse: the client prices a
+  // finish-less line at the bare base (Basket.tsx lineTotalPence adds framing
+  // and canvas only when the flag is true) and posts framing:false,canvas:false,
+  // so the basket showed £525 and Stripe charged £750. That is
+  // advertised != charged — an OVERCHARGE, and the highest rule in this
+  // codebase. Measured: 12 tier/add-on combinations diverged, every one against
+  // the buyer.
+  //
+  // Refusing is the honest answer. The PDP can no longer emit a finish-less
+  // line, so this only fires for a stale localStorage basket or an old
+  // ?restore= payload — cases where the buyer must re-pick a finish anyway, and
+  // where a clear 400 beats either a ghost price or a surprise charge.
+  const offersAFinish =
+    typeof tier.framingPricePence === "number" ||
+    typeof tier.canvasPricePence === "number";
+  if (offersAFinish && !canvasAsked && !framingAsked) {
+    return {
+      error:
+        "One of your prints has no frame or canvas chosen. Please reopen it and pick a finish — every print is supplied framed or on canvas.",
+    };
+  }
 
-  const canvas = canvasAsked || (needsDefaultFinish && !cheapestIsFraming);
-  const framing = framingAsked || (needsDefaultFinish && cheapestIsFraming);
+  const canvas = canvasAsked;
+  const framing = framingAsked;
 
   // Hand-embellishment requested only counts if the tier actually offers it.
   const embellished =

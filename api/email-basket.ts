@@ -579,7 +579,11 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     // Tail micro-text shown after the size — surfaces the add-ons so the
     // buyer sees the same shape they'll see at Stripe Checkout.
     const tail: string[] = [tier.editionLabel];
-    if (canvas) tail.push("stretched canvas");
+    // ⚠️ "canvas print", never "stretched canvas". paintings.ts is explicit that
+    // it is NOT stretched, NOT framed and NOT sold ready-to-hang. This string was
+    // dead until the ExitSaveBasket payload started sending `canvas`, which made
+    // it live buyer copy.
+    if (canvas) tail.push("canvas print");
     if (framing) tail.push("hand-made frame");
     if (embellished) tail.push("hand-finished by Polly");
     // ⚠️ QUANTITY. `subtotalPence += linePence` priced a line of three as one,

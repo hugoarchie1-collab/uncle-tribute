@@ -2319,23 +2319,34 @@ async function claimSessionProcessing(
   ]);
   if (claim === "OK") return true;
   if (claim === null) {
-    // A key exists. If it is a STALE `processing` marker the previous attempt
-    // died mid-flight — take it over rather than skipping the work. (Its short
-    // TTL means "exists" here is nearly always a genuine in-flight or completed
-    // run; the takeover only matters after a crash.)
+    // ⚠️ FAIL OPEN, NOT CLOSED. `kvCmd` returns null for FIVE different
+    // outcomes — key-exists, !resp.ok, json.error, a network failure, and the
+    // 2.5s timeout — so null alone does NOT mean "already processed". This
+    // used to skip the concern on any of them, and during a KV blip the
+    // follow-up GET returns null too, so a 2.5-second outage silently skipped
+    // ALL fulfilment: no certificate, no ledger entry, no estate email, no
+    // buyer confirmation, no gift code, no alert — and the handler still 200s,
+    // so Stripe never retries. The exact outcome the two-phase rewrite exists
+    // to prevent, reached through a different door.
+    //
+    // A GET that returns the DONE marker is the only positive proof the work
+    // already completed. Anything else — the processing marker (a previous
+    // attempt died mid-flight) or another null (KV is unwell) — means do the
+    // work. Duplicates are bounded by Stripe idempotency; a skip is not
+    // bounded by anything.
     const existing = await kvCmd(["GET", key]);
-    if (existing === KV_PROCESSING_MARKER) {
-      console.warn(
-        "[stripe-webhook] stale processing marker on session concern — retrying the work",
-        { session_id: sessionId, concern },
-      );
-      return true;
+    if (existing === KV_DONE_MARKER) {
+      console.log("[stripe-webhook] session concern already processed, skipping", {
+        session_id: sessionId,
+        concern,
+      });
+      return false;
     }
-    console.log("[stripe-webhook] session concern already processed, skipping", {
-      session_id: sessionId,
-      concern,
-    });
-    return false;
+    console.warn(
+      "[stripe-webhook] session concern claim inconclusive — doing the work rather than risking a silent skip",
+      { session_id: sessionId, concern, marker: existing ?? "unavailable" },
+    );
+    return true;
   }
   // Unexpected result / KV blip — fail open.
   return true;
@@ -2356,13 +2367,30 @@ async function completeSessionProcessing(
   ]);
 }
 
-/** Release the concern claim because the work did not complete. */
+/**
+ * Release the concern claim because the work did not complete.
+ *
+ * ⚠️ NEVER delete a `done` marker. This used to DEL unconditionally, so if
+ * invocation A completed and promoted to `done` while B — which had taken the
+ * claim over — later threw, B deleted A's COMPLETED claim and re-opened the
+ * concern even though the work had succeeded. Only clear the key when it is
+ * still `processing`.
+ */
 async function releaseSessionProcessing(
   sessionId: string,
   concern: ProcessingConcern,
 ): Promise<void> {
   if (!kvDedupConfig()) return;
-  await kvCmd(["DEL", `stripe_session_done:${concern}:${sessionId}`]);
+  const key = `stripe_session_done:${concern}:${sessionId}`;
+  const existing = await kvCmd(["GET", key]);
+  if (existing === KV_DONE_MARKER) {
+    console.warn(
+      "[stripe-webhook] not releasing a completed concern claim — another invocation finished this work",
+      { session_id: sessionId, concern },
+    );
+    return;
+  }
+  await kvCmd(["DEL", key]);
 }
 /**
  * Claim a concern, run its work, then promote the claim — or release it if the
