@@ -153,7 +153,7 @@ export const Footer = () => (
                   rel="noopener noreferrer"
                   aria-label={`${s.label} — The Mandala Company`}
                   style={{ ["--brand" as string]: SOCIAL_BRAND[s.label] ?? "currentColor" }}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-muted transition-[color,transform] duration-300 hover:text-[color:var(--brand)] hover:-translate-y-0.5 focus-visible:text-[color:var(--brand)]"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--brand)] transition-[filter,transform] duration-300 hover:-translate-y-0.5 hover:brightness-110 focus-visible:brightness-110"
                 >
                   {s.icon}
                 </a>
