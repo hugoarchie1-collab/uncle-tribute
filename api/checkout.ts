@@ -342,16 +342,42 @@ const GIFT_LABEL_MAX = 60;
 const GIFT_NAME_MAX = 80;
 const GIFT_EMAIL_MAX = 254; // RFC 5321 practical address cap
 const GIFT_MESSAGE_MAX = 400; // mirror of the <textarea maxLength> on /gift
+/**
+ * Truncate to at most `max` UTF-16 code units WITHOUT splitting an emoji.
+ *
+ * ⚠️ A plain `.slice(0, n)` can cut between the two halves of a surrogate
+ * pair, leaving a lone high surrogate. stripe-node form-encodes metadata
+ * through `encodeURIComponent`, which THROWS `URIError: URI malformed` on a
+ * lone surrogate — the throw escapes `sessions.create` and the buyer gets
+ * `{"error":"URI malformed"}` instead of a checkout. Measured: with 2 gift
+ * cards (a 249-character slot budget) 20% of emoji-bearing notes that the
+ * /gift textarea happily accepts killed the session outright.
+ *
+ * A prefix slice can only ever orphan a HIGH surrogate at the tail — the low
+ * half is what got cut — so dropping one trailing char is sufficient and exact.
+ */
+const sliceSafe = (v: string, max: number): string => {
+  const out = v.slice(0, max);
+  const last = out.charCodeAt(out.length - 1);
+  // 0xD800–0xDBFF = a high surrogate whose partner was sliced away.
+  return last >= 0xd800 && last <= 0xdbff ? out.slice(0, -1) : out;
+};
+
 const giftText = (v: unknown, max: number): string =>
   typeof v !== "string"
     ? ""
-    : v
-        // eslint-disable-next-line no-control-regex
+    : sliceSafe(
+        v
+          // eslint-disable-next-line no-control-regex
         .replace(/[\u0000-\u001f\u007f]+/g, " ")
-        .replace(/\|/g, "/")
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, max);
+          // ⚠️ BOTH separators. `|` joins the gift slots, and the webhook's
+          // gift_labels parser also splits on `,` — so a comma in user text
+          // would add a phantom slot and shift every later label by one.
+          .replace(/[|,]/g, "/")
+          .replace(/\s+/g, " ")
+          .trim(),
+        max,
+      );
 
 // Permissive-but-real address shape. A malformed recipient address must fail
 // LOUDLY at checkout rather than silently posting a £750 code into the void.
@@ -379,7 +405,11 @@ const joinGiftSlots = (values: string[]): string => {
       (STRIPE_METADATA_VALUE_LIMIT - (values.length - 1)) / values.length,
     ),
   );
-  return values.map((v) => v.slice(0, budget)).join("|");
+  // ⚠️ sliceSafe, never a bare .slice — the per-slot budget is arbitrary (249
+  // for 2 gifts, 166 for 3, 99 for 5) and lands mid-emoji often enough to
+  // matter: a lone surrogate here throws URIError inside stripe-node's form
+  // encoder and the buyer loses the whole checkout. See sliceSafe above.
+  return values.map((v) => sliceSafe(v, budget)).join("|");
 };
 
 // Allowlist of valid painting IDs so a malicious caller can't create a

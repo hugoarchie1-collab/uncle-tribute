@@ -99,7 +99,7 @@
  */
 
 import type { IncomingMessage } from "node:http";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 import Stripe from "stripe";
 import { Resend } from "resend";
 
@@ -675,8 +675,32 @@ const convertFromGbpMinor = (gbpPence: number, code: string): number => {
  * reused idempotency key whose parameters differ — so every parameter of the
  * call, the code included, has to be a pure function of the session.
  */
+/**
+ * ⚠️ SECRET-KEYED. Never revert this to a bare `createHash("sha256")`.
+ *
+ * The seeds below are `gift:<sessionId>:<index>:<attempt>` and
+ * `thankyou:<sessionId>:<attempt>` — every component of which is PUBLIC. The
+ * session id is in the /order/success URL, and the buyer's confirmation email
+ * prints it as the order reference (it must, or /orders cannot look the order
+ * up). With a plain digest, anyone holding one gift email could recompute EVERY
+ * code on that order — the other recipients' cards and the buyer's Family &
+ * Friends code — with no Stripe access and no brute force. Codes are
+ * `max_redemptions: 1`, so first to redeem wins: a £25 recipient could take the
+ * £5,000 card bought for someone else.
+ *
+ * HMAC with a server-side key removes derivability while keeping the function
+ * pure — which the idempotency contract below still requires.
+ *
+ * The key prefers a dedicated `GIFT_CODE_SECRET` and falls back to
+ * `STRIPE_WEBHOOK_SECRET`, which is mandatory for this endpoint to run at all,
+ * so the protection is live with ZERO new configuration. If both were ever
+ * absent the signature check would already have rejected the request.
+ */
+const codeSecret = (): string =>
+  process.env.GIFT_CODE_SECRET || process.env.STRIPE_WEBHOOK_SECRET || "";
+
 const seededSuffix = (seed: string, alphabet: string, length = 6): string => {
-  const digest = createHash("sha256").update(seed, "utf8").digest();
+  const digest = createHmac("sha256", codeSecret()).update(seed, "utf8").digest();
   let out = "";
   for (let i = 0; i < length; i += 1) out += alphabet[digest[i] % alphabet.length];
   return out;
@@ -742,9 +766,13 @@ const createGiftCard = async (
   for (let attempt = 0; attempt < 4; attempt += 1) {
     // The attempt index salts BOTH the code and the idempotency key together, so
     // a genuine code collision retries cleanly while a redelivery replays.
+    // 8 symbols, not the 6 used for thank-you codes: a gift card is a bearer
+    // instrument worth up to £5,000, and 31^6 (~887 million) is thin for that.
+    // 31^8 is ~852 billion, which costs nothing and makes blind guessing moot.
     const code = `${GIFT_PREFIX}-${seededSuffix(
       `gift:${sessionId}:${index}:${attempt}`,
       GIFT_ALPHABET,
+      8,
     )}`;
     try {
       // Match createThankYouCode's promotionCodes.create shape EXACTLY
