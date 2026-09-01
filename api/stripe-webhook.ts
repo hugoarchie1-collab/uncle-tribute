@@ -2942,6 +2942,41 @@ async function processGiftCards(
           });
         }
       }
+
+      // ⚠️ THE ESTATE'S OWN RECORD OF THE CODE. Three buyer-facing surfaces
+      // (Legal.tsx ×2, FAQ.tsx) promise "the estate is copied on every gift
+      // email", and that promise is load-bearing: it is the stated remedy when
+      // a buyer mistypes a recipient address, and Legal cites it as the basis
+      // for retaining the recipient's details.
+      //
+      // The BCC on the sends above DOES NOT DELIVER IT in the default config.
+      // DEFAULT_FROM and DEFAULT_BCC are both info@themandalacompany.com, and
+      // every send drops the bcc when it equals the from address. That
+      // short-circuit is deliberate and must stay — its comment records that
+      // Resend can reject a self-BCC on some sender domains, and a rejected
+      // send would mean the RECIPIENT never gets their code, which is far worse
+      // than a missing copy.
+      //
+      // So the estate is notified explicitly instead, via sendEstateAlert,
+      // which uses `to:` and is immune to that rule. Fail-open like everything
+      // else here: it can never block the 200 to Stripe.
+      await sendEstateAlert({
+        subject: `Gift card issued · ${minted.amountLabel} · order ${session.id.slice(0, 12)}…`,
+        html: renderEstateAlertHtml({
+          headline: "A gift card has been issued",
+          orderRef: session.id,
+          rows: [
+            ["Code", minted.code],
+            ["Value", minted.amountLabel],
+            ["Sent to", recipientAddress || `${buyerEmail ?? "—"} (buyer, to pass on)`],
+            ["Recipient name", gift.recipientName || "—"],
+            ["Valid until", minted.expiresLabel],
+          ],
+          action:
+            "This is the estate's copy of the code. If the recipient says it never arrived — a mistyped address, a spam filter — you can re-send this code to another address.",
+        }),
+        context: { session_id: session.id, gift_index: i },
+      });
     }
   }
 

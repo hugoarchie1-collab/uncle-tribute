@@ -526,11 +526,20 @@ export const Gift = () => {
                       onClick={() => selectKey(key)}
                       onKeyDown={onLadderKeyDown}
                       className={cn(
-                        "group text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft/85",
+                        // ⚠️ NO OPAQUE SLAB. This read `bg-bg-soft/85` (#14120f at 85%) — /gift
+                        // was the ONLY buying surface using it: 7 occurrences here
+                        // against 0 on /for-you, the PDP, /collections and /basket,
+                        // and at 390px the four cards became full-width near-black
+                        // bars, the heaviest dark mass on any buying page, sitting
+                        // on top of the ambient wash every reference page keeps
+                        // visible. This is the Collections / FindAPrint treatment:
+                        // a hairline ring and a barely-there tint that lets the
+                        // ground through. Never a scrim.
+                        "group text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300",
                         "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
                         isSelected
-                          ? "ring-accent ring-2"
-                          : "ring-line hover:ring-ink/40",
+                          ? "ring-accent ring-2 bg-accent/[0.07]"
+                          : "ring-line bg-ink/[0.02] hover:ring-accent/50 hover:bg-ink/[0.035]",
                       )}
                     >
                       <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
@@ -561,11 +570,12 @@ export const Gift = () => {
                   onClick={() => selectKey(CUSTOM_KEY)}
                   onKeyDown={onLadderKeyDown}
                   className={cn(
-                    "text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 bg-bg-soft/85 col-span-1 sm:col-span-2",
+                    "text-left rounded-[12px] px-4 py-3.5 md:px-5 md:py-4 transition-all duration-300 col-span-1 sm:col-span-2",
                     "ring-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    // Matches the denomination cards above — see the ⚠️ note there.
                     selection.kind === "custom"
-                      ? "ring-accent ring-2"
-                      : "ring-line hover:ring-ink/40",
+                      ? "ring-accent ring-2 bg-accent/[0.07]"
+                      : "ring-line bg-ink/[0.02] hover:ring-accent/50 hover:bg-ink/[0.035]",
                   )}
                 >
                   <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
@@ -609,7 +619,7 @@ export const Gift = () => {
                             : "gift-amount-help"
                         }
                         className={cn(
-                          "w-full bg-bg-soft/85 ring-1 focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                          "w-full bg-ink/[0.04] ring-1 focus:ring-2 focus:ring-accent focus:outline-none pl-8 pr-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
                           showCustomError ? "ring-accent" : "ring-line",
                         )}
                         placeholder={String(minPounds)}
@@ -656,7 +666,7 @@ export const Gift = () => {
                     maxLength={GIFT_NAME_MAX}
                     value={recipientName}
                     onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow"
+                    className="w-full bg-ink/[0.04] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow"
                     placeholder="Their name"
                   />
                 </label>
@@ -671,7 +681,7 @@ export const Gift = () => {
                     maxLength={GIFT_EMAIL_MAX}
                     value={recipientEmail}
                     onChange={(e) => setRecipientEmail(e.target.value)}
-                    className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow"
+                    className="w-full bg-ink/[0.04] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] text-ink placeholder:text-ink-fade transition-shadow"
                     placeholder="them@example.com"
                   />
                 </label>
@@ -687,7 +697,7 @@ export const Gift = () => {
                   onChange={(e) => setGiftMessage(e.target.value)}
                   maxLength={GIFT_MESSAGE_MAX}
                   aria-describedby="gift-message-count"
-                  className="w-full bg-bg-soft/85 ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.65] text-ink placeholder:text-ink-fade transition-shadow resize-none"
+                  className="w-full bg-ink/[0.04] ring-1 ring-line focus:ring-2 focus:ring-accent focus:outline-none px-4 py-3 font-sans text-[16px] 3xl:text-[22px] 4xl:text-[26px] leading-[1.65] text-ink placeholder:text-ink-fade transition-shadow resize-none"
                   placeholder="A few words to go with the gift."
                 />
               </label>
@@ -714,7 +724,7 @@ export const Gift = () => {
                 right rail so the figure + the add button travel with the
                 reader as they move down the long left column. */}
             <Reveal as="div" className="lg:col-span-5 lg:col-start-8">
-              <div className="lg:sticky lg:top-28 rounded-[12px] bg-bg-soft/85 ring-1 ring-line p-6 md:p-8">
+              <div className="lg:sticky lg:top-28 rounded-[12px] bg-ink/[0.03] ring-1 ring-line p-6 md:p-8">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>Your gift</p>
                 {/* ⚠️ NEVER render a plausible amount here when nothing valid is
                     chosen. This slot used to fall back to fmtP(GIFT_MIN_PENCE),
