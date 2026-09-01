@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
+import { AssetImage } from "../components/AssetImage";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -8,7 +9,9 @@ import { SceneBackdrop } from "../components/SceneBackdrop";
 import { PageMasthead } from "../components/PageMasthead";
 import { useCurrency } from "../lib/currency";
 import {
+  PAINTINGS,
   PRINT_TIERS,
+  getLowestTierPricePence,
   getTierAdvertisedPricePence,
   type PrintTier,
 } from "../data/paintings";
@@ -132,6 +135,23 @@ export const Gift = () => {
   // formats ("£525" from formatPretty above "…Collector Edition — £525.00"
   // from format). One figure, one formatter.
   const { formatPretty: fmtP, code } = useCurrency();
+
+  // Four real works, drawn once per mount from the live catalogue so this band
+  // can never advertise something the estate no longer sells.
+  //
+  // ⚠️ Lazy useState, not useMemo: the lint rule forbids an impure call inside
+  // a memo (a memo may legitimately re-run), and this is the same lazy-initial
+  // draw the home page's random-six grid uses. Fisher–Yates on a COPY — a
+  // `sort(() => Math.random() - 0.5)` comparator is a biased shuffle and, with
+  // an inconsistent comparator, is not even guaranteed to terminate sensibly.
+  const [giftableWorks] = useState(() => {
+    const pool = [...PAINTINGS];
+    for (let i = pool.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 4);
+  });
 
   // Size-pegged denominations: available, non-one-off tiers, in ladder order.
   const denominations = useMemo<Denomination[]>(
@@ -833,6 +853,64 @@ export const Gift = () => {
                   </div>
                 ))}
               </dl>
+            </Reveal>
+
+            {/* ⚠️ THE WORK ITSELF. /gift carried ZERO images of Stephen's
+                paintings — against 4 on /collections and 7 on a product page —
+                so a buyer was asked for up to £5,000, and a name, an email and
+                four hundred words, without ever being shown a single mandala.
+                On the estate of a visual artist that was the defining gap on
+                this page.
+
+                Deliberately restrained, and deliberately LAST: it sits after
+                the form so it never competes with the money step, and it
+                reuses the /collections tile verbatim (AssetImage → <picture>
+                with the .webp sibling, the same caption, the same price line
+                from SEARCH.tilePriceLine's source) rather than inventing a new
+                image pattern. NO new buyer-visible words: the works carry their
+                own titles and years, and the only other string is the price
+                line already live on /collections and /for-you. */}
+            <Reveal as="section" className="lg:col-span-12 mt-10 md:mt-14">
+              <div className="flex items-baseline gap-3 border-t border-line pt-3 mb-4 md:mb-5">
+                <span className={cn(EYEBROW, "shrink-0")}>04</span>
+                <span className={cn(EYEBROW_MUTED, "shrink-0")}>
+                  What it can be spent on
+                </span>
+              </div>
+              <div className="flex flex-wrap justify-center gap-5 md:gap-7">
+                {giftableWorks.map((p) => {
+                  const cover = p.colourways.find((c) => c.available) ?? p.colourways[0];
+                  const from = getLowestTierPricePence(p);
+                  return (
+                    <Link
+                      key={p.id}
+                      to={`/collections/${p.id}`}
+                      className="group block flex-[0_1_clamp(240px,22%,420px)] text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-[6px]"
+                    >
+                      <div className="relative aspect-square overflow-hidden rounded-[10px] ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
+                        <AssetImage
+                          src={cover?.image ?? ""}
+                          alt={p.title}
+                          loading="lazy"
+                          decoding="async"
+                          sizes="(min-width: 768px) 300px, 45vw"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        />
+                      </div>
+                      <p
+                        className={cn(
+                          "font-display font-semibold tracking-[-0.02em] text-[15px] md:text-[17px] 3xl:text-[20px] leading-snug text-ink m-0 mt-3 reading-shadow",
+                        )}
+                      >
+                        {p.title}
+                      </p>
+                      <p className={cn(META, "m-0 mt-1 reading-shadow")}>
+                        Estate-stamped giclée, framed · from {fmtP(from)}
+                      </p>
+                    </Link>
+                  );
+                })}
+              </div>
             </Reveal>
           </div>
         )}
