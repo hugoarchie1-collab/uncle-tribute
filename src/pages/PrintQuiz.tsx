@@ -568,13 +568,13 @@ export const PrintQuiz = ({
                   className="pointer-events-none absolute inset-0"
                   style={{ background: `radial-gradient(90% 80% at 26% 34%, ${haloHex}26, transparent 68%)` }}
                 />
-                <div className="relative grid md:grid-cols-[1.12fr_0.88fr]">
+                <div className="relative grid lg:grid-cols-[1.12fr_0.88fr]">
                   {/* LEFT — the print that matches you: the ARTWORK ITSELF, large,
                       NOT framed (Hugo: "no framing — just show what print matches;
                       framing/size are customised on the product page"). Fills the
                       column so there's no void; hover zoom, links to the PDP. */}
                   <div
-                    className="relative flex items-center justify-center border-b border-[rgba(237,230,214,0.07)] p-5 sm:p-6 md:border-b-0 md:border-r md:p-7 lg:p-8"
+                    className="relative flex items-center justify-center border-b border-[rgba(237,230,214,0.07)] p-5 sm:p-6 md:p-7 lg:border-b-0 lg:border-r lg:p-8"
                     style={{ background: `radial-gradient(120% 100% at 50% 32%, ${haloHex}26, rgba(0,0,0,0.32))` }}
                   >
                     <motion.div {...beat(2)} className="w-full max-w-[600px]">
@@ -663,16 +663,16 @@ export const PrintQuiz = ({
                           colourway are chosen and bought; secondary = a quick add
                           of the recommended print. Hugo: easily buy + customise. */}
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-                        <Link to={pdpTo} className={cn(BTN_PRIMARY, "justify-center")}>
-                          See &amp; customise{anchorPrice ? ` — from ${anchorPrice}` : ""}
+                        <Link to={pdpTo} className={cn(BTN_PRIMARY, "justify-center whitespace-nowrap")}>
+                          See &amp; customise
                           <span aria-hidden="true" className="ml-2">→</span>
                         </Link>
                         {added ? (
-                          <Link to="/basket" className={cn(BTN_SECONDARY, "justify-center")}>
+                          <Link to="/basket" className={cn(BTN_SECONDARY, "justify-center whitespace-nowrap")}>
                             Added ✓ Basket
                           </Link>
                         ) : (
-                          <button type="button" onClick={addResultToBasket} className={cn(BTN_SECONDARY, "justify-center")}>
+                          <button type="button" onClick={addResultToBasket} className={cn(BTN_SECONDARY, "justify-center whitespace-nowrap")}>
                             Add to basket
                           </button>
                         )}
