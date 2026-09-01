@@ -242,6 +242,17 @@ export const Reviews = ({
     [reviews],
   );
 
+  // Star distribution for the DROOL-style histogram — buckets[0]=1★ … [4]=5★.
+  // Real data only; the bars render solely inside the count > 0 branch.
+  const distribution = useMemo(() => {
+    const buckets = [0, 0, 0, 0, 0];
+    for (const r of reviews) {
+      const s = clampRating(r.rating);
+      if (s >= 1 && s <= 5) buckets[s - 1] += 1;
+    }
+    return buckets;
+  }, [reviews]);
+
   const averageLabel = average ? average.toFixed(average % 1 === 0 ? 0 : 1) : "0";
 
   return (
@@ -267,25 +278,51 @@ export const Reviews = ({
         </div>
 
         {count > 0 ? (
-          <div className="flex items-center gap-4">
-            <span
-              className="font-display font-semibold tracking-[-0.02em] text-[clamp(34px,4vw,52px)] leading-none text-ink"
-              style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
-            >
-              {averageLabel}
-            </span>
-            <span className="flex flex-col gap-1">
-              <span aria-hidden="true">
-                <Stars value={average} size={18} />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+            <div className="flex items-center gap-4">
+              <span
+                className="font-display font-semibold tracking-[-0.02em] text-[clamp(34px,4vw,52px)] leading-none text-ink"
+                style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
+              >
+                {averageLabel}
               </span>
-              <span className={cn(EYEBROW_TIGHT)}>
-                {count} {count === 1 ? "review" : "reviews"}
+              <span className="flex flex-col gap-1">
+                <span aria-hidden="true">
+                  <Stars value={average} size={18} />
+                </span>
+                <span className={cn(EYEBROW_TIGHT)}>
+                  {count} {count === 1 ? "review" : "reviews"}
+                </span>
+                <span className="sr-only">
+                  Average rating {averageLabel} out of 5, from {count}{" "}
+                  {count === 1 ? "review" : "reviews"}.
+                </span>
               </span>
-              <span className="sr-only">
-                Average rating {averageLabel} out of 5, from {count}{" "}
-                {count === 1 ? "review" : "reviews"}.
-              </span>
-            </span>
+            </div>
+
+            {/* Star histogram — DROOL's 5→1 distribution bars, real data only. */}
+            <ul aria-hidden="true" className="flex flex-col gap-1.5 w-full sm:w-[220px] 3xl:w-[280px] list-none m-0 p-0">
+              {[5, 4, 3, 2, 1].map((star) => {
+                const c = distribution[star - 1];
+                const pct = count ? Math.round((c / count) * 100) : 0;
+                return (
+                  <li key={star} className="flex items-center gap-2.5 m-0">
+                    <span className="font-sans text-[12px] 3xl:text-[15px] text-ink-muted w-2.5 text-right tabular-nums">
+                      {star}
+                    </span>
+                    <span className="h-1.5 flex-1 rounded-full bg-ink/10 overflow-hidden">
+                      <span
+                        className="block h-full rounded-full bg-ink/70"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </span>
+                    <span className="font-sans text-[12px] 3xl:text-[15px] text-ink-muted w-5 tabular-nums">
+                      {c}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         ) : null}
       </div>
