@@ -15,7 +15,7 @@ import { cn } from "../lib/cn";
  * Set to the refined-masthead house pattern (the shared MASTHEAD_TITLE_STYLE
  * cut, opsz 144 / wght 560): a meta rule + a Fraunces statement with prestige
  * restraint — large but never shouting, one word italic at regular weight —
- * supporting copy packed immediately beneath under a hairline. The eight
+ * supporting copy packed immediately beneath under a hairline. The
  * questions then run as a NUMBERED two-column editorial register (a bordered
  * question grid), densifying what was a single thin column of stacked
  * paragraphs into dense horizontal blocks. Compressed vertical rhythm
@@ -25,6 +25,14 @@ import { cn } from "../lib/cn";
  *
  * ⚠️ EVERY answer / eyebrow / question below is verbatim — restructure LAYOUT
  * only; never edit the copy, links, emails or prices.
+ *
+ * 2026-09-01: three GIFT-CARD Q&As added (Gifting / Redeeming / Gift value),
+ * sitting just above Family & Friends. Every fact in them is mirrored from the
+ * code — validity from GIFT_VALID_DAYS (api/stripe-webhook.ts), the £25–£5,000
+ * window from GIFT_MIN/MAX_PENCE (src/lib/basket.ts), the £250 floor from
+ * getTierAdvertisedPricePence (src/data/paintings.ts) — and from the "Gift
+ * cards" section of the terms of sale (src/pages/Legal.tsx). Change one,
+ * change all. ⚠️ src/lib/search.ts mirrors this FAQ copy into the search index.
  */
 
 const SECTION =
@@ -196,6 +204,64 @@ export const FAQS: QA[] = [
     ),
   },
   {
+    eyebrow: "Gifting",
+    question: "How does a gift card reach the person I'm giving it to?",
+    answer: (
+      <>
+        By email, the moment your payment clears — there is nothing to post and
+        no delivery cost. Give us their email address and the code goes straight
+        to them with whatever note you wrote; leave it blank and it comes back
+        to you, to hand over yourself. The estate is copied on every gift email,
+        so if it doesn't land, write to{" "}
+        <a
+          href="mailto:info@themandalacompany.com"
+          className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
+        >
+          info@themandalacompany.com
+        </a>
+        {" "}and we'll send the code again.
+      </>
+    ),
+  },
+  {
+    eyebrow: "Redeeming",
+    question: "How is a gift card spent — and does it expire?",
+    answer: (
+      <>
+        The person holding it chooses whatever piece they like and enters the
+        code in the promotion-code box at checkout. It isn't tied to a name or
+        an address, so it can be passed on. It is{" "}
+        <strong>valid for one year</strong> from the day it's bought, and that
+        date is written in the email carrying it. A card is issued in the
+        currency it was bought in and carries the estate's equivalent value in
+        each of the others we show, so it can be spent whichever currency the
+        site is set to.
+      </>
+    ),
+  },
+  {
+    eyebrow: "Gift value",
+    question: "What if a gift card doesn't cover the whole order?",
+    answer: (
+      <>
+        If the order comes to more than the card, the balance is simply paid at
+        checkout. Our least expensive print is <strong>£250</strong>, so a card
+        below that is a contribution towards one rather than a whole print. A
+        card is used once, on a single order, and any unspent value isn't
+        refunded or carried forward — so it's best spent in one go. Changed your
+        mind? Write to{" "}
+        <a
+          href="mailto:info@themandalacompany.com"
+          className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
+        >
+          info@themandalacompany.com
+        </a>
+        {" "}within 14 days of buying it and we'll refund it in full, as long as
+        the code hasn't been used.
+      </>
+    ),
+  },
+  {
     eyebrow: "Family & Friends",
     question: "Is there a discount for a second print?",
     answer: (
@@ -314,7 +380,7 @@ const FaqMasthead = () => (
       <div className="mt-2.5 md:mt-3 border-t border-line pt-2.5 md:pt-3">
         <Reveal as="div">
           <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.6]")}>
-            Provenance · paper · editions · care
+            Provenance · paper · editions · gifting · care
           </p>
         </Reveal>
         <Reveal as="div" delay={0.06} className="mt-2 md:mt-2.5">
@@ -326,8 +392,9 @@ const FaqMasthead = () => (
               lineHeight: 1.28,
             }}
           >
-            On provenance, paper, editions, framing, hand-finishing, shipping
-            and after-sale care. For anything not covered here, write to{" "}
+            On provenance, paper, editions, framing, hand-finishing, shipping,
+            gift cards and after-sale care. For anything not covered here,
+            write to{" "}
             <a
               href="mailto:info@themandalacompany.com"
               className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"

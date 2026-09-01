@@ -321,10 +321,18 @@ export const OrderSuccess = () => {
           <p className={cn(SUBTITLE, "mt-5 md:mt-6 mb-6 mx-auto text-center max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]")}>
             Your payment has been received. Stripe is sending your receipt now.
           </p>
+          {/* ⚠️ SUPPLIER TRUTH (2026-08-28). The printer is NEVER named, and
+              NEVER placed anywhere but the Sussex coast, in buyer copy. This
+              line said "our London atelier" — the last surviving instance of
+              the old fiction, on the one page every buyer sees after paying.
+              The wording below is the approved phrasing already used verbatim
+              in paintings.ts (ESTATE_AUTHENTICATION.printer), FAQ.tsx and
+              CraftHighlights.tsx. Do not re-name or re-place it. */}
           <p className="font-sans font-normal text-[16px] md:text-[17px] leading-[1.75] text-ink-muted m-0 mb-6 mx-auto max-w-[640px] 3xl:max-w-[858px] 4xl:max-w-[1037px]">
-            Each print is made to order. We place yours with our London atelier
-            within two working days, then ship to the address you gave at checkout. A tracking
-            link follows the moment it leaves the studio.
+            Each print is made to order. We place yours with a specialist giclée
+            studio on the Sussex coast within two working days, then ship to the
+            address you gave at checkout. A tracking link follows the moment it
+            leaves the studio.
           </p>
           {sessionId && (
             <p className="font-sans text-[14.5px] leading-[1.6] text-ink-muted m-0 mb-6">

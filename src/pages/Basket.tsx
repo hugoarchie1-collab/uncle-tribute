@@ -409,9 +409,15 @@ export const Basket = () => {
 
         {isEmpty ? (
           <Reveal as="div" className="max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
+            {/* ⚠️ Supplier truth (2026-08-28): "atelier" is the retired word and
+                the printer is never named or placed loosely — the approved
+                phrasing, used verbatim in paintings.ts / FAQ.tsx /
+                CraftHighlights.tsx, is a specialist giclée studio on the Sussex
+                coast. */}
             <p className={cn(SUBTITLE, "m-0 mb-7 md:mb-8")}>
-              Your basket is empty. Each print is made to order by a UK atelier and
-              estate-stamped on behalf of The Mandala Company.
+              Your basket is empty. Each print is made to order by a specialist
+              giclée studio on the Sussex coast and estate-stamped on behalf of
+              The Mandala Company.
             </p>
             <Link to="/collections" className={cn(BTN_PRIMARY, "w-fit")}>
               See the collection <span aria-hidden="true" className="ml-2">→</span>
@@ -1020,11 +1026,21 @@ export const Basket = () => {
                   </span>
                 </p>
                 {/* pl-[25px] = 15px glyph + 10px gap, so the second line
-                    aligns with the first line's text, not the glyph. */}
-                <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
-                  Estate-stamped &amp; numbered within the edition · Free delivery ·
-                  Damaged-in-transit replacement
-                </p>
+                    aligns with the first line's text, not the glyph.
+                    ⚠️ PRINT-ONLY. Every claim on this line is about a physical
+                    print — the estate stamp + edition numbering, delivery, and
+                    the damaged-in-transit replacement. A gift-card-only basket
+                    has nothing stamped, nothing numbered, nothing delivered and
+                    nothing to damage, so the whole line is gated on there being
+                    at least one physical line, exactly like the delivery panel
+                    above. The Stripe security line above is NOT gated — it's
+                    true of any payment. */}
+                {lines.length > 0 && (
+                  <p className="font-sans font-normal text-[clamp(14px,0.74vw,15px)] leading-[1.6] text-ink-muted m-0 mt-1.5 pl-[25px]">
+                    Estate-stamped &amp; numbered within the edition · Free delivery ·
+                    Damaged-in-transit replacement
+                  </p>
+                )}
                 {/* The wallet/card marks Stripe presents, shown as glyphs (not
                     just named above) at the highest-intent spot on the site. */}
                 <PaymentMarks className="mt-3 pl-[25px] text-ink/70" />

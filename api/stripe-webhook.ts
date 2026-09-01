@@ -1,13 +1,32 @@
 /**
  * POST /api/stripe-webhook
  *
- * Stripe pings this endpoint when payment events fire. We listen for
- * `checkout.session.completed` and:
+ * Stripe pings this endpoint when payment events fire. On a completed checkout
+ * session we:
  *   1. Log the order to Vercel function logs (audit trail)
- *   2. Create a personal one-year "thank-you" promotion code for the buyer
- *      (10% off, single use) — see api/_lib/thankYouCode.ts
- *   3. Send an estate-branded confirmation email via Resend, including the
- *      thank-you code — see api/_lib/emails/OrderConfirmation.tsx
+ *   2. Issue a Certificate ID + print number per print line (estate ledger)
+ *      and email the estate its fulfilment payload
+ *   3. Create a personal one-year "thank-you" promotion code for the buyer
+ *      (10% off, single use) — skipped on gift-card and £0 orders
+ *   4. Send an estate-branded confirmation email via Resend
+ *   5. Mint + email any gift-card codes bought on the order — ONLY once paid
+ *
+ * ⚠️ THE GATE IS SPLIT BY RISK, on purpose (see the long note above
+ * processPrintFulfilment). `checkout.session.completed` fires when the buyer
+ * finishes checkout, NOT when the money lands: with Klarna / Clearpay live a
+ * session completes with payment_status "unpaid" and settles later.
+ *   • Steps 1-4 (PRINT FULFILMENT) run on `completed` regardless of
+ *     payment_status, exactly as they always have. A paid print that is never
+ *     made is unrecoverable; an unsettled one the estate can simply cancel.
+ *   • Step 5 (GIFT CODES) waits for isSessionPaid() — payment_status "paid", or
+ *     "no_payment_required" for a £0 order covered by a gift code. An unpaid
+ *     session must never mint a live, 365-day, up-to-£5,000 code. The deferred
+ *     mint arrives on `checkout.session.async_payment_succeeded`; meanwhile the
+ *     estate is emailed an alert so a pending code is visible, not silent.
+ * `checkout.session.async_payment_failed` revokes the codes the print path
+ * already issued and tells the estate not to fulfil. `charge.refunded` (in
+ * full) / `charge.dispute.created` deactivate every code minted for that order
+ * — otherwise the estate returns the money AND honours the card.
  *
  * Duplicate-delivery protection (Stripe redelivers the same event id after
  * network blips / slow responses): each verified event id is claimed
@@ -33,6 +52,18 @@
  *   Stripe dashboard → Settings → Notifications → Successful payments
  * We also BCC info@themandalacompany.com on the estate-branded email so the
  * estate has a paper trail of what the buyer received from us specifically.
+ *
+ * ⚠️HUGO — REQUIRED DASHBOARD CONFIG. This endpoint must be subscribed to:
+ *   checkout.session.completed          (already on)
+ *   checkout.session.expired            (already on)
+ *   checkout.session.async_payment_succeeded   ← REQUIRED for Klarna/Clearpay
+ *   checkout.session.async_payment_failed
+ *   charge.refunded
+ *   charge.dispute.created
+ * Prints are fulfilled without any of these (the `completed` event alone is
+ * enough), but without async_payment_succeeded a GIFT CODE bought via Klarna /
+ * Clearpay is never issued — the estate is emailed an alert in that case so it
+ * can be issued by hand.
  *
  * Required env vars:
  *   STRIPE_SECRET_KEY       – sk_live_…
@@ -497,6 +528,10 @@ interface ThankYouCode {
   code: string;
   valueLabel: string;
   expiresLabel: string;
+  /** Null on the static FALLBACK_CODE path — nothing was minted, so there is
+   *  nothing for the refund / dispute revocation to deactivate. */
+  couponId: string | null;
+  promotionCodeId: string | null;
 }
 const THANKYOU_PERCENT = 10;
 const THANKYOU_VALID_DAYS = 365;
@@ -505,40 +540,53 @@ const THANKYOU_VALID_DAYS = 365;
 // in the email copy below.
 const THANKYOU_PREFIX = "FF";
 const THANKYOU_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const thankYouSuffix = (length = 6): string => {
-  let out = "";
-  for (let i = 0; i < length; i += 1) {
-    out += THANKYOU_ALPHABET[Math.floor(Math.random() * THANKYOU_ALPHABET.length)];
-  }
-  return out;
-};
 const createThankYouCode = async (
   stripe: Stripe,
-  { sessionId, buyerEmail }: { sessionId: string; buyerEmail: string | null },
+  {
+    sessionId,
+    sessionCreated,
+    buyerEmail,
+  }: { sessionId: string; sessionCreated: number; buyerEmail: string | null },
 ): Promise<ThankYouCode> => {
-  const expiresAt = new Date(Date.now() + THANKYOU_VALID_DAYS * 24 * 60 * 60 * 1000);
-  const expiresUnix = Math.floor(expiresAt.getTime() / 1000);
-  const coupon = await stripe.coupons.create({
-    percent_off: THANKYOU_PERCENT,
-    duration: "once",
-    max_redemptions: 1,
-    redeem_by: expiresUnix,
-    name: `Family & Friends — ${sessionId.slice(0, 14)}`,
-    metadata: { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" },
-  });
+  // Derived from the SESSION's creation time (not Date.now()) so a redelivery
+  // replays byte-identical parameters under the same idempotency key below.
+  const expiresUnix = sessionCreated + THANKYOU_VALID_DAYS * 24 * 60 * 60;
+  const expiresAt = new Date(expiresUnix * 1000);
+  const meta = { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" };
+  const coupon = await stripe.coupons.create(
+    {
+      percent_off: THANKYOU_PERCENT,
+      duration: "once",
+      max_redemptions: 1,
+      redeem_by: expiresUnix,
+      name: `Family & Friends — ${sessionId.slice(0, 14)}`,
+      metadata: meta,
+    },
+    { idempotencyKey: `thankyou-coupon:${sessionId}` },
+  );
   let promoErr: unknown = null;
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const code = `${THANKYOU_PREFIX}-${thankYouSuffix()}`;
+    // Deterministic code — see seededSuffix: a random code would change the
+    // parameters under a replayed idempotency key and Stripe would reject it.
+    const code = `${THANKYOU_PREFIX}-${seededSuffix(
+      `thankyou:${sessionId}:${attempt}`,
+      THANKYOU_ALPHABET,
+    )}`;
     try {
-      await stripe.promotionCodes.create({
-        promotion: { type: "coupon", coupon: coupon.id },
-        code,
-        max_redemptions: 1,
-        expires_at: expiresUnix,
-        metadata: { kind: "thank_you", session_id: sessionId, buyer_email: buyerEmail ?? "" },
-      });
+      const promo = await stripe.promotionCodes.create(
+        {
+          promotion: { type: "coupon", coupon: coupon.id },
+          code,
+          max_redemptions: 1,
+          expires_at: expiresUnix,
+          metadata: meta,
+        },
+        { idempotencyKey: `thankyou-promo:${sessionId}:${attempt}` },
+      );
       return {
         code,
+        couponId: coupon.id,
+        promotionCodeId: promo.id,
         valueLabel: `${THANKYOU_PERCENT}%`,
         expiresLabel: expiresAt.toLocaleDateString("en-GB", {
           day: "numeric",
@@ -566,8 +614,12 @@ const createThankYouCode = async (
 // — do NOT regress it to the legacy positional `coupon` argument.
 // ---------------------------------------------------------------------------
 interface GiftCard {
-  /** Pence value the buyer paid — equals the coupon's amount_off to the penny. */
+  /** GBP catalogue value of the card (the figure the /gift page advertises). */
   amountPence: number;
+  /** Minor units ACTUALLY charged for this line, in `chargedCurrency`. */
+  chargedMinor: number;
+  /** The session's presentment currency, lower-case ISO ("gbp" / "usd" / …). */
+  chargedCurrency: string;
   /** Optional — who the gift is for. */
   recipientEmail?: string;
   recipientName?: string;
@@ -576,78 +628,145 @@ interface GiftCard {
 }
 interface MintedGiftCard {
   code: string; // GIFT-XXXXXX
-  amountPence: number;
-  amountLabel: string; // formatted GBP, e.g. "£50.00"
+  couponId: string;
+  promotionCodeId: string;
+  amountMinor: number; // the coupon's base amount_off
+  currency: string; // the coupon's base currency
+  amountLabel: string; // formatted in `currency`, e.g. "$660.00"
   expiresLabel: string; // human date ~12 months out
 }
 const GIFT_VALID_DAYS = 365;
 const GIFT_PREFIX = "GIFT";
 // Same unambiguous alphabet as the thank-you code (no 0/O/1/I).
 const GIFT_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const giftSuffix = (length = 6): string => {
+
+// ---- Presentment currency (mirror of api/checkout.ts + src/lib/currency.tsx) -
+// ⚠️ MONEY MIRROR (gotcha #9). A Stripe amount_off coupon can only be applied to
+// a session in a matching currency, so a card BOUGHT in USD must also be
+// redeemable by a recipient whose picker sits on GBP. Stripe's `currency_options`
+// carries one amount per currency on the single coupon; the per-currency figures
+// are derived here with the SAME estate-set rates and the SAME whole-major-unit
+// rounding the site quotes with, so the credit is worth exactly the catalogue
+// figure in whichever currency it is redeemed. Keep byte-identical to
+// CURRENCY_RATES / convertFromGbpMinor in api/checkout.ts and
+// CURRENCIES[*].rate / convertFromGbpPence in src/lib/currency.tsx — change all
+// three in the same commit or the gift's value drifts between currencies.
+const CURRENCY_RATES: Record<string, number> = {
+  gbp: 1,
+  usd: 1.32,
+  eur: 1.22,
+  aud: 2.0,
+  cad: 1.82,
+};
+const convertFromGbpMinor = (gbpPence: number, code: string): number => {
+  if (code === "gbp") return Math.round(gbpPence);
+  const rate = CURRENCY_RATES[code];
+  if (!rate) return Math.round(gbpPence);
+  return Math.ceil((gbpPence * rate) / 100) * 100; // whole major unit
+};
+
+/**
+ * A short code suffix derived DETERMINISTICALLY from a seed, over the same
+ * unambiguous alphabet as the random generator it replaces.
+ *
+ * ⚠️ Why not random: the mint calls below carry a Stripe idempotency key so a
+ * webhook redelivery on a cold lambda (where the in-memory dedup set is empty
+ * and KV may be unavailable) cannot mint a DUPLICATE coupon. Stripe rejects a
+ * reused idempotency key whose parameters differ — so every parameter of the
+ * call, the code included, has to be a pure function of the session.
+ */
+const seededSuffix = (seed: string, alphabet: string, length = 6): string => {
+  const digest = createHash("sha256").update(seed, "utf8").digest();
   let out = "";
-  for (let i = 0; i < length; i += 1) {
-    out += GIFT_ALPHABET[Math.floor(Math.random() * GIFT_ALPHABET.length)];
-  }
+  for (let i = 0; i < length; i += 1) out += alphabet[digest[i] % alphabet.length];
   return out;
 };
+
 const createGiftCard = async (
   stripe: Stripe,
   {
     sessionId,
+    sessionCreated,
     buyerEmail,
-    amountPence,
+    gift,
     index,
   }: {
     sessionId: string;
+    /** Stripe session `created` (unix). Deterministic — see seededSuffix. */
+    sessionCreated: number;
     buyerEmail: string | null;
-    amountPence: number;
+    gift: GiftCard;
     index: number;
   },
 ): Promise<MintedGiftCard> => {
-  const expiresAt = new Date(Date.now() + GIFT_VALID_DAYS * 24 * 60 * 60 * 1000);
-  const expiresUnix = Math.floor(expiresAt.getTime() / 1000);
+  // Expiry is derived from the SESSION's creation time, not Date.now(), so a
+  // redelivery replays byte-identical parameters under the same idempotency key.
+  const expiresUnix = sessionCreated + GIFT_VALID_DAYS * 24 * 60 * 60;
+  const expiresAt = new Date(expiresUnix * 1000);
+  const baseCurrency = gift.chargedCurrency;
   // INVARIANT: the minted gift value MUST equal the amount the buyer was
-  // charged for this gift line, to the penny. amount_off IS amountPence.
-  const coupon = await stripe.coupons.create({
-    amount_off: amountPence,
-    currency: "gbp",
-    duration: "once",
-    max_redemptions: 1,
-    redeem_by: expiresUnix,
-    name: "Estate gift card",
-    metadata: {
-      kind: "gift_card",
-      session_id: sessionId,
-      gift_index: String(index),
-      amount_pence: String(amountPence),
-      buyer_email: buyerEmail ?? "",
+  // charged for this gift line, to the penny, in the currency they were charged.
+  const baseAmount = gift.chargedMinor;
+  // Every OTHER supported currency, at the catalogue value. Without these a card
+  // bought in USD simply failed at checkout for a recipient paying in GBP.
+  const currencyOptions: Record<string, { amount_off: number }> = {};
+  for (const code of Object.keys(CURRENCY_RATES)) {
+    if (code === baseCurrency) continue;
+    currencyOptions[code] = {
+      amount_off: convertFromGbpMinor(gift.amountPence, code),
+    };
+  }
+  const meta = {
+    kind: "gift_card",
+    session_id: sessionId,
+    gift_index: String(index),
+    amount_pence: String(gift.amountPence),
+    amount_minor: String(baseAmount),
+    currency: baseCurrency,
+    buyer_email: buyerEmail ?? "",
+  };
+  const coupon = await stripe.coupons.create(
+    {
+      amount_off: baseAmount,
+      currency: baseCurrency,
+      currency_options: currencyOptions,
+      duration: "once",
+      max_redemptions: 1,
+      redeem_by: expiresUnix,
+      name: "Estate gift card",
+      metadata: meta,
     },
-  });
+    { idempotencyKey: `gift-coupon:${sessionId}:${index}` },
+  );
   let promoErr: unknown = null;
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    const code = `${GIFT_PREFIX}-${giftSuffix()}`;
+    // The attempt index salts BOTH the code and the idempotency key together, so
+    // a genuine code collision retries cleanly while a redelivery replays.
+    const code = `${GIFT_PREFIX}-${seededSuffix(
+      `gift:${sessionId}:${index}:${attempt}`,
+      GIFT_ALPHABET,
+    )}`;
     try {
       // Match createThankYouCode's promotionCodes.create shape EXACTLY
       // (promotion: { type: "coupon", coupon }) — the installed SDK's working
       // call. Do NOT regress to a positional `coupon` field (gotcha).
-      await stripe.promotionCodes.create({
-        promotion: { type: "coupon", coupon: coupon.id },
-        code,
-        max_redemptions: 1,
-        expires_at: expiresUnix,
-        metadata: {
-          kind: "gift_card",
-          session_id: sessionId,
-          gift_index: String(index),
-          amount_pence: String(amountPence),
-          buyer_email: buyerEmail ?? "",
+      const promo = await stripe.promotionCodes.create(
+        {
+          promotion: { type: "coupon", coupon: coupon.id },
+          code,
+          max_redemptions: 1,
+          expires_at: expiresUnix,
+          metadata: meta,
         },
-      });
+        { idempotencyKey: `gift-promo:${sessionId}:${index}:${attempt}` },
+      );
       return {
         code,
-        amountPence,
-        amountLabel: formatGBP(amountPence),
+        couponId: coupon.id,
+        promotionCodeId: promo.id,
+        amountMinor: baseAmount,
+        currency: baseCurrency,
+        amountLabel: formatGBP(baseAmount, baseCurrency),
         expiresLabel: expiresAt.toLocaleDateString("en-GB", {
           day: "numeric",
           month: "long",
@@ -667,20 +786,27 @@ const createGiftCard = async (
 };
 
 // ---------------------------------------------------------------------------
-// Gift line-item parser. The checkout handler marks gift-card purchases in the
-// session metadata. We accept TWO shapes for resilience against the parallel
-// checkout agent's exact wire format:
-//   (A) A JSON blob:  gift_cards = '[{"amountPence":5000,"recipientEmail":"…",
-//                                      "recipientName":"…","giftMessage":"…"}, …]'
-//   (B) Comma-joined parallel arrays (mirrors the multi-item print shape):
-//         gift_card_count        = "2"
-//         gift_amounts_pence     = "5000,10000"
-//         gift_recipient_emails  = "a@x.com,"      (empty slot = no recipient)
-//         gift_recipient_names   = "Ada,"
-//         gift_messages          = "Happy birthday|"   (pipe-joined; see note)
-// Comma is the array separator everywhere else in this file, so gift MESSAGES
-// (which may contain commas) are pipe-separated in shape (B). Either shape
-// yields the same GiftCard[]. Returns [] when there are no gift cards.
+// Gift line-item parser. api/checkout.ts marks gift-card purchases in the
+// session metadata as FIXED-ARITY parallel arrays — exactly one slot per gift,
+// empty slots preserved, PIPE-joined (joinGiftSlots):
+//     gift_count             = "2"
+//     gift_amounts_pence     = "2500|50000"        (GBP catalogue value)
+//     gift_amounts_minor     = "3300|66000"        (charged, in gift_currency)
+//     gift_currency          = "usd"
+//     gift_recipient_emails  = "|alice@example.com" (empty slot = no recipient)
+//     gift_recipient_names   = "|Alice"
+//     gift_messages          = "|Happy birthday"
+//
+// ⚠️ POSITIONAL. These arrays are zipped BY INDEX — slot i of every array is the
+// same card. Never filter empties out of one of them and never drop a trailing
+// entry: either shifts the zip and emails the wrong card to the wrong person.
+//
+// ⚠️ A second, JSON-blob shape (`gift_cards`) used to be accepted here "for
+// resilience against the parallel checkout agent's wire format". checkout.ts
+// never wrote it. Because that dead branch sat FIRST, it made the real bug
+// invisible: the singular `gift_message` key checkout.ts wrote never matched the
+// plural `gift_messages` read here, so every buyer's personal note was silently
+// dropped. The blob branch is deleted — one shape, written and read.
 // ---------------------------------------------------------------------------
 const cleanStr = (v: unknown): string | undefined => {
   if (typeof v !== "string") return undefined;
@@ -690,53 +816,44 @@ const cleanStr = (v: unknown): string | undefined => {
 const parseGiftCards = (m: Stripe.Metadata | null): GiftCard[] => {
   if (!m) return [];
 
-  // Shape (A): a JSON blob.
-  const blob = cleanStr(m.gift_cards);
-  if (blob) {
-    try {
-      const arr = JSON.parse(blob);
-      if (Array.isArray(arr)) {
-        return arr
-          .map((raw): GiftCard | null => {
-            const amountPence = Math.round(
-              Number(
-                (raw && (raw.amountPence ?? raw.amount_pence ?? raw.amount)) ?? NaN,
-              ),
-            );
-            if (!Number.isFinite(amountPence) || amountPence <= 0) return null;
-            return {
-              amountPence,
-              recipientEmail: cleanStr(raw.recipientEmail ?? raw.recipient_email),
-              recipientName: cleanStr(raw.recipientName ?? raw.recipient_name),
-              giftMessage: cleanStr(raw.giftMessage ?? raw.gift_message),
-            };
-          })
-          .filter((g): g is GiftCard => g !== null);
-      }
-    } catch {
-      // fall through to shape (B)
-    }
-  }
-
-  // Shape (B): comma-joined parallel arrays.
+  // Amounts drive the arity. Tolerant of "|" or "," because a session created
+  // just before this deploy carries the older comma-joined shape; an amount can
+  // contain neither character, so accepting both is safe.
   const amounts = (m.gift_amounts_pence || "")
-    .split(",")
+    .split(/[|,]/)
     .map((s) => s.trim())
     .filter(Boolean);
   if (amounts.length === 0) return [];
-  // Recipient email/name are comma-joined; messages are pipe-joined (may hold
-  // commas). Keep empty slots positional by NOT filtering them out.
-  const splitKeepEmpties = (raw: string | undefined, sep: string): string[] =>
-    (raw || "").split(sep).map((s) => s.trim());
-  const emails = splitKeepEmpties(m.gift_recipient_emails, ",");
-  const names = splitKeepEmpties(m.gift_recipient_names, ",");
-  const messages = splitKeepEmpties(m.gift_messages, "|");
+  const minors = (m.gift_amounts_minor || "")
+    .split(/[|,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  // Slot-split that keeps empties positional. Pipes are the current separator;
+  // a legacy 2+-gift session with no pipe at all falls back to comma so an
+  // in-flight order still resolves its recipients.
+  const splitKeepEmpties = (raw: string | undefined): string[] => {
+    const s = raw || "";
+    if (s.includes("|") || amounts.length <= 1) return s.split("|").map((t) => t.trim());
+    return s.split(",").map((t) => t.trim());
+  };
+  const emails = splitKeepEmpties(m.gift_recipient_emails);
+  const names = splitKeepEmpties(m.gift_recipient_names);
+  const messages = splitKeepEmpties(m.gift_messages);
+  // The currency the buyer was actually charged in. Only trusted when the
+  // per-slot minor amounts are present AND line up with the amounts array —
+  // otherwise we fall back to the GBP catalogue value (the pre-#5 behaviour).
+  const currency = (m.gift_currency || "").trim().toLowerCase();
+  const minorsUsable = currency.length === 3 && minors.length === amounts.length;
   return amounts
     .map((a, idx): GiftCard | null => {
       const amountPence = Math.round(Number(a));
       if (!Number.isFinite(amountPence) || amountPence <= 0) return null;
+      const chargedMinor = minorsUsable ? Math.round(Number(minors[idx])) : Number.NaN;
+      const useCharged = Number.isFinite(chargedMinor) && chargedMinor > 0;
       return {
         amountPence,
+        chargedMinor: useCharged ? chargedMinor : amountPence,
+        chargedCurrency: useCharged ? currency : "gbp",
         recipientEmail: cleanStr(emails[idx]),
         recipientName: cleanStr(names[idx]),
         giftMessage: cleanStr(messages[idx]),
@@ -764,9 +881,12 @@ const renderOrderConfirmationHtml = (p: {
   orderRef: string;
   lines: EmailLine[];
   total: string;
-  thankYouCode: string;
-  thankYouValue: string;
-  thankYouExpiry: string;
+  // Null when no Family & Friends code was minted for this order (a £0 order —
+  // a gift code covering the total — never mints one; see the farming guard in
+  // processCompletedSession). The card block is then omitted entirely.
+  thankYouCode: string | null;
+  thankYouValue: string | null;
+  thankYouExpiry: string | null;
   estateEmail: string;
 }): string => {
   const first = (() => {
@@ -856,14 +976,18 @@ const renderOrderConfirmationHtml = (p: {
     + `<p style="${s.meta}color:#ede6d6;margin-bottom:8px;">· ${ESTATE.coa}</p>`
     + `<p style="${s.meta}color:rgba(237,230,214,0.78);">· ${ESTATE.printer}</p>`
     + `</div>`
-    + `<div style="${s.giftCard}">`
-    + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">Family &amp; Friends</p>`
-    + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">With our thanks for taking one of Steve's prints into your home, here is ${esc(p.thankYouValue)} towards your next print — and one to pass to someone you love.</p>`
-    + `<code style="${s.code}">${esc(p.thankYouCode)}</code>`
-    + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry)}.</p>`
-    + `</div>`
+    + (p.thankYouCode
+        ? `<div style="${s.giftCard}">`
+          + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 14px 0;">Family &amp; Friends</p>`
+          + `<p style="${s.body}color:#ede6d6;margin:0 0 14px 0;">With our thanks for taking one of Steve's prints into your home, here is ${esc(p.thankYouValue ?? "")} towards your next print — and one to pass to someone you love.</p>`
+          + `<code style="${s.code}">${esc(p.thankYouCode)}</code>`
+          + `<p style="${s.small}margin:0;">Apply at checkout. Valid for one year — until ${esc(p.thankYouExpiry ?? "")}.</p>`
+          + `</div>`
+        : "")
     + `<h2 style="${s.subheading}">What happens next</h2>`
-    + `<p style="${s.body}">We'll place your print with our atelier in the next working day, and notify you the moment it leaves the studio. If anything about the colourway or sizing needs another look, just reply to this email — we read everything ourselves.</p>`
+    // ⚠️ SUPPLIER TRUTH (2026-08-28): "our atelier" claimed a studio the estate
+    // does not own. Same approved wording as ESTATE.printer above.
+    + `<p style="${s.body}">We'll place your print with a specialist giclée studio on the Sussex coast in the next working day, and notify you the moment it leaves the studio. If anything about the colourway or sizing needs another look, just reply to this email — we read everything ourselves.</p>`
     + `<p style="${s.signoff}">With love from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`
@@ -952,12 +1076,104 @@ const renderGiftHtml = (p: {
     + `<p style="${s.small}margin:0;">Valid until ${esc(p.expiresLabel)}.</p>`
     + `</div>`
     + `<h2 style="${s.subheading}">How to redeem</h2>`
-    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code <strong style="color:#ede6d6;">${esc(p.code)}</strong> at checkout. It covers a single order — for example, an A2 Collector's Edition print — and the gift value is taken off the total. If the print costs more than the gift, you simply pay the difference; if less, the gift covers it in full.</p>`
-    + `<p style="${s.small}">The code is single-use and applies to one order. There's no need to spend it all at once on shipping or add-ons — just pick the piece that speaks to you.</p>`
+    // ⚠️ MONEY / HONESTY. The tier named here must be a REAL, buyable rung at its
+    // REAL advertised price — base + cheapest finish, i.e.
+    // getTierAdvertisedPricePence in src/data/paintings.ts (£250 / £445 / £750 /
+    // £1,300), never the bare base (£175 / £295 / £525 / £975). This line said
+    // "an A2 Collector's Edition print" — retired A-series naming.
+    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code <strong style="color:#ede6d6;">${esc(p.code)}</strong> at checkout. It covers a single order — for example, a Collector Edition print · 42 × 42 cm · £750 — and the gift value is taken off the total. If the print costs more than the gift, you simply pay the difference; if less, the gift covers it in full.</p>`
+    // ⚠️ NEVER promise partial spending here. The coupon is duration:"once",
+    // max_redemptions:1, and there is NO balance ledger anywhere in this system —
+    // a £5,000 card spent on a £750 print destroys £4,250. This line used to read
+    // "There's no need to spend it all at once on shipping or add-ons", which both
+    // promised a balance the system cannot keep AND contradicted the sentence
+    // directly above it. Wording follows the FAQ's own "single-use code, valid for
+    // one year" phrasing (src/pages/FAQ.tsx).
+    + `<p style="${s.small}">The code is single-use and applies to one order. Any value not spent on that order is not carried over to another order, and is not refunded.</p>`
     + `<p style="${s.signoff}">With warmth from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`
     + `<p style="${s.footer}">Questions — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `</div></body></html>`;
+};
+
+// ---------------------------------------------------------------------------
+// Inlined GIFT-ONLY order confirmation → HTML string. Same dark estate palette
+// + shared esc() / SANS / DISPLAY utils (gotcha #5 — inline, do not import).
+// ---------------------------------------------------------------------------
+// ⚠️ A gift-only basket writes NO print metadata, so linesFromMetadata() returns
+// [] and the standard confirmation went out with the subject "your print from
+// the Stephen Meakin estate", an EMPTY item table and no mention of the gift
+// code at all. This is the gift-only branch: it restates what was bought, who
+// each card was sent to, and the code — which is also the buyer's own copy of
+// every code (see the recipient-typo note in the handler).
+const renderGiftOrderConfirmationHtml = (p: {
+  buyerName?: string | null;
+  orderRef: string;
+  cards: Array<{
+    label: string;
+    amountLabel: string;
+    code: string | null;
+    expiresLabel: string | null;
+    recipientName?: string | null;
+    recipientEmail?: string | null;
+  }>;
+  total: string;
+  estateEmail: string;
+}): string => {
+  const first = (() => {
+    const t = (p.buyerName ?? "").trim();
+    return t ? esc(t.split(/\s+/)[0]) : "there";
+  })();
+  const s = {
+    page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
+    shell: `max-width:560px;margin:0 auto;background-color:#0a0908;padding:0;`,
+    eyebrow: `font-family:${SANS};font-size:10px;font-weight:700;letter-spacing:0.34em;text-transform:uppercase;color:#c97844;margin:0 0 18px 0;`,
+    heading: `font-family:${DISPLAY};font-weight:700;letter-spacing:-0.02em;font-size:36px;line-height:1.1;color:#ede6d6;margin:0 0 24px 0;`,
+    body: `font-family:${SANS};font-size:15px;line-height:1.7;color:rgba(237,230,214,0.78);margin:0 0 16px 0;`,
+    small: `font-family:${SANS};font-size:12px;line-height:1.65;color:rgba(237,230,214,0.55);margin:0 0 10px 0;`,
+    divider: `border:0;border-top:1px solid rgba(237,230,214,0.18);margin:28px 0;`,
+    card: `background-color:#15120f;border:1px solid rgba(237,230,214,0.18);border-radius:4px;padding:20px 22px;margin:20px 0;`,
+    code: `font-family:"SF Mono","Menlo","Consolas",monospace;font-size:20px;font-weight:600;letter-spacing:0.22em;color:#c97844;margin:8px 0 6px 0;display:block;`,
+    meta: `font-family:${SANS};font-size:12px;color:rgba(237,230,214,0.55);margin:0;`,
+    signoff: `font-family:${DISPLAY};font-style:italic;font-size:16px;color:#ede6d6;margin:24px 0 4px 0;`,
+    footer: `font-family:${SANS};font-size:11px;line-height:1.7;color:rgba(237,230,214,0.55);text-align:center;margin:32px 0 0 0;`,
+    link: `color:#c97844;text-decoration:underline;`,
+  };
+  const cardHtml = p.cards
+    .map((c, idx) => {
+      const sentTo = c.recipientEmail
+        ? `Sent to ${esc(c.recipientName || c.recipientEmail)} · ${esc(c.recipientEmail)}`
+        : "Kept for you to pass on by hand.";
+      return `<div style="margin-top:${idx === 0 ? 0 : 14}px;padding-top:${idx === 0 ? 0 : 14}px;border-top:${idx === 0 ? "0" : "1px solid rgba(237,230,214,0.18)"};">`
+        + `<p style="font-family:${SANS};font-size:14px;line-height:1.55;margin:0 0 4px 0;"><strong style="color:#ede6d6;">Gift card${c.label ? ` — ${esc(c.label)}` : ""}</strong> &nbsp;·&nbsp; <strong style="color:#ede6d6;">${esc(c.amountLabel)}</strong></p>`
+        + `<p style="${s.meta}margin-top:4px;">${sentTo}</p>`
+        + (c.code
+            ? `<code style="${s.code}">${esc(c.code)}</code>`
+              + (c.expiresLabel
+                  ? `<p style="${s.meta}">Valid until ${esc(c.expiresLabel)}.</p>`
+                  : "")
+            : `<p style="${s.meta}">The code for this card is being issued — we'll send it on shortly.</p>`)
+        + `</div>`;
+    })
+    .join("");
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Your gift card — The Art of Stephen Meakin</title></head>`
+    + `<body style="${s.page}"><div style="${s.shell}">`
+    + `<p style="${s.eyebrow}">The Mandala Company · The estate of Stephen Meakin</p>`
+    + `<h1 style="${s.heading}">Thank you, ${first}.</h1>`
+    + `<p style="${s.body}">Your gift card for <em>The Art of Stephen Meakin</em> is ready. The code${p.cards.length > 1 ? "s are" : " is"} below — keep this email, whether or not the card has already gone to its recipient.</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.eyebrow}">Your order</p>`
+    + `<div style="${s.card}">${cardHtml}`
+    + `<hr style="border:0;border-top:1px solid rgba(237,230,214,0.18);margin:18px 0 12px 0;"/>`
+    + `<p style="font-family:${SANS};font-size:14px;margin:0;"><span style="color:rgba(237,230,214,0.55);letter-spacing:0.18em;font-size:11px;text-transform:uppercase;font-weight:700;">Total</span> &nbsp; <strong style="color:#ede6d6;font-size:16px;">${esc(p.total)}</strong></p>`
+    + `</div>`
+    + `<p style="${s.body}">Choose a print at <a href="https://themandalacompany.com/collections" style="${s.link}">themandalacompany.com</a>, then enter the code at checkout and the gift value is taken off the total.</p>`
+    + `<p style="${s.small}">The code is single-use and applies to one order. Any value not spent on that order is not carried over to another order, and is not refunded.</p>`
+    + `<p style="${s.signoff}">With love from the estate,</p>`
+    + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
+    + `<hr style="${s.divider}"/>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
     + `</div></body></html>`;
 };
 
@@ -1514,6 +1730,931 @@ const renderEstateFulfilmentHtml = (p: {
 };
 
 // ---------------------------------------------------------------------------
+// Estate alert — a plain internal note when something needs a human.
+// ---------------------------------------------------------------------------
+// Utilitarian (this goes to the estate inbox, never a buyer). Used today by the
+// registry check below; fail-open like every other send in this file.
+const renderEstateAlertHtml = (p: {
+  headline: string;
+  orderRef: string;
+  rows: Array<[string, string]>;
+  action: string;
+}): string =>
+  `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/></head>` +
+  `<body style="font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;padding:24px;">` +
+  `<h2 style="margin:0 0 4px 0;">${esc(p.headline)}</h2>` +
+  `<p style="margin:0 0 16px 0;color:#444;">Order <strong>${esc(p.orderRef)}</strong></p>` +
+  `<table style="border-collapse:collapse;font-size:13px;">` +
+  p.rows
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 12px 6px 0;color:#666;">${esc(k)}</td>` +
+        `<td style="padding:6px 0;"><strong>${esc(v)}</strong></td></tr>`,
+    )
+    .join("") +
+  `</table>` +
+  `<p style="margin:18px 0 0 0;color:#444;">${esc(p.action)}</p>` +
+  `<p style="margin:18px 0 0 0;font-size:12px;color:#888;">The Mandala Company · generated automatically by the Stripe webhook.</p>` +
+  `</body></html>`;
+
+/** Send a plain internal note to the estate inbox. Fully fail-open — logs and
+ *  returns on any missing key / Resend error; NEVER throws into the handler. */
+async function sendEstateAlert(args: {
+  subject: string;
+  html: string;
+  context: Record<string, unknown>;
+}): Promise<void> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    console.error(
+      "[stripe-webhook] estate alert could not be emailed — RESEND_API_KEY missing.",
+      { subject: args.subject, ...args.context },
+    );
+    return;
+  }
+  try {
+    const from = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+    const to = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+    const result = await new Resend(key).emails.send({
+      from: `${FROM_NAME} <${from}>`,
+      to: [to],
+      replyTo: DEFAULT_FROM,
+      subject: args.subject,
+      html: args.html,
+    });
+    if (result.error) {
+      console.error("[stripe-webhook] estate alert Resend error:", result.error, args.context);
+    } else {
+      console.log("[stripe-webhook] estate alert sent", { to, subject: args.subject });
+    }
+  } catch (err) {
+    console.error(
+      "[stripe-webhook] estate alert failed:",
+      err instanceof Error ? err.message : err,
+      args.context,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Minted-code registry (for refund / dispute revocation)
+// ---------------------------------------------------------------------------
+// Every promotion code minted for a session is recorded under
+// `codes:session:<sessionId>` so a later charge.refunded / charge.dispute.created
+// can find and deactivate exactly those codes. Fail-open: when KV is absent the
+// revocation path falls back to scanning recent promotion codes by metadata.
+const CODES_KEY = (sessionId: string) => `codes:session:${sessionId}`;
+const CODES_TTL_SECONDS = 400 * 24 * 60 * 60; // outlives the 365-day validity
+
+interface MintedCodeRef {
+  promotion_code_id: string;
+  coupon_id: string;
+  code: string;
+  kind: string;
+}
+
+async function recordMintedCode(sessionId: string, ref: MintedCodeRef): Promise<void> {
+  if (!kvDedupConfig()) return;
+  await kvCmd(["RPUSH", CODES_KEY(sessionId), JSON.stringify(ref)]);
+  await kvCmd(["EXPIRE", CODES_KEY(sessionId), CODES_TTL_SECONDS]);
+}
+
+async function readMintedCodes(sessionId: string): Promise<MintedCodeRef[]> {
+  if (!kvDedupConfig()) return [];
+  const raw = await kvCmd(["LRANGE", CODES_KEY(sessionId), 0, -1]);
+  if (!Array.isArray(raw)) return [];
+  const out: MintedCodeRef[] = [];
+  for (const item of raw) {
+    if (typeof item !== "string") continue;
+    try {
+      out.push(JSON.parse(item) as MintedCodeRef);
+    } catch {
+      /* corrupt entry — skip */
+    }
+  }
+  return out;
+}
+
+/**
+ * Deactivate every promotion code minted for a session, and delete the coupons
+ * behind them so the value can't be applied by any other route either.
+ *
+ * ⚠️ Codes are minted and emailed the moment payment is confirmed and stay live
+ * for 365 days. Without this, a refunded or disputed order left a full-value
+ * gift code in the wild — the estate returns the money AND honours the card.
+ *
+ * Primary lookup is the KV registry above; when KV is unavailable we fall back
+ * to scanning recent promotion codes for the session id in their metadata.
+ * Entirely fail-open — every step is caught, and the handler still 200s.
+ */
+async function revokeSessionCodes(
+  stripe: Stripe,
+  sessionId: string,
+  reason: string,
+): Promise<number> {
+  let refs = await readMintedCodes(sessionId);
+  if (refs.length === 0) {
+    // KV fallback — Stripe cannot filter promotion codes by metadata, so scan
+    // the most recent pages and match on the session id we wrote at mint time.
+    try {
+      const scanned: MintedCodeRef[] = [];
+      let startingAfter: string | undefined;
+      for (let page = 0; page < 3; page += 1) {
+        const list = await stripe.promotionCodes.list({
+          limit: 100,
+          ...(startingAfter ? { starting_after: startingAfter } : {}),
+        });
+        for (const pc of list.data) {
+          if (pc.metadata?.session_id !== sessionId) continue;
+          // `promotion.coupon` is the SDK's current shape (the flat `coupon`
+          // field is legacy) — same shape createGiftCard writes on the way in.
+          const coupon = pc.promotion?.coupon ?? null;
+          const couponId = typeof coupon === "string" ? coupon : coupon?.id ?? "";
+          scanned.push({
+            promotion_code_id: pc.id,
+            coupon_id: couponId,
+            code: pc.code,
+            kind: pc.metadata?.kind ?? "",
+          });
+        }
+        if (!list.has_more || list.data.length === 0) break;
+        startingAfter = list.data[list.data.length - 1].id;
+      }
+      refs = scanned;
+    } catch (err) {
+      console.error(
+        "[stripe-webhook] promotion-code scan failed during revocation:",
+        err instanceof Error ? err.message : err,
+        { session_id: sessionId },
+      );
+    }
+  }
+  let revoked = 0;
+  for (const ref of refs) {
+    try {
+      await stripe.promotionCodes.update(ref.promotion_code_id, { active: false });
+      revoked += 1;
+      console.log("[stripe-webhook] promotion code deactivated", {
+        session_id: sessionId,
+        code: ref.code,
+        kind: ref.kind,
+        reason,
+      });
+    } catch (err) {
+      console.error(
+        "[stripe-webhook] promotion code deactivation failed:",
+        err instanceof Error ? err.message : err,
+        { session_id: sessionId, code: ref.code },
+      );
+    }
+    if (!ref.coupon_id) continue;
+    try {
+      // Deleting the coupon closes the `discounts:[{coupon}]` route too. Already
+      // completed redemptions are unaffected (Stripe's documented behaviour).
+      await stripe.coupons.del(ref.coupon_id);
+    } catch (err) {
+      console.error(
+        "[stripe-webhook] coupon delete failed:",
+        err instanceof Error ? err.message : err,
+        { session_id: sessionId, coupon: ref.coupon_id },
+      );
+    }
+  }
+  return revoked;
+}
+
+// ---------------------------------------------------------------------------
+// Payment gate + session-level processing claim
+// ---------------------------------------------------------------------------
+/**
+ * Has the money actually been taken?
+ *
+ * ⚠️ "paid" is the ordinary case. "no_payment_required" is a £0 session — a
+ * gift code that covers the order in full — which IS a completed order and must
+ * still be fulfilled, certificate and all. Anything else ("unpaid") means a
+ * delayed payment method has not settled yet: issue NOTHING.
+ */
+const isSessionPaid = (session: Stripe.Checkout.Session): boolean =>
+  session.payment_status === "paid" ||
+  session.payment_status === "no_payment_required";
+
+/**
+ * Claim a session for one-time processing of ONE CONCERN.
+ *
+ * ⚠️ PER-CONCERN, not per-session — this is the subtle one. Print fulfilment and
+ * gift minting run on DIFFERENT events for the same order: an unpaid Klarna
+ * session fulfils its prints on `checkout.session.completed` and mints its gift
+ * codes later on `checkout.session.async_payment_succeeded`. A single
+ * session-wide claim would be taken by the print run and would then SILENTLY
+ * SWALLOW the deferred gift mint — the buyer would pay and never receive the
+ * code. Each concern therefore claims its own key.
+ *
+ * The claim is only ever taken when the work actually runs: the deferred path
+ * below does NOT claim the gift concern, precisely so the async event still can.
+ *
+ * FAIL-OPEN, like every KV call in this file: with no KV configured it returns
+ * true and processing proceeds (both mint calls carry Stripe idempotency keys,
+ * so a duplicate delivery still cannot mint a second coupon).
+ */
+type ProcessingConcern = "fulfilment" | "gifts";
+
+async function claimSessionProcessing(
+  sessionId: string,
+  concern: ProcessingConcern,
+): Promise<boolean> {
+  if (!kvDedupConfig()) return true;
+  const claim = await kvCmd([
+    "SET",
+    `stripe_session_done:${concern}:${sessionId}`,
+    "1",
+    "NX",
+    "EX",
+    String(KV_DEDUP_TTL_SECONDS),
+  ]);
+  if (claim === "OK") return true;
+  if (claim === null) {
+    console.log("[stripe-webhook] session concern already processed, skipping", {
+      session_id: sessionId,
+      concern,
+    });
+    return false;
+  }
+  // Unexpected result / KV blip — fail open.
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Completed-order processing — split by RISK, deliberately
+// ---------------------------------------------------------------------------
+// ⚠️ READ BEFORE RE-COMBINING THESE. The two concerns below have OPPOSITE
+// failure costs, so they are gated differently on purpose:
+//
+//   • PRINT FULFILMENT (certificates, ledger, estate fulfilment email, buyer
+//     confirmation) runs on `checkout.session.completed` REGARDLESS of
+//     payment_status — exactly as it always has. A print is physically made and
+//     posted by the estate, who can cancel an order that never settles, so
+//     notifying early is RECOVERABLE. Gating it would mean that if the
+//     `checkout.session.async_payment_succeeded` event were ever missing from
+//     the endpoint's subscription, a Klarna buyer could pay £1,300 and receive
+//     NOTHING, silently — an unrecoverable failure, and one that would hit print
+//     orders that were never at risk in the first place.
+//
+//   • GIFT-CODE MINTING is gated on isSessionPaid(). This is the actual
+//     giveaway: an unpaid session used to mint and email a live £5,000 code that
+//     stayed valid for 365 days whether or not the money ever arrived. Nothing
+//     is minted or emailed until the money is confirmed; the deferred mint
+//     arrives via `checkout.session.async_payment_succeeded`, and the estate is
+//     emailed an alert meanwhile so a missing subscription is visible, not
+//     silent.
+//
+// Fail-open throughout: every downstream step is caught and logged so the
+// webhook always returns 200 to Stripe.
+
+/** The buyer / order facts both concerns derive identically off a session. */
+interface OrderContext {
+  m: Stripe.Metadata;
+  shipping: { name?: string | null; address?: unknown } | null;
+  buyerEmail: string | null;
+  buyerName: string | null;
+  /** A gift-ONLY basket (api/checkout.ts writes order_kind:"gift"). It has no
+   *  print lines, so its buyer confirmation belongs to the GIFT concern. */
+  isGiftOrder: boolean;
+}
+
+const orderContext = (session: Stripe.Checkout.Session): OrderContext => {
+  const m = session.metadata ?? {};
+  const shipping =
+    (session as unknown as {
+      shipping_details?: { name?: string | null; address?: unknown };
+    }).shipping_details ?? null;
+  return {
+    m,
+    shipping,
+    buyerEmail: session.customer_details?.email ?? null,
+    buyerName: session.customer_details?.name ?? shipping?.name ?? null,
+    isGiftOrder: m.order_kind === "gift",
+  };
+};
+
+/**
+ * PRINT FULFILMENT — certificates, the estate ledger + fulfilment email, the
+ * CRM/ads events, the Family & Friends code and the buyer's print confirmation.
+ *
+ * ⚠️ NOT gated on payment_status. See the block comment above: silent
+ * non-fulfilment of a paid print is worse than early notification of one that
+ * may not settle, and the estate can cancel the latter. Restores the behaviour
+ * that shipped before the payment gate was introduced.
+ *
+ * A gift-ONLY order has nothing to fulfil here — no print lines, no thank-you
+ * code, and its confirmation is sent by processGiftCards once the money lands.
+ */
+async function processPrintFulfilment(
+  stripe: Stripe,
+  session: Stripe.Checkout.Session,
+  ctx: OrderContext,
+): Promise<void> {
+  const { m, shipping, buyerEmail, buyerName, isGiftOrder } = ctx;
+
+  console.log("[stripe-webhook] print fulfilment", {
+    session_id: session.id,
+    payment_status: session.payment_status,
+    amount_total: session.amount_total,
+    currency: session.currency,
+    customer_email: buyerEmail,
+    customer_name: buyerName,
+    painting_id: m.painting_id,
+    painting_title: m.painting_title,
+    painting_titles: m.painting_titles,
+    colourway: m.colourway_name,
+    colourway_names: m.colourway_names,
+    item_count: m.item_count,
+    order_kind: m.order_kind,
+    size: m.size,
+    shipping_name: shipping?.name,
+    shipping_address: shipping?.address,
+  });
+
+  // -- 0b. Klaviyo "Placed Order" event + customer upsert ---------------
+  // Best-effort + env-guarded (no KLAVIYO_API_KEY → clean no-op). Runs here
+  // BEFORE the confirmation-email block, which returns early when
+  // RESEND_API_KEY / buyerEmail are missing — so the CRM sync isn't tied to
+  // the email path. Feeds the Post-Purchase flow + revenue analytics +
+  // segmentation. Every call is try/catch'd; the webhook ALWAYS returns 200
+  // regardless of Klaviyo's outcome (Stripe must not retry on our errors).
+  const klaviyoKey = process.env.KLAVIYO_API_KEY;
+  if (klaviyoKey) {
+    if (!buyerEmail) {
+      console.warn(
+        "[stripe-webhook] No buyer email on session — skipping Klaviyo sync.",
+        { session_id: session.id },
+      );
+    } else {
+      try {
+        const klaviyoLines = linesFromMetadata(m, session.amount_subtotal);
+        await klaviyoPlacedOrderEvent(klaviyoKey, {
+          email: buyerEmail,
+          name: buyerName,
+          sessionId: session.id,
+          amountTotalPence: session.amount_total,
+          currency: session.currency,
+          lines: klaviyoLines,
+        });
+        console.log("[stripe-webhook] klaviyo Placed Order event sent", {
+          session_id: session.id,
+          email: buyerEmail,
+          value_pence: session.amount_total,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] klaviyo event failed:", message, {
+          session_id: session.id,
+        });
+      }
+      // Extra best-effort profile upsert (name lands on the profile even if
+      // the event's profile attrs were sparse). Independent try/catch.
+      try {
+        await klaviyoUpsertProfile(klaviyoKey, buyerEmail, buyerName);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] klaviyo profile upsert failed:", message, {
+          session_id: session.id,
+        });
+      }
+    }
+  }
+
+  // -- 0c. Meta Conversions API "Purchase" event -------------------------
+  // Best-effort + env-guarded (META_PIXEL_ID / META_CAPI_ACCESS_TOKEN —
+  // either absent → clean silent no-op). Runs here BEFORE the
+  // confirmation-email block (which returns early when RESEND_API_KEY /
+  // buyerEmail are missing), like Klaviyo, so ad attribution isn't tied to
+  // the email path. Try/catch'd; the webhook ALWAYS returns 200 regardless
+  // of Meta's outcome.
+  const metaPixelId = process.env.META_PIXEL_ID;
+  const metaCapiToken = process.env.META_CAPI_ACCESS_TOKEN;
+  if (metaPixelId && metaCapiToken) {
+    if (!buyerEmail) {
+      // Meta requires at least one user_data identifier — without the
+      // buyer's email we have nothing to hash, so skip with a log.
+      console.warn(
+        "[stripe-webhook] No buyer email on session — skipping Meta CAPI Purchase.",
+        { session_id: session.id },
+      );
+    } else {
+      try {
+        await metaCapiPurchase({
+          pixelId: metaPixelId,
+          accessToken: metaCapiToken,
+          sessionId: session.id,
+          email: buyerEmail,
+          amountTotalPence: session.amount_total,
+          currency: session.currency,
+        });
+        console.log("[stripe-webhook] meta CAPI Purchase sent", {
+          session_id: session.id,
+          value_pence: session.amount_total,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] meta CAPI Purchase failed:", message, {
+          session_id: session.id,
+        });
+      }
+    }
+  }
+
+  // -- 0d. Estate ledger — issue Certificate IDs + print numbers --------
+  // Writes a ledger entry per print line (idempotent per session+line),
+  // then emails the estate the structured fulfilment payload (artwork, tier,
+  // edition, print number, Certificate ID, /auth verify URL — the QR
+  // target). Fully fail-open: a KV/Resend outage logs + continues, never
+  // blocking the 200. Gift-only orders have no print lines → no certs.
+  const printLineCount = ledgerLinesFromMetadata(m).length;
+  // ⚠️ FAIL LOUDLY. Certificate issuance runs ONLY when the KV credentials
+  // are present. Without them the order used to complete with NO certificate
+  // and NOBODY told — a warning in a function log nobody reads. An order
+  // carrying print lines with no registry is a fulfilment defect the estate
+  // has to fix by hand, so it is emailed AND logged at error level. Still
+  // fail-open: it never blocks the 200 to Stripe.
+  if (printLineCount > 0 && !kvDedupConfig()) {
+    console.error(
+      "[stripe-webhook] ⚠️ CERTIFICATES NOT ISSUED — the estate registry (KV) is " +
+        "not configured, so no Certificate ID or print number was recorded for this " +
+        "order. Set KV_REST_API_URL + KV_REST_API_TOKEN (or the UPSTASH_* aliases) " +
+        "on Vercel.",
+      { session_id: session.id, print_lines: printLineCount },
+    );
+    await sendEstateAlert({
+      subject: `⚠️ Certificates NOT issued · order ${session.id.slice(0, 12)}…`,
+      html: renderEstateAlertHtml({
+        headline: "Certificates were not issued for this order",
+        orderRef: session.id,
+        rows: [
+          ["Print lines", String(printLineCount)],
+          ["Buyer", buyerEmail ?? "—"],
+          ["Ship to", shipping?.name ?? "—"],
+          ["Reason", "The estate registry (KV) is not configured on this deployment."],
+        ],
+        action:
+          "No Certificate ID or print number was recorded, and the fulfilment email was not sent. " +
+          "Set KV_REST_API_URL and KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL / " +
+          "UPSTASH_REDIS_REST_TOKEN) in the Vercel project, then issue this order's certificates by hand.",
+      }),
+      context: { session_id: session.id, print_lines: printLineCount },
+    });
+  }
+  let ledgerEntries: LedgerEntry[] = [];
+  try {
+    ledgerEntries = await issueLedgerEntries(session.id, m);
+  } catch (err) {
+    console.error(
+      "[stripe-webhook] estate ledger issue failed:",
+      err instanceof Error ? err.message : err,
+    );
+  }
+  if (ledgerEntries.length > 0) {
+    const siteUrlLedger = (
+      process.env.SITE_URL || "https://themandalacompany.com"
+    ).replace(/\/$/, "");
+    // Log the structured payload regardless of email — durable audit trail.
+    console.log("[stripe-webhook] estate ledger payload", {
+      order_id: session.id,
+      certificates: ledgerEntries.map((e) => ({
+        cert: e.certificate_id,
+        artwork: e.artwork_id,
+        tier: e.tier_id,
+        print_number: e.print_number,
+        auth_url: `${siteUrlLedger}/auth/${e.certificate_id}`,
+      })),
+    });
+    const resendKeyLedger = process.env.RESEND_API_KEY;
+    if (resendKeyLedger) {
+      try {
+        const fromEmailL = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+        const toEmailL = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+        const resendL = new Resend(resendKeyLedger);
+        const sendL = await resendL.emails.send({
+          from: `${FROM_NAME} <${fromEmailL}>`,
+          to: [toEmailL],
+          replyTo: DEFAULT_FROM,
+          subject: `Fulfilment — ${ledgerEntries.length} print${
+            ledgerEntries.length > 1 ? "s" : ""
+          } to place · order ${session.id.slice(0, 12)}…`,
+          html: renderEstateFulfilmentHtml({
+            orderRef: session.id,
+            shippingName: shipping?.name ?? null,
+            entries: ledgerEntries,
+            siteUrl: siteUrlLedger,
+          }),
+        });
+        if (sendL.error) {
+          console.error(
+            "[stripe-webhook] estate fulfilment email error:",
+            sendL.error,
+          );
+        } else {
+          console.log("[stripe-webhook] estate fulfilment email sent", {
+            order_id: session.id,
+            to: toEmailL,
+            count: ledgerEntries.length,
+          });
+        }
+      } catch (err) {
+        console.error(
+          "[stripe-webhook] estate fulfilment email failed:",
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+  }
+
+  // -- 1. Mint the thank-you code (or fall back) -----------------------
+  // We do this BEFORE rendering the email so the code lands in the
+  // template. Any failure falls back to the static reusable code; we
+  // never block the webhook on Stripe.coupons errors.
+  //
+  // ⚠️ FARMING GUARD: never mint on a gift-card order or a £0 order. A gift
+  // coupon carries no `applies_to` restriction, so redeeming a £525 code
+  // against a £525 gift card cost £0 — and used to mint BOTH a fresh
+  // full-value gift code (365 fresh days) AND a fresh 10% thank-you code,
+  // repeatable forever. api/checkout.ts refuses the promo-code field on any
+  // basket holding a gift card; this is the second half of that guard.
+  const skipThankYou = isGiftOrder || (session.amount_total ?? 0) === 0;
+  let thankYou: ThankYouCode | null = null;
+  if (skipThankYou) {
+    console.log("[stripe-webhook] thank-you code not minted", {
+      session_id: session.id,
+      order_kind: m.order_kind ?? "",
+      amount_total: session.amount_total,
+    });
+  } else {
+    try {
+      thankYou = await createThankYouCode(stripe, {
+        sessionId: session.id,
+        sessionCreated: session.created,
+        buyerEmail,
+      });
+      console.log("[stripe-webhook] thank-you code minted", {
+        session_id: session.id,
+        code: thankYou.code,
+      });
+      // ⚠️ Record it alongside any gift codes: revokeSessionCodes only falls
+      // back to scanning Stripe when the KV registry is EMPTY, so a thank-you
+      // code left unrecorded would survive a refund on a mixed order.
+      if (thankYou.couponId && thankYou.promotionCodeId) {
+        await recordMintedCode(session.id, {
+          promotion_code_id: thankYou.promotionCodeId,
+          coupon_id: thankYou.couponId,
+          code: thankYou.code,
+          kind: "thank_you",
+        });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(
+        "[stripe-webhook] thank-you code mint failed, using fallback:",
+        message,
+      );
+      const fallbackCode = process.env.THANK_YOU_CODE_FALLBACK || FALLBACK_CODE;
+      const oneYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+      thankYou = {
+        code: fallbackCode,
+        couponId: null,
+        promotionCodeId: null,
+        valueLabel: "10%",
+        expiresLabel: oneYear.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }),
+      };
+    }
+  }
+
+  // -- 2. Send the estate-branded confirmation email -------------------
+  // ⚠️ A gift-ONLY order's confirmation is NOT sent here. It has to carry the
+  // gift codes, which do not exist until the money is confirmed, so it belongs
+  // to processGiftCards. Sending the print template for a gift-only order was
+  // the original bug: an EMPTY item table under "your print from the Stephen
+  // Meakin estate", with no mention of the code.
+  if (isGiftOrder) return;
+
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    // Documented design choice — see file header. Hugo gets a warning in
+    // the function log but the webhook still 200s so Stripe is happy.
+    console.warn(
+      "[stripe-webhook] RESEND_API_KEY missing — skipping confirmation email.",
+    );
+    return;
+  }
+  if (!buyerEmail) {
+    console.warn(
+      "[stripe-webhook] No customer email on session — skipping confirmation email.",
+      { session_id: session.id },
+    );
+    return;
+  }
+
+  try {
+    const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+    const bccEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+    const resend = new Resend(resendKey);
+
+    const sendResult = await resend.emails.send({
+      from: `${FROM_NAME} <${fromEmail}>`,
+      to: [buyerEmail],
+      // BCC only if it's a different inbox to "from", to avoid Resend
+      // rejecting a self-bcc on some sender domains.
+      bcc: bccEmail && bccEmail.toLowerCase() !== fromEmail.toLowerCase()
+        ? [bccEmail]
+        : undefined,
+      replyTo: DEFAULT_FROM,
+      subject: "Thank you — your print from the Stephen Meakin estate",
+      html: renderOrderConfirmationHtml({
+        buyerName,
+        orderRef: session.id.slice(0, 18) + "…",
+        lines: linesFromMetadata(m, session.amount_subtotal),
+        total: formatGBP(session.amount_total, session.currency),
+        thankYouCode: thankYou?.code ?? null,
+        thankYouValue: thankYou?.valueLabel ?? null,
+        thankYouExpiry: thankYou?.expiresLabel ?? null,
+        estateEmail: DEFAULT_FROM,
+      }),
+    });
+
+    // Resend returns { data, error } — log either branch for traceability.
+    if (sendResult.error) {
+      console.error("[stripe-webhook] Resend send error:", sendResult.error);
+    } else {
+      console.log("[stripe-webhook] confirmation email sent", {
+        session_id: session.id,
+        to: buyerEmail,
+        resend_id: sendResult.data?.id,
+      });
+    }
+  } catch (err) {
+    // Swallow ALL email errors — never fail the webhook on email send.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[stripe-webhook] confirmation email failed:", message);
+  }
+
+  // -- 3. Shipped email -----------------------------------------------
+  // TODO(hugo): build a small admin endpoint POST /api/admin/order-shipped
+  // that takes { sessionId, trackingUrl, carrier } and sends the
+  // OrderShipped template via Resend. For initial launch this remains
+  // manual from Hugo's own inbox.
+}
+
+/**
+ * GIFT CODES — mint each card, email it to the recipient AND to the buyer, and
+ * (on a gift-ONLY order) send the buyer's confirmation carrying the codes.
+ *
+ * ⚠️ ONLY ever called for a session isSessionPaid() says is settled. An unpaid
+ * BNPL session must not mint or email a live code — that is the giveaway this
+ * whole gate exists to stop.
+ */
+async function processGiftCards(
+  stripe: Stripe,
+  session: Stripe.Checkout.Session,
+  ctx: OrderContext,
+): Promise<void> {
+  const { m, buyerEmail, buyerName, isGiftOrder } = ctx;
+
+  // -- Mint + send each gift card ----------------------------------------
+  // For each gift card purchased: mint an amount_off coupon + GIFT-XXXXXX
+  // promotion code worth EXACTLY what the buyer paid, then email it to the
+  // recipient (with the buyer's note) AND to the buyer. Every step is
+  // try/catch'd per-card so one failure can't block the others or the
+  // webhook — we ALWAYS return 200 (never make Stripe retry).
+  const giftCards = parseGiftCards(m);
+  const giftSummaries: Array<{
+    label: string;
+    amountLabel: string;
+    code: string | null;
+    expiresLabel: string | null;
+    recipientName?: string | null;
+    recipientEmail?: string | null;
+  }> = [];
+  // Labels are positional like every other gift array (see parseGiftCards).
+  // Display-only — an absent slot just leaves the card unlabelled.
+  const giftLabels = (m.gift_labels || "")
+    .split(/[|,]/)
+    .map((t) => t.trim());
+  if (giftCards.length > 0) {
+    const resendKeyGift = process.env.RESEND_API_KEY;
+    const fromEmailGift = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+    const bccEmailGift = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+    const resendGift = resendKeyGift ? new Resend(resendKeyGift) : null;
+    if (!resendGift) {
+      console.warn(
+        "[stripe-webhook] RESEND_API_KEY missing — gift codes will be minted but the gift email cannot be sent.",
+        { session_id: session.id, gift_count: giftCards.length },
+      );
+    }
+    for (let i = 0; i < giftCards.length; i += 1) {
+      const gift = giftCards[i];
+      const giftLabel = giftLabels[i] || "";
+      let minted: MintedGiftCard;
+      try {
+        minted = await createGiftCard(stripe, {
+          sessionId: session.id,
+          sessionCreated: session.created,
+          buyerEmail,
+          gift,
+          index: i,
+        });
+        // INVARIANT confirmed in the log: minted value == amount charged,
+        // in the currency the buyer was actually charged in.
+        console.log("[stripe-webhook] gift card minted", {
+          session_id: session.id,
+          gift_index: i,
+          code: minted.code,
+          amount_minor: minted.amountMinor,
+          currency: minted.currency,
+          charged_minor: gift.chargedMinor,
+          value_matches_charge: minted.amountMinor === gift.chargedMinor,
+        });
+        await recordMintedCode(session.id, {
+          promotion_code_id: minted.promotionCodeId,
+          coupon_id: minted.couponId,
+          code: minted.code,
+          kind: "gift_card",
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] gift card mint failed:", message, {
+          session_id: session.id,
+          gift_index: i,
+        });
+        giftSummaries.push({
+          label: giftLabel,
+          amountLabel: formatGBP(gift.chargedMinor, gift.chargedCurrency),
+          code: null,
+          expiresLabel: null,
+          recipientName: gift.recipientName ?? null,
+          recipientEmail: gift.recipientEmail ?? null,
+        });
+        continue; // skip the email for a card we couldn't mint
+      }
+
+      giftSummaries.push({
+        label: giftLabel,
+        amountLabel: minted.amountLabel,
+        code: minted.code,
+        expiresLabel: minted.expiresLabel,
+        recipientName: gift.recipientName ?? null,
+        recipientEmail: gift.recipientEmail ?? null,
+      });
+
+      // Send the dignified gift email. To the recipient if given (with the
+      // buyer's note); else back to the buyer to forward. Estate BCC'd.
+      if (!resendGift) continue;
+      const sendGiftEmail = async (
+        toAddress: string,
+        toRecipient: boolean,
+      ): Promise<void> => {
+        const html = renderGiftHtml({
+          toRecipient,
+          recipientName: gift.recipientName ?? null,
+          buyerName,
+          giftMessage: gift.giftMessage ?? null,
+          code: minted.code,
+          amountLabel: minted.amountLabel,
+          expiresLabel: minted.expiresLabel,
+          estateEmail: DEFAULT_FROM,
+          orderRef: session.id.slice(0, 18) + "…",
+        });
+        const subject = toRecipient
+          ? `A gift for you — ${minted.amountLabel} towards a Stephen Meakin print`
+          : `Your gift card — ${minted.amountLabel} for The Art of Stephen Meakin`;
+        const giftSend = await resendGift.emails.send({
+          from: `${FROM_NAME} <${fromEmailGift}>`,
+          to: [toAddress],
+          bcc:
+            bccEmailGift && bccEmailGift.toLowerCase() !== fromEmailGift.toLowerCase()
+              ? [bccEmailGift]
+              : undefined,
+          replyTo: DEFAULT_FROM,
+          subject,
+          html,
+        });
+        if (giftSend.error) {
+          console.error("[stripe-webhook] gift email Resend error:", giftSend.error, {
+            session_id: session.id,
+            gift_index: i,
+            code: minted.code,
+          });
+        } else {
+          console.log("[stripe-webhook] gift email sent", {
+            session_id: session.id,
+            gift_index: i,
+            code: minted.code,
+            to: toAddress,
+            to_recipient: toRecipient,
+            resend_id: giftSend.data?.id,
+          });
+        }
+      };
+      const recipientAddress = gift.recipientEmail ?? "";
+      const primaryAddress = recipientAddress || buyerEmail;
+      if (!primaryAddress) {
+        console.warn(
+          "[stripe-webhook] gift card has no recipient email AND no buyer email — code minted, email skipped.",
+          { session_id: session.id, gift_index: i, code: minted.code },
+        );
+        continue;
+      }
+      try {
+        await sendGiftEmail(primaryAddress, !!recipientAddress);
+      } catch (err) {
+        // Swallow all email errors — never fail the webhook on email send.
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("[stripe-webhook] gift email failed:", message, {
+          session_id: session.id,
+          gift_index: i,
+          code: minted.code,
+        });
+      }
+      // ⚠️ The buyer ALWAYS gets their own copy of the code. A typo'd but
+      // well-formed recipient address (bob@gmial.com) used to send a £750
+      // card into the void with no copy anywhere — `gift.recipientEmail ||
+      // buyerEmail` meant the buyer was skipped entirely whenever a
+      // recipient was named. On a gift-ONLY order the confirmation email
+      // below already restates every code, so the copy is sent here only
+      // for a mixed basket (whose confirmation covers the prints).
+      const needsBuyerCopy =
+        !!recipientAddress &&
+        !!buyerEmail &&
+        buyerEmail.toLowerCase() !== recipientAddress.toLowerCase() &&
+        !isGiftOrder;
+      if (needsBuyerCopy && buyerEmail) {
+        try {
+          await sendGiftEmail(buyerEmail, false);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          console.error("[stripe-webhook] gift buyer-copy email failed:", message, {
+            session_id: session.id,
+            gift_index: i,
+            code: minted.code,
+          });
+        }
+      }
+    }
+  }
+
+  // -- Gift-only confirmation to the buyer --------------------------------
+  // ⚠️ This is also the buyer's own copy of every code (see the recipient-typo
+  // note above), so it must run whenever the order was gift-only.
+  if (!isGiftOrder) return;
+  const resendKeyConf = process.env.RESEND_API_KEY;
+  if (!resendKeyConf || !buyerEmail) {
+    console.warn(
+      "[stripe-webhook] gift confirmation skipped — no RESEND_API_KEY or no buyer email.",
+      { session_id: session.id, has_key: !!resendKeyConf, has_email: !!buyerEmail },
+    );
+    return;
+  }
+  try {
+    const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
+    const bccEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
+    const sendResult = await new Resend(resendKeyConf).emails.send({
+      from: `${FROM_NAME} <${fromEmail}>`,
+      to: [buyerEmail],
+      bcc: bccEmail && bccEmail.toLowerCase() !== fromEmail.toLowerCase()
+        ? [bccEmail]
+        : undefined,
+      replyTo: DEFAULT_FROM,
+      subject: "Thank you — your gift card from the Stephen Meakin estate",
+      html: renderGiftOrderConfirmationHtml({
+        buyerName,
+        orderRef: session.id.slice(0, 18) + "…",
+        cards: giftSummaries,
+        total: formatGBP(session.amount_total, session.currency),
+        estateEmail: DEFAULT_FROM,
+      }),
+    });
+    if (sendResult.error) {
+      console.error("[stripe-webhook] gift confirmation Resend error:", sendResult.error, {
+        session_id: session.id,
+      });
+    } else {
+      console.log("[stripe-webhook] gift confirmation email sent", {
+        session_id: session.id,
+        to: buyerEmail,
+        cards: giftSummaries.length,
+        resend_id: sendResult.data?.id,
+      });
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[stripe-webhook] gift confirmation email failed:", message, {
+      session_id: session.id,
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
 
@@ -1594,411 +2735,183 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   seenEvents.set(event.id, Date.now());
 
   switch (event.type) {
+    // ⚠️ SPLIT GATE — read the block comment above processPrintFulfilment
+    // before changing this. `checkout.session.completed` fires when the buyer
+    // finishes checkout, NOT when the money arrives: with Klarna / Clearpay live
+    // a session completes with payment_status "unpaid" and settles later.
+    //   • Print fulfilment runs either way — a paid print that is never made is
+    //     unrecoverable, an unsettled one the estate can simply cancel.
+    //   • Gift codes wait for the money. Nothing is minted or emailed until
+    //     isSessionPaid(); the deferred mint arrives on
+    //     async_payment_succeeded, and the estate is alerted meanwhile.
     case "checkout.session.completed": {
       const session = event.data.object;
-      const m = session.metadata ?? {};
-      const shipping =
-        (session as unknown as {
-          shipping_details?: { name?: string | null; address?: unknown };
-        }).shipping_details ?? null;
-      const buyerEmail = session.customer_details?.email ?? null;
-      const buyerName = session.customer_details?.name ?? shipping?.name ?? null;
-
-      console.log("[checkout.session.completed]", {
+      const ctx = orderContext(session);
+      if (await claimSessionProcessing(session.id, "fulfilment")) {
+        await processPrintFulfilment(stripe, session, ctx);
+      }
+      const paid = isSessionPaid(session);
+      if (paid) {
+        if (await claimSessionProcessing(session.id, "gifts")) {
+          await processGiftCards(stripe, session, ctx);
+        }
+      } else if (parseGiftCards(ctx.m).length > 0) {
+        // ⚠️ DELIBERATELY NO CLAIM HERE — claiming "gifts" now would make the
+        // deferred mint on async_payment_succeeded a silent no-op, and the
+        // buyer would pay and never receive the code.
+        const giftCount = parseGiftCards(ctx.m).length;
+        console.error(
+          "[stripe-webhook] gift code(s) NOT minted — payment not settled; waiting for " +
+            "checkout.session.async_payment_succeeded (that event must be enabled on this " +
+            "webhook endpoint or the code will never be issued)",
+          {
+            session_id: session.id,
+            payment_status: session.payment_status,
+            gift_count: giftCount,
+          },
+        );
+        // Turn the dashboard prerequisite from a silent trap into a visible one:
+        // Hugo sees a pending gift even if the async event was never subscribed.
+        await sendEstateAlert({
+          subject: `Gift code pending settlement · order ${session.id.slice(0, 12)}…`,
+          html: renderEstateAlertHtml({
+            headline: "A gift code is waiting on payment settlement",
+            orderRef: session.id,
+            rows: [
+              ["Gift cards on order", String(giftCount)],
+              ["Payment status", session.payment_status ?? "—"],
+              ["Buyer", ctx.buyerEmail ?? "—"],
+              [
+                "Issued so far",
+                "Nothing — no code has been minted or emailed.",
+              ],
+            ],
+            action:
+              "The code will be issued automatically when Stripe sends " +
+              "checkout.session.async_payment_succeeded for this order. If that event is not " +
+              "enabled on this webhook endpoint (Stripe Dashboard → Developers → Webhooks), " +
+              "enable it — otherwise this buyer will never receive their gift code.",
+          }),
+          context: { session_id: session.id, gift_count: giftCount },
+        });
+      }
+      break;
+    }
+    case "checkout.session.async_payment_succeeded": {
+      // The delayed-payment settlement (Klarna / Clearpay / bank debits). The
+      // gift mint that `completed` deferred happens HERE. Print fulfilment is
+      // re-attempted too — normally a no-op because `completed` already claimed
+      // the "fulfilment" concern, but it means an order still completes even if
+      // the `completed` delivery was ever lost.
+      const session = event.data.object;
+      const ctx = orderContext(session);
+      if (await claimSessionProcessing(session.id, "fulfilment")) {
+        await processPrintFulfilment(stripe, session, ctx);
+      }
+      if (await claimSessionProcessing(session.id, "gifts")) {
+        await processGiftCards(stripe, session, ctx);
+      }
+      break;
+    }
+    case "checkout.session.async_payment_failed": {
+      // The buyer's delayed payment never cleared. No gift code was ever minted
+      // (that is the whole point of the gate), but the print path already ran on
+      // `completed`, so the Family & Friends code exists — revoke it, and tell
+      // the estate the print must not be sent.
+      const session = event.data.object;
+      console.error("[stripe-webhook] delayed payment FAILED", {
         session_id: session.id,
         payment_status: session.payment_status,
         amount_total: session.amount_total,
-        currency: session.currency,
-        customer_email: buyerEmail,
-        customer_name: buyerName,
-        painting_id: m.painting_id,
-        painting_title: m.painting_title,
-        painting_titles: m.painting_titles,
-        colourway: m.colourway_name,
-        colourway_names: m.colourway_names,
-        item_count: m.item_count,
-        size: m.size,
-        shipping_name: shipping?.name,
-        shipping_address: shipping?.address,
       });
-
-      // -- 0. Gift e-vouchers -----------------------------------------------
-      // Run BEFORE the print confirmation block (which has early `break`s when
-      // RESEND_API_KEY / buyerEmail are missing) so gifts are always processed.
-      // For each gift card purchased: mint an amount_off coupon + GIFT-XXXXXX
-      // promotion code worth EXACTLY what the buyer paid, then email it to the
-      // recipient (with the buyer's note) or back to the buyer. Every step is
-      // try/catch'd per-card so one failure can't block the others or the
-      // webhook — we ALWAYS return 200 (never make Stripe retry).
-      const giftCards = parseGiftCards(m);
-      if (giftCards.length > 0) {
-        const resendKeyGift = process.env.RESEND_API_KEY;
-        const fromEmailGift = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
-        const bccEmailGift = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
-        const resendGift = resendKeyGift ? new Resend(resendKeyGift) : null;
-        if (!resendGift) {
-          console.warn(
-            "[stripe-webhook] RESEND_API_KEY missing — gift codes will be minted but the gift email cannot be sent.",
-            { session_id: session.id, gift_count: giftCards.length },
-          );
-        }
-        for (let i = 0; i < giftCards.length; i += 1) {
-          const gift = giftCards[i];
-          let minted: MintedGiftCard;
-          try {
-            minted = await createGiftCard(stripe, {
-              sessionId: session.id,
-              buyerEmail,
-              amountPence: gift.amountPence,
-              index: i,
-            });
-            // INVARIANT confirmed in the log: minted value == amount charged.
-            console.log("[stripe-webhook] gift card minted", {
-              session_id: session.id,
-              gift_index: i,
-              code: minted.code,
-              amount_pence: minted.amountPence,
-              charged_pence: gift.amountPence,
-              value_matches_charge: minted.amountPence === gift.amountPence,
-            });
-          } catch (err) {
-            const message = err instanceof Error ? err.message : String(err);
-            console.error("[stripe-webhook] gift card mint failed:", message, {
-              session_id: session.id,
-              gift_index: i,
-            });
-            continue; // skip the email for a card we couldn't mint
-          }
-
-          // Send the dignified gift email. To the recipient if given (with the
-          // buyer's note); else back to the buyer to forward. Estate BCC'd.
-          if (!resendGift) continue;
-          const toRecipient = !!gift.recipientEmail;
-          const toAddress = gift.recipientEmail || buyerEmail;
-          if (!toAddress) {
-            console.warn(
-              "[stripe-webhook] gift card has no recipient email AND no buyer email — code minted, email skipped.",
-              { session_id: session.id, gift_index: i, code: minted.code },
-            );
-            continue;
-          }
-          try {
-            const html = renderGiftHtml({
-              toRecipient,
-              recipientName: gift.recipientName ?? null,
-              buyerName,
-              giftMessage: gift.giftMessage ?? null,
-              code: minted.code,
-              amountLabel: minted.amountLabel,
-              expiresLabel: minted.expiresLabel,
-              estateEmail: DEFAULT_FROM,
-              orderRef: session.id.slice(0, 18) + "…",
-            });
-            const subject = toRecipient
-              ? `A gift for you — ${minted.amountLabel} towards a Stephen Meakin print`
-              : `Your gift card — ${minted.amountLabel} for The Art of Stephen Meakin`;
-            const giftSend = await resendGift.emails.send({
-              from: `${FROM_NAME} <${fromEmailGift}>`,
-              to: [toAddress],
-              bcc:
-                bccEmailGift && bccEmailGift.toLowerCase() !== fromEmailGift.toLowerCase()
-                  ? [bccEmailGift]
-                  : undefined,
-              replyTo: DEFAULT_FROM,
-              subject,
-              html,
-            });
-            if (giftSend.error) {
-              console.error("[stripe-webhook] gift email Resend error:", giftSend.error, {
-                session_id: session.id,
-                gift_index: i,
-                code: minted.code,
-              });
-            } else {
-              console.log("[stripe-webhook] gift email sent", {
-                session_id: session.id,
-                gift_index: i,
-                code: minted.code,
-                to: toAddress,
-                to_recipient: toRecipient,
-                resend_id: giftSend.data?.id,
-              });
-            }
-          } catch (err) {
-            // Swallow all email errors — never fail the webhook on email send.
-            const message = err instanceof Error ? err.message : String(err);
-            console.error("[stripe-webhook] gift email failed:", message, {
-              session_id: session.id,
-              gift_index: i,
-              code: minted.code,
-            });
-          }
-        }
-      }
-
-      // -- 0b. Klaviyo "Placed Order" event + customer upsert ---------------
-      // Best-effort + env-guarded (no KLAVIYO_API_KEY → clean no-op). Runs here
-      // BEFORE the confirmation-email block, which has early `break`s when
-      // RESEND_API_KEY / buyerEmail are missing — so the CRM sync isn't tied to
-      // the email path. Feeds the Post-Purchase flow + revenue analytics +
-      // segmentation. Every call is try/catch'd; the webhook ALWAYS returns 200
-      // regardless of Klaviyo's outcome (Stripe must not retry on our errors).
-      const klaviyoKey = process.env.KLAVIYO_API_KEY;
-      if (klaviyoKey) {
-        if (!buyerEmail) {
-          console.warn(
-            "[stripe-webhook] No buyer email on session — skipping Klaviyo sync.",
-            { session_id: session.id },
-          );
-        } else {
-          try {
-            const klaviyoLines = linesFromMetadata(m, session.amount_subtotal);
-            await klaviyoPlacedOrderEvent(klaviyoKey, {
-              email: buyerEmail,
-              name: buyerName,
-              sessionId: session.id,
-              amountTotalPence: session.amount_total,
-              currency: session.currency,
-              lines: klaviyoLines,
-            });
-            console.log("[stripe-webhook] klaviyo Placed Order event sent", {
-              session_id: session.id,
-              email: buyerEmail,
-              value_pence: session.amount_total,
-            });
-          } catch (err) {
-            const message = err instanceof Error ? err.message : String(err);
-            console.error("[stripe-webhook] klaviyo event failed:", message, {
-              session_id: session.id,
-            });
-          }
-          // Extra best-effort profile upsert (name lands on the profile even if
-          // the event's profile attrs were sparse). Independent try/catch.
-          try {
-            await klaviyoUpsertProfile(klaviyoKey, buyerEmail, buyerName);
-          } catch (err) {
-            const message = err instanceof Error ? err.message : String(err);
-            console.error("[stripe-webhook] klaviyo profile upsert failed:", message, {
-              session_id: session.id,
-            });
-          }
-        }
-      }
-
-      // -- 0c. Meta Conversions API "Purchase" event -------------------------
-      // Best-effort + env-guarded (META_PIXEL_ID / META_CAPI_ACCESS_TOKEN —
-      // either absent → clean silent no-op). Runs here BEFORE the
-      // confirmation-email block (which has early `break`s when
-      // RESEND_API_KEY / buyerEmail are missing), like Klaviyo, so ad
-      // attribution isn't tied to the email path. Try/catch'd; the webhook
-      // ALWAYS returns 200 regardless of Meta's outcome.
-      const metaPixelId = process.env.META_PIXEL_ID;
-      const metaCapiToken = process.env.META_CAPI_ACCESS_TOKEN;
-      if (metaPixelId && metaCapiToken) {
-        if (!buyerEmail) {
-          // Meta requires at least one user_data identifier — without the
-          // buyer's email we have nothing to hash, so skip with a log.
-          console.warn(
-            "[stripe-webhook] No buyer email on session — skipping Meta CAPI Purchase.",
-            { session_id: session.id },
-          );
-        } else {
-          try {
-            await metaCapiPurchase({
-              pixelId: metaPixelId,
-              accessToken: metaCapiToken,
-              sessionId: session.id,
-              email: buyerEmail,
-              amountTotalPence: session.amount_total,
-              currency: session.currency,
-            });
-            console.log("[stripe-webhook] meta CAPI Purchase sent", {
-              session_id: session.id,
-              value_pence: session.amount_total,
-            });
-          } catch (err) {
-            const message = err instanceof Error ? err.message : String(err);
-            console.error("[stripe-webhook] meta CAPI Purchase failed:", message, {
-              session_id: session.id,
-            });
-          }
-        }
-      }
-
-      // -- 0d. Estate ledger — issue Certificate IDs + print numbers --------
-      // Writes a ledger entry per print line (idempotent per session+line),
-      // then emails the estate the structured Point 101 fulfilment payload
-      // (artwork, tier, edition, print number, Certificate ID, /auth verify URL —
-      // the QR target). Fully fail-open: a KV/Resend outage logs + continues,
-      // never blocking the 200. Gift-only orders have no print lines → no certs.
-      let ledgerEntries: LedgerEntry[] = [];
       try {
-        ledgerEntries = await issueLedgerEntries(session.id, m);
-      } catch (err) {
-        console.error(
-          "[stripe-webhook] estate ledger issue failed:",
-          err instanceof Error ? err.message : err,
-        );
-      }
-      if (ledgerEntries.length > 0) {
-        const siteUrlLedger = (
-          process.env.SITE_URL || "https://themandalacompany.com"
-        ).replace(/\/$/, "");
-        // Log the structured payload regardless of email — durable audit trail.
-        console.log("[stripe-webhook] estate ledger payload", {
-          order_id: session.id,
-          certificates: ledgerEntries.map((e) => ({
-            cert: e.certificate_id,
-            artwork: e.artwork_id,
-            tier: e.tier_id,
-            print_number: e.print_number,
-            auth_url: `${siteUrlLedger}/auth/${e.certificate_id}`,
-          })),
-        });
-        const resendKeyLedger = process.env.RESEND_API_KEY;
-        if (resendKeyLedger) {
-          try {
-            const fromEmailL = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
-            const toEmailL = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
-            const resendL = new Resend(resendKeyLedger);
-            const sendL = await resendL.emails.send({
-              from: `${FROM_NAME} <${fromEmailL}>`,
-              to: [toEmailL],
-              replyTo: DEFAULT_FROM,
-              subject: `Fulfilment — ${ledgerEntries.length} print${
-                ledgerEntries.length > 1 ? "s" : ""
-              } to place · order ${session.id.slice(0, 12)}…`,
-              html: renderEstateFulfilmentHtml({
-                orderRef: session.id,
-                shippingName: shipping?.name ?? null,
-                entries: ledgerEntries,
-                siteUrl: siteUrlLedger,
-              }),
-            });
-            if (sendL.error) {
-              console.error(
-                "[stripe-webhook] estate fulfilment email error:",
-                sendL.error,
-              );
-            } else {
-              console.log("[stripe-webhook] estate fulfilment email sent", {
-                order_id: session.id,
-                to: toEmailL,
-                count: ledgerEntries.length,
-              });
-            }
-          } catch (err) {
-            console.error(
-              "[stripe-webhook] estate fulfilment email failed:",
-              err instanceof Error ? err.message : err,
-            );
-          }
-        }
-      }
-
-      // -- 1. Mint the thank-you code (or fall back) -----------------------
-      // We do this BEFORE rendering the email so the code lands in the
-      // template. Any failure falls back to the static reusable code; we
-      // never block the webhook on Stripe.coupons errors.
-      let thankYou: ThankYouCode;
-      try {
-        thankYou = await createThankYouCode(stripe, {
-          sessionId: session.id,
-          buyerEmail,
-        });
-        console.log("[stripe-webhook] thank-you code minted", {
+        const revoked = await revokeSessionCodes(stripe, session.id, event.type);
+        console.log("[stripe-webhook] failed-payment code revocation complete", {
           session_id: session.id,
-          code: thankYou.code,
+          codes_deactivated: revoked,
         });
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
         console.error(
-          "[stripe-webhook] thank-you code mint failed, using fallback:",
-          message,
-        );
-        const fallbackCode = process.env.THANK_YOU_CODE_FALLBACK || FALLBACK_CODE;
-        const oneYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
-        thankYou = {
-          code: fallbackCode,
-          valueLabel: "10%",
-          expiresLabel: oneYear.toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          }),
-        };
-      }
-
-      // -- 2. Send the estate-branded confirmation email -------------------
-      const resendKey = process.env.RESEND_API_KEY;
-      if (!resendKey) {
-        // Documented design choice — see file header. Hugo gets a warning in
-        // the function log but the webhook still 200s so Stripe is happy.
-        console.warn(
-          "[stripe-webhook] RESEND_API_KEY missing — skipping confirmation email.",
-        );
-        break;
-      }
-      if (!buyerEmail) {
-        console.warn(
-          "[stripe-webhook] No customer email on session — skipping confirmation email.",
+          "[stripe-webhook] failed-payment revocation failed:",
+          err instanceof Error ? err.message : err,
           { session_id: session.id },
         );
-        break;
       }
-
+      await sendEstateAlert({
+        subject: `⚠️ Payment FAILED — do not fulfil · order ${session.id.slice(0, 12)}…`,
+        html: renderEstateAlertHtml({
+          headline: "This order's delayed payment did not clear",
+          orderRef: session.id,
+          rows: [
+            ["Payment status", session.payment_status ?? "—"],
+            ["Buyer", session.customer_details?.email ?? "—"],
+            ["Amount", String(session.amount_total ?? "—")],
+          ],
+          action:
+            "The fulfilment email for this order was sent when the buyer completed checkout, " +
+            "before the payment was confirmed. Do NOT place the print order. Any discount code " +
+            "issued for it has been deactivated; no gift code was ever issued.",
+        }),
+        context: { session_id: session.id },
+      });
+      break;
+    }
+    case "charge.refunded":
+    case "charge.dispute.created": {
+      // ⚠️ Codes are live for 365 days from the moment payment confirms. A
+      // refunded or disputed order left a full-value gift code in the wild — the
+      // estate returned the money AND honoured the card. Deactivate every code
+      // minted for that order. Entirely fail-open (the whole block is caught) so
+      // it can never stop the 200 Stripe needs.
       try {
-        const fromEmail = process.env.ESTATE_FROM_EMAIL || DEFAULT_FROM;
-        const bccEmail = process.env.ESTATE_BCC_EMAIL || DEFAULT_BCC;
-        const resend = new Resend(resendKey);
-
-        const lines = linesFromMetadata(m, session.amount_subtotal);
-        const html = renderOrderConfirmationHtml({
-          buyerName,
-          orderRef: session.id.slice(0, 18) + "…",
-          lines,
-          total: formatGBP(session.amount_total, session.currency),
-          thankYouCode: thankYou.code,
-          thankYouValue: thankYou.valueLabel,
-          thankYouExpiry: thankYou.expiresLabel,
-          estateEmail: DEFAULT_FROM,
-        });
-
-        const sendResult = await resend.emails.send({
-          from: `${FROM_NAME} <${fromEmail}>`,
-          to: [buyerEmail],
-          // BCC only if it's a different inbox to "from", to avoid Resend
-          // rejecting a self-bcc on some sender domains.
-          bcc: bccEmail && bccEmail.toLowerCase() !== fromEmail.toLowerCase()
-            ? [bccEmail]
-            : undefined,
-          replyTo: DEFAULT_FROM,
-          subject: "Thank you — your print from the Stephen Meakin estate",
-          html,
-        });
-
-        // Resend returns { data, error } — log either branch for traceability.
-        if (sendResult.error) {
-          console.error("[stripe-webhook] Resend send error:", sendResult.error);
-        } else {
-          console.log("[stripe-webhook] confirmation email sent", {
-            session_id: session.id,
-            to: buyerEmail,
-            resend_id: sendResult.data?.id,
-          });
+        if (event.type === "charge.refunded") {
+          // A PARTIAL refund (a goodwill adjustment on a print) must not kill a
+          // gift card the buyer still paid for in full. Only a fully-refunded
+          // charge revokes.
+          const charge = event.data.object;
+          if (charge.amount_refunded < charge.amount) {
+            console.log("[stripe-webhook] partial refund — codes left active", {
+              charge_id: charge.id,
+              amount: charge.amount,
+              amount_refunded: charge.amount_refunded,
+            });
+            break;
+          }
         }
+        const paymentIntent = event.data.object.payment_intent;
+        const piId =
+          typeof paymentIntent === "string" ? paymentIntent : paymentIntent?.id ?? null;
+        if (!piId) {
+          console.warn("[stripe-webhook] refund/dispute with no payment intent — nothing to revoke", {
+            type: event.type,
+          });
+          break;
+        }
+        const sessions = await stripe.checkout.sessions.list({
+          payment_intent: piId,
+          limit: 1,
+        });
+        const sessionId = sessions.data[0]?.id ?? null;
+        if (!sessionId) {
+          console.warn(
+            "[stripe-webhook] refund/dispute: no Checkout Session for payment intent — nothing to revoke",
+            { type: event.type, payment_intent: piId },
+          );
+          break;
+        }
+        const revoked = await revokeSessionCodes(stripe, sessionId, event.type);
+        console.log("[stripe-webhook] refund/dispute code revocation complete", {
+          type: event.type,
+          session_id: sessionId,
+          codes_deactivated: revoked,
+        });
       } catch (err) {
-        // Swallow ALL email errors — never fail the webhook on email send.
-        const message = err instanceof Error ? err.message : String(err);
-        console.error("[stripe-webhook] confirmation email failed:", message);
+        console.error(
+          "[stripe-webhook] refund/dispute revocation failed:",
+          err instanceof Error ? err.message : err,
+          { type: event.type },
+        );
       }
-
-      // -- 3. Shipped email -----------------------------------------------
-      // TODO(hugo): build a small admin endpoint POST /api/admin/order-shipped
-      // that takes { sessionId, trackingUrl, carrier } and sends the
-      // OrderShipped template via Resend. For initial launch this remains
-      // manual from Hugo's own inbox.
-
       break;
     }
     case "checkout.session.expired": {

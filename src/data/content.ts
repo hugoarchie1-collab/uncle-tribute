@@ -233,3 +233,63 @@ export const INTERVIEW = {
     note: "Published as “British artist driven by patterns and geometry comes to Dubai”, alongside ‘The Mystic Rose’ — Stephen's exhibition at the Majlis Gallery, which ran until 24 January 2011.",
   },
 };
+
+// -----------------------------------------------------------------------------
+// SEARCH — every buyer-visible word on /search and in the header search panel.
+//
+// ⚠️ HOUSE RULE: nothing here is marketing prose. Every string is either a PLAIN
+// FUNCTIONAL LABEL (the same words the nav already uses — "Collections", "Find a
+// print", "Contact") or a VERBATIM MIRROR of copy that is already live elsewhere
+// on the site. The 2026-09-01 rebuild removed five invented lines from
+// Search.tsx ("Nothing in the estate matches … just yet.", "Search the estate —
+// artworks, collections, the writing, anything.", "Try a painting name, a colour,
+// or a collection — or begin from one of these.", "Ask the estate", "Find a print
+// for you"). Do not reintroduce copy of that register here.
+// -----------------------------------------------------------------------------
+
+export const SEARCH = {
+  /** h1 on a bare /search (no query yet). */
+  title: "Search the estate",
+  /** Quiet prefix above the quoted query in the h1 when a query is present. */
+  resultsFor: "Results for",
+
+  /** aria-live result count — "1 result" / "24 results" / "No matches". */
+  countSingular: "result",
+  countPlural: "results",
+  noMatches: "No matches",
+
+  /** Accessible names for the two search landmarks (the header reveal can be
+   *  open while /search is showing its own refine field — two identically
+   *  unnamed `role="search"` landmarks was the a11y defect). */
+  landmarkHeader: "Search",
+  landmarkRefine: "Refine search",
+
+  /** Plain functional heading above the recovery / resting artwork grid. */
+  browseHeading: "Paintings",
+
+  /** VERBATIM mirror of the live tile price line on /collections and /for-you —
+   *  the search tile now matches that standard exactly. Never re-word this here
+   *  without changing it there too. */
+  tilePriceLine: "Estate-stamped giclée, framed · from",
+  /** VERBATIM mirror of the live colourway-count suffix on those same tiles. */
+  tileColourwaysSuffix: "colourways",
+
+  /** Plural group headings, keyed by the SINGULAR label search.ts publishes in
+   *  SEARCH_TYPE_LABELS. Unknown labels fall back to themselves, so a new doc
+   *  type added to the index can never crash or read wrong here. */
+  typePlural: {
+    Painting: "Paintings",
+    Collection: "Collections",
+    Page: "Pages",
+    News: "News",
+    About: "About",
+    FAQ: "FAQ",
+  } as Record<string, string>,
+
+  /** The recovery doors — the nav's own labels, nothing invented. */
+  links: [
+    { to: "/collections", label: "Collections" },
+    { to: "/for-you", label: "Find a print" },
+    { to: "/contact", label: "Contact" },
+  ],
+} as const;

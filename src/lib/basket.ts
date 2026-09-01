@@ -100,9 +100,14 @@ export interface GiftBasketItem {
   /** Face value in integer pence (== advertised == Stripe charge). */
   amountPence: number;
   /**
-   * Short human label for the denomination, e.g. "A2 Collector — £495" or
-   * "Custom amount". Display + Stripe product name only — never a price source
-   * (amountPence is the single source of the charge).
+   * Short human label for the denomination, e.g. "42 × 42 cm Collector Edition"
+   * or "Custom amount". Display + Stripe product name only — never a price
+   * source (amountPence is the single source of the charge).
+   *
+   * ⚠️ MUST NOT contain a money figure. The label is frozen at add-time and
+   * persisted; the basket's price column recomputes live from `amountPence` in
+   * the active currency, so a baked-in "£250" sat beside a live "$330" on the
+   * same line. See denominationCardLabel in src/pages/Gift.tsx.
    */
   label: string;
   /** Optional recipient name (for the gift email + Stripe metadata). */
@@ -130,6 +135,34 @@ export const isPrintItem = (line: BasketLine): line is BasketItem =>
 // and validate again server-side in api/checkout.ts (never trust the client).
 export const GIFT_MIN_PENCE = 2500; //   £25
 export const GIFT_MAX_PENCE = 500000; // £5,000
+
+// ---- Gift-card free-text ceilings -----------------------------------------
+// The buyer-typed fields that ride along to Stripe metadata + the gift email.
+// Enforced in THREE places that must agree: the input `maxLength` on
+// src/pages/Gift.tsx, `addGiftCard` below, and `readFromStorage` below (a
+// hand-edited localStorage entry is untrusted input like any other). The
+// server clamps again in api/checkout.ts — these are the CLIENT's promise that
+// what the basket shows is what the buyer actually typed, never a value that
+// only the server will silently truncate.
+//   • 400 is the message length the textarea has always accepted.
+//   • 254 is the RFC 5321 maximum email address length.
+// ⚠️ MIRROR (gotcha #9): these are the SAME four ceilings as GIFT_MESSAGE_MAX /
+// GIFT_NAME_MAX / GIFT_EMAIL_MAX / GIFT_LABEL_MAX in api/checkout.ts. The
+// client's cap must never be LOOSER than the server's, or the basket shows the
+// buyer text the checkout will quietly cut. Change both together.
+export const GIFT_MESSAGE_MAX = 400;
+export const GIFT_NAME_MAX = 80;
+export const GIFT_EMAIL_MAX = 254;
+/** Denomination label ceiling — display only, never a price source. */
+const GIFT_LABEL_MAX = 60;
+
+/** Trim + hard-cap a buyer-typed gift field. Empty → undefined (field omitted). */
+const capGiftText = (v: unknown, max: number): string | undefined => {
+  if (typeof v !== "string") return undefined;
+  const trimmed = v.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length > max ? trimmed.slice(0, max) : trimmed;
+};
 
 const STORAGE_KEY = "tasm.basket.v2";
 
@@ -172,20 +205,23 @@ const readFromStorage = (): BasketLine[] => {
           ) {
             return null;
           }
-          const label = typeof o.label === "string" ? o.label : "Gift card";
+          // Label is DISPLAY ONLY (the amount above is the single price
+          // source). A stored "" / "   " used to survive the bare typeof
+          // check and render an empty line under "Gift card" in the basket —
+          // now it falls through to the default like a missing field. Since
+          // labels stopped carrying a money figure they can only ever be a
+          // denomination name, so a hard cap costs nothing.
+          const label = capGiftText(o.label, GIFT_LABEL_MAX) ?? "Gift card";
+          const recipientName = capGiftText(o.recipientName, GIFT_NAME_MAX);
+          const recipientEmail = capGiftText(o.recipientEmail, GIFT_EMAIL_MAX);
+          const giftMessage = capGiftText(o.giftMessage, GIFT_MESSAGE_MAX);
           const gift: GiftBasketItem = {
             kind: "gift",
             amountPence,
             label,
-            ...(typeof o.recipientName === "string" && o.recipientName.trim()
-              ? { recipientName: o.recipientName }
-              : {}),
-            ...(typeof o.recipientEmail === "string" && o.recipientEmail.trim()
-              ? { recipientEmail: o.recipientEmail }
-              : {}),
-            ...(typeof o.giftMessage === "string" && o.giftMessage.trim()
-              ? { giftMessage: o.giftMessage }
-              : {}),
+            ...(recipientName ? { recipientName } : {}),
+            ...(recipientEmail ? { recipientEmail } : {}),
+            ...(giftMessage ? { giftMessage } : {}),
             addedAt: o.addedAt,
           };
           return gift;
@@ -256,6 +292,14 @@ const writeToStorage = (items: BasketLine[]) => {
  * GIFT lines are digital — they reference no painting / colourway / tier — so
  * they're never reconciled against the catalogue; they pass through untouched
  * (their face value can never "drift" against a catalogue change).
+ *
+ * ⚠️ MONEY INVARIANT: this function only ever FILTERS. It never rewrites a
+ * line, so a gift's `amountPence` cannot be altered on a cold read — unlike a
+ * print's `tierId`, which readFromStorage repairs against the anchor and which
+ * is exactly how a £250 Emblem line once became a £750 charge. If a future
+ * change makes reconcile MAP as well as filter, gift lines must stay excluded
+ * from the mapping: the amount the buyer was advertised is the amount Stripe
+ * charges, and nothing between the two may touch it.
  */
 const reconcile = (items: BasketLine[]): BasketLine[] => {
   const cleaned = items.filter((item) => {
@@ -353,6 +397,25 @@ const setCache = (next: BasketLine[]) => {
   emit();
 };
 
+/**
+ * A line id that CANNOT collide with anything already in the basket.
+ *
+ * `addedAt` is not just a timestamp — it is the LINE IDENTITY that `removeItem`
+ * and `setItemQuantity` match on. Two lines sharing one `addedAt` means
+ * removing either removes BOTH. Print adds merge by configuration so they can't
+ * duplicate, but gift cards never merge (two £250 cards for two people are two
+ * real lines), and a genuine double-click on "Add gift card to basket" lands
+ * both clicks inside the same millisecond, so `Date.now()` alone was not safe.
+ * Cross-tab adds are covered too: the storage listener re-reads the merged list
+ * before the next add, so `current` already contains the other tab's line.
+ */
+const nextAddedAt = (current: BasketLine[]): number => {
+  const now = Date.now();
+  let max = 0;
+  for (const l of current) if (l.addedAt > max) max = l.addedAt;
+  return now > max ? now : max + 1;
+};
+
 // ---- Public API ----------------------------------------------------------
 
 /**
@@ -436,7 +499,7 @@ export const addItem = (
     ...(framing && !canvas && glazing ? { glazing } : {}),
     ...(framing && !canvas && paperFinish ? { paperFinish } : {}),
     quantity: qty,
-    addedAt: Date.now(),
+    addedAt: nextAddedAt(current),
   };
   // Merge into an existing identical line if present (quantity += qty), keeping
   // its addedAt/position; otherwise append. Either way we notify with the
@@ -555,20 +618,20 @@ export const addGiftCard = (input: {
     return false;
   }
   const current = ensureCache();
+  // Free text is trimmed + hard-capped here as well as at the input, so a
+  // caller that skips the UI can never persist a label/name/message the basket
+  // renders but the checkout would have to truncate.
+  const recipientName = capGiftText(input.recipientName, GIFT_NAME_MAX);
+  const recipientEmail = capGiftText(input.recipientEmail, GIFT_EMAIL_MAX);
+  const giftMessage = capGiftText(input.giftMessage, GIFT_MESSAGE_MAX);
   const added: GiftBasketItem = {
     kind: "gift",
     amountPence,
-    label: input.label.trim() || "Gift card",
-    ...(input.recipientName?.trim()
-      ? { recipientName: input.recipientName.trim() }
-      : {}),
-    ...(input.recipientEmail?.trim()
-      ? { recipientEmail: input.recipientEmail.trim() }
-      : {}),
-    ...(input.giftMessage?.trim()
-      ? { giftMessage: input.giftMessage.trim() }
-      : {}),
-    addedAt: Date.now(),
+    label: capGiftText(input.label, GIFT_LABEL_MAX) ?? "Gift card",
+    ...(recipientName ? { recipientName } : {}),
+    ...(recipientEmail ? { recipientEmail } : {}),
+    ...(giftMessage ? { giftMessage } : {}),
+    addedAt: nextAddedAt(current),
   };
   setCache([...current, added]);
   // Fire the SAME global "Added to basket" toast every other add uses (Hugo
@@ -602,6 +665,15 @@ const subscribe = (callback: () => void): (() => void) => {
   listeners.add(callback);
   // Cross-tab sync — another tab adding/removing items writes to
   // localStorage; the `storage` event fires in every *other* tab.
+  //
+  // This REPLACES the cache wholesale from storage, which is correct: storage
+  // is the shared truth and the writing tab wrote the full list. It cannot
+  // clobber a gift added in another tab, because the other tab's write already
+  // contains its own gift line and this tab is only catching up to it. The one
+  // way a line could be lost is two tabs writing between each other's events —
+  // and `nextAddedAt` (see above) is what keeps the merged result addressable:
+  // a line arriving from another tab can never share an `addedAt` with a line
+  // added here, so a later `removeItem` cannot take both.
   const onStorage = (e: StorageEvent) => {
     if (e.key !== STORAGE_KEY) return;
     cache = reconcile(readFromStorage());

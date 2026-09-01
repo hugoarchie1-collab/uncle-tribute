@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /search
 Disallow: /trade/pricing
 Disallow: /partners/terms
 

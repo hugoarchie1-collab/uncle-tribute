@@ -19,6 +19,10 @@
 // `onNavigate` lets the host (e.g. the mobile menu) close itself when the user
 // commits to a result, so the same component serves the desktop header AND the
 // full-screen mobile drawer.
+// `label` names this instance's search landmark + input (two can be on screen
+// at once). `initialQuery` seeds AND re-seeds the field — /search passes ?q=.
+//
+// Every buyer-visible word here comes from SEARCH in src/data/content.ts.
 
 import {
   useCallback,
@@ -32,12 +36,29 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { searchSite, SEARCH_TYPE_LABELS, type SearchResult } from "../lib/search";
 import { AssetImage } from "./AssetImage";
+import { SEARCH } from "../data/content";
 import { cn } from "../lib/cn";
 
 interface SearchBarProps {
   className?: string;
   /** "header" = compact (desktop Nav / mobile menu); "page" = large (/search). */
   variant?: "header" | "page";
+  /**
+   * Accessible name for THIS instance — used for both the `role="search"`
+   * landmark on the <form> and the combobox input. Two instances can be on
+   * screen at once (the header reveal open while /search shows its refine
+   * field); without distinct names a screen reader announced two identical,
+   * unnamed search landmarks carrying two identically-labelled inputs.
+   */
+  label?: string;
+  /**
+   * Seed the field with this text on mount, and RE-seed whenever it changes.
+   * /search passes its `?q=` here: arriving by shared link, a refresh or the
+   * back button used to leave the big refine field empty under a heading that
+   * quoted the query back at you (the field only kept text when you had typed
+   * it into that same mounted instance).
+   */
+  initialQuery?: string;
   /** Called after any navigation commits — lets the host (mobile drawer) close. */
   onNavigate?: () => void;
   /** Focus the input as soon as it mounts — used by the header's search reveal
@@ -64,6 +85,10 @@ type MinimalSpeechRecognition = {
   abort: () => void;
 };
 
+/** The browse-all door offered when the index has nothing to show — the nav's
+ *  OWN "Collections" label and route, never invented recovery copy. */
+const BROWSE = SEARCH.links[0];
+
 /** Top results to surface in the live dropdown — the brief's ~7. */
 const DROPDOWN_LIMIT = 7;
 /** Debounce so we don't re-rank on every keystroke (~120ms per the brief). */
@@ -88,13 +113,15 @@ const MagnifierIcon = ({ className }: { className?: string }) => (
 export const SearchBar = ({
   className,
   variant = "header",
+  label = SEARCH.landmarkHeader,
+  initialQuery = "",
   onNavigate,
   autoFocus = false,
   showVoice = false,
 }: SearchBarProps) => {
   const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [debounced, setDebounced] = useState("");
+  const [query, setQuery] = useState(initialQuery);
+  const [debounced, setDebounced] = useState(initialQuery.trim());
   // -1 = nothing highlighted (Enter submits to /search); 0..n highlights a row.
   const [active, setActive] = useState(-1);
   const [open, setOpen] = useState(false);
@@ -102,7 +129,26 @@ export const SearchBar = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
+  const statusId = useId();
   const isPage = variant === "page";
+
+  // RE-seed when the host's initialQuery changes (/search?q=a → ?q=b, or a back
+  // button between two queries). The field is otherwise uncontrolled by the
+  // host: typing owns `query` from then on.
+  //
+  // ⚠️ Done DURING RENDER, not in an effect. This is React's sanctioned
+  // "adjusting state when a prop changes" pattern — React discards the
+  // in-progress render and immediately re-runs the component, so nothing is
+  // committed twice. An effect here would be a cascading render (and is banned
+  // by react-hooks/set-state-in-effect). `open` is deliberately NOT touched:
+  // re-seeding must never pop the suggestions panel open on a cold page load.
+  const [seededFrom, setSeededFrom] = useState(initialQuery);
+  if (seededFrom !== initialQuery) {
+    setSeededFrom(initialQuery);
+    setQuery(initialQuery);
+    setDebounced(initialQuery.trim());
+    setActive(-1);
+  }
 
   // ── Voice search (YouTube-style) ────────────────────────────────────────────
   // Uses the browser's built-in Web Speech API — no server, no key, no data
@@ -139,6 +185,9 @@ export const SearchBar = ({
         .trim();
       if (transcript) {
         setQuery(transcript);
+        // Same synchronous reset as typing — dictation replaces the whole query,
+        // so any highlight from the previous one is stale immediately.
+        setActive(-1);
         setOpen(true);
       }
     };
@@ -166,15 +215,18 @@ export const SearchBar = ({
     return () => window.cancelAnimationFrame(id);
   }, [autoFocus]);
 
-  // Debounce the query → debounced, so ranking runs ~once per pause, not per
-  // key. A settled new query also resets the highlight (a stale index must not
-  // survive into a fresh result set) — done here, in the same external-sync
-  // effect, rather than a separate effect that would cascade a render.
+  // Debounce the query → debounced, so ranking runs ~once per pause, not per key.
+  //
+  // ⚠️ The highlight reset does NOT live here any more (2026-09-01). It used to,
+  // and that opened a 120ms stale-results race: `showPanel` derives from `query`
+  // (immediate) while `results` derives from `debounced` (delayed), so between a
+  // keystroke and the debounce settling, `active` still indexed the PREVIOUS
+  // query's list — arrow to row 5, type one more character, press Enter inside
+  // 120ms and you navigated to a result for the query you had already abandoned.
+  // `active` is now cleared SYNCHRONOUSLY in the input's onChange (and by voice
+  // dictation), so a highlight can never outlive the query it was chosen from.
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      setDebounced(query.trim());
-      setActive(-1);
-    }, DEBOUNCE_MS);
+    const id = window.setTimeout(() => setDebounced(query.trim()), DEBOUNCE_MS);
     return () => window.clearTimeout(id);
   }, [query]);
 
@@ -187,9 +239,11 @@ export const SearchBar = ({
   // The panel shows whenever the field is focused/open AND there is a query —
   // either live results, or (with a non-empty query) at least the footer row.
   const showPanel = open && query.trim().length > 0;
-  // The footer "search everything" row is always the last navigable item when
-  // the panel is open with a query — it lives at index === results.length.
+  // The footer row is always the last navigable item when the panel is open with
+  // a query — it lives at index === results.length. With results it commits the
+  // query to the full page; with NO results it is the browse-all recovery.
   const footerIndex = results.length;
+  const noMatches = debounced.length > 0 && results.length === 0;
 
   const close = useCallback(() => {
     setOpen(false);
@@ -216,6 +270,13 @@ export const SearchBar = ({
     [navigate, close, onNavigate],
   );
 
+  /** The browse-all recovery — the door offered when the index has nothing. */
+  const goToBrowse = useCallback(() => {
+    close();
+    navigate(BROWSE.to);
+    onNavigate?.();
+  }, [navigate, close, onNavigate]);
+
   // Click-away closes the panel (but a click INSIDE — including a row Link —
   // is allowed to do its own navigation first via the Link's own handler).
   useEffect(() => {
@@ -228,6 +289,19 @@ export const SearchBar = ({
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [showPanel, close]);
+
+  // Keep the keyboard highlight IN VIEW. The listbox is capped at
+  // max-h-[min(70vh,460px)] with overflow-y-auto, so on a short viewport the
+  // arrow keys used to walk the active row straight out of the visible box:
+  // aria-activedescendant kept screen readers correct, but a sighted keyboard
+  // user was steering a highlight they could no longer see. `nearest` scrolls
+  // only the listbox and only when it has to, so a fully-visible row never
+  // jumps. Guarded on the panel + a real index so it no-ops at rest.
+  useEffect(() => {
+    if (!showPanel || active < 0) return;
+    const el = document.getElementById(`${listboxId}-opt-${active}`);
+    el?.scrollIntoView({ block: "nearest" });
+  }, [active, showPanel, listboxId]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") {
@@ -250,8 +324,13 @@ export const SearchBar = ({
       e.preventDefault();
       if (showPanel && active >= 0 && active < results.length) {
         goToResult(results[active]);
+      } else if (showPanel && noMatches && active === footerIndex) {
+        // The highlighted row IS the browse recovery — Enter must do what the
+        // row says it does, not silently submit the query instead.
+        goToBrowse();
       } else {
-        // Nothing highlighted (or the footer row) → submit to the full page.
+        // Nothing highlighted → submit to the full page (which carries its own
+        // recovery grid, so it is a real destination even with no matches).
         goToSearchPage(query);
       }
       return;
@@ -273,6 +352,7 @@ export const SearchBar = ({
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (active >= 0 && active < results.length) goToResult(results[active]);
+    else if (noMatches && active === footerIndex) goToBrowse();
     else goToSearchPage(query);
   };
 
@@ -284,12 +364,12 @@ export const SearchBar = ({
   const iconBox = isPage ? "left-4 md:left-5 h-5 w-5 md:h-[22px] md:w-[22px]" : "left-5 h-[20px] w-[20px]";
 
   return (
-    <div
-      ref={rootRef}
-      className={cn("relative w-full", className)}
-      role="search"
-    >
-      <form onSubmit={onSubmit} className="relative">
+    <div ref={rootRef} className={cn("relative w-full", className)}>
+      {/* role="search" belongs on the FORM (the convention), not the positioning
+          wrapper, and it is NAMED — two instances can be on screen at once (the
+          header reveal open over /search), which previously announced as two
+          identical unnamed search landmarks. */}
+      <form onSubmit={onSubmit} className="relative" role="search" aria-label={label}>
         <span
           aria-hidden="true"
           className={cn(
@@ -321,7 +401,10 @@ export const SearchBar = ({
           aria-activedescendant={
             showPanel && active >= 0 ? `${listboxId}-opt-${active}` : undefined
           }
-          aria-label="Search artworks, collections, anything"
+          aria-label={label}
+          // The "No matches" line lives OUTSIDE the listbox (a listbox may only
+          // contain options), so point the combobox at it explicitly.
+          aria-describedby={showPanel && noMatches ? statusId : undefined}
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="search"
@@ -329,6 +412,10 @@ export const SearchBar = ({
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
+            // SYNCHRONOUS highlight reset — see the debounce effect above. The
+            // 120ms window between a keystroke and the settled result set must
+            // never carry a stale `active` index into an Enter press.
+            setActive(-1);
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
@@ -400,21 +487,27 @@ export const SearchBar = ({
             "shadow-[0_24px_60px_rgba(0,0,0,0.55)]",
           )}
         >
+          {/* "No matches" sits OUTSIDE the listbox. It used to be a
+              role="presentation" <li> INSIDE it, which screen readers skip
+              entirely — so aria-expanded="true" announced an open popup with
+              nothing in it. As a role="status" sibling it is announced, and the
+              input points at it via aria-describedby. */}
+          {noMatches && (
+            <p
+              id={statusId}
+              role="status"
+              className="m-0 border-b border-line px-4 py-3 font-sans text-[13.5px] leading-[1.6] text-ink-muted"
+            >
+              {SEARCH.noMatches}
+            </p>
+          )}
           <ul
             id={listboxId}
             role="listbox"
-            aria-label="Search suggestions"
+            aria-label={label}
             className="max-h-[min(70vh,460px)] overflow-y-auto py-1.5"
           >
-            {results.length === 0 ? (
-              <li
-                role="presentation"
-                className="px-4 py-3 font-sans text-[13.5px] leading-[1.6] text-ink-muted"
-              >
-                No matches yet — press Enter to search everything.
-              </li>
-            ) : (
-              results.map((result, i) => {
+            {results.map((result, i) => {
                 const { doc } = result;
                 const isArtwork = doc.type === "painting";
                 const highlighted = i === active;
@@ -478,41 +571,76 @@ export const SearchBar = ({
                     </Link>
                   </li>
                 );
-              })
-            )}
+            })}
 
-            {/* Footer "search everything" row — always present with a query, so
-                Enter from anywhere lands the user on the full results page. It
-                is a button (not a Link) because it composes the query into the
-                /search route via useNavigate. */}
+            {/* FOOTER ROW — the last navigable option, always present with a
+                query.
+                • With results: "search everything for <q>" → the full page.
+                • With NO results: the browse-all RECOVERY (Collections).
+                  It used to read "No matches yet — press Enter to search
+                  everything", which was a guaranteed dead end: the dropdown and
+                  the page call the SAME searchSite() at the same threshold, so
+                  the limits only truncate — zero here always means zero there.
+                  Offer a door that exists instead of promising one that doesn't. */}
             <li role="presentation" className="mt-1.5 border-t border-line">
-              <button
-                id={`${listboxId}-opt-${footerIndex}`}
-                role="option"
-                aria-selected={active === footerIndex}
-                type="button"
-                onMouseEnter={() => setActive(footerIndex)}
-                onClick={() => goToSearchPage(query)}
-                className={cn(
-                  "flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors duration-150",
-                  active === footerIndex ? "bg-ink/[0.08]" : "hover:bg-ink/[0.05]",
-                )}
-              >
-                <MagnifierIcon className="h-4 w-4 shrink-0 text-ink-muted" />
-                <span className="min-w-0 flex-1 truncate font-sans text-[13px] text-ink-muted">
-                  Search everything for{" "}
-                  <span className="font-semibold text-ink">{query.trim()}</span>
-                </span>
-                <span
-                  aria-hidden="true"
+              {noMatches ? (
+                <Link
+                  id={`${listboxId}-opt-${footerIndex}`}
+                  role="option"
+                  aria-selected={active === footerIndex}
+                  to={BROWSE.to}
+                  onMouseEnter={() => setActive(footerIndex)}
+                  onClick={() => {
+                    close();
+                    onNavigate?.();
+                  }}
                   className={cn(
-                    "shrink-0 font-sans text-[13px] transition-colors duration-150",
-                    active === footerIndex ? "text-accent" : "text-ink-muted",
+                    "flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors duration-150",
+                    active === footerIndex ? "bg-ink/[0.08]" : "hover:bg-ink/[0.05]",
                   )}
                 >
-                  →
-                </span>
-              </button>
+                  <span className="min-w-0 flex-1 truncate font-sans text-[13px] font-semibold text-ink">
+                    {BROWSE.label}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "shrink-0 font-sans text-[13px] transition-colors duration-150",
+                      active === footerIndex ? "text-accent" : "text-ink-muted",
+                    )}
+                  >
+                    →
+                  </span>
+                </Link>
+              ) : (
+                <button
+                  id={`${listboxId}-opt-${footerIndex}`}
+                  role="option"
+                  aria-selected={active === footerIndex}
+                  type="button"
+                  onMouseEnter={() => setActive(footerIndex)}
+                  onClick={() => goToSearchPage(query)}
+                  className={cn(
+                    "flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors duration-150",
+                    active === footerIndex ? "bg-ink/[0.08]" : "hover:bg-ink/[0.05]",
+                  )}
+                >
+                  <MagnifierIcon className="h-4 w-4 shrink-0 text-ink-muted" />
+                  <span className="min-w-0 flex-1 truncate font-sans text-[13px] text-ink-muted">
+                    Search everything for{" "}
+                    <span className="font-semibold text-ink">{query.trim()}</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "shrink-0 font-sans text-[13px] transition-colors duration-150",
+                      active === footerIndex ? "text-accent" : "text-ink-muted",
+                    )}
+                  >
+                    →
+                  </span>
+                </button>
+              )}
             </li>
           </ul>
         </div>

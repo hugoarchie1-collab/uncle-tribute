@@ -35,14 +35,18 @@
  * `embellished` — Polly Wedge hand-finishes A2 + A1 only at
  * `embellishmentPricePence` (£350 / £495); ignored on A3 / A0.
  *
- * Bundle discount: when the basket holds ≥ 2 lines we mint a single-use
- * Stripe coupon and apply it via `discounts`. The percent is derived from
- * the basket CONTENTS, server-side, by `bundlePercentOff`:
- *   • one print of EVERY painting (complete catalogue)     → 15%
- *   • all lines a SINGLE painting (complete colourway set) → 12%
- *   • 3+ mixed paintings → 10%; 2 mixed → 5%.
- * Mirrors src/data/paintings.ts (COMPLETE_CATALOGUE_DISCOUNT_PERCENT 15,
- * COLOURWAY_SET_DISCOUNT_PERCENT 12, bundleDiscountPercentForCount 5/10) —
+ * Bundle discount: when the basket holds ≥ 2 lines the saving is applied as a
+ * PER-UNIT reduction on each print line item — NOT as a session-level coupon,
+ * because Stripe forbids `discounts` and `allow_promotion_codes` together and
+ * the promo-code field must always render (a gift code has to be redeemable on
+ * a multi-print basket). A session coupon is minted only as a fallback, in the
+ * case the per-unit reduction cannot reproduce the advertised saving to the
+ * penny. The percent is derived from the basket CONTENTS, server-side, by
+ * `bundlePercentOff`:
+ *   • one print of EVERY painting (complete catalogue)     → 12%
+ *   • all lines a SINGLE painting (complete colourway set) → 10%
+ *   • 3+ mixed paintings → 8%; 2 mixed → 5%.
+ * Mirrors src/data/paintings.ts + src/pages/Basket.tsx bundlePercentOff —
  * gotcha #9. Failures are swallowed — never block checkout on a mint failure.
  *
  * Response 200: { url: string }      — redirect the browser here
@@ -256,8 +260,14 @@ const lineRetailPence = (item: NormalisedItem): number => {
 };
 
 // Boilerplate spec line used in Stripe product description.
+// ⚠️ SUPPLIER TRUTH (2026-08-28): this string is the line-item description on
+// EVERY print order, so it lands on every Stripe receipt. The printer is NEVER
+// named or mis-placed in buyer copy — the approved wording is "a specialist
+// giclée studio on the Sussex coast" (same sentence as the ESTATE.printer line
+// in api/stripe-webhook.ts). It read "Printed at our London atelier." until
+// this pass, which was both a fiction and a place the estate does not have.
 const PRINT_SPEC =
-  "Estate-stamped by The Mandala Company, numbered within its edition. Issued with a Certificate of Authenticity carrying a unique Certificate ID. Printed at our London atelier.";
+  "Estate-stamped by The Mandala Company, numbered within its edition. Issued with a Certificate of Authenticity carrying a unique Certificate ID. Printed and finished by a specialist giclée studio on the Sussex coast.";
 
 // The edition the catalogue is currently issuing under (mirror of
 // CURRENT_EDITION in src/data/paintings.ts — gotcha #5 forbids importing it
@@ -313,16 +323,64 @@ const convertFromGbpMinor = (gbpPence: number, code: CurrencyCode): number => {
 const GIFT_MIN_PENCE = 2500; //   £25
 const GIFT_MAX_PENCE = 500000; // £5,000
 
-// Stripe per-metadata-value cap (re-stated near use for the gift fields).
-// Recipient name / message are user-supplied, so they're trimmed to fit.
-const giftMetaTrim = (v: string): string =>
-  v.length <= STRIPE_METADATA_VALUE_LIMIT
-    ? v
-    : `${v.slice(0, STRIPE_METADATA_VALUE_LIMIT - 1)}…`;
-
 // Stripe caps each metadata value at 500 characters. We truncate gracefully
 // when concatenating IDs / colourways across a multi-item basket.
 const STRIPE_METADATA_VALUE_LIMIT = 500;
+
+// ---- Client-text hygiene (gift fields) ------------------------------------
+// `label`, `recipientName` and `giftMessage` are BUYER-SUPPLIED strings that
+// flow into Stripe `product_data.name` / `.description` and into the session
+// metadata. Two failure modes this closes:
+//   • Stripe rejects an over-long product name / description outright — an
+//     uncapped field 500s the WHOLE checkout, so the caps below are server-side
+//     and never trust the client's own maxLength.
+//   • A "|" inside one of these values would shift the webhook's positional
+//     gift zip (see the gift metadata block below), so it is replaced here.
+// Control characters are stripped and runs of whitespace collapsed so nothing
+// user-supplied can break the Stripe line or the metadata slot format.
+const GIFT_LABEL_MAX = 60;
+const GIFT_NAME_MAX = 80;
+const GIFT_EMAIL_MAX = 254; // RFC 5321 practical address cap
+const GIFT_MESSAGE_MAX = 400; // mirror of the <textarea maxLength> on /gift
+const giftText = (v: unknown, max: number): string =>
+  typeof v !== "string"
+    ? ""
+    : v
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\u0000-\u001f\u007f]+/g, " ")
+        .replace(/\|/g, "/")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, max);
+
+// Permissive-but-real address shape. A malformed recipient address must fail
+// LOUDLY at checkout rather than silently posting a £750 code into the void.
+// (A well-formed TYPO — bob@gmial.com — can't be caught here; that is why the
+// webhook always sends the buyer their own copy of every gift code.)
+const GIFT_EMAIL_RE = /^[^\s@,;|]+@[^\s@,;|.]+(\.[^\s@,;|.]+)+$/;
+
+/**
+ * Join one value per gift into a single metadata value, PIPE-separated, with a
+ * per-slot length budget so the joined string can never exceed Stripe's 500-char
+ * cap.
+ *
+ * ⚠️ POSITIONAL — DO NOT use truncateMetadata here. Its "…+N more" tail DROPS
+ * trailing entries, and the webhook zips these arrays BY INDEX to decide which
+ * recipient gets which code: a dropped or shifted slot emails the wrong card to
+ * the wrong person (a £25 code to the person the buyer spent £500 on). Capping
+ * PER SLOT shortens a value but can never change the arity.
+ */
+const joinGiftSlots = (values: string[]): string => {
+  if (values.length === 0) return "";
+  // (n − 1) separators + n slots must fit inside the per-value cap.
+  const budget = Math.max(
+    1,
+    Math.floor(
+      (STRIPE_METADATA_VALUE_LIMIT - (values.length - 1)) / values.length,
+    ),
+  );
+  return values.map((v) => v.slice(0, budget)).join("|");
+};
 
 // Allowlist of valid painting IDs so a malicious caller can't create a
 // checkout for an arbitrary string. If you add a painting in
@@ -641,14 +699,23 @@ const normaliseGift = (raw: {
   }
   // Label is display-only; default to the amount if the client omitted it. The
   // amount — never the label — is the price source.
-  const labelRaw = typeof raw.label === "string" ? raw.label.trim() : "";
-  const label = labelRaw || `£${(amountPence / 100).toFixed(0)} gift card`;
-  const recipientName =
-    typeof raw.recipientName === "string" ? raw.recipientName.trim() : "";
-  const recipientEmail =
-    typeof raw.recipientEmail === "string" ? raw.recipientEmail.trim() : "";
-  const giftMessage =
-    typeof raw.giftMessage === "string" ? raw.giftMessage.trim() : "";
+  // ⚠️ A crafted label ("£5,000 gift card" on a £25 card) would print a FALSE
+  // figure on the estate's own Stripe receipt, so any label carrying a currency
+  // symbol or a multi-digit run is discarded for the server-derived one. Real
+  // denomination labels ("A2 Collector Edition", "Custom amount") carry neither
+  // — the /gift page's own contract already forbids a money figure in the label
+  // (see denominationCardLabel in src/pages/Gift.tsx).
+  const labelClean = giftText(raw.label, GIFT_LABEL_MAX);
+  const labelSafe = /[£$€¥]|\d{2,}/.test(labelClean) ? "" : labelClean;
+  const label = labelSafe || `£${(amountPence / 100).toFixed(0)} gift card`;
+  const recipientName = giftText(raw.recipientName, GIFT_NAME_MAX);
+  const recipientEmail = giftText(raw.recipientEmail, GIFT_EMAIL_MAX);
+  if (recipientEmail && !GIFT_EMAIL_RE.test(recipientEmail)) {
+    return {
+      error: `"${recipientEmail}" doesn't look like an email address — the gift code is sent there, so please check it.`,
+    };
+  }
+  const giftMessage = giftText(raw.giftMessage, GIFT_MESSAGE_MAX);
   return { amountPence, label, recipientName, recipientEmail, giftMessage };
 };
 
@@ -1436,6 +1503,145 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // A basket of ONLY gift cards needs NO shipping address / options.
   const giftOnly = normalised.length === 0 && gifts.length > 0;
 
+  // ---- Bundle discount ----------------------------------------------------
+  // Percent derived from the basket CONTENTS by bundlePercentOff (12% complete
+  // catalogue / 10% colourway set / 8% on 3+ / 5% on 2). Mirrors paintings.ts
+  // (gotcha #9). Computed HERE — before the line items are built — because the
+  // saving is applied as a PER-UNIT reduction on each print line item rather
+  // than as a session-level coupon; see the bundleNet note below.
+  const advertisedPercentOff = bundlePercentOff(normalised);
+
+  // ---- #13 MARGIN-FLOOR GUARD --------------------------------------------
+  // A bundle discount applies to the WHOLE line (print + frame + embellish are
+  // separate line items, all reduced together). The danger case is a deeply-
+  // discounted line whose net price dips under that line's fully-loaded COST
+  // FLOOR. This guard makes "never below cost" a HARD invariant independent of
+  // whatever discount logic exists now or later.
+  //
+  // Behaviour (safe no-op cap — only ever REDUCES a discount, never raises a
+  // price, never blocks checkout):
+  //   • For each line compute maxPct = the largest percent that still keeps the
+  //     discounted line ≥ floor × FLOOR_SAFETY (0 if the discount must vanish).
+  //   • Clamp the session percent DOWN to the min across lines. Never up.
+  //   • If it would have breached, log a warning (with ⚠️HUGO context) so a bad
+  //     future price edit is visible — but proceed at the clamped percent.
+  // At today's ~92% margins maxPct is always ≥ the advertised percent, so the
+  // clamp is a no-op and `percentOff === advertisedPercentOff`.
+  let percentOff = advertisedPercentOff;
+  if (advertisedPercentOff > 0) {
+    let maxSafePct = 100;
+    for (const item of normalised) {
+      const retail = lineRetailPence(item);
+      if (retail <= 0) continue;
+      const floor = lineCostFloorPence(item) * FLOOR_SAFETY;
+      // Largest percent that keeps net ≥ floor: pct ≤ (1 − floor/retail) × 100.
+      // Floored to a whole percent because the reduction is a whole percent
+      // (rounding DOWN is the safe direction — a shallower discount).
+      const lineMaxPct = Math.max(
+        0,
+        Math.floor((1 - floor / retail) * 100),
+      );
+      if (lineMaxPct < maxSafePct) maxSafePct = lineMaxPct;
+      // Worst case: even at 0% discount the BASE retail is below cost floor —
+      // only possible after a bad manual price edit. Per this task's brief the
+      // guard NEVER blocks checkout, so we log loudly rather than rejecting.
+      if (retail < floor) {
+        console.error(
+          "[/api/checkout] ⚠️HUGO BASE PRICE BELOW COST FLOOR for " +
+            `${item.paintingId} (${item.tier.id}, framing=${item.framing}, ` +
+            `embellished=${item.embellished}): retail ${retail}p < floor ${floor}p. ` +
+            "A tier RETAIL or add-on price is below its (estimated) cost. " +
+            "Checkout PROCEEDS at 0% discount — fix the prices in " +
+            "src/data/paintings.ts AND api/checkout.ts.",
+        );
+      }
+    }
+    if (maxSafePct < advertisedPercentOff) {
+      console.warn(
+        "[/api/checkout] ⚠️ margin-floor guard CLAMPED bundle discount " +
+          `${advertisedPercentOff}% → ${maxSafePct}% to keep every line at or ` +
+          "above its cost floor. This should NEVER happen at normal margins — " +
+          "a tier RETAIL price or add-on price has likely been edited below " +
+          "the (estimated ⚠️HUGO) cost floor. Verify COST_FLOOR_PENCE / tier " +
+          "prices in api/checkout.ts AND src/data/paintings.ts.",
+      );
+      percentOff = maxSafePct;
+    }
+  }
+
+  /**
+   * The converted MINOR unit amounts of the Stripe line items ONE configured
+   * print line produces, in the same order the build loop below pushes them
+   * (print, framing, hand-finish, canvas). Mirror of `stripeLineItemsFor` in
+   * src/pages/Basket.tsx (gotcha #9) — the displayed bundle saving and the
+   * charged one must read the same list, or advertised != charged.
+   */
+  const unitAmountsFor = (item: NormalisedItem): number[] => {
+    const amounts = [toMinor(item.tier.pricePence)];
+    if (item.framing && typeof item.tier.framingPricePence === "number") {
+      // Include the premium-frame surcharge — the framing LINE ITEM charges
+      // framingPricePence + frameSurchargePence, so the discount base must too.
+      amounts.push(toMinor(item.tier.framingPricePence + item.frameSurchargePence));
+    }
+    if (item.embellished && typeof item.tier.embellishmentPricePence === "number") {
+      amounts.push(toMinor(item.tier.embellishmentPricePence));
+    }
+    if (item.canvas && typeof item.tier.canvasPricePence === "number") {
+      // Include the canvas float-edge surcharge — the canvas line item charges
+      // canvasPricePence + canvasEdgeSurchargePence.
+      amounts.push(toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence));
+    }
+    return amounts;
+  };
+
+  // ⚠️ MONEY + REDEEMABILITY. The bundle saving used to be a session-level
+  // `discounts:[{coupon}]`, and Stripe FORBIDS `discounts` and
+  // `allow_promotion_codes` together — so ANY basket of 2+ prints rendered NO
+  // promo-code field at all. A recipient holding a £750 gift code had nowhere
+  // to type it, with no error and no explanation. Applying the saving as a
+  // PER-UNIT price reduction on the print line items instead leaves the promo
+  // field free for the gift / Family & Friends code.
+  //
+  // The reduction must land on exactly the figure /basket showed. Basket.tsx
+  // computes the saving as Σ round(unitMinor × qty × pct / 100) per SUB-AMOUNT;
+  // a per-unit reduction gives Σ round(unitMinor × pct / 100) × qty. Those are
+  // equal whenever unitMinor × pct is a whole multiple of 100 — true for every
+  // price in the ladder today (every unit amount is a whole £, and every
+  // non-GBP amount rounds to a whole major unit) — but a future price ending in
+  // odd pence could break it. So we CHECK, and fall back to the old coupon
+  // shape (losing the promo field, keeping the money exact) if it ever differs.
+  let expectedBundleMinor = 0; //  what /basket displayed
+  let perUnitBundleMinor = 0; //   what a per-unit reduction would charge
+  if (percentOff > 0) {
+    for (const item of normalised) {
+      for (const a of unitAmountsFor(item)) {
+        expectedBundleMinor += Math.round((a * item.quantity * percentOff) / 100);
+        perUnitBundleMinor += Math.round((a * percentOff) / 100) * item.quantity;
+      }
+    }
+  }
+  const bundleOnLines =
+    percentOff > 0 && perUnitBundleMinor === expectedBundleMinor;
+  if (percentOff > 0 && !bundleOnLines) {
+    console.warn(
+      "[/api/checkout] ⚠️ per-unit bundle reduction would not match the " +
+        `advertised saving (${perUnitBundleMinor} vs ${expectedBundleMinor} ` +
+        `${currencyCode}) — falling back to a session coupon. The promo-code ` +
+        "field will NOT render on this checkout. A tier / add-on price is no " +
+        "longer a whole major unit; fix it in src/data/paintings.ts AND " +
+        "api/checkout.ts (gotcha #9).",
+    );
+  }
+  /** A print line item's unit amount, net of the bundle saving. Gift lines and
+   *  the fallback-coupon path pass through at full price. */
+  const bundleNet = (unitMinor: number): number =>
+    bundleOnLines ? unitMinor - Math.round((unitMinor * percentOff) / 100) : unitMinor;
+  // Named on each reduced print line so the buyer's receipt says WHY the figure
+  // is below the catalogue price. Reuses the coupon's own existing name.
+  const BUNDLE_NOTE = bundleOnLines
+    ? ` Estate bundle thank-you — ${percentOff}% applied.`
+    : "";
+
   // ---- Build Stripe line items -------------------------------------------
   // One line per print, plus an OPTIONAL separate line per framing add-on so
   // the buyer sees the framing charge explicitly and accounting stays clean.
@@ -1456,13 +1662,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       quantity: item.quantity,
       price_data: {
         currency: currencyCode,
-        unit_amount: toMinor(item.tier.pricePence),
+        unit_amount: bundleNet(toMinor(item.tier.pricePence)),
         product_data: {
           name: `${item.title} — ${item.colourway} — ${item.tier.label} ${item.tier.size}${item.tier.isOneOff ? "" : ` · ${EDITION_LABEL}`}`,
           // The chosen paper finish (framed prints only) is named on the print
           // line so it lands in the estate's Stripe order — that's how the
           // estate knows which stock to order from the print house.
-          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`}${item.paperFinish ? ` Paper: ${item.paperFinish}.` : ""} ${PRINT_SPEC}`,
+          description: `${sizeFor(item.paintingId, item.tier)}. ${item.tier.editionLabel}.${item.tier.isOneOff ? "" : ` Issued in the ${EDITION_LABEL}.`}${item.paperFinish ? ` Paper: ${item.paperFinish}.` : ""} ${PRINT_SPEC}${BUNDLE_NOTE}`,
           // No product_data.images — Stripe synchronously fetches each image
           // URL when creating the session, and an unreachable / slow image
           // can hang the call (gotcha #3 in CLAUDE.md).
@@ -1483,12 +1689,12 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: toMinor(
-            item.tier.framingPricePence + item.frameSurchargePence,
+          unit_amount: bundleNet(
+            toMinor(item.tier.framingPricePence + item.frameSurchargePence),
           ),
           product_data: {
             name: `Framing — ${finish} — ${item.title} (${item.tier.label} ${item.tier.size})`,
-            description: `${finish}, set within a white window mount and ready to hang. Hand-finished for the ${item.tier.label} edition.`,
+            description: `${finish}, set within a white window mount and ready to hang. Hand-finished for the ${item.tier.label} edition.${BUNDLE_NOTE}`,
           },
         },
       });
@@ -1501,7 +1707,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: toMinor(item.tier.embellishmentPricePence),
+          unit_amount: bundleNet(toMinor(item.tier.embellishmentPricePence)),
           product_data: {
             name: `Hand-finished by Polly Wedge — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of EMBELLISHMENT_NOTE in src/data/paintings.ts (gotcha #9 —
@@ -1509,7 +1715,8 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             // "up to two weeks" (reduced from 4 weeks 2026-06-04); keep this in
             // sync with api/stripe-webhook.ts + PaintingDetail FINISH_LEAD_WEEKS.
             description:
-              "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow up to two weeks.",
+              "Hand-finished in Stephen's geometric tradition by Polly Wedge (estate). Made by hand and to order — please allow up to two weeks." +
+              BUNDLE_NOTE,
           },
         },
       });
@@ -1519,13 +1726,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         quantity: item.quantity,
         price_data: {
           currency: currencyCode,
-          unit_amount: toMinor(
-            item.tier.canvasPricePence + item.canvasEdgeSurchargePence,
+          unit_amount: bundleNet(
+            toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence),
           ),
           product_data: {
             name: `Canvas print — ${item.title} (${item.tier.label} ${item.tier.size})`,
             // Mirror of CANVAS_NOTE in src/data/paintings.ts.
-            description: `Printed as a fine-art giclée on Hahnemühle 370gsm art canvas — a smooth, heavyweight canvas print. Made to order.`,
+            description: `Printed as a fine-art giclée on Hahnemühle 370gsm art canvas — a smooth, heavyweight canvas print. Made to order.${BUNDLE_NOTE}`,
           },
         },
       });
@@ -1627,26 +1834,48 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   if (gifts.length > 0) {
     metadata.has_gift = "yes";
     metadata.gift_count = String(gifts.length);
-    metadata.gift_amounts_pence = truncateMetadata(
+    // ⚠️ POSITIONAL — READ THIS BEFORE EDITING. api/stripe-webhook.ts zips these
+    // arrays BY INDEX to decide which recipient is emailed which code. They are
+    // therefore FIXED-ARITY (exactly one slot per gift, empty slots preserved)
+    // and PIPE-joined via joinGiftSlots.
+    //   • `.filter(Boolean)` used to be applied to the name/email arrays. Card 1
+    //     "£25, no recipient" + card 2 "£500 for alice@…" collapsed to a single
+    //     email slot → ALICE WAS SENT THE £25 CODE and the £500 one fell back to
+    //     the buyer. Never filter these.
+    //   • comma was the separator. A recipient name "Smith, John" shifted every
+    //     later slot the same way — hence pipes, plus the "|" replacement in
+    //     giftText so a value can never carry the separator itself.
+    //   • truncateMetadata is NOT used here: its "…+N more" tail DROPS trailing
+    //     entries, which shifts the zip identically. joinGiftSlots caps PER SLOT.
+    metadata.gift_amounts_pence = joinGiftSlots(
       gifts.map((g) => String(g.amountPence)),
     );
+    // ⚠️ MONEY (#5 currency): the GBP figure above is the catalogue value; THIS
+    // is the minor-unit amount the buyer was actually charged for each gift in
+    // the presentment currency. The webhook mints the gift coupon's base
+    // amount_off from it, in `gift_currency` — a Stripe amount_off coupon's
+    // currency must match the session currency it is redeemed against, so a card
+    // bought in USD used to mint as GBP and simply fail at redemption.
+    metadata.gift_amounts_minor = joinGiftSlots(
+      gifts.map((g) => String(toMinor(g.amountPence))),
+    );
+    metadata.gift_currency = currencyCode;
     metadata.gift_total_pence = String(
       gifts.reduce((sum, g) => sum + g.amountPence, 0),
     );
-    metadata.gift_labels = truncateMetadata(gifts.map((g) => g.label));
-    const recipientNames = gifts.map((g) => g.recipientName).filter(Boolean);
-    const recipientEmails = gifts.map((g) => g.recipientEmail).filter(Boolean);
-    if (recipientNames.length > 0) {
-      metadata.gift_recipient_names = truncateMetadata(recipientNames);
-    }
-    if (recipientEmails.length > 0) {
-      metadata.gift_recipient_emails = truncateMetadata(recipientEmails);
-    }
-    // Single-gift baskets carry the personal message in full (trimmed to
-    // Stripe's per-value cap) so the webhook can render it into the email.
-    if (gifts.length === 1 && gifts[0].giftMessage) {
-      metadata.gift_message = giftMetaTrim(gifts[0].giftMessage);
-    }
+    metadata.gift_labels = joinGiftSlots(gifts.map((g) => g.label));
+    metadata.gift_recipient_names = joinGiftSlots(
+      gifts.map((g) => g.recipientName),
+    );
+    metadata.gift_recipient_emails = joinGiftSlots(
+      gifts.map((g) => g.recipientEmail),
+    );
+    // The buyer's personal message, one slot per gift. ⚠️ This was written as a
+    // singular `gift_message` key, and only when the basket held exactly ONE
+    // card — while the webhook reads `gift_messages` (plural, pipe-joined). The
+    // key names never matched, so the note the /gift page asks for twice and the
+    // basket quotes back was silently dropped on EVERY order.
+    metadata.gift_messages = joinGiftSlots(gifts.map((g) => g.giftMessage));
   }
 
 
@@ -1663,113 +1892,18 @@ export default async function handler(req: VercelReq, res: VercelRes) {
   // union (gotcha #6 in CLAUDE.md). Let the SDK use its pinned default.
   const stripe = new Stripe(secret);
 
-  // ---- Bundle discount (programmatic coupon mint) ------------------------
-  // Percent derived from the basket CONTENTS by bundlePercentOff (15% complete
-  // catalogue / 12% colourway set / 10% on 3+ / 5% on 2). Mirrors paintings.ts
-  // (gotcha #9). Failures are swallowed — never block checkout on a mint fail.
+  // ---- Bundle discount — FALLBACK coupon path only ------------------------
+  // The bundle saving is normally applied as a per-unit reduction on the print
+  // line items (see bundleNet above) precisely so `allow_promotion_codes` can
+  // stay on. This coupon path runs ONLY when the per-unit reduction could not
+  // reproduce the advertised saving to the penny (bundleOnLines === false) —
+  // money exactness outranks the promo field. Failures are swallowed; never
+  // block checkout on a mint failure.
   let discounts: Array<{ coupon: string }> | undefined;
-  const advertisedPercentOff = bundlePercentOff(normalised);
-
-  // ---- #13 MARGIN-FLOOR GUARD --------------------------------------------
-  // A bundle coupon's percent_off applies to the WHOLE line (print + frame +
-  // embellish are separate line items, all caught by the coupon). The danger
-  // case is a deeply-discounted line whose net price dips under that line's
-  // fully-loaded COST FLOOR. This guard makes "never below cost" a HARD
-  // invariant independent of whatever discount logic exists now or later.
-  //
-  // Behaviour (safe no-op cap — only ever REDUCES a discount, never raises a
-  // price, never blocks checkout):
-  //   • For each line compute maxPct = the largest percent that still keeps the
-  //     discounted line ≥ floor × FLOOR_SAFETY (0 if the discount must vanish).
-  //   • Clamp the session percent DOWN to the min across lines. Never up.
-  //   • If it would have breached, log a warning (with ⚠️HUGO context) so a bad
-  //     future price edit is visible — but proceed at the clamped percent.
-  // At today's ~92% margins maxPct is always ≥ the advertised percent, so the
-  // clamp is a no-op and `percentOff === advertisedPercentOff`.
-  let percentOff = advertisedPercentOff;
-  if (advertisedPercentOff > 0) {
-    let maxSafePct = 100;
-    for (const item of normalised) {
-      const retail = lineRetailPence(item);
-      if (retail <= 0) continue;
-      const floor = lineCostFloorPence(item) * FLOOR_SAFETY;
-      // Largest percent that keeps net ≥ floor: pct ≤ (1 − floor/retail) × 100.
-      // Floored to a whole percent because Stripe coupons take integer percents
-      // (rounding DOWN is the safe direction — a shallower discount).
-      const lineMaxPct = Math.max(
-        0,
-        Math.floor((1 - floor / retail) * 100),
-      );
-      if (lineMaxPct < maxSafePct) maxSafePct = lineMaxPct;
-      // Worst case: even at 0% discount the BASE retail is below cost floor —
-      // only possible after a bad manual price edit. Per this task's brief the
-      // guard NEVER blocks checkout, so we log loudly rather than rejecting.
-      // (The spec's stricter "reject the line" option is intentionally NOT
-      // taken here — keep this a safe no-op; surface it to the build-time
-      // assertion / UI agents instead.)
-      if (retail < floor) {
-        console.error(
-          "[/api/checkout] ⚠️HUGO BASE PRICE BELOW COST FLOOR for " +
-            `${item.paintingId} (${item.tier.id}, framing=${item.framing}, ` +
-            `embellished=${item.embellished}): retail ${retail}p < floor ${floor}p. ` +
-            "A tier RETAIL or add-on price is below its (estimated) cost. " +
-            "Checkout PROCEEDS at 0% discount — fix the prices in " +
-            "src/data/paintings.ts AND api/checkout.ts.",
-        );
-      }
-    }
-    if (maxSafePct < advertisedPercentOff) {
-      console.warn(
-        "[/api/checkout] ⚠️ margin-floor guard CLAMPED bundle discount " +
-          `${advertisedPercentOff}% → ${maxSafePct}% to keep every line at or ` +
-          "above its cost floor. This should NEVER happen at normal margins — " +
-          "a tier RETAIL price or add-on price has likely been edited below " +
-          "the (estimated ⚠️HUGO) cost floor. Verify COST_FLOOR_PENCE / tier " +
-          "prices in api/checkout.ts AND src/data/paintings.ts.",
-      );
-      percentOff = maxSafePct;
-    }
-  }
-
-  // Discount as a FIXED AMOUNT on the PRINT lines only — NOT a session-wide
-  // percent_off. A percent coupon applies to EVERY line item at Stripe, so it
-  // would also discount gift cards + order-bump add-ons, while the basket total
-  // (Basket.tsx grandTotalMinor) adds those UNDISCOUNTED → advertised != charged
-  // whenever a bundle runs alongside a gift/bump. Computing amount_off in the
-  // presentment currency, summed over the print line items exactly the way the
-  // client sums bundleDiscountMinor (per-line-item rounding), keeps the Stripe
-  // charge identical to the shown total to the penny, and leaves gifts/bumps at
-  // full price in both places.
-  let bundleDiscountMinor = 0;
-  if (percentOff > 0) {
-    for (const item of normalised) {
-      const parts = [toMinor(item.tier.pricePence)];
-      if (item.framing && typeof item.tier.framingPricePence === "number")
-        // Include the premium-frame surcharge — the framing LINE ITEM (line ~936)
-        // charges framingPricePence + frameSurchargePence, so the discount base
-        // must too, or a discounted basket with a Signature/Ornate frame is
-        // charged more than /basket shows (advertised==charged, gotcha #9).
-        parts.push(toMinor(item.tier.framingPricePence + item.frameSurchargePence));
-      if (item.embellished && typeof item.tier.embellishmentPricePence === "number")
-        parts.push(toMinor(item.tier.embellishmentPricePence));
-      if (item.canvas && typeof item.tier.canvasPricePence === "number")
-        // Include the canvas float-edge surcharge — the canvas line item (line
-        // ~972) charges canvasPricePence + canvasEdgeSurchargePence.
-        parts.push(toMinor(item.tier.canvasPricePence + item.canvasEdgeSurchargePence));
-      // × item.quantity: the Stripe line item is unit_amount × quantity, so the
-      // discount must scale with quantity too — and rounds PER LINE ITEM on
-      // (unit × qty), byte-identical to Basket.tsx's bundleDiscountMinor. Without
-      // the quantity factor a multi-line qty≥2 bundle undercounts the discount →
-      // Stripe charges MORE than the advertised total (advertised==charged break).
-      for (const a of parts)
-        bundleDiscountMinor += Math.round((a * item.quantity * percentOff) / 100);
-    }
-  }
-
-  if (bundleDiscountMinor > 0) {
+  if (!bundleOnLines && expectedBundleMinor > 0) {
     try {
       const coupon = await stripe.coupons.create({
-        amount_off: bundleDiscountMinor,
+        amount_off: expectedBundleMinor,
         currency: currencyCode,
         duration: "once",
         name: "Estate bundle thank-you",
@@ -1777,7 +1911,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           source: "bundle_discount",
           item_count: String(normalised.length),
           percent_off: String(percentOff),
-          amount_off_minor: String(bundleDiscountMinor),
+          amount_off_minor: String(expectedBundleMinor),
         },
       });
       discounts = [{ coupon: coupon.id }];
@@ -1788,6 +1922,13 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         message,
       );
     }
+  }
+  // Recorded on the session so the estate can see the saving that was applied
+  // and HOW, without re-deriving it from the line items.
+  if (percentOff > 0) {
+    metadata.bundle_percent_off = String(percentOff);
+    metadata.bundle_discount_minor = String(expectedBundleMinor);
+    metadata.bundle_applied_as = bundleOnLines ? "line_items" : "coupon";
   }
 
   // Shipping is collected ONLY when there's a physical print to post. A basket
@@ -1824,15 +1965,26 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     line_items: lineItems,
     ...shippingParams,
     metadata,
-    // Stripe disallows `allow_promotion_codes` and `discounts` together.
-    // When we've programmatically applied a bundle discount, we drop the
-    // promo-code input on the hosted checkout (the buyer's bundle already
-    // beats their thank-you code anyway). When there's no bundle, the
-    // promo-code input stays so a gift / thank-you code is redeemable —
-    // including on a gift-only basket (a giver could redeem a code too).
+    // Stripe disallows `allow_promotion_codes` and `discounts` together, so the
+    // promo-code field is the DEFAULT and `discounts` is now only ever set on
+    // the rare fallback path above.
+    // ⚠️ This used to be the other way round: any basket of 2+ prints carried a
+    // bundle coupon and therefore rendered NO promo-code field at all. The old
+    // comment justified it as "the bundle beats their thank-you code" — true of
+    // a 10% code, catastrophic for a fixed-amount GIFT code, which the
+    // recipient then had nowhere to enter, with no error and no explanation.
+    //
+    // ⚠️ FARMING GUARD: promo codes are refused on any basket containing a gift
+    // card. A gift coupon has no `applies_to` restriction (the line items are
+    // ad-hoc `price_data` products, so there is no stable product id to
+    // restrict to), so redeeming a £525 code against a £525 gift card cost £0
+    // and minted a FRESH £525 code with a fresh 365-day expiry — repeatable
+    // forever. Refusing the field on gift baskets closes it at the only surface
+    // where a code can be entered. The webhook independently declines to mint a
+    // thank-you code on a £0 / gift-only order.
     ...(discounts
       ? { discounts }
-      : { allow_promotion_codes: true }),
+      : { allow_promotion_codes: gifts.length === 0 }),
     success_url: `${siteUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/order/cancel`,
   };
@@ -1890,7 +2042,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       giftCount: gifts.length,
       giftTotalPence: gifts.reduce((sum, g) => sum + g.amountPence, 0),
       giftOnly,
-      bundleDiscount: discounts ? `${percentOff}%` : "no",
+      bundleDiscount: percentOff > 0 ? `${percentOff}%` : "no",
+      bundleAppliedAs: percentOff > 0 ? (bundleOnLines ? "line_items" : "coupon") : "none",
+      promoCodeField: discounts ? false : gifts.length === 0,
     });
     return send(200, { url: session.url });
   } catch (err) {

@@ -7,6 +7,7 @@ import { DeliverTo } from "./DeliverTo";
 import { CurrencySelect } from "./CurrencySelect";
 import { ReturningVisitorChip } from "./ReturningVisitorChip";
 import { cn } from "../lib/cn";
+import { SEARCH } from "../data/content";
 import { asset } from "../lib/asset";
 import { useBasketTotalQuantity } from "../lib/basket";
 import { useMenuOpen, setMenuOpen, DRAWER_WIDTH } from "../lib/menuStore";
@@ -360,7 +361,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
               src={asset("/logo/logo-seal-v9-w256.png")}
               alt=""
               aria-hidden="true"
-              className="shrink-0 h-[clamp(30px,3vw,42px)] w-auto mr-2 sm:mr-2.5 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
+              className="shrink-0 h-[clamp(30px,3vw,42px)] w-auto mr-1.5 sm:mr-2.5 select-none [filter:drop-shadow(0_1px_4px_rgba(0,0,0,0.5))]"
             />
             <span
               className="font-display font-bold text-ink tracking-[-0.01em] [font-variation-settings:'opsz'_40,'wght'_700] leading-[1.02] min-w-0 whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(13px,1.4vw,20px)] [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]"
@@ -396,7 +397,17 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         {/* RIGHT — the quiet commerce cluster: search magnifier, bare "£ GBP ⌄",
             hairline basket; the hamburger (below xl) sits at the end. The bar's
             justify-between pins this group to the right edge. */}
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2 lg:gap-3">
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-2 lg:gap-3">
+          {/* SEARCH — visible at EVERY width (2026-09-01). It was `hidden
+              sm:inline-flex`, so on every real phone (375–430px) the site's
+              highest-intent control had NO affordance at all in the bar: the only
+              way in was to open the hamburger drawer first. On mobile-heavy
+              traffic that buried the one control a buyer with intent reaches for.
+              The bar's 375px budget is real (this file's header documents the
+              1280–1400px logo/search/links collision), so the third icon is paid
+              for below sm: the right cluster drops to gap-0.5 and the button to
+              w-10 (h-11 keeps the 44px tap height), and the logo lockup already
+              carries min-w-0 + overflow-hidden text-ellipsis for the remainder. */}
           <button
             ref={searchButtonRef}
             type="button"
@@ -404,7 +415,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             aria-expanded={searchOpen}
             aria-controls={searchOpen ? "header-search-reveal" : undefined}
             onClick={() => setSearchOpen((o) => !o)}
-            className="press hidden sm:inline-flex items-center justify-center w-11 h-11 text-ink/55 hover:text-ink transition-colors"
+            className="press inline-flex items-center justify-center w-10 sm:w-11 h-11 text-ink/55 hover:text-ink transition-colors"
           >
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               {searchOpen ? (
@@ -512,8 +523,14 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             transition={{ duration: reduceMotion ? 0 : 0.28, ease: EASE_SMOOTH }}
           >
             <div className="mx-auto w-full max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[2000px] pt-3.5 pb-1">
+              {/* `label` names this search landmark. The /search page mounts its
+                  OWN SearchBar; with the reveal open on that route a screen
+                  reader announced two identical, unnamed `role="search"`
+                  landmarks with two identically-labelled inputs. This one is
+                  "Search"; the refine field on /search names itself. */}
               <SearchBar
                 variant="page"
+                label={SEARCH.landmarkHeader}
                 autoFocus
                 showVoice={false}
                 onNavigate={() => setSearchOpen(false)}
@@ -664,7 +681,12 @@ const NavMenu = ({
               className="flex-1 overflow-y-auto px-7 sm:px-8 py-7 flex flex-col gap-0.5"
             >
               {/* Search at the top of the drawer — committing a result closes it. */}
-              <SearchBar variant="page" onNavigate={onClose} className="mb-4" />
+              <SearchBar
+                variant="page"
+                label={SEARCH.landmarkHeader}
+                onNavigate={onClose}
+                className="mb-4"
+              />
               {/* Deliver-to + Currency — the header controls' drawer home on
                   small screens. */}
               <DeliverTo variant="menu" className="mb-3" />

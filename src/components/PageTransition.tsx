@@ -80,13 +80,27 @@ const routeVariants: Variants = {
  *  - PUSH / REPLACE with hash: poll for the target element (page may still be
  *    mounting + fixed backdrop layer settling), then scroll it into view
  *  - PUSH / REPLACE without hash: scroll to top, synchronously before paint
+ *
+ * ⚠️ `search` IS a dependency (added 2026-09-01). A same-pathname query change —
+ * /search?q=a → /search?q=b, the ONLY route that does this today — used to leave
+ * the reader stranded wherever they were: they'd refine from the bottom of a long
+ * results page and the content would silently swap above them. `location.search`
+ * was not in the dep list and `key={location.pathname}` means no remount, so
+ * nothing reset the scroll. The three existing behaviours are untouched by this:
+ * POP still returns early (browser scroll restoration intact), a hash still takes
+ * the poll-and-scrollIntoView path (/collections#collection-<id> intact), and no
+ * other page mutates its query string (there is no setSearchParams call anywhere
+ * in src/ — every useSearchParams is read-only, and no <Link> targets a bare
+ * "?…" on the current pathname), so this adds exactly one new trigger.
  */
 const ScrollManager = ({
   pathname,
+  search,
   hash,
   navType,
 }: {
   pathname: string;
+  search: string;
   hash: string;
   navType: NavigationType;
 }) => {
@@ -123,7 +137,7 @@ const ScrollManager = ({
     // useLayoutEffect → this runs before the incoming page's first paint, so
     // the new route is never seen at the old scroll position, even mid-fade.
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [pathname, hash, navType]);
+  }, [pathname, search, hash, navType]);
 
   return null;
 };
@@ -152,6 +166,7 @@ export const PageTransition = ({ children }: { children: ReactNode }) => {
       >
         <ScrollManager
           pathname={location.pathname}
+          search={location.search}
           hash={location.hash}
           navType={navType}
         />

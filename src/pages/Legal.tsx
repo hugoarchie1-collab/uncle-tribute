@@ -18,8 +18,8 @@ import { cn } from "../lib/cn";
  *
  * Updated: 2026-05-31. Anything written here should be reviewed by a UK
  * solicitor before the site is heavily promoted; the wording covers UK GDPR
- * Art 13–14, CCR 2013 reg 28 (made-to-order exemption) with the A3 Open
- * Edition granted the standard 14-day right, a complaints/ADR statement, and
+ * Art 13–14, CCR 2013 reg 28 (made-to-order exemption) with canvas prints
+ * granted the standard 14-day right, a complaints/ADR statement, and
  * standard consumer-sale boilerplate. NB: trader postal address still pending.
  *
  * DECIDED 2026-06-12 (Hugo), UPDATED 2026-07-27 (no unframed prints — every
@@ -98,6 +98,7 @@ const PRIVACY: Section[] = [
         kind: "ul",
         items: [
           <><strong>Order details</strong> — your name, email and postal address, captured by Stripe at checkout and passed to us so we can send your print.</>,
+          <><strong>Gift-card recipients</strong> — if you buy a gift card and address it to someone else, we take that person's name and email address, and the message you write them. Those are somebody else's details rather than your own, so please only give them to us for someone you actually know. What happens to them is set out under "If a gift card was bought for you" below.</>,
           <><strong>Newsletter sign-up</strong> — your name (optional) and email, if you join the Friends &amp; Family list.</>,
           <><strong>Enquiries</strong> — your name, email and message, when you write to us through the contact form.</>,
           <><strong>Saved basket</strong> — the painting / colourway / tier you've added is stored in your own browser only (<code>localStorage</code> key <code>tasm.basket.v2</code>). It never leaves your device unless you choose to email it to yourself, in which case your email address is also stored (briefly) to send the basket.</>,
@@ -119,9 +120,43 @@ const PRIVACY: Section[] = [
         kind: "ul",
         items: [
           <><strong>Performance of a contract</strong> — for handling orders, fulfilment and after-sale support.</>,
-          <><strong>Legitimate interest</strong> — for the in-browser basket store, minimal server logs, and the server-side sharing of a hashed order identifier with Meta for advertising measurement (described under "Cookies &amp; analytics" below).</>,
+          <><strong>Legitimate interest</strong> — for the in-browser basket store, minimal server logs, emailing a gift card to the person a buyer addressed it to, and the server-side sharing of a hashed order identifier with Meta for advertising measurement (described under "Cookies &amp; analytics" below).</>,
           <><strong>Consent</strong> — for the newsletter, and for the optional analytics and advertising cookies (Google Analytics 4, Meta Pixel). You can withdraw newsletter consent via the unsubscribe link in any email, and cookie consent via the "Cookie preferences" link in the site footer.</>,
         ],
+      },
+    ],
+  },
+  // UK GDPR Art 14 — data we did NOT get from the person it describes. A gift
+  // recipient's name + email reach us from the BUYER (src/pages/Gift.tsx →
+  // localStorage `tasm.basket.v2` → Stripe session metadata → Resend), so the
+  // recipient must be told what we hold, why, for how long and how to get rid
+  // of it. Keep this in step with api/stripe-webhook.ts's gift block.
+  {
+    heading: "If a gift card was bought for you",
+    blocks: [
+      {
+        kind: "p",
+        text: "Someone can buy a gift card on this site and address it to you. When they do, we hold your name, your email address and the message they wrote you — given to us by them, not by you.",
+      },
+      {
+        kind: "p",
+        text: "We use it for one thing: to email you the code, once, so you can spend it. You are not added to any mailing list and we do not use your details for anything else. Their basket keeps those details in their own browser until they check out; from there they pass to Stripe with the order and to Resend, which sends the email. The estate is copied on it, so a copy also sits in our inbox with the order record — kept for seven years alongside it, as HMRC requires of any sale.",
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            If you would rather we did not hold any of it, write to{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            {" "}and we will take your name and email address out of our
+            records; where the sale itself has to be kept for tax purposes we
+            keep only what the tax record needs. The rights listed under "Your
+            rights" below are yours too, including the right to complain to the
+            Information Commissioner's Office.
+          </>
+        ),
       },
     ],
   },
@@ -182,6 +217,7 @@ const PRIVACY: Section[] = [
         kind: "ul",
         items: [
           <><strong>Order records</strong> — kept for seven years to comply with HMRC's record-keeping requirements for self-employed sales.</>,
+          <><strong>Gift-card recipient details</strong> — a recipient's name, email address and the buyer's message form part of the order record, and are kept with it for seven years unless the recipient asks us to remove them sooner.</>,
           <><strong>Newsletter sign-ups</strong> — kept until you unsubscribe, at which point your record is deleted from our active list.</>,
           <><strong>Saved basket</strong> — stored in your own browser's <code>localStorage</code> and cleared when you clear your browser data.</>,
           <><strong>Enquiry emails</strong> — kept for as long as needed to answer your question, then archived in the estate inbox.</>,
@@ -352,6 +388,89 @@ const TERMS: Section[] = [
       {
         kind: "p",
         text: "All prices are shown in pounds sterling (GBP) and include any tax due. The estate is not currently VAT-registered (it trades below the UK VAT threshold), so no VAT is charged or itemised. Payment is taken at checkout by Stripe; we never see or store your card details.",
+      },
+    ],
+  },
+  // ⚠️ VAT — INTERNAL NOTE, deliberately not buyer copy. The estate is not
+  // VAT-registered (see "Pricing and payment" above), so the single-purpose /
+  // multi-purpose voucher distinction has no cash consequence today and no VAT
+  // wording appears below. On registration this section MUST be revisited: a
+  // card redeemable only against prints, all at one rate, looks like a
+  // SINGLE-purpose voucher — VAT falls due when the card is SOLD, not when it
+  // is redeemed — which changes both the accounting and what has to be said
+  // here. Bounds + expiry mirror src/lib/basket.ts (GIFT_MIN/MAX_PENCE) and
+  // api/stripe-webhook.ts (GIFT_VALID_DAYS); the multi-currency line mirrors
+  // createGiftCard's `currency_options` there, and the £250 part-payment line
+  // mirrors getTierAdvertisedPricePence in src/data/paintings.ts. Change one,
+  // change all.
+  {
+    heading: "Gift cards",
+    blocks: [
+      {
+        kind: "p",
+        text: (
+          <>
+            A gift card is a digital code, emailed rather than posted, bought
+            for any whole-pound amount from <strong>£25 to £5,000</strong>. It
+            is spent in the promotion-code box at checkout, against an order
+            placed on this site. It is not exchangeable for cash and cannot be
+            used anywhere else.
+          </>
+        ),
+      },
+      {
+        kind: "ul",
+        items: [
+          <><strong>Valid for one year</strong> — twelve months from the day the code is issued. The date is written in the email that carries it, and the code stops working after it.</>,
+          <><strong>One use, one order</strong> — the code is applied once, to a single order. It cannot be split across two, or used twice.</>,
+          <><strong>Unspent value is not returned</strong> — if the order comes to less than the card is worth, the difference is not refunded, credited or carried forward, so a card is best spent in one go. If the order comes to more, the balance is paid at checkout in the usual way.</>,
+          <><strong>Below £250 is a part-payment</strong> — the least expensive print the estate sells is £250, so a card under that will not cover a whole print on its own; whoever receives it puts the difference to it themselves.</>,
+          <><strong>Transferable</strong> — the code is not tied to a name or an email address. Whoever holds it can spend it, so it can be passed on freely.</>,
+          <><strong>No fees, and no decay</strong> — nothing is deducted for holding a card, and its value does not fall over time.</>,
+          <><strong>Spendable in any currency we show</strong> — a card is issued in the currency it was bought in, and carries the estate's own equivalent value in each of the other currencies the site offers, so it can be spent whichever one is selected.</>,
+        ],
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            The code is emailed as soon as payment clears. If you give us the
+            recipient's email address it goes straight to them, with whatever
+            note you wrote; leave it blank and it comes back to you, to pass on
+            yourself. The estate is copied on every gift email, so if it never
+            lands — a mistyped address, a spam filter — write to{" "}
+            <a href="mailto:info@themandalacompany.com" className="text-accent hover:underline">
+              info@themandalacompany.com
+            </a>
+            {" "}and we will send the code again, to whichever address you'd
+            like.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        text: (
+          <>
+            <strong>If you change your mind.</strong>{" "}
+            Write to us within <strong>14 days</strong> of buying a gift card
+            and we will refund it in full, provided the code has not been used.
+            Once a code has been spent against an order, that order's own
+            cancellation terms apply instead — see "Your right to cancel"
+            below. Your statutory rights as a consumer are unaffected.
+          </>
+        ),
+      },
+      {
+        kind: "p",
+        // ⚠️ This paragraph originally described the OPPOSITE, because it was
+        // written against the old checkout: a basket of 2+ prints carried a
+        // session-level bundle coupon, and Stripe forbids a coupon and the
+        // promotion-code field together, so the box vanished and a gift code
+        // had nowhere to go. That was a bug, and it is now fixed — the bundle
+        // saving is applied per line item, so the code box always renders on a
+        // print basket. The only remaining restriction is the farming guard.
+        // See the `allow_promotion_codes` comment in api/checkout.ts.
+        text: "A gift card stands on its own. It can be spent on any basket of prints, whether or not that basket also qualifies for the multi-print discount — the two apply together. It cannot be spent on the purchase of another gift card, so the code box does not appear on a basket containing one.",
       },
     ],
   },
