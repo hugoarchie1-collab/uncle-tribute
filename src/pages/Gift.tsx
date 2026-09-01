@@ -9,6 +9,7 @@ import { PageMasthead } from "../components/PageMasthead";
 import { useCurrency } from "../lib/currency";
 import {
   PRINT_TIERS,
+  getTierAdvertisedPricePence,
   type PrintTier,
 } from "../data/paintings";
 import {
@@ -60,11 +61,19 @@ interface Denomination {
   amountPence: number;
 }
 
+// ⚠️ The face value MUST be the ADVERTISED (buyable) price, not `tier.pricePence`.
+// The bare base is a GHOST price — there are no unframed prints, so the cheapest
+// a buyer can actually complete is base + the cheaper finish (see
+// getTierAdvertisedPricePence in paintings.ts). Pegging to the base shipped a
+// card labelled "Collector Edition — £525" that could not buy a Collector
+// Edition (£750), leaving the recipient £225 short; the gap ran £75–£325 across
+// the four rungs. Every other surface on the site routes through this helper —
+// this page must too, or the "pegged to a print size" promise is false.
 const tierToDenomination = (tier: PrintTier): Denomination => ({
   id: tier.id,
   sizeShort: tier.size,
   label: tier.label,
-  amountPence: tier.pricePence,
+  amountPence: getTierAdvertisedPricePence(tier),
 });
 
 /**
@@ -288,11 +297,18 @@ export const Gift = () => {
                 <span className={cn(EYEBROW, "shrink-0")}>01</span>
                 <span className={cn(EYEBROW_MUTED, "shrink-0")}>Choose an amount</span>
               </div>
-              {/* Three size-pegged denominations (A0/Heirloom retired), so the
-                  grid is 3-up from sm — one full row, no orphan — stacking to
-                  1-up on phones where a 3-across amount would clip £1,300. The
-                  custom-amount rung below spans the full row. */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 md:gap-3 3xl:gap-4">
+              {/* FOUR size-pegged denominations (A0/Heirloom + Original are
+                  retired; Emblem was added 2026-08-29). The count must divide
+                  the column evenly or the last card is stranded alone on row
+                  two — so 2×2, never 3-up (correct for three tiers, orphaned
+                  the moment Emblem landed).
+                  ⚠️ Do NOT "improve" this to 4-across. This grid sits in the
+                  narrow left column beside the sticky summary: measured at a
+                  1280px viewport a 4-up card is only 159px wide, and the
+                  40.96px Fraunces amount wraps "£1,300" onto two lines. 2×2
+                  keeps every amount on one line at every width, and stacks
+                  1-up on phones. The custom rung below spans the full row. */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-3 3xl:gap-4">
                 {denominations.map((d) => {
                   const isSelected =
                     selection.kind === "tier" && selection.id === d.id;

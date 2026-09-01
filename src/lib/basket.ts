@@ -22,7 +22,7 @@
 // =============================================================================
 
 import { useSyncExternalStore } from "react";
-import { getPaintingById, getPrintTiers, getAnchorTier, type PrintTier } from "../data/paintings";
+import { getPaintingById, getPrintTiers, getAnchorTier, isTierId, type PrintTier } from "../data/paintings";
 
 /**
  * A PRINT line — one painting + one colourway + one tier (size), quantity
@@ -139,8 +139,11 @@ const listeners = new Set<() => void>();
 
 const isBrowser = typeof window !== "undefined";
 
-const isTierId = (v: unknown): v is PrintTier["id"] =>
-  v === "atelier" || v === "collector" || v === "atelier-grande" || v === "heirloom" || v === "studio";
+// Tier-id validation is imported, never re-typed here. A hand-typed copy of
+// this list silently dropped `cabinet`, so a stored Emblem Edition line
+// (£250) failed the guard on every cold read and reconciled to the anchor
+// Collector Edition (£750) — a 200% substitution the buyer never chose.
+// See the TIER_ID_SET comment in src/data/paintings.ts.
 
 const readFromStorage = (): BasketLine[] => {
   if (!isBrowser) return [];

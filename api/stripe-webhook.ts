@@ -921,7 +921,13 @@ const renderGiftHtml = (p: {
     : `Thank you, ${firstOf(p.buyerName, "there")}.`;
 
   const intro = p.toRecipient
-    ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards a signed, estate-stamped giclée print of one of Stephen's mandalas, each one made to order at our London atelier.</p>`
+    // ⚠️ NEVER describe a print as "signed" here. Stephen died in 2021 and the
+    // FAQ states plainly that prints cannot be signed in his hand — this email
+    // was the one surface making a provenance claim the estate denies
+    // everywhere else. Nor "our London atelier": the supplier-truth pass
+    // (2026-08-28) established the printer is never named or mis-placed in
+    // buyer copy — the approved wording is "the Sussex coast".
+    ? `<p style="${s.body}">${buyerLabel} has given you a gift from <em>The Art of Stephen Meakin</em> — a credit towards an estate-stamped giclée print of one of Stephen's mandalas, each one made to order by a specialist giclée studio on the Sussex coast.</p>`
     : `<p style="${s.body}">Your gift card for <em>The Art of Stephen Meakin</em> is ready. Below is the code and how it's redeemed — forward this email to whomever it's for, or keep it for yourself.</p>`;
 
   const noteHtml =
@@ -941,7 +947,7 @@ const renderGiftHtml = (p: {
     + `<div style="${s.giftCard}">`
     + `<p style="${s.eyebrow}color:rgba(237,230,214,0.55);margin:0 0 12px 0;">Your gift card</p>`
     + `<p style="${s.amount}">${esc(p.amountLabel)}</p>`
-    + `<p style="${s.small}margin:0 0 4px 0;">towards a signed estate print</p>`
+    + `<p style="${s.small}margin:0 0 4px 0;">towards an estate-stamped print</p>`
     + `<code style="${s.code}">${esc(p.code)}</code>`
     + `<p style="${s.small}margin:0;">Valid until ${esc(p.expiresLabel)}.</p>`
     + `</div>`

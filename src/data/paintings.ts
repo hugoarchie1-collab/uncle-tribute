@@ -475,6 +475,37 @@ export const getLowestTierPricePence = (painting: Painting): number => {
  * — browse tiles, the size ladder, the Google Merchant SKU, the Product JSON-LD
  * offer — routes through this, so advertised == the lowest achievable charge.
  */
+/**
+ * The canonical set of tier ids, keyed off `PrintTier["id"]` itself.
+ *
+ * ⚠️ This exists because the same bug has now shipped TWICE: a hand-typed
+ * `isTierId` guard that forgot a tier id, causing the value to fail validation
+ * and fall back to the anchor (`collector`) — silently substituting a £750
+ * Collector Edition for the £250 Emblem the buyer actually chose. It happened
+ * in `api/checkout.ts` (fixed 2026-08-30) and again in `src/lib/basket.ts`.
+ *
+ * Because the Record is typed `Record<PrintTier["id"], true>`, adding a tier id
+ * to the union without adding it here is a COMPILE ERROR, not a silent
+ * overcharge. Every consumer inside `src/` must use `isTierId` below rather
+ * than re-typing the list.
+ *
+ * The `/api` functions cannot import this (they are deliberately
+ * self-contained — see CLAUDE.md gotcha #5), so they keep their own copies.
+ * When you add a tier, you MUST also update `isTierId` in `api/checkout.ts`.
+ */
+const TIER_ID_SET: Record<PrintTier["id"], true> = {
+  cabinet: true,
+  atelier: true,
+  collector: true,
+  "atelier-grande": true,
+  heirloom: true,
+  studio: true,
+};
+
+/** Type guard for a stored/untrusted tier id. Never hand-type this list. */
+export const isTierId = (v: unknown): v is PrintTier["id"] =>
+  typeof v === "string" && Object.prototype.hasOwnProperty.call(TIER_ID_SET, v);
+
 export const getTierAdvertisedPricePence = (tier: PrintTier): number => {
   const adds: number[] = [];
   if (typeof tier.framingPricePence === "number") adds.push(tier.framingPricePence);
