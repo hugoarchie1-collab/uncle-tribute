@@ -622,9 +622,14 @@ export const Search = () => {
                 {SEARCH.browseHeading}
               </h2>
               <span aria-hidden="true" className="h-px flex-1 bg-ink/15" />
-              <span className={cn(EYEBROW_MUTED, "shrink-0 reading-shadow")}>
-                {recovery.length}
-              </span>
+              {/* ⚠️ Deliberately NO count here, unlike a real result group.
+                  With one, the zero-result page read "No matches" in muted 15px
+                  and then, in identical heading markup, "Paintings  12" — which
+                  a customer reasonably takes as twelve results for their query.
+                  A count is what makes this block look like an answer; without
+                  it, the heading reads as the section label it is. (The count
+                  is not merely hidden — the recovery set is a fixed browse
+                  sample, so counting it was never meaningful.) */}
             </div>
 
             <div className="mt-6 md:mt-8 flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6">

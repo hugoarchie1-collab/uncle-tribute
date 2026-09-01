@@ -455,10 +455,16 @@ const PAGE_SEEDS: PageSeed[] = [
   },
   {
     id: "page-trade",
-    title: "Trade",
-    subtitle: "For interior designers & art consultants",
+    // ⚠️ The page at /trade is called PARTNERS everywhere a visitor can see it:
+    // Nav.tsx's primary desktop nav and drawer, the page's own <Seo title> and
+    // h1 eyebrow, and the footer. Indexing it as "Trade" meant the single word
+    // in the site's own navigation returned ZERO results, and the rendered
+    // subtitle ("For interior designers & art consultants") described the
+    // unrouted src/pages/Trade.tsx rather than the page this actually opens.
+    title: "Partners",
+    subtitle: "By invitation",
     url: "/trade",
-    body: "Trade enquiries for interior designers, art consultants and the design industry. Commercial, bulk, project, hospitality, contract, trade account, designer pricing.",
+    body: "Partners — introduce Stephen's work to a client or a space and place it on commission, by invitation. Representative, representatives, partner programme, trade, trade enquiries, interior designers, art consultants and the design industry. Commercial, bulk, project, hospitality, contract, trade account, designer pricing.",
   },
   {
     id: "page-contact",
@@ -1532,7 +1538,33 @@ function buildSnippet(
  *               faq → page authoring order). The top `limit` results may carry
  *               an optional `snippet` (see SearchSnippet).
  */
+/**
+ * A Certificate ID as printed on the wax-sealed COA and encoded in its QR:
+ * `MANDALA-<3-letter artwork code>-<6 Crockford-base32 chars>`, minted in
+ * api/stripe-webhook.ts. Deliberately forgiving about case, spacing and
+ * underscores, exactly as api/auth-lookup.ts's `normaliseCert` is — someone
+ * typing this is reading it off a printed certificate, possibly badly.
+ */
+const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{2,4}[\s_-]+[a-z0-9]{4,10}\s*$/i;
+
 export function searchSite(query: string, limit = 24): SearchResult[] {
+  // ⚠️ Certificate IDs are matched BEFORE the scorer, never through it.
+  //
+  // The tokeniser splits `MANDALA-OPI-7F3K91` into `mandala` / `opi` / `7f3k91`.
+  // "mandala" appears in nearly every document on a mandala artist's site, so
+  // the query behaved identically to a bare `?q=mandala` — 29 results led by a
+  // collection, with the Authentication page not present at ALL (its body has
+  // no "mandala" in it). That is the single worst place to fail: the person
+  // typing this is holding a printed certificate or has just scanned its QR,
+  // and is asking the one question the estate exists to answer.
+  //
+  // Resolved as an exact route rather than a ranking tweak, because a cert ID
+  // has exactly one correct destination and no useful fuzzy neighbours.
+  if (CERT_ID_RE.test(query)) {
+    const auth = INDEX.find((d) => d.doc.id === "page-auth");
+    if (auth) return [{ doc: auth.doc, score: 1000 }];
+  }
+
   const phraseLc = foldDiacritics(query.trim().toLowerCase());
   const terms = expandQuery(query);
   if (terms.length === 0) return [];

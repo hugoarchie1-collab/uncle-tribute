@@ -170,6 +170,7 @@ export const Gift = () => {
   // basket's LINE IDENTITY (removing one would remove both).
   const addLockRef = useRef(false);
   const confirmHeadingRef = useRef<HTMLParagraphElement | null>(null);
+  const customInputRef = useRef<HTMLInputElement | null>(null);
 
   const minPounds = GIFT_MIN_PENCE / 100;
   const maxPounds = GIFT_MAX_PENCE / 100;
@@ -270,11 +271,20 @@ export const Gift = () => {
     setError("");
     if (!resolved) {
       setCustomTouched(true);
-      setError(
-        selection.kind === "custom"
-          ? amountErrorText
-          : "Please choose an amount.",
-      );
+      // ⚠️ On the custom rung the error is ALREADY rendered beside the field
+      // (`showCustomError`), so setting it here too rendered the identical
+      // sentence in two visible role="alert" nodes — announced twice by a
+      // screen reader, and shown twice on screen ~750px apart. The summary
+      // panel carries only errors that have no field of their own.
+      if (selection.kind === "custom") {
+        setError("");
+        // Send the buyer to the thing they have to change. Focus was landing on
+        // <body> after a failed submit, so a keyboard user had to tab back up
+        // the page to find out what was wrong.
+        customInputRef.current?.focus();
+      } else {
+        setError("Please choose an amount.");
+      }
       return;
     }
     // Optional recipient email — validate only if provided.
@@ -556,6 +566,7 @@ export const Gift = () => {
                         £
                       </span>
                       <input
+                        ref={customInputRef}
                         name="customAmount"
                         type="number"
                         inputMode="numeric"
