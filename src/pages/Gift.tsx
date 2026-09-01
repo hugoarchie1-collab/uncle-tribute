@@ -77,14 +77,18 @@ const tierToDenomination = (tier: PrintTier): Denomination => ({
 });
 
 /**
- * The metadata label a denomination carries into the basket / Stripe. Takes the
- * active currency formatter (from useCurrency) so the label reads in the buyer's
- * chosen presentment currency — the figure shown equals the figure charged.
+ * The label a denomination carries into the basket / Stripe.
+ *
+ * ⚠️ MUST NOT contain a formatted money figure. The label is a STRING, frozen
+ * at add-time and persisted to localStorage; the basket's price column is
+ * recomputed live from `amountPence` against the active currency. Baking the
+ * figure in meant a card added in GBP and viewed in USD rendered
+ * "Custom amount — £250.00" on the same line as "$330" — two different numbers
+ * for one charge, on the money surface. The amount is the basket's job; this
+ * string only says WHICH denomination it was.
  */
-const denominationCardLabel = (
-  d: Denomination,
-  fmt: (gbpPence: number) => string,
-): string => `${d.sizeShort} ${d.label} — ${fmt(d.amountPence)}`;
+const denominationCardLabel = (d: Denomination): string =>
+  `${d.sizeShort} ${d.label}`;
 
 type Selection = { kind: "tier"; id: PrintTier["id"] } | { kind: "custom" };
 
@@ -92,7 +96,11 @@ export const Gift = () => {
   // Presentment currency — every figure on this page (and the label carried into
   // the basket) reads in the buyer's chosen currency; the same conversion is
   // applied server-side at checkout, so advertised == charged.
-  const { format: fmt, formatPretty: fmtP } = useCurrency();
+  // Only `formatPretty` is used. `format` was dropped with the baked-in label
+  // figure: the page previously showed the same amount twice in two different
+  // formats ("£525" from formatPretty above "…Collector Edition — £525.00"
+  // from format). One figure, one formatter.
+  const { formatPretty: fmtP } = useCurrency();
 
   // Size-pegged denominations: available, non-one-off tiers, in ladder order.
   const denominations = useMemo<Denomination[]>(
@@ -130,7 +138,7 @@ export const Gift = () => {
     if (selection.kind === "tier") {
       const d = denominations.find((x) => x.id === selection.id);
       if (!d) return null;
-      return { amountPence: d.amountPence, label: denominationCardLabel(d, fmt) };
+      return { amountPence: d.amountPence, label: denominationCardLabel(d) };
     }
     // Custom — parse whole pounds.
     const pounds = Number.parseInt(customAmount, 10);
@@ -143,8 +151,8 @@ export const Gift = () => {
     ) {
       return null;
     }
-    return { amountPence, label: `Custom amount — ${fmt(amountPence)}` };
-  }, [selection, customAmount, denominations, fmt]);
+    return { amountPence, label: "Custom amount" };
+  }, [selection, customAmount, denominations]);
 
   const handleAdd = () => {
     setError("");

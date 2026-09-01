@@ -598,7 +598,18 @@ function scoreDoc(indexed: IndexedDoc, tokens: string[], phraseLc: string): numb
     // estate-specific synonyms, so "delivery" finds "shipping", "refund" finds
     // "returns", etc. Multi-word synonyms ("how much") are scored as a phrase
     // substring; single-word ones go through the same field scorer.
-    const syns = SYNONYMS[token];
+    // ⚠️ hasOwnProperty.call, NEVER a bare `SYNONYMS[token]` truthiness check.
+    // SYNONYMS is an object literal, so a bare lookup resolves up the prototype
+    // chain: SYNONYMS["constructor"] returns the Object constructor — truthy
+    // but not iterable — and the `for...of` below threw, taking the whole page
+    // down to the ErrorBoundary. "constructor" is ordinary English and a
+    // plausible query on a sacred-geometry site, and /search?q=constructor was
+    // a permanently broken, shareable, indexable URL. (Only lowercase keys can
+    // reach here — the tokeniser lowercases, which is why "toString" and
+    // "valueOf" never triggered it. Do not rely on that.)
+    const syns = Object.prototype.hasOwnProperty.call(SYNONYMS, token)
+      ? SYNONYMS[token]
+      : undefined;
     if (syns) {
       for (const syn of syns) {
         if (syn.includes(" ")) {
