@@ -878,6 +878,17 @@ const DISPLAY = `"Playfair Display",Georgia,"Times New Roman",serif`;
 
 const renderOrderConfirmationHtml = (p: {
   buyerName?: string | null;
+  /**
+   * ⚠️ The FULL Stripe session id (`cs_…`), never truncated.
+   *
+   * This string is printed as "Reference:" in the buyer's email, and
+   * src/pages/Orders.tsx tells them to paste it into /orders to track the
+   * order — which calls GET /api/order-status, whose guard is
+   * `/^cs_[A-Za-z0-9_]+$/`. Every email used to print
+   * `session.id.slice(0, 18) + "…"`, so the reference the buyer was handed
+   * could never pass that guard: the site asked for an id it had already
+   * broken. The id is not a secret — it is in the /order/success URL.
+   */
   orderRef: string;
   lines: EmailLine[];
   total: string;
@@ -2373,7 +2384,7 @@ async function processPrintFulfilment(
       subject: "Thank you — your print from the Stephen Meakin estate",
       html: renderOrderConfirmationHtml({
         buyerName,
-        orderRef: session.id.slice(0, 18) + "…",
+        orderRef: session.id,
         lines: linesFromMetadata(m, session.amount_subtotal),
         total: formatGBP(session.amount_total, session.currency),
         thankYouCode: thankYou?.code ?? null,
@@ -2523,7 +2534,7 @@ async function processGiftCards(
           amountLabel: minted.amountLabel,
           expiresLabel: minted.expiresLabel,
           estateEmail: DEFAULT_FROM,
-          orderRef: session.id.slice(0, 18) + "…",
+          orderRef: session.id,
         });
         const subject = toRecipient
           ? `A gift for you — ${minted.amountLabel} towards a Stephen Meakin print`
@@ -2628,7 +2639,7 @@ async function processGiftCards(
       subject: "Thank you — your gift card from the Stephen Meakin estate",
       html: renderGiftOrderConfirmationHtml({
         buyerName,
-        orderRef: session.id.slice(0, 18) + "…",
+        orderRef: session.id,
         cards: giftSummaries,
         total: formatGBP(session.amount_total, session.currency),
         estateEmail: DEFAULT_FROM,
@@ -2951,7 +2962,7 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           buyerName: session.customer_details?.name ?? null,
           recoveryUrl,
           estateEmail: DEFAULT_FROM,
-          orderRef: session.id.slice(0, 18) + "…",
+          orderRef: session.id,
         });
 
         const sendResult = await resend.emails.send({
