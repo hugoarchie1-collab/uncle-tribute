@@ -208,16 +208,28 @@ export const PrintQuiz = ({
       }
     });
 
-    // Rank paintings that are actually purchasable, by score (stable by catalogue order).
-    const ranked = PAINTINGS.map((p) => ({ p, s: score.get(p.id) ?? 0 }))
+    // The colour the person was drawn to (from the colour question). It now
+    // STEERS WHICH PAINTING wins — a +2 colour-fit bonus for pieces that actually
+    // offer those tones (Hugo: the quiz must take colourways into account) — as
+    // well as picking the winner's colourway.
+    const preferred = [...colourScore.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    const COLOUR_FIT = 2;
+    const offersPreferred = (p: (typeof PAINTINGS)[number]) =>
+      !!preferred &&
+      p.colourways.some((c) => c.available && colourwayFamily(c.name, c.hex) === preferred);
+
+    // Rank purchasable paintings by essence score + colour-fit (stable by catalogue order).
+    const ranked = PAINTINGS.map((p) => ({
+      p,
+      s: (score.get(p.id) ?? 0) + (offersPreferred(p) ? COLOUR_FIT : 0),
+    }))
       .filter(({ p }) => p.colourways.some((c) => c.available))
       .sort((a, b) => b.s - a.s);
 
     const winner = ranked[0]?.p ?? PAINTINGS[0];
     const avail = winner.colourways.filter((c) => c.available);
 
-    // Choose the colourway whose family best matches the colour answers; else original.
-    const preferred = [...colourScore.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    // Show the winner in the colourway that matches those tones; else its original.
     const original = avail.find((c) => c.isOriginal) ?? avail[0];
     const cover =
       (preferred && avail.find((c) => colourwayFamily(c.name, c.hex) === preferred)) || original;
