@@ -220,6 +220,39 @@ for (const dir of BUYER_FACING) {
 }
 
 // -----------------------------------------------------------------------------
+// 2b. NO SUM-THEN-CONVERT ON A MULTI-PART PRICE
+// -----------------------------------------------------------------------------
+// ⚠️ THE CLASS THIS GATE ORIGINALLY MISSED. api/checkout.ts emits the print,
+// the finish and the hand-finishing as SEPARATE Stripe line items and converts
+// EACH one; convertFromGbpPence rounds UP to a whole major unit, so summing GBP
+// first and converting once produces a DIFFERENT, LOWER figure in EUR and CAD
+// than the buyer is charged. Measured before the fix: 12 of 40 tier/finish/
+// currency combinations diverged, EVERY ONE against the buyer, on the PDP
+// buy-now figure — which IS the order total.
+//
+// The safe helper is `formatPartsPretty` / `convertPartsFromGbpPence`. This
+// check fails the build if a price formatter is handed an ADDITION, which is
+// the shape that always means "summed in GBP first".
+{
+  const priceFiles = ["src/pages/PaintingDetail.tsx", "src/pages/Basket.tsx", "src/pages/Collections.tsx"];
+  // fmtP( … + … )  /  format( … + … )  — an addition inside a money formatter.
+  const sumInFormatter = /\b(fmtP|fmtPParts|format|formatPretty)\(\s*[A-Za-z_$][\w.$]*\s*\+/g;
+  for (const file of priceFiles) {
+    if (!fs.existsSync(path.join(ROOT, file))) continue;
+    const src = stripComments(read(file));
+    for (const hit of src.match(sumInFormatter) ?? []) {
+      if (hit.startsWith("fmtPParts")) continue; // parts-aware, correct by construction
+      fail(
+        "fx-sum-then-convert",
+        `${file} — "${hit.trim()}…" adds GBP figures inside a money formatter. ` +
+          `Use formatPartsPretty([partA, partB]) so each Stripe line item is converted separately; ` +
+          `otherwise EUR/CAD display less than the charge.`,
+      );
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 // 3. THE CERT PATTERN MUST NOT SWALLOW PLAIN ENGLISH
 // -----------------------------------------------------------------------------
 const searchSrc = read("src/lib/search.ts");

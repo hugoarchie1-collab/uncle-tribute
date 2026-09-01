@@ -11,8 +11,8 @@ import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
   PRINT_TIERS,
-  getLowestTierPricePence,
   getTierAdvertisedPricePence,
+  getLowestTierPriceParts,
   type PrintTier,
 } from "../data/paintings";
 import {
@@ -134,7 +134,7 @@ export const Gift = () => {
   // figure: the page previously showed the same amount twice in two different
   // formats ("£525" from formatPretty above "…Collector Edition — £525.00"
   // from format). One figure, one formatter.
-  const { formatPretty: fmtP, code } = useCurrency();
+  const { formatPretty: fmtP, formatPartsPretty: fmtPParts, code } = useCurrency();
 
   // Four real works, drawn once per mount from the live catalogue so this band
   // can never advertise something the estate no longer sells.
@@ -880,7 +880,8 @@ export const Gift = () => {
               <div className="flex flex-wrap justify-center gap-5 md:gap-7">
                 {giftableWorks.map((p) => {
                   const cover = p.colourways.find((c) => c.available) ?? p.colourways[0];
-                  const from = getLowestTierPricePence(p);
+                  // Parts — see getLowestTierPriceParts (EUR/CAD parity).
+                  const fromParts = getLowestTierPriceParts(p);
                   return (
                     <Link
                       key={p.id}
@@ -905,7 +906,7 @@ export const Gift = () => {
                         {p.title}
                       </p>
                       <p className={cn(META, "m-0 mt-1 reading-shadow")}>
-                        Estate-stamped giclée, framed · from {fmtP(from)}
+                        Estate-stamped giclée, framed · from {fmtPParts(fromParts)}
                       </p>
                     </Link>
                   );

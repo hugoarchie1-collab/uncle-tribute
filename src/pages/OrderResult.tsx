@@ -21,7 +21,7 @@ import {
   getPaintingById,
   getPaintingsByCollection,
   getAnchorTier,
-  getTierAdvertisedPricePence,
+  getTierAdvertisedPriceParts,
   type Painting,
 } from "../data/paintings";
 
@@ -135,7 +135,7 @@ const buildCompanions = (justBought: BasketItem[], max = 3): Companion[] => {
 const CompanionCard = ({ companion }: { companion: Companion }) => {
   const { painting, colourwayName, image, note } = companion;
   const anchor = getAnchorTier(painting);
-  const { formatPretty: fmtP, code: currencyCode } = useCurrency();
+  const { formatPartsPretty: fmtPParts, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -201,14 +201,22 @@ const CompanionCard = ({ companion }: { companion: Companion }) => {
           />
         </picture>
       </div>
-      <p className="font-sans text-[15px] 3xl:text-[18px] 4xl:text-[21px] font-semibold leading-[1.3] text-ink m-0">
+      {/* Title in Fraunces (font-display), like every other tile that names a
+          work — this card set it in Schibsted, the one painting title on the
+          site in body sans (Hugo 2026-08-31, full-site tile unison). The rest of
+          this card deliberately differs from a browse tile: it is a one-click
+          BUY card for a specific colourway at a specific size, so it states that
+          exact configuration and the price that will actually be charged for it
+          (getTierAdvertisedPricePence of the anchor tier, the tier POSTed
+          below) rather than the catalogue floor. */}
+      <p className="font-display font-semibold tracking-[-0.02em] text-[15px] 3xl:text-[18px] 4xl:text-[21px] leading-[1.3] text-ink m-0">
         {painting.title}
       </p>
       <p className={cn(EYEBROW_TIGHT, "mt-1.5")}>{colourwayName}</p>
       <p className={cn(META, "mt-2 mb-3")}>{note}</p>
       <div className="mt-auto flex items-baseline justify-between gap-3">
         <span className="font-display font-semibold tracking-[-0.01em] text-[17px] 3xl:text-[23px] 4xl:text-[27px] text-ink">
-          from {fmtP(getTierAdvertisedPricePence(anchor))}
+          from {fmtPParts(getTierAdvertisedPriceParts(anchor))}
         </span>
         <span className={cn(EYEBROW_TIGHT)}>{anchor.size}</span>
       </div>

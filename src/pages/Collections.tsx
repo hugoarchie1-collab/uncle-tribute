@@ -9,8 +9,8 @@ import {
   COLLECTIONS,
   PAINTINGS,
   PRINT_TIERS,
-  getLowestTierPricePence,
-  getTierAdvertisedPricePence,
+  getLowestTierPriceParts,
+  getTierAdvertisedPriceParts,
   getEmbellishmentPricePence,
   getFramingPricePence,
   getCanvasPricePence,
@@ -1179,7 +1179,7 @@ export const Collections = () => {
   // the buyer's chosen currency. fmt = full ("£450.00"/"$572.00"), fmtP = pretty
   // (".00" stripped). The GBP pence figures from paintings.ts stay the single
   // source of truth; only the presentation converts — advertised == charged.
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
 
   // PAGE-LEVEL colourway choice (paintingId → colourway name). Chosen on a browse
   // tile's colour dots and consumed by BOTH the per-collection "complete collection"
@@ -1354,7 +1354,7 @@ export const Collections = () => {
                 >
                   Every painting, from{" "}
                   <span className="font-semibold text-ink">
-                    {fmtP(getTierAdvertisedPricePence(SET_TIERS_ASCENDING[0]))}
+                    {fmtPParts(getTierAdvertisedPriceParts(SET_TIERS_ASCENDING[0]))}
                   </span>{" "}
                   · each with a Certificate of Authenticity
                 </p>
@@ -1392,7 +1392,7 @@ export const Collections = () => {
                       style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
                     >
                       <span className="text-ink-muted">from </span>
-                      <span className="font-semibold">{fmtP(getTierAdvertisedPricePence(tier))}</span>
+                      <span className="font-semibold">{fmtPParts(getTierAdvertisedPriceParts(tier))}</span>
                     </p>
                   </li>
                 ))}
@@ -1593,7 +1593,7 @@ export const Collections = () => {
                             >
                               Estate-stamped giclée, framed · from{" "}
                               <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
-                                {fmtP(getLowestTierPricePence(painting))}
+                                {fmtPParts(getLowestTierPriceParts(painting))}
                               </span>
                             </p>
                           </figcaption>

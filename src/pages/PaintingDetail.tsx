@@ -50,10 +50,12 @@ import {
   getFrameSurchargePence,
   getCanvasPricePence,
   getLowestTierPricePence,
+  getLowestTierPriceParts,
   getPaintingById,
   getPaintingsByCollection,
   getPrintTiers,
   getTierAdvertisedPricePence,
+  getTierAdvertisedPriceParts,
   paintingImageAlt,
   ORIGINAL_PRINT_SPEC,
   COLOURWAY_NOTE,
@@ -304,7 +306,7 @@ const SizePicker = ({
   paintingId: string;
   colourwayName: string;
 }) => {
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   return (
   <div role="radiogroup" aria-label="Print size" className="grid grid-cols-1 gap-0 border-b border-line">
     {tiers.map((tier, i) => {
@@ -313,7 +315,9 @@ const SizePicker = ({
       // size (base + cheapest finish = the framed/canvas price) — NOT the bare
       // base, which no one can check out at (Hugo 2026-07-27: "make it honest").
       // This matches the browse "from", the feed and the JSON-LD offer exactly.
-      const rungPricePence = getTierAdvertisedPricePence(tier);
+      // Parts, so the rung figure equals the charge in EUR/CAD (see
+      // getTierAdvertisedPriceParts).
+      const rungPriceParts = getTierAdvertisedPriceParts(tier);
       return (
         <button
           key={tier.id}
@@ -351,7 +355,7 @@ const SizePicker = ({
             )}
             style={{ fontVariationSettings: '"opsz" 28, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
-            {fmtP(rungPricePence)}
+            {fmtPParts(rungPriceParts)}
           </span>
           {/* Selected summary — the card's own editionLabel line already sits
               two lines above, so it is NOT repeated here (mobile made the
@@ -1072,7 +1076,7 @@ const BuyBox = ({
    * affordance is on screen, not just at the top of the order block. */
   orderEndSentinelRef: React.RefObject<HTMLDivElement | null>;
 }) => {
-  const { formatPretty: fmtP, code: currencyCode } = useCurrency();
+  const { formatPretty: fmtP, formatPartsPretty: fmtPParts, code: currencyCode } = useCurrency();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [enquireOpen, setEnquireOpen] = useState(false);
@@ -1131,7 +1135,13 @@ const BuyBox = ({
   // "+£345" framing-only figures anywhere).
   const framedTotalLabel =
     framingPricePence !== null
-      ? fmtP(selectedTier.pricePence + framingPricePence + frameSurchargePence)
+      ? // ⚠️ PARTS, not a GBP sum — this is "the single clean number the buyer
+        // commits to", so it must equal the charge. Stripe converts the print
+        // and the framing separately and rounds each UP to a whole major unit.
+        fmtPParts([
+          selectedTier.pricePence,
+          framingPricePence + frameSurchargePence,
+        ])
       : null;
   const embellishPriceLabel =
     embellishPricePence !== null
@@ -1152,21 +1162,31 @@ const BuyBox = ({
   const canvasEdgeSurchargePence = canvasActive
     ? getCanvasEdgeSurchargePence(canvasEdge, selectedTier.id)
     : 0;
-  const finishTotalPence = canvasActive
-    ? selectedTier.pricePence + (canvasPricePence ?? 0) + canvasEdgeSurchargePence
-    : framingActive
-      ? selectedTier.pricePence + (framingPricePence ?? 0) + frameSurchargePence
-      : selectedTier.pricePence;
 
   // Running line total = print + (frame if active) + (hand-finish if active).
   // Updates live as the buyer ticks add-ons (DMCC: the running total must
   // reflect the chosen configuration before they commit). Add-on pence come
   // from the data-layer helpers, so the figure can never drift from the ladder.
-  const lineTotalPence =
-    selectedTier.pricePence +
-    (framingActive ? (framingPricePence ?? 0) + frameSurchargePence : 0) +
-    (embellishActive ? embellishPricePence ?? 0 : 0) +
-    (canvasActive ? (canvasPricePence ?? 0) + canvasEdgeSurchargePence : 0);
+
+  // ⚠️ THE SAME FIGURES AS SEPARATE PARTS — advertised == charged.
+  // api/checkout.ts emits the print, the finish and the hand-finishing as
+  // SEPARATE Stripe line items and converts EACH one; convertFromGbpPence
+  // rounds UP to a whole major unit, so summing GBP first and converting once
+  // gives a DIFFERENT (lower) number in EUR and CAD. Collector framed showed
+  // €915 and charged €916. Measured: 12 of 40 tier/finish/currency
+  // combinations diverged, every one against the buyer, on the very figure the
+  // buy button commits to. Display must use these parts, never the sums above.
+  const finishParts: number[] = canvasActive
+    ? [selectedTier.pricePence, (canvasPricePence ?? 0) + canvasEdgeSurchargePence]
+    : framingActive
+      ? [selectedTier.pricePence, (framingPricePence ?? 0) + frameSurchargePence]
+      : [selectedTier.pricePence];
+  const lineParts: number[] = [
+    selectedTier.pricePence,
+    ...(framingActive ? [(framingPricePence ?? 0) + frameSurchargePence] : []),
+    ...(embellishActive ? [embellishPricePence ?? 0] : []),
+    ...(canvasActive ? [(canvasPricePence ?? 0) + canvasEdgeSurchargePence] : []),
+  ];
 
   // Stated lead time — the LONGEST selected add-on governs. Frame 2 wks,
   // hand-finishing 2 wks. Nothing selected → the standard print lead time.
@@ -1411,7 +1431,7 @@ const BuyBox = ({
             className="font-sans font-semibold tracking-[-0.015em] text-[clamp(34px,3vw,52px)] text-ink m-0"
             style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
           >
-            {fmtP(finishTotalPence)}
+            {fmtPParts(finishParts)}
           </p>
         </div>
 
@@ -1650,7 +1670,7 @@ const BuyBox = ({
                 <div className="flex flex-col gap-2 ring-1 ring-line px-4 py-3.5">
                   <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted m-0">
                     {CANVAS_EDGES[0].note}
-                    {` Canvas: ${fmtP(finishTotalPence)}.`}
+                    {` Canvas: ${fmtPParts(finishParts)}.`}
                   </p>
                 </div>
               )}
@@ -1796,7 +1816,7 @@ const BuyBox = ({
                   </span>
                 </span>
                 <span className="font-sans font-semibold tracking-[-0.02em] text-[22px] 3xl:text-[30px] 4xl:text-[35px] text-ink whitespace-nowrap">
-                  {fmtP(lineTotalPence)}
+                  {fmtPParts(lineParts)}
                 </span>
               </div>
             )}
@@ -1850,7 +1870,7 @@ const BuyBox = ({
               className="font-sans font-semibold tracking-[-0.02em] text-[26px] 3xl:text-[34px] 4xl:text-[40px] text-ink whitespace-nowrap"
               style={{ fontFeatureSettings: '"tnum" 1, "lnum" 1' }}
             >
-              {fmtP(lineTotalPence * quantity)}
+              {fmtPParts(lineParts.flatMap((p) => Array.from({ length: quantity }, () => p)))}
             </span>
           </div>
           <p className={cn(META, "m-0 mt-2")}>
@@ -2036,7 +2056,7 @@ const CompanionWorks = ({
   painting: Painting;
   collectionTitle?: string;
 }) => {
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   const companions = useMemo(() => {
     const mates = getPaintingsByCollection(painting.collection).filter(
       (p) => p.id !== painting.id,
@@ -2061,13 +2081,14 @@ const CompanionWorks = ({
         {companions.map((p) => {
           const cover =
             p.colourways.find((c) => c.isOriginal) ?? p.colourways[0];
-          const fromPence = getLowestTierPricePence(p);
+          // Parts — the tile price must equal the charge in EUR/CAD.
+          const fromParts = getLowestTierPriceParts(p);
           return (
             <li key={p.id} className="m-0 min-w-0">
               <Link
                 to={`/collections/${p.id}`}
                 className="group block"
-                aria-label={`${p.title} — from ${fmtP(fromPence)}`}
+                aria-label={`${p.title} — from ${fmtPParts(fromParts)}`}
               >
                 <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-ink/40">
                   <AssetImage
@@ -2113,7 +2134,7 @@ const CompanionWorks = ({
                 >
                   Estate-stamped giclée, framed · from{" "}
                   <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
-                    {fmtP(fromPence)}
+                    {fmtPParts(fromParts)}
                   </span>
                 </p>
               </Link>
@@ -2536,7 +2557,7 @@ const StickyAddBar = ({
 };
 
 export const PaintingDetail = () => {
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   const { id } = useParams();
   const painting = id ? getPaintingById(id) : undefined;
 
@@ -2844,7 +2865,9 @@ export const PaintingDetail = () => {
   // actually-purchasable configuration (base + cheapest finish), matching the
   // "From £…" on browse tiles + PDP meta. Using the bare base price here (£525)
   // advertised a figure no size rung sells and the buy box never shows.
-  const pricePence = getLowestTierPricePence(painting);
+  // ⚠️ PARTS for display — the sticky bar's "from" figure must equal the
+  // charge in EUR/CAD. See getLowestTierPriceParts.
+  const priceParts = getLowestTierPriceParts(painting);
 
   // Hero intrinsic aspect — derived from the painting's known cm size so the
   // browser reserves the image slot's ratio BEFORE the file decodes (#23: kills
@@ -3076,7 +3099,7 @@ export const PaintingDetail = () => {
             >
               <span className="font-sans font-semibold tracking-[-0.01em] text-ink normal-case text-[14px] 3xl:text-[17px] 4xl:text-[20px]">
                 <span className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold text-ink-muted mr-1">from</span>
-                {fmtP(pricePence)}
+                {fmtPParts(priceParts)}
               </span>
               <span aria-hidden="true" className="text-ink/35">·</span>
               <span>Order print</span>

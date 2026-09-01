@@ -13,7 +13,7 @@ import { AccountPanel } from "./Account";
 import { PaymentMarks } from "../components/PaymentMarks";
 import {
   getAnchorTier,
-  getLowestTierPricePence,
+  getLowestTierPriceParts,
   getPaintingById,
   getPrintTiers,
   frameStyleLabel,
@@ -24,6 +24,7 @@ import {
   COLLECTIONS,
   PAINTINGS,
   type PrintTier,
+  type Painting,
 } from "../data/paintings";
 import { useCurrency, formatMinorUnits } from "../lib/currency";
 import { useBasket, useGiftCards, removeItem, setItemQuantity, setItemColourway, MAX_LINE_QUANTITY, type BasketItem, type GiftBasketItem } from "../lib/basket";
@@ -187,6 +188,36 @@ const shippingPreview = () => ({
 // urgency copy. Shown in the ORIGINAL colourway (the PDP's default, so a plain
 // /collections/:id link lands on the colourway pictured).
 // -----------------------------------------------------------------------------
+/**
+ * ColourwayDots — the reference tile's colourway row (swatches + count), static.
+ * On /collections the dots are interactive (they swap that tile's image); on the
+ * basket's merchandising rails the tile's job is only to say the work HAS
+ * colourways and how many, then hand over to the PDP. The reserved height keeps
+ * captions baseline-aligned across a mixed row. Mirrors CompanionWorks on the
+ * product page exactly — no new buyer-visible words (the "colourways" suffix is
+ * the live one from the /collections tile).
+ */
+const ColourwayDots = ({ painting }: { painting: Painting }) => {
+  const ways = painting.colourways.filter((c) => c.available);
+  if (ways.length <= 1) return <div aria-hidden="true" className="mt-2.5 h-5" />;
+  return (
+    <div className="mt-2.5 flex h-5 items-center justify-center gap-1.5">
+      {ways.slice(0, 5).map((c) => (
+        <span
+          key={c.name}
+          aria-hidden="true"
+          title={c.name}
+          className="block h-2.5 w-2.5 rounded-full ring-1 ring-line/80"
+          style={{ backgroundColor: c.hex }}
+        />
+      ))}
+      <span className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted">
+        {ways.length} colourways
+      </span>
+    </div>
+  );
+};
+
 const BEGIN_WITH_IDS = ["wild-rose", "english-bluebells", "ophiuchus"] as const;
 
 const BEGIN_WITH_PICKS = BEGIN_WITH_IDS.map((id) => {
@@ -196,7 +227,12 @@ const BEGIN_WITH_PICKS = BEGIN_WITH_IDS.map((id) => {
     painting.colourways.find((c) => c.isOriginal && c.available) ??
     painting.colourways.find((c) => c.available) ??
     painting.colourways[0];
-  return { painting, cover, fromPence: getLowestTierPricePence(painting) };
+  return {
+    painting,
+    cover,
+    // Parts — EUR/CAD parity with the charge (getLowestTierPriceParts).
+    fromParts: getLowestTierPriceParts(painting),
+  };
 }).filter((p): p is NonNullable<typeof p> => p !== null);
 
 export const Basket = () => {
@@ -206,7 +242,7 @@ export const Basket = () => {
   // Presentment currency (header picker). `fmt` charges-parity formatting,
   // `fmtP` the pretty (no .00) variant; `currencyCode` rides along on the
   // checkout POST so Stripe charges in the SAME currency shown here.
-  const { formatPretty: fmtP, convert, code: currencyCode } = useCurrency();
+  const { formatPretty: fmtP, formatPartsPretty: fmtPParts, convert, code: currencyCode } = useCurrency();
   const items = useBasket();
   const lines = resolveLines(items);
   // ⚠️ Only claim numbering when EVERY line is a numbered tier. `editionTotal`
@@ -435,12 +471,12 @@ export const Basket = () => {
               <div className="mt-8 md:mt-10">
                 <p className={cn(EYEBROW_MUTED, "m-0 mb-5")}>Begin with these</p>
                 <ul className="list-none p-0 m-0 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                  {BEGIN_WITH_PICKS.map(({ painting, cover, fromPence }) => (
+                  {BEGIN_WITH_PICKS.map(({ painting, cover, fromParts }) => (
                     <li key={painting.id} className="m-0 min-w-0">
                       <Link
                         to={`/collections/${painting.id}`}
                         className="group block"
-                        aria-label={`${painting.title} — from ${fmtP(fromPence)}`}
+                        aria-label={`${painting.title} — from ${fmtPParts(fromParts)}`}
                       >
                         <div className="relative aspect-square overflow-hidden ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
                           <AssetImage
@@ -457,13 +493,41 @@ export const Basket = () => {
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
                           />
                         </div>
-                        <h3 className="font-display font-bold tracking-[-0.015em] text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] text-ink m-0 mt-3 min-h-[2.5em] group-hover:text-accent transition-colors duration-300">
-                          {painting.title}
-                        </h3>
-                        <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
-                          From {fmtP(fromPence)}
-                        </p>
+                        {/* ⚠️ THE COLLECTIONS TILE CAPTION, verbatim. Standing
+                            rule (Hugo 2026-08-31): "base it all on collections
+                            tab, full site design unison" — wherever a print is
+                            SOLD or surfaced it carries the same caption, never a
+                            thinner one. This tile showed title + a bare "From
+                            £x": no year, no colourway count, and a price line
+                            worded differently from every browse surface. */}
+                        <div className="text-center">
+                          <h3 className="font-display font-semibold tracking-[-0.02em] text-[16px] md:text-[clamp(18px,1.15vw,24px)] leading-[1.25] text-ink m-0 mt-3 min-h-[2.5em] flex items-center justify-center group-hover:text-accent transition-colors duration-300 reading-shadow">
+                            {painting.title}
+                          </h3>
+                          {/* Year always occupies its line so the price row keeps
+                              a shared baseline across the row; an undated work
+                              renders an invisible spacer. `[ DATE ]` is the
+                              internal placeholder and never reaches a customer. */}
+                          <p
+                            className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                            aria-hidden={!(painting.year && painting.year !== "[ DATE ]")}
+                          >
+                            {painting.year && painting.year !== "[ DATE ]" ? painting.year : " "}
+                          </p>
+                          <p className={cn(META, "mt-2 m-0")}>
+                            Estate-stamped giclée, framed · from{" "}
+                            <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                              {fmtPParts(fromParts)}
+                            </span>
+                          </p>
+                        </div>
                       </Link>
+                      {/* Colourway dots + count, matching the reference tiles.
+                          Static here (the swatches on /collections swap that
+                          tile's image); this tile says the work HAS colourways
+                          and how many, then hands over to the PDP. Reserved
+                          height keeps captions baseline-aligned. */}
+                      <ColourwayDots painting={painting} />
                     </li>
                   ))}
                 </ul>
@@ -501,15 +565,20 @@ export const Basket = () => {
                   // the per-line HEADLINE with the framed price the buyer chose.
                   const isCanvas = line.item.canvas === true && canvasPence > 0;
                   const isFramed = line.item.framing === true && framingPence > 0;
-                  const canvasUnitPence = line.tier.pricePence + canvasPence;
-                  const framedUnitPence = line.tier.pricePence + framingPence;
                   // The all-in unit price for this line's presentation — framed,
                   // canvas, or (fallback) bare print. This is the headline figure.
-                  const baseUnitPence = isCanvas
-                    ? canvasUnitPence
+                  // ⚠️ The SAME figure as separate parts — advertised == charged.
+                  // api/checkout.ts converts each Stripe line item individually
+                  // and convertFromGbpPence rounds UP to a whole major unit, so
+                  // converting a GBP sum once yields a LOWER number in EUR/CAD
+                  // than the charge (Collector framed: shown €915, charged €916).
+                  // lineMinorTotal below already sums per part; the headline
+                  // must too.
+                  const baseUnitParts: number[] = isCanvas
+                    ? [line.tier.pricePence, canvasPence]
                     : isFramed
-                      ? framedUnitPence
-                      : line.tier.pricePence;
+                      ? [line.tier.pricePence, framingPence]
+                      : [line.tier.pricePence];
                   // Itemised breakdown is now ONLY for a GENUINE optional add-on
                   // (hand-finishing) or a multi-unit line — framing/canvas are the
                   // baked product, never itemised as a surcharge.
@@ -687,7 +756,7 @@ export const Basket = () => {
                             figure with the add-ons + subtotal itemised below —
                             so nothing is hidden (DMCC #13: no drip-pricing). */}
                         <p className="font-display font-semibold tracking-[-0.02em] text-[clamp(16px,1.7vw,27px)] text-ink m-0 flex-shrink-0">
-                          {fmtP(baseUnitPence)}
+                          {fmtPParts(baseUnitParts)}
                         </p>
                       </div>
 
@@ -706,7 +775,7 @@ export const Basket = () => {
                                   : `${line.tier.label} print (${line.tier.size})`}
                             </span>
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted tabular-nums flex-shrink-0">
-                              {fmtP(baseUnitPence)}
+                              {fmtPParts(baseUnitParts)}
                             </span>
                           </div>
                           {line.item.quantity > 1 && (
@@ -819,13 +888,29 @@ export const Basket = () => {
                               className="w-full h-full object-cover object-center block transition-transform duration-500 group-hover:scale-[1.04]"
                             />
                           </div>
-                          <p className="font-display font-semibold tracking-[-0.02em] text-[15px] 3xl:text-[18px] 4xl:text-[21px] text-ink leading-tight mt-2.5 min-h-[2.5em] group-hover:text-accent transition-colors">
-                            {p.title}
-                          </p>
-                          <p className={cn(EYEBROW_TIGHT, "m-0 mt-1")}>
-                            From {fmtP(getLowestTierPricePence(p))}
-                          </p>
+                          {/* ⚠️ THE COLLECTIONS TILE CAPTION, verbatim (Hugo
+                              2026-08-31, full-site tile unison): title · year ·
+                              the live price line · colourway count. This rail
+                              showed title + a bare "From £x". */}
+                          <div className="text-center">
+                            <p className="font-display font-semibold tracking-[-0.02em] text-[15px] 3xl:text-[18px] 4xl:text-[21px] text-ink leading-tight mt-2.5 min-h-[2.5em] flex items-center justify-center group-hover:text-accent transition-colors reading-shadow">
+                              {p.title}
+                            </p>
+                            <p
+                              className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                              aria-hidden={!(p.year && p.year !== "[ DATE ]")}
+                            >
+                              {p.year && p.year !== "[ DATE ]" ? p.year : " "}
+                            </p>
+                            <p className={cn(META, "mt-2 m-0")}>
+                              Estate-stamped giclée, framed · from{" "}
+                              <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                                {fmtPParts(getLowestTierPriceParts(p))}
+                              </span>
+                            </p>
+                          </div>
                         </Link>
+                        <ColourwayDots painting={p} />
                       </li>
                     );
                   })}

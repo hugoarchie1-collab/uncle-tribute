@@ -546,6 +546,34 @@ export const getTierAdvertisedPricePence = (tier: PrintTier): number => {
 };
 
 /**
+ * The SAME advertised price as separate Stripe line-item parts.
+ *
+ * ⚠️ FOR DISPLAY, ALWAYS USE THIS. api/checkout.ts bills the print and the
+ * finish as SEPARATE line items and converts EACH one, and
+ * convertFromGbpPence rounds UP to a whole major unit — so formatting the
+ * SUM above converts once and lands a whole major unit LOW in EUR and CAD.
+ * Collector framed displayed €915 against a €916 charge. Pass these parts to
+ * `formatPartsPretty`; only ever use the summed helper for GBP arithmetic.
+ */
+export const getTierAdvertisedPriceParts = (tier: PrintTier): number[] => {
+  const adds: number[] = [];
+  if (typeof tier.framingPricePence === "number") adds.push(tier.framingPricePence);
+  if (typeof tier.canvasPricePence === "number") adds.push(tier.canvasPricePence);
+  const cheapestFinish = adds.length > 0 ? Math.min(...adds) : 0;
+  return cheapestFinish > 0 ? [tier.pricePence, cheapestFinish] : [tier.pricePence];
+};
+
+/** The cheapest BUYABLE tier's advertised price, as parts. The "from" figure. */
+export const getLowestTierPriceParts = (painting: Painting): number[] => {
+  const tiers = getPrintTiers(painting).filter((t) => !t.isOneOff);
+  if (tiers.length === 0) return getTierAdvertisedPriceParts(getAnchorTier(painting));
+  const cheapest = tiers.reduce((lo, t) =>
+    getTierAdvertisedPricePence(t) < getTierAdvertisedPricePence(lo) ? t : lo,
+  );
+  return getTierAdvertisedPriceParts(cheapest);
+};
+
+/**
  * Returns the framing surcharge for a tier, or null if framing isn't
  * offered at that size. Framing is currently A2 + A1 only.
  */

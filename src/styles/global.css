@@ -137,7 +137,20 @@
     overflow-wrap: anywhere;
   }
 
+  /* TEXT-WRAP CANON (2026-09-01) — the two line-breaking rules a gallery/museum
+     compositor would apply by hand, set once as defaults instead of being
+     remembered per call site:
+       * headings BALANCE  — a display line must never leave one orphaned word
+         hanging under a full line. Engines cap balancing at ~6 lines, so this
+         is free on long text and decisive on the 2-3 line headings this site is
+         built from.
+       * prose PRETTIES    — orphan/rag control on the LAST line of a paragraph.
+     Both are progressive: an engine without support just wraps normally. Both
+     are plain DEFAULTS in @layer base, so any call site that already sets
+     `text-balance` / `text-pretty` (or wants neither) still wins on source
+     order — nothing existing is overridden. */
   h1, h2, h3, h4 {
+    text-wrap: balance;
     @apply font-display text-ink;
     /* Only 400 + 600 of each family are loaded (index.html). Use the heaviest
        LOADED weight so nothing is faux-bolded (synthesised wider glyphs that
@@ -150,6 +163,8 @@
     line-height: 1.05;
     letter-spacing: -0.035em;
   }
+
+  p, li, dd, blockquote, figcaption { text-wrap: pretty; }
 
   img, svg, video { display: block; max-width: 100%; height: auto; }
   /* Links ease their ink + underline colour changes instead of snapping —
@@ -363,6 +378,16 @@
 @media (min-width: 768px) {
   .caption { font-size: 15px; }
 }
+/* 2026-09-01 — 4K rungs. .caption was FLAT 14/15px at every width while the body
+   it sits under runs to 44px on a 4K display, so a documentary caption had
+   drifted from 0.70x body (mobile) to 0.34x (3840px) — the "museum caption"
+   register quietly becoming unreadable fine print exactly where the screen is
+   biggest. Stepped in lockstep with the META token (ui/tokens.ts) so a caption
+   and a spec row never render at two different sizes on the same page.
+   Breakpoints mirror tailwind.config.ts: 2xl 1536 / 3xl 1700 / 4xl 2400. */
+@media (min-width: 1536px) { .caption { font-size: 17px; } }
+@media (min-width: 1700px) { .caption { font-size: 19px; } }
+@media (min-width: 2400px) { .caption { font-size: 22px; } }
 .caption i,
 .caption em {
   font-family: theme(fontFamily.display);

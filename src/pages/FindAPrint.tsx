@@ -13,7 +13,7 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import {
   PAINTINGS,
-  getLowestTierPricePence,
+  getLowestTierPriceParts,
   paintingImageAlt,
 } from "../data/paintings";
 import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
@@ -147,7 +147,7 @@ export const FindAPrint = () => {
   const [cwChoice, setCwChoice] = useState<Record<string, string>>({});
   const chooseTileCw = (id: string, name: string) =>
     setCwChoice((prev) => ({ ...prev, [id]: name }));
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   const [searchParams] = useSearchParams();
   // The guided quiz now lives INSIDE this page (Hugo 2026-08-06: "I want the quiz
   // page also inside the for-you page"). Start in quiz mode when a shared-result
@@ -538,7 +538,7 @@ export const FindAPrint = () => {
                     <p className={cn(META, "mt-2 m-0")} style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
                       Estate-stamped giclée, framed · from{" "}
                       <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
-                        {fmtP(getLowestTierPricePence(painting))}
+                        {fmtPParts(getLowestTierPriceParts(painting))}
                       </span>
                     </p>
                   </figcaption>

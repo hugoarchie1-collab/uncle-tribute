@@ -77,7 +77,7 @@ import {
 import { SEARCH } from "../data/content";
 import {
   PAINTINGS,
-  getLowestTierPricePence,
+  getLowestTierPriceParts,
   paintingImageAlt,
   type Painting,
 } from "../data/paintings";
@@ -294,13 +294,13 @@ const ArtworkTile = ({
   basis,
   chosenName,
   onChooseColourway,
-  fmtP,
+  fmtPParts,
 }: {
   doc: SearchDoc;
   basis: string;
   chosenName?: string;
   onChooseColourway: (paintingId: string, colourway: string) => void;
-  fmtP: (gbpPence: number) => string;
+  fmtPParts: (parts: readonly number[]) => string;
 }) => {
   const painting = paintingFromDoc(doc);
   const avail = painting?.colourways.filter((c) => c.available) ?? [];
@@ -356,7 +356,7 @@ const ArtworkTile = ({
             <p className={cn(META, "mt-2 m-0")} style={CAPTION_SHADOW}>
               {SEARCH.tilePriceLine}{" "}
               <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
-                {fmtP(getLowestTierPricePence(painting))}
+                {fmtPParts(getLowestTierPriceParts(painting))}
               </span>
             </p>
           ) : (
@@ -413,7 +413,7 @@ export const Search = () => {
   const [params] = useSearchParams();
   const query = params.get("q") ?? "";
   const trimmed = query.trim();
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const firstRender = useRef(true);
 
@@ -596,7 +596,7 @@ export const Search = () => {
                           basis={basis}
                           chosenName={cwChoice[paintingFromDoc(doc)?.id ?? ""]}
                           onChooseColourway={chooseTileCw}
-                          fmtP={fmtP}
+                          fmtPParts={fmtPParts}
                         />
                       ))}
                     </div>
@@ -647,7 +647,7 @@ export const Search = () => {
                   basis={tileBasis(recovery.length)}
                   chosenName={cwChoice[paintingFromDoc(doc)?.id ?? ""]}
                   onChooseColourway={chooseTileCw}
-                  fmtP={fmtP}
+                  fmtPParts={fmtPParts}
                 />
               ))}
             </div>

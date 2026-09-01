@@ -5,10 +5,10 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AssetImage } from "../components/AssetImage";
 import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, META, SUBTITLE, BTN_PRIMARY, BTN_SECONDARY, EASE_SIGNATURE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
-import { PAINTINGS, getAnchorTier, getTierAdvertisedPricePence } from "../data/paintings";
+import { PAINTINGS, getAnchorTier, getLowestTierPriceParts } from "../data/paintings";
 import { addItem } from "../lib/basket";
 import { colourwayFamily, type ColourFamily } from "../lib/colour";
 import { SITE_URL } from "../lib/seo";
@@ -173,7 +173,7 @@ export const PrintQuiz = ({
   onExit,
 }: { embedded?: boolean; onExit?: () => void } = {}) => {
   const reduce = useReducedMotion();
-  const { formatPretty: fmtP } = useCurrency();
+  const { formatPartsPretty: fmtPParts } = useCurrency();
 
   const [params] = useSearchParams();
   // A ?result=<id> deep link opens DIRECTLY on the reveal — no intro flash, no
@@ -306,8 +306,15 @@ export const PrintQuiz = ({
     () => (result ? PAINTINGS.find((p) => p.id === result.paintingId) : null),
     [result],
   );
-  const anchorPrice = winnerPainting
-    ? fmtP(getTierAdvertisedPricePence(getAnchorTier(winnerPainting)))
+  // ⚠️ The BUYABLE FLOOR, exactly as every browse tile quotes it
+  // (getLowestTierPricePence — /collections, /search, /for-you, the PDP rail).
+  // This was the ANCHOR tier's price, so the same painting read "from £750"
+  // here and "from £445" on /collections — one work, two "from" prices. The
+  // quick-add below still adds the anchor size (unchanged), and the basket +
+  // added-to-basket panel state that line's own price, so nothing is understated
+  // at the point of charge.
+  const fromPrice = winnerPainting
+    ? fmtPParts(getLowestTierPriceParts(winnerPainting))
     : "";
 
   // ── Reveal derivations ────────────────────────────────────────────────────
@@ -627,12 +634,15 @@ export const PrintQuiz = ({
                       in {result.colourwayName}
                     </motion.p>
 
-                    {/* Data strip — the UI/craft register beneath the display serif */}
-                    <motion.p
-                      {...beat(2)}
-                      className="mt-4 font-sans text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted"
-                    >
-                      Estate-stamped giclée · made to order{anchorPrice ? ` · from ${anchorPrice}` : ""}
+                    {/* Data strip — the /collections tile's price line, verbatim
+                        (Hugo 2026-08-31, full-site tile unison), in the shared
+                        META register. It was an uppercase-tracked sans strip
+                        quoting the anchor price under the word "from". */}
+                    <motion.p {...beat(2)} className={cn(META, "mt-4 m-0")}>
+                      Estate-stamped giclée, framed · from{" "}
+                      <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                        {fromPrice}
+                      </span>
                     </motion.p>
 
                     {/* The reading */}
@@ -768,6 +778,23 @@ export const PrintQuiz = ({
                             {r.title}
                           </p>
                           <p className="m-0 mt-1 font-sans text-[12px] text-ink-muted">{r.name}</p>
+                          {/* The /collections tile's price line, verbatim (Hugo
+                              2026-08-31, full-site tile unison). These cards
+                              surfaced two more purchasable works with NO price at
+                              all, so the only way to learn one existed was to
+                              click through. */}
+                          {(() => {
+                            const rp = PAINTINGS.find((p) => p.id === r.id);
+                            if (!rp) return null;
+                            return (
+                              <p className={cn(META, "m-0 mt-1.5 text-[13px]")}>
+                                Estate-stamped giclée, framed · from{" "}
+                                <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                                  {fmtPParts(getLowestTierPriceParts(rp))}
+                                </span>
+                              </p>
+                            );
+                          })()}
                         </div>
                       </Link>
                     ))}

@@ -92,6 +92,30 @@ export const convertFromGbpPence = (gbpPence: number, code: CurrencyCode): numbe
   return Math.ceil(raw / 100) * 100; // → round UP to a clean whole major unit (2026-07-25 squeeze)
 };
 
+/**
+ * Convert a set of GBP-pence PARTS and sum them — the ONLY correct way to price
+ * a multi-part line for display.
+ *
+ * ⚠️ ADVERTISED == CHARGED. api/checkout.ts emits the print, the framing/canvas
+ * and the hand-finishing as SEPARATE Stripe line items and converts EACH one
+ * (`unitAmountsFor` -> `toMinor(part)`). Because `convertFromGbpPence` rounds UP
+ * to a whole major unit, summing-then-converting is NOT the same as
+ * converting-then-summing:
+ *
+ *   Collector framed, EUR:  conv(52500) + conv(22500) = 641 + 275 = €916  (charged)
+ *                           conv(52500 + 22500)       =              €915  (was displayed)
+ *
+ * Measured across every tier x finish x hand-finishing x currency: 12 of 40
+ * combinations diverged, EVERY ONE against the buyer, on the PDP buy-now figure
+ * (which IS the order total) and on every derived "from" price. Always pass the
+ * PARTS here; never pre-add them.
+ */
+export const convertPartsFromGbpPence = (
+  gbpPenceParts: readonly number[],
+  code: CurrencyCode,
+): number =>
+  gbpPenceParts.reduce((sum, part) => sum + convertFromGbpPence(part, code), 0);
+
 // One Intl.NumberFormat instance per currency, reused across every price render.
 // Constructing a formatter is ~70× slower than calling .format() on an existing
 // one, and the commerce pages (Collections especially) format dozens of prices
@@ -171,6 +195,15 @@ export interface CurrencyContextValue {
   format: (gbpPence: number) => string;
   /** GBP pence → formatted string, ".00" stripped ("£450" / "$572"). */
   formatPretty: (gbpPence: number) => string;
+  /**
+   * Format a multi-part price (print + framing/canvas + hand-finishing).
+   *
+   * ⚠️ USE THIS, not `formatPretty(a + b)`, wherever a figure covers more than
+   * one Stripe line item — see convertPartsFromGbpPence. Summing GBP first and
+   * converting once under-states EUR and CAD by a whole major unit against the
+   * charge, on the very figure the buyer is asked to approve.
+   */
+  formatPartsPretty: (gbpPenceParts: readonly number[]) => string;
 }
 
 export const CurrencyContext = createContext<CurrencyContextValue | null>(null);
@@ -212,6 +245,8 @@ export const buildCurrencyValue = (
   convert: (gbpPence: number) => convertFromGbpPence(gbpPence, code),
   format: (gbpPence: number) => formatMoney(gbpPence, code),
   formatPretty: (gbpPence: number) => formatMoney(gbpPence, code, { pretty: true }),
+  formatPartsPretty: (parts: readonly number[]) =>
+    formatMinorUnits(convertPartsFromGbpPence(parts, code), code, { pretty: true }),
 });
 
 const FALLBACK_VALUE: CurrencyContextValue = {
@@ -221,6 +256,8 @@ const FALLBACK_VALUE: CurrencyContextValue = {
   convert: (gbpPence: number) => convertFromGbpPence(gbpPence, DEFAULT_CURRENCY),
   format: (gbpPence: number) => formatMoney(gbpPence, DEFAULT_CURRENCY),
   formatPretty: (gbpPence: number) => formatMoney(gbpPence, DEFAULT_CURRENCY, { pretty: true }),
+  formatPartsPretty: (parts: readonly number[]) =>
+    formatMinorUnits(convertPartsFromGbpPence(parts, DEFAULT_CURRENCY), DEFAULT_CURRENCY, { pretty: true }),
 };
 
 /**

@@ -7,10 +7,12 @@ import { SceneBackdrop } from "../components/SceneBackdrop";
 import {
   EYEBROW,
   EYEBROW_MUTED,
+  META,
   BTN_PRIMARY,
   BTN_SECONDARY,
 } from "../components/ui/tokens";
-import { PAINTINGS } from "../data/paintings";
+import { PAINTINGS, getLowestTierPriceParts } from "../data/paintings";
+import { useCurrency } from "../lib/currency";
 import { cn } from "../lib/cn";
 import { usePageTitle } from "../lib/usePageTitle";
 import { useNoindexHead } from "../lib/useNoindexHead";
@@ -30,6 +32,9 @@ export const NotFound = () => {
   usePageTitle("Page not found");
   // Transactional route — noindex + default meta (see useNoindexHead).
   useNoindexHead();
+  // Presentment currency — the price line reads in whatever currency the header
+  // picker is set to, like every other tile (advertised == charged).
+  const { formatPartsPretty: fmtPParts } = useCurrency();
   const painting = dailyPainting();
   const colourway =
     painting.colourways.find((c) => c.isOriginal) ?? painting.colourways[0];
@@ -156,6 +161,16 @@ export const NotFound = () => {
                     className="inline-block transition-transform duration-300 ease-smooth group-hover:translate-x-[3px]"
                   >
                     →
+                  </span>
+                </span>
+                {/* The /collections tile's price line, verbatim (Hugo 2026-08-31,
+                    full-site tile unison). This plate merchandises a real,
+                    purchasable work — it named the piece and its year but never
+                    said a price existed. */}
+                <span className={cn(META, "mt-3 block")}>
+                  Estate-stamped giclée, framed · from{" "}
+                  <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                    {fmtPParts(getLowestTierPriceParts(painting))}
                   </span>
                 </span>
               </Link>
