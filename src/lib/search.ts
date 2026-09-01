@@ -1672,7 +1672,24 @@ function buildSnippet(
  * underscores, exactly as api/auth-lookup.ts's `normaliseCert` is — someone
  * typing this is reading it off a printed certificate, possibly badly.
  */
-const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{2,4}[\s_-]+[a-z0-9]{4,10}\s*$/i;
+const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{3}[\s_-]+[0-9a-hjkmnp-tv-z]{6}\s*$/i;
+
+/**
+ * A cert id always carries a separator or a digit. Plain English never does.
+ *
+ * ⚠️ THIS GUARD EXISTS BECAUSE THE FIRST VERSION BROKE THE SHOP. The pattern
+ * was `[a-z]{2,4}` + `[a-z0-9]{4,10}`, which on a MANDALA ARTIST'S SITE reads
+ * as `mandala <short word> <word>` — so "mandala for sale", "mandala art
+ * print", "mandala on canvas" and "mandala of life" each returned exactly ONE
+ * result, the Authentication page, with the entire catalogue suppressed.
+ * "mandala for sale" is the highest-intent commercial query this site can
+ * receive. 9 of 18 realistic phrases were swallowed.
+ *
+ * Tightened to the real minted shape (api/stripe-webhook.ts): exactly 3 letters
+ * then exactly 6 Crockford base32 characters — Crockford excludes I, L, O and U,
+ * which is what `[0-9a-hjkmnp-tv-z]` encodes.
+ */
+const looksLikeCertInput = (q: string): boolean => /[-_]/.test(q) || /\d/.test(q);
 
 /**
  * Does this query contain anything the scorer can actually look for?
@@ -1686,7 +1703,7 @@ const CERT_ID_RE = /^\s*mandala[\s_-]+[a-z]{2,4}[\s_-]+[a-z0-9]{4,10}\s*$/i;
  * A caller should gate its no-results message on this.
  */
 export function hasScorableTerms(query: string): boolean {
-  return CERT_ID_RE.test(query) || expandQuery(query).length > 0;
+  return (looksLikeCertInput(query) && CERT_ID_RE.test(query)) || expandQuery(query).length > 0;
 }
 
 export function searchSite(query: string, limit = 24): SearchResult[] {
@@ -1702,10 +1719,15 @@ export function searchSite(query: string, limit = 24): SearchResult[] {
   //
   // Resolved as an exact route rather than a ranking tweak, because a cert ID
   // has exactly one correct destination and no useful fuzzy neighbours.
-  if (CERT_ID_RE.test(query)) {
-    const auth = INDEX.find((d) => d.doc.id === "page-auth");
-    if (auth) return [{ doc: auth.doc, score: 1000 }];
-  }
+  // ⚠️ PREPEND, never `return` only this. Belt-and-braces after the first
+  // version of CERT_ID_RE swallowed "mandala for sale" and returned a
+  // single-result page with the whole catalogue suppressed. Putting the
+  // registry FIRST and letting the normal results follow means even a future
+  // false positive can only ever add a row — it can never blank the page.
+  const certMatch =
+    looksLikeCertInput(query) && CERT_ID_RE.test(query)
+      ? (INDEX.find((d) => d.doc.id === "page-auth") ?? null)
+      : null;
 
   const phraseLc = foldDiacritics(query.trim().toLowerCase());
   const terms = expandQuery(query);
@@ -1735,7 +1757,15 @@ export function searchSite(query: string, limit = 24): SearchResult[] {
   const floor = best * MIN_SCORE_RATIO;
   const kept = floor > 0 ? results.filter((r) => r.score >= floor) : results;
 
-  const top = kept.slice(0, Math.max(0, limit));
+  // The registry, when the query is a Certificate ID, leads — then the normal
+  // ranked results follow. Deduped so it can never appear twice.
+  const ranked = certMatch
+    ? [
+        { doc: certMatch.doc, score: 1000 },
+        ...kept.filter((r) => r.doc.id !== certMatch.doc.id),
+      ]
+    : kept;
+  const top = ranked.slice(0, Math.max(0, limit));
 
   // Snippets are built for the returned page only — never for the whole index.
   const matchers = snippetMatchers(

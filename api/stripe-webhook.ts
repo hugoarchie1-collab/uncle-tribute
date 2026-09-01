@@ -2267,21 +2267,56 @@ const isSessionPaid = (session: Stripe.Checkout.Session): boolean =>
  */
 type ProcessingConcern = "fulfilment" | "gifts";
 
+/**
+ * ⚠️ TWO-PHASE, exactly like the event claim — do NOT simplify this back to a
+ * single `SET … NX EX 86400`.
+ *
+ * It was single-phase, and that quietly DEFEATED the event-level release. The
+ * event claim is released when a handler throws so Stripe's retry can redo the
+ * work — but `dispatchEvent` almost never throws (processGiftCards try/catches
+ * every per-card step), so the realistic failure is a TIMEOUT, and on a timeout
+ * this key stayed set for 24 hours. Sequence: claim gifts → lambda killed → no
+ * 200 → Stripe retries → event claim released, so `kvClaimEventId` says
+ * "first" → this returns FALSE → processGiftCards skipped entirely. Buyer paid,
+ * no code, no email, no alert. Byte-for-byte the bug the release path exists to
+ * prevent.
+ *
+ * Reachable: MAX_ITEMS is 20 and counts gift cards, and each card is ~6
+ * sequential round trips (coupon, promo, RPUSH, EXPIRE, recipient send, estate
+ * alert) AFTER print fulfilment in the same invocation.
+ *
+ * Now: a short `processing` marker, promoted to a durable `done` only once the
+ * work completes, and released on failure — so a killed invocation leaves the
+ * claim expiring in seconds rather than blocking the retry for a day.
+ */
 async function claimSessionProcessing(
   sessionId: string,
   concern: ProcessingConcern,
 ): Promise<boolean> {
   if (!kvDedupConfig()) return true;
+  const key = `stripe_session_done:${concern}:${sessionId}`;
   const claim = await kvCmd([
     "SET",
-    `stripe_session_done:${concern}:${sessionId}`,
-    "1",
+    key,
+    KV_PROCESSING_MARKER,
     "NX",
     "EX",
-    String(KV_DEDUP_TTL_SECONDS),
+    String(KV_PROCESSING_TTL_SECONDS),
   ]);
   if (claim === "OK") return true;
   if (claim === null) {
+    // A key exists. If it is a STALE `processing` marker the previous attempt
+    // died mid-flight — take it over rather than skipping the work. (Its short
+    // TTL means "exists" here is nearly always a genuine in-flight or completed
+    // run; the takeover only matters after a crash.)
+    const existing = await kvCmd(["GET", key]);
+    if (existing === KV_PROCESSING_MARKER) {
+      console.warn(
+        "[stripe-webhook] stale processing marker on session concern — retrying the work",
+        { session_id: sessionId, concern },
+      );
+      return true;
+    }
     console.log("[stripe-webhook] session concern already processed, skipping", {
       session_id: sessionId,
       concern,
@@ -2291,6 +2326,56 @@ async function claimSessionProcessing(
   // Unexpected result / KV blip — fail open.
   return true;
 }
+
+/** Phase 2 — the concern's work finished; hold the key for the full dedup TTL. */
+async function completeSessionProcessing(
+  sessionId: string,
+  concern: ProcessingConcern,
+): Promise<void> {
+  if (!kvDedupConfig()) return;
+  await kvCmd([
+    "SET",
+    `stripe_session_done:${concern}:${sessionId}`,
+    KV_DONE_MARKER,
+    "EX",
+    String(KV_DEDUP_TTL_SECONDS),
+  ]);
+}
+
+/** Release the concern claim because the work did not complete. */
+async function releaseSessionProcessing(
+  sessionId: string,
+  concern: ProcessingConcern,
+): Promise<void> {
+  if (!kvDedupConfig()) return;
+  await kvCmd(["DEL", `stripe_session_done:${concern}:${sessionId}`]);
+}
+/**
+ * Claim a concern, run its work, then promote the claim — or release it if the
+ * work threw. Every call site goes through this so none can forget the second
+ * phase and silently re-open the lost-gift-card hole.
+ */
+async function runSessionConcern(
+  sessionId: string,
+  concern: ProcessingConcern,
+  work: () => Promise<void>,
+): Promise<void> {
+  if (!(await claimSessionProcessing(sessionId, concern))) return;
+  try {
+    await work();
+  } catch (err) {
+    await releaseSessionProcessing(sessionId, concern).catch(() => {});
+    console.error(
+      "[stripe-webhook] session concern threw — claim released so a retry can redo it:",
+      err instanceof Error ? err.message : err,
+      { session_id: sessionId, concern },
+    );
+    throw err;
+  }
+  await completeSessionProcessing(sessionId, concern).catch(() => {});
+}
+
+
 
 // ---------------------------------------------------------------------------
 // Completed-order processing — split by RISK, deliberately
@@ -3161,14 +3246,14 @@ async function dispatchEvent(
     case "checkout.session.completed": {
       const session = event.data.object;
       const ctx = orderContext(session);
-      if (await claimSessionProcessing(session.id, "fulfilment")) {
-        await processPrintFulfilment(stripe, session, ctx);
-      }
+      await runSessionConcern(session.id, "fulfilment", () =>
+        processPrintFulfilment(stripe, session, ctx),
+      );
       const paid = isSessionPaid(session);
       if (paid) {
-        if (await claimSessionProcessing(session.id, "gifts")) {
-          await processGiftCards(stripe, session, ctx);
-        }
+        await runSessionConcern(session.id, "gifts", () =>
+          processGiftCards(stripe, session, ctx),
+        );
       } else if (parseGiftCards(ctx.m).length > 0) {
         // ⚠️ DELIBERATELY NO CLAIM HERE — claiming "gifts" now would make the
         // deferred mint on async_payment_succeeded a silent no-op, and the
@@ -3219,12 +3304,12 @@ async function dispatchEvent(
       // the `completed` delivery was ever lost.
       const session = event.data.object;
       const ctx = orderContext(session);
-      if (await claimSessionProcessing(session.id, "fulfilment")) {
-        await processPrintFulfilment(stripe, session, ctx);
-      }
-      if (await claimSessionProcessing(session.id, "gifts")) {
-        await processGiftCards(stripe, session, ctx);
-      }
+      await runSessionConcern(session.id, "fulfilment", () =>
+        processPrintFulfilment(stripe, session, ctx),
+      );
+      await runSessionConcern(session.id, "gifts", () =>
+        processGiftCards(stripe, session, ctx),
+      );
       break;
     }
     case "checkout.session.async_payment_failed": {
@@ -3369,7 +3454,14 @@ async function dispatchEvent(
       // which is the very outcome the reversible path exists to avoid.
       try {
         const dispute = event.data.object;
-        if (dispute.status !== "won") {
+        // ⚠️ NOT just "won". charge.dispute.created fires for INQUIRIES
+        // (warning_needs_response) too, so their codes were deactivated — but an
+        // inquiry resolved in the estate's favour closes as "warning_closed",
+        // and a card the network blocked closes as "prevented". Gating on "won"
+        // alone left those customers suspended FOREVER, which is precisely the
+        // outcome the reversible-dispute design exists to prevent.
+        const RESOLVED_IN_OUR_FAVOUR = ["won", "warning_closed", "prevented"];
+        if (!RESOLVED_IN_OUR_FAVOUR.includes(dispute.status)) {
           console.log("[stripe-webhook] dispute closed but not won — codes stay suspended", {
             dispute_id: dispute.id,
             status: dispute.status,

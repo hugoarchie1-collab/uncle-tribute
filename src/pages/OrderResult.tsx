@@ -515,7 +515,13 @@ export const OrderSuccess = () => {
           )}
           {sessionId && (
             <p className="font-sans text-[14.5px] leading-[1.6] text-ink-muted m-0 mb-6">
-              Reference: {sessionId.slice(0, 18)}…
+              {/* ⚠️ FULL id, never truncated. e14d036 fixed this in the
+                  confirmation EMAIL and missed this surface. /orders tells the
+                  buyer to paste the reference in, and api/order-status.ts
+                  guards on /^cs_[A-Za-z0-9_]+$/ — an ellipsis can never match,
+                  so a truncated reference is one the site itself rejects. The
+                  id is not a secret: it is in this page's own URL. */}
+              Reference: {sessionId}
             </p>
           )}
           <div className="flex flex-wrap items-center justify-center gap-3">
