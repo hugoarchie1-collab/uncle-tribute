@@ -70,7 +70,7 @@ const resolve = (item: BasketItem): Resolved | null => {
   const tiers = getPrintTiers(painting);
   const tier = tiers.find((t) => t.id === item.tierId) ?? getAnchorTier(painting);
   const addons: string[] = [];
-  if (item.canvas === true && tier.canvasPricePence) addons.push("Stretched canvas");
+  if (item.canvas === true && tier.canvasPricePence) addons.push("Canvas print");
   if (item.framing === true && tier.framingPricePence) addons.push("Hand-framed");
   if (item.embellished === true && tier.embellishmentPricePence)
     addons.push("Hand-finished");

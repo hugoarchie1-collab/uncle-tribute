@@ -700,7 +700,7 @@ export const Basket = () => {
                           <div className="flex items-baseline justify-between gap-4">
                             <span className="font-sans text-[clamp(13px,0.78vw,16px)] leading-[1.5] text-ink-muted min-w-0">
                               {isCanvas
-                                ? `Stretched canvas print · ${canvasEdgeLabel(line.item.canvasEdge)} (${line.tier.size})`
+                                ? `Canvas print · ${canvasEdgeLabel(line.item.canvasEdge)} (${line.tier.size})`
                                 : isFramed
                                   ? `Framed ${line.tier.label} print (${line.tier.size})`
                                   : `${line.tier.label} print (${line.tier.size})`}

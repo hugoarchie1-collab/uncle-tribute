@@ -2079,10 +2079,74 @@ const CompanionWorks = ({
                     className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>
-                <h3 className="font-sans font-semibold tracking-[-0.015em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 mb-1 group-hover:text-ink transition-colors duration-300">
+                {/* ⚠️ THE COLLECTIONS TILE, verbatim. Standing rule (Hugo,
+                    2026-08-31): "base it all on collections tab, full site
+                    design unison" — wherever a print is SOLD it carries the
+                    same caption. This tile showed the TITLE ALONE: no year, no
+                    price, no colourways, and in Schibsted rather than the
+                    Fraunces the reference tiles use. `fromPence` was already
+                    computed here and used only in the aria-label, so a browsing
+                    buyer had to click through to learn a price existed — the
+                    same defect that was fixed on /search and /gift. */}
+                <h3 className="font-display font-semibold tracking-[-0.02em] text-[14px] sm:text-[clamp(16px,1vw,22px)] leading-[1.3] text-ink m-0 mt-3 group-hover:text-ink transition-colors duration-300 reading-shadow">
                   {p.title}
                 </h3>
+                {/* Year always occupies its line so the price row keeps a
+                    shared baseline across a mixed row; an undated work renders
+                    an invisible spacer, never blank-looking copy. `[ DATE ]` is
+                    the internal placeholder and must never reach a customer. */}
+                {(() => {
+                  const hasYear = !!p.year && p.year !== "[ DATE ]";
+                  return (
+                    <p
+                      className={cn(EYEBROW_MUTED, "mt-1.5 m-0")}
+                      aria-hidden={!hasYear}
+                      style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                    >
+                      {hasYear ? p.year : " "}
+                    </p>
+                  );
+                })()}
+                <p
+                  className={cn(META, "mt-2 m-0")}
+                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                >
+                  Estate-stamped giclée, framed · from{" "}
+                  <span className="font-semibold text-ink [font-variant-numeric:tabular-nums]">
+                    {fmtP(fromPence)}
+                  </span>
+                </p>
               </Link>
+              {/* Colourway dots + count, matching the reference tiles. Static
+                  here (the swatches on /collections swap that tile's image);
+                  this tile's job is to say the work HAS colourways and how
+                  many, then hand over to the PDP. Reserved height keeps
+                  captions baseline-aligned across the row. */}
+              {(() => {
+                const ways = p.colourways.filter((c) => c.available);
+                if (ways.length <= 1) {
+                  return <div aria-hidden="true" className="mt-2.5 h-5" />;
+                }
+                return (
+                  <div className="mt-2.5 flex h-5 items-center justify-center gap-1.5">
+                    {ways.slice(0, 5).map((c) => (
+                      <span
+                        key={c.name}
+                        aria-hidden="true"
+                        title={c.name}
+                        className="block h-2.5 w-2.5 rounded-full ring-1 ring-line/80"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                    ))}
+                    <span
+                      className="ml-1 font-sans text-[13px] 3xl:text-[14px] leading-none tracking-[0.04em] text-ink-muted"
+                      style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+                    >
+                      {ways.length} colourways
+                    </span>
+                  </div>
+                );
+              })()}
             </li>
           );
         })}

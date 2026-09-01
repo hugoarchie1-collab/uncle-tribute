@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/check-faq-mirror.mjs",
+    "prebuild": "node scripts/check-faq-mirror.mjs && node scripts/check-invariants.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -14,7 +14,8 @@
     "build:wall": "node scripts/build-wall-models.mjs",
     "validate:wall": "node scripts/validate-wall-models.mjs --deep",
     "test:wall": "node scripts/test-wall.mjs",
-    "check:faq": "node scripts/check-faq-mirror.mjs"
+    "check:faq": "node scripts/check-faq-mirror.mjs",
+    "check:invariants": "node scripts/check-invariants.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

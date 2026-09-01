@@ -1187,7 +1187,7 @@ const renderOrderConfirmationHtml = (p: {
             ? priceRow("Hand-finished frame", line.framingPrice)
             : "")
         + (line.canvasPrice
-            ? priceRow("Stretched canvas", line.canvasPrice)
+            ? priceRow("Canvas print", line.canvasPrice)
             : "")
         + (line.embellished && line.embellishPrice
             ? priceRow("Hand-finished by Polly Wedge", line.embellishPrice, EMBELLISH)
