@@ -353,7 +353,11 @@ export const Gift = () => {
     setAdded(null);
   };
 
-  const messageRemaining = GIFT_MESSAGE_MAX - giftMessage.length;
+  // Clamped at 0. `maxLength` stops normal typing and pasting, but a value set
+  // programmatically (autofill, a password manager, a restored draft) can
+  // exceed it — and the counter then read "-1 of 400 characters remaining",
+  // which is nonsense rather than guidance.
+  const messageRemaining = Math.max(0, GIFT_MESSAGE_MAX - giftMessage.length);
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
@@ -581,7 +585,15 @@ export const Gift = () => {
                   <span className={cn(EYEBROW_MUTED, "block m-0 mb-1.5")}>
                     Custom amount
                   </span>
-                  <span className={cn(META, "block")}>{amountConstraint}</span>
+                  {/* ⚠️ Only while UNSELECTED. Selecting this rung reveals the
+                      amount field below, which carries the same sentence at the
+                      point of entry — so rendering it here too showed the
+                      identical helper line twice on screen at once. On the card
+                      it is a preview of what the option is; at the field it is
+                      the rule you are typing against. Never both. */}
+                  {selection.kind !== "custom" && (
+                    <span className={cn(META, "block")}>{amountConstraint}</span>
+                  )}
                 </button>
               </div>
 
