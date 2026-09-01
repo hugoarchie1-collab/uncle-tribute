@@ -263,6 +263,30 @@ const onRadioKey = (
   if (el instanceof HTMLElement) el.focus();
 };
 
+/** The numbered token for a guided buy step — the DROOL "1 · …" cue in the
+ *  estate's monochrome idiom (a hairline-ringed numeral, ink not accent). */
+const StepNumber = ({ n }: { n: number }) => (
+  <span
+    aria-hidden="true"
+    className="inline-flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-ink/25 font-sans text-[12px] font-semibold leading-none text-ink shrink-0"
+  >
+    {n}
+  </span>
+);
+
+/** A numbered guided-step heading. Unifies the buy flow's previously-mismatched
+ *  sub-headings (Size had none, Colour said "Colourways · N", Finish said
+ *  "Finish your piece") into ONE clear, uniform, guided sequence — DROOL's
+ *  numbered-steps clarity, in this site's monochrome/Fraunces-adjacent voice.
+ *  Numbers are passed in (computed by the buy box) so they stay sequential even
+ *  when a step is absent (a single-colourway print, or a canvas-only size). */
+const StepHeading = ({ n, label }: { n: number; label: string }) => (
+  <div className="flex items-center gap-2.5 mb-3">
+    <StepNumber n={n} />
+    <span className={cn(EYEBROW_MUTED, "m-0")}>{label}</span>
+  </div>
+);
+
 const SizePicker = ({
   tiers,
   selectedTier,
@@ -664,17 +688,24 @@ const Colourways = ({
   availableColourways,
   selected,
   onSelect,
+  stepN,
 }: {
   availableColourways: Colourway[];
   selected: Colourway;
   onSelect: (name: string) => void;
+  /** Guided-step number (only shown when there's a real choice to make). */
+  stepN?: number;
 }) => {
   const hasAlternates = availableColourways.length > 1;
   return (
     <div>
-      <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
-        {hasAlternates ? `Colourways · ${availableColourways.length}` : "Original colourway"}
-      </p>
+      {hasAlternates && stepN ? (
+        <StepHeading n={stepN} label="Choose your colourway" />
+      ) : (
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>
+          {hasAlternates ? `Colourways · ${availableColourways.length}` : "Original colourway"}
+        </p>
+      )}
 
       {hasAlternates && (
         <p className={cn(META, "m-0 mb-4")}>{COLOURWAY_NOTE}</p>
@@ -1396,7 +1427,8 @@ const BuyBox = ({
           <DimensionChip tier={selectedTier} />
         </div>
 
-        {/* 4 · SIZE PICKER — standard tiers only */}
+        {/* STEP 1 · SIZE PICKER — standard tiers only */}
+        <StepHeading n={1} label="Choose your size" />
         <SizePicker
           tiers={sizeTiers}
           selectedTier={selectedTier}
@@ -1434,6 +1466,7 @@ const BuyBox = ({
             availableColourways={availableColourways}
             selected={selected}
             onSelect={onSelectColourway}
+            stepN={2}
           />
         </div>
 
@@ -1531,9 +1564,10 @@ const BuyBox = ({
                   onReset === resetOptions, which snaps framing, frame style,
                   glazing, paper finish, hand-finishing AND canvas + canvas edge
                   back to defaults. */}
-              <span className="flex items-baseline justify-between gap-3 w-full">
-                <span className={cn(EYEBROW_MUTED, "block")}>
-                  Finish your piece
+              <span className="flex items-center justify-between gap-3 w-full">
+                <span className={cn(EYEBROW_MUTED, "flex items-center gap-2.5")}>
+                  <StepNumber n={availableColourways.length > 1 ? 3 : 2} />
+                  Choose your finish
                 </span>
                 <button
                   type="button"
