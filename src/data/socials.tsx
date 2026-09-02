@@ -5,8 +5,8 @@ import type { ReactNode } from "react";
  *
  * The SAME URLs are wired into the Organization `sameAs` array in index.html
  * (the strongest cross-web signal tying the brand together — Knowledge-Panel /
- * entity grounding). Consumed by both the Footer "Follow" row and the /links
- * hub page, so the two surfaces can never drift. Icons are inline SVG on
+ * entity grounding). Consumed by the Footer "Follow" row and /account (via
+ * SocialMarks), so the surfaces can never drift. Icons are inline SVG on
  * `currentColor` so they inherit whatever muted→ink hover the caller sets.
  *
  * When a new channel goes live (TikTok / YouTube / etc.), add it here AND to

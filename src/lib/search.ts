@@ -87,7 +87,6 @@ import {
   CREDENTIALS,
   TRIBUTE,
 } from "../data/content";
-import { SOCIAL_PROFILES } from "../data/socials";
 
 // -----------------------------------------------------------------------------
 // PUBLIC TYPES
@@ -501,23 +500,6 @@ const PAGE_SEEDS: PageSeed[] = [
     subtitle: "Frequently asked questions",
     url: "/faq",
     body: "Frequently asked questions — answers about prints, provenance, paper, sizes, editions, framing, hand-finishing, shipping, delivery and after-sale care. Help, questions, info.",
-  },
-  {
-    // NEW — the /links "link in bio" hub was live but unindexed. The social
-    // labels are DERIVED from src/data/socials.tsx (the single source of truth
-    // the Footer and the hub both read), so a new channel added there becomes
-    // searchable here with no edit to this file. Etsy is deliberately absent:
-    // Links.tsx gates its Etsy card behind an empty ETSY_URL, so there is no
-    // Etsy destination to send anyone to yet.
-    id: "page-links",
-    title: "Links",
-    subtitle: "Everything from the estate, in one place",
-    url: "/links",
-    body: joinBody(
-      "Links — the estate's link in bio hub. Follow The Mandala Company and The Art of Stephen Meakin on social media.",
-      SOCIAL_PROFILES.map((s) => s.label).join(" · "),
-      "Social, socials, follow, profile, bio link, link in bio.",
-    ),
   },
   {
     id: "page-basket",

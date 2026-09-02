@@ -2,7 +2,7 @@ import { SOCIAL_PROFILES } from "../data/socials";
 import { cn } from "../lib/cn";
 
 /**
- * THE social row. ONE component, used by the footer, /account and /links.
+ * THE social row. ONE component, used by the footer and /account.
  *
  * ⚠️ WHY THIS EXISTS. Hugo, from the live site: "the design isn't consistent
  * with the social media logos compared to the bank card logos, which IS
