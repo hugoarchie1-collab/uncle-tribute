@@ -84,13 +84,18 @@ import {
 // The canonical scale lives in components/ui/tokens.ts (ABOUT_*). Aliased here
 // to the short names the section JSX reads with. NEVER re-type a bespoke clamp
 // below these — that per-section drift is exactly what the rebuild removes.
-const BODY = ABOUT_BODY;                    // role 5 — running prose, ceiling 20px
-const LEAD = ABOUT_LEAD;                     // role 4 — chapter lead, ceiling 23px
-const STANDOUT_CLASS = ABOUT_STANDOUT;       // role 2 — pull-line, ceiling 42px
+// ⚠️ The sizes above are READ FROM tokens.ts. These comments once cited
+// ceilings of 20/23/42/34/16px — none of which existed in the code. Hugo's
+// standing desktop rule is BIG type that fills the screen, so a future
+// session trusting those numbers would have "corrected" the real sizes
+// DOWN by half. If you change a token, change the note in the same edit.
+const BODY = ABOUT_BODY;                    // role 5 — running prose, 22px → 44px (4xl)
+const LEAD = ABOUT_LEAD;                     // role 4 — chapter lead, 25px → 48px (4xl)
+const STANDOUT_CLASS = ABOUT_STANDOUT;       // role 2 — pull-line, clamp 38 → 98px
 const STANDOUT_STYLE = ABOUT_STANDOUT_STYLE;
-const SUBHEAD = ABOUT_SUBHEAD;               // role 3 — subhead / Q, ceiling 34px
+const SUBHEAD = ABOUT_SUBHEAD;               // role 3 — subhead / Q, clamp 32 → 76px
 const SUBHEAD_STYLE = ABOUT_SUBHEAD_STYLE;
-const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, ceiling 16px
+const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, 16px → 32px (4xl)
 
 // ─── Canonical width ladder — reuse EXACTLY (invent no new max-w) ────────────
 // ⚠️ every mx-auto'd aspect-ratio block MUST also carry w-full, or a bare

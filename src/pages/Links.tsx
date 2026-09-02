@@ -5,8 +5,8 @@ import { Seo } from "../components/Seo";
 import { SceneBackdrop } from "../components/SceneBackdrop";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
-import { SOCIAL_PROFILES } from "../data/socials";
 import { cn } from "../lib/cn";
+import { SocialMarks } from "../components/SocialMarks";
 
 /**
  * /links — the estate "link in bio" hub.
@@ -212,24 +212,10 @@ export const Links = () => (
           family, shipped worldwide.
         </p>
 
-        {/* Socials — a quiet centred row */}
-        {SOCIAL_PROFILES.length > 0 && (
-          <ul className="mt-6 flex items-center justify-center gap-3 m-0 p-0 list-none">
-            {SOCIAL_PROFILES.map((s) => (
-              <li key={s.label} className="m-0">
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${s.label} — The Mandala Company`}
-                  className="press inline-flex h-11 w-11 items-center justify-center rounded-full ring-1 ring-ink/25 text-ink-muted transition-[color,transform,box-shadow] duration-300 hover:text-accent hover:ring-accent hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                >
-                  {s.icon}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+        {/* Socials — the SHARED SocialMarks row (same white brand chip as the
+            footer, /account and the payment marks). This used to be a third
+            hand-rolled treatment: 44px grey outline circles. */}
+        <SocialMarks className="mt-6 justify-center" />
 
         {/* The link stack — the whole point of the page */}
         <ul className="mt-8 w-full flex flex-col gap-3 m-0 p-0 list-none">

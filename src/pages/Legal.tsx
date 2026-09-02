@@ -485,7 +485,7 @@ const TERMS: Section[] = [
         kind: "ul",
         items: [
           <><strong>Framed, estate-stamped</strong> — approximately two weeks to dispatch (choice of frame finish, glazed with float glass).</>,
-          <><strong>Gallery-wrapped canvas</strong> — approximately two weeks to dispatch, ready to hang.</>,
+          <><strong>Canvas print</strong> — approximately two weeks to dispatch.</>,
           <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],
       },
@@ -530,7 +530,7 @@ const TERMS: Section[] = [
             Each work is produced by a specialist giclée studio on the Sussex
             coast only after you order it —
             printed in the colourway and size you choose, then either hand-framed
-            in solid wood behind glazing or hand-stretched onto a gallery canvas.
+            in solid wood behind glazing or printed onto heavyweight fine-art canvas.
             Nothing is held in stock, and there is no plain, unframed option: the
             frame or canvas is an integral part of the finished piece, made
             specifically for your order.
@@ -542,7 +542,7 @@ const TERMS: Section[] = [
         text: (
           <>
             <strong>Canvas prints — the full 14-day right.</strong>{" "}
-            A gallery-wrapped canvas is printed to a colourway and size you choose
+            A canvas print is printed to a colourway and size you choose
             from our catalogue. Because that is a catalogue selection rather than a
             bespoke commission, it carries the full statutory{" "}
             <strong>14-day right to cancel</strong> under the{" "}

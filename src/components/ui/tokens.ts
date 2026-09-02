@@ -220,7 +220,7 @@ export const ABOUT_BODY =
   "leading-[1.55] md:leading-[1.6] 2xl:leading-[1.5] tracking-normal text-ink-soft text-pretty m-0 reading-shadow";
 
 /** ROLE 4 — LEAD (sans). A chapter's first paragraph, one step above BODY.
- *  Desktop ceiling 23px (never display serif — the masthead-prose fix). Mobile
+ *  Never display serif — the masthead-prose fix. Mobile
  *  floors + the md: step are frozen. */
 export const ABOUT_LEAD =
   "font-sans font-normal text-[25px] md:text-[27px] 2xl:text-[35px] 3xl:text-[42px] 4xl:text-[48px] " +

@@ -423,7 +423,14 @@ const renderBasketSavedHtml = (p: {
     + `<td style="padding-top:16px;font-family:${SANS};font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:${C.muted};">Subtotal</td>`
     + `<td align="right" style="padding-top:16px;text-align:right;font-family:${DISPLAY};font-size:20px;color:${C.cream};">${esc(p.subtotal)}</td>`
     + `</tr></table>`
-    + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Delivery is free — framed or unframed — with nothing added at checkout.</div>`
+    // ⚠️ "framed or unframed" was FALSE — there is no unframed print (Hugo
+    // 2026-07-27); the framed/canvas price IS the entry price.
+    // ⚠️ GBP is stated EXPLICITLY. This endpoint prices from its own GBP mirror
+    // and does not carry the FX table (adding a fifth money mirror here would
+    // be a new drift surface for no gain). A buyer browsing in USD/EUR would
+    // otherwise see an unlabelled "£" figure that did not match the site. The
+    // restore link rebuilds the basket, which reprices in their own currency.
+    + `<div style="font-family:${SANS};font-size:12.5px;line-height:1.55;color:${C.faint};margin-top:12px;">Shown in GBP; your basket reprices in your own currency when you open it. Delivery is free — framed or on canvas — with nothing added at checkout.</div>`
     + `</td></tr></table>`
     + `</td></tr>`
     // ---- First Edition · founding collectors — the reason to return now ----

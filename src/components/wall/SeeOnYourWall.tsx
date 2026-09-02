@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Painting } from "../../data/paintings";
-import { AR_FRAME_STYLES } from "../../data/paintings";
+import { AR_FRAME_STYLES, PRINT_TIERS } from "../../data/paintings";
 import {
   ARTWORK_SIZES,
   getArtworkSize,
@@ -28,6 +28,17 @@ import { SITE_URL } from "../../lib/seo";
 import { EYEBROW } from "../ui/tokens";
 import { trackWall } from "../../lib/wallAnalytics";
 import { ModelViewerAR } from "./ModelViewerAR";
+
+
+// ⚠️ Only sizes the buyer can ACTUALLY order. ARTWORK_SIZES carries a row per
+// paper size including A0 → the `heirloom` tier, which is retired
+// (`available:false`). Offering a wall preview for a size that cannot be bought
+// sells a size that does not exist — and with five rows in a 4-column grid it
+// also orphaned one button. Derived from PRINT_TIERS so flipping a tier's
+// availability moves this automatically; never hard-code the list.
+const SELLABLE_SIZES = ARTWORK_SIZES.filter((s) =>
+  PRINT_TIERS.some((t) => t.id === s.tierId && t.available),
+);
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])';
@@ -364,7 +375,7 @@ export const SeeOnYourWall = ({
           <section className="mb-5">
             <p className={cn(EYEBROW, "m-0 mb-2.5")}>Size</p>
             <div role="radiogroup" aria-label="Print size" className="grid grid-cols-4 gap-2">
-              {ARTWORK_SIZES.map((s) => {
+              {SELLABLE_SIZES.map((s) => {
                 const sel = s.id === sizeId;
                 return (
                   <button

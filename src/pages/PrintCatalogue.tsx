@@ -703,8 +703,6 @@ function PaintingPage({ painting }: { painting: (typeof PAINTINGS)[number] }) {
 
 function FinishesPage() {
   const gp = (id: string) => PRINT_TIERS.find((t) => t.id === id);
-  const frA2 = gp("collector")?.framingPricePence ?? 0;
-  const frA1 = gp("atelier-grande")?.framingPricePence ?? 0;
   const emA2 = gp("collector")?.embellishmentPricePence ?? 0;
   const emA1 = gp("atelier-grande")?.embellishmentPricePence ?? 0;
   return (
@@ -717,18 +715,18 @@ function FinishesPage() {
             Framing &amp; <span style={{ fontStyle: "italic", color: "rgb(var(--accent))" }}>hand-finishing</span>
           </h2>
           <p className="font-sans text-ink" style={{ fontSize: 16, lineHeight: 1.5, maxWidth: "180mm", margin: "10px 0 0", opacity: 0.9 }}>
-            Every edition can be ordered ready to hang, or hand-finished by the estate. Both are optional add-ons to the print price on the previous page.
+            Every edition arrives framed and ready to hang, or as a fine-art canvas print &mdash; included in the price on the previous page, whichever you choose. Hand-finishing by the estate is the one optional addition.
           </p>
         </header>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14mm", flex: "1 1 auto", alignItems: "start" }}>
           {/* FRAMING */}
           <div style={{ borderTop: "2px solid rgb(var(--accent))", paddingTop: "5mm" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-              <h3 className="font-display text-ink" style={{ fontSize: 30, margin: 0 }}>Bespoke framing</h3>
-              <span className="font-display text-ink" style={{ fontSize: 20 }}>+{gbp(frA2)} Collector · +{gbp(frA1)} Atelier</span>
+              <h3 className="font-display text-ink" style={{ fontSize: 30, margin: 0 }}>Framing</h3>
+              <span className="font-display text-ink" style={{ fontSize: 20 }}>Included in the price</span>
             </div>
             <p className="font-sans text-ink-muted" style={{ fontSize: 14.5, lineHeight: 1.5, margin: "8px 0 0" }}>
-              Bespoke solid-wood framing. Every finish is included in the one price — choose a moulding and a glazing:
+              Solid-wood framing, included in every edition price &mdash; there is no unframed option and no separate framing charge. One price whichever moulding you pick:
             </p>
             <p className="font-sans text-accent" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", margin: "14px 0 6px" }}>Moulding</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 14px" }}>
@@ -762,7 +760,7 @@ function FinishesPage() {
           </div>
         </div>
         <p className="font-sans text-ink-muted" style={{ fontSize: 13.5, letterSpacing: "0.02em", margin: 0 }}>
-          Framing is offered on the Collector &amp; Atelier tiers · hand-finishing on Collector &amp; Atelier · both made to order, allow up to two weeks · free delivery.
+          Framing is included on every edition · hand-finishing is optional, on Collector &amp; Atelier · made to order, allow up to two weeks · free delivery worldwide.
         </p>
       </div>
     </section>

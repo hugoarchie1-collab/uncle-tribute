@@ -73,7 +73,11 @@ export const PageMasthead = ({
     <header className={className}>
       <Heading
         className={cn(
-          "font-display text-ink m-0 text-balance text-pretty",
+          // ⚠️ text-balance ONLY. Both classes set text-wrap, so text-pretty (declared
+          // later in Tailwind's output) silently won and text-balance never applied.
+          // A masthead is a SHORT heading — balance is the correct algorithm; pretty
+          // only guards against a single-word last line in long prose.
+          "font-display text-ink m-0 text-balance",
           titleClassName,
         )}
         style={{ ...MASTHEAD_TITLE_STYLE, ...titleStyle }}

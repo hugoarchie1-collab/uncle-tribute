@@ -77,6 +77,29 @@ const validateLine = (raw: unknown): RestoredLine | null => {
   const embellished =
     o.embellished === true && typeof tier.embellishmentPricePence === "number";
 
+  // ⚠️ A LINE MUST CARRY A FINISH. There are no unframed prints (Hugo
+  // 2026-07-27): the framed/canvas price IS the entry price, and the bare base
+  // is not checkoutable. A restore link minted before that rule — or one whose
+  // framing flag failed the guard above — would rebuild a finish-LESS line that
+  // displayed the bare base in the basket (a ghost price nobody can pay) and
+  // was then refused by api/checkout.ts with a 400 at the click of "Proceed to
+  // checkout". Dead end, after the buyer had already been quoted a number.
+  // Framing is the default, recommended presentation, and base+framing is
+  // exactly the advertised floor (getLowestTierPriceParts), so restoring to it
+  // shows a real, buyable, correctly-advertised price. Canvas-priced-only tiers
+  // fall to canvas. A tier that prices neither is left alone — reconcile() in
+  // basket.ts drops it.
+  const needsFinish =
+    !canvas &&
+    !framing &&
+    (typeof tier.framingPricePence === "number" ||
+      typeof tier.canvasPricePence === "number");
+  const finalFraming =
+    framing || (needsFinish && typeof tier.framingPricePence === "number");
+  const finalCanvas =
+    canvas ||
+    (needsFinish && typeof tier.framingPricePence !== "number");
+
   // Finish selections survive on the relevant path: frame style + glazing +
   // paper only when framed; canvas edge only when canvas. Preserves the exact
   // product the buyer configured (a Signature frame or a float-frame canvas is
@@ -100,8 +123,8 @@ const validateLine = (raw: unknown): RestoredLine | null => {
     paintingId: painting.id,
     colourwayName: colourway.name,
     tierId: tier.id,
-    ...(canvas ? { canvas: true } : {}),
-    ...(framing ? { framing: true } : {}),
+    ...(finalCanvas ? { canvas: true } : {}),
+    ...(finalFraming ? { framing: true } : {}),
     ...(embellished ? { embellished: true } : {}),
     ...(frameStyle ? { frameStyle } : {}),
     ...(glazing ? { glazing } : {}),

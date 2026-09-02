@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
-import { AssetImage } from "../components/AssetImage";
+import { PrintTile } from "../components/PrintTile";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -12,7 +12,6 @@ import {
   PAINTINGS,
   PRINT_TIERS,
   getTierAdvertisedPricePence,
-  getLowestTierPriceParts,
   type PrintTier,
 } from "../data/paintings";
 import {
@@ -134,7 +133,7 @@ export const Gift = () => {
   // figure: the page previously showed the same amount twice in two different
   // formats ("£525" from formatPretty above "…Collector Edition — £525.00"
   // from format). One figure, one formatter.
-  const { formatPretty: fmtP, formatPartsPretty: fmtPParts, code } = useCurrency();
+  const { formatPretty: fmtP, code } = useCurrency();
 
   // Four real works, drawn once per mount from the live catalogue so this band
   // can never advertise something the estate no longer sells.
@@ -877,40 +876,21 @@ export const Gift = () => {
                   What it can be spent on
                 </span>
               </div>
-              <div className="flex flex-wrap justify-center gap-5 md:gap-7">
-                {giftableWorks.map((p) => {
-                  const cover = p.colourways.find((c) => c.available) ?? p.colourways[0];
-                  // Parts — see getLowestTierPriceParts (EUR/CAD parity).
-                  const fromParts = getLowestTierPriceParts(p);
-                  return (
-                    <Link
-                      key={p.id}
-                      to={`/collections/${p.id}`}
-                      className="group block flex-[0_1_clamp(240px,22%,420px)] text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-[6px]"
-                    >
-                      <div className="relative aspect-square overflow-hidden rounded-[10px] ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50">
-                        <AssetImage
-                          src={cover?.image ?? ""}
-                          alt={p.title}
-                          loading="lazy"
-                          decoding="async"
-                          sizes="(min-width: 768px) 300px, 45vw"
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                        />
-                      </div>
-                      <p
-                        className={cn(
-                          "font-display font-semibold tracking-[-0.02em] text-[15px] md:text-[17px] 3xl:text-[20px] leading-snug text-ink m-0 mt-3 reading-shadow",
-                        )}
-                      >
-                        {p.title}
-                      </p>
-                      <p className={cn(META, "m-0 mt-1 reading-shadow")}>
-                        Estate-stamped giclée, framed · from {fmtPParts(fromParts)}
-                      </p>
-                    </Link>
-                  );
-                })}
+              {/* ⚠️ Uses the SHARED PrintTile — the same offer treatment as
+                  /collections, the PDP rail and /search. This grid used to
+                  hand-roll its own cut-down tile (image, title, price) and so
+                  hid the colourway choice and the year; Hugo caught it from the
+                  live page. Never re-inline a tile here — see PrintTile.tsx. */}
+              <div className="flex flex-wrap justify-center gap-x-5 md:gap-x-7 gap-y-5 md:gap-y-6">
+                {giftableWorks.map((p) => (
+                  <PrintTile
+                    key={p.id}
+                    painting={p}
+                    basisClassName="flex-[0_1_clamp(260px,30%,460px)]"
+                    sizes="(min-width:1400px) min(30vw,460px), (min-width:640px) 30vw, 90vw"
+                    titleClassName="text-[clamp(18px,1.2vw,26px)]"
+                  />
+                ))}
               </div>
             </Reveal>
           </div>

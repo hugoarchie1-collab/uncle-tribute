@@ -16,9 +16,9 @@ import { useNoindexHead } from "../lib/useNoindexHead";
 import { usePageTitle } from "../lib/usePageTitle";
 import { Reveal } from "../components/Reveal";
 import { cn } from "../lib/cn";
+import { SocialMarks } from "../components/SocialMarks";
 import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, META, SUBTITLE } from "../components/ui/tokens";
 import { useAuth, signOut, requestSignInLink, refreshAuth, type OrderRow } from "../lib/auth";
-import { SOCIAL_PROFILES } from "../data/socials";
 
 // Fine-print prose (real explanatory sentences currently ~15px) — grows gently
 // on large screens (≈17px at 1440, ≈24px at 2560) without enlarging chrome.
@@ -414,21 +414,7 @@ export const AccountPanel = () => {
               </Link>
 
               <p className={cn(EYEBROW_MUTED, "m-0 mt-6 mb-3")}>Stay close</p>
-              <ul className="list-none p-0 m-0 flex flex-wrap gap-2.5">
-                {SOCIAL_PROFILES.map((s) => (
-                  <li key={s.label}>
-                    <a
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${s.label} — opens in a new tab`}
-                      className="inline-flex items-center justify-center h-10 w-10 rounded-full ring-1 ring-line text-ink-muted hover:text-accent hover:ring-accent/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    >
-                      {s.icon}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <SocialMarks />
             </div>
           </Reveal>
         </div>

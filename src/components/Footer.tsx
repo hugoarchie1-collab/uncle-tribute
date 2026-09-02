@@ -3,9 +3,9 @@ import { FooterCatalogue } from "./FooterCatalogue";
 import { Logo } from "./Logo";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { cn } from "../lib/cn";
+import { SocialMarks } from "./SocialMarks";
 import { clearConsent } from "../lib/consent";
 import { PaymentMarks } from "./PaymentMarks";
-import { SOCIAL_PROFILES } from "../data/socials";
 
 const YEAR = new Date().getFullYear();
 
@@ -42,13 +42,6 @@ const EXPLORE_LINKS = [
  *  CSS var so the socials come alive in colour (Hugo 2026-08-30: the mono icons
  *  looked dull next to every AI-builder site). TikTok uses its cyan (its black
  *  would vanish on the dark footer). At rest they stay muted for restraint. */
-const SOCIAL_BRAND: Record<string, string> = {
-  Instagram: "#E4405F",
-  TikTok: "#25F4EE",
-  YouTube: "#FF0000",
-  Facebook: "#1877F2",
-  Pinterest: "#E60023",
-};
 
 const ESTATE_LINKS = [
   { to: "/about", label: "About Stephen" },
@@ -156,22 +149,7 @@ export const Footer = () => (
               is cyan/red/black, which no single flat colour can represent.
               On white each mark reads true and the row matches the card row
               directly beneath it. */}
-          <ul className="flex flex-wrap items-center gap-2 m-0 p-0 list-none">
-            {SOCIAL_PROFILES.map((s) => (
-              <li key={s.label} className="m-0">
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${s.label} — The Mandala Company`}
-                  style={{ ["--brand" as string]: SOCIAL_BRAND[s.label] ?? "currentColor" }}
-                  className="inline-flex h-7 w-9 items-center justify-center rounded-[5px] bg-white ring-1 ring-black/5 text-[color:var(--brand)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
-                >
-                  {s.icon}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <SocialMarks />
         </div>
       </div>
 
