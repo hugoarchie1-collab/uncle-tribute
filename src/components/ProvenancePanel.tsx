@@ -49,7 +49,7 @@ export const ProvenancePanel = ({
         <li className={META}>Delivery is free worldwide — framed or on canvas — with nothing added at checkout.</li>
         <li className={META}>
           Damaged or lost in transit? See{" "}
-          <Link to="/returns" className="underline underline-offset-4 hover:text-ink transition-colors">
+          <Link to="/legal#returns" className="underline underline-offset-4 hover:text-ink transition-colors">
             returns &amp; damages
           </Link>
           .

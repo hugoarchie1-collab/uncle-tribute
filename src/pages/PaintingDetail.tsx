@@ -1981,7 +1981,7 @@ const BuyBox = ({
               Changed your mind? A framed or hand-finished piece is made to
               order —{" "}
               <Link
-                to="/returns"
+                to="/legal#returns"
                 className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
               >
                 cancel free within 24 hours
@@ -1992,7 +1992,7 @@ const BuyBox = ({
             <>
               Changed your mind? A canvas print carries the full{" "}
               <Link
-                to="/returns"
+                to="/legal#returns"
                 className="underline underline-offset-4 decoration-ink/60 hover:text-ink transition-colors"
               >
                 14-day right to cancel
@@ -2923,7 +2923,7 @@ export const PaintingDetail = () => {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "GB",
         itemDefectReturnFees: "https://schema.org/FreeReturn",
-        merchantReturnLink: absoluteUrl("/returns"),
+        merchantReturnLink: absoluteUrl("/legal#returns"),
       },
     },
   };

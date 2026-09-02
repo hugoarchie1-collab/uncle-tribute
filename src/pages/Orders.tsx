@@ -172,9 +172,9 @@ export const Orders = () => {
               cancellable free within 24 hours before production. And if anything
               arrives less than perfect, we replace or refund it.
               The full policy lives on the{" "}
-              <Link to="/returns" className="underline underline-offset-4 hover:text-accent">returns</Link>{" "}
+              <Link to="/legal#returns" className="underline underline-offset-4 hover:text-accent">returns</Link>{" "}
               and{" "}
-              <Link to="/faq" className="underline underline-offset-4 hover:text-accent">FAQ</Link>{" "}
+              <Link to="/contact#faq" className="underline underline-offset-4 hover:text-accent">FAQ</Link>{" "}
               pages.
             </p>
             <a

@@ -1,30 +1,20 @@
+/* eslint-disable react-refresh/only-export-components -- data module: verbatim FAQ copy (JSX answers), not a component */
 import { isValidElement, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Nav } from "../components/Nav";
-import { SceneBackdrop } from "../components/SceneBackdrop";
-import { Footer } from "../components/Footer";
-import { Reveal } from "../components/Reveal";
-import { Seo } from "../components/Seo";
-import { EYEBROW, EYEBROW_MUTED, SUBTITLE } from "../components/ui/tokens";
-import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
-import { cn } from "../lib/cn";
 
 /**
- * /faq — frequently asked questions.
+ * The frequently-asked questions — ONE source of truth.
  *
- * Set to the refined-masthead house pattern (the shared MASTHEAD_TITLE_STYLE
- * cut, opsz 144 / wght 560): a meta rule + a Fraunces statement with prestige
- * restraint — large but never shouting, one word italic at regular weight —
- * supporting copy packed immediately beneath under a hairline. The
- * questions then run as a NUMBERED two-column editorial register (a bordered
- * question grid), densifying what was a single thin column of stacked
- * paragraphs into dense horizontal blocks. Compressed vertical rhythm
- * throughout. Visual register sits between About and Legal — readable
- * long-form copy, not cinematic. Designed to be the first place a curious
- * buyer lands when they want to know "is this real?".
+ * 2026-09-02: the dedicated /faq page was retired (Hugo: too many small pages
+ * looked messy). The same verbatim Q&As now render as the on-page accordion
+ * (src/components/FaqAccordion.tsx) on every product page AND on /contact#faq,
+ * which /faq redirects to. Lifting the data out of the old page also removes
+ * the page→Nav→SearchBar→search.ts import cycle that forced search.ts to carry
+ * a hand-copied mirror (scripts/check-faq-mirror.mjs still verifies it).
  *
- * ⚠️ EVERY answer / eyebrow / question below is verbatim — restructure LAYOUT
- * only; never edit the copy, links, emails or prices.
+ * ⚠️ EVERY answer / eyebrow / question below is verbatim — never edit the copy,
+ * links, emails or prices without changing every mirror (search.ts FAQ_SEEDS,
+ * scripts/prerender.ts FAQ_QUESTIONS, the terms of sale in Legal.tsx).
  *
  * 2026-09-01: three GIFT-CARD Q&As added (Gifting / Redeeming / Gift value),
  * sitting just above Family & Friends. Every fact in them is mirrored from the
@@ -32,11 +22,8 @@ import { cn } from "../lib/cn";
  * window from GIFT_MIN/MAX_PENCE (src/lib/basket.ts), the £250 floor from
  * getTierAdvertisedPricePence (src/data/paintings.ts) — and from the "Gift
  * cards" section of the terms of sale (src/pages/Legal.tsx). Change one,
- * change all. ⚠️ src/lib/search.ts mirrors this FAQ copy into the search index.
+ * change all.
  */
-
-const SECTION =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
 
 export interface QA {
   eyebrow: string;
@@ -196,10 +183,10 @@ export const FAQS: QA[] = [
         damage and we'll replace at no cost or refund — your choice. If it
         didn't arrive, we'll open a claim with the carrier and replace or
         refund within 30 days. The full policy lives on our{" "}
-        <Link to="/returns" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
+        <Link to="/legal#returns" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           returns
         </Link>
-        {" "}and <Link to="/terms" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">terms</Link> pages.
+        {" "}and <Link to="/legal#terms" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">terms</Link> pages.
       </>
     ),
   },
@@ -308,163 +295,4 @@ const FAQ_JSONLD = {
   })),
 };
 
-/** Two-digit ordinal for the question rail — 01 · 02 · 03 … */
-const ordinal = (i: number) => String(i + 1).padStart(2, "0");
-
-// ─── QaItem ──────────────────────────────────────────────────────────────────
-// One question block — the ordinal + eyebrow header, the Fraunces question, then
-// the verbatim answer. Carries its ORIGINAL index `i` so the ordinal + schema
-// numbering never drift as items flow across the two multi-columns. Each item
-// owns a top hairline + break-inside-avoid so it stays whole within a column and
-// stacked items read as dense, divided blocks.
-const QaItem = ({ qa, i }: { qa: QA; i: number }) => (
-  <section
-    aria-labelledby={`faq-q-${i}`}
-    className="relative flex break-inside-avoid flex-col border-t border-line pt-3.5 md:pt-4 pb-3.5 md:pb-4"
-  >
-    <div className="flex items-baseline gap-4">
-      <span
-        aria-hidden
-        className="font-display font-semibold leading-none text-accent select-none shrink-0"
-        style={{
-          fontVariationSettings: '"opsz" 32, "wght" 600',
-          fontSize: "clamp(22px,1.9vw,30px)",
-        }}
-      >
-        {ordinal(i)}
-      </span>
-      <p className={cn(EYEBROW, "m-0 self-center")}>{qa.eyebrow}</p>
-    </div>
-    <h2
-      id={`faq-q-${i}`}
-      className={cn(
-        "font-display font-bold [font-variation-settings:'opsz'_48,'wght'_700] tracking-[-0.04em] text-balance text-ink m-0 mt-2",
-        "text-[clamp(24px,2.4vw,38px)] leading-[1.05]",
-      )}
-    >
-      {qa.question}
-    </h2>
-    <div className={cn(SUBTITLE, "max-w-none mt-2.5 md:mt-3")}>{qa.answer}</div>
-  </section>
-);
-
-// ─── FaqMasthead ─────────────────────────────────────────────────────────────
-// The refined front cover — the shared MASTHEAD_TITLE_STYLE cut (opsz 144,
-// real loaded weight 560, font-synthesis none): a meta rule (eyebrow + hairline
-// + question count), then the page statement set with prestige restraint — large
-// but never shouting — with one word italic at regular weight (the auction-house
-// "title of a work" signal), then the supporting passage packed immediately
-// beneath under a border-t.
-const FaqMasthead = () => (
-  // Legibility shadow is scoped to the H1 ONLY (not the whole section) so it no
-  // longer cascades a heavy dark halo onto the eyebrow/lead body copy — which
-  // reads over the page's own SceneBackdrop scrim. A single tight pass keeps the
-  // headline crisp over the faq scene without the "black box behind text" the
-  // brightness rule forbids. Whole-element, not per-glyph, so gotcha #2 (no
-  // SplitReveal blockiness) is not triggered.
-  <section className={cn(SECTION, "pt-6 md:pt-8 pb-3 md:pb-4")}>
-    <div className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]">
-      <Reveal as="div">
-        <h1
-          className="font-display text-ink m-0"
-          style={{
-            ...MASTHEAD_TITLE_STYLE,
-            fontSynthesis: "none",
-            textShadow: "0 1px 2px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.42)",
-          }}
-        >
-          What people <em className="italic font-normal" style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}>ask</em>.
-        </h1>
-      </Reveal>
-
-      <div className="mt-2.5 md:mt-3 border-t border-line pt-2.5 md:pt-3">
-        <Reveal as="div">
-          <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.6]")}>
-            Provenance · paper · editions · gifting · care
-          </p>
-        </Reveal>
-        <Reveal as="div" delay={0.06} className="mt-2 md:mt-2.5">
-          <p
-            className="font-display font-normal tracking-[-0.01em] text-ink m-0 max-w-[72ch] 3xl:max-w-[80ch]"
-            style={{
-              fontVariationSettings: '"opsz" 32, "wght" 400',
-              fontSize: "clamp(22px, 2.2vw, 44px)",
-              lineHeight: 1.28,
-            }}
-          >
-            On provenance, paper, editions, framing, hand-finishing, shipping,
-            gift cards and after-sale care. For anything not covered here,
-            write to{" "}
-            <a
-              href="mailto:info@themandalacompany.com"
-              className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
-            >
-              info@themandalacompany.com
-            </a>
-            {" "}or use the{" "}
-            <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
-              contact page
-            </Link>
-            .
-          </p>
-        </Reveal>
-      </div>
-    </div>
-  </section>
-);
-
-export const FAQ = () => {
-  return (
-    <div className="relative min-h-screen flex flex-col overflow-x-clip">
-      {/* Hugo's two certified FAQ scenes (lupin lakeshore → alpine night),
-          crossfading seamlessly over the page scroll — the canonical
-          SceneBackdrop treatment so /faq matches every other scene page. */}
-      <SceneBackdrop
-        src={[
-          "/img/scenes/faq-scene-a-v3.webp",
-          "/img/scenes/faq-scene-b-v3.webp",
-        ]}
-      />
-      <Seo
-        title="Frequently asked"
-        description="Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care."
-        url="/faq"
-        jsonLd={FAQ_JSONLD}
-      />
-      <Nav />
-      <main className="relative z-10 flex-1">
-        {/* 1 · MASTHEAD — bold left-aligned front cover. */}
-        <FaqMasthead />
-
-        {/* 2 · THE QUESTIONS — a numbered two-column editorial register. Each
-            answer / eyebrow / question is verbatim; only the LAYOUT changed —
-            from a single CSS grid (whose paired cells shared the taller row's
-            height, hollowing out a void under a short answer) to CSS
-            multi-columns that flow and pack independently with no row coupling,
-            divided by hairlines so they read as dense blocks, not an endless
-            scroll. */}
-        <section className={cn(SECTION, "pb-6 md:pb-9")}>
-          {/* TWO INDEPENDENT NEWSPAPER COLUMNS — CSS multi-column so each item
-              packs tightly against the one above it with NO shared row height.
-              The old single CSS grid coupled both cells in a row to the taller
-              one's height, leaving a hollow void under a short answer (the
-              "shipping"/"lead time" jigsaw gap). Multi-column has no rows to
-              couple: items flow down column one, then column two, auto-balanced
-              to roughly equal heights, in ascending 01→09 order (so mobile's
-              single column stays in sequence too). Each item carries a top
-              hairline and break-inside-avoid, so both columns open on a clean
-              divider aligned at the top and stacked items read as dense blocks. */}
-          <Reveal
-            as="div"
-            className="mx-auto w-full max-w-[1240px] 2xl:max-w-[1380px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] md:columns-2 gap-x-10 lg:gap-x-12 3xl:gap-x-16 [column-fill:balance]"
-          >
-            {FAQS.map((qa, i) => (
-              <QaItem key={i} qa={qa} i={i} />
-            ))}
-          </Reveal>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-};
+export { FAQ_JSONLD };

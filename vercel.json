@@ -19,6 +19,10 @@
       "destination": "/auth",
       "permanent": true
     },
+    { "source": "/faq", "destination": "/contact#faq", "permanent": true },
+    { "source": "/privacy", "destination": "/legal#privacy", "permanent": true },
+    { "source": "/terms", "destination": "/legal#terms", "permanent": true },
+    { "source": "/returns", "destination": "/legal#returns", "permanent": true },
     {
       "source": "/gallery",
       "destination": "/collections",

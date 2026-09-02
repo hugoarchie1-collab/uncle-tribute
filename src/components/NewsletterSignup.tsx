@@ -165,7 +165,7 @@ export const NewsletterSignup = ({
             )}
             <p className="font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] italic text-ink-fade mt-3 m-0">
               By subscribing you agree to our{" "}
-              <Link to="/privacy" className="underline transition-colors hover:text-ink">
+              <Link to="/legal#privacy" className="underline transition-colors hover:text-ink">
                 Privacy Policy
               </Link>
               .
@@ -250,7 +250,7 @@ export const NewsletterSignup = ({
             )}
             <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] italic text-ink/55 mt-2 m-0">
               By subscribing you agree to our{" "}
-              <Link to="/privacy" className="underline hover:text-ink/70">
+              <Link to="/legal#privacy" className="underline hover:text-ink/70">
                 Privacy Policy
               </Link>
               .
@@ -361,7 +361,7 @@ export const NewsletterSignup = ({
           </div>
           <p className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] italic text-ink/55 mt-2 m-0">
             By subscribing you agree to our{" "}
-            <Link to="/privacy" className="underline hover:text-ink/70">
+            <Link to="/legal#privacy" className="underline hover:text-ink/70">
               Privacy Policy
             </Link>
             .

@@ -50,7 +50,7 @@ export const ConsentBanner = () => {
           how the estate&rsquo;s site is found. Essential cookies only, unless
           you allow more.{" "}
           <Link
-            to="/privacy"
+            to="/legal#privacy"
             className="underline underline-offset-4 transition-colors duration-300 hover:text-ink whitespace-nowrap"
           >
             How we handle data

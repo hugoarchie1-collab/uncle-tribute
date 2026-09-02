@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -9,10 +9,21 @@ import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
 
 /**
- * Legal pages — Privacy / Terms / Returns.
+ * Legal — ONE page (/legal) carrying Privacy / Terms / Returns as three
+ * anchored parts (#privacy · #terms · #returns).
  *
- * Three routes share a single `LegalPage` scaffold so the visual register
- * stays consistent. Content is structured (headed sections + paragraphs +
+ * 2026-09-02 (Hugo: the scatter of small utility pages looked messy): the
+ * three separate routes were folded into this single page. The old URLs
+ * 301 to the anchors (vercel.json + src/lib/legacyRoutes.ts) because Stripe,
+ * Merchant Center, the cookie banner and every order email need each policy
+ * reachable at a URL.
+ *
+ * ⚠️ The three parts are TABS, not one continuous scroll. Stacked, the page ran
+ * ~13,000px and the returns policy — the one linked from every product page and
+ * order email — sat behind a 12,000px smooth-scroll flight. Tabbing keeps each
+ * policy exactly one screen from its own URL. Every part stays in the DOM
+ * (`hidden`, never unmounted) so crawlers still read all three from /legal and
+ * an in-page find still hits every clause. Content is structured (headed sections + paragraphs +
  * lists) rather than the original flat-paragraph placeholder. The estate
  * voice is kept — "the estate retains" not "the company shall".
  *
@@ -789,7 +800,7 @@ const RETURNS: Section[] = [
               info@themandalacompany.com
             </a>
             {" "}and we'll get back to you. The full legal version of this
-            page lives in our <Link to="/terms" className="text-accent hover:underline">Terms</Link>.
+            page lives in our <Link to="/legal#terms" className="text-accent hover:underline">Terms</Link>.
           </>
         ),
       },
@@ -801,71 +812,59 @@ const RETURNS: Section[] = [
   },
 ];
 
-export const Privacy = () => (
-  <LegalPage
-    title="Privacy."
-    lead="The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR."
-    sections={PRIVACY}
-    updated={UPDATED}
-    // Privacy's certified sunset-silhouette scene. (Its 2nd scene — the lone-
-    // tree headland — was moved to be the ACCOUNT page's exclusive backdrop
-    // per Hugo's "no repeats" rule 2026-07-04, so privacy is single-scene now.)
-    backdrop="/img/scenes/privacy-scene-a-v5.webp"
-  />
-);
-export const Terms = () => (
-  <LegalPage
-    title="Terms of sale."
-    lead="The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights."
-    sections={TERMS}
-    updated={UPDATED}
-    // Hugo's two certified terms scenes (mirror lake → ember forest),
-    // crossfading seamlessly on scroll.
-    backdrop={[
-      "/img/scenes/terms-scene-a-v3.webp",
-      "/img/scenes/terms-scene-b-v4.webp",
-    ]}
-  />
-);
-export const Returns = () => (
-  <LegalPage
-    title="Returns, refunds &amp; damages."
-    lead="Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive."
-    sections={RETURNS}
-    updated={UPDATED}
-    // Hugo's two certified returns scenes (rainbow wave → ice cave),
-    // crossfading seamlessly on scroll.
-    backdrop={[
-      "/img/scenes/returns-scene-a-v3.webp",
-      "/img/scenes/returns-scene-b-v3.webp",
-    ]}
-  />
-);
-
-// ─── LegalMasthead ───────────────────────────────────────────────────────────
-// The refined front cover for a legal page — a meta rule, the title set in the
-// shared MASTHEAD_TITLE_STYLE register (Fraunces opsz 144, wght 560 — composed,
-// not the old crude logo-bold), then the lead packed immediately beneath under a
-// border-t — dense, left-aligned, no centred-floating-header timidity and no
-// clamp-driven dead air. The numbered section index sits in the left rail so
-// the reader can see the whole document's shape at a glance before scrolling.
-const LegalMasthead = ({
-  title,
-  lead,
-  sections,
-}: {
+/** The three parts of the one legal page, in reading order. `id` doubles as the
+ *  URL anchor the old routes redirect to (/privacy → /legal#privacy …). */
+interface Part {
+  id: "privacy" | "terms" | "returns";
   title: string;
   lead: string;
-  updated: string;
   sections: Section[];
-}) => (
-  <section className="relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 md:pt-8 pb-4 md:pb-6">
+}
+
+const PARTS: Part[] = [
+  {
+    id: "privacy",
+    title: "Privacy.",
+    lead: "The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR.",
+    sections: PRIVACY,
+  },
+  {
+    id: "terms",
+    title: "Terms of sale.",
+    lead: "The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights.",
+    sections: TERMS,
+  },
+  {
+    id: "returns",
+    title: "Returns, refunds &amp; damages.",
+    lead: "Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive.",
+    sections: RETURNS,
+  },
+];
+
+const LEGAL_LEAD =
+  "The estate's privacy policy, terms of sale, and returns, refunds & damages policy — one page, three parts.";
+
+const CONTAINER =
+  "relative mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
+
+const plain = (t: string) => t.replace(/&amp;/g, "&").replace(/\.$/, "");
+
+// ─── LegalMasthead ───────────────────────────────────────────────────────────
+// The refined front cover — the title set in the shared MASTHEAD_TITLE_STYLE
+// register (Fraunces opsz 144, wght 560), the lead packed immediately beneath
+// under a border-t, and the THREE-PART index in the right rail so the reader
+// sees the whole document's shape (and can jump straight to a policy) before
+// scrolling. Dense, left-aligned, no centred-floating-header timidity.
+const LegalMasthead = ({ activeId }: { activeId: Part["id"] }) => (
+  <section className={cn(CONTAINER, "pt-6 md:pt-8 pb-4 md:pb-6")}>
     <Reveal as="div">
       <h1
-        className="font-display text-ink m-0 text-balance text-pretty [&_br]:hidden sm:[&_br]:block"
+        className="font-display text-ink m-0 text-balance text-pretty"
         style={MASTHEAD_TITLE_STYLE}
-        dangerouslySetInnerHTML={{ __html: title }}
-      />
+      >
+        Privacy, terms &amp; returns.
+      </h1>
     </Reveal>
 
     <div className="mt-4 md:mt-5 grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-5 items-start border-t border-line pt-4 md:pt-5">
@@ -878,29 +877,59 @@ const LegalMasthead = ({
             lineHeight: 1.32,
           }}
         >
-          {lead}
+          {LEGAL_LEAD}
         </p>
       </Reveal>
-      {/* Document index — the shape of the whole policy at a glance, so the
-          masthead screen is dense with wayfinding rather than blank air. Anchor
-          jumps to each section's id. */}
       <Reveal as="div" delay={0.06} className="lg:col-span-4">
         <nav aria-label="On this page">
           <p className={cn(EYEBROW_MUTED, "m-0 mb-3")}>On this page</p>
-          <ol className="m-0 p-0 list-none columns-1 sm:columns-2 lg:columns-1 gap-x-8">
-            {sections.map((section, i) => (
-              <li key={i} className="break-inside-avoid mb-1.5">
-                <a
-                  href={`#legal-${i}`}
-                  className="group flex items-baseline gap-2 font-sans text-[14.5px] md:text-[15px] 3xl:text-[clamp(15px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
-                >
-                  <span aria-hidden className="font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] tabular-nums text-ink/55 group-hover:text-accent">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>{section.heading}</span>
-                </a>
-              </li>
-            ))}
+          <ol className="m-0 p-0 list-none">
+            {PARTS.map((part, i) => {
+              const isActive = part.id === activeId;
+              return (
+                <li key={part.id} className="border-t border-line">
+                  {/* GRID, not a flex row: the ordinal holds its own fixed
+                      column so a two-line title can never squeeze the number
+                      into breaking across lines, and the section count sits on
+                      its own line rather than in an orphaned wrap. */}
+                  {/* A real <Link>, not a button: each part IS a URL, so the
+                      control must be copyable, openable in a new tab, and
+                      announced as a link — while React Router still handles the
+                      click, which a bare in-page anchor could not (a native
+                      fragment click fires hashchange, not popstate, so
+                      useLocation would never see it and the panel would not
+                      change). */}
+                  <Link
+                    to={`#${part.id}`}
+                    // Explicit name: the visible label is split across three
+                    // spans (one aria-hidden), so spell out what the link opens
+                    // rather than leaving it to name-from-content.
+                    aria-label={`${plain(part.title)} — ${part.sections.length} sections`}
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "group grid w-full grid-cols-[1.9em_1fr] items-baseline gap-x-2.5 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 rounded-sm",
+                      isActive ? "text-accent" : "text-ink hover:text-accent",
+                    )}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] font-bold tracking-[0.02em] tabular-nums group-hover:text-accent",
+                        isActive ? "text-accent" : "text-ink/55",
+                      )}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display font-semibold tracking-[-0.02em] text-[clamp(18px,1.4vw,24px)] leading-[1.25] text-balance">
+                      {plain(part.title)}
+                    </span>
+                    <span className="col-start-2 mt-0.5 font-sans font-normal text-[13px] 3xl:text-[16px] tabular-nums text-ink-muted">
+                      {part.sections.length} sections
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
           </ol>
         </nav>
       </Reveal>
@@ -908,94 +937,169 @@ const LegalMasthead = ({
   </section>
 );
 
-const LegalPage = ({
-  title,
-  lead,
-  sections,
-  updated,
-  backdrop,
+// ─── LegalPart ───────────────────────────────────────────────────────────────
+// One policy — its own front matter (part number, title, lead, updated) and
+// then its sections as an editorial ledger. Each section is a 12-col row: the
+// heading + a hairline rule hold the LEFT rail (sticky on lg so the reader
+// always knows which clause they're in), the verbatim blocks pack the wide
+// RIGHT column at a comfortable legal reading measure — never multi-column,
+// clauses must read linearly. Compressed py so the page reads tight.
+const LegalPart = ({
+  part,
+  index,
+  active,
 }: {
-  title: string;
-  lead: string;
-  sections: Section[];
-  updated: string;
-  /** Per-page blurred scene backdrop — one src, or several that crossfade on scroll. */
-  backdrop: string | string[];
-}) => {
-  // Strip HTML entities + the canonical trailing full stop for the tab title.
-  const plainTitle = title.replace(/&amp;/g, "&").replace(/\.$/, "");
+  part: Part;
+  index: number;
+  /** Inactive parts stay in the DOM (hidden) so crawlers and in-page find still
+   *  reach every clause — only one is ever shown. */
+  active: boolean;
+}) => (
+  // ⚠️ The panel's id is `part-<id>`, NOT the bare `<id>` the URL hash carries.
+  // PageTransition's ScrollManager scrolls to whatever element a hash names, and
+  // a part hash must NOT scroll: the reader should land on the masthead with the
+  // tab row and the policy's opening clause all on one screen. Nothing has the
+  // bare id, so both the browser's native hash jump and the ScrollManager poll
+  // are no-ops, while a CLAUSE hash (`#returns-2`, from the index below) still
+  // matches a real section and scrolls exactly as it should.
+  <article id={`part-${part.id}`} aria-labelledby={`${part.id}-title`} hidden={!active} className="scroll-mt-24">
+    {/* PART FRONT MATTER — a 12-col row, never a lone left column against a
+        right-hand void (Hugo's fill-the-screen rule): the title + lead hold the
+        wide left, and THIS part's own clause index packs the right flank as a
+        two-column hairline register, so the reader can jump straight to a
+        clause instead of scrolling for it. */}
+    <Reveal as="header" className="border-t-2 border-line pt-6 md:pt-8 pb-4 md:pb-5 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 items-start">
+      <div className="lg:col-span-7">
+        <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5 tabular-nums")}>
+          Part {String(index + 1).padStart(2, "0")} / {String(PARTS.length).padStart(2, "0")} · Updated {UPDATED}
+        </p>
+        <h2
+          id={`${part.id}-title`}
+          className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(34px,4.2vw,72px)] leading-[1.02] text-ink m-0"
+          dangerouslySetInnerHTML={{ __html: part.title }}
+        />
+        <p
+          className="font-display font-normal tracking-[-0.01em] text-ink-muted m-0 mt-3 max-w-[56ch] 3xl:max-w-[64ch]"
+          style={{
+            fontVariationSettings: '"opsz" 32, "wght" 400',
+            fontSize: "clamp(18px, 1.5vw, 28px)",
+            lineHeight: 1.36,
+          }}
+        >
+          {part.lead}
+        </p>
+      </div>
+
+      <nav aria-label={`${plain(part.title)} — clauses`} className="lg:col-span-5 lg:pt-1">
+        <ol className="m-0 p-0 list-none sm:columns-2 gap-x-8">
+          {part.sections.map((section, i) => (
+            <li key={i} className="break-inside-avoid border-t border-line py-1.5">
+              <a
+                href={`#${part.id}-${i}`}
+                className="group grid grid-cols-[1.9em_1fr] items-baseline gap-x-2 font-sans text-[14.5px] md:text-[15px] 3xl:text-[clamp(15px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
+              >
+                <span aria-hidden className="text-[12.5px] 3xl:text-[15px] font-bold tracking-[0.02em] tabular-nums text-ink/45 group-hover:text-accent">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>{section.heading}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </Reveal>
+
+    {part.sections.map((section, i) => (
+      <Reveal
+        as="section"
+        key={i}
+        id={`${part.id}-${i}`}
+        className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 border-t border-line py-5 md:py-6"
+      >
+        <div className="lg:col-span-4 lg:sticky lg:top-24 self-start">
+          <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5 tabular-nums")}>
+            {String(i + 1).padStart(2, "0")} / {String(part.sections.length).padStart(2, "0")}
+          </p>
+          <h3 className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(26px,2.8vw,52px)] leading-[1.08] text-ink m-0">
+            {section.heading}
+          </h3>
+        </div>
+
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          {section.blocks.map((block, j) => {
+            if (block.kind === "p") {
+              return (
+                <p
+                  key={j}
+                  className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+                >
+                  {block.text}
+                </p>
+              );
+            }
+            return (
+              <ul
+                key={j}
+                className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3.5 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
+              >
+                {block.items.map((item, k) => (
+                  <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            );
+          })}
+        </div>
+      </Reveal>
+    ))}
+  </article>
+);
+
+/**
+ * The part a hash names, defaulting to the first.
+ *
+ * Accepts BOTH shapes the page produces: a part hash (`#returns`, written by a
+ * tab click and by the /returns → /legal#returns redirect) and a clause hash
+ * (`#returns-2`, written by the per-part clause index). Without the clause
+ * form, following "03 · Framed, hand-finished…" inside Returns would silently
+ * throw the reader back to Privacy. A stale or hand-typed hash (`#refunds`)
+ * falls back to the first part rather than rendering an empty page.
+ */
+const partIdFromHash = (hash: string): Part["id"] => {
+  const id = hash.replace(/^#/, "");
+  const match = PARTS.find((p) => p.id === id || id.startsWith(`${p.id}-`));
+  return match ? match.id : PARTS[0].id;
+};
+
+export const Legal = () => {
+  const { hash } = useLocation();
+
+  // DERIVED, never state: the URL is the single source of truth, so
+  // /legal#returns from an order email, the browser's back button and a tab
+  // click all resolve through the same line — nothing to fall out of sync.
+  const activeId = partIdFromHash(hash);
+
+  const activeIndex = PARTS.findIndex((p) => p.id === activeId);
+
   return (
     <div className="relative flex flex-col">
-      {/* Per-route meta — without this the three policy pages fall through to
-          App's homepage default description (same wrong meta on all three).
-          Seo auto-canonicalises to the current pathname, so no url prop needed. */}
-      <Seo title={plainTitle} description={lead} />
-      <SceneBackdrop src={backdrop} />
+      {/* Seo auto-canonicalises to /legal; the old three URLs 301 here. */}
+      <Seo title="Privacy, terms & returns" description={LEGAL_LEAD} />
+      {/* Calm mode ignores the src (shared near-black ground) — kept so the
+          bespoke scene returns if CALM_BACKDROPS is ever flipped off. */}
+      <SceneBackdrop src="/img/scenes/privacy-scene-a-v5.webp" />
       <Nav />
-
-      {/* 1 · MASTHEAD — bold left-aligned front cover (lead + document index). */}
-      <LegalMasthead title={title} lead={lead} updated={updated} sections={sections} />
-
-      {/* 2 · THE POLICY — sections as an editorial ledger. Each section is a
-          12-col row: the heading + a hairline rule hold the LEFT rail, the
-          verbatim blocks pack the wide RIGHT column at a comfortable legal
-          reading measure. Asymmetric, dense, no tall single ribbon of prose;
-          legibility of the legal copy stays paramount (the right column never
-          goes multi-column — clauses must read linearly). Compressed py so the
-          whole page reads tight, never an endless scroll. */}
-      <main className="relative z-10 flex-1 mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pb-12 md:pb-16">
-        <article className="flex flex-col">
-          {sections.map((section, i) => (
-            <Reveal
-              as="section"
-              key={i}
-              id={`legal-${i}`}
-              className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-6 border-t border-line py-5 md:py-6"
-            >
-              {/* Left rail — the section number + heading, sticky on lg so the
-                  reader always knows which clause they're in. */}
-              <div className="lg:col-span-4 lg:sticky lg:top-24 self-start">
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-2.5 tabular-nums")}>
-                  {String(i + 1).padStart(2, "0")} / {String(sections.length).padStart(2, "0")}
-                </p>
-                <h2 className="font-display font-semibold tracking-[-0.035em] text-balance text-[clamp(26px,2.8vw,52px)] leading-[1.08] text-ink m-0">
-                  {section.heading}
-                </h2>
-              </div>
-
-              {/* Right column — the verbatim blocks, unchanged copy, at the
-                  legal reading register. Even, comfortable vertical rhythm
-                  between blocks (gap-5) so multi-paragraph clauses read with a
-                  deliberate cadence — never cramped, never gappy. */}
-              <div className="lg:col-span-8 flex flex-col gap-6">
-                {section.blocks.map((block, j) => {
-                  if (block.kind === "p") {
-                    return (
-                      <p
-                        key={j}
-                        className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
-                      >
-                        {block.text}
-                      </p>
-                    );
-                  }
-                  return (
-                    <ul
-                      key={j}
-                      className="font-sans font-normal text-[clamp(19px,1.05vw+5px,33px)] max-w-[72ch] 3xl:max-w-[78ch] leading-[1.8] text-ink-muted list-none pl-0 flex flex-col gap-3.5 m-0 [&_strong]:font-semibold [&_strong]:text-ink [&_em]:font-display [&_em]:italic"
-                    >
-                      {block.items.map((item, k) => (
-                        <li key={k} className="relative pl-6 before:absolute before:left-0 before:top-[0.62em] before:h-1.5 before:w-1.5 before:rotate-45 before:bg-accent/45 before:content-['']">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                })}
-              </div>
-            </Reveal>
-          ))}
-        </article>
+      <LegalMasthead activeId={activeId} />
+      <main className={cn(CONTAINER, "z-10 flex-1 pb-12 md:pb-16")}>
+        {PARTS.map((part, i) => (
+          <LegalPart
+            key={part.id}
+            part={part}
+            index={i}
+            active={i === activeIndex}
+          />
+        ))}
       </main>
       <Footer />
     </div>

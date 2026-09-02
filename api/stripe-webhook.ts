@@ -1242,7 +1242,7 @@ const renderOrderConfirmationHtml = (p: {
     + `<p style="${s.signoff}">With love from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`
     + `<hr style="${s.divider}"/>`
-    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Returns, refunds &amp; damages — <a href="https://themandalacompany.com/returns" style="${s.link}">themandalacompany.com/returns</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
+    + `<p style="${s.footer}">Questions, or anything to flag — <a href="mailto:${esc(p.estateEmail)}" style="${s.link}">${esc(p.estateEmail)}</a><br/>Returns, refunds &amp; damages — <a href="https://themandalacompany.com/legal#returns" style="${s.link}">themandalacompany.com/legal</a><br/>Reference: ${esc(p.orderRef)}<br/>The Art of Stephen Meakin · Lewes, East Sussex</p>`
     + `</div></body></html>`;
 };
 
@@ -1348,7 +1348,7 @@ const renderGiftHtml = (p: {
     // "There's no need to spend it all at once on shipping or add-ons", which both
     // promised a balance the system cannot keep AND contradicted the sentence
     // directly above it. Wording follows the FAQ's own "single-use code, valid for
-    // one year" phrasing (src/pages/FAQ.tsx).
+    // one year" phrasing (src/data/faqs.tsx).
     + `<p style="${s.small}">The code is single-use and applies to one order. Any value not spent on that order is not carried over to another order, and is not refunded.</p>`
     + `<p style="${s.signoff}">With warmth from the estate,</p>`
     + `<p style="${s.body}font-style:italic;margin:0;">— Archie, for The Mandala Company</p>`

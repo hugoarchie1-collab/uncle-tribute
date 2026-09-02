@@ -1,4 +1,4 @@
-import { FAQS } from "../pages/FAQ";
+import { FAQS } from "../data/faqs";
 import { Reveal } from "./Reveal";
 import { cn } from "../lib/cn";
 import { EYEBROW_MUTED } from "./ui/tokens";
@@ -9,17 +9,32 @@ import { EYEBROW_MUTED } from "./ui/tokens";
  * real / how long / can I frame it / do you ship to me?". Mounted on
  * PaintingDetail below the Reviews section.
  *
- * ⚠️ Copy is NOT duplicated: it renders the SAME verbatim `FAQS` array the /faq
- * page uses (exported from src/pages/FAQ.tsx), so the two surfaces can never
- * drift and there are no invented words. Native <details>/<summary> — zero deps,
+ * ⚠️ Copy is NOT duplicated: it renders the SAME verbatim `FAQS` array from
+ * src/data/faqs.tsx that /contact#faq also mounts (the old /faq page was
+ * retired 2026-09-02 and redirects there), so the surfaces can never drift and
+ * there are no invented words. Native <details>/<summary> — zero deps,
  * keyboard-accessible, works with JS off. Monochrome to match the PDP; the only
  * colour is the accent on the answers' own links (an interaction state).
  */
-export const FaqAccordion = () => (
+export const FaqAccordion = ({
+  id,
+  className,
+}: {
+  /** Anchor id (e.g. "faq" so /contact#faq lands here). */
+  id?: string;
+  /** Override the default self-contained container (e.g. when the parent
+   *  already provides the page gutter). */
+  className?: string;
+}) => (
   <Reveal
     as="section"
+    id={id}
     aria-labelledby="faq-heading"
-    className="mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10"
+    className={cn(
+      "scroll-mt-24",
+      className ??
+        "mx-auto w-full max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 mt-8 md:mt-10",
+    )}
   >
     <div className="h-px w-full bg-line mb-8" />
 

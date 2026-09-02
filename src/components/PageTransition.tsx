@@ -1,6 +1,7 @@
 import { useLayoutEffect, type ReactNode } from "react";
 import { useLocation, useNavigationType, type NavigationType } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import { canonicalPath } from "../lib/legacyRoutes";
 
 /**
  * PageTransition — a fast, dignified crossfade between routes.
@@ -157,7 +158,7 @@ export const PageTransition = ({ children }: { children: ReactNode }) => {
   return (
     <AnimatePresence mode="wait" initial={false} custom={custom}>
       <motion.div
-        key={location.pathname}
+        key={canonicalPath(location.pathname)}
         custom={custom}
         variants={routeVariants}
         initial="initial"

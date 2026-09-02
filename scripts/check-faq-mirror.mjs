@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // WHY THIS EXISTS
 //   `FAQ_SEEDS` in src/lib/search.ts is a hand-typed plain-text copy of `FAQS`
-//   in src/pages/FAQ.tsx. Nothing structurally kept them in step, and they
+//   in src/data/faqs.tsx. Nothing structurally kept them in step, and they
 //   drifted: the site widened to worldwide shipping in July 2026 (specifically
 //   because Stephen's collector base is Gulf/Dubai), the FAQ was updated, and
 //   the search index went on telling buyers for six weeks that the estate
@@ -32,7 +32,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FAQ_PATH = path.join(ROOT, "src/pages/FAQ.tsx");
+const FAQ_PATH = path.join(ROOT, "src/data/faqs.tsx");
 const SEARCH_PATH = path.join(ROOT, "src/lib/search.ts");
 
 /** Slice out a top-level `const NAME ... = [ ... \n];` array literal. */
@@ -145,7 +145,7 @@ if (problems > 0) {
   console.error(
     `\n[faq-mirror] ${problems} divergence(s). The search index no longer matches /faq.\n` +
       `Update FAQ_SEEDS in src/lib/search.ts so every question and answer is VERBATIM\n` +
-      `from FAQS in src/pages/FAQ.tsx, then re-run. Do not paraphrase.\n`,
+      `from FAQS in src/data/faqs.tsx, then re-run. Do not paraphrase.\n`,
   );
   process.exit(1);
 }

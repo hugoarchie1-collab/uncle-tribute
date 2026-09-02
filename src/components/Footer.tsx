@@ -24,8 +24,10 @@ const FOOTER_TEXT = "font-sans text-[14px] 3xl:text-[17px] 4xl:text-[20px] leadi
  *  explicit in the footer site map) then mirrors the primary nav order
  *  (Nav.tsx NAV_LINKS). ESTATE gathers the secondary / utility pages and is the
  *  ONLY place /gift and /trade are linked anywhere in the chrome, so those
- *  routes aren't orphaned. Legal (Privacy · Terms · Returns) lives ONLY in the
- *  bottom bar below — never duplicated up here. Keep both lists in the same
+ *  routes aren't orphaned. Legal (one /legal page: privacy · terms · returns)
+ *  lives ONLY in the bottom bar below — never duplicated up here. FAQ has no
+ *  page of its own any more (2026-09-02): the Q&As sit on every product page
+ *  and under the form on /contact#faq. Keep both lists in the same
  *  canonical order the nav uses so the surfaces never drift. */
 // Mirror the grouped site menu (Nav.tsx NAV_GROUPS) so the footer never drifts
 // from the nav — "Shop" = where to buy; the second column gathers His story +
@@ -49,7 +51,6 @@ const ESTATE_LINKS = [
   { to: "/memories", label: "Memories" },
   { to: "/auth", label: "Authenticate" },
   { to: "/contact", label: "Contact" },
-  { to: "/faq", label: "FAQ" },
 ];
 
 const LinkColumn = ({
@@ -196,24 +197,17 @@ export const Footer = () => (
       <PaymentMarks className="text-ink-muted" />
     </div>
 
-    {/* Bottom bar — copyright + the SOLE legal link row (Privacy · Terms ·
-        Returns appear ONLY here, never also in a column above). */}
+    {/* Bottom bar — copyright + the SOLE legal link (the single /legal page
+        carries privacy · terms · returns as anchored parts; it appears ONLY
+        here, never also in a column above). */}
     <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mt-5 md:mt-6 pt-4 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3 font-sans text-[13px] 3xl:text-[16px] 4xl:text-[19px] leading-[1.5] text-ink-muted">
       <p className="m-0">
         © {YEAR} The estate of Stephen Meakin. All works and writings © the
         estate. All rights reserved.
       </p>
       <p className="m-0 flex items-center gap-2 flex-wrap">
-        <Link to="/privacy" className={FOOTER_LINK}>
-          Privacy
-        </Link>
-        <span aria-hidden="true">·</span>
-        <Link to="/terms" className={FOOTER_LINK}>
-          Terms
-        </Link>
-        <span aria-hidden="true">·</span>
-        <Link to="/returns" className={FOOTER_LINK}>
-          Returns
+        <Link to="/legal" className={FOOTER_LINK}>
+          Privacy, terms &amp; returns
         </Link>
         <span aria-hidden="true">·</span>
         {/* Clears the tasm.consent.v1 decision — the consent banner subscribes

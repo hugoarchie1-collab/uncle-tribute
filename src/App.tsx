@@ -25,6 +25,7 @@ import { AmbientBackdrop } from "./components/AmbientBackdrop";
 import { AmbientBackground } from "./components/AmbientBackground";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { applyDefaultHead, didSeoWrite } from "./lib/headMeta";
+import { LEGACY_REDIRECTS } from "./lib/legacyRoutes";
 import { captureUtm } from "./lib/utm";
 import { captureRef } from "./lib/ref";
 import { initTrackingIfConsented } from "./lib/tracking";
@@ -42,11 +43,8 @@ const Basket = lazy(() => import("./pages/Basket").then((m) => ({ default: m.Bas
 const OrderSuccess = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderSuccess })));
 const OrderCancel = lazy(() => import("./pages/OrderResult").then((m) => ({ default: m.OrderCancel })));
 const NotFound = lazy(() => import("./pages/NotFound").then((m) => ({ default: m.NotFound })));
-const Privacy = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Privacy })));
-const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms })));
-const Returns = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Returns })));
+const Legal = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Legal })));
 const Contact = lazy(() => import("./pages/Contact").then((m) => ({ default: m.Contact })));
-const FAQ = lazy(() => import("./pages/FAQ").then((m) => ({ default: m.FAQ })));
 const FindAPrint = lazy(() => import("./pages/FindAPrint").then((m) => ({ default: m.FindAPrint })));
 
 /** The quiz now lives INSIDE /for-you (embedded in FindAPrint). Redirect the old
@@ -146,7 +144,6 @@ const AnimatedRoutes = () => {
           <Route path="/print-catalogue" element={<PrintCatalogue />} />
           {/* Old /gallery (Virtual Exhibition) retired — AR now lives in the
               "See on your wall" modal on each painting. Redirect legacy links. */}
-          <Route path="/gallery" element={<Navigate to="/collections" replace />} />
           <Route path="/for-you" element={<FindAPrint />} />
           {/* Site-wide search — header SearchBar + this results page. */}
           <Route path="/search" element={<Search />} />
@@ -158,12 +155,10 @@ const AnimatedRoutes = () => {
           <Route path="/memories" element={<Memories />} />
           <Route path="/news" element={<News />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/faq" element={<FAQ />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/:certId" element={<Auth />} />
           {/* /verify kept as a permanent redirect to the renamed Authentication
               page so old links + printed certificates keep resolving. */}
-          <Route path="/verify" element={<Navigate to="/auth" replace />} />
           <Route path="/gift" element={<Gift />} />
           {/* /trade IS the Partners page (Hugo 2026-07-30: one page, never "two
               confusing trade pages"). Rebuilt 2026-09-02 as src/pages/Partners.tsx:
@@ -177,16 +172,22 @@ const AnimatedRoutes = () => {
           <Route path="/trade/pricing" element={<TradePricing />} />
           <Route path="/partners/terms" element={<PartnerTerms />} />
           {/* Old /representatives URL now redirects to the canonical /trade. */}
-          <Route path="/representatives" element={<Navigate to="/trade" replace />} />
           {/* Account (passwordless) + Orders & Returns — Amazon-IA header. */}
           <Route path="/account" element={<Account />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/basket" element={<Basket />} />
           <Route path="/order/success" element={<OrderSuccess />} />
           <Route path="/order/cancel" element={<OrderCancel />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/returns" element={<Returns />} />
+          {/* ONE legal page; the three old routes 301 (vercel.json) and, for
+              in-app navigation, redirect to their anchor here. */}
+          <Route path="/legal" element={<Legal />} />
+          {/* LEGACY ALIASES — every retired path in one place (src/lib/legacyRoutes.ts),
+              mirrored by an edge 301 in vercel.json. PageTransition keys its
+              crossfade on the alias's TARGET, so these redirect without the
+              blank-page exit/enter swap described in that module. */}
+          {Object.entries(LEGACY_REDIRECTS).map(([from, to]) => (
+            <Route key={from} path={from} element={<Navigate to={to} replace />} />
+          ))}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

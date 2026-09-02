@@ -65,16 +65,14 @@ const CURATED_NAV: NavItem[] = [
   { to: "/trade", label: "Partners" },
 ];
 
-/** Quiet drawer-footer set — account/orders + FAQ + legal. Gift cards moved UP
+/** Quiet drawer-footer set — account/orders + the one legal page (FAQ lives
+ *  on every product page and /contact#faq since 2026-09-02). Gift cards moved UP
  *  into the Shop group (Hugo: it belongs in the shop menu). Basket has its own
  *  top-bar icon so it's intentionally absent. */
 const SECONDARY_LINKS = [
   { to: "/basket", label: "Basket & account" },
   { to: "/orders", label: "Orders & returns" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/privacy", label: "Privacy" },
-  { to: "/terms", label: "Terms" },
-  { to: "/returns", label: "Returns" },
+  { to: "/legal", label: "Privacy, terms & returns" },
 ];
 
 /** Site canonical easing — mirrors tailwind transitionTimingFunction.smooth. */

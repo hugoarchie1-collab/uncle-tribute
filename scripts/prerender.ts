@@ -186,12 +186,6 @@ const STATIC_ROUTES: RouteHead[] = [
       "Find a Stephen Meakin print by the colours you're drawn to. Each mandala was made in several of his own colourways, estate-stamped and made to order.",
   },
   {
-    routePath: "/faq",
-    title: "Frequently asked",
-    description:
-      "Answers on the estate-stamped prints of Stephen Meakin's mandala paintings — provenance, paper, sizes and editions, framing, hand-finishing, shipping and after-sale care.",
-  },
-  {
     routePath: "/contact",
     title: "Contact the estate",
     description:
@@ -230,23 +224,11 @@ const STATIC_ROUTES: RouteHead[] = [
     noindex: true,
   },
   {
-    routePath: "/privacy",
-    title: "Privacy.",
-    // Mirror of Legal.tsx <Privacy> lead — so the prerendered + runtime meta agree.
+    routePath: "/legal",
+    title: "Privacy, terms & returns",
+    // Mirror of Legal.tsx <Legal> lead — so the prerendered + runtime meta agree.
     description:
-      "The personal data this site collects, the processors who handle it on the estate's behalf, and the rights you hold under UK GDPR.",
-  },
-  {
-    routePath: "/terms",
-    title: "Terms of sale.",
-    description:
-      "The terms governing every print order placed with the estate — order acceptance, pricing, delivery, cancellation, and your statutory rights.",
-  },
-  {
-    routePath: "/returns",
-    title: "Returns, refunds & damages.",
-    description:
-      "Each print is made to order. What that means for cancellation, and how the estate handles a print that arrives damaged or fails to arrive.",
+      "The estate's privacy policy, terms of sale, and returns, refunds & damages policy — one page, three parts.",
   },
   {
     // Not in the sitemap; prerendered only to give the SPA-shell route its own
@@ -332,7 +314,7 @@ function paintingRoute(p: (typeof PAINTINGS)[number]): RouteHead {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "GB",
         itemDefectReturnFees: "https://schema.org/FreeReturn",
-        merchantReturnLink: absoluteUrl("/returns"),
+        merchantReturnLink: absoluteUrl("/legal#returns"),
       },
     },
   };
@@ -405,7 +387,7 @@ function buildRoutes(): RouteHead[] {
     if (r.routePath === "/collections") return { ...r, bodyHtml: collectionsBody() };
     if (r.routePath === "/about")
       return { ...r, bodyHtml: aboutBody(), jsonLd: [aboutJsonLd()] };
-    if (r.routePath === "/faq") return { ...r, bodyHtml: faqBody() };
+    if (r.routePath === "/contact") return { ...r, bodyHtml: faqBody() };
     return r;
   });
   return [...statics, ...PAINTINGS.map(paintingRoute)];
@@ -503,9 +485,9 @@ const homeBody = (): string =>
   ].join("");
 
 /** FAQ questions — a build-time MIRROR of the `question` strings in
- *  src/pages/FAQ.tsx (FAQS). Kept here rather than imported because FAQ.tsx's
+ *  src/data/faqs.tsx (FAQS). Kept here rather than imported because faqs.tsx's
  *  answers are JSX/ReactNode and pulling the page into the build graph is
- *  fragile. ⚠️ Keep in sync if the FAQ.tsx questions change. */
+ *  fragile. ⚠️ Keep in sync if the faqs.tsx questions change. */
 const FAQ_QUESTIONS: string[] = [
   "Are the prints signed?",
   "Can I check a certificate is genuine?",
@@ -518,9 +500,9 @@ const FAQ_QUESTIONS: string[] = [
   "What if my print arrives damaged or doesn't arrive?",
 ];
 
-/** FAQ body — the question set, so non-JS crawlers read the page's real topics
- *  (the answers are JSX in FAQ.tsx; the head description already summarises them).
- *  The /faq shell previously shipped an empty #root. */
+/** FAQ body — the question set, so non-JS crawlers read /contact's real topics
+ *  (the answers are JSX in src/data/faqs.tsx; the Q&As render under the contact
+ *  form at /contact#faq since the /faq page was retired 2026-09-02). */
 const faqBody = (): string =>
   [
     `<h1>Frequently asked questions</h1>`,

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
+import { FaqAccordion } from "../components/FaqAccordion";
+import { FAQ_JSONLD } from "../data/faqs";
 import { Reveal } from "../components/Reveal";
 import { Seo } from "../components/Seo";
 import { MASTHEAD_TITLE_STYLE } from "../components/ui/tokens";
@@ -38,7 +40,8 @@ const ContactBackdrop = () => {
  * /contact — full-page version of the EnquireModal form. Same mailto +
  * Web3Forms-optional submission path, same honeypot, mounted as a routed
  * page so it shows in the Nav / Footer and can be deep-linked from press,
- * partnerships, and customer enquiries.
+ * partnerships, and customer enquiries. Since 2026-09-02 it also carries the
+ * FAQ accordion (#faq) — the old /faq page redirects here.
  *
  * Visual register: NO timid centred 640px column, NO blank space. A
  * left-aligned masthead — a meta rule (eyebrow + hairline + place tag), then
@@ -149,6 +152,7 @@ export const Contact = () => {
         title="Contact the estate"
         description="Write to The Mandala Company, the estate of Stephen Meakin — questions about prints, editions, commissions or the work itself."
         url="/contact"
+        jsonLd={FAQ_JSONLD}
       />
       <Nav />
       <main className="relative z-10 flex-1 mx-auto w-full max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12 pt-12 md:pt-14 pb-10 md:pb-14">
@@ -422,6 +426,14 @@ export const Contact = () => {
             </dl>
           </Reveal>
         </section>
+
+        {/* QUESTIONS & ANSWERS — the same verbatim FAQ accordion the product
+            page carries (src/data/faqs.tsx). The dedicated /faq page was
+            retired 2026-09-02 and 301s to #faq here, so a reader with a
+            question lands on the answers first and the form is one scroll
+            below if they still need it. Parent already provides the page
+            gutter, so the accordion mounts flush. */}
+        <FaqAccordion id="faq" className="mt-12 md:mt-16" />
       </main>
       <Footer />
     </div>
