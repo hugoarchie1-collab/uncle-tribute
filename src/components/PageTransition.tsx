@@ -136,17 +136,39 @@ const ScrollManager = ({
       let attempts = 0;
       const maxAttempts = 30; // 30 × 100ms = 3s max
       let cancelled = false;
+      // ⚠️ A COLD LOAD JUMPS, it does not glide. Verified live 2026-09-02: the
+      // smooth flight was starting and then being lost while the page was still
+      // loading — webfonts and images above the target land after first paint,
+      // and the resulting layout shift kills an in-flight smooth scroll, so
+      // /contact#faq settled back at the top of the form. There is also nothing
+      // to animate FROM on a first paint the reader has not seen. An in-session
+      // navigation still glides, because there the motion carries meaning.
+      const behavior: ScrollBehavior = (coldLoad ? "instant" : "smooth") as ScrollBehavior;
+      // Re-assert a few times on a cold load so late layout shift cannot push
+      // the target back out from under the reader.
+      let settles = 0;
+      const maxSettles = 3;
+      let lastY = -1;
 
       const tryScroll = () => {
         if (cancelled) return;
         const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (!el) {
+          if (attempts < maxAttempts) {
+            attempts += 1;
+            window.setTimeout(tryScroll, 100);
+          }
           return;
         }
-        if (attempts < maxAttempts) {
-          attempts += 1;
-          window.setTimeout(tryScroll, 100);
+        // If the reader has scrolled since our own jump, they have taken over —
+        // never yank them back to the anchor.
+        if (lastY >= 0 && Math.abs(window.scrollY - lastY) > 4) return;
+        el.scrollIntoView({ behavior, block: "start" });
+        if (coldLoad && settles < maxSettles) {
+          // `instant` lands synchronously, so this reads back our own position.
+          lastY = window.scrollY;
+          settles += 1;
+          window.setTimeout(tryScroll, 350);
         }
       };
 
