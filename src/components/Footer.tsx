@@ -143,8 +143,20 @@ export const Footer = () => (
             Organization sameAs in index.html). Inline SVG glyphs, each in a
             44px hit-area (a11y), muted→ink with a soft lift on hover. */}
         <div className="mt-4">
-          <h2 className="font-display font-semibold text-[15px] md:text-[16px] tracking-[0.005em] text-ink mb-2.5">Follow</h2>
-          <ul className="flex items-center gap-1 -ml-2 m-0 p-0 list-none">
+          {/* ⚠️ `mb-4`, matching LinkColumn's heading — this was `mb-2.5`, so
+              "Follow" sat a rung tighter than Shop / Estate / Friends & Family
+              and broke the footer's heading rhythm. */}
+          <h2 className="font-display font-semibold text-[15px] md:text-[16px] tracking-[0.005em] text-ink mb-4">Follow</h2>
+          {/* ⚠️ WHITE CHIPS, exactly like PaymentMarks — deliberate unison, and
+              the same reason that file gives: a brand mark is only correct on
+              its own ground. As bare flat glyphs on the dark footer these read
+              as one red smear, because four of the five brand colours
+              (Instagram #E4405F, YouTube #FF0000, Pinterest #E60023, and TikTok
+              rendered in a single flat tone) are reds — and TikTok's real mark
+              is cyan/red/black, which no single flat colour can represent.
+              On white each mark reads true and the row matches the card row
+              directly beneath it. */}
+          <ul className="flex flex-wrap items-center gap-2 m-0 p-0 list-none">
             {SOCIAL_PROFILES.map((s) => (
               <li key={s.label} className="m-0">
                 <a
@@ -153,7 +165,7 @@ export const Footer = () => (
                   rel="noopener noreferrer"
                   aria-label={`${s.label} — The Mandala Company`}
                   style={{ ["--brand" as string]: SOCIAL_BRAND[s.label] ?? "currentColor" }}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--brand)] transition-[filter,transform] duration-300 hover:-translate-y-0.5 hover:brightness-110 focus-visible:brightness-110"
+                  className="inline-flex h-7 w-9 items-center justify-center rounded-[5px] bg-white ring-1 ring-black/5 text-[color:var(--brand)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:-translate-y-0.5"
                 >
                   {s.icon}
                 </a>

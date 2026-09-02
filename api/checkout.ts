@@ -150,13 +150,19 @@ const TIERS: Record<TierId, TierDef> = {
     pricePence: 199500,
     editionLabel: "Heirloom Edition — edition of 18, numbered",
     // £1,995 base — mirrors src/data/paintings.ts PRINT_TIERS["heirloom"].
-    // ⚠️ HIDDEN from buyers (paintings.ts `available:false`); this row stays
-    // `available:true` here only so a stale in-flight client can't crash
-    // checkout. Hand-finish enabled; FRAMING intentionally NOT offered (a glazed
-    // 84cm frame exceeds the supplier's ship cap — see paintings.ts).
+    // ⚠️ NOT SELLABLE. paintings.ts has `available:false`, so this work is
+    // hidden from every buyer surface. This row used to stay `available:true`
+    // "so a stale in-flight client can't crash checkout" — but `available` is
+    // the SALES gate, not crash safety: keeping it true meant a crafted POST
+    // could buy the retired A0 at £2,420, and the trade path already gates on
+    // TRADE_SELLABLE_TIERS for exactly this reason. The row REMAINS here (so a
+    // stale client still resolves the tier and gets a clean, readable 400
+    // instead of an unknown-tier crash) but it can no longer be sold.
+    // Hand-finish enabled; FRAMING intentionally NOT offered (a glazed 84cm
+    // frame exceeds the supplier's ship cap — see paintings.ts).
     embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
-    available: true,
+    available: false,
   },
   studio: {
     // Studio one-off — £2,650 unique hand-painted piece by Polly Wedge. No
@@ -168,7 +174,10 @@ const TIERS: Record<TierId, TierDef> = {
     pricePence: 265000,
     editionLabel: "Unique — one of one",
     isOneOff: true,
-    available: true,
+    // ⚠️ NOT SELLABLE — mirrors paintings.ts `available:false`. A crafted POST
+    // could otherwise mint a £2,650 session for a one-of-one original the
+    // estate has explicitly decided not to offer. See the heirloom note above.
+    available: false,
   },
 };
 

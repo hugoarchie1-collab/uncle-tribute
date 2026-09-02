@@ -119,14 +119,14 @@ const TIERS: Record<TierId, EmailTier> = {
     embellishmentPricePence: 129500,
     canvasPricePence: 42500, // £425 (A0) — mirror of paintings.ts (gotcha #9)
     // ⚠️ HIDDEN from buyers — paintings.ts has `available: false` (Heirloom /
-    // A0 was retired). This row stays `available: true` DELIBERATELY, mirroring
+    // A0 was retired). This row stays `available: false` DELIBERATELY, mirroring
     // the identical decision and rationale in api/checkout.ts: it exists only
     // so a stale in-flight client holding an A0 line is priced correctly rather
     // than being silently downgraded to the Collector anchor. Do NOT "fix" this
     // to match paintings.ts — the divergence is the point, and the same comment
     // sits beside the checkout.ts row. (The old note here cited £495 vs £1,895,
     // two price revisions out of date.)
-    available: true,
+    available: false,
   },
   studio: {
     // £2,650 unique hand-painted one-off by Polly Wedge — no add-ons.
@@ -135,7 +135,7 @@ const TIERS: Record<TierId, EmailTier> = {
     editionLabel: "Unique — one of one",
     pricePence: 265000,
     isOneOff: true,
-    available: true,
+    available: false,
   },
 };
 // Per-painting LANDSCAPE size overrides (mirror of OPHIUCHUS_TIER_SIZE in

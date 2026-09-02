@@ -45,6 +45,14 @@ const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const failures = [];
 const fail = (check, detail) => failures.push({ check, detail });
 
+// Comments are stripped before ANY parsing: a ⚠️ note explaining why a tier is
+// not sellable legitimately contains the words `available:true`, and matching
+// that made the gate report drift that did not exist. Parse CODE, never prose.
+const stripComments = (src) =>
+  src
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/(^|[^:])\/\/[^\n]*/g, "$1 ");
+
 // -----------------------------------------------------------------------------
 // 1. ADVERTISED == CHARGED — the price mirror
 // -----------------------------------------------------------------------------
@@ -85,6 +93,15 @@ const parseTiers = (src, startMarker, endMarker, ids) => {
       framing: num("framingPricePence"),
       canvas: num("canvasPricePence"),
       embellish: num("embellishmentPricePence"),
+      // ⚠️ `available` is the SALES GATE, not a display flag. api/checkout.ts
+      // marked heirloom and studio available:true "so a stale client can't
+      // crash", while paintings.ts hides them — so a crafted POST could buy a
+      // £2,650 one-of-one the estate had decided not to sell.
+      available: /available:\s*true/.test(seg)
+        ? true
+        : /available:\s*false/.test(seg)
+          ? false
+          : undefined,
     };
   });
   return out;
@@ -96,7 +113,7 @@ const tierIdsFrom = (src) => {
   return m ? [...m[1].matchAll(/"([a-z-]+)"/g)].map((x) => x[1]) : [];
 };
 
-const paintings = read("src/data/paintings.ts");
+const paintings = stripComments(read("src/data/paintings.ts"));
 const TIER_IDS = tierIdsFrom(paintings);
 const canonical = parseTiers(
   paintings,
@@ -113,7 +130,7 @@ if (!canonical) {
     ["api/email-basket.ts", "const TIERS", "const PAINTING_TIER_SIZE"],
   ];
   for (const [file, start, end] of mirrors) {
-    const mirror = parseTiers(read(file), start, end, TIER_IDS);
+    const mirror = parseTiers(stripComments(read(file)), start, end, TIER_IDS);
     if (!mirror) {
       fail("price-mirror", `Could not parse the tier mirror in ${file}.`);
       continue;
@@ -124,12 +141,15 @@ if (!canonical) {
         fail("price-mirror", `${file} is missing tier "${id}" — a tier present in paintings.ts must exist in every mirror.`);
         continue;
       }
-      for (const field of ["base", "framing", "canvas", "embellish"]) {
+      for (const field of ["base", "framing", "canvas", "embellish", "available"]) {
         if (want[field] !== got[field]) {
           fail(
             "price-mirror",
-            `${file} tier "${id}" ${field}: mirror has ${got[field]}, paintings.ts has ${want[field]}. ` +
-              `ADVERTISED != CHARGED is the highest rule in this codebase.`,
+            field === "available"
+              ? `${file} tier "${id}" is available:${got[field]} but paintings.ts says available:${want[field]}. ` +
+                `\`available\` is the SALES GATE — a tier hidden from buyers must not be purchasable.`
+              : `${file} tier "${id}" ${field}: mirror has ${got[field]}, paintings.ts has ${want[field]}. ` +
+                `ADVERTISED != CHARGED is the highest rule in this codebase.`,
           );
         }
       }
@@ -140,13 +160,6 @@ if (!canonical) {
 // -----------------------------------------------------------------------------
 // 2. NO BUYER-VISIBLE FALSEHOODS
 // -----------------------------------------------------------------------------
-// Only string/JSX content is scanned — comments are exempt, because several
-// carry these words legitimately while explaining why they must never ship.
-const stripComments = (src) =>
-  src
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|[^:])\/\/[^\n]*/g, "$1 ");
-
 /** Files a customer can read text from. */
 const BUYER_FACING = [
   "src/pages",
