@@ -40,7 +40,8 @@ export interface Colourway {
   framing?: string;       // [TBD] e.g. "Hand-finished oak frame with museum glass"
   price?: string;         // [TBD] e.g. "£450"
   // ⚠️ NEVER write "signed" or "hand-signed" here. Stephen died in 2021 and
-  // /faq states plainly that prints cannot be signed in his hand — this example
+  // the FAQ (src/data/faqs.tsx) states plainly that prints cannot be signed in
+  // his hand — this example
   // read "Limited to 50, hand-signed", which is a falsehood waiting for the
   // first person who fills the field in. Match the live editionLabel register:
   // "edition of 200, numbered", or "unnumbered, issued to order".

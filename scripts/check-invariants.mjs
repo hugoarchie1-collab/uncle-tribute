@@ -197,7 +197,7 @@ const BANNED = [
     // "signed" adjacent to print/giclée/edition. Stephen died in 2021 and /faq
     // states plainly that prints cannot be signed in his hand.
     re: /\bsigned\b[^.<>{}\n]{0,30}\b(print|prints|gicl|edition|editions)\b/i,
-    why: 'Prints are NEVER "signed" — Stephen died in 2021 and /faq says so. Use "estate-stamped".',
+    why: 'Prints are NEVER "signed" — Stephen died in 2021 and the FAQ (src/data/faqs.tsx) says so. Use "estate-stamped".',
   },
   {
     id: "printer-named",

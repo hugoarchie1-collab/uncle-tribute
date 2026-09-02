@@ -8,7 +8,7 @@ import { EYEBROW_MUTED } from "./ui/tokens";
  * checkmark lists that make the craft legible at a glance on the product page.
  *
  * ⚠️ Every bullet is literally true and traces to existing, vetted buyer copy
- * (the /faq answers + the buy-box material spec) — no upgraded or invented
+ * (the FAQ answers + the buy-box material spec) — no upgraded or invented
  * claims. Monochrome (PDP rule); the tick is ink, not accent.
  */
 

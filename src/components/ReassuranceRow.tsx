@@ -7,7 +7,7 @@ import { PaymentMarks } from "./PaymentMarks";
  * ReassuranceRow — three honest, documented reassurances under the buy box.
  * Every claim is literally true for this stack: payments via Stripe,
  * damaged-in-transit replacement (see /returns), and free delivery
- * with estate dispatch in 7–10 days (see /faq — FREE SHIPPING POLICY 2026-06-06,
+ * with estate dispatch in 7–10 days (see the FAQ in src/data/faqs.tsx — FREE SHIPPING POLICY 2026-06-06,
  * the estate absorbs all delivery cost into the print margin). Deliberately NOT
  * an unconditional 14-day refund (made-to-order, UK CCR 2013 reg 28) and NO
  * fake SSL/badge.

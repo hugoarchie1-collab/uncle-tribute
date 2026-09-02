@@ -74,13 +74,30 @@ const routeVariants: Variants = {
   }),
 };
 
+/** True until ScrollManager runs once. Module scope on purpose: it marks the
+ *  session's COLD LOAD, which React Router reports as navType POP and which
+ *  therefore used to skip the fragment the URL asked for. */
+let isFirstRun = true;
+
 /**
  * Scroll behaviour on route change (logic preserved from the original
  * App-level ScrollToTop, relocated so it runs as the incoming page mounts):
+ *  - FIRST RUN of the session with a hash: honour the hash (see below)
  *  - POP (browser back/forward): let the browser restore its scroll position
  *  - PUSH / REPLACE with hash: poll for the target element (page may still be
  *    mounting + fixed backdrop layer settling), then scroll it into view
  *  - PUSH / REPLACE without hash: scroll to top, synchronously before paint
+ *
+ * ⚠️ THE FIRST-RUN CASE IS NOT COSMETIC (added 2026-09-02). React Router reports
+ * navType POP for the initial navigation, so a COLD load carrying a fragment —
+ * themandalacompany.com/contact#faq from an order email, a Google result for the
+ * retired /faq, any /legal#returns-2 deep link — returned early and never
+ * scrolled. The browser's own fragment jump cannot cover for it either: this is
+ * an SPA, so at document-load time the target element does not exist yet and
+ * nothing retries. Verified live: /faq redirected correctly and then left the
+ * reader on the contact FORM, 909px above the questions they had asked for.
+ * `isFirstRun` is module scope, so it distinguishes the initial load from every
+ * later back/forward POP, whose browser scroll restoration stays untouched.
  *
  * ⚠️ `search` IS a dependency (added 2026-09-01). A same-pathname query change —
  * /search?q=a → /search?q=b, the ONLY route that does this today — used to leave
@@ -106,7 +123,13 @@ const ScrollManager = ({
   navType: NavigationType;
 }) => {
   useLayoutEffect(() => {
-    if (navType === "POP") return;
+    // The initial navigation reports POP; a cold URL's fragment still has to be
+    // honoured. Consume the flag on the first run whatever happens, so a genuine
+    // back/forward later in the session is never mistaken for a cold load.
+    const coldLoad = isFirstRun;
+    isFirstRun = false;
+
+    if (navType === "POP" && !coldLoad) return;
 
     if (hash) {
       const id = hash.replace(/^#/, "");
@@ -134,6 +157,10 @@ const ScrollManager = ({
         window.clearTimeout(t);
       };
     }
+
+    // A cold load with no hash already starts at the top, and forcing a
+    // scrollTo here would fight the browser's own restoration on a reload.
+    if (coldLoad) return;
 
     // useLayoutEffect → this runs before the incoming page's first paint, so
     // the new route is never seen at the old scroll position, even mid-fade.

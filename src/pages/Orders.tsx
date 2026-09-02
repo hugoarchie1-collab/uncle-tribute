@@ -1,7 +1,8 @@
 // src/pages/Orders.tsx — /orders. Amazon "Returns & Orders", estate-skinned.
 // Two sections: (1) track an order by its reference (the cs_… id from the
 // confirmation email) + optional email, via GET /api/order-status; (2) a warm
-// returns / after-sale summary that links to the full /returns + /faq policy
+// returns / after-sale summary that links to the full policy (/legal#returns)
+// and the FAQ accordion (/contact#faq)
 // and offers a prefilled return-or-damage email. Signed-in buyers get their
 // full history at /account.
 

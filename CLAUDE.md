@@ -1,6 +1,6 @@
 # The Art of Stephen Meakin — Project Source of Truth
 
-A memorial tribute website and direct-to-buyer print shop for **Stephen Meakin** (SEM, 1966–2021), British mandala artist and sacred geometer. Built by his nephew on behalf of **The Mandala Company** (the estate, run by Steve's immediate family — Mandala Company is a trading name, not a registered Foundation or charity). Sells **estate-stamped** giclée print reproductions of his paintings direct from the site (via Stripe) and via Etsy. ⚠️ NEVER "signed": Stephen died in 2021 and `/faq` says plainly that prints cannot be signed in his hand — they are estate-stamped by The Mandala Company, numbered where the edition is numbered, and issued with a Certificate of Authenticity. This line itself read "signed" until 2026-09-01, in the very document that gets pasted into every new session.
+A memorial tribute website and direct-to-buyer print shop for **Stephen Meakin** (SEM, 1966–2021), British mandala artist and sacred geometer. Built by his nephew on behalf of **The Mandala Company** (the estate, run by Steve's immediate family — Mandala Company is a trading name, not a registered Foundation or charity). Sells **estate-stamped** giclée print reproductions of his paintings direct from the site (via Stripe) and via Etsy. ⚠️ NEVER "signed": Stephen died in 2021 and the FAQ (`src/data/faqs.tsx`) says plainly that prints cannot be signed in his hand — they are estate-stamped by The Mandala Company, numbered where the edition is numbered, and issued with a Certificate of Authenticity. This line itself read "signed" until 2026-09-01, in the very document that gets pasted into every new session.
 
 This document is the project's running source of truth — paste it at the start of any new AI chat to skip a full re-explanation.
 
@@ -88,7 +88,7 @@ Six audit agents, then five build agents on partitioned files, then a re-audit o
 - **PDP substrate = a "Material" choice** (`7fe1fbd`+): Fine-art paper (Included, default, highest margin) vs Stretched canvas (+£X, ready to hang). Canvas is mutually exclusive with framing AND hand-finishing — selecting it CLEARS both flags (no phantom charge, `cb3b48b`). Replaced the old confusing "add canvas" checkbox.
 - **Framing presented as the RECOMMENDED presentation** (`581161b`): a "Recommended" tag + stronger resting outline + "Recommended: hand-framed, ready to hang" lead — but the charge stays OPT-IN, never pre-ticked (UK DMCC drip-pricing rule). Biggest AOV lever.
 - **THREE checkout order bumps** (near-pure margin, same inline-price_data pattern in Basket.tsx + api/checkout.ts): gift-wrap £25, care-kit £20, **Heirloom presentation box £45** (`9abc8d0`). ⚠️ the box needs sourcing/drop-ship to fulfil.
-- **SEO:** **FAQPage JSON-LD** on /faq (`ce2ec4b`, built from the rendered FAQS via a node-flattener so schema==visible) + fixed a stale FAQ framing price (£295/£395→£345/£445). Product `AggregateRating` still NOT wired (deferred — needs KV + real reviews; never emit an empty rating).
+- **SEO:** **FAQPage JSON-LD** on /contact (moved there 2026-09-02 with the questions; originally /faq, `ce2ec4b`, built from the rendered FAQS via a node-flattener so schema==visible) + fixed a stale FAQ framing price (£295/£395→£345/£445). Product `AggregateRating` still NOT wired (deferred — needs KV + real reviews; never emit an empty rating).
 - **Home masthead** dead-gap fixed → `landscape:min-h-[78svh]` (`95b2a3a`): Earth limb fully visible, "THE SEM EXPERIENCE" wordmark rises to meet it. ⚠️ NOT 100svh (forehead gap), NOT ≤64svh (clips Earth).
 - **Scene backgrounds re-darkened for legibility** (`7fe1fbd`): `SceneBackdrop` filter `brightness(2.0)`→`1.28 saturate(0.96)`, scrim ramp `0.36→0.50→0.68`; `SceneReveal` default `2.35`→`1.68` — reversed a 07-07 over-lightening that washed out cream text. **PDP colourway ambient** (`.pd-*` layers) strengthened so a colourway switch is visibly re-tinted.
 - **Nav:** Gift cards moved into the **"Shop"** menu group. New **`/links`** link-in-bio hub (`f44a3c1`; socials in `src/data/socials.tsx`; ⚠️ Etsy card gated behind an empty `ETSY_URL`).
@@ -229,15 +229,23 @@ To test serverless functions locally you'd need `vercel dev` (Vercel CLI) — no
 /basket                      Multi-item basket (localStorage; ?restore=<payload> rebuilds it cross-device) + Proceed to checkout
 (REMOVED: /journal, /journal/:slug, /photo-book — pages + data deleted; do not re-document)
 /contact                     Full-page contact form (same submission path as EnquireModal)
-/links                       On-brand "link in bio" hub (NOT Linktree) — socials from src/data/socials.tsx; Etsy card gated behind an empty ETSY_URL. (NEW 2026-07-15)
-/faq                         8-section frequently asked
-/privacy                     UK GDPR Art 13–14 privacy policy (updated 2026-05-28)
-/terms                       Terms of sale (UK CCR 2013 reg 28 made-to-order exemption)
-/returns                     Returns, refunds & damages (plain-English summary)
+/legal                       ⚠️ ONE page carrying all three policies as TABS: #privacy (UK GDPR Art 13–14) · #terms (UK CCR 2013 reg 28 made-to-order exemption) · #returns (returns, refunds & damages). CONSOLIDATED 2026-09-02 from three separate routes — stacked they ran ~13,000px and buried the returns policy, the one linked from every PDP and order email. The active tab is DERIVED from the hash, never state; a clause hash (#returns-2) resolves to its parent part. Panels stay in the DOM (`hidden`) so crawlers read all three. Panel ids are `part-<id>`, deliberately NOT the bare hash id — see src/pages/Legal.tsx.
+(RETIRED 2026-09-02: /faq → the Q&As are src/data/faqs.tsx, rendered as an accordion on every PDP and at /contact#faq. /privacy, /terms, /returns → /legal anchors. /links → page deleted 2026-09-02. All 301'd at the edge in vercel.json AND aliased in-app via src/lib/legacyRoutes.ts — do not re-document as pages.)
 /order/success?session_id=…  Post-checkout confirmation (clears basket on mount)
 /order/cancel                Abandoned-checkout landing
 *                            NotFound
 ```
+
+⚠️ **Every retired path needs BOTH halves, or it breaks.** `vercel.json`
+`redirects` 301s it at the edge (crawlers, printed leaflets, old order emails),
+and `src/lib/legacyRoutes.ts` `LEGACY_REDIRECTS` drives the in-app `<Navigate>`
+alias. **Never add a `<Navigate>` route by hand:** `PageTransition` runs
+`AnimatePresence mode="wait"`, so a route-level redirect changes the crossfade
+key mid-render — the alias exits while its replacement never enters and the
+reader gets a BLANK page with only site chrome. The crossfade keys on
+`canonicalPath()` so an alias borrows its target's key; a redirect added
+outside that map re-introduces the bug. It had shipped broken on /gallery and
+/verify for months, hidden because the edge 301 usually got there first.
 
 ---
 
@@ -407,7 +415,7 @@ Painting page → "Add to basket"  → localStorage basket  → /basket → "Pro
 
 ### Family & Friends discount — the dignified register (renamed 2026-08 from "thank-you")
 
-The estate sends a **single-use 10% promotion code** to every buyer inside the order confirmation email — NOT a banner, popup, or "10% OFF" badge on the site. Buyer-facing name **Family & Friends**; framing: *"With our thanks for taking one of Steve's prints into your home, here is 10% towards your next print — and one to pass to someone you love."* Valid for one year, redeemable on any future print. Code shape: `FF-AB12CD` (unique per order; `THANKYOU_PREFIX = "FF"` in `api/stripe-webhook.ts`). Surfaced on the site as a **/faq entry** ("Is there a discount for a second print?") and on the catalogue's last page — never a public standing code. First purchases stay full price; the 10% only applies to a *second* print (margin-safe on ~90% margins).
+The estate sends a **single-use 10% promotion code** to every buyer inside the order confirmation email — NOT a banner, popup, or "10% OFF" badge on the site. Buyer-facing name **Family & Friends**; framing: *"With our thanks for taking one of Steve's prints into your home, here is 10% towards your next print — and one to pass to someone you love."* Valid for one year, redeemable on any future print. Code shape: `FF-AB12CD` (unique per order; `THANKYOU_PREFIX = "FF"` in `api/stripe-webhook.ts`). Surfaced on the site as a **FAQ entry** ("Is there a discount for a second print?" — `src/data/faqs.tsx`, shown on every PDP and at /contact#faq) and on the catalogue's last page — never a public standing code. First purchases stay full price; the 10% only applies to a *second* print (margin-safe on ~90% margins).
 
 **Fallback**: if the dynamic coupon mint fails, the webhook falls back to a static reusable code (env var `THANK_YOU_CODE_FALLBACK`, default `FAMILYFRIENDS` — Stripe codes can't contain `&`). For the fallback to actually grant a discount, Hugo must create a matching promotion code in the Stripe dashboard: Dashboard → Products → Coupons → New (10% off, "Once", no expiry) → attach a promotion code named `FAMILYFRIENDS`. Otherwise leave the fallback unused — the dynamic per-order `FF-XXXXXX` path is the production design.
 
