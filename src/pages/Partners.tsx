@@ -69,7 +69,7 @@ const SectionHead = ({ eyebrow, meta }: { eyebrow: string; meta?: string }) => (
 /** The suite-grid tile edge. Every colourway square on the page is exactly this
  *  wide, in every group, so the grid reads as one set of squares rather than
  *  rows that each chose their own scale. */
-const TILE = "clamp(64px, 7vw, 124px)";
+const TILE = "clamp(72px, 9vw, 152px)";
 const TILE_GAP = "10px";
 
 const ITALIC_STYLE = { fontVariationSettings: '"opsz" 40, "wght" 400' } as const;
@@ -116,13 +116,40 @@ const ART_HOME = art("enneagon-swans", "Antique Pink");
  *  left in the most colourways, so the "one painting, every mood" claim is
  *  carried by the widest real example in the catalogue. Chosen from the data,
  *  so it stays correct if the catalogue changes. */
+const availableWays = (p: (typeof PAINTINGS)[number]) => p.colourways.filter((c) => c.available);
+// Sorted by colourway count, ties broken by id so a data edit can never silently
+// swap the section's subject. `?? PAINTINGS[0]` guards module scope: this runs at
+// import time, so throwing here would reject the lazy chunk and blank the ROUTE,
+// not just this section.
 const MOOD_PAINTING =
   [...PAINTINGS].sort(
-    (a, b) =>
-      b.colourways.filter((c) => c.available).length -
-      a.colourways.filter((c) => c.available).length,
-  )[0];
-const MOOD_WAYS = MOOD_PAINTING.colourways.filter((c) => c.available);
+    (a, b) => availableWays(b).length - availableWays(a).length || a.id.localeCompare(b.id),
+  )[0] ?? PAINTINGS[0];
+const MOOD_WAYS = MOOD_PAINTING ? availableWays(MOOD_PAINTING) : [];
+
+// Every OTHER painting Stephen left in more than one colourway. The demonstration
+// painting is excluded: it is shown ten lines above at full size, and rendering
+// its five squares again here read as a duplicate. Ordered richest-first then
+// INTERLEAVED largest/smallest — the groups are a fixed tile size and wrap, so in
+// catalogue order the wide groups collide and every row ends half empty.
+const SUITES = (() => {
+  const all = PAINTINGS.filter((p) => p.id !== MOOD_PAINTING?.id)
+    .map((p) => ({ painting: p, ways: availableWays(p) }))
+    .filter((x) => x.ways.length > 1)
+    .sort((a, b) => b.ways.length - a.ways.length || a.painting.id.localeCompare(b.painting.id));
+  const out: typeof all = [];
+  let lo = 0;
+  let hi = all.length - 1;
+  while (lo <= hi) {
+    out.push(all[lo]);
+    lo += 1;
+    if (lo <= hi) {
+      out.push(all[hi]);
+      hi -= 1;
+    }
+  }
+  return out;
+})();
 
 // ── sectors ──────────────────────────────────────────────────────────────────
 
@@ -202,7 +229,7 @@ const SECTORS: Sector[] = [
       </>
     ),
     body:
-      "Farmacy in Notting Hill commissioned a 3.6-metre SunStar. Your room can have its own: a single hero piece, hand-painted by Stephen's sister in his tradition, with a run of framed editions matched to the palette of the room.",
+      "Farmacy in Notting Hill commissioned a 3.6-metre SunStar. For a room that wants a piece of its own, the estate takes on a small number of commissions each year, hand-painted by Polly in Stephen's tradition, alongside a run of framed editions matched to the palette of the room.",
     zones: ["Dining room", "Bar", "Private dining", "Members' lounge"],
     sizes: "A1 · commission",
     art: ART_DINING,
@@ -279,7 +306,7 @@ const STEPS: { label: string; title: string; body: string }[] = [
   {
     label: "Made & delivered",
     title: "Each piece made to order, estate-stamped, framed and packed flat.",
-    body: "A single framed print takes around two weeks. A project schedule is confirmed in the proposal.",
+    body: "A single framed print is dispatched within 2–4 working days. A project schedule is confirmed in the proposal.",
   },
 ];
 
@@ -398,6 +425,20 @@ const Chips = ({ name, options, label }: { name: string; options: readonly strin
 const ProjectForm = ({ sector }: { sector: string }) => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  // The sector selector above the form seeds this field, but ONLY until the
+  // buyer answers it themselves. It used to be `key={sector} defaultValue`,
+  // which remounted the select on every tab click and silently overwrote their
+  // answer. Derived during render (not synced in an effect) so there is no
+  // cascading re-render: null means "nobody has touched it, follow the tabs".
+  const [ownSector, setOwnSector] = useState<string | null>(null);
+  const sectorValue = ownSector ?? sector;
+  const successRef = useRef<HTMLParagraphElement>(null);
+  // The form unmounts on success, which drops focus to <body> — the top of a
+  // 10,000px page for anyone on a keyboard. Move it to the confirmation, which
+  // also makes screen readers announce it.
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -421,6 +462,13 @@ const ProjectForm = ({ sector }: { sector: string }) => {
       setErrorMsg("Please add your name, your studio or company, and an email we can reply to.");
       return;
     }
+    // noValidate is set (the browser's own bubbles are off-brand), so the
+    // address is checked here rather than costing a round-trip to be told.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("error");
+      setErrorMsg("That email address doesn't look right — we'd hate to reply into thin air.");
+      return;
+    }
     try {
       const res = await fetch("/api/newsletter-subscribe", {
         method: "POST",
@@ -430,6 +478,7 @@ const ProjectForm = ({ sector }: { sector: string }) => {
           name,
           email,
           studio,
+          website: get("website"),
           role: get("role"),
           sector: get("sector"),
           project: get("project"),
@@ -449,7 +498,10 @@ const ProjectForm = ({ sector }: { sector: string }) => {
       }
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       setStatus("error");
-      setErrorMsg(body?.error || "We couldn't send that just now. Try again, or email us directly.");
+      setErrorMsg(
+        body?.error ||
+          "We couldn't send that just now. Please try again, or email info@themandalacompany.com directly — we don't want to lose your project.",
+      );
     } catch {
       setStatus("error");
       setErrorMsg("We couldn't reach the estate just now. Try again, or email info@themandalacompany.com.");
@@ -458,8 +510,12 @@ const ProjectForm = ({ sector }: { sector: string }) => {
 
   if (status === "success") {
     return (
-      <div className="ring-1 ring-line p-7 md:p-9 3xl:p-12" aria-live="polite">
-        <p className="font-display font-semibold text-[clamp(26px,3vw,44px)] text-ink m-0 mb-3">
+      <div className="ring-1 ring-line p-7 md:p-9 3xl:p-12">
+        <p
+          ref={successRef}
+          tabIndex={-1}
+          className="font-display font-semibold text-[clamp(26px,3vw,44px)] text-ink m-0 mb-3 outline-none"
+        >
           Thank you. It's with the family.
         </p>
         <p className={cn(SUBTITLE, "max-w-none m-0")}>
@@ -491,6 +547,10 @@ const ProjectForm = ({ sector }: { sector: string }) => {
           <input name="studio" required autoComplete="organization" className={FIELD_INPUT} placeholder="Studio name" />
         </label>
         <label className="block">
+          <span className={FIELD_LABEL}>Website</span>
+          <input name="website" autoComplete="url" className={FIELD_INPUT} placeholder="studio.com" />
+        </label>
+        <label className="block">
           <span className={FIELD_LABEL}>Your role</span>
           <select name="role" defaultValue="" className={cn(FIELD_INPUT, "appearance-none")}>
             <option value="">Select…</option>
@@ -501,7 +561,12 @@ const ProjectForm = ({ sector }: { sector: string }) => {
         </label>
         <label className="block">
           <span className={FIELD_LABEL}>Sector</span>
-          <select name="sector" key={sector} defaultValue={sector} className={cn(FIELD_INPUT, "appearance-none")}>
+          <select
+            name="sector"
+            value={sectorValue}
+            onChange={(e) => setOwnSector(e.target.value)}
+            className={cn(FIELD_INPUT, "appearance-none")}
+          >
             <option value="">Select…</option>
             {SECTORS.map((s) => (
               <option key={s.id} value={s.label}>{s.label}</option>
@@ -574,6 +639,10 @@ const ProjectForm = ({ sector }: { sector: string }) => {
 const IntroducerForm = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const successRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (status === "success") successRef.current?.focus();
+  }, [status]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -592,6 +661,11 @@ const IntroducerForm = () => {
     if (!name || !email) {
       setStatus("error");
       setErrorMsg("Please add your name and email.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("error");
+      setErrorMsg("That email address doesn't look right.");
       return;
     }
     try {
@@ -624,8 +698,14 @@ const IntroducerForm = () => {
 
   if (status === "success") {
     return (
-      <div className="ring-1 ring-line p-7 md:p-9" aria-live="polite">
-        <p className="font-display font-semibold text-[clamp(24px,2.6vw,38px)] text-ink m-0 mb-3">Thank you.</p>
+      <div className="ring-1 ring-line p-7 md:p-9">
+        <p
+          ref={successRef}
+          tabIndex={-1}
+          className="font-display font-semibold text-[clamp(24px,2.6vw,38px)] text-ink m-0 mb-3 outline-none"
+        >
+          Thank you.
+        </p>
         <p className={cn(SUBTITLE, "max-w-none m-0")}>
           We'll be in touch personally and in confidence.
         </p>
@@ -700,15 +780,17 @@ const ScaleDiagram = () => {
     x: startX + sizes.slice(0, i).reduce((n, q) => n + q.cm + gap, 0),
     y: H - CENTRE - s.cm / 2,
   }));
+  const SANS = "Schibsted Grotesk, sans-serif";
   const stroke = "rgb(237 230 214 / 0.5)";
   const soft = "rgb(237 230 214 / 0.26)";
-  const SANS = "Schibsted Grotesk, sans-serif";
   return (
     <svg
-      viewBox={`0 0 ${W} ${H + 16}`}
+      viewBox={`0 0 ${W} ${H + 4}`}
       className="w-full h-auto block"
       role="img"
-      aria-label="The three project print sizes — A3 at 29.5 cm, A2 at 42 cm and A1 at 59.5 cm — drawn to one scale above a two-metre sofa, each hung with its centre 150 cm from the floor"
+      aria-label={`The project print sizes — ${frames
+        .map((f) => `${f.label} at ${f.cm} cm`)
+        .join(", ")} — drawn to one scale above a two-metre sofa, each hung with its centre ${CENTRE} cm from the floor`}
     >
       {/* floor */}
       <line x1="0" y1={H} x2={W} y2={H} stroke={stroke} strokeWidth="0.7" />
@@ -719,14 +801,8 @@ const ScaleDiagram = () => {
         <line x1={sofaX + 9} y1={H - 14} x2={sofaX + 9} y2={H} />
         <line x1={sofaX + sofaW - 9} y1={H - 14} x2={sofaX + sofaW - 9} y2={H} />
       </g>
-      <text x={W / 2} y={H + 11} textAnchor="middle" fill={soft} fontSize="5.4" fontFamily={SANS}>
-        two-metre sofa
-      </text>
       {/* the shared hanging line, labelled clear of the frames */}
       <line x1="0" y1={H - CENTRE} x2={W} y2={H - CENTRE} stroke={soft} strokeWidth="0.4" strokeDasharray="2 3" />
-      <text x="1" y={H - CENTRE - 4} fill={soft} fontSize="5.4" fontFamily={SANS}>
-        centre 150 cm from the floor
-      </text>
       {frames.map((f) => (
         <g key={f.id}>
           <rect
@@ -768,11 +844,11 @@ export const Partners = () => {
   // so a useSearchParams write threw the reader back to the masthead on every
   // tab click. history.replaceState updates the address bar without a router
   // navigation, so the URL stays shareable and the page stays put.
-  const initialSector =
-    (typeof window !== "undefined"
-      ? SECTORS.find((s) => s.id === new URLSearchParams(window.location.search).get("sector"))?.id
-      : undefined) ?? SECTORS[0].id;
-  const [sectorId, setSectorId] = useState(initialSector);
+  const [sectorId, setSectorId] = useState(
+    () =>
+      SECTORS.find((s) => s.id === new URLSearchParams(window.location.search).get("sector"))?.id ??
+      SECTORS[0].id,
+  );
   const sector = SECTORS.find((s) => s.id === sectorId) ?? SECTORS[0];
   const tabsId = useId();
 
@@ -803,12 +879,13 @@ export const Partners = () => {
   const projectRef = useRef<HTMLElement>(null);
   const introRef = useRef<HTMLElement>(null);
   const [pastHero, setPastHero] = useState(false);
-  const [formVisible, setFormVisible] = useState(false);
-  // The bar must also stand down over the footer — a fixed CTA sitting on the
-  // footer's legal + payment row is the sloppiest thing a page can end on.
-  // A 1px sentinel can't express this (it stops intersecting once scrolled
-  // past), so the end-of-page test is plain scroll arithmetic.
-  const [atEnd, setAtEnd] = useState(false);
+  // True while EITHER form, or the footer, is on screen — the three places the
+  // bar must stand down. The footer is observed as a whole element rather than
+  // measured against scrollHeight on every scroll event: a sentinel stops
+  // intersecting the moment it is scrolled past, and a scrollHeight threshold
+  // is both a forced reflow per scroll and a guess at the footer's height.
+  const [hideZone, setHideZone] = useState(false);
+  const footerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const obs: IntersectionObserver[] = [];
@@ -821,41 +898,38 @@ export const Partners = () => {
       obs.push(o);
     }
     const seen = new Map<Element, boolean>();
-    const targets = [projectRef.current, introRef.current].filter((n): n is HTMLElement => Boolean(n));
+    const targets = [projectRef.current, introRef.current, footerRef.current].filter(
+      (n): n is HTMLElement => Boolean(n),
+    );
     if (targets.length) {
+      // threshold 0 — "any pixel of this on screen" is exactly the condition;
+      // a ratio threshold is unreachable for a section taller than the viewport.
       const o = new IntersectionObserver(
         (entries) => {
           for (const e of entries) seen.set(e.target, e.isIntersecting);
-          setFormVisible([...seen.values()].some(Boolean));
+          setHideZone([...seen.values()].some(Boolean));
         },
-        { threshold: 0.05 },
+        { threshold: 0 },
       );
       targets.forEach((t) => o.observe(t));
       obs.push(o);
     }
-    const onScroll = () => {
-      const doc = document.documentElement;
-      setAtEnd(window.scrollY + window.innerHeight >= doc.scrollHeight - 260);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      obs.forEach((o) => o.disconnect());
-      window.removeEventListener("scroll", onScroll);
-    };
+    return () => obs.forEach((o) => o.disconnect());
   }, []);
-  const showSticky = pastHero && !formVisible && !atEnd;
+  const showSticky = pastHero && !hideZone;
 
-  const scrollTo = (ref: React.RefObject<HTMLElement | null>) =>
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // ⚠️ window.scrollTo is a NO-OP on these pages (overflow-x-clip on the page
+  // root), so every in-page jump must go through scrollIntoView.
+  const jump = (el: Element | null | undefined, block: ScrollLogicalPosition = "start") => {
+    const smooth =
+      typeof window !== "undefined" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block });
+  };
+  const scrollTo = (ref: React.RefObject<HTMLElement | null>) => jump(ref.current);
 
   // Suites: every painting with more than one available colourway, as square
   // tiles — the catalogue's real depth, sourced live so it can never drift.
-  const suites = PAINTINGS.map((p) => ({
-    painting: p,
-    ways: p.colourways.filter((c) => c.available),
-  })).filter((s) => s.ways.length > 1);
-
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-clip">
       <Seo
@@ -920,11 +994,15 @@ export const Partners = () => {
                     )}
                     <button
                       type="button"
+                      aria-current={s.id === sectorId ? "true" : undefined}
                       onClick={() => {
                         chooseSector(s.id);
-                        document.getElementById(`${tabsId}-panel`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        jump(document.getElementById(`${tabsId}-panel`), "center");
                       }}
-                      className="hover:text-accent transition-colors"
+                      className={cn(
+                        "transition-colors hover:text-accent",
+                        s.id === sectorId && "text-accent",
+                      )}
                     >
                       {s.label}
                     </button>
@@ -968,7 +1046,7 @@ export const Partners = () => {
                 <Reveal
                   as="div"
                   key={c.fig}
-                  className={cn("grid grid-cols-[auto_1fr] gap-x-6 md:gap-x-8 items-baseline py-5 md:py-6", i > 0 && "border-t border-line/70")}
+                  className={cn("grid grid-cols-[auto_1fr] gap-x-6 md:gap-x-8 items-baseline py-5 md:py-6", i > 0 && "border-t border-line")}
                 >
                   <p
                     className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(34px,3.6vw,64px)] leading-none whitespace-nowrap min-w-[3.2ch] [font-variant-numeric:tabular-nums]"
@@ -979,7 +1057,7 @@ export const Partners = () => {
                   <p className={cn(SUBTITLE, "max-w-none m-0")}>{c.text}</p>
                 </Reveal>
               ))}
-              <Reveal as="div" className="pt-5 md:pt-6 border-t border-line/70">
+              <Reveal as="div" className="pt-5 md:pt-6 border-t border-line">
                 <p className={cn(META, "m-0")}>
                   Exhibited at the Majlis Gallery, Dubai · Trinity Gallery, London · Unique Arts, Brighton
                 </p>
@@ -1020,8 +1098,8 @@ export const Partners = () => {
                     <AssetImage
                       src={c.image}
                       alt={paintingImageAlt(MOOD_PAINTING.title, c.name)}
-                      loading={i < 3 ? "eager" : "lazy"}
-                      sizes="(min-width:1536px) 19vw, (min-width:1024px) 24vw, 74vw"
+                      loading={i === 0 ? "eager" : "lazy"}
+                      sizes="(min-width:1700px) 19vw, (min-width:1024px) 24vw, 74vw"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -1046,7 +1124,7 @@ export const Partners = () => {
                 reads as deliberate. `maxWidth:100%` lets a five-tile group
                 shrink on a phone rather than push the page sideways. */}
             <div className="flex flex-wrap justify-center gap-x-8 lg:gap-x-10 gap-y-10">
-              {suites.map(({ painting, ways }) => (
+              {SUITES.map(({ painting, ways }) => (
                 <div
                   key={painting.id}
                   className="min-w-0"
@@ -1072,26 +1150,28 @@ export const Partners = () => {
                         to={`/collections/${painting.id}?c=${encodeURIComponent(c.name)}`}
                         className="group block aspect-square overflow-hidden ring-1 ring-line hover:ring-accent/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                         aria-label={`${painting.title} — ${c.name}`}
-                        title={c.name}
                       >
                         <div className="w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
                           <AssetImage
                             src={c.image}
                             alt={paintingImageAlt(painting.title, c.name)}
                             loading="lazy"
-                            sizes="(min-width:1536px) 9vw, (min-width:768px) 12vw, 22vw"
+                            sizes={TILE}
                             className="w-full h-full object-cover"
                           />
                         </div>
                       </Link>
                     ))}
                   </div>
-                  <p className="font-display font-semibold tracking-[-0.02em] text-ink m-0 mt-3 text-[clamp(16px,1.1vw,23px)] leading-[1.2] text-balance">
+                  {/* Title + count only. Listing every colourway NAME here made
+                      the caption wider than its own group, so it wrapped to
+                      three ragged lines under the narrow groups and collided
+                      with the neighbour. The names belong on the product page
+                      and the specification sheet, not under a thumbnail. */}
+                  <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 mt-3 text-[clamp(15px,1.05vw,22px)] leading-[1.2] text-balance">
                     {painting.title}
-                  </p>
-                  <p className={cn(META, "m-0 mt-1 text-pretty")}>
-                    {ways.length} colourways · {ways.map((c) => c.name).join(" · ")}
-                  </p>
+                  </h3>
+                  <p className={cn(META, "m-0 mt-0.5")}>{ways.length} colourways</p>
                  </Reveal>
                 </div>
               ))}
@@ -1141,15 +1221,14 @@ export const Partners = () => {
             id={`${tabsId}-panel`}
             role="tabpanel"
             aria-labelledby={`${tabsId}-tab-${sector.id}`}
-            aria-live="polite"
             className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center"
           >
-            <figure key={sector.art.src} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
+            <figure key={sector.id} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
               <div className="overflow-hidden ring-1 ring-line aspect-square">
                 <AssetImage
                   src={sector.art.src}
                   alt={paintingImageAlt(sector.art.painting, sector.art.colourway)}
-                  loading="eager"
+                  loading="lazy"
                   sizes="(min-width:1024px) 40vw, 92vw"
                   className="w-full h-full object-cover"
                 />
@@ -1162,7 +1241,7 @@ export const Partners = () => {
             <div key={sector.id} className="lg:col-span-7 motion-safe:animate-[fadeIn_0.5s_ease-out]">
               <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>{sector.title}</h2>
               <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{sector.body}</p>
-              <dl className="m-0 mt-6 md:mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line/70 pt-5">
+              <dl className="m-0 mt-6 md:mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line pt-5">
                 <dt className={cn(EYEBROW_MUTED, "m-0")}>Suits</dt>
                 <dd className={cn(META, "m-0 text-ink")}>{sector.zones.join(" · ")}</dd>
                 <dt className={cn(EYEBROW_MUTED, "m-0")}>Sizes</dt>
@@ -1189,7 +1268,7 @@ export const Partners = () => {
               <Reveal
                 as="div"
                 key={p.title}
-                className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-x-8 gap-y-2 py-5 md:py-6 border-b border-line/70"
+                className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-x-8 gap-y-2 py-5 md:py-6 border-b border-line"
               >
                 <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(19px,1.5vw,30px)] leading-[1.15]">
                   {p.title}
@@ -1208,7 +1287,7 @@ export const Partners = () => {
               <h2 className={cn(TITLE, "m-0")}>
                 For the feature wall, his sister still paints by <Em>hand</Em>.
               </h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{WELCOME.bio[2]}</p>
+              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{WELCOME.bio[1]}</p>
               <p className={cn(SUBTITLE, "m-0 mt-4")}>
                 The estate undertakes a small number of commissions each year, hand-painted by Polly,
                 Stephen's sister, working in his sacred-geometry tradition. Scale, palette and timeline
@@ -1268,6 +1347,10 @@ export const Partners = () => {
             </Reveal>
             <Reveal as="div" className="lg:col-span-8">
               <ScaleDiagram />
+              <p className={cn(META, "mt-4 text-center")}>
+                Drawn to one scale · each hung with its centre 150 cm from the floor · shown against a
+                two-metre sofa
+              </p>
             </Reveal>
           </div>
         </section>
@@ -1275,9 +1358,9 @@ export const Partners = () => {
         {/* ── S9 QUESTIONS ────────────────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
           <SectionHead eyebrow="Questions people ask" meta="Before you write" />
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-12 border-t border-line">
+          <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-x-12 border-t border-line">
             {QUESTIONS.map((f) => (
-              <details key={f.q} className="group border-b border-line/70 py-5 md:py-6 [&_summary::-webkit-details-marker]:hidden">
+              <details key={f.q} className="group border-b border-line py-5 md:py-6 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex items-center justify-between gap-6 cursor-pointer list-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm">
                   <h3 className="font-display font-semibold tracking-[-0.02em] text-ink m-0 text-[clamp(18px,1.5vw,28px)] leading-[1.2] group-hover:text-accent transition-colors">
                     {f.q}
@@ -1333,13 +1416,13 @@ export const Partners = () => {
                 selection to delivery. You share in every placement that follows, on terms agreed
                 privately and in writing.
               </p>
-              <ul className="list-none m-0 mt-6 p-0 border-t border-line/70">
+              <ul className="list-none m-0 mt-6 p-0 border-t border-line">
                 {[
                   "You introduce.",
                   "The family selects, makes, frames and delivers.",
                   "You share in the placement, and in the ones that follow.",
                 ].map((l) => (
-                  <li key={l} className={cn(META, "m-0 py-3 border-b border-line/70 text-ink")}>
+                  <li key={l} className={cn(META, "m-0 py-3 border-b border-line text-ink")}>
                     {l}
                   </li>
                 ))}
@@ -1394,7 +1477,9 @@ export const Partners = () => {
         </div>
       </div>
 
-      <Footer />
+      <div ref={footerRef}>
+        <Footer />
+      </div>
     </div>
   );
 };

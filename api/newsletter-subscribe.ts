@@ -453,6 +453,14 @@ const renderCustomSizeHtml = (p: {
 // esc/SANS/DISPLAY above (gotcha #5). Emails the ESTATE the trade enquiry with
 // replyTo the applicant. No prices — the estate prepares trade pricing offline.
 // ---------------------------------------------------------------------------
+// ⚠️ A PROJECT ENQUIRY IS THE MOST VALUABLE THING THIS ENDPOINT HANDLES.
+// Both application branches used to return 200 whatever happened — a missing
+// API key, a Resend error, a thrown exception — so a lost lead showed the buyer
+// "Thank you, it's with the family." A trade enquiry can be worth a whole
+// project, so a failure now says so and gives them the address instead.
+const LEAD_LOST =
+  "We couldn't deliver that to the estate just now. Please email info@themandalacompany.com directly — we don't want to lose your project.";
+
 const renderTradeApplicationHtml = (p: {
   name: string;
   email: string;
@@ -779,22 +787,24 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           });
           if (r.error) {
             console.error("[newsletter-subscribe] trade-application send error:", r.error);
-          } else {
-            console.log("[newsletter-subscribe] trade-application email sent", {
-              email,
-              resend_id: r.data?.id,
-            });
+            return send(502, { error: LEAD_LOST });
           }
+          console.log("[newsletter-subscribe] trade-application email sent", {
+            email,
+            resend_id: r.data?.id,
+          });
         } catch (err) {
           console.error(
             "[newsletter-subscribe] trade-application email failed:",
             err instanceof Error ? err.message : String(err),
           );
+          return send(502, { error: LEAD_LOST });
         }
       } else {
-        console.warn(
-          "[newsletter-subscribe] RESEND_API_KEY missing — trade application logged only.",
+        console.error(
+          "[newsletter-subscribe] RESEND_API_KEY missing — trade application NOT delivered.",
         );
+        return send(502, { error: LEAD_LOST });
       }
     }
     return send(200, { ok: true });
@@ -846,22 +856,24 @@ export default async function handler(req: VercelReq, res: VercelRes) {
           });
           if (r.error) {
             console.error("[newsletter-subscribe] representative-application send error:", r.error);
-          } else {
-            console.log("[newsletter-subscribe] representative-application email sent", {
-              email,
-              resend_id: r.data?.id,
-            });
+            return send(502, { error: LEAD_LOST });
           }
+          console.log("[newsletter-subscribe] representative-application email sent", {
+            email,
+            resend_id: r.data?.id,
+          });
         } catch (err) {
           console.error(
             "[newsletter-subscribe] representative-application email failed:",
             err instanceof Error ? err.message : String(err),
           );
+          return send(502, { error: LEAD_LOST });
         }
       } else {
-        console.warn(
-          "[newsletter-subscribe] RESEND_API_KEY missing — representative application logged only.",
+        console.error(
+          "[newsletter-subscribe] RESEND_API_KEY missing — representative application NOT delivered.",
         );
+        return send(502, { error: LEAD_LOST });
       }
     }
     return send(200, { ok: true });

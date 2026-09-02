@@ -193,9 +193,13 @@ const STATIC_ROUTES: RouteHead[] = [
   },
   {
     routePath: "/trade",
-    title: "Trade & Interior Design",
+    // ⚠️ Mirrors <Seo> in src/pages/Partners.tsx verbatim. Every non-JS consumer
+    // (Bing, the AI crawlers, Slack/iMessage unfurls, Merchant Center's
+    // landing-page check) reads THIS, so drift here ships stale copy to all of
+    // them. Update both in the same commit.
+    title: "Partners",
     description:
-      "For interior designers, art consultants and hospitality buyers. Estate-stamped prints of Stephen Meakin's mandala paintings, framing, and bespoke commissions hand-painted in his tradition by Polly Wedge. Project pricing on request.",
+      "Estate-stamped editions of Stephen Meakin's mandalas for hotels, wellness, workplaces, healthcare, restaurants and residential schemes. Tell us the rooms; the family sends a proposal with the works placed on your walls, framed, glazed and delivered free worldwide.",
   },
   {
     routePath: "/gift",
