@@ -59,7 +59,7 @@ const ForYouRedirect = () => {
 const News = lazy(() => import("./pages/News").then((m) => ({ default: m.News })));
 const TradePricing = lazy(() => import("./pages/TradePricing").then((m) => ({ default: m.TradePricing })));
 const PartnerTerms = lazy(() => import("./pages/PartnerTerms").then((m) => ({ default: m.PartnerTerms })));
-const Representatives = lazy(() => import("./pages/Representatives").then((m) => ({ default: m.Representatives })));
+const Partners = lazy(() => import("./pages/Partners").then((m) => ({ default: m.Partners })));
 const Gift = lazy(() => import("./pages/Gift").then((m) => ({ default: m.Gift })));
 const Auth = lazy(() => import("./pages/Auth").then((m) => ({ default: m.Auth })));
 const Search = lazy(() => import("./pages/Search").then((m) => ({ default: m.Search })));
@@ -165,11 +165,13 @@ const AnimatedRoutes = () => {
               page so old links + printed certificates keep resolving. */}
           <Route path="/verify" element={<Navigate to="/auth" replace />} />
           <Route path="/gift" element={<Gift />} />
-          {/* /trade IS the Partners page (Hugo 2026-07-30: replace the old buyer
-              trade page with the introducer/Partners page — one page, no more
-              "two confusing trade pages"). The old Trade.tsx is kept on disk but
-              no longer routed. Menu label = "Partners". */}
-          <Route path="/trade" element={<Representatives />} />
+          {/* /trade IS the Partners page (Hugo 2026-07-30: one page, never "two
+              confusing trade pages"). Rebuilt 2026-09-02 as src/pages/Partners.tsx:
+              the BUYER door (hotels / wellness / workplace / care / dining /
+              residential → a proposal) is primary, the introducer door sits lower.
+              The old Representatives.tsx + Trade.tsx were deleted. Menu label =
+              "Partners". */}
+          <Route path="/trade" element={<Partners />} />
           {/* Gated trade price sheet — reachable only via the estate's link
               (noindex + robots Disallow; not in nav / footer / sitemap). */}
           <Route path="/trade/pricing" element={<TradePricing />} />

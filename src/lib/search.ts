@@ -239,7 +239,7 @@ interface IndexSeed {
 }
 
 /**
- * PLAIN-TEXT MIRROR OF `src/pages/FAQ.tsx` → the exported `FAQS` array.
+ * PLAIN-TEXT MIRROR OF `src/data/faqs.tsx` → the exported `FAQS` array.
  *
  * ⚠️ WHY THIS IS HAND-COPIED (and what should replace it):
  * `FAQS` in FAQ.tsx is the real source of truth and IS exported — but its
@@ -476,16 +476,13 @@ const PAGE_SEEDS: PageSeed[] = [
   },
   {
     id: "page-trade",
-    // ⚠️ The page at /trade is called PARTNERS everywhere a visitor can see it:
-    // Nav.tsx's primary desktop nav and drawer, the page's own <Seo title> and
-    // h1 eyebrow, and the footer. Indexing it as "Trade" meant the single word
-    // in the site's own navigation returned ZERO results, and the rendered
-    // subtitle ("For interior designers & art consultants") described the
-    // unrouted src/pages/Trade.tsx rather than the page this actually opens.
+    // ⚠️ The page at /trade is called PARTNERS everywhere a visitor can see it
+    // (Nav, Footer, its own <Seo title> and h1). Rebuilt 2026-09-02 as the
+    // BUYER page for bulk / project orders with an introducer door lower down.
     title: "Partners",
-    subtitle: "By invitation",
+    subtitle: "Projects, trade and introductions",
     url: "/trade",
-    body: "Partners — introduce Stephen's work to a client or a space and place it on commission, by invitation. Representative, representatives, partner programme, trade, trade enquiries, interior designers, art consultants and the design industry. Commercial, bulk, project, hospitality, contract, trade account, designer pricing.",
+    body: "Partners — estate-stamped editions of Stephen Meakin's mandalas for hotels, hospitality, spas, wellness, yoga, workplaces, offices, healthcare, hospices, restaurants, bars, members' clubs, developers, show homes and residential schemes. A proposal with the works placed on your walls, colourway suites for corridors and floors, framed and glazed, delivered free worldwide, one invoice, specification sheets, Estate Registry provenance, hand-painted commissions by Polly. Interior designers, art consultants, procurement, FF&E, trade account, trade enquiries, bulk, project, commercial, contract, wholesale, corporate art, introduce a project, representatives, partner programme.",
   },
   {
     id: "page-contact",
@@ -498,7 +495,7 @@ const PAGE_SEEDS: PageSeed[] = [
     id: "page-faq",
     title: "FAQ",
     subtitle: "Frequently asked questions",
-    url: "/faq",
+    url: "/contact#faq",
     body: "Frequently asked questions — answers about prints, provenance, paper, sizes, editions, framing, hand-finishing, shipping, delivery and after-sale care. Help, questions, info.",
   },
   {
@@ -512,21 +509,21 @@ const PAGE_SEEDS: PageSeed[] = [
     id: "page-returns",
     title: "Returns",
     subtitle: "Returns, refunds & damages",
-    url: "/returns",
+    url: "/legal#returns",
     body: "Returns, refunds and damages policy. Return a print, refund, damaged in transit, didn't arrive, replacement, money back, cancel an order.",
   },
   {
     id: "page-terms",
     title: "Terms",
     subtitle: "Terms of sale",
-    url: "/terms",
+    url: "/legal#terms",
     body: "Terms of sale and conditions. Made-to-order exemption, your rights, the legal terms of buying a print, terms and conditions, T&Cs.",
   },
   {
     id: "page-privacy",
     title: "Privacy",
     subtitle: "Privacy policy",
-    url: "/privacy",
+    url: "/legal#privacy",
     body: "Privacy policy — how your data is handled, cookies and analytics, UK GDPR, data protection, your information.",
   },
   {
@@ -931,7 +928,7 @@ function buildIndex(): IndexedDoc[] {
         type: "faq",
         title: f.question,
         subtitle: joinBody(f.eyebrow, "FAQ"),
-        url: "/faq",
+        url: "/contact#faq",
         body: joinBody(f.eyebrow, f.question, f.answer),
       },
       // Excerpt the ANSWER only — the body opens with the eyebrow + question,

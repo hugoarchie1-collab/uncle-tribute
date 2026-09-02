@@ -463,6 +463,13 @@ const renderTradeApplicationHtml = (p: {
   scale: string;
   vatNumber: string;
   message: string;
+  sector: string;
+  project: string;
+  pieces: string;
+  spaces: string;
+  sizes: string;
+  timeline: string;
+  introducedBy: string;
 }): string => {
   const s = {
     page: `background-color:#0a0908;margin:0;padding:32px 16px;font-family:${SANS};color:#ede6d6;`,
@@ -480,14 +487,25 @@ const renderTradeApplicationHtml = (p: {
     value
       ? `<p style="${s.row}"><span style="${s.label}">${esc(label)}</span><br/>${esc(value)}</p>`
       : "";
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Trade application</title></head>`
+  // Subject-line summary so the estate can triage from the inbox list alone:
+  // "Hotel · 21–50 pieces · Within 3 months".
+  const headline = [p.sector, p.pieces ? `${p.pieces} pieces` : "", p.timeline].filter(Boolean).join(" · ");
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="color-scheme" content="dark only"/><title>Project enquiry</title></head>`
     + `<body style="${s.page}"><div style="${s.shell}">`
-    + `<p style="${s.eyebrow}">The Mandala Company · Trade &amp; Interior Design</p>`
-    + `<h1 style="${s.heading}">A trade application${p.studio ? ` from ${esc(p.studio)}` : ""}.</h1>`
+    + `<p style="${s.eyebrow}">The Mandala Company · Partners</p>`
+    + `<h1 style="${s.heading}">A project${p.studio ? ` from ${esc(p.studio)}` : ""}.</h1>`
+    + (headline ? `<p style="${s.row}"><strong>${esc(headline)}</strong></p>` : "")
     + row("Studio / company", p.studio)
     + row("Website", p.website)
     + row("Contact", `${p.name ? `${p.name} · ` : ""}${p.email}`)
     + row("Role", p.role)
+    + row("Sector", p.sector)
+    + row("Project", p.project)
+    + row("Number of pieces", p.pieces)
+    + row("Spaces", p.spaces)
+    + row("Sizes in mind", p.sizes)
+    + row("Needed on the wall", p.timeline)
+    + row("Introduced by", p.introducedBy)
     + row("Project type", p.projectType)
     + row("Scale / budget band", p.scale)
     + row("VAT / company no.", p.vatNumber)
@@ -585,6 +603,15 @@ export default async function handler(req: VercelReq, res: VercelRes) {
     projectType?: string;
     scale?: string;
     vatNumber?: string;
+    // Project-qualification fields added 2026-09-02 with the /trade Partners
+    // rebuild (all plain strings; multi-selects arrive pre-joined by ", ").
+    sector?: string;
+    project?: string;
+    pieces?: string;
+    spaces?: string;
+    sizes?: string;
+    timeline?: string;
+    introducedBy?: string;
     // Representative-application fields (kind === "representative-application").
     // `company` (a real field here) + `website` are reused from above; `botcheck`
     // is the honeypot. (Note: custom-size uses `company` as ITS honeypot, but
@@ -699,6 +726,14 @@ export default async function handler(req: VercelReq, res: VercelRes) {
       const scale = (body.scale ?? "").toString().trim().slice(0, 200);
       const vatNumber = (body.vatNumber ?? "").toString().trim().slice(0, 60);
       const taMessage = (body.message ?? "").toString().trim().slice(0, 2000);
+      const str = (v: unknown, max: number) => (v ?? "").toString().trim().slice(0, max);
+      const sector = str(body.sector, 80);
+      const project = str(body.project, 200);
+      const pieces = str(body.pieces, 40);
+      const spaces = str(body.spaces, 300);
+      const sizes = str(body.sizes, 200);
+      const timeline = str(body.timeline, 60);
+      const introducedBy = str(body.introducedBy, 200);
       console.log("[newsletter-subscribe] trade application", {
         email,
         name,
@@ -706,6 +741,9 @@ export default async function handler(req: VercelReq, res: VercelRes) {
         role,
         projectType,
         scale,
+        sector,
+        pieces,
+        timeline,
       });
       const resendKeyTa = process.env.RESEND_API_KEY;
       if (resendKeyTa) {
@@ -723,14 +761,20 @@ export default async function handler(req: VercelReq, res: VercelRes) {
             scale,
             vatNumber,
             message: taMessage,
+            sector,
+            project,
+            pieces,
+            spaces,
+            sizes,
+            timeline,
+            introducedBy,
           });
+          const subjectBits = [studio, sector, pieces ? `${pieces} pieces` : ""].filter(Boolean).join(" · ");
           const r = await resend.emails.send({
             from: `${FROM_NAME} <${fromEmail}>`,
             to: [toEmail],
             replyTo: email,
-            subject: studio
-              ? `Trade application — ${studio}`
-              : "Trade application",
+            subject: subjectBits ? `Project enquiry — ${subjectBits}` : "Project enquiry",
             html,
           });
           if (r.error) {
