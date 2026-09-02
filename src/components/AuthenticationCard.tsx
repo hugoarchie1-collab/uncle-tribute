@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ESTATE_AUTHENTICATION } from "../data/paintings";
+import { ESTATE_AUTHENTICATION, numberingFor, type PrintTier } from "../data/paintings";
 import { EYEBROW_TIGHT, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
 
@@ -50,17 +50,29 @@ const PrinterIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-const ROWS = [
-  { Icon: StampIcon, label: ESTATE_AUTHENTICATION.stampLabel, detail: ESTATE_AUTHENTICATION.stamp },
-  { Icon: HashIcon, label: ESTATE_AUTHENTICATION.numberingLabel, detail: ESTATE_AUTHENTICATION.numbering },
-  { Icon: CertIcon, label: ESTATE_AUTHENTICATION.coaLabel, detail: ESTATE_AUTHENTICATION.coa },
-  { Icon: PrinterIcon, label: ESTATE_AUTHENTICATION.printerLabel, detail: ESTATE_AUTHENTICATION.printer },
-];
+// ⚠️ Rows are built PER RENDER because the numbering row depends on the tier
+// the buyer has selected — Emblem and Gallery are open editions and are not
+// numbered. A module-level ROWS constant is what made the false claim static.
+const rowsFor = (tier?: Pick<PrintTier, "editionTotal"> | null) => {
+  const numbering = numberingFor(tier);
+  return [
+    { Icon: StampIcon, label: ESTATE_AUTHENTICATION.stampLabel, detail: ESTATE_AUTHENTICATION.stamp },
+    { Icon: HashIcon, label: numbering.label, detail: numbering.detail },
+    { Icon: CertIcon, label: ESTATE_AUTHENTICATION.coaLabel, detail: ESTATE_AUTHENTICATION.coa },
+    { Icon: PrinterIcon, label: ESTATE_AUTHENTICATION.printerLabel, detail: ESTATE_AUTHENTICATION.printer },
+  ];
+};
 
-export const AuthenticationCard = () => (
+export const AuthenticationCard = ({
+  tier,
+}: {
+  /** The selected tier. Omit only where no tier is in play — the helper then
+      uses the open-edition wording, which is the safe (never-overclaiming) side. */
+  tier?: Pick<PrintTier, "editionTotal"> | null;
+} = {}) => (
   <div className="ring-1 ring-line p-5">
     <ul className="list-none m-0 p-0 divide-y divide-line">
-      {ROWS.map(({ Icon, label, detail }) => (
+      {rowsFor(tier).map(({ Icon, label, detail }) => (
         <li
           key={label}
           className="grid grid-cols-[16px_1fr] gap-3 items-start py-2.5 first:pt-0"

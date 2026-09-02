@@ -2018,7 +2018,7 @@ const BuyBox = ({
             Full provenance + shipping detail live in the ProvenancePanel
             below the Story so the buy box stays tight. */}
         <Separator className="bg-line mt-6 mb-5" />
-        <AuthenticationCard />
+        <AuthenticationCard tier={selectedTier} />
         <div className="mt-4">
           <ReassuranceRow />
         </div>
@@ -3246,7 +3246,7 @@ export const PaintingDetail = () => {
               the price + options. */}
           <div className="mt-10 md:mt-14">
             <Story painting={painting} />
-            <ProvenancePanel />
+            <ProvenancePanel tier={selectedTier} />
           </div>
         </main>
         {/* CRAFT HIGHLIGHTS — DROOL-style scannable quality + frame tick-lists,

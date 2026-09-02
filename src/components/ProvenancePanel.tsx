@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import {
   ESTATE_AUTHENTICATION,
   ORIGINAL_PRINT_SPEC,
+  numberingFor,
+  type PrintTier,
 } from "../data/paintings";
 import { EYEBROW_MUTED, META } from "./ui/tokens";
 import { cn } from "../lib/cn";
@@ -14,13 +16,19 @@ import { cn } from "../lib/cn";
  * visible at once, the row fills the measure, and there is no dead space. All
  * copy from single-source data.
  */
-export const ProvenancePanel = () => (
+export const ProvenancePanel = ({
+  tier,
+}: {
+  /** Selected tier — the numbering line is tier-dependent (open editions are
+      NOT numbered). Omitted => open-edition wording, the safe default. */
+  tier?: Pick<PrintTier, "editionTotal"> | null;
+} = {}) => (
   <div className="max-w-[1180px] 2xl:max-w-[1320px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto mt-10 md:mt-12 border-t border-line pt-8 md:pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-14">
     <section>
       <p className={cn(EYEBROW_MUTED, "m-0 mb-4")}>Authentication &amp; provenance</p>
       <ul className="list-none m-0 p-0 flex flex-col gap-2.5">
         <li className={META}>{ESTATE_AUTHENTICATION.stamp}</li>
-        <li className={META}>{ESTATE_AUTHENTICATION.numbering}</li>
+        <li className={META}>{numberingFor(tier).detail}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.coa}</li>
         <li className={META}>{ESTATE_AUTHENTICATION.printer}</li>
         <li className={META}>

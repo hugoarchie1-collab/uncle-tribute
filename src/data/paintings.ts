@@ -203,8 +203,16 @@ export const STUDIO_ONE_OFF_NOTE =
 export const ESTATE_AUTHENTICATION = {
   stamp: "Estate-stamped by The Mandala Company",
   stampLabel: "Estate stamp",
+  // ⚠️ TIER-DEPENDENT — do NOT render these two unconditionally. Two of the four
+  // live tiers are OPEN (`editionTotal: null`): Emblem £250 and Gallery £445 are
+  // issued to order and are NOT numbered. Rendering the numbered wording on
+  // every product page told a £250 buyer "Numbered within the edition" in the
+  // trust card while the size rung two inches away said "unnumbered". Use
+  // `numberingFor(tier)` below; these strings are the NUMBERED case only.
   numbering: "Numbered within its edition",
   numberingLabel: "Numbered within the edition",
+  numberingOpen: "Issued to order within the current edition — this size is not numbered",
+  numberingOpenLabel: "Edition",
   coa: "Issued with a Certificate of Authenticity carrying a unique Certificate ID",
   coaLabel: "Certificate of Authenticity",
   // NOTE: the print studio is deliberately NOT named to buyers (Hugo, 2026-07-11:
@@ -635,6 +643,30 @@ export const getCanvasEdgeSurchargePence = (
 export const FRAME_TIERS = {
   classic: { label: "Classic", surchargePence: 0 },
 } as const;
+
+/**
+ * The authentication "numbering" row, honest for the SELECTED tier.
+ *
+ * ⚠️ A tier with `editionTotal: null` is an OPEN edition — issued to order,
+ * never numbered. Emblem (£250) and Gallery (£445) are both open, so for half
+ * the live ladder the flat "Numbered within its edition" line was simply false
+ * at the exact place the page asks to be trusted. Pass the tier; when it is not
+ * known (a surface with no tier context) the caller gets the open wording,
+ * which is the SAFE default — understating never misleads a buyer.
+ */
+export const numberingFor = (
+  tier?: Pick<PrintTier, "editionTotal"> | null,
+): { label: string; detail: string } =>
+  tier && tier.editionTotal !== null
+    ? {
+        label: ESTATE_AUTHENTICATION.numberingLabel,
+        detail: ESTATE_AUTHENTICATION.numbering,
+      }
+    : {
+        label: ESTATE_AUTHENTICATION.numberingOpenLabel,
+        detail: ESTATE_AUTHENTICATION.numberingOpen,
+      };
+
 export type FrameTier = keyof typeof FRAME_TIERS;
 
 // Display groups, in the order Point 101 present them — the picker renders one
