@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -665,44 +665,48 @@ const IntroducerForm = () => {
  *  (cm from artworkSizes — the single source of truth for print dimensions),
  *  hung with their centres 150 cm from the floor. */
 const ScaleDiagram = () => {
-  const W = 320; // cm
-  const H = 250; // cm (floor at y=H)
+  const W = 300; // cm of wall drawn
+  const H = 210; // cm of wall drawn (floor sits on y = H)
+  const CENTRE = 150; // cm from the floor to the centre of every frame — the
+  // gallery hanging height, and the reason the three sizes share one baseline.
   const sofaW = 200;
   const sofaX = (W - sofaW) / 2;
   const sizes = ARTWORK_SIZES.filter((s) => s.id === "a3" || s.id === "a2" || s.id === "a1");
-  // Lay the three frames out left→right with even gaps, centres at 150 cm.
-  const gap = 14;
+  const gap = 16;
   const total = sizes.reduce((n, s) => n + s.cm, 0) + gap * (sizes.length - 1);
   const startX = (W - total) / 2;
   const frames = sizes.map((s, i) => ({
     ...s,
     x: startX + sizes.slice(0, i).reduce((n, q) => n + q.cm + gap, 0),
-    y: H - 150 - s.cm / 2,
+    y: H - CENTRE - s.cm / 2,
   }));
-  const stroke = "rgb(237 230 214 / 0.55)";
-  const soft = "rgb(237 230 214 / 0.28)";
+  const stroke = "rgb(237 230 214 / 0.5)";
+  const soft = "rgb(237 230 214 / 0.26)";
+  const SANS = "Schibsted Grotesk, sans-serif";
   return (
     <svg
-      viewBox={`0 0 ${W} ${H + 24}`}
+      viewBox={`0 0 ${W} ${H + 16}`}
       className="w-full h-auto block"
       role="img"
-      aria-label="The three project print sizes, A3, A2 and A1, drawn to scale above a two-metre sofa"
+      aria-label="The three project print sizes — A3 at 29.5 cm, A2 at 42 cm and A1 at 59.5 cm — drawn to one scale above a two-metre sofa, each hung with its centre 150 cm from the floor"
     >
-      {/* floor + wall edges */}
-      <line x1="0" y1={H} x2={W} y2={H} stroke={stroke} strokeWidth="0.8" />
-      {/* sofa silhouette */}
-      <g stroke={soft} strokeWidth="0.8" fill="none">
-        <rect x={sofaX} y={H - 42} width={sofaW} height="22" rx="4" />
-        <rect x={sofaX + 4} y={H - 66} width={sofaW - 8} height="26" rx="4" />
-        <line x1={sofaX + 10} y1={H - 20} x2={sofaX + 10} y2={H} />
-        <line x1={sofaX + sofaW - 10} y1={H - 20} x2={sofaX + sofaW - 10} y2={H} />
+      {/* floor */}
+      <line x1="0" y1={H} x2={W} y2={H} stroke={stroke} strokeWidth="0.7" />
+      {/* sofa silhouette — 2 m, the reference object */}
+      <g stroke={soft} strokeWidth="0.7" fill="none">
+        <rect x={sofaX} y={H - 34} width={sofaW} height="20" rx="3" />
+        <rect x={sofaX + 5} y={H - 56} width={sofaW - 10} height="24" rx="3" />
+        <line x1={sofaX + 9} y1={H - 14} x2={sofaX + 9} y2={H} />
+        <line x1={sofaX + sofaW - 9} y1={H - 14} x2={sofaX + sofaW - 9} y2={H} />
       </g>
-      {/* hanging line at 150 cm */}
-      <line x1="12" y1={H - 150} x2={W - 12} y2={H - 150} stroke={soft} strokeWidth="0.5" strokeDasharray="2 3" />
-      <text x="14" y={H - 153} fill={soft} fontSize="6" fontFamily="Schibsted Grotesk, sans-serif">
+      <text x={W / 2} y={H + 11} textAnchor="middle" fill={soft} fontSize="5.4" fontFamily={SANS}>
+        two-metre sofa
+      </text>
+      {/* the shared hanging line, labelled clear of the frames */}
+      <line x1="0" y1={H - CENTRE} x2={W} y2={H - CENTRE} stroke={soft} strokeWidth="0.4" strokeDasharray="2 3" />
+      <text x="1" y={H - CENTRE - 4} fill={soft} fontSize="5.4" fontFamily={SANS}>
         centre 150 cm from the floor
       </text>
-      {/* frames */}
       {frames.map((f) => (
         <g key={f.id}>
           <rect
@@ -711,36 +715,26 @@ const ScaleDiagram = () => {
             width={f.cm}
             height={f.cm}
             fill="rgb(237 230 214 / 0.05)"
-            stroke="rgb(201 120 68 / 0.9)"
-            strokeWidth="1.1"
+            stroke="rgb(201 120 68 / 0.95)"
+            strokeWidth="1"
           />
-          <rect x={f.x + 4} y={f.y + 4} width={f.cm - 8} height={f.cm - 8} fill="none" stroke={soft} strokeWidth="0.5" />
+          <rect x={f.x + 3.5} y={f.y + 3.5} width={f.cm - 7} height={f.cm - 7} fill="none" stroke={soft} strokeWidth="0.4" />
           <text
             x={f.x + f.cm / 2}
-            y={f.y - 6}
+            y={f.y - 5}
             textAnchor="middle"
             fill="#ede6d6"
-            fontSize="9"
+            fontSize="8.5"
             fontWeight="600"
             fontFamily="Fraunces, serif"
           >
             {f.label}
           </text>
-          <text
-            x={f.x + f.cm / 2}
-            y={f.y + f.cm + 10}
-            textAnchor="middle"
-            fill={stroke}
-            fontSize="6"
-            fontFamily="Schibsted Grotesk, sans-serif"
-          >
-            {`${f.cm} × ${f.cm} cm print`}
+          <text x={f.x + f.cm / 2} y={f.y + f.cm + 9} textAnchor="middle" fill={stroke} fontSize="5.4" fontFamily={SANS}>
+            {`${f.cm} × ${f.cm} cm`}
           </text>
         </g>
       ))}
-      <text x={W / 2} y={H + 18} textAnchor="middle" fill={soft} fontSize="6" fontFamily="Schibsted Grotesk, sans-serif">
-        two-metre sofa · one scale
-      </text>
     </svg>
   );
 };
@@ -748,17 +742,29 @@ const ScaleDiagram = () => {
 // ── the page ─────────────────────────────────────────────────────────────────
 
 export const Partners = () => {
-  const [params, setParams] = useSearchParams();
-  const initialSector = SECTORS.find((s) => s.id === params.get("sector"))?.id ?? SECTORS[0].id;
+  // ⚠️ The sector is deep-linkable (?sector=wellness — an introducer can send a
+  // buyer straight to their own setting) but it is NOT router state. The site's
+  // ScrollManager (PageTransition.tsx) resets scroll on every `search` change,
+  // so a useSearchParams write threw the reader back to the masthead on every
+  // tab click. history.replaceState updates the address bar without a router
+  // navigation, so the URL stays shareable and the page stays put.
+  const initialSector =
+    (typeof window !== "undefined"
+      ? SECTORS.find((s) => s.id === new URLSearchParams(window.location.search).get("sector"))?.id
+      : undefined) ?? SECTORS[0].id;
   const [sectorId, setSectorId] = useState(initialSector);
   const sector = SECTORS.find((s) => s.id === sectorId) ?? SECTORS[0];
   const tabsId = useId();
 
   const chooseSector = (id: string) => {
     setSectorId(id);
-    const next = new URLSearchParams(params);
-    next.set("sector", id);
-    setParams(next, { replace: true });
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("sector", id);
+      window.history.replaceState(window.history.state, "", url);
+    } catch {
+      /* address-bar sync is a nicety — never break the tab on it */
+    }
   };
 
   const onTabKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -942,10 +948,10 @@ export const Partners = () => {
                 <Reveal
                   as="div"
                   key={c.fig}
-                  className={cn("grid grid-cols-[minmax(96px,0.3fr)_1fr] 3xl:grid-cols-[minmax(140px,0.3fr)_1fr] gap-x-6 items-baseline py-5 md:py-6", i > 0 && "border-t border-line/70")}
+                  className={cn("grid grid-cols-[auto_1fr] gap-x-6 md:gap-x-8 items-baseline py-5 md:py-6", i > 0 && "border-t border-line/70")}
                 >
                   <p
-                    className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(34px,3.6vw,64px)] leading-none [font-variant-numeric:tabular-nums]"
+                    className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(34px,3.6vw,64px)] leading-none whitespace-nowrap min-w-[3.2ch] [font-variant-numeric:tabular-nums]"
                     style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                   >
                     {c.fig}
@@ -999,10 +1005,14 @@ export const Partners = () => {
 
           {/* Suites — every painting with more than one colourway, dense. */}
           <div className={cn(WRAP, "mt-10 md:mt-14")}>
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-x-8 lg:gap-x-10 gap-y-10">
+            {/* Each suite's width is proportional to its colourway count, so
+                every tile on a row is the same size whether the painting has
+                two colourways or five — one grid of equal squares, grouped. */}
+            <div className="flex flex-wrap gap-x-8 lg:gap-x-10 gap-y-10">
               {suites.map(({ painting, ways }) => (
-                <Reveal as="div" key={painting.id}>
-                  <div className={cn("grid gap-2 md:gap-2.5", ways.length >= 5 ? "grid-cols-5" : ways.length === 4 ? "grid-cols-4" : "grid-cols-3")}>
+                <div key={painting.id} className="min-w-0" style={{ flex: `${ways.length} 1 ${ways.length * 132}px` }}>
+                 <Reveal as="div">
+                  <div className="grid gap-2 md:gap-2.5" style={{ gridTemplateColumns: `repeat(${ways.length}, minmax(0, 1fr))` }}>
                     {ways.map((c) => (
                       <Link
                         key={c.name}
@@ -1029,7 +1039,8 @@ export const Partners = () => {
                   <p className={cn(META, "m-0 mt-1")}>
                     {ways.length} colourways · {ways.map((c) => c.name).join(" · ")}
                   </p>
-                </Reveal>
+                 </Reveal>
+                </div>
               ))}
             </div>
           </div>
@@ -1085,7 +1096,8 @@ export const Partners = () => {
                 <AssetImage
                   src={sector.room.src}
                   alt={paintingImageAlt(sector.room.painting, sector.room.colourway)}
-                  loading="lazy"
+                  loading="eager"
+                  sizes="(min-width:1024px) 58vw, 92vw"
                   className="w-full h-full object-cover"
                 />
               </div>
