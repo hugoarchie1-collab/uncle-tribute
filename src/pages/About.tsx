@@ -1,18 +1,13 @@
-import { Children, isValidElement, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type Variants,
-} from "framer-motion";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
 import { ImageReveal } from "../components/ImageReveal";
 import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
-import { EnquireModal } from "../components/EnquireModal";
+import { MagneticLink } from "../components/MagneticLink";
+import { PrintTile } from "../components/PrintTile";
+import { Seo } from "../components/Seo";
 import {
   ABOUT,
   BIRTH_DATE,
@@ -21,353 +16,181 @@ import {
   INTERVIEW,
   LIFE_DATES,
 } from "../data/content";
-import { Seo } from "../components/Seo";
-import { PavoBackdrop } from "../components/PavoBackdrop";
+import { PAINTINGS, type Painting } from "../data/paintings";
 import { cn } from "../lib/cn";
-import {
-  EYEBROW,
-  EYEBROW_MUTED,
-  EYEBROW_TIGHT,
-  TITLE,
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE } from "../components/ui/tokens";
+
+// =============================================================================
+// ABOUT — REBUILT 2026-09-02 AS A CLONE OF THE HOME PAGE (Welcome.tsx).
+//
+// Hugo: "I want this to be a clone of the home page in all its rules … the
+// proportions are all off … it has to be better than home visually and
+// symmetrically." So this page no longer owns a design system of its own. The
+// old page ran its OWN seven-role type ladder (ABOUT_* tokens, 22→48px prose),
+// its OWN width ladder, its OWN section rhythm, left-aligned CSS-column prose,
+// natural-aspect justified photo rows with drop shadows, and a masthead whose
+// portrait floated beside a short paragraph with a void above and below it.
+// None of that survives. EVERY module below is a byte-for-byte copy of a Home
+// module's classes, with Stephen's verbatim biography poured in:
+//
+//   Home module                      → About section
+//   ─────────────────────────────────────────────────────────────────────────
+//   §1 hero (title + WHOLE photo)     → the front cover (28-at-the-drafting-table)
+//   §2 "A reminder" essay            → the opening passage (lede · body · pull)
+//   §3 Meet Stephen two-column       → "As he described himself" · Exhibitions
+//   §4 full-bleed cinematic band     → the exhibition room · the gathering
+//   §5 featured PrintTile grid       → six paintings (the buy path)
+//   §6 ritual island + ledger        → Art as ritual + the facts ledger
+//   §7 hairline four-traditions      → the four traditions · the credentials
+//   Arista capped archive photo      → cymatics chart · the Az-Zarqa photograph
+//   featured-grid tile treatment     → every family / studio photo row
+//
+// THE RULES THIS PAGE INHERITS (all Hugo's, all already baked into Home):
+//   • ONE container + ONE reading measure (CONTAINER / MEASURE below) so every
+//     block shares the same left + right edge down the page — no jigsaw.
+//   • ONE vertical rhythm: <main> carries space-y; sections carry NO padding.
+//   • Body prose is CENTRED + JUSTIFIED at ~20px (BODY_P) — never a narrow
+//     ribbon, never left-aligned columns, never large ragged centred text.
+//   • Section header = centred EYEBROW → TITLE, ending in a full stop.
+//   • Photo BESIDE text = the photo COVER-FILLS its column to the text's exact
+//     height (items-stretch + absolute inset-0 object-cover) — text and image
+//     start and END on the same line, zero void (Hugo's screenshot #2).
+//   • Photo rows = UNIFORM tiles, ONE aspect per row, same-orientation only,
+//     hairline ring, face-safe object-position (every position below was set
+//     from a photo-by-photo audit of where the faces sit — do not "centre" them).
+//   • Feature photos are shown WHOLE (hero, flyer, cymatics, the Az-Zarqa
+//     children, the cairn) — never cover-cropped.
+//   • NO black boxes: legibility is text-shadow only (hero-text-shadow /
+//     reading-shadow / the 12px body halo), never a scrim.
+//   • NO invented words. Every visible string is a verbatim substring of
+//     content.ts, a factual label that already existed on this page (chapter
+//     kickers + place·year tags, "As he described himself —", "From the design
+//     archive", the Virgin Islands caption, the cymatics caption), or a label
+//     already live elsewhere on the site ("See the collection", "Leave a
+//     memory", "Six paintings from a lifetime at the compass.").
+//   • Background = the site-wide AmbientBackground mesh (App root). The
+//     PavoBackdrop this page used to mount has been flag-gated to `null` since
+//     the calm pass, so it is simply gone here — same ground as Home.
+// =============================================================================
+
+// ─── HOME'S LAYOUT + TYPE CANON (copied verbatim from Welcome.tsx) ───────────
+/** Home's section container. */
+const CONTAINER =
+  "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12";
+/** Home's ONE wide near-edge reading measure. */
+const MEASURE = "mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px]";
+/** Home's body paragraph: ~20px sans, justified, last line centred, hyphenated. */
+const BODY_P =
+  "font-sans font-normal text-[clamp(20px,0.7vw+13px,30px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto";
+const BODY_SHADOW: CSSProperties = { textShadow: "0 1px 12px rgba(10,9,8,0.45)" };
+/** Home's two-column copy paragraph (Meet Stephen / ritual). */
+const SIDE_P = cn(
   SUBTITLE,
-  ABOUT_BODY,
-  ABOUT_LEAD,
-  ABOUT_STANDOUT,
-  ABOUT_STANDOUT_STYLE,
-  ABOUT_SUBHEAD,
-  ABOUT_SUBHEAD_STYLE,
-  ABOUT_CAPTION,
-} from "../components/ui/tokens";
-
-// =============================================================================
-// ABOUT — "One life, nine chapters, four skies." A chaptered monograph rebuilt
-// (2026-07-09) to a FIXED set of layout PRIMITIVES so the desktop page reads as
-// one coherent editorial monograph — never a per-section patchwork. Hugo's
-// rules, made structural: NO huge images (every content image ≤64svh; the
-// Anegada poster is the sole larger moment), NO gaps (two-column rows are
-// equal-height by construction — art cover-fills to the text height; people
-// photos are STACKED into even rows, never cropped), PERFECT SYMMETRY (photo
-// groups are even tiles at ONE shared aspect), TEXT IN LINE WITH IMAGES, one
-// COHERENT small type scale (the seven-role ABOUT_* ladder from tokens.ts — no
-// jarring massive→tiny jumps), EVERYTHING SEPARATED (one section rhythm), and
-// LEFT-ALIGNED prose that fills the width (no centred narrow islands).
-//
-// DESKTOP-ONLY MANDATE: every change ships behind 2xl:(1400) / 3xl:(1700) /
-// 4xl:(2400) or as the CEILING of a clamp. Mobile (base/sm/md/lg + clamp
-// floors) is FROZEN and pixel-identical below 1400px.
-//
-// THE PRIMITIVES (defined ONCE below, every section built from exactly one):
-//   P1 ProseFull        — full-width single running-text block (the default)
-//   P2 ProseColumns     — balanced 2-column running text (long passages)
-//   P3 PhotoRow         — even tiles, 2–3 up, ONE shared aspect (all photo groups)
-//   P4 TextThenArt      — full-width text, THEN a contained captioned art figure
-//                         BELOW it (Home's stacked module — NO narrow side column)
-//   (P5 PeopleThenList removed 2026-07-13 — a tall portrait stacked above a
-//    list still stranded space; a portrait now sits BESIDE the list in a 2-col
-//    row, capped column, exactly like the Q3 easel pattern.)
-//   P6 ImageBand        — capped full-width landscape (≤64svh)
-//   P7 PullLine         — short display-serif pull, its own band, left-aligned
-//   P8 ChapterHead      — the repeated chapter signature + one section rhythm
-//
-// Type canon: prose is ALWAYS sans (BODY / LEAD). Fraunces (font-display) is
-// reserved for chapter/section titles, SUBHEAD, the P7 pull-line, the masthead
-// h1, the Anegada headline and italic caption titles. No running paragraph is
-// ever display serif — that was the top "massive text" defect.
-//
-// Photo registers (by SUBJECT, not by slot):
-//   · people (face / family / the artist) → Plate fill / ContainImage
-//     (object-CONTAIN, transparent letterbox — a face is NEVER cropped)
-//   · art / room / document → ImageReveal (object-cover safe, objectPosition center)
-// =============================================================================
-
-// ─── The seven-role type scale (imported shared home; local aliases) ─────────
-// The canonical scale lives in components/ui/tokens.ts (ABOUT_*). Aliased here
-// to the short names the section JSX reads with. NEVER re-type a bespoke clamp
-// below these — that per-section drift is exactly what the rebuild removes.
-// ⚠️ The sizes above are READ FROM tokens.ts. These comments once cited
-// ceilings of 20/23/42/34/16px — none of which existed in the code. Hugo's
-// standing desktop rule is BIG type that fills the screen, so a future
-// session trusting those numbers would have "corrected" the real sizes
-// DOWN by half. If you change a token, change the note in the same edit.
-const BODY = ABOUT_BODY;                    // role 5 — running prose, 22px → 44px (4xl)
-const LEAD = ABOUT_LEAD;                     // role 4 — chapter lead, 25px → 48px (4xl)
-const STANDOUT_CLASS = ABOUT_STANDOUT;       // role 2 — pull-line, clamp 38 → 98px
-const STANDOUT_STYLE = ABOUT_STANDOUT_STYLE;
-const SUBHEAD = ABOUT_SUBHEAD;               // role 3 — subhead / Q, clamp 32 → 76px
-const SUBHEAD_STYLE = ABOUT_SUBHEAD_STYLE;
-const CAPTION = ABOUT_CAPTION;               // role 6 — caption / meta, 16px → 32px (4xl)
-
-// ─── Canonical width ladder — reuse EXACTLY (invent no new max-w) ────────────
-// ⚠️ every mx-auto'd aspect-ratio block MUST also carry w-full, or a bare
-// aspect child collapses to 0×0 (documented gotcha). All ladders include w-full.
-// ⚠️ ONE canonical content width for EVERYTHING — prose, photos, grids, bands all
-// share this EXACT max-w so every block's left + right edge lines up down the whole
-// page (the root fix for the "jigsaw": prose used to sit at 1180 and photos at 1400,
-// so nothing shared a spine). RUTHLESS UNIFORMITY — invent NO other content max-w.
-// Ladder kept ≤ SECTION's content box at every step so the inner width always
-// governs (no clip). If a block needs to be narrower, it still uses THIS and insets
-// its inner column — never a bespoke max-w.
-// max-w matches the SECTION ladder so `w-full` always governs (SECTION's content
-// box is always ≤ this) — every block fills the SAME box → ONE left + right edge
-// down the page, and fills WIDE (no centred inset gutter).
-const ONE_WIDTH =
-  "mx-auto w-full max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]";
-/** The reading-measure alias points at the ONE width so all call-sites stay
- *  uniform — every prose block, photo, grid and band shares this exact box. */
-const READING_WIDE = ONE_WIDTH;
-
-/** The one shared section shell + the delimiter rhythm (P8). */
-const SECTION =
-  "mx-auto max-w-[1320px] 2xl:max-w-[1640px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] px-4 sm:px-6 md:px-8 lg:px-12";
-
-// ─── ONE vertical rhythm — cloned from Home (Welcome.tsx) ─────────────────────
-// Home reads calm because it uses ONE section padding + ONE inter-block gap
-// everywhere (never a random mt-3/mt-5/mt-8 mix). About now does the same: every
-// section carries SECTION_PAD, every block-below-a-block carries BLOCK_GAP.
-// Mobile floors are frozen (base/md); only the 2xl ceiling opens on wide screens.
-const SECTION_PAD = "py-8 md:py-10 2xl:py-12";
-const BLOCK_GAP = "mt-6 md:mt-8";
-/** The same rhythm as a BOTTOM gap (a block that separates from what follows). */
-const BLOCK_GAP_B = "mb-6 md:mb-8";
-/** A GENEROUS gap reserved for the seam where TEXT meets an IMAGE (above or
- *  below). Text must never sit tight against a photo/figure — this opens a clear
- *  breathing band (≥40px) at every prose↔image boundary while image↔image and
- *  text↔text seams keep the tighter BLOCK_GAP rhythm. */
-const IMG_GAP = "mt-10 md:mt-14 2xl:mt-16";
-/** The same generous seam as a BOTTOM gap (a text block above an image). */
-const IMG_GAP_B = "mb-10 md:mb-14 2xl:mb-16";
-
-// =============================================================================
-// LAYOUT PRIMITIVES — P1–P8. Defined ONCE; every section composes exactly one.
-// They GUARANTEE by construction: equal-height two-column rows (art fills to
-// text; people photos stack), capped image heights (≤64svh), even photo tiles
-// at one aspect, left-aligned prose, one type scale, one vertical rhythm.
-// =============================================================================
-
-// ─── P1 · ProseFull — full-width single running-text block (the default) ─────
-// Use for any chapter lead/body when NO image sits beside it. Reach for this
-// BEFORE any two-column. Prose sits LEFT (no mx-auto / text-center on the
-// <Prose> itself); the 66ch cap keeps the measure sane. LEAD/BODY are sans.
-const ProseFull = ({
-  text,
-  lead = false,
-  dropCap = false,
-  per = 3,
-}: {
-  text: string;
-  lead?: boolean;
-  dropCap?: boolean;
-  per?: number;
-}) => (
-  // FILL THE WIDTH (Hugo 2026-07-09: "empty space is the enemy"): flow the text
-  // into TWO balanced columns on lg+ so it spans the full (widened) measure
-  // instead of a single 66ch column stranding the right half. Mobile = ONE
-  // column (frozen). [column-fill:_balance] keeps the columns even-bottomed.
-  <Reveal
-    as="div"
-    className={cn(READING_WIDE, "columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]")}
-  >
-    <Prose text={text} per={per} className={cn(lead ? LEAD : BODY)} dropCap={dropCap} />
-  </Reveal>
+  "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]",
 );
+/** Home's two-column small heading (Meet Stephen). */
+const SIDE_H2 =
+  "font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,44px)] 3xl:text-[clamp(44px,2.5vw,60px)] 4xl:text-[clamp(56px,2.4vw,74px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0";
+const OPSZ40: CSSProperties = { fontVariationSettings: '"opsz" 40, "wght" 600' };
+/** Home's full-bleed cinematic band height ladder. */
+const BAND_H =
+  "relative w-full overflow-hidden h-[clamp(300px,44svh,440px)] md:h-[clamp(400px,62svh,760px)] 2xl:h-[clamp(440px,62svh,860px)] 3xl:h-[clamp(480px,60svh,960px)] 4xl:h-[clamp(520px,58svh,1040px)]";
+/** Home's tile grid gaps. */
+const TILE_GRID = "grid gap-x-5 gap-y-6 md:gap-x-6 md:gap-y-7";
+/** Home's filled + outlined CTA pills (hero). */
+const PILL_PRIMARY =
+  "press group inline-flex w-fit items-center bg-ink text-bg px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] rounded-full transition-colors duration-300 hover:bg-accent hover:text-ink whitespace-nowrap";
+const PILL_SECONDARY =
+  "press inline-flex w-fit items-center justify-center text-ink border border-[rgba(237,230,214,0.35)] px-7 py-3.5 font-sans text-[14px] font-bold tracking-[0.02em] rounded-full transition-colors duration-300 hover:border-accent hover:text-accent whitespace-nowrap";
+/** Home's ledger row (the material spec strip). */
+const LEDGER_ROW = "m-0 flex items-baseline justify-between gap-6 py-2.5 3xl:py-3.5 border-t border-line";
+const LEDGER_VALUE =
+  "text-right font-sans font-normal text-[15px] md:text-[16px] 3xl:text-[20px] 4xl:text-[24px] leading-[1.4] text-ink";
+/** Home's capped-archive-photo caption (Arista). */
+const CAPTION = "font-sans text-[13px] md:text-[14px] font-bold tracking-[0.02em] text-ink/80 mt-4 text-center";
 
-// ─── P2 · ProseColumns — balanced 2-column running text ──────────────────────
-// ONLY for a long passage (>~600 chars) with NO image beside it, so a single
-// 66ch column wouldn't strand dead space. [column-fill:_balance] is MANDATORY —
-// it forces equal-bottom columns (kills the empty-right jigsaw). No per-column
-// max-w (the two columns already constrain the measure). dropCap opens column 1.
-const ProseColumns = ({
-  text,
-  dropCap = false,
-  breakInside = false,
-  lead = false,
-}: {
-  text: string;
-  dropCap?: boolean;
-  breakInside?: boolean;
-  lead?: boolean;
-}) => (
-  <Reveal
-    as="div"
-    className={cn(READING_WIDE, "columns-1 lg:columns-2 lg:gap-12 3xl:gap-16 [column-fill:_balance]")}
-  >
-    <Prose text={text} className={lead ? LEAD : BODY} dropCap={dropCap} breakInside={breakInside} />
-  </Reveal>
-);
-
-// ─── P3 · PhotoRow — a JUSTIFIED gallery row (reads each photo's real size) ────
-// REBUILT 2026-07-27 (Hugo: "you're not reading image sizes properly — if it's
-// landscape don't put a horizontal image right next to it… jaggered images that
-// aren't the same shape with this stupid transparent background behind"). The old
-// row was an EQUAL-column grid that forced every photo into ONE arbitrary aspect
-// via object-contain — so a 1600×1200 LANDSCAPE jammed into a 4/5 PORTRAIT slot
-// got letterboxed into ragged warm-mount bars beside a real portrait. Now the row
-// is a proper justified gallery (à la a photo book): each photo keeps its NATURAL
-// aspect ratio (read from its width/height props) and its column GROWS in
-// proportion to that aspect, so every photo in the row lands at the SAME HEIGHT —
-// a landscape gets a wide column, a portrait a narrow one, and they align cleanly
-// with NO crop, NO letterbox, NO mount. Stacks to one column on phones.
-const readAspect = (node: ReactNode): number => {
-  if (!isValidElement(node)) return 1;
-  const props = node.props as {
-    width?: number;
-    height?: number;
-    aspect?: string;
-    children?: ReactNode;
-  };
-  if (typeof props.width === "number" && typeof props.height === "number" && props.height > 0) {
-    return props.width / props.height;
+// ─── paragraphize / BodyProse ─────────────────────────────────────────────────
+// Split a VERBATIM string into readable paragraphs on sentence boundaries so a
+// long single string reads as an essay, never one endless wall. Every
+// character renders exactly once, in order — no word is changed or dropped.
+//
+// ⚠️ A sentence boundary REQUIRES whitespace after the stop AND a capital,
+// quote or digit starting the next sentence. The old pattern allowed `\s*`
+// (zero spaces), so it broke inside a DECIMAL: "In 2016, his 3.6-metre Arista
+// SunStar…" rendered as a paragraph ending "his 3." followed by one opening
+// "6-metre Arista SunStar was commissioned…" — live on the page, in the
+// estate's own account of its biggest commission. Verified against all 55
+// long strings in content.ts: 7 split better, 0 lose a character.
+const paragraphize = (text: string, per = 3): string[] => {
+  const cuts: number[] = [];
+  const boundary = /[.!?]+["'”’)\]]*\s+/g;
+  // The match object itself is never read — the loop advances on the regex's
+  // own `lastIndex`, so capturing it would be an unused binding.
+  while (boundary.exec(text)) {
+    const next = text[boundary.lastIndex];
+    if (!next) break;
+    if (!/[A-Z“‘"'(0-9]/.test(next)) continue;
+    cuts.push(boundary.lastIndex);
   }
-  // ImageReveal tiles carry no width/height — only an `aspect` class string
-  // (e.g. "aspect-[4/3]", "aspect-square", "aspect-video"). Parse it so those
-  // rows JUSTIFY to one shared height just like the Plate rows do. Without this,
-  // every ImageReveal fell back to 1 → equal-width columns → mixed-aspect tiles
-  // rendered at DIFFERENT heights = the "jaggered jigsaw" Hugo keeps flagging.
-  if (typeof props.aspect === "string") {
-    if (props.aspect.includes("square")) return 1;
-    if (props.aspect.includes("video")) return 16 / 9;
-    const m = props.aspect.match(/\[(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\]/);
-    if (m) {
-      const w = parseFloat(m[1]);
-      const h = parseFloat(m[2]);
-      if (h > 0) return w / h;
-    }
+  const sentences: string[] = [];
+  let start = 0;
+  for (const cut of cuts) {
+    sentences.push(text.slice(start, cut));
+    start = cut;
   }
-  // Photos are wrapped in <Reveal><Plate …/></Reveal>; look one level in.
-  for (const child of Children.toArray(props.children)) {
-    const a = readAspect(child);
-    if (a !== 1) return a;
+  if (start < text.length) sentences.push(text.slice(start));
+  if (sentences.length <= per) return [text];
+  const out: string[] = [];
+  for (let i = 0; i < sentences.length; i += per) {
+    out.push(sentences.slice(i, i + per).join("").trim());
   }
-  return 1;
-};
-const PhotoRow = ({
-  children,
-}: {
-  cols?: 2 | 3;
-  width?: "tight" | "wide";
-  children: ReactNode;
-}) => {
-  const kids = Children.toArray(children);
-  return (
-    <Reveal
-      as="div"
-      className={cn(ONE_WIDTH, "flex flex-col sm:flex-row gap-3 md:gap-5 items-start")}
-    >
-      {kids.map((child, i) => (
-        <div
-          key={i}
-          className="min-w-0 w-full sm:w-auto"
-          style={{ flexGrow: readAspect(child), flexBasis: 0 }}
-        >
-          {child}
-        </div>
-      ))}
-    </Reveal>
-  );
+  return out.filter(Boolean);
 };
 
-// ─── P4 · TextThenArt — Home's stacked module: full-width text, then a
-//     full-width contained captioned figure BELOW (NO narrow side column) ──────
-// Rebuilt 2026-07-13 to Home's pattern (Welcome.tsx): Hugo hated the old
-// `lg:grid-cols-[1fr_520px]` side-column — it stranded empty space beside short
-// text and left the image "cut off". Now the VERBATIM text flows full-width as a
-// balanced 2-column block (exactly like Home's ProseFull), then the art sits as
-// its own generous, contained, captioned figure beneath it. Art/room/document
-// images may cover-fill inside a capped aspect (never a people photo — those use
-// ContainImage). Height-capped so nothing is a full-screen slab. `caption`
-// optional; `aspect` defaults to a wide 3/2.
-// (TextThenArt removed 2026-07-13 — its only remaining caller, the cymatics
-// chart, is now a capped centred figure inline. No other caller.)
-
-// ─── P6 · ImageBand — capped full-width landscape image ──────────────────────
-// One wide art/room/in-progress shot, height-capped so it can never become a
-// "huge image." MANDATORY ceiling 2xl:max-h-[Nsvh] 2xl:overflow-hidden. Always
-// landscape (16/9). Never a tall portrait as a band.
-const ImageBand = ({
-  src,
-  alt,
-  aspect = "aspect-[16/9]",
-  parallax = 0.1,
-  cap = "64svh",
-  sizes = "(min-width: 1280px) 1180px, calc(100vw - 32px)",
-  caption,
-}: {
-  src: string;
-  alt: string;
-  aspect?: string;
-  parallax?: number;
-  cap?: "64svh" | "56svh";
-  sizes?: string;
-  caption?: ReactNode;
-}) => (
-  <Reveal
-    as="figure"
-    className={cn(
-      ONE_WIDTH,
-      "m-0",
-      cap === "64svh" && "max-h-[62svh] overflow-hidden",
-      cap === "56svh" && "max-h-[54svh] overflow-hidden",
-    )}
-  >
-    <ImageReveal
-      src={src}
-      alt={alt}
-      aspect={aspect}
-      edges="none"
-      objectPosition="center"
-      parallax={parallax}
-      sizes={sizes}
-    />
-    {caption && <figcaption className={cn(CAPTION, "mt-4")}>{caption}</figcaption>}
-  </Reveal>
-);
-
-// ─── P7 · PullLine — short display-serif pull / quote in its OWN band ─────────
-// The ONLY place display serif appears in body flow. A short VERBATIM sentence
-// under a hairline, filling its own full-width band (never stranding a
-// half-empty column beside it), LEFT-aligned, capped max-w-[26ch]. Renders
-// nothing if the slice came back empty (marker-drift safety). Short only
-// (<~120 chars) — a paragraph belongs in P1/P2 as sans body.
-const PullLine = ({ text, className }: { text: string; className?: string }) => {
-  if (!text) return null;
-  return (
-    <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP, BLOCK_GAP_B, className)}>
-      {/* A full-width hairline + a BOLD statement that spans the whole measure on
-          lg+ (was a 42px line capped at 26ch, which left the band's right half
-          empty — Hugo's "blank space"). Now it fills the band edge-to-edge as a
-          display beat. */}
-      <p
-        className={cn(
-          STANDOUT_CLASS,
-          "m-0 text-balance max-w-[24ch] md:max-w-[34ch] lg:max-w-none",
-        )}
-        style={STANDOUT_STYLE}
-      >
-        {text}
+/** Home's centred-justified essay body (the "A reminder" paragraphs). */
+const BodyProse = ({ text, per = 3 }: { text: string; per?: number }) => (
+  <>
+    {paragraphize(text, per).map((para) => (
+      <p key={para.slice(0, 32)} lang="en-GB" className={BODY_P} style={BODY_SHADOW}>
+        {para}
       </p>
-    </Reveal>
-  );
-};
+    ))}
+  </>
+);
+
+/** Home's two-column copy paragraphs (SUBTITLE register, left-aligned). */
+const SideProse = ({ text, per = 3 }: { text: string; per?: number }) => (
+  <>
+    {paragraphize(text, per).map((para) => (
+      <p key={para.slice(0, 32)} className={SIDE_P}>
+        {para}
+      </p>
+    ))}
+  </>
+);
+
+// ─── SectionHead — Home's centred eyebrow → TITLE header ─────────────────────
+const SectionHead = ({
+  eyebrow,
+  title,
+  className = "mb-4 md:mb-5",
+}: {
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  className?: string;
+}) => (
+  <Reveal as="div" className={cn("text-center", className)}>
+    {eyebrow && <p className={cn(EYEBROW, "m-0 mb-3")}>{eyebrow}</p>}
+    <h2 className={cn(TITLE, MEASURE, "my-0 hero-text-shadow")}>{title}</h2>
+  </Reveal>
+);
 
 // ─── CHAPTERS — the page's editorial signature ("the rule and the year") ─────
-// One config array drives every ChapterHead so the owner's document order is
-// structurally enforced. Every year/place is established verbatim in content.ts.
-interface Chapter {
-  id:
-    | "beginnings"
-    | "bournemouth"
-    | "wandering"
-    | "return"
-    | "ritual"
-    | "lewes"
-    | "exhibitions"
-    | "academy"
-    | "azzarqa";
-  kicker: string;
-  tag: string;
-}
-
-const CHAPTERS: readonly Chapter[] = [
+// Every kicker + tag is a FACTUAL label established in content.ts (place, year,
+// the school's name) — these existed on the page before this rebuild and were
+// kept through Hugo's 2026-06-27 purge of invented titles. Numerals derive from
+// array INDEX so reordering renumbers the page.
+const CHAPTERS = [
   { id: "beginnings", kicker: "Beginnings", tag: "Staffordshire · 1966" },
   { id: "bournemouth", kicker: "Bournemouth", tag: "1990" },
   { id: "wandering", kicker: "Years abroad", tag: "France · Ibiza · Mexico · The Virgin Islands" },
@@ -376,439 +199,352 @@ const CHAPTERS: readonly Chapter[] = [
   { id: "lewes", kicker: "Four traditions", tag: "Lewes · Phoenix Place" },
   { id: "exhibitions", kicker: "Exhibitions & commissions", tag: "Dubai · London · Brighton" },
   { id: "academy", kicker: "The Academy", tag: "Phoenix Place, Lewes · 2010" },
-];
-
-type ChapterId = Chapter["id"];
-
-/** Numerals derive from array INDEX — reordering CHAPTERS renumbers the page. */
-const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"] as const;
-
-// ─── P8 · ChapterHead — the repeated chapter signature (the delimiter) ───────
-// Hairline rule → two-tone kicker ("Chapter {numeral} · {kicker} · {tag}").
-// Reveals in fixed order via sibling Reveal delays.
-const ChapterHead = ({ id }: { id: ChapterId }) => {
+  { id: "azzarqa", kicker: "Az-Zarqa School", tag: "Jordan" },
+] as const;
+type ChapterId = (typeof CHAPTERS)[number]["id"];
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"] as const;
+const chapter = (id: ChapterId) => {
   const index = CHAPTERS.findIndex((c) => c.id === id);
-  const chapter = CHAPTERS[index];
-  const numeral = ROMAN_NUMERALS[index];
-  // Home's centered header unit: a rust eyebrow + a big Fraunces TITLE, no rule.
-  return (
-    <Reveal as="header" className="text-center mb-5 md:mb-7">
-      <p className={cn(EYEBROW, "m-0 mb-3")}>
-        Chapter {numeral} · {chapter.tag}
-      </p>
-      <h2 className={cn(TITLE, "my-0 max-w-[1180px] 2xl:max-w-[1400px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto hero-text-shadow")}>
-        {chapter.kicker}
-      </h2>
-    </Reveal>
-  );
+  const c = CHAPTERS[index];
+  return { eyebrow: `Chapter ${ROMAN[index]} · ${c.tag}`, title: `${c.kicker}.` };
+};
+const ChapterHead = ({ id, className }: { id: ChapterId; className?: string }) => {
+  const c = chapter(id);
+  return <SectionHead eyebrow={c.eyebrow} title={c.title} className={className} />;
 };
 
-// Unifying editorial grade for the family SNAPSHOTS only (never the artworks):
-// a warm, gently-desaturated film tone that harmonises ~28 mixed amateur photos
-// — different cameras, decades, exposures — into ONE intentional collection
-// (family album → art book). Baked into the SAME `filter` as the plate shadow so
-// the whole thing rasterises once (a static texture) and costs nothing per frame
-// under the scroll parallax. Dial the numbers to taste; `PHOTO_GRADE` alone is
-// the tone, `_SHADOW` adds the lift for shadowed plates.
-// Photos render in TRUE colour (Hugo: the sepia grade "ruined the colouring").
-// A single soft lift only — no tone shift, no heavy dark halo.
-const PHOTO_GRADE_SHADOW = "drop-shadow(0 10px 26px rgba(0,0,0,0.30))";
-
-// ─── Plate ───────────────────────────────────────────────────────────────────
-// The family-album register: a personal snapshot shown at object-CONTAIN inside
-// a fixed-aspect slot (fill) or whole at native ratio, sitting directly on the
-// peacock backdrop with a soft drop-shadow. No object-cover, ever — these are
-// family photographs and nobody may be cropped out; any letterbox is transparent.
-const Plate = ({
+// ─── Tile — Home's featured-grid tile treatment for a photograph ─────────────
+// Uniform aspect per row, hairline ring, gentle hover zoom, object-cover with a
+// FACE-SAFE object-position (set per photo from the audit — never "center" by
+// default). A row mixes NO orientations: landscapes with landscapes at 3:2 /
+// 16:9 / 4:3, portraits with portraits at 4:5.
+const Tile = ({
   src,
   alt,
-  width,
-  height,
+  aspect,
+  position = "center",
   sizes,
 }: {
   src: string;
   alt: string;
-  width: number;
-  height: number;
-  sizes?: string;
-  /** Kept for call-site back-compat (both now ignored — the photo shows at its
-   *  natural aspect and its column in a justified PhotoRow is sized from it). */
-  fill?: boolean;
-  aspect?: string;
+  aspect: string;
+  position?: string;
+  sizes: string;
 }) => (
-  <figure className="m-0">
-    {/* NATURAL ASPECT, no mount, no crop (Hugo 2026-07-27). The photo shows at its
-        own true shape — inside a justified PhotoRow its column width is set in
-        proportion to this aspect, so it lands at the row's shared height with NO
-        letterbox and NO crop. `aspect` prop is now ignored (kept for call-site
-        back-compat). A gentle rounded corner + the shared soft film-shadow read it
-        as a photograph, not a floating cut-out. */}
-    <AssetImage
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      loading="lazy"
-      decoding="async"
-      sizes={sizes}
-      style={{ filter: PHOTO_GRADE_SHADOW }}
-      className="block w-full h-auto rounded-[3px]"
-    />
-  </figure>
-);
-
-// ─── Dinkus ──────────────────────────────────────────────────────────────────
-// The quiet section-break mark — used exactly twice (Art as ritual; the
-// exhibitions→interview turn). Static.
-// Sections separate by whitespace, never a rule (Hugo: no lines anywhere).
-const Dinkus = () => null;
-
-// ─── WordReveal ────────────────────────────────────────────────────────────
-// Stagger every word into place. Used on the one cinematic headline (Anegada).
-// Short-circuits entirely under reduced motion.
-const WordReveal = ({
-  text,
-  className,
-  stagger = 0.08,
-  duration = 0.8,
-}: {
-  text: string;
-  className?: string;
-  stagger?: number;
-  duration?: number;
-}) => {
-  const reduceMotion = useReducedMotion();
-  if (reduceMotion) return <span className={className}>{text}</span>;
-  const words = text.split(" ");
-  const wordVariants: Variants = {
-    hidden: { opacity: 0, y: 28 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration, ease: [0.22, 0.61, 0.36, 1] },
-    },
-  };
-  return (
-    <motion.span
-      className={className}
-      style={{ display: "inline" }}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.4 }}
-      variants={{
-        hidden: {},
-        show: { transition: { staggerChildren: stagger } },
-      }}
-    >
-      {words.map((w, i) => (
-        <motion.span
-          key={i}
-          variants={wordVariants}
-          style={{ display: "inline-block", whiteSpace: "pre" }}
-        >
-          {w}
-          {i < words.length - 1 ? " " : ""}
-        </motion.span>
-      ))}
-    </motion.span>
-  );
-};
-
-// ─── SectionLabel ───────────────────────────────────────────────────────────
-// Canonical accent eyebrow — kept for the interview sub-head.
-const SectionLabel = ({ children }: { children: ReactNode }) => (
-  <p className={cn(EYEBROW, "m-0 mb-4")}>{children}</p>
-);
-
-// ─── ContainImage ────────────────────────────────────────────────────────────
-// No-crop figure: the photo sits inside a fixed-aspect slot and is shown in full
-// with object-contain — so heads, feet and edges are never cut off. The photo
-// floats directly on the peacock backdrop with a drop-shadow that hugs the image
-// itself; any letterbox area is transparent. Gentle scroll-tied parallax on the
-// image only, short-circuited under reduced motion.
-const ContainImage = ({
-  src,
-  alt,
-  aspect = "aspect-[4/3]",
-  parallax = 0.06,
-  sizes,
-}: {
-  src: string;
-  alt: string;
-  aspect?: string;
-  parallax?: number;
-  sizes?: string;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  // Only promote the parallax layer to its own GPU layer while it's NEAR the
-  // viewport — About renders ~16 of these, and promoting them ALL (the old
-  // always-on will-change) held 16 live compositor layers, a big share of the
-  // fullscreen scroll jank. IntersectionObserver keeps only the ~2-3 on screen
-  // promoted. (2026-07-16 scroll-jank fix; mirrors ImageReveal's discipline.)
-  const [near, setNear] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || reduceMotion) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setNear(entry.isIntersecting),
-      { rootMargin: "300px 0px" },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduceMotion]);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const px = reduceMotion ? 0 : Math.round(parallax * 60);
-  const y = useTransform(scrollYProgress, [0, 1], [px, -px]);
-
-  return (
-    <div ref={ref} className={cn("relative w-full md:overflow-hidden", aspect)}>
-      <motion.div
-        className={cn("absolute inset-0", near && !reduceMotion && "will-change-transform")}
-        style={reduceMotion ? undefined : { y }}
-      >
+  <figure className="m-0 min-w-0 group">
+    <div className={cn("relative overflow-hidden bg-ink/5 ring-1 ring-line transition-all duration-500 group-hover:ring-accent/50", aspect)}>
+      <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]">
         <AssetImage
           src={src}
           alt={alt}
           loading="lazy"
           decoding="async"
           sizes={sizes}
-          style={{ filter: PHOTO_GRADE_SHADOW }}
-          className="absolute inset-0 w-full h-full object-contain object-center"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: position }}
         />
-      </motion.div>
+      </div>
     </div>
+  </figure>
+);
+
+/** A uniform tile row — 2-up or 3-up, one shared aspect. */
+const TileRow = ({
+  cols,
+  className,
+  children,
+}: {
+  cols: 2 | 3;
+  className?: string;
+  children: ReactNode;
+}) => (
+  <Reveal
+    as="div"
+    className={cn(
+      TILE_GRID,
+      cols === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-1 sm:grid-cols-2",
+      className,
+    )}
+  >
+    {children}
+  </Reveal>
+);
+
+// ─── WholeRow — two photographs of DIFFERENT orientation, both shown WHOLE ────
+// The one place a row may mix a portrait with a landscape: each keeps its true
+// aspect and its column grows in proportion, so both land at the SAME height
+// and together fill the measure edge-to-edge — no crop (a face is never cut),
+// no letterbox, no side void. Used only where a crop would cut people out
+// (the Az-Zarqa children; the gallery full-length).
+const WholeRow = ({
+  photos,
+}: {
+  photos: { src: string; alt: string; width: number; height: number; sizes: string }[];
+}) => (
+  <Reveal as="div" className="flex flex-col sm:flex-row gap-5 md:gap-6 items-stretch">
+    {photos.map((p) => (
+      <figure
+        key={p.src}
+        className="m-0 min-w-0 w-full sm:w-auto overflow-hidden ring-1 ring-line"
+        style={{ flexGrow: p.width / p.height, flexBasis: 0 }}
+      >
+        <AssetImage
+          src={p.src}
+          alt={p.alt}
+          width={p.width}
+          height={p.height}
+          loading="lazy"
+          decoding="async"
+          sizes={p.sizes}
+          className="block w-full h-auto"
+        />
+      </figure>
+    ))}
+  </Reveal>
+);
+
+// ─── Band — Home's full-bleed cinematic band (edge-to-edge, ~62svh) ──────────
+// The crop is inherent to a full-width landscape band; objectPosition keeps the
+// subject in the visible slice (set per photo from the audit).
+const Band = ({ src, alt, position }: { src: string; alt: string; position: string }) => (
+  <Reveal as="figure" className="mt-0 mb-0 mr-0 w-screen ml-[calc(50%-50vw)]">
+    <div className={BAND_H}>
+      <ImageReveal
+        src={src}
+        alt={alt}
+        fill
+        edges="none"
+        parallax={0}
+        zoom={1}
+        objectPosition={position}
+        shadow=""
+        sizes="100vw"
+        className="h-full"
+      />
+    </div>
+  </Reveal>
+);
+
+// ─── SideBySide — Home's Meet-Stephen module ─────────────────────────────────
+// Portrait LEFT, cover-filled to the copy's EXACT height (items-stretch +
+// absolute inset-0 object-cover) so the two columns start AND end on the same
+// line — the "so clean" module in Hugo's screenshot. Copy sits top-aligned
+// beside it as ONE cohesive block: eyebrow → small heading → paragraphs.
+// Mobile shows the WHOLE portrait, sized down + centred, stacked above.
+const SideBySide = ({
+  src,
+  alt,
+  position,
+  sizes = "(min-width:768px) 34vw, 64vw",
+  children,
+}: {
+  src: string;
+  alt: string;
+  position: string;
+  sizes?: string;
+  children: ReactNode;
+}) => (
+  <Reveal
+    as="div"
+    className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
+  >
+    <figure className="relative m-0 mx-auto w-[64%] max-w-[300px] md:w-full md:max-w-none md:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
+      <AssetImage
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        sizes={sizes}
+        className="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover"
+        style={{ objectPosition: position }}
+      />
+    </figure>
+    <div className="w-full flex flex-col items-start justify-start text-left gap-4 md:gap-5 3xl:gap-7 4xl:gap-9">
+      {children}
+    </div>
+  </Reveal>
+);
+
+// ─── DisplayPull — Home's two-tier pull-quote ("There is a star…") ───────────
+const DisplayPull = ({ lead, follow }: { lead: string; follow?: string }) => (
+  <Reveal delay={0.05} className="my-10 md:my-14 text-center">
+    <blockquote className="m-0 hero-text-shadow">
+      <span
+        className="block mx-auto font-display font-semibold text-ink text-balance"
+        style={{
+          fontVariationSettings: '"opsz" 48, "wght" 600',
+          fontWeight: 600,
+          fontSize: "clamp(44px, 8vw, 104px)",
+          letterSpacing: "-0.045em",
+          lineHeight: 0.98,
+        }}
+      >
+        {lead}
+      </span>
+      {follow && (
+        <span
+          className="block mx-auto font-display font-normal italic text-ink/90 text-balance"
+          style={{
+            fontVariationSettings: '"opsz" 40, "wght" 400',
+            fontWeight: 400,
+            fontSize: "clamp(28px, 5.5vw, 60px)",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+            marginTop: "clamp(12px, 1.8vw, 28px)",
+          }}
+        >
+          {follow}
+        </span>
+      )}
+    </blockquote>
+  </Reveal>
+);
+
+// ─── DisplayClose — Home's two-tier close ("Everything you think…") ──────────
+const DisplayClose = ({ lead, follow, accentStop = true }: { lead: string; follow?: string; accentStop?: boolean }) => {
+  const leadBody = accentStop && lead.endsWith(".") ? lead.slice(0, -1) : lead;
+  return (
+    <Reveal delay={0.1} className="text-center">
+      <p className={cn(MEASURE, "m-0 text-center hero-text-shadow")}>
+        <span
+          className="block font-display text-ink text-balance mx-auto"
+          style={{
+            fontVariationSettings: '"opsz" 48, "wght" 600',
+            fontWeight: 600,
+            fontSize: "clamp(42px, 10.5vw, 68px)",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.02,
+          }}
+        >
+          {leadBody}
+          {accentStop && lead.endsWith(".") && <span className="text-accent">.</span>}
+        </span>
+        {follow && (
+          <span
+            className="block font-display font-normal italic text-ink-muted text-balance mx-auto mt-4 md:mt-6"
+            style={{
+              fontVariationSettings: '"opsz" 36, "wght" 400',
+              fontWeight: 400,
+              fontSize: "clamp(25px, 6.2vw, 44px)",
+              letterSpacing: "-0.015em",
+              lineHeight: 1.2,
+            }}
+          >
+            {follow}
+          </span>
+        )}
+      </p>
+    </Reveal>
   );
 };
 
-// ─── AboutMasthead ──────────────────────────────────────────────────────────
-// The front cover: a meta rule, the name set enormous (the sanctioned masthead
-// h1), then his portrait beside the opening passage. DEFECT #1 FIX: the opening
-// passage renders as LEAD (sans, ≤23px) — NOT the old ≤60px display serif that
-// was Hugo's #1 "massive text" complaint. Portrait keeps aspect + w-full (the
-// 0×0 lazy-load gotcha).
-const AboutMasthead = () => (
-  <section className={cn(SECTION, "relative pt-6 md:pt-10")}>
-    {/* Centered home-style header — eyebrow + big Fraunces name, no rules. */}
-    <Reveal as="div" className={cn("text-center", BLOCK_GAP_B)}>
-      <p className={cn(EYEBROW, "m-0 mb-3")}>In memoriam · {LIFE_DATES}</p>
-      <h1 className={cn(TITLE, "my-0 mx-auto hero-text-shadow")}>Stephen Meakin</h1>
-      <p className={cn(EYEBROW_MUTED, "m-0 mt-3")}>
-        Mandala artist &amp; sacred geometer
-      </p>
-    </Reveal>
-    {/* Opening spread — the portrait sits BESIDE the opening passage so the row
-        fills the full measure with NO dead side space (Hugo 2026-07-27: the lone
-        centred portrait "has a huge gap either side … totally rethink"). A
-        contained bounded column, never a full-bleed wall; stacks portrait-then-
-        text on mobile, true-colour, single hairline ring like home's figures. */}
-    <div
-      className={cn(
-        BLOCK_GAP,
-        "grid grid-cols-1 items-center gap-7 md:gap-10 lg:gap-14 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)]",
-      )}
-    >
-      <Reveal as="figure" delay={0.06} className="m-0 w-full">
-        <div className="overflow-hidden rounded-[3px] ring-1 ring-line">
-          <ImageReveal
-            src="/img/about/12-stephen-portrait.jpg"
-            alt="Stephen Meakin"
-            aspect="aspect-[1337/1600]"
-            edges="none"
-            parallax={0}
-            eager
-            sizes="(min-width: 768px) 44vw, 90vw"
-          />
-        </div>
-      </Reveal>
-      <Reveal as="div" delay={0.1} className="text-center md:text-left">
-        <Prose text={ABOUT.opening[0]} per={2} className={cn(SUBTITLE, "reading-shadow m-0")} />
-      </Reveal>
-    </div>
-  </section>
-);
+// ─── Verbatim slicing (never re-typed) ───────────────────────────────────────
+// Every display moment on the page is DERIVED from the paragraph it belongs to,
+// and the body then renders only the remainder — so each of Stephen's words
+// appears exactly once, in order (Home's reminderLead / starSentence recipe).
 
-// ─── AnegadaPoster ────────────────────────────────────────────────────────────
-// The turning point — the page's SOLE giant moment (≤88svh headline). The
-// giant "Everything / is connected." headline stays centered (the one display
-// moment); the story + the pull-quote are LEFT-aligned within READING_WIDE
-// (DEFECT #3 FIX — the old text-center / mx-auto islands are gone). The section
-// is transparent so the Blood-Moon → Moroccan-Purple crossfade glows through.
-// ⚠️ No image is re-added (the sand-circle photo stays removed).
-const AnegadaPoster = () => (
-  <div className={BLOCK_GAP}>
-    <div className={READING_WIDE}>
-      <Reveal as="div" className="text-center">
-        <p className={cn(EYEBROW, "m-0 mb-3")}>Anegada · 1995</p>
-        <h3
-          className="font-display font-bold tracking-[-0.03em] text-[clamp(48px,8vw,140px)] leading-[0.92] text-ink m-0 hero-text-shadow"
-          style={{ fontVariationSettings: '"opsz" 48, "wght" 700' }}
-        >
-          <span className="block">
-            <WordReveal text="Everything" stagger={0.1} duration={1.0} />
-          </span>
-          <span className="block">
-            <WordReveal text="is connected." stagger={0.1} duration={1.0} />
-          </span>
-        </h3>
-      </Reveal>
+// Opening passage: first sentence = the illuminated lede; the closing two
+// sentences ("That kind of knowledge is a gift. It is also a weight.") = the
+// two-tier pull; the middle = body.
+const opening = ABOUT.opening[0];
+const openingSplit = opening.indexOf(". ");
+const openingLede = (openingSplit > 0 ? opening.slice(0, openingSplit + 1) : opening).replace(/ (\S+)$/, " $1");
+const openingPullAt = opening.indexOf("That kind of knowledge");
+const openingBody =
+  openingSplit > 0
+    ? opening.slice(openingSplit + 2, openingPullAt > 0 ? openingPullAt : undefined).trim()
+    : "";
+const openingPull = openingPullAt > 0 ? opening.slice(openingPullAt).trim() : "";
+const openingPullSplit = openingPull.indexOf(". ");
+const openingPullLead = openingPullSplit > 0 ? openingPull.slice(0, openingPullSplit + 1) : openingPull;
+const openingPullFollow = openingPullSplit > 0 ? openingPull.slice(openingPullSplit + 2) : "";
 
-      {/* The first-person Anegada story — 2-column on lg+ to fill the width. */}
-      <Reveal as="div" className={cn(BLOCK_GAP, "columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]")}>
-        <Prose text={ABOUT.anegada[0]} className={cn(BODY)} />
-      </Reveal>
+// "As he described himself": the first sentence carries the two-column heading,
+// the rest flows as the copy beside his portrait.
+const described = ABOUT.opening[1];
+const describedSplit = described.indexOf(". ");
+const describedHead = describedSplit > 0 ? described.slice(0, describedSplit + 1) : described;
+const describedBody = describedSplit > 0 ? described.slice(describedSplit + 2) : "";
 
-      {/* The hung-accent-mark pull-quote — the full sentence VERBATIM from
-          content.ts (ABOUT.anegadaQuote), LEFT-aligned. */}
-      <Reveal as="div" className={cn(BLOCK_GAP, BLOCK_GAP_B)}>
-        <span
-          aria-hidden
-          className="block font-display font-semibold leading-[0.8] text-accent/60 select-none"
-          style={{ fontVariationSettings: '"opsz" 40, "wght" 600', fontSize: "clamp(38px,3vw,56px)" }}
-        >
-          &ldquo;
-        </span>
-        <blockquote className="m-0">
-          <p className={cn(STANDOUT_CLASS, "font-normal italic m-0 max-w-[22ch] md:max-w-[40ch] lg:max-w-none text-balance")} style={STANDOUT_STYLE}>
-            {ABOUT.anegadaQuote}
-          </p>
-          <cite className={cn(EYEBROW_MUTED, "not-italic block mt-6")}>SEM</cite>
-        </blockquote>
-      </Reveal>
-    </div>
-  </div>
-);
+// Return & the first mandala: earlyLife[4] is two sentences — the close.
+const firstMandala = ABOUT.earlyLife[4];
+const firstMandalaSplit = firstMandala.indexOf(". ");
+const firstMandalaLead = firstMandalaSplit > 0 ? firstMandala.slice(0, firstMandalaSplit + 1) : firstMandala;
+const firstMandalaFollow = firstMandalaSplit > 0 ? firstMandala.slice(firstMandalaSplit + 2) : "";
 
-// The four traditions Stephen wove together (named exactly as in ABOUT.legacy[0]).
+// Anegada: the story runs up to the sanctioned pull sentence (ABOUT.anegadaQuote,
+// a verbatim substring of anegada[0]), the sentence lands as the two-tier pull,
+// and the story resumes beneath it.
+const anegada = ABOUT.anegada[0];
+const anegadaQuoteAt = anegada.indexOf(ABOUT.anegadaQuote);
+const anegadaBefore = anegadaQuoteAt > 0 ? anegada.slice(0, anegadaQuoteAt).trim() : anegada;
+const anegadaAfter = anegadaQuoteAt > 0 ? anegada.slice(anegadaQuoteAt + ABOUT.anegadaQuote.length).trim() : "";
+const anegadaQuoteSplit = ABOUT.anegadaQuote.indexOf(", I felt");
+const anegadaQuoteLead =
+  anegadaQuoteSplit > 0 ? ABOUT.anegadaQuote.slice(0, anegadaQuoteSplit + 1) : ABOUT.anegadaQuote;
+const anegadaQuoteFollow = anegadaQuoteSplit > 0 ? ABOUT.anegadaQuote.slice(anegadaQuoteSplit + 2) : "";
+
+// The four traditions, named exactly as in ABOUT.legacy[0].
 const TRADITIONS = [
-  { numeral: "I", name: "Ancient Insular Island Arts" },
-  { numeral: "II", name: "The Rose Windows of Medieval Europe" },
-  { numeral: "III", name: "The Art of Persian Geometry" },
-  { numeral: "IV", name: "The Sacred Mandala of Tibet" },
+  "Ancient Insular Island Arts",
+  "The Rose Windows of Medieval Europe",
+  "The Art of Persian Geometry",
+  "The Sacred Mandala of Tibet",
 ];
 
-// Q&A answers at or under this length are the interview's emotional beats
-// ("To inspire wonderment." / "Shall we sit down and have some tea?") — they
-// land in the SUBHEAD register instead of the reading register.
+// The facts ledger — Home's material-spec strip, filled with the estate's
+// verifiable facts (dates from content.ts; the rest verbatim from ABOUT.legacy
+// and CREDENTIALS).
+const FACTS: [string, string][] = [
+  ["Born", `${BIRTH_DATE} — Staffordshire`],
+  ["Died", DEATH_DATE],
+  ["Studio", "Phoenix Place, Lewes"],
+  ["Academy", "TAGA — The Art of Geometry Academy · 2010"],
+  ["Exhibited", CREDENTIALS.slice(0, 3).join(" · ")],
+  ["Commissioned", CREDENTIALS.slice(3, 5).join(" · ")],
+];
+
+// Interview answers at or under this length are the emotional beats ("To
+// inspire wonderment." / "Shall we sit down and have some tea?") — they land as
+// a display close instead of a reading paragraph.
 const BEAT_ANSWER_MAX_CHARS = 64;
 
-// ─── InterviewQA ─────────────────────────────────────────────────────────────
-// One question/answer pair from content.ts INTERVIEW, rendered verbatim.
-// Questions sit in the muted sans eyebrow register; long answers in BODY; beat
-// answers (≤ BEAT_ANSWER_MAX_CHARS) land large in the SUBHEAD role. Every pair
-// spans the same READING_WIDE measure, LEFT-aligned, under a hairline — so the
-// whole interview reads as one consistent-width column (no 860/920 islands).
+/** One question/answer pair, verbatim, in Home's centred essay register. */
 const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   const isBeat = item.a.length <= BEAT_ANSWER_MAX_CHARS;
   return (
-    <Reveal as="div" className="py-4 md:py-5">
-      <p className="m-0 mb-2 md:mb-3 font-display italic font-normal text-[clamp(16px,1.2vw,20px)] leading-[1.45] text-ink-muted">{item.q}</p>
+    <Reveal as="div" className={cn(MEASURE, "text-center")}>
+      <p
+        className="m-0 mb-3 md:mb-4 font-display italic font-normal text-ink-muted text-balance text-[clamp(20px,1.6vw,32px)] leading-[1.35] hero-text-shadow"
+        style={{ fontVariationSettings: '"opsz" 36, "wght" 400' }}
+      >
+        {item.q}
+      </p>
       {isBeat ? (
-        <p className={cn(SUBHEAD, "m-0 max-w-[34ch]")} style={SUBHEAD_STYLE}>
-          &ldquo;{item.a}&rdquo;
-        </p>
+        <DisplayClose lead={`“${item.a}”`} accentStop={false} />
       ) : (
-        <p className={cn(BODY, "max-w-[68ch]")}>{item.a}</p>
+        <BodyProse text={item.a} />
       )}
     </Reveal>
   );
 };
 
-// ─── paragraphize / Prose ─────────────────────────────────────────────────────
-// Split a VERBATIM string into readable paragraphs on sentence boundaries so a
-// long single string reads as an article, never one endless wall. Every
-// character renders exactly once, in order — no word is changed, re-typed or
-// dropped, only wrapped across <p> elements.
-const paragraphize = (text: string, per = 3): string[] => {
-  const sentences = text.match(/[^.!?]+(?:[.!?]+["'”’)\]]*\s*|$)/g);
-  if (!sentences || sentences.length <= per) return [text];
-  const out: string[] = [];
-  for (let i = 0; i < sentences.length; i += per) {
-    out.push(sentences.slice(i, i + per).join("").trim());
-  }
-  return out.filter(Boolean);
-};
-
-/** Renders a VERBATIM string as sentence-grouped paragraphs. `dropCap` styles
- *  the FIRST paragraph; `breakInside` (for CSS-column parents) keeps each
- *  paragraph whole within a column. Paragraphs after the first get top spacing. */
-const Prose = ({
-  text,
-  className,
-  per = 3,
-  dropCap = false,
-  breakInside = false,
-}: {
-  text: string;
-  className?: string;
-  per?: number;
-  dropCap?: boolean;
-  breakInside?: boolean;
-}) => (
-  <>
-    {paragraphize(text, per).map((para, i) => (
-      <p
-        key={i}
-        className={cn(
-          className,
-          i === 0 && dropCap ? "drop-cap" : "",
-          i > 0 ? "mt-2 md:mt-3" : "",
-          breakInside ? "[break-inside:avoid]" : "",
-        )}
-      >
-        {para}
-      </p>
-    ))}
-  </>
-);
-
-// ─── Verbatim pull-lines — sliced (never re-typed) from the chapter's prose ──
-// Each standout sentence is a literal substring of its chapter's content.ts
-// prose, extracted by slicing between markers, so curly apostrophes / em-dashes
-// carry through byte-for-byte. A marker miss returns "" and the pull simply
-// doesn't render — it can never surface invented or malformed text.
-const pullSentence = (
-  source: string,
-  startMarker: string,
-  endMarkerInclusive: string,
-): string => {
-  const start = source.indexOf(startMarker);
-  if (start < 0) return "";
-  const endAt = source.indexOf(endMarkerInclusive, start);
-  if (endAt < 0) return "";
-  return source.slice(start, endAt + endMarkerInclusive.length);
-};
-
-// (PULL_BEGINNINGS / PULL_BOURNEMOUTH removed 2026-07-09 — now the chapter prose
-// is shown in full 2-column, a pull-line quoting a sentence FROM that same prose
-// read as a repeat. Hugo: no repeats.)
-const PULL_EARTH_MEASURE = pullSentence(
-  INTERVIEW.qa[0].a,
-  "the word geometry means",
-  "order in nature.",
-);
-
 export const About = () => {
-  // Friends & Family enquiry modal — opened from the closing CTA.
-  const [friendsOpen, setFriendsOpen] = useState(false);
-  const closeFriends = useCallback(() => setFriendsOpen(false), []);
+  // Six paintings, a FRESH random six on every mount — Home's featured-grid
+  // draw, verbatim (Fisher–Yates on a COPY; a lazy initialiser so the impure
+  // draw runs exactly once per mount). Rendered with the SHARED PrintTile —
+  // never a hand-rolled tile (Hugo caught the per-page drift twice).
+  const [featured] = useState<Painting[]>(() => {
+    const pool = [...PAINTINGS];
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 6);
+  });
 
   return (
     <div className="relative">
-      {/* PAVO TAPESTRY BACKDROP — the exact same five-colourway component as the
-          home page; fade windows land on act seams. */}
-      <PavoBackdrop
-        fit="cover"
-        fades={[
-          [0.15, 0.23],
-          [0.33, 0.41],
-          [0.51, 0.59],
-          [0.68, 0.76],
-        ]}
-      />
       <Seo
         title="About Stephen Meakin — the life and work"
         description="The life and work of Stephen Meakin (1966–2021), British mandala artist and sacred geometer: from Anegada to the studio at Phoenix Place, Lewes, and a practice built on the idea that everything is connected."
@@ -816,585 +552,535 @@ export const About = () => {
       />
       <Nav />
 
-      <main className="relative isolate z-10">
-        {/* 1 · MASTHEAD — front cover; the opening passage lives here as LEAD. */}
-        <AboutMasthead />
-
-        {/* 2 · SELF-DESCRIPTION + FACTS RAIL — P1 (ProseFull) + a spread facts
-            rail. His own words (opening[1] VERBATIM) sit LEFT as BODY; the facts
-            <dl> spans the reading measure beneath. */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <div className={READING_WIDE}>
-            <Reveal as="div">
-              <p className={cn(EYEBROW, "m-0 mb-5")}>As he described himself —</p>
-              {/* 2-column on lg+ so his words fill the width (no stranded right). */}
-              <div className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-                <Prose text={ABOUT.opening[1]} per={2} className={cn(BODY)} />
+      {/* ONE vertical rhythm for the whole page — Home's: the gap lives on
+          <main> (space-y), sections carry no padding of their own, so it can
+          never double up or collapse. overflow-x-clip lets the full-bleed
+          bands break out without a horizontal scrollbar. */}
+      <main className="relative isolate z-10 overflow-x-clip space-y-10 md:space-y-12 lg:space-y-14 pt-6 md:pt-8 pb-8 md:pb-10">
+        {/* 1 · FRONT COVER — Home's hero, beat for beat: the WHOLE photograph
+            first at full content width (his best landscape photograph — sharp,
+            at work, the mandala behind him), then the name set as the page's
+            dominant statement with the one italic subordinate, then the two
+            pills. Nothing is cropped; the photo box matches its native 3:2. */}
+        <section className="relative isolate w-full overflow-hidden">
+          <div className={cn(CONTAINER, "flex flex-col w-full")}>
+            <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
+              <h1 className={cn("font-display tracking-[-0.03em] text-ink m-0 text-balance hero-text-shadow", MEASURE)}>
+                <span
+                  className="block text-[clamp(56px,11vw,176px)] leading-[0.94]"
+                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
+                >
+                  Stephen Meakin
+                </span>
+                <span className="block font-normal italic text-[clamp(30px,5vw,72px)] leading-[1.06] mt-4 md:mt-6 text-ink/95">
+                  &mdash; mandala artist and sacred geometer.
+                </span>
+              </h1>
+              <div className="mt-6 md:mt-7 flex flex-wrap items-center justify-center gap-3">
+                <MagneticLink to="/collections" className={PILL_PRIMARY} ariaLabel="See the collection">
+                  See the collection{" "}
+                  <span
+                    aria-hidden="true"
+                    className="ml-2 inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-1"
+                  >
+                    &rarr;
+                  </span>
+                </MagneticLink>
+                <MagneticLink to="/memories" className={PILL_SECONDARY} ariaLabel="Leave a memory">
+                  Leave a memory
+                </MagneticLink>
               </div>
             </Reveal>
-            <Reveal as="div" delay={0.1} className={BLOCK_GAP}>
-              <dl className="flex flex-wrap justify-start items-start gap-x-16 md:gap-x-20 gap-y-4 py-4 md:py-5">
-                <div>
-                  <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Born</dt>
-                  <dd className={cn(CAPTION, "m-0")}>{BIRTH_DATE} — Staffordshire</dd>
-                </div>
-                <div>
-                  <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Died</dt>
-                  <dd className={cn(CAPTION, "m-0")}>{DEATH_DATE}</dd>
-                </div>
-                <div>
-                  <dt className={cn(EYEBROW_TIGHT, "m-0 mb-1.5")}>Studio</dt>
-                  <dd className={cn(CAPTION, "m-0")}>Phoenix Place, Lewes</dd>
-                </div>
-              </dl>
-            </Reveal>
-          </div>
-        </section>
 
-        {/* 3 · PHOTO CLUSTER — 2-up people (the family-group photo removed at
-            Hugo's request 2026-07-13; two portraits left, even). */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <PhotoRow>
-            <Reveal as="div">
-              <Plate
-                src="/img/about/13-stephen-outdoor-portrait.jpg"
-                alt="Stephen Meakin outdoors in sunlight, sunglasses resting on his head and earphones in, palms and greenery behind him."
-                width={1600}
-                height={1200}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                fill
-                aspect="aspect-[4/5]"
+            <Reveal
+              as="figure"
+              className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[min(1400px,116svh)] 2xl:max-w-[min(1680px,116svh)] 3xl:max-w-[min(2100px,116svh)] 4xl:max-w-[min(2600px,116svh)]"
+            >
+              <ImageReveal
+                src="/img/about/28-at-the-drafting-table.jpg"
+                alt="Stephen Meakin leaning over a print on the drafting table in his studio, a large mandala on the wall behind him"
+                eager
+                aspect="aspect-[3/2]"
+                edges="none"
+                parallax={0}
+                zoom={1}
+                objectPosition="center"
+                shadow=""
+                sizes="(min-width: 1400px) 1320px, 92vw"
               />
             </Reveal>
-            <Reveal as="div" delay={0.09}>
-              <Plate
-                src="/img/about/01-stephen-at-gallery.jpg"
-                alt="Stephen Meakin standing beside one of his framed mandala paintings in a gallery."
-                width={800}
-                height={1200}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                fill
-                aspect="aspect-[4/5]"
-              />
-            </Reveal>
-          </PhotoRow>
-        </section>
-
-        {/* 4 · CHAPTER I — BEGINNINGS. P1 lead (dropCap) → P3 (2-up people) → P7. */}
-        <section id="beginnings" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="beginnings" />
-          <ProseFull text={ABOUT.earlyLife[0]} lead dropCap />
-          <div className={IMG_GAP}>
-            <PhotoRow width="wide">
-              <Reveal as="div">
-                <Plate
-                  src="/img/about/15-wedding-top-hats.jpg"
-                  alt="A bride and three young men in morning dress and grey top hats at a family wedding."
-                  width={1353}
-                  height={814}
-                  fill
-                  aspect="aspect-[3/2]"
-                  sizes="(min-width: 768px) 48vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="div" delay={0.09}>
-                <Plate
-                  src="/img/about/16-family-sofa.jpg"
-                  alt="A teenager in a yellow patterned shirt on a floral sofa beside two teenage girls — a family photograph."
-                  width={1600}
-                  height={1200}
-                  fill
-                  aspect="aspect-[3/2]"
-                  sizes="(min-width: 768px) 48vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
           </div>
         </section>
 
-        {/* 5 · CHAPTER II — BOURNEMOUTH. P1 lead (dropCap) → P3 (2-up people) → P7. */}
-        <section id="bournemouth" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="bournemouth" />
-          <ProseFull text={ABOUT.earlyLife[1]} lead dropCap />
-          <div className={IMG_GAP}>
-            <PhotoRow width="wide">
-              <Reveal as="div">
-                <Plate
-                  src="/img/about/17-bournemouth-friends.jpg"
-                  alt="Four smartly dressed young men standing together outdoors under trees."
-                  width={1600}
-                  height={900}
-                  fill
-                  aspect="aspect-[3/2]"
-                  sizes="(min-width: 768px) 48vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="div" delay={0.09}>
-                <Plate
-                  src="/img/about/18-cafe-terrace.jpg"
-                  alt="Stephen Meakin in a denim shirt smiling at an outdoor café table, a stoneware jug before him and cypress trees in the distance."
-                  width={1600}
-                  height={1200}
-                  fill
-                  aspect="aspect-[3/2]"
-                  sizes="(min-width: 768px) 48vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-        </section>
-
-        {/* 6 · CHAPTER III — THE WANDERING YEARS. P2 (columns) → P3 ×2 (2-up
-            people, ONE aspect each) → caption. */}
-        <section id="wandering" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="wandering" />
-          <ProseColumns text={ABOUT.earlyLife[2]} lead dropCap />
-          {/* Three portraits, even 3-up (the landscape "evening with friends"
-              photo removed at Hugo's request 2026-07-13). */}
-          <div className={IMG_GAP}>
-            <PhotoRow cols={3}>
-              <Reveal as="div">
-                <Plate
-                  src="/img/about/20-island-evening.jpg"
-                  alt="Stephen Meakin in a loose white shirt and jeans, seated outdoors at night during his years abroad."
-                  width={818}
-                  height={1134}
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  fill
-                  aspect="aspect-[4/5]"
-                />
-              </Reveal>
-              <Reveal as="div" delay={0.09}>
-                <Plate
-                  src="/img/about/21-at-the-helm.jpg"
-                  alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him."
-                  width={1200}
-                  height={1600}
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  fill
-                  aspect="aspect-[4/5]"
-                />
-              </Reveal>
-              <Reveal as="div" delay={0.18}>
-                <Plate
-                  src="/img/about/22-fancy-dress-party.jpg"
-                  alt="Stephen Meakin in pirate fancy dress with a toy parrot on his shoulder, a friend in an eyepatch reclining in front of him."
-                  width={1200}
-                  height={1600}
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  fill
-                  aspect="aspect-[4/5]"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP)}>
-            <p className={cn(CAPTION, "m-0")}>A four-year stay in the Virgin Islands</p>
-          </Reveal>
-        </section>
-
-        {/* 7 · CHAPTER IV — RETURN & THE FIRST MANDALA. P2 (columns) → P7 → the
-            Anegada poster (the sole giant moment). No photo re-added. */}
-        <section id="return" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="return" />
-          <ProseColumns text={ABOUT.earlyLife[3]} lead dropCap />
-          <PullLine text={ABOUT.earlyLife[4]} />
-          <AnegadaPoster />
-        </section>
-
-        {/* 8 · CHAPTER V — ART AS RITUAL. SUBHEAD → P3 (2-up art) → P4 (LEAD
-            beside the cymatics chart, cover-filled) → Dinkus → P2 (breakInside)
-            → P3 (2-up film). */}
-        <section id="ritual" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="ritual" />
-          <Reveal as="div" className={READING_WIDE}>
-            <p className={cn(SUBHEAD, "m-0")} style={SUBHEAD_STYLE}>
-              — Stephen, on his practice, in his own words
+        {/* 2 · THE OPENING PASSAGE — Home's "A reminder" essay: eyebrow, the
+            first sentence as the illuminated lede, the paragraph's remainder at
+            reading size, then its closing two sentences lifted as the two-tier
+            pull. Every word of ABOUT.opening[0] appears exactly once. */}
+        <section className={cn(CONTAINER, "relative isolate")}>
+          <Reveal as="header" className="mb-3 md:mb-4 text-center">
+            <p className={cn(EYEBROW, "m-0 mb-3")}>In memoriam · {LIFE_DATES}</p>
+            <p
+              className="font-display font-semibold tracking-[-0.03em] text-ink m-0 mx-auto max-w-[30ch] text-balance"
+              style={{
+                fontVariationSettings: '"opsz" 48, "wght" 600',
+                fontSize: "clamp(32px, 5.2vw, 64px)",
+                lineHeight: 1.04,
+                textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
+              }}
+            >
+              {openingLede}
             </p>
-          </Reveal>
-
-          {/* An intimate opening beat for the ritual chapter — his hand and a
-              fine brush laying detail into the Wild Rose mandala. Contained,
-              height-capped so it never fills the screen. */}
-          <Reveal
-            as="figure"
-            className={cn(
-              "relative m-0 mx-auto w-full max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] aspect-[3/2] max-h-[56svh] overflow-hidden rounded-[3px]",
-              IMG_GAP,
+            {openingBody && (
+              <p className={cn(BODY_P, MEASURE, "mt-3 md:mt-4")} style={BODY_SHADOW}>
+                {openingBody}
+              </p>
             )}
-          >
-            <AssetImage
-              src="/img/about/hand-finishing-brush-v1.jpg"
-              alt="Stephen's hand laying fine brushwork into a Wild Rose mandala, petal by petal"
-              loading="lazy"
-              decoding="async"
-              sizes="(min-width: 768px) 880px, 100vw"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
           </Reveal>
+          {openingPullLead && <DisplayPull lead={openingPullLead} follow={openingPullFollow} />}
+        </section>
 
-          {/* Two archive photographs of Stephen at the board — art tiles.
-              width="wide" gives a clean 2-up (was cols={3} with only 2 children
-              → a ragged empty third column on md+). */}
-          <div className={BLOCK_GAP}>
-            <PhotoRow width="wide">
-              <Reveal as="figure" className="m-0">
-                <ImageReveal
+        {/* 3 · AS HE DESCRIBED HIMSELF — Home's Meet-Stephen two-column: his
+            portrait cover-fills the left column to the copy's exact height; the
+            copy (eyebrow → first sentence as the heading → the rest) sits
+            beside it. object-position 50% 25% keeps the whole face; the source
+            is already a head crop, so the column must never be squarer than
+            the copy makes it (see the audit note in the commit). */}
+        <section className={CONTAINER}>
+          <SideBySide
+            src="/img/about/12-stephen-portrait.jpg"
+            alt="Stephen Meakin"
+            position="50% 25%"
+          >
+            <p className={cn(EYEBROW, "m-0")}>As he described himself &mdash;</p>
+            <h2 className={SIDE_H2} style={OPSZ40}>
+              {describedHead}
+            </h2>
+            <SideProse text={describedBody} per={2} />
+          </SideBySide>
+        </section>
+
+        {/* 4 · CHAPTER I — BEGINNINGS. Centred header → justified body → one
+            uniform 3:2 row of the two family photographs (faces kept). */}
+        <section className={CONTAINER}>
+          <ChapterHead id="beginnings" />
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={ABOUT.earlyLife[0]} />
+          </Reveal>
+          <TileRow cols={2} className="mt-6 md:mt-8">
+            <Tile
+              src="/img/about/15-wedding-top-hats.jpg"
+              alt="A bride and three young men in morning dress and grey top hats at a family wedding."
+              aspect="aspect-[3/2]"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/16-family-sofa.jpg"
+              alt="A teenager in a yellow patterned shirt on a floral sofa beside two teenage girls — a family photograph."
+              aspect="aspect-[3/2]"
+              position="center 25%"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </TileRow>
+        </section>
+
+        {/* 5 · CHAPTER II — BOURNEMOUTH. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="bournemouth" />
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={ABOUT.earlyLife[1]} />
+          </Reveal>
+          <TileRow cols={2} className="mt-6 md:mt-8">
+            <Tile
+              src="/img/about/17-bournemouth-friends.jpg"
+              alt="Four smartly dressed young men standing together outdoors under trees."
+              aspect="aspect-[3/2]"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/18-cafe-terrace.jpg"
+              alt="Stephen Meakin in a denim shirt smiling at an outdoor café table, a stoneware jug before him and cypress trees in the distance."
+              aspect="aspect-[3/2]"
+              position="center 35%"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </TileRow>
+        </section>
+
+        {/* 6 · CHAPTER III — YEARS ABROAD. Three portraits, one 4:5 row. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="wandering" />
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={ABOUT.earlyLife[2]} />
+          </Reveal>
+          <TileRow cols={3} className="mt-6 md:mt-8">
+            <Tile
+              src="/img/about/20-island-evening.jpg"
+              alt="Stephen Meakin in a loose white shirt and jeans, seated outdoors at night during his years abroad."
+              aspect="aspect-[4/5]"
+              position="center 30%"
+              sizes="(min-width: 640px) 31vw, 100vw"
+            />
+            <Tile
+              src="/img/about/21-at-the-helm.jpg"
+              alt="Stephen Meakin at the wheel of a motorboat, long sun-bleached hair blown back and the sea behind him."
+              aspect="aspect-[4/5]"
+              position="center 40%"
+              sizes="(min-width: 640px) 31vw, 100vw"
+            />
+            <Tile
+              src="/img/about/22-fancy-dress-party.jpg"
+              alt="Stephen Meakin in pirate fancy dress with a toy parrot on his shoulder, a friend in an eyepatch reclining in front of him."
+              aspect="aspect-[4/5]"
+              position="center"
+              sizes="(min-width: 640px) 31vw, 100vw"
+            />
+          </TileRow>
+          <Reveal as="div" className="text-center">
+            <p className={cn(CAPTION, "m-0 mt-4")}>A four-year stay in the Virgin Islands</p>
+          </Reveal>
+        </section>
+
+        {/* 7 · CHAPTER IV — RETURN & THE FIRST MANDALA, then ANEGADA. The chapter
+            body, its two-sentence close as Home's two-tier close, then the
+            Anegada story: the text up to the sanctioned pull sentence, the
+            sentence itself as the two-tier pull, and the story's remainder. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="return" />
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={ABOUT.earlyLife[3]} />
+          </Reveal>
+          <div className="mt-10 md:mt-14">
+            <DisplayClose lead={firstMandalaLead} follow={firstMandalaFollow} />
+          </div>
+        </section>
+
+        <section className={CONTAINER}>
+          <Reveal as="div" className="text-center mb-4 md:mb-5">
+            <p className={cn(EYEBROW, "m-0")}>Anegada · 1995</p>
+          </Reveal>
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={anegadaBefore} />
+          </Reveal>
+          <DisplayPull lead={anegadaQuoteLead} follow={anegadaQuoteFollow} />
+          {anegadaAfter && (
+            <Reveal as="div" className={cn(MEASURE, "text-center")}>
+              <BodyProse text={anegadaAfter} />
+            </Reveal>
+          )}
+        </section>
+
+        {/* 8 · CHAPTER V — ART AS RITUAL. Home's ISLAND, beat for beat: the
+            translucent card, the title centred above, the photograph filling
+            the LEFT column to the prose's exact height, his own words in the
+            right column, and the ledger strip below (the estate's facts). The
+            over-shoulder photograph keeps Stephen at the right edge of the
+            frame, so the column is anchored 100% right. */}
+        <section className={CONTAINER}>
+          <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
+            <ChapterHead id="ritual" className="mb-8 md:mb-10" />
+            <Reveal
+              as="div"
+              className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] items-stretch gap-8 lg:gap-12 xl:gap-16"
+            >
+              <figure className="relative m-0 lg:h-full overflow-hidden rounded-[16px] md:rounded-[20px] ring-1 ring-line">
+                <AssetImage
                   src="/img/about/stephen-painting-colour-v1.jpg"
                   alt="Stephen Meakin painting a large colour mandala at his board, a finished mandala on the wall behind"
-                  aspect="aspect-[3/2]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 640px) 48vw, 100vw"
+                  loading="lazy"
+                  decoding="async"
+                  width={1600}
+                  height={1067}
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="block w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:w-full lg:object-cover"
+                  style={{ objectPosition: "100% 55%" }}
                 />
-              </Reveal>
-              <Reveal as="figure" className="m-0" delay={0.09}>
-                <ImageReveal
-                  src="/img/about/stephen-painting-compass-v1.jpg"
-                  alt="Stephen Meakin laying gold knotwork into a mandala with compass and rule"
-                  aspect="aspect-[3/2]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 640px) 48vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-
-          {/* Practice passage full-width, then the cymatics chart as a MODEST
-              CENTRED figure. It's a reference document, NOT a hero — full-width
-              6/5 rendered it ~1460px tall (Hugo: "why is this so big, awful").
-              Capped max-w so the whole 12-pattern grid reads at a sane size. */}
-          <div className={IMG_GAP}>
-            <div className={ONE_WIDTH}>
-              <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-                <Prose text={ABOUT.anegada[1]} per={3} className={LEAD} />
-              </Reveal>
-              <Reveal
-                as="figure"
-                className={cn("relative m-0 mx-auto w-full max-w-[520px] md:max-w-[640px]", IMG_GAP)}
-              >
-                <ImageReveal
-                  src="/img/about/25-harmonic-frequencies.jpg"
-                  alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
-                  aspect="aspect-[6/5]"
-                  edges="none"
-                  objectPosition="center"
-                  parallax={0.06}
-                  sizes="(min-width: 768px) 640px, 100vw"
-                />
-                <figcaption className="mt-4 text-center font-sans text-[13px] md:text-[14px] leading-[1.55] text-ink-muted">
-                  Cymatics — sound made visible: twelve frequencies, from 345 to 5907&nbsp;Hz, each vibrating sand into a distinct geometric figure.
-                </figcaption>
-              </Reveal>
-            </div>
-          </div>
-
-          <Dinkus />
-
-          {/* The long practice passage as a balanced two-column spread. Held clear
-              of the cymatics figure above it by the generous image seam. */}
-          <div className={IMG_GAP}>
-            <ProseColumns text={ABOUT.anegada[2]} breakInside />
-          </div>
-
-          {/* THE RITUAL, IN MOTION — two archive clips, an even diptych. */}
-          <Reveal as="div" className={cn(ONE_WIDTH, IMG_GAP, "grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 items-stretch")}>
-            <LoopFilm
-              src="/video/studio-paint-a-v1.mp4"
-              poster="/video/poster-studio-paint-a-v1.jpg"
-              label="Stephen Meakin painting a mandala, filmed from above"
-              aspect="aspect-[16/9]"
-              edges="none"
-            />
-            <LoopFilm
-              src="/video/studio-paint-b-v1.mp4"
-              poster="/video/poster-studio-paint-b-v1.jpg"
-              label="Stephen Meakin laying colour into a mandala, filmed from above"
-              aspect="aspect-[16/9]"
-              edges="none"
-            />
-          </Reveal>
-        </section>
-
-        {/* 9 · CHAPTER VI — LEWES & THE FOUR TRADITIONS. P2 (lead dropCap) → P5
-            (cairn portrait beside the TRADITIONS stretch list) → P3 (2-up art). */}
-        <section id="lewes" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="lewes" />
-          <ProseColumns text={ABOUT.legacy[0]} lead dropCap />
-          {/* The cairn portrait BESIDE the four-traditions list — a tall 3:4
-              portrait fills a capped ~440px column (aspect-[3/4], contained, no
-              face crop) while the list fills the larger left share, so the row
-              fills the measure with no side letterbox (was a 16/9 slot that
-              pillarboxed the portrait with huge empty sides — Hugo's #1 rule). */}
-          <div
-            className={cn(
-              IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-stretch gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto",
-            )}
-          >
-            {/* Compact 2×2 index (natural spacing — NOT spread thin down the
-                column, which read as sparse/empty). The list drives the row
-                height; the cairn photo cover-fills to match it, so both columns
-                end level with no dead space and no sparse gaps. */}
-            <ul className="m-0 list-none p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-              {TRADITIONS.map((t) => (
-                <li key={t.numeral} className="flex flex-col justify-start pt-4">
-                  <p className={cn(EYEBROW, "m-0 mb-2")}>{t.numeral}</p>
-                  <p className={cn(SUBHEAD, "m-0 text-balance")} style={SUBHEAD_STYLE}>
-                    {t.name}
+              </figure>
+              <div className="flex flex-col gap-5 md:gap-6">
+                {paragraphize(ABOUT.anegada[1], 3).map((para, i) => (
+                  <p
+                    key={para.slice(0, 32)}
+                    className={cn(SIDE_P, i === 0 && "font-medium text-ink 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px]")}
+                  >
+                    {para}
                   </p>
+                ))}
+              </div>
+            </Reveal>
+            <ul className="list-none p-0 m-0 mt-9 md:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+              {FACTS.map(([label, value]) => (
+                <li key={label} className={LEDGER_ROW}>
+                  <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
+                  <span className={LEDGER_VALUE}>{value}</span>
                 </li>
               ))}
             </ul>
-            <Reveal
-              as="figure"
-              className="relative m-0 w-full aspect-[3/4] min-h-[300px] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
-            >
-              <AssetImage
-                src="/img/about/03-stephen-on-cairn.jpg"
-                alt="Stephen standing on a stone cairn in the desert"
-                loading="lazy"
-                decoding="async"
-                sizes="(min-width: 1024px) 420px, 100vw"
-                style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-cover object-center"
-              />
-            </Reveal>
-          </div>
-          {/* Two tradition reference photographs — art tiles, ONE aspect. */}
-          <div className={BLOCK_GAP}>
-            <PhotoRow>
-              <Reveal as="figure" className="m-0">
-                <ImageReveal
-                  src="/img/about/26-persian-geometry.jpg"
-                  alt="The blue-tiled, honeycomb-vaulted entrance portal of a mosque, an example of the Persian geometric tradition Stephen studied."
-                  aspect="aspect-[16/9]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="figure" className="m-0" delay={0.09}>
-                <ImageReveal
-                  src="/img/about/27-sainte-chapelle.jpg"
-                  alt="The upper chapel of Sainte-Chapelle in Paris, its walls of stained glass rising to a rose window, the medieval tradition behind Stephen's rose-window studies."
-                  aspect="aspect-[16/9]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
           </div>
         </section>
 
-        {/* 10 · CHAPTER VII — EXHIBITIONS, FLOWING INTO THE INTERVIEW. P5
-            (legacy[1] lead beside the CREDENTIALS stretch ledger) → P7 → Dinkus
-            → interview head → P4 (context beside the flyer) → Q&A × N interleaved
-            with P3 photo rows / P6 bands, all Q&A in ONE reading measure. */}
-        <section id="exhibitions" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="exhibitions" />
-          {/* CREDENTIALS — Home's stacked module: the exhibitions lead flows
-              full-width (balanced 2-column), then the credentials ledger sits
-              below as a full-width even 2-up index (no stranded side column). */}
-          <div className={ONE_WIDTH}>
-            <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-              <Prose text={ABOUT.legacy[1]} className={LEAD} />
-            </Reveal>
-            <Reveal as="ul" className={cn("m-0 list-none p-0 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-0", BLOCK_GAP)}>
-              {CREDENTIALS.map((item) => (
-                <li key={item} className={cn(CAPTION, "py-4 md:py-5")}>
-                  {item}
-                </li>
-              ))}
-            </Reveal>
-          </div>
-
-          <PullLine text={PULL_EARTH_MEASURE} />
-
-          <Dinkus />
-
-          {/* THE INTERVIEW — sub-head demoted under the chapter head. */}
-          <Reveal as="div" className={cn(READING_WIDE, BLOCK_GAP_B)}>
-            <SectionLabel>{INTERVIEW.eyebrow}</SectionLabel>
-            <h3 className={cn(SUBHEAD, "italic font-normal m-0")} style={SUBHEAD_STYLE}>
-              In conversation.
-            </h3>
+        {/* THE RITUAL, IN MOTION — the two archive clips of Stephen painting,
+            filmed from above, as one even 16:9 pair. */}
+        <section className={CONTAINER}>
+          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2")}>
+            {[
+              {
+                src: "/video/studio-paint-a-v1.mp4",
+                poster: "/video/poster-studio-paint-a-v1.jpg",
+                label: "Stephen Meakin painting a mandala, filmed from above",
+              },
+              {
+                src: "/video/studio-paint-b-v1.mp4",
+                poster: "/video/poster-studio-paint-b-v1.jpg",
+                label: "Stephen Meakin laying colour into a mandala, filmed from above",
+              },
+            ].map((film) => (
+              <figure key={film.src} className="m-0 overflow-hidden ring-1 ring-line">
+                <LoopFilm src={film.src} poster={film.poster} label={film.label} aspect="aspect-[16/9]" edges="none" />
+              </figure>
+            ))}
           </Reveal>
+        </section>
 
-          {/* Home's stacked module — the scene-setting context flows full-width
-              (balanced 2-column), then the Mystic Rose flyer sits below as its
-              own contained (no-crop, so the flyer text is never sliced),
-              captioned figure. */}
-          <div className={ONE_WIDTH}>
-            <Reveal as="div" className="columns-1 lg:columns-2 lg:gap-14 3xl:gap-20 [column-fill:_balance]">
-              {INTERVIEW.context.map((p, i) => (
-                <p key={i} className={cn(BODY, "[break-inside:avoid]", i > 0 ? "mt-3 md:mt-4" : "")}>
-                  {p}
-                </p>
-              ))}
-            </Reveal>
-            <Reveal as="figure" className={cn("relative m-0 mx-auto max-w-[820px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]", IMG_GAP)} delay={0.08}>
-              <ContainImage
-                src="/img/about/04-mystic-rose-flyer.jpg"
-                alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
-                aspect="aspect-[3/2]"
-                parallax={0.06}
-                sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
-              />
-              <figcaption className={cn(CAPTION, "mt-4")}>
-                <i>‘The Mystic Rose’</i> · Fairmont Dubai · presented by the Majlis Gallery
-              </figcaption>
-            </Reveal>
-          </div>
-
-          {/* Q1 — full reading measure. */}
-          <div className={cn(READING_WIDE, IMG_GAP)}>
-            <InterviewQA item={INTERVIEW.qa[0]} />
-          </div>
-
-          {/* Q2 — full measure; then the easel portrait stacked above Q3. */}
-          <div className={READING_WIDE}>
-            <InterviewQA item={INTERVIEW.qa[1]} />
-          </div>
-          {/* Q3 (the LONG "sacred geometrist" answer) BESIDE the easel portrait,
-              both filling the row — text ~60%, portrait a capped column. Was a
-              full-width 16/9 slot that letterboxed the tall portrait with huge
-              empty sides (Hugo: "empty space" in the interview). object-contain
-              keeps the whole figure; no face crop. */}
-          <div
-            className={cn(
-              IMG_GAP,
-              "grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,400px)] items-start gap-8 lg:gap-10 max-w-[880px] 3xl:max-w-[92vw] 4xl:max-w-[94vw] mx-auto",
-            )}
-          >
-            <div className="min-w-0">
-              <InterviewQA item={INTERVIEW.qa[2]} />
-            </div>
-            {/* Portrait shown WHOLE at its native 2:3 (no lg:h-full stretch, no
-                cover-crop). The old stretch-to-text-height forced a wide window on
-                an 800×1200 portrait and sliced Stephen's brush HAND mid-stroke —
-                the heart of the frame. Now the figure keeps its true aspect and
-                object-contain guarantees NOTHING is cut: hand, brush, face and the
-                wall mandala all read. The row aligns at the top (items-start); any
-                remaining space sits below the photo, never across the artist. */}
-            <Reveal
-              as="figure"
-              className="relative m-0 w-full aspect-[2/3] min-h-[280px] max-h-[74svh] overflow-hidden md:rounded-[3px] md:ring-1 md:ring-line"
-            >
+        {/* His words on interconnectedness, then the cymatics chart as Home's
+            capped archive figure (a low-res reference document — kept small,
+            WHOLE, with its caption). */}
+        <section className={CONTAINER}>
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={ABOUT.anegada[2]} />
+          </Reveal>
+          <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[440px] md:max-w-[540px] 2xl:max-w-[600px]">
+            <div className="overflow-hidden ring-1 ring-line">
               <AssetImage
-                src="/img/about/29-at-the-easel.jpg"
-                alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
+                src="/img/about/25-harmonic-frequencies.jpg"
+                alt="A grid of twelve cymatic patterns, each labelled with the sound frequency in hertz that formed it, from 345 Hz to 5907 Hz."
+                width={612}
+                height={502}
                 loading="lazy"
                 decoding="async"
-                sizes="(min-width: 1024px) 400px, 100vw"
-                style={{ filter: PHOTO_GRADE_SHADOW }}
-                className="absolute inset-0 h-full w-full object-contain object-center"
+                sizes="(min-width: 768px) 600px, 100vw"
+                className="block w-full h-auto"
               />
-            </Reveal>
-          </div>
+            </div>
+            <figcaption className={CAPTION}>
+              Cymatics — sound made visible: twelve frequencies, from 345 to 5907&nbsp;Hz, each vibrating sand into a distinct geometric figure.
+            </figcaption>
+          </Reveal>
+        </section>
 
-          {/* The rose-window painting in progress — P6 band (≤64svh). */}
-          <div className={BLOCK_GAP}>
-            <ImageBand
+        {/* 9 · CHAPTER VI — FOUR TRADITIONS. Body, then Home's hairline-ruled
+            index (the four traditions named exactly as in his words), then the
+            two reference photographs as one 16:9 row. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="lewes" />
+          <Reveal as="div" className={cn(MEASURE, "text-center mb-6 md:mb-8")}>
+            <BodyProse text={ABOUT.legacy[0]} />
+          </Reveal>
+          <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 m-0 mb-6 md:mb-8">
+            {TRADITIONS.map((name, i) => (
+              <li
+                key={name}
+                className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
+              >
+                <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>{ROMAN[i]}</p>
+                <p
+                  className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 transition-colors duration-300 group-hover:text-accent text-balance"
+                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
+                >
+                  {name}
+                </p>
+              </li>
+            ))}
+          </Reveal>
+          <TileRow cols={2}>
+            <Tile
+              src="/img/about/26-persian-geometry.jpg"
+              alt="The blue-tiled, honeycomb-vaulted entrance portal of a mosque, an example of the Persian geometric tradition Stephen studied."
+              aspect="aspect-video"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/27-sainte-chapelle.jpg"
+              alt="The upper chapel of Sainte-Chapelle in Paris, its walls of stained glass rising to a rose window, the medieval tradition behind Stephen's rose-window studies."
+              aspect="aspect-video"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </TileRow>
+        </section>
+
+        {/* 10 · CHAPTER VII — EXHIBITIONS & COMMISSIONS. Home's two-column
+            module (the easel portrait cover-fills to the copy), then the
+            documented credentials in Home's hairline index, then the
+            exhibition room as a full-bleed band. */}
+        <section className={CONTAINER}>
+          <SideBySide
+            src="/img/about/29-at-the-easel.jpg"
+            alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
+            position="center 25%"
+          >
+            <p className={cn(EYEBROW, "m-0")}>{chapter("exhibitions").eyebrow}</p>
+            <h2 className={SIDE_H2} style={OPSZ40}>
+              {chapter("exhibitions").title}
+            </h2>
+            <SideProse text={ABOUT.legacy[1]} per={2} />
+          </SideBySide>
+          <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 m-0 mt-10 md:mt-14">
+            {CREDENTIALS.map((item) => (
+              <li
+                key={item}
+                className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
+              >
+                <p
+                  className="font-display text-ink text-[clamp(20px,2vw,32px)] tracking-[-0.02em] leading-[1.15] m-0 transition-colors duration-300 group-hover:text-accent text-balance"
+                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
+                >
+                  {item}
+                </p>
+              </li>
+            ))}
+          </Reveal>
+        </section>
+
+        <Band
+          src="/img/about/36-mystic-rose-exhibition.jpg"
+          alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
+          position="center 35%"
+        />
+
+        {/* 11 · SIX PAINTINGS — Home's featured grid, the page's buy path,
+            placed where the biography turns to the work. The SHARED PrintTile,
+            a fresh random six per visit, the same heading Home uses. */}
+        <section className={CONTAINER}>
+          <SectionHead eyebrow="From the hand" title="Six paintings from a lifetime at the compass." />
+          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-2 md:grid-cols-3 mb-5 md:mb-6")}>
+            {featured.map((p) => (
+              <PrintTile
+                key={p.id}
+                painting={p}
+                sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
+              />
+            ))}
+          </Reveal>
+          <Reveal as="div" className="text-center">
+            <MagneticLink
+              to="/collections"
+              className="press group inline-flex items-center gap-2 font-sans text-[14px] font-bold tracking-[0.02em] text-ink transition-colors duration-300 hover:text-accent"
+              ariaLabel="See the collection"
+            >
+              See the collection{" "}
+              <span
+                aria-hidden="true"
+                className="inline-block transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:translate-x-0.5"
+              >
+                →
+              </span>
+            </MagneticLink>
+          </Reveal>
+        </section>
+
+        {/* 12 · THE INTERVIEW — Time Out Dubai, 2011. Centred header, the
+            scene-setting context, the flyer WHOLE as a capped archive figure,
+            then the six questions in one centred measure with the studio
+            photographs interleaved as uniform rows, the gathering as a band. */}
+        <section className={CONTAINER}>
+          <SectionHead eyebrow={INTERVIEW.eyebrow} title="In conversation." />
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            {INTERVIEW.context.map((p) => (
+              <p key={p.slice(0, 32)} lang="en-GB" className={BODY_P} style={BODY_SHADOW}>
+                {p}
+              </p>
+            ))}
+          </Reveal>
+          <Reveal as="figure" delay={0.08} className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[720px] 2xl:max-w-[820px]">
+            <div className="overflow-hidden ring-1 ring-line">
+              <AssetImage
+                src="/img/about/04-mystic-rose-flyer.jpg"
+                alt="Exhibition flyer for ‘The Mystic Rose’, an exhibition of paintings by Stephen E. Meakin at the Fairmont Dubai, presented by the Majlis Gallery"
+                width={900}
+                height={604}
+                loading="lazy"
+                decoding="async"
+                sizes="(min-width: 768px) 820px, 100vw"
+                className="block w-full h-auto"
+              />
+            </div>
+            <figcaption className={CAPTION}>
+              <i>‘The Mystic Rose’</i> · Fairmont Dubai · presented by the Majlis Gallery
+            </figcaption>
+          </Reveal>
+        </section>
+
+        <section className={cn(CONTAINER, "space-y-10 md:space-y-12 lg:space-y-14")}>
+          <InterviewQA item={INTERVIEW.qa[0]} />
+          <InterviewQA item={INTERVIEW.qa[1]} />
+          <InterviewQA item={INTERVIEW.qa[2]} />
+          <TileRow cols={2}>
+            <Tile
+              src="/img/about/stephen-painting-compass-v1.jpg"
+              alt="Stephen Meakin laying gold knotwork into a mandala with compass and rule"
+              aspect="aspect-[3/2]"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
               src="/img/about/30-painting-in-progress.jpg"
               alt="Stephen Meakin painting a circular rose-window-patterned mandala in the studio"
               aspect="aspect-[3/2]"
-              parallax={0.1}
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
             />
-          </div>
-
-          {/* Q4, then the pair the PDF places with it — P3 (2-up art). */}
-          <div className={cn(READING_WIDE, IMG_GAP)}>
-            <InterviewQA item={INTERVIEW.qa[3]} />
-          </div>
-          <div className={IMG_GAP}>
-            <PhotoRow>
-              <Reveal as="figure" className="m-0">
-                <ImageReveal
-                  src="/img/about/31-studio-wall.jpg"
-                  alt="A studio wall hung edge to edge with finished framed mandala paintings"
-                  aspect="aspect-[16/9]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="figure" className="m-0" delay={0.08}>
-                <ImageReveal
-                  src="/img/about/32-paintings-at-home.jpg"
-                  alt="A sitting room hung with mandala paintings and panels"
-                  aspect="aspect-[16/9]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-
-          {/* Interlude — 33 (a painting) + 34 (in progress), P3 at ONE shared
-              aspect so both cover-fill equally and bottom-align. 33 is a painting
-              → ImageReveal cover (not ContainImage). */}
-          <div className={BLOCK_GAP}>
-            <PhotoRow>
-              <Reveal as="figure" className="m-0">
-                <ImageReveal
-                  src="/img/about/33-painting-on-easel.jpg"
-                  alt="A deep blue, violet and gold geometric painting standing on the studio easel"
-                  aspect="aspect-square"
-                  edges="none"
-                  parallax={0.06}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="figure" className="m-0" delay={0.08}>
-                <ImageReveal
-                  src="/img/about/34-white-flowers-in-progress.jpg"
-                  alt="Stephen Meakin, palette in hand, painting clusters of white blossoms onto a large round work"
-                  aspect="aspect-[4/3]"
-                  edges="none"
-                  parallax={0.08}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
-
-          {/* Q5 — the wonderment beat, answered by the gathering: crowd photo
-              beneath it. 35 is PEOPLE → Plate fill (object-contain, no face crop),
-              in an ImageBand-capped figure (≤64svh). */}
-          <div className={cn(READING_WIDE, IMG_GAP)}>
-            <InterviewQA item={INTERVIEW.qa[4]} />
-          </div>
-          <Reveal as="figure" className={cn(ONE_WIDTH, "m-0", IMG_GAP, "max-h-[62svh] overflow-hidden")}>
-            <Plate
-              src="/img/about/35-gathering-at-the-gallery.jpg"
-              alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
-              width={1624}
-              height={914}
-              fill
-              aspect="aspect-[16/9]"
-              sizes="(min-width: 1280px) 1180px, calc(100vw - 32px)"
+          </TileRow>
+          <InterviewQA item={INTERVIEW.qa[3]} />
+          <TileRow cols={2}>
+            <Tile
+              src="/img/about/31-studio-wall.jpg"
+              alt="A studio wall hung edge to edge with finished framed mandala paintings"
+              aspect="aspect-video"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
             />
-          </Reveal>
-
-          {/* Q6 — the tea line, then the exhibition room band + the source credit. */}
-          <div className={cn(READING_WIDE, IMG_GAP)}>
-            <InterviewQA item={INTERVIEW.qa[5]} />
-          </div>
-          <div className={IMG_GAP}>
-            <ImageBand
-              src="/img/about/36-mystic-rose-exhibition.jpg"
-              alt="A bright gallery room hung with framed paintings, sculptural pieces standing on plinths"
-              aspect="aspect-[4/3]"
-              parallax={0.08}
+            <Tile
+              src="/img/about/32-paintings-at-home.jpg"
+              alt="A sitting room hung with mandala paintings and panels"
+              aspect="aspect-video"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
             />
-          </div>
-          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP)} delay={0.08}>
-            <p className={cn(BODY, "max-w-[62ch] mb-4")}>{INTERVIEW.source.note}</p>
-            <p className={cn(EYEBROW_MUTED, "m-0 leading-[1.9]")}>
+          </TileRow>
+          <InterviewQA item={INTERVIEW.qa[4]} />
+        </section>
+
+        <Band
+          src="/img/about/35-gathering-at-the-gallery.jpg"
+          alt="A large smiling crowd gathered with Stephen Meakin in a gallery, his paintings filling the wall behind them"
+          position="center 20%"
+        />
+
+        <section className={cn(CONTAINER, "space-y-10 md:space-y-12 lg:space-y-14")}>
+          <InterviewQA item={INTERVIEW.qa[5]} />
+          <TileRow cols={2}>
+            <Tile
+              src="/img/about/33-painting-on-easel.jpg"
+              alt="A deep blue, violet and gold geometric painting standing on the studio easel"
+              aspect="aspect-square"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/34-white-flowers-in-progress.jpg"
+              alt="Stephen Meakin, palette in hand, painting clusters of white blossoms onto a large round work"
+              aspect="aspect-square"
+              position="62% center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </TileRow>
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <p className={BODY_P} style={BODY_SHADOW}>
+              {INTERVIEW.source.note}
+            </p>
+            <p className={cn(EYEBROW_MUTED, "m-0 mt-4 leading-[1.9]")}>
               {INTERVIEW.source.publication} · {INTERVIEW.source.byline} · {INTERVIEW.source.date}
               {INTERVIEW.source.url && (
                 <>
@@ -1413,146 +1099,115 @@ export const About = () => {
           </Reveal>
         </section>
 
-        {/* 11 · FORCE INDIA — the design plate. P3 (2-up DOC at ONE aspect). */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <Reveal as="div" className={cn(READING_WIDE, IMG_GAP_B)}>
-            <p className={cn(EYEBROW_MUTED, "m-0")}>From the design archive</p>
+        {/* 13 · FROM THE DESIGN ARCHIVE — the Force India plates, one 3:2 row. */}
+        <section className={CONTAINER}>
+          <Reveal as="div" className="text-center mb-4 md:mb-5">
+            <p className={cn(EYEBROW, "m-0")}>From the design archive</p>
           </Reveal>
-          <PhotoRow width="wide">
-            <Reveal as="figure" className="m-0">
-              <ImageReveal
-                src="/img/about/05-force-india-layout.jpg"
-                alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
-                aspect="aspect-[3/2]"
-                edges="none"
-                parallax={0.06}
-                sizes="(min-width: 768px) 48vw, 100vw"
-              />
-            </Reveal>
-            <Reveal as="figure" className="m-0" delay={0.08}>
-              <ImageReveal
-                src="/img/about/06-force-india-final.jpg"
-                alt="Stephen's mandala design for the Sahara Force India Formula One car"
-                aspect="aspect-[3/2]"
-                edges="none"
-                parallax={0.06}
-                sizes="(min-width: 768px) 48vw, 100vw"
-              />
-            </Reveal>
-          </PhotoRow>
+          <TileRow cols={2}>
+            <Tile
+              src="/img/about/05-force-india-layout.jpg"
+              alt="Annotated layout sheet of mandala designs arranged across the bodywork of the Sahara Force India Formula One car"
+              aspect="aspect-[3/2]"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/06-force-india-final.jpg"
+              alt="Stephen's mandala design for the Sahara Force India Formula One car"
+              aspect="aspect-[3/2]"
+              position="center"
+              sizes="(min-width: 640px) 48vw, 100vw"
+            />
+          </TileRow>
         </section>
 
-        {/* 12 · CHAPTER VIII — TAGA. P7 (legacy[2] lead) → P4 (ophiuchus ART
-            cover-filled beside the founding quote + palestine passage). */}
-        <section id="academy" className={cn(SECTION, "scroll-mt-24", SECTION_PAD)}>
-          <ChapterHead id="academy" />
-          <Reveal as="div" className={READING_WIDE}>
-            <p className={cn(STANDOUT_CLASS, "m-0 max-w-[22ch] md:max-w-[40ch] lg:max-w-none text-balance")} style={STANDOUT_STYLE}>
-              {ABOUT.legacy[2]}
-            </p>
+        {/* 14 · CHAPTER VIII — THE ACADEMY. The founding line as Home's display
+            close, the Academy's own account as body, then the six archive
+            photographs of the place as one uniform 4:3 grid (3×2, like the
+            featured works) — all six are native 4:3 or wider, nobody is cut. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="academy" className="mb-6 md:mb-8" />
+          <DisplayClose lead={ABOUT.legacy[2]} />
+          <Reveal as="div" className={cn(MEASURE, "text-center mt-8 md:mt-10")}>
+            <BodyProse text={ABOUT.academyQuote} />
           </Reveal>
-          {/* ISLAND CARD (x.com / Memories register, Hugo): the photo runs full
-              WIDTH on top — object-contain on a dark matte, height-capped so it
-              never fills the screen and is never cropped — welded by a hairline
-              seam to the founding quote + palestine passage below. Replaces the
-              beside-text grid that stranded an ugly side void. */}
-          <Reveal
-            as="div"
-            className={cn(IMG_GAP, "mx-auto w-full max-w-[900px] 3xl:max-w-[92vw] 4xl:max-w-[94vw]")}
-          >
-            <figure className="m-0 flex justify-center overflow-hidden rounded-[3px] bg-ink/[0.04]">
-              <AssetImage
-                src="/img/about/07-az-zarqa-students.jpg"
-                alt="Stephen seated among a group of children, the mandalas they made held up around them"
-                loading="lazy"
-                decoding="async"
-                sizes="(min-width: 1024px) 900px, 100vw"
-                className="mx-auto block h-auto w-auto max-h-[60svh] max-w-full"
-              />
-            </figure>
-            <div className={cn(IMG_GAP, "mx-auto max-w-[70ch] text-center")}>
-              <blockquote className="m-0">
-                <Prose text={ABOUT.academyQuote} className={BODY} />
-                <cite className={cn(EYEBROW_MUTED, "not-italic block mt-5")}>— On the founding of TAGA</cite>
-              </blockquote>
-              <Prose text={ABOUT.palestine} className={cn(BODY, "mt-5 md:mt-6")} />
-            </div>
+          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6 md:mt-8")}>
+            <Tile
+              src="/img/about/08-taga-group.jpg"
+              alt="Stephen Meakin with four Academy participants, each holding up the mandala board they made"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/10-taga-classroom.jpg"
+              alt="Students at work around the tables of the TAGA classroom"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/students-working-v1.jpg"
+              alt="Students at the Academy's tables, working on their own geometry in colour"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/09-taga-studio.jpg"
+              alt="A paint-spattered drafting easel in the studio, finished mandalas crowding the walls behind it"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/02-painting-table.jpg"
+              alt="Stephen Meakin and a collaborator working on a large blue and orange mandala print at the studio table"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
+            <Tile
+              src="/img/about/finishing-large-mandala-v1.jpg"
+              alt="Stephen absorbed in finishing a large mandala by hand at the studio table"
+              aspect="aspect-[4/3]"
+              position="center"
+              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
+            />
           </Reveal>
-
-          {/* The Academy as it was — a place of teaching AND making. Two archive
-              photographs at ONE aspect (never mix in a row): students at their
-              tables, and Stephen absorbed in finishing a large mandala by hand. */}
-          <div className={IMG_GAP}>
-            <PhotoRow width="wide">
-              <Reveal as="figure" className="m-0">
-                <ImageReveal
-                  src="/img/about/students-working-v1.jpg"
-                  alt="Students at the Academy's tables, working on their own geometry in colour"
-                  aspect="aspect-[4/3]"
-                  edges="none"
-                  parallax={0.08}
-                  objectPosition="center 35%"
-                  sizes="(min-width: 640px) 48vw, 100vw"
-                />
-              </Reveal>
-              <Reveal as="figure" className="m-0" delay={0.09}>
-                <ImageReveal
-                  src="/img/about/finishing-large-mandala-v1.jpg"
-                  alt="Stephen absorbed in finishing a large mandala by hand at the studio table"
-                  aspect="aspect-[3/2]"
-                  edges="none"
-                  parallax={0.08}
-                  objectPosition="center 35%"
-                  sizes="(min-width: 640px) 48vw, 100vw"
-                />
-              </Reveal>
-            </PhotoRow>
-          </div>
         </section>
 
-        {/* 14 · THE ACADEMY CLOSE — P3 (2-up, ONE register). Both tiles Plate
-            fill (object-contain) so a cover-vs-contain register mix can't read
-            uneven AND the classroom faces aren't cropped. */}
-        <section className={cn(SECTION, SECTION_PAD)}>
-          <PhotoRow width="wide">
-            <Reveal as="div">
-              <Plate
-                src="/img/about/09-taga-studio.jpg"
-                alt="A paint-spattered drafting easel in the studio, finished mandalas crowding the walls behind it"
-                width={1200}
-                height={900}
-                fill
-                aspect="aspect-[4/3]"
-                sizes="(min-width: 768px) 50vw, 100vw"
-              />
-            </Reveal>
-            <Reveal as="div" delay={0.09}>
-              <Plate
-                src="/img/about/10-taga-classroom.jpg"
-                alt="Students at work around the tables of the TAGA classroom"
-                width={1200}
-                height={900}
-                fill
-                aspect="aspect-[4/3]"
-                sizes="(min-width: 768px) 50vw, 100vw"
-              />
-            </Reveal>
-          </PhotoRow>
+        {/* 15 · CHAPTER IX — AZ-ZARQA. The passage, then the two photographs
+            that belong to it shown WHOLE side by side (a cover crop of the
+            children would cut them out): Stephen on the cairn in the Jordanian
+            desert beside Stephen among the children with their mandalas. */}
+        <section className={CONTAINER}>
+          <ChapterHead id="azzarqa" />
+          <Reveal as="div" className={cn(MEASURE, "text-center mb-6 md:mb-8")}>
+            <BodyProse text={ABOUT.palestine} />
+          </Reveal>
+          <WholeRow
+            photos={[
+              {
+                src: "/img/about/03-stephen-on-cairn.jpg",
+                alt: "Stephen standing barefoot on a stone cairn in the desert",
+                width: 1536,
+                height: 2048,
+                sizes: "(min-width: 640px) 36vw, 100vw",
+              },
+              {
+                src: "/img/about/07-az-zarqa-students.jpg",
+                alt: "Stephen seated among a group of children, the mandalas they made held up around them",
+                width: 920,
+                height: 689,
+                sizes: "(min-width: 640px) 64vw, 100vw",
+              },
+            ]}
+          />
         </section>
-        {/* The About page closes on the academy-close photos above (Hugo
-            2026-07-27: "delete 'The collection so far' and everything below").
-            The old "body of work" band + farewell CTA were removed. Stephen's
-            students' letter + Polly's funeral tribute live ONLY on /memories. */}
       </main>
 
-      <EnquireModal
-        open={friendsOpen}
-        onClose={closeFriends}
-        eyebrow="Friends & Family"
-        title="The Mandala Company"
-        subject="Subscribe — Mandala Company"
-        intro="Leave your name and email and we'll add you to Friends & Family. Occasional updates only — exhibitions, new releases, news from the estate."
-      />
       <Footer />
     </div>
   );
