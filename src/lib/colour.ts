@@ -98,53 +98,91 @@ export const hexToFamily = (hex: string): ColourFamily => {
  * matched against the lowercased colourway name. ORDER MATTERS: rules higher
  * in the list win, so the most specific / overriding rule is placed first.
  */
-const NAME_RULES: { family: ColourFamily; words: string[] }[] = [
-  // 1. BLUES (specific) — "moonstone" is a blue gem and these names also carry
-  //    the word "blue" (e.g. "Moonstone Blue"). It MUST sit above the neutrals
-  //    rule, because "moonstone" contains the substring "stone" which the
-  //    neutrals rule would otherwise claim. Pulled out here so the explicit
-  //    blue intent wins; the rest of the blue words live in rule 9.
-  { family: "blues", words: ["moonstone"] },
-  // 2. NEUTRALS — sand/desert + true neutrals. MUST sit above `yellows` so
-  //    "Sahara Sand Yellow" files as a neutral, not a yellow. ("moonstone" is
-  //    already siphoned to blues by rule 1 above, so "stone" here is safe.)
-  { family: "neutrals", words: ["sand", "sahara", "pearl", "cream", "stone", "ivory", "bone"] },
-  // 3. DARK — deep indigo / black-blue / black tones. Above `blues` so
-  //    "Persian Indigo" files as dark (its hex is a dark blue), and above
-  //    `reds`/`oranges` so nothing deep leaks up.
-  { family: "dark", words: ["indigo", "midnight", "onyx", "obsidian", "noir", "ophiuchus"] },
-  // 4. PURPLES — violet family. Above `blues` so "Supernova Violet" /
-  //    "Velvet Purple" file as purple rather than near-blue hexes.
-  { family: "purples", words: ["purple", "violet", "amethyst", "velvet", "lilac"] },
-  // 5. REDS & PINKS — incl. pink/rose/garnet/rubedo/blood/crimson/ruby.
-  { family: "reds", words: ["pink", "rose", "garnet", "rubedo", "blood", "crimson", "ruby", "red"] },
-  // 6. ORANGES & GOLDS — incl. gold/amber/copper/bronze/solstice/coral.
-  //    "Coral Reef" matches "coral" here (warm), before "reef" reaches blue.
-  { family: "oranges", words: ["orange", "gold", "amber", "copper", "bronze", "solstice", "coral"] },
-  // 7. YELLOWS — plain yellow only (sand/sahara already siphoned by rule 2).
-  { family: "yellows", words: ["yellow"] },
-  // 8. GREENS — green/sage/jade/emerald.
-  { family: "greens", words: ["green", "sage", "jade", "emerald"] },
-  // 9. BLUES & TEALS — blue/teal/aqua/aquamarine/glacier/lightning/cyan. Sits
-  //    last among colour rules so the more specific dark/purple overrides above
-  //    take precedence on ambiguous blue-ish names. ("moonstone" handled by
-  //    rule 1.)
-  { family: "blues", words: ["blue", "teal", "aqua", "aquamarine", "glacier", "lightning", "cyan"] },
+// =============================================================================
+// MULTI-FAMILY (2026-09-01). A colourway genuinely belongs to EVERY family it
+// fits — not just one. The old first-rule-wins classifier filed each colourway
+// under a single family, so buyers missed obvious matches: "Persian Indigo"
+// was ONLY "dark" (absent from Blues), "Sahara Sand Yellow" ONLY a neutral
+// (absent from Yellows), the golds ONLY oranges (absent from Yellows), "Coral
+// Reef" absent from Reds & pinks, and "Terracotta Brown" was WRONGLY a red.
+// Now every matching colour word contributes its families, and a word that
+// names an in-between tone (indigo, gold, coral, tanzanite, terracotta) maps to
+// BOTH of the families a buyer would look under. Each rule is auditable.
+// =============================================================================
+const NAME_FAMILIES: { words: string[]; families: ColourFamily[]; unless?: string[] }[] = [
+  // Gems / minerals with a definite hue
+  { words: ["moonstone"], families: ["blues"] },
+  { words: ["tanzanite"], families: ["purples", "blues"] }, // blue-violet gem
+  { words: ["lapis"], families: ["blues"] },
+  // Neutrals & sand (a sand-YELLOW is also a yellow — see the yellow rule).
+  // `unless: moonstone` — "stone" would otherwise substring-match inside
+  // "Moonstone Blue" and wrongly file a pale blue gem under neutrals.
+  { words: ["sand", "sahara", "pearl", "cream", "stone", "ivory", "bone", "linen"], families: ["neutrals"], unless: ["moonstone"] },
+  // Dark & indigo — indigo is a DEEP BLUE, so it is a blue too
+  { words: ["indigo"], families: ["dark", "blues"] },
+  { words: ["midnight", "onyx", "obsidian", "noir", "ophiuchus", "black"], families: ["dark"] },
+  // Purples & violets
+  { words: ["purple", "violet", "amethyst", "velvet", "lilac", "lavender", "mauve"], families: ["purples"] },
+  // Reds & pinks
+  { words: ["pink", "rose", "garnet", "rubedo", "blood", "crimson", "ruby", "red", "magenta"], families: ["reds"] },
+  // Coral sits between orange and pink — file under both
+  { words: ["coral", "peach", "salmon"], families: ["oranges", "reds"] },
+  // Oranges & golds; gold/saffron/amber are yellow-orange — file under both
+  { words: ["orange", "copper", "bronze", "solstice", "tangerine"], families: ["oranges"] },
+  { words: ["gold", "saffron", "amber", "honey"], families: ["oranges", "yellows"] },
+  // Browns / earth (terracotta, rust, clay) are warm earth tones — NOT reds
+  { words: ["terracotta", "brown", "rust", "clay", "sienna", "umber", "ochre"], families: ["oranges", "neutrals"] },
+  // Yellows
+  { words: ["yellow", "lemon", "citrine", "manipura"], families: ["yellows"] },
+  // Greens
+  { words: ["green", "sage", "jade", "emerald", "olive", "moss", "aurora"], families: ["greens"] },
+  // Blues & teals
+  { words: ["blue", "teal", "aqua", "aquamarine", "glacier", "lightning", "cyan", "cerulean"], families: ["blues"] },
 ];
 
 /**
- * Derive a colourway's family from its NAME first (explicit colour words,
- * checked via the ordered NAME_RULES table — most specific wins), falling back
- * to `hexToFamily(hex)` only when the name carries no recognised colour word
- * (e.g. "Original", "Kaleidoscope"). This is the function the "Find a print"
- * wayfinder should use so every painting surfaces under the family its
- * colourway names intend.
+ * EVERY family a colourway belongs to, from the colour words in its NAME (all
+ * matching rules contribute), falling back to `hexToFamily(hex)` only when the
+ * name carries no recognised colour word (e.g. "Original", "Kaleidoscope",
+ * "Stained Glass"). This is what the "Find a print" colour lens and the quiz
+ * should use, so a buyer filtering Blues sees Persian Indigo and Lapis, a
+ * buyer filtering Yellows sees the golds and Sahara Sand, etc.
  */
-export const colourwayFamily = (name: string, hex: string): ColourFamily => {
+// ARTWORK overrides (2026-09-01, from a tile-by-tile audit). A colourway's
+// `hex` is one representative pixel and its NAME describes the mandala — but
+// a buyer filters by what they SEE in the whole tile, ground included. These
+// are ADDITIVE only (they never remove a name-expected family), keyed by the
+// lowercased colourway name, each with the reason it earns the extra family.
+const ARTWORK_FAMILIES: Record<string, ColourFamily[]> = {
+  // Flower of Life "Kaleidoscope": hex hue 255.5° sits ½° past the blue cut-off
+  // and files purple-only, yet the tile is a strong periwinkle/cornflower-blue ground.
+  kaleidoscope: ["blues"],
+  // Ophiuchus "Stained Glass": hex is the near-black night sky; the tile is
+  // dominated by a rust-orange/terracotta frame and bright cobalt blues.
+  "stained glass": ["blues", "oranges"],
+  // Peacock "Sahara Sand Yellow": hex hue 37° is squarely gold-orange (the
+  // "Oranges & golds" swatch is its nearest), warm peach-gold lattice border.
+  "sahara sand yellow": ["oranges"],
+  // Swans "Glacier Blue": mint mandala on a DEEP PURPLE ground — the site's
+  // own colourwayTints measurement puts the dominant hue at 324° (purple).
+  "glacier blue": ["purples"],
+};
+
+export const colourwayFamilies = (name: string, hex: string): ColourFamily[] => {
   const n = name.toLowerCase();
-  for (const rule of NAME_RULES) {
-    if (rule.words.some((w) => n.includes(w))) return rule.family;
+  const out = new Set<ColourFamily>();
+  for (const rule of NAME_FAMILIES) {
+    if (rule.unless?.some((w) => n.includes(w))) continue; // e.g. "stone" must not hit "moonstone"
+    if (rule.words.some((w) => n.includes(w))) rule.families.forEach((f) => out.add(f));
   }
   // No colour word in the name — trust the pixel value.
-  return hexToFamily(hex);
+  if (out.size === 0) out.add(hexToFamily(hex));
+  // What the whole tile actually shows (ground included) — additive.
+  ARTWORK_FAMILIES[n]?.forEach((f) => out.add(f));
+  return [...out];
 };
+
+/** Primary (first) family — kept for any single-value caller. Prefer
+ *  `colourwayFamilies` for filtering, which honours every family a tone fits. */
+export const colourwayFamily = (name: string, hex: string): ColourFamily =>
+  colourwayFamilies(name, hex)[0];

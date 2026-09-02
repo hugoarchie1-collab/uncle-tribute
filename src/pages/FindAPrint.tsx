@@ -16,7 +16,7 @@ import {
   getLowestTierPriceParts,
   paintingImageAlt,
 } from "../data/paintings";
-import { COLOUR_FAMILIES, colourwayFamily, type ColourFamily } from "../lib/colour";
+import { COLOUR_FAMILIES, colourwayFamilies, type ColourFamily } from "../lib/colour";
 
 // The intention lens — what a piece can cultivate, mapped ONLY to the paintings
 // whose own documented meaning (in paintings.ts descriptions) genuinely carries
@@ -39,7 +39,7 @@ const INTENTIONS: { key: IntentionKey; label: string; paintings: string[] }[] = 
   { key: "abundance", label: "Abundance", paintings: ["wild-rose", "english-bluebells", "slipper-orchids"] },
   { key: "protection", label: "Protection", paintings: ["wild-rose", "peacock-minerva", "ophiuchus", "celtic-shield"] },
   { key: "healing", label: "Healing", paintings: ["ophiuchus"] },
-  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "persian-flower-of-life"] },
+  { key: "unity", label: "Unity & connection", paintings: ["enneagon-swans", "persian-flower-of-life", "celtic-shield", "slipper-orchids"] },
   { key: "wholeness", label: "Wholeness", paintings: ["orchis-7", "flower-of-life", "twelve-around-three", "persian-flower-of-life"] },
   { key: "remembrance", label: "Remembrance", paintings: ["enneagon-swans"] },
 ];
@@ -173,7 +173,8 @@ export const FindAPrint = () => {
       PAINTINGS.map((p) => {
         const avail = p.colourways.filter((c) => c.available);
         const original = avail.find((c) => c.isOriginal) ?? avail[0];
-        const families = new Set(avail.map((c) => colourwayFamily(c.name, c.hex)));
+        // EVERY family the painting's colourways span (a tone can fit several).
+        const families = new Set(avail.flatMap((c) => colourwayFamilies(c.name, c.hex)));
         return { painting: p, avail, original, families };
       }),
     [],
@@ -218,7 +219,7 @@ export const FindAPrint = () => {
         .map((e) => {
           const matched =
             active.size > 0
-              ? e.avail.find((c) => active.has(colourwayFamily(c.name, c.hex)))?.name
+              ? e.avail.find((c) => colourwayFamilies(c.name, c.hex).some((f) => active.has(f)))?.name
               : undefined;
           // Prefer the buyer's dot choice; else the colour-lens match; else original.
           const chosenName = cwChoice[e.painting.id] ?? matched ?? e.original.name;

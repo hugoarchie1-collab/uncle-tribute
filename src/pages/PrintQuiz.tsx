@@ -10,7 +10,7 @@ import { cn } from "../lib/cn";
 import { useCurrency } from "../lib/currency";
 import { PAINTINGS, getAnchorTier, getLowestTierPriceParts } from "../data/paintings";
 import { addItem } from "../lib/basket";
-import { colourwayFamily, type ColourFamily } from "../lib/colour";
+import { colourwayFamilies, type ColourFamily } from "../lib/colour";
 import { SITE_URL } from "../lib/seo";
 
 /**
@@ -216,7 +216,7 @@ export const PrintQuiz = ({
     const COLOUR_FIT = 2;
     const offersPreferred = (p: (typeof PAINTINGS)[number]) =>
       !!preferred &&
-      p.colourways.some((c) => c.available && colourwayFamily(c.name, c.hex) === preferred);
+      p.colourways.some((c) => c.available && colourwayFamilies(c.name, c.hex).includes(preferred));
 
     // Rank purchasable paintings by essence score + colour-fit (stable by catalogue order).
     const ranked = PAINTINGS.map((p) => ({
@@ -232,7 +232,7 @@ export const PrintQuiz = ({
     // Show the winner in the colourway that matches those tones; else its original.
     const original = avail.find((c) => c.isOriginal) ?? avail[0];
     const cover =
-      (preferred && avail.find((c) => colourwayFamily(c.name, c.hex) === preferred)) || original;
+      (preferred && avail.find((c) => colourwayFamilies(c.name, c.hex).includes(preferred))) || original;
 
     const runnersUp = ranked.slice(1, 3).map(({ p }) => {
       const a = p.colourways.filter((c) => c.available);
