@@ -28,6 +28,7 @@
       "destination": "/collections",
       "permanent": true
     },
+    { "source": "/representatives", "destination": "/trade", "permanent": true },
     {
       "source": "/stephen-meakin-biography/:path*",
       "destination": "/about",

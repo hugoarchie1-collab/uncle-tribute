@@ -994,15 +994,21 @@ const LegalPart = ({
         <ol className="m-0 p-0 list-none sm:columns-2 gap-x-8">
           {part.sections.map((section, i) => (
             <li key={i} className="break-inside-avoid border-t border-line py-1.5">
-              <a
-                href={`#${part.id}-${i}`}
+              {/* Router <Link>, not a bare <a href="#…">: this app scrolls to a
+                  fragment through PageTransition's ScrollManager (the same path
+                  /collections#collection-<id> takes), and that runs only when
+                  the ROUTER location changes — a native fragment click never
+                  reaches it. Going through the router also keeps the clause
+                  hash in the history entry the tab row reads back. */}
+              <Link
+                to={`#${part.id}-${i}`}
                 className="group grid grid-cols-[1.9em_1fr] items-baseline gap-x-2 font-sans text-[14.5px] md:text-[15px] 3xl:text-[clamp(15px,0.8vw,17px)] leading-[1.4] text-ink-muted transition-colors hover:text-accent"
               >
                 <span aria-hidden className="text-[12.5px] 3xl:text-[15px] font-bold tracking-[0.02em] tabular-nums text-ink/45 group-hover:text-accent">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span>{section.heading}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ol>
