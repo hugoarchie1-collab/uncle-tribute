@@ -331,11 +331,20 @@ const Band = ({ src, alt, position }: { src: string; alt: string; position: stri
 // line — the "so clean" module in Hugo's screenshot. Copy sits top-aligned
 // beside it as ONE cohesive block: eyebrow → small heading → paragraphs.
 // Mobile shows the WHOLE portrait, sized down + centred, stacked above.
+// ⚠️ The two-column split starts at lg (1024), NOT md (768) as on Home. The
+// portrait column is Home's `clamp(400px,34vw,540px)`, and 34vw at 768px is
+// 261px — under the 400px floor — so at tablet the photo claimed 400 of the
+// 704px content box and left the copy a ~256px ribbon: the heading broke over
+// EIGHT lines and the body ran ~30 characters wide. Home survives that because
+// its copy beside the portrait is two short paragraphs; About's is a heading
+// plus four. So 768–1023 keeps the stacked treatment (whole portrait, sized
+// down, centred) and the two columns engage at 1024, where the copy still gets
+// ~460px. Verified at 768 / 1024 / 1440 / 1920.
 const SideBySide = ({
   src,
   alt,
   position,
-  sizes = "(min-width:768px) 34vw, 64vw",
+  sizes = "(min-width:1024px) 34vw, 64vw",
   children,
 }: {
   src: string;
@@ -346,16 +355,16 @@ const SideBySide = ({
 }) => (
   <Reveal
     as="div"
-    className="grid grid-cols-1 md:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
+    className="grid grid-cols-1 lg:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
   >
-    <figure className="relative m-0 mx-auto w-[64%] max-w-[300px] md:w-full md:max-w-none md:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
+    <figure className="relative m-0 mx-auto w-[64%] max-w-[300px] lg:w-full lg:max-w-none lg:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
       <AssetImage
         src={src}
         alt={alt}
         loading="lazy"
         decoding="async"
         sizes={sizes}
-        className="block w-full h-auto md:absolute md:inset-0 md:h-full md:w-full md:object-cover"
+        className="block w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:w-full lg:object-cover"
         style={{ objectPosition: position }}
       />
     </figure>
