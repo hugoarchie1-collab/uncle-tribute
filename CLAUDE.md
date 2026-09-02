@@ -24,6 +24,16 @@ This document is the project's running source of truth — paste it at the start
 
 ## ⚠️ Current live state (read this first)
 
+**2026-09-02 (later) — PARTNERS HARDENED after an adversarial code review (`efd1974`). Live and re-verified in-browser.**
+
+Two findings were serious. **A trade enquiry could be destroyed silently**: both application branches in `api/newsletter-subscribe.ts` returned 200 whatever happened — missing API key, Resend error, thrown exception — while the page rendered "Thank you. It's with the family." The most valuable thing this site collects could vanish with the buyer reassured. Both branches now return **502** with the estate's address (see [[reference_lead_capture_must_fail_loudly]]). And **the page contradicted the rest of the site on lead time**, saying a framed print "takes around two weeks" where the FAQ, the PDP and Stripe's own shipping label all say dispatched within **2–4 working days** (two weeks is the hand-finished figure).
+
+⚠️ **`border-line/70` IS NOT A SOFTER HAIRLINE.** `line` is a function-form colour: bare `border-line` → `var(--line)` = rgba(237,230,214,**0.12**); `border-line/N` → `rgb(var(--ink) / N)`, i.e. cream at 70%, ~6× brighter. Seven shipped on this page beside correct ones. For a softer rule use `border-ink/8`. This is the documented palette-alpha gotcha, walked into again.
+
+⚠️ **`scripts/prerender.ts` must be updated in the SAME commit as a page's `<Seo>`.** It still baked "Trade & Interior Design" into `dist/trade/index.html`, so Bing, the AI crawlers, link unfurls and Merchant Center all read the retired page while browsers read the new one.
+
+Also fixed: the demonstration painting rendered twice (strip + grid, ten lines apart); the Sector `<select>` used `key` + `defaultValue`, so every tab click remounted it and overwrote an answer the buyer had already given; the tabpanel's `aria-live` re-read the entire panel on every tab press; both success states mounted their own live region and dropped focus to `<body>`; the sticky bar read `scrollHeight` on every scroll event and still sat on the footer (it now observes the footer element); the studio **website** field was lost in the rebuild though the server still parses and renders it; two `sizes` hints named breakpoints the CSS does not use; the scale diagram's labels collided with the A3 frame and are now real type beneath the drawing.
+
 **2026-09-02 — /about REBUILT AS A CLONE OF THE HOME PAGE. Build (gated) + `tsc -b` + lint green; verified in a real browser at 1920 / 1440 / 390.**
 
 Hugo: the About page was "the worst page on site … the proportions are all off … it has to be better than home visually and symmetrically", with a specific complaint that the opening paragraph did not start at the top of the portrait beside it, leaving "huge gaps above and below".
