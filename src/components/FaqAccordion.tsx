@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FAQS } from "../data/faqs";
 import { Reveal } from "./Reveal";
 import { cn } from "../lib/cn";
@@ -19,13 +20,31 @@ import { EYEBROW_MUTED } from "./ui/tokens";
 export const FaqAccordion = ({
   id,
   className,
+  variant = "all",
 }: {
   /** Anchor id (e.g. "faq" so /contact#faq lands here). */
   id?: string;
   /** Override the default self-contained container (e.g. when the parent
    *  already provides the page gutter). */
   className?: string;
-}) => (
+  /**
+   * "all" — every Q&A, for the support surface at /contact#faq.
+   * "pdp" — the curated buy-point subset, in `pdp` order (see QA.pdp).
+   *
+   * ⚠️ The product page must NOT render the full list. It was doing so, which
+   * put four gift-card questions and a second-print discount under the buy
+   * button — including one answer that names a cheaper £250 print to someone
+   * about to spend £750.
+   */
+  variant?: "all" | "pdp";
+}) => {
+  const items =
+    variant === "pdp"
+      ? FAQS.filter((qa) => qa.pdp !== undefined).sort(
+          (a, b) => (a.pdp ?? 0) - (b.pdp ?? 0),
+        )
+      : FAQS;
+  return (
   <Reveal
     as="section"
     id={id}
@@ -47,7 +66,7 @@ export const FaqAccordion = ({
     </h2>
 
     <ul className="list-none p-0 m-0 border-t border-line max-w-[860px] 3xl:max-w-[1100px]">
-      {FAQS.map((qa) => (
+      {items.map((qa) => (
         <li key={qa.question} className="m-0 border-b border-line">
           <details className="group">
             <summary className="flex items-center justify-between gap-5 cursor-pointer list-none py-5 [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 rounded-sm">
@@ -68,5 +87,20 @@ export const FaqAccordion = ({
         </li>
       ))}
     </ul>
+
+    {/* The curated buy-point list is deliberately short, so it must hand off
+        to the full set rather than dead-end. /faq was retired 2026-09-02 and
+        the complete list now lives on /contact#faq. */}
+    {variant === "pdp" ? (
+      <p className="m-0 mt-6">
+        <Link
+          to="/contact#faq"
+          className="font-sans text-[15px] 3xl:text-[17px] text-ink-muted underline underline-offset-4 hover:text-ink transition-colors"
+        >
+          All questions &amp; answers →
+        </Link>
+      </p>
+    ) : null}
   </Reveal>
-);
+  );
+};

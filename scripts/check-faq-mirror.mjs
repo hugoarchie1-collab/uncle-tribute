@@ -1,5 +1,6 @@
 // =============================================================================
-// FAQ MIRROR CHECK — fails the build if the search index drifts from /faq.
+// FAQ MIRROR CHECK — fails the build if the search index drifts from the
+// canonical FAQ copy in src/data/faqs.tsx.
 // -----------------------------------------------------------------------------
 // WHY THIS EXISTS
 //   `FAQ_SEEDS` in src/lib/search.ts is a hand-typed plain-text copy of `FAQS`
@@ -69,8 +70,12 @@ const readSource = () => {
     "export const FAQS: QA[] = [",
     "FAQ.tsx",
   );
+  // ⚠️ `[^]*?` between question and answer, NOT `\s*`: a QA may carry other
+  // fields (today `pdp`, the product-page subset order) between the two. The
+  // strict version silently DROPPED every entry that had one — see the count
+  // assertion below, which is what makes that failure loud instead of silent.
   const re =
-    /question:\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')\s*,\s*answer:\s*\(\s*<>([\s\S]*?)<\/>\s*\),/g;
+    /question:\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')\s*,[\s\S]*?answer:\s*\(\s*<>([\s\S]*?)<\/>\s*\),/g;
   const out = [];
   let m;
   while ((m = re.exec(block))) {
@@ -80,6 +85,18 @@ const readSource = () => {
       .replace(/<[^>]+>/g, "") // strip tags, keep their text children
       .replace(/\{[^{}]*\}/g, ""); // strip remaining JSX expressions
     out.push({ question: unescape(m[1] ?? m[2]), answer: normalise(answer) });
+  }
+  // ⚠️ A parser that silently skips is worse than no parser: an entry it cannot
+  // read is an entry the mirror check never covers, so the search index could
+  // drift on exactly that answer and the build would still pass. Count the
+  // `question:` keys and refuse to run if we did not capture all of them.
+  const declared = (block.match(/^\s*question:/gm) || []).length;
+  if (declared !== out.length) {
+    throw new Error(
+      `FAQ.tsx: parsed ${out.length} of ${declared} entries — ` +
+        `${declared - out.length} could not be read, so they would go unchecked. ` +
+        `Fix the parser in scripts/check-faq-mirror.mjs before trusting this gate.`,
+    );
   }
   return out;
 };
@@ -143,11 +160,11 @@ for (let i = 0; i < Math.max(source.length, mirror.length); i++) {
 
 if (problems > 0) {
   console.error(
-    `\n[faq-mirror] ${problems} divergence(s). The search index no longer matches /faq.\n` +
+    `\n[faq-mirror] ${problems} divergence(s). The search index no longer matches the FAQ.\n` +
       `Update FAQ_SEEDS in src/lib/search.ts so every question and answer is VERBATIM\n` +
       `from FAQS in src/data/faqs.tsx, then re-run. Do not paraphrase.\n`,
   );
   process.exit(1);
 }
 
-console.log(`[faq-mirror] ${source.length} FAQ entries — search index matches /faq exactly.`);
+console.log(`[faq-mirror] ${source.length} FAQ entries — search index matches src/data/faqs.tsx exactly.`);

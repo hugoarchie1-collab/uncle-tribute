@@ -495,8 +495,15 @@ const TERMS: Section[] = [
       {
         kind: "ul",
         items: [
-          <><strong>Framed, estate-stamped</strong> — approximately two weeks to dispatch (choice of frame finish, glazed with float glass).</>,
-          <><strong>Canvas print</strong> — approximately two weeks to dispatch.</>,
+          // 2-4 WORKING DAYS, matching the shipping option the buyer actually
+          // clicks in Stripe (api/checkout.ts buildShippingOptions), the FAQ, the
+          // provenance panel and the reassurance row. These two lines were the
+          // lone outlier at "approximately two weeks" - and they sat in the
+          // CONTRACTUAL document, promising something slower than every other
+          // surface including checkout itself. Hand-finishing keeps its own
+          // two-week maximum below, because Polly works those by hand.
+          <><strong>Framed, estate-stamped</strong> — dispatched within 2–4 working days (choice of frame finish, glazed with float glass).</>,
+          <><strong>Canvas print</strong> — dispatched within 2–4 working days.</>,
           <><strong>Hand-finished by Polly</strong> — two weeks maximum to dispatch.</>,
         ],
       },

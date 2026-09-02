@@ -29,6 +29,23 @@ export interface QA {
   eyebrow: string;
   question: string;
   answer: React.ReactNode;
+  /**
+   * Position in the PRODUCT-PAGE subset (1 = first). Absent => this Q&A is
+   * shown only on the full list at /contact#faq.
+   *
+   * ⚠️ WHY A SUBSET. The product page used to render ALL of FAQS. That put
+   * four gift-card questions and a "discount for a second print" answer under
+   * the buy button of a £750 print — one of which told the buyer "our least
+   * expensive print is £250" at the moment of commitment. It also restated the
+   * size picker and the framing picker as questions, which reads as though
+   * framing were optional or chargeable when it is neither.
+   *
+   * Every serious comparable does it this way: a long list on a support page,
+   * a short curated one on the product page (Sonic Editions runs 23 vs 4).
+   * The ORDER here is objection-first, logistics-last — what is it and is it
+   * real, then what arrives, then can I undo it, then when and how.
+   */
+  pdp?: number;
 }
 
 // Exported so the product page can render the SAME verbatim Q&As inline (a DROOL-
@@ -38,11 +55,14 @@ export const FAQS: QA[] = [
   {
     eyebrow: "Provenance",
     question: "Are the prints signed?",
+    pdp: 1,
     answer: (
       <>
         No — Stephen passed in 2021, so prints cannot be signed in his hand.
-        Every print is <strong>estate-stamped</strong> by The Mandala Company
-        and numbered within its edition. Each is issued with a Certificate
+        Every print is <strong>estate-stamped</strong> by The Mandala Company,
+        and numbered within its edition on the Collector and Atelier sizes
+        (Emblem and Gallery are open editions, issued to order and not
+        numbered). Each is issued with a Certificate
         of Authenticity carrying a unique Certificate ID. This is the convention
         used by the estates of Picasso, Hepworth and Hilma af Klint, and
         is the standard for works released posthumously by an estate.
@@ -74,6 +94,7 @@ export const FAQS: QA[] = [
   {
     eyebrow: "The print itself",
     question: "What are the prints made on — and can I have canvas?",
+    pdp: 2,
     answer: (
       <>
         As standard, every print is made on <strong>Hahnemühle Photo Rag —
@@ -87,9 +108,11 @@ export const FAQS: QA[] = [
         <strong>framed</strong> — the giclée on fine-art paper, hand-mounted and
         framed in solid wood behind glass, ready to hang; or{" "}
         <strong>canvas</strong> — the same image as a fine-art giclée print on
-        heavyweight 370gsm art canvas, a bold, tactile, glass-free surface. Both
-        are made to order at the same price — pick whichever suits
-        your wall, or{" "}
+        heavyweight 370gsm art canvas, a bold, tactile, glass-free surface. The
+        canvas is supplied as a <strong>flat canvas print</strong> — it is not
+        stretched over a frame and is not ready to hang, so allow for stretching
+        or framing it yourself. Both are made to order at the same price — pick
+        whichever suits your wall, or{" "}
         <Link to="/contact" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
           ask us
         </Link>{" "}
@@ -98,8 +121,71 @@ export const FAQS: QA[] = [
     ),
   },
   {
+    // ⚠️ PRE-CONTRACT DISCLOSURE, not marketing copy. Under the Consumer
+    // Contracts Regulations 2013 the trader must tell the buyer BEFORE they are
+    // bound that the 14-day cancellation right does not apply. Framed is the
+    // DEFAULT presentation here, and framed is exempt under reg 28(1)(b) — so
+    // the buyer taking the default path gives up that right. Nothing in this
+    // FAQ said so; the only mention was one line of small print under the CTA.
+    // Every figure below mirrors "Your right to cancel" in src/pages/Legal.tsx.
+    eyebrow: "Changing your mind",
+    question: "Can I change my mind after ordering?",
+    pdp: 3,
+    answer: (
+      <>
+        It depends on what you chose, because everything is made to order.{" "}
+        <strong>Canvas prints</strong> carry the full statutory{" "}
+        <strong>14-day right to cancel</strong> — from the moment you order
+        until 14 days after it arrives, for any reason.
+        <br />
+        <br />
+        A <strong>framed</strong> or <strong>hand-finished</strong> piece is cut,
+        mounted and finished to your specification, so it is exempt from that
+        right under regulation 28(1)(b). As a goodwill measure the estate still
+        cancels and refunds in full within <strong>24 hours</strong> of your
+        order, provided it has not gone to the studio yet — email{" "}
+        <a
+          href="mailto:info@themandalacompany.com"
+          className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70"
+        >
+          info@themandalacompany.com
+        </a>
+        . After that it is in production. This is separate from a damaged or
+        lost delivery, which is always replaced or refunded — see the{" "}
+        <Link to="/legal#returns" className="text-accent rounded-sm hover:underline focus-visible:outline-none focus-visible:underline focus-visible:ring-2 focus-visible:ring-accent/70">
+          full terms
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
+    // ⚠️ Klarna / Clearpay are enabled on the Stripe account (Hugo, 2026-07-28)
+    // and api/checkout.ts sets no `payment_method_types`, so Stripe serves
+    // whatever the dashboard allows. Before this entry the capability appeared
+    // in ZERO buyer-facing words anywhere on the site — a paid-for option the
+    // buyer only discovered after leaving the page. Worded around eligibility
+    // (Stripe decides by country and order value), so it cannot promise a
+    // method a given buyer will not be shown.
+    eyebrow: "Paying",
+    question: "Can I pay in instalments?",
+    pdp: 6,
+    answer: (
+      <>
+        Checkout is handled by Stripe, and the pay-later options available in
+        your country — such as <strong>Klarna</strong> or{" "}
+        <strong>Clearpay</strong> — are offered there when your order qualifies,
+        alongside card, Apple Pay and Google Pay. Whichever you choose, the
+        estate is paid in full and your print goes into production straight
+        away; the instalment arrangement is between you and the provider. The
+        price is identical either way — nothing is added for paying over time.
+      </>
+    ),
+  },
+  {
     eyebrow: "Lead time",
     question: "How long until my print arrives?",
+    pdp: 4,
     answer: (
       <>
         Every piece is made to order — framed in solid wood, or a fine-art canvas
@@ -131,33 +217,36 @@ export const FAQS: QA[] = [
     question: "Can I have my print framed?",
     answer: (
       <>
-        Every piece arrives framed and ready to hang — the edition price already
+        Framed is how most pieces arrive, and the edition price already
         includes a white window mount, a solid-wood frame and glazing, so there
         is no unframed option and no separate framing charge. Choose your{" "}
         <strong>frame</strong> on the product page — solid wood in oak, white or
         black, glazed with clear, edge-polished float glass. Prefer canvas? Every
         piece is also offered as a fine-art 370gsm canvas print, at the same price.
-        Framed and canvas orders are made to order — allow roughly two weeks;
-        delivery is free worldwide.
+        Framed and canvas orders are made to order and dispatched within 2–4
+        working days; delivery is free worldwide.
       </>
     ),
   },
   {
     eyebrow: "Hand-finishing",
     question: 'What is "hand-finished by Polly"?',
+    pdp: 5,
     answer: (
       <>
         Polly (Stephen's sister) hand-paints additional geometric
         detail onto selected prints in Stephen's own tradition. Each
-        hand-finished piece is therefore unique. The add-on is available on
-        the Collector and Atelier editions, by request, and adds £595 (Collector)
-        or £895 (Atelier). Allow two weeks maximum from order to dispatch.
+        hand-finished piece is therefore unique. Tick it on the product page
+        when you order — it is offered on the Collector and Atelier sizes when
+        framed, and adds £595 (Collector) or £895 (Atelier). It is not available
+        on canvas. Allow two weeks maximum from order to dispatch.
       </>
     ),
   },
   {
     eyebrow: "Shipping",
     question: "Do you ship internationally?",
+    pdp: 7,
     answer: (
       <>
         Yes — we ship worldwide. Delivery is free on every order, framed or
@@ -170,6 +259,7 @@ export const FAQS: QA[] = [
   {
     eyebrow: "After-sale care",
     question: "What if my print arrives damaged or doesn't arrive?",
+    pdp: 8,
     answer: (
       <>
         Write to{" "}

@@ -66,6 +66,12 @@ const SectionHead = ({ eyebrow, meta }: { eyebrow: string; meta?: string }) => (
   </Reveal>
 );
 
+/** The suite-grid tile edge. Every colourway square on the page is exactly this
+ *  wide, in every group, so the grid reads as one set of squares rather than
+ *  rows that each chose their own scale. */
+const TILE = "clamp(64px, 7vw, 124px)";
+const TILE_GAP = "10px";
+
 const ITALIC_STYLE = { fontVariationSettings: '"opsz" 40, "wght" 400' } as const;
 const Em = ({ children }: { children: ReactNode }) => (
   <em className="italic font-normal" style={ITALIC_STYLE}>
@@ -1030,14 +1036,36 @@ export const Partners = () => {
 
           {/* Suites — every painting with more than one colourway, dense. */}
           <div className={cn(WRAP, "mt-10 md:mt-14")}>
-            {/* Each suite's width is proportional to its colourway count, so
-                every tile on a row is the same size whether the painting has
-                two colourways or five — one grid of equal squares, grouped. */}
-            <div className="flex flex-wrap gap-x-8 lg:gap-x-10 gap-y-10">
+            {/* EVERY tile on this page is the same square, whichever painting it
+                belongs to. The first cut let each group FLEX-GROW to fill its
+                row, so a row holding one four-colourway work drew tiles half as
+                big again as the row beneath it — the "design isn't consistent"
+                failure Hugo catches every time. Each group is now sized to
+                exactly its own tile count (`--tile` wide plus the gaps between)
+                and never stretched; rows are centred so the ragged right edge
+                reads as deliberate. `maxWidth:100%` lets a five-tile group
+                shrink on a phone rather than push the page sideways. */}
+            <div className="flex flex-wrap justify-center gap-x-8 lg:gap-x-10 gap-y-10">
               {suites.map(({ painting, ways }) => (
-                <div key={painting.id} className="min-w-0" style={{ flex: `${ways.length} 1 ${ways.length * 132}px` }}>
+                <div
+                  key={painting.id}
+                  className="min-w-0"
+                  style={{
+                    flex: "0 1 auto",
+                    // Sized to its OWN tile count, never stretched — the tile
+                    // edge is identical in every group on the page. Written
+                    // out rather than via a Tailwind arbitrary custom property
+                    // (`[--tile:clamp(…)]` did not apply, and the groups then
+                    // sized to content, which is the bug this replaces).
+                    width: `calc(${ways.length} * ${TILE} + ${ways.length - 1} * ${TILE_GAP})`,
+                    maxWidth: "100%",
+                  }}
+                >
                  <Reveal as="div">
-                  <div className="grid gap-2 md:gap-2.5" style={{ gridTemplateColumns: `repeat(${ways.length}, minmax(0, 1fr))` }}>
+                  <div
+                    className="grid"
+                    style={{ gap: TILE_GAP, gridTemplateColumns: `repeat(${ways.length}, minmax(0, 1fr))` }}
+                  >
                     {ways.map((c) => (
                       <Link
                         key={c.name}
@@ -1058,10 +1086,10 @@ export const Partners = () => {
                       </Link>
                     ))}
                   </div>
-                  <p className="font-display font-semibold tracking-[-0.02em] text-ink m-0 mt-3 text-[clamp(17px,1.25vw,26px)] leading-[1.2]">
+                  <p className="font-display font-semibold tracking-[-0.02em] text-ink m-0 mt-3 text-[clamp(16px,1.1vw,23px)] leading-[1.2] text-balance">
                     {painting.title}
                   </p>
-                  <p className={cn(META, "m-0 mt-1")}>
+                  <p className={cn(META, "m-0 mt-1 text-pretty")}>
                     {ways.length} colourways · {ways.map((c) => c.name).join(" · ")}
                   </p>
                  </Reveal>

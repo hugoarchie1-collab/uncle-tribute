@@ -241,19 +241,22 @@ interface IndexSeed {
 /**
  * PLAIN-TEXT MIRROR OF `src/data/faqs.tsx` → the exported `FAQS` array.
  *
- * ⚠️ WHY THIS IS HAND-COPIED (and what should replace it):
- * `FAQS` in FAQ.tsx is the real source of truth and IS exported — but its
- * answers are `ReactNode` (JSX with <Link>/<strong>/<a>), and FAQ.tsx imports
- * Nav → SearchBar → this module. Importing it here would be a require cycle
- * AND would drag a whole page component into the nav bundle. The clean fix is
- * to lift `FAQS` + its `nodeText` flattener into a data module (e.g.
- * `src/data/faq.tsx`) that BOTH FAQ.tsx and this file import — then this array
- * disappears. That refactor touches FAQ.tsx, which this module does not own.
+ * ⚠️ WHY THIS IS STILL HAND-COPIED:
+ * `FAQS` now lives in `src/data/faqs.tsx` (lifted out of the deleted FAQ page
+ * on 2026-09-02), so the old require cycle — FAQ.tsx → Nav → SearchBar → this
+ * module — is GONE and a direct import is now possible. What still separates
+ * the two is shape, not structure: `FAQS` answers are `ReactNode` (JSX with
+ * <Link>/<strong>/<a>) while the index wants flat text, and each seed below
+ * carries an `id` + `keywords` blob that has no counterpart in the display
+ * copy. Collapsing them means giving every FAQS entry a stable id and
+ * flattening answers at module load. Worth doing; NOT done here, because
+ * `scripts/check-faq-mirror.mjs` already fails the build on any drift, so the
+ * duplication is gated rather than dangerous.
  *
- * Until then: every string below is VERBATIM from FAQ.tsx's `FAQS`, in the same
+ * Until then: every string below is VERBATIM from `FAQS`, in the same
  * order, with JSX flattened to text (a `<br/><br/>` becomes a space). Re-copy
- * it whenever FAQ.tsx changes — never paraphrase, never re-word, never invent.
- * Last reconciled against FAQ.tsx: 2026-09-01 (13 questions — the count read
+ * it whenever faqs.tsx changes — never paraphrase, never re-word, never invent.
+ * Last reconciled against src/data/faqs.tsx: 2026-09-01 (13 questions — the count read
  * "10" while the array held 13; `npm run check:faq` verifies the CONTENT, not
  * this comment, so only a reader was being misled).
  */
@@ -274,7 +277,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Provenance",
     question: "Are the prints signed?",
     answer:
-      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company and numbered within its edition. Each is issued with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
+      "No — Stephen passed in 2021, so prints cannot be signed in his hand. Every print is estate-stamped by The Mandala Company, and numbered within its edition on the Collector and Atelier sizes (Emblem and Gallery are open editions, issued to order and not numbered). Each is issued with a Certificate of Authenticity carrying a unique Certificate ID. This is the convention used by the estates of Picasso, Hepworth and Hilma af Klint, and is the standard for works released posthumously by an estate.",
     keywords: "signature autograph hand-signed posthumous estate stamp",
   },
   {
@@ -290,8 +293,24 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "The print itself",
     question: "What are the prints made on — and can I have canvas?",
     answer:
-      "As standard, every print is made on Hahnemühle Photo Rag — 308gsm, 100% cotton archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each is made to order on the Sussex coast, at a Hahnemühle Certified Studio. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer. Every piece is offered two ways, and you choose on the product page: framed — the giclée on fine-art paper, hand-mounted and framed in solid wood behind glass, ready to hang; or canvas — the same image as a fine-art giclée print on heavyweight 370gsm art canvas, a bold, tactile, glass-free surface. Both are made to order at the same price — pick whichever suits your wall, or ask us if you'd like a hand.",
+      "As standard, every print is made on Hahnemühle Photo Rag — 308gsm, 100% cotton archival paper, printed with pigment inks on a 12-colour large-format giclée press. Each is made to order on the Sussex coast, at a Hahnemühle Certified Studio. Under normal display conditions it carries archival, museum-grade lightfastness rated by the paper manufacturer. Every piece is offered two ways, and you choose on the product page: framed — the giclée on fine-art paper, hand-mounted and framed in solid wood behind glass, ready to hang; or canvas — the same image as a fine-art giclée print on heavyweight 370gsm art canvas, a bold, tactile, glass-free surface. The canvas is supplied as a flat canvas print — it is not stretched over a frame and is not ready to hang, so allow for stretching or framing it yourself. Both are made to order at the same price — pick whichever suits your wall, or ask us if you'd like a hand.",
     keywords: "paper stock material substrate fine art quality archival",
+  },
+  {
+    id: "cancel",
+    eyebrow: "Changing your mind",
+    question: "Can I change my mind after ordering?",
+    answer:
+      "It depends on what you chose, because everything is made to order. Canvas prints carry the full statutory 14-day right to cancel — from the moment you order until 14 days after it arrives, for any reason. A framed or hand-finished piece is cut, mounted and finished to your specification, so it is exempt from that right under regulation 28(1)(b). As a goodwill measure the estate still cancels and refunds in full within 24 hours of your order, provided it has not gone to the studio yet — email info@themandalacompany.com. After that it is in production. This is separate from a damaged or lost delivery, which is always replaced or refunded — see the full terms.",
+    keywords: "cancel cancellation refund return change my mind 14 day cooling off consumer contracts regulation 28 bespoke made to order",
+  },
+  {
+    id: "instalments",
+    eyebrow: "Paying",
+    question: "Can I pay in instalments?",
+    answer:
+      "Checkout is handled by Stripe, and the pay-later options available in your country — such as Klarna or Clearpay — are offered there when your order qualifies, alongside card, Apple Pay and Google Pay. Whichever you choose, the estate is paid in full and your print goes into production straight away; the instalment arrangement is between you and the provider. The price is identical either way — nothing is added for paying over time.",
+    keywords: "instalments installments klarna clearpay pay later finance monthly split payment apple pay google pay afterpay",
   },
   {
     id: "lead-time",
@@ -329,7 +348,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Framing",
     question: "Can I have my print framed?",
     answer:
-      "Every piece arrives framed and ready to hang — the edition price already includes a white window mount, a solid-wood frame and glazing, so there is no unframed option and no separate framing charge. Choose your frame on the product page — solid wood in oak, white or black, glazed with clear, edge-polished float glass. Prefer canvas? Every piece is also offered as a fine-art 370gsm canvas print, at the same price. Framed and canvas orders are made to order — allow roughly two weeks; delivery is free worldwide.",
+      "Framed is how most pieces arrive, and the edition price already includes a white window mount, a solid-wood frame and glazing, so there is no unframed option and no separate framing charge. Choose your frame on the product page — solid wood in oak, white or black, glazed with clear, edge-polished float glass. Prefer canvas? Every piece is also offered as a fine-art 370gsm canvas print, at the same price. Framed and canvas orders are made to order and dispatched within 2–4 working days; delivery is free worldwide.",
     keywords: "frame mount glazing glass oak white black unframed ready to hang",
   },
   {
@@ -337,7 +356,7 @@ const FAQ_SEEDS: FaqSeed[] = [
     eyebrow: "Hand-finishing",
     question: 'What is "hand-finished by Polly"?',
     answer:
-      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. The add-on is available on the Collector and Atelier editions, by request, and adds £595 (Collector) or £895 (Atelier). Allow two weeks maximum from order to dispatch.",
+      "Polly (Stephen's sister) hand-paints additional geometric detail onto selected prints in Stephen's own tradition. Each hand-finished piece is therefore unique. Tick it on the product page when you order — it is offered on the Collector and Atelier sizes when framed, and adds £595 (Collector) or £895 (Atelier). It is not available on canvas. Allow two weeks maximum from order to dispatch.",
     keywords: "embellished hand painted unique polly wedge add-on",
   },
   {

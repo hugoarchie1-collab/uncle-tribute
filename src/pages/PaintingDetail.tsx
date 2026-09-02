@@ -3266,10 +3266,11 @@ export const PaintingDetail = () => {
           <Reviews paintingId={painting.id} paintingTitle={painting.title} />
         </div>
         {/* FAQ on the product page — the DROOL move: everything a buyer needs to
-            decide is here, so they never leave for a separate /faq page. Same
-            verbatim Q&As as /faq (shared FAQS array). */}
+            decide is here, so they never leave the page to find it. Same verbatim
+            Q&As as /contact#faq — one shared FAQS array (src/data/faqs.tsx);
+            the separate /faq page was retired 2026-09-02. */}
         <div id="faq" className="scroll-mt-24">
-          <FaqAccordion />
+          <FaqAccordion variant="pdp" />
         </div>
         <CompanionWorks painting={painting} collectionTitle={collection?.title} />
         <Footer />

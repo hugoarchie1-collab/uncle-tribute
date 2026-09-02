@@ -491,13 +491,16 @@ const homeBody = (): string =>
 const FAQ_QUESTIONS: string[] = [
   "Are the prints signed?",
   "Can I check a certificate is genuine?",
-  "What are the prints made on?",
+  "What are the prints made on — and can I have canvas?",
+  "Can I change my mind after ordering?",
+  "Can I pay in instalments?",
   "How long until my print arrives?",
   "What sizes do you offer?",
   "Can I have my print framed?",
   'What is "hand-finished by Polly"?',
   "Do you ship internationally?",
   "What if my print arrives damaged or doesn't arrive?",
+  "Is there a discount for a second print?",
 ];
 
 /** FAQ body — the question set, so non-JS crawlers read /contact's real topics
