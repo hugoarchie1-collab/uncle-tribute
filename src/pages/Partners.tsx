@@ -40,11 +40,9 @@ import { WELCOME, MEMORIAL_QUOTE } from "../data/content";
  * no fire rating, no glazing promise the studio has not confirmed, and the
  * printer is never named (ESTATE_AUTHENTICATION.printer is the approved line).
  *
- * The rooms are the site's own true-size composites (/img/truesize — the same
- * files the product page "True size" tab uses): Stephen's real painting file
- * placed at exact A-size scale on one room per painting, so one painting's
- * colourways share ONE room — which is what makes the "one painting, every
- * mood" strip honest: same wall, same size, five colours.
+ * ⚠️ NO ROOM MOCK-UPS. Every image is either Stephen's own painting or a real
+ * photograph of a real installed work (the Arista SunStar at Farmacy). Hugo is
+ * making the in-room imagery himself; see the note above the artwork helpers.
  *
  * Buyer form → kind:"trade-application" (api/newsletter-subscribe.ts, extended
  * 2026-09-02 with sector / project / pieces / spaces / sizes / timeline /
@@ -75,34 +73,50 @@ const Em = ({ children }: { children: ReactNode }) => (
   </em>
 );
 
-// ── rooms (true-size composites that exist on disk) ─────────────────────────
+// ── the work (Stephen's own paintings — never a room mock-up) ───────────────
+//
+// ⚠️ NO IN-ROOM IMAGERY ON THIS PAGE. An earlier pass used the /img/truesize
+// composites (the artwork placed on a photographed wall). Hugo, 2026-09-02:
+// "i never asked you to add the in the room images not until ive done from
+// canvy.com … take it down from all site." The only room-like image that
+// remains is the REAL photograph of the Arista SunStar installed at Farmacy —
+// a genuine installed commission, not a mock-up. Everything else is the
+// painting itself. Do not reintroduce /img/truesize here; when Hugo's own
+// room images exist they will arrive under new filenames (the assets are
+// cached immutable for a year).
 
-type Room = { src: string; painting: string; colourway: string; size: string };
-const room = (stem: string, painting: string, colourway: string, size = "A1"): Room => ({
-  src: `/img/truesize/${stem}-${size.toLowerCase()}.jpg`,
-  painting,
-  colourway,
-  size,
-});
+type Art = { src: string; painting: string; colourway: string };
 
-const ROOM_HOTEL = room("fol-kaleidoscope", "Mandala of Transformation — Flower of Life", "Kaleidoscope");
-const ROOM_WELLNESS = room("orchids30-garnet-red", "Mandala of 30 Slipper Orchids", "Garnet Red");
-const ROOM_WORKPLACE = room("enneagon-glacier-blue", "Enneagon — The Swans", "Glacier Blue");
-const ROOM_CARE = room("english-bluebells-v3", "Mandala of English Bluebells", "");
-const ROOM_DINING = room("ophiuchus-original", "Ophiuchus", "Stained Glass", "A2");
-const ROOM_HOME = room("enneagon-antique-pink", "Enneagon — The Swans", "Antique Pink");
+/** Look a painting + colourway up in the catalogue so a path can never rot.
+ *  Falls back to the painting's original/first available colourway. */
+const art = (paintingId: string, colourwayName?: string): Art => {
+  const p = PAINTINGS.find((x) => x.id === paintingId);
+  const avail = p?.colourways.filter((c) => c.available) ?? [];
+  const c =
+    avail.find((x) => x.name === colourwayName) ??
+    avail.find((x) => x.isOriginal) ??
+    avail[0];
+  return { src: c?.image ?? "", painting: p?.title ?? "", colourway: c?.name ?? "" };
+};
 
-/** One painting, five colourways, ONE room — the corridor strip. */
-const MOODS: Room[] = [
-  room("enneagon-cygnus-gold", "Enneagon — The Swans", "Cygnus Gold"),
-  room("enneagon-glacier-blue", "Enneagon — The Swans", "Glacier Blue"),
-  room("enneagon-solstice-orange", "Enneagon — The Swans", "Solstice Orange"),
-  room("enneagon-antique-pink", "Enneagon — The Swans", "Antique Pink"),
-  room("enneagon-velvet-purple", "Enneagon — The Swans", "Velvet Purple"),
-];
+const ART_HOTEL = art("flower-of-life", "Kaleidoscope");
+const ART_WELLNESS = art("slipper-orchids", "Garnet Red");
+const ART_WORKPLACE = art("enneagon-swans", "Glacier Blue");
+const ART_CARE = art("english-bluebells");
+const ART_DINING = art("ophiuchus", "Stained Glass");
+const ART_HOME = art("enneagon-swans", "Antique Pink");
 
-const roomCaption = (r: Room) =>
-  `${r.painting}${r.colourway ? ` · ${r.colourway}` : ""} · shown at ${r.size}`;
+/** The demonstration painting for the colourway-suite strip: the work Stephen
+ *  left in the most colourways, so the "one painting, every mood" claim is
+ *  carried by the widest real example in the catalogue. Chosen from the data,
+ *  so it stays correct if the catalogue changes. */
+const MOOD_PAINTING =
+  [...PAINTINGS].sort(
+    (a, b) =>
+      b.colourways.filter((c) => c.available).length -
+      a.colourways.filter((c) => c.available).length,
+  )[0];
+const MOOD_WAYS = MOOD_PAINTING.colourways.filter((c) => c.available);
 
 // ── sectors ──────────────────────────────────────────────────────────────────
 
@@ -113,7 +127,7 @@ type Sector = {
   body: string;
   zones: string[];
   sizes: string;
-  room: Room;
+  art: Art;
 };
 
 const SECTORS: Sector[] = [
@@ -129,7 +143,7 @@ const SECTORS: Sector[] = [
       "Bedrooms take a pair at A3 or a single A2 over the headboard. Corridors take a run of one painting in its colourways, so each door opens on its own colour and the building still holds together. The lobby takes an A1, or a piece painted for it. Every print carries a certificate a guest can check.",
     zones: ["Bedrooms", "Corridors", "Suites", "Lobby"],
     sizes: "A3 · A2 · A1 · commission",
-    room: ROOM_HOTEL,
+    art: ART_HOTEL,
   },
   {
     id: "wellness",
@@ -143,7 +157,7 @@ const SECTORS: Sector[] = [
       "Mandalas were made for rooms where people lie still. Calm colourways for the treatment rooms, a warmer one for the lounge, and a single hero piece where guests arrive. Each work comes with its own geometry and its own story for the team to tell.",
     zones: ["Treatment rooms", "Relaxation lounge", "Reception", "Studios"],
     sizes: "A3 · A2 · A1",
-    room: ROOM_WELLNESS,
+    art: ART_WELLNESS,
   },
   {
     id: "workplace",
@@ -157,7 +171,7 @@ const SECTORS: Sector[] = [
       "The same artist in every meeting room, each room in its own colourway, so wayfinding and wellbeing come from one decision. Reception takes the largest piece; the certificates give it something to say.",
     zones: ["Reception", "Meeting rooms", "Breakout", "Boardroom"],
     sizes: "A2 · A1",
-    room: ROOM_WORKPLACE,
+    art: ART_WORKPLACE,
   },
   {
     id: "healthcare",
@@ -171,7 +185,7 @@ const SECTORS: Sector[] = [
       "Stephen's Tree of Wellbeing mandala was distributed to children in 1,200 hospices and hospitals throughout the UK. The estate continues that work: gentle colourways for family rooms, quiet rooms and staff spaces, chosen with care for patient-facing areas.",
     zones: ["Family rooms", "Quiet rooms", "Staff spaces", "Reception"],
     sizes: "A3 · A2",
-    room: ROOM_CARE,
+    art: ART_CARE,
   },
   {
     id: "dining",
@@ -185,7 +199,7 @@ const SECTORS: Sector[] = [
       "Farmacy in Notting Hill commissioned a 3.6-metre SunStar. Your room can have its own: a single hero piece, hand-painted by Stephen's sister in his tradition, with a run of framed editions matched to the palette of the room.",
     zones: ["Dining room", "Bar", "Private dining", "Members' lounge"],
     sizes: "A1 · commission",
-    room: ROOM_DINING,
+    art: ART_DINING,
   },
   {
     id: "residential",
@@ -199,7 +213,7 @@ const SECTORS: Sector[] = [
       "A set that photographs well, framed to fit ordinary walls, delivered on a date. Every print is traceable in the Estate Registry, so the piece on the show-home wall is the same piece a buyer can order for their own.",
     zones: ["Living room", "Bedroom", "Hallway", "Amenity lounge"],
     sizes: "A3 · A2 · A1",
-    room: ROOM_HOME,
+    art: ART_HOME,
   },
 ];
 
@@ -784,6 +798,11 @@ export const Partners = () => {
   const introRef = useRef<HTMLElement>(null);
   const [pastHero, setPastHero] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+  // The bar must also stand down over the footer — a fixed CTA sitting on the
+  // footer's legal + payment row is the sloppiest thing a page can end on.
+  // A 1px sentinel can't express this (it stops intersecting once scrolled
+  // past), so the end-of-page test is plain scroll arithmetic.
+  const [atEnd, setAtEnd] = useState(false);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const obs: IntersectionObserver[] = [];
@@ -808,9 +827,18 @@ export const Partners = () => {
       targets.forEach((t) => o.observe(t));
       obs.push(o);
     }
-    return () => obs.forEach((o) => o.disconnect());
+    const onScroll = () => {
+      const doc = document.documentElement;
+      setAtEnd(window.scrollY + window.innerHeight >= doc.scrollHeight - 260);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      obs.forEach((o) => o.disconnect());
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
-  const showSticky = pastHero && !formVisible;
+  const showSticky = pastHero && !formVisible && !atEnd;
 
   const scrollTo = (ref: React.RefObject<HTMLElement | null>) =>
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -901,20 +929,6 @@ export const Partners = () => {
           </Reveal>
         </div>
 
-        {/* Hero plate — the work on a real wall, full width. */}
-        <Reveal as="figure" className={cn(WRAP, "m-0 pb-4 md:pb-6")}>
-          <div className="overflow-hidden ring-1 ring-line aspect-[4/3] md:aspect-[16/9] 3xl:aspect-[21/9]">
-            <AssetImage
-              src={ROOM_HOTEL.src}
-              alt={paintingImageAlt(ROOM_HOTEL.painting, ROOM_HOTEL.colourway)}
-              loading="eager"
-              decoding="async"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <figcaption className={cn(META, "mt-3 text-center")}>{roomCaption(ROOM_HOTEL)}</figcaption>
-        </Reveal>
-
         {/* ── S2 ALREADY ON WALLS — the estate's proof, all of it real. ──── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
           <SectionHead eyebrow="Already on walls" meta="Stephen Meakin · 1966–2021" />
@@ -971,7 +985,7 @@ export const Partners = () => {
         {/* ── S3 ONE PAINTING, EVERY MOOD — same room, same size, five colours. */}
         <section className="py-8 md:py-12">
           <div className={WRAP}>
-            <SectionHead eyebrow="One painting, every mood" meta="Same wall · same size · five colourways" />
+            <SectionHead eyebrow="One painting, every mood" meta="Every colourway Stephen set for it" />
             <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-4 items-end mb-6 md:mb-8">
               <h2 className={cn(TITLE, "lg:col-span-7 m-0")}>
                 A corridor of rooms, one <Em>hand</Em>.
@@ -983,25 +997,36 @@ export const Partners = () => {
               </p>
             </Reveal>
           </div>
+          {/* The demonstration row: ONE painting, every colourway Stephen set
+              for it, at one size. The artwork carries the point — no room. */}
           <div className="flex gap-4 md:gap-5 overflow-x-auto px-4 sm:px-6 md:px-8 lg:px-12 pb-3 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {MOODS.map((m, i) => (
+            {MOOD_WAYS.map((c, i) => (
               <figure
-                key={m.src}
-                className="m-0 flex-none w-[82vw] sm:w-[520px] lg:w-[calc((100vw-7rem)/3)] 3xl:w-[calc((100vw-8rem)/4)] snap-start"
+                key={c.name}
+                className="m-0 flex-none w-[74vw] sm:w-[360px] lg:w-[calc((100vw-9rem)/4)] 3xl:w-[calc((100vw-10rem)/5)] snap-start"
               >
-                <div className="overflow-hidden ring-1 ring-line aspect-[4/3]">
-                  <AssetImage
-                    src={m.src}
-                    alt={paintingImageAlt(m.painting, m.colourway)}
-                    loading={i < 2 ? "eager" : "lazy"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <figcaption className={cn(META, "mt-3 text-center")}>{m.colourway}</figcaption>
+                <Link
+                  to={`/collections/${MOOD_PAINTING.id}?c=${encodeURIComponent(c.name)}`}
+                  className="group block aspect-square overflow-hidden ring-1 ring-line hover:ring-accent/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  aria-label={`${MOOD_PAINTING.title} — ${c.name}`}
+                >
+                  <div className="w-full h-full transition-transform duration-700 group-hover:scale-[1.04]">
+                    <AssetImage
+                      src={c.image}
+                      alt={paintingImageAlt(MOOD_PAINTING.title, c.name)}
+                      loading={i < 3 ? "eager" : "lazy"}
+                      sizes="(min-width:1536px) 19vw, (min-width:1024px) 24vw, 74vw"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </Link>
+                <figcaption className={cn(META, "mt-3 text-center")}>{c.name}</figcaption>
               </figure>
             ))}
           </div>
-          <p className={cn(WRAP, META, "mt-2 text-center")}>{MOODS[0].painting} · shown at A1</p>
+          <p className={cn(WRAP, META, "mt-2 text-center")}>
+            {MOOD_PAINTING.title} · {MOOD_WAYS.length} colourways, one geometry
+          </p>
 
           {/* Suites — every painting with more than one colourway, dense. */}
           <div className={cn(WRAP, "mt-10 md:mt-14")}>
@@ -1091,19 +1116,22 @@ export const Partners = () => {
             aria-live="polite"
             className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center"
           >
-            <figure key={sector.room.src} className="lg:col-span-7 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <div className="overflow-hidden ring-1 ring-line aspect-[4/3]">
+            <figure key={sector.art.src} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
+              <div className="overflow-hidden ring-1 ring-line aspect-square">
                 <AssetImage
-                  src={sector.room.src}
-                  alt={paintingImageAlt(sector.room.painting, sector.room.colourway)}
+                  src={sector.art.src}
+                  alt={paintingImageAlt(sector.art.painting, sector.art.colourway)}
                   loading="eager"
-                  sizes="(min-width:1024px) 58vw, 92vw"
+                  sizes="(min-width:1024px) 40vw, 92vw"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <figcaption className={cn(META, "mt-3")}>{roomCaption(sector.room)}</figcaption>
+              <figcaption className={cn(META, "mt-3")}>
+                {sector.art.painting}
+                {sector.art.colourway ? ` · ${sector.art.colourway}` : ""}
+              </figcaption>
             </figure>
-            <div key={sector.id} className="lg:col-span-5 motion-safe:animate-[fadeIn_0.5s_ease-out]">
+            <div key={sector.id} className="lg:col-span-7 motion-safe:animate-[fadeIn_0.5s_ease-out]">
               <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>{sector.title}</h2>
               <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{sector.body}</p>
               <dl className="m-0 mt-6 md:mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line/70 pt-5">
