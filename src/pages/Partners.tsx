@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
@@ -15,6 +15,7 @@ import {
   BTN_SECONDARY,
 } from "../components/ui/tokens";
 import { cn } from "../lib/cn";
+import { asset } from "../lib/asset";
 import { PAINTINGS, ESTATE_AUTHENTICATION, paintingImageAlt } from "../data/paintings";
 import { ARTWORK_SIZES } from "../lib/artworkSizes";
 import { MEMORIAL_QUOTE } from "../data/content";
@@ -67,10 +68,10 @@ const WRAP =
  * near-identical small print before it said anything. A section now opens with
  * its own sentence, at heading size, and nothing else. Do not put a label rule
  * back above these. */
-const Head = ({ children, sub }: { children: ReactNode; sub?: string }) => (
-  <Reveal as="div" className="mb-7 md:mb-10">
-    <h2 className={cn(TITLE, "m-0 max-w-[20ch]")}>{children}</h2>
-    {sub && <p className={cn(SUBTITLE, "m-0 mt-4 md:mt-5 max-w-[58ch]")}>{sub}</p>}
+const Head = ({ children, sub }: { children: ReactNode; sub?: ReactNode }) => (
+  <Reveal as="div" className="mb-8 md:mb-12 text-center">
+    <h2 className={cn(TITLE, "m-0 mx-auto max-w-[24ch]")}>{children}</h2>
+    {sub && <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6 mx-auto max-w-[62ch]")}>{sub}</p>}
   </Reveal>
 );
 
@@ -99,26 +100,6 @@ const Em = ({ children }: { children: ReactNode }) => (
 // the credentials band that carried it were removed 2026-09-03 — Hugo is not
 // releasing that material publicly yet, so do not put it back.
 
-type Art = { src: string; painting: string; colourway: string };
-
-/** Look a painting + colourway up in the catalogue so a path can never rot.
- *  Falls back to the painting's original/first available colourway. */
-const art = (paintingId: string, colourwayName?: string): Art => {
-  const p = PAINTINGS.find((x) => x.id === paintingId);
-  const avail = p?.colourways.filter((c) => c.available) ?? [];
-  const c =
-    avail.find((x) => x.name === colourwayName) ??
-    avail.find((x) => x.isOriginal) ??
-    avail[0];
-  return { src: c?.image ?? "", painting: p?.title ?? "", colourway: c?.name ?? "" };
-};
-
-const ART_HOTEL = art("flower-of-life", "Kaleidoscope");
-const ART_WELLNESS = art("slipper-orchids", "Garnet Red");
-const ART_WORKPLACE = art("enneagon-swans", "Glacier Blue");
-const ART_CARE = art("english-bluebells");
-const ART_DINING = art("ophiuchus", "Stained Glass");
-const ART_HOME = art("enneagon-swans", "Antique Pink");
 
 /** The demonstration painting for the colourway-suite strip: the work Stephen
  *  left in the most colourways, so the "one painting, every mood" claim is
@@ -161,111 +142,20 @@ const SUITES = (() => {
 
 // ── sectors ──────────────────────────────────────────────────────────────────
 
-type Sector = {
-  id: string;
-  label: string;
-  title: ReactNode;
-  body: string;
-  zones: string[];
-  sizes: string;
-  /** Singular noun for the CTA. Deriving it from `label` produced "a hotels
-   *  scheme" and "a restaurants & clubs scheme". */
-  ctaNoun: string;
-  art: Art;
-};
+/** The sectors the estate works with. Once a whole section was built around
+ *  these — a tab strip with a painting per setting — and Hugo binned it
+ *  ("i hate the whole thing and whole concept"). What survives is the only
+ *  place they earn their keep: the Sector question on the project form. Plain
+ *  labels, nothing else. */
+const SECTOR_LABELS = [
+  "Hotels",
+  "Wellness & spa",
+  "Workplace",
+  "Healthcare & hospices",
+  "Restaurants & clubs",
+  "Residential & show homes",
+] as const;
 
-const SECTORS: Sector[] = [
-  {
-    id: "hotels",
-    label: "Hotels",
-    title: (
-      <>
-        One hand across every <Em>floor</Em>.
-      </>
-    ),
-    body:
-      "Bedrooms take a pair at A3 or a single A2 over the headboard. Corridors take a run of one painting in its colourways, so each door opens on its own colour and the building still holds together. The lobby takes an A1, or a piece painted for it. Every print carries a certificate a guest can check.",
-    zones: ["Bedrooms", "Corridors", "Suites", "Lobby"],
-    sizes: "A3 · A2 · A1 · commission",
-    ctaNoun: "a hotel scheme",
-    art: ART_HOTEL,
-  },
-  {
-    id: "wellness",
-    label: "Wellness & spa",
-    title: (
-      <>
-        The native language of a treatment <Em>room</Em>.
-      </>
-    ),
-    body:
-      "Mandalas were made for rooms where people lie still. Calm colourways for the treatment rooms, a warmer one for the lounge, and a single hero piece where guests arrive. Each work comes with its own geometry and its own story for the team to tell.",
-    zones: ["Treatment rooms", "Relaxation lounge", "Reception", "Studios"],
-    sizes: "A3 · A2 · A1",
-    ctaNoun: "a spa or wellness scheme",
-    art: ART_WELLNESS,
-  },
-  {
-    id: "workplace",
-    label: "Workplace",
-    title: (
-      <>
-        A calmer <Em>floor</Em>.
-      </>
-    ),
-    body:
-      "The same artist in every meeting room, each room in its own colourway, so wayfinding and wellbeing come from one decision. Reception takes the largest piece; the certificates give it something to say.",
-    zones: ["Reception", "Meeting rooms", "Breakout", "Boardroom"],
-    sizes: "A2 · A1",
-    ctaNoun: "a workplace scheme",
-    art: ART_WORKPLACE,
-  },
-  {
-    id: "healthcare",
-    label: "Healthcare & hospices",
-    title: (
-      <>
-        Work that has already been in <Em>care</Em>.
-      </>
-    ),
-    body:
-      "Stephen's Tree of Wellbeing mandala was distributed to children in 1,200 hospices and hospitals throughout the UK. The estate continues that work: gentle colourways for family rooms, quiet rooms and staff spaces, chosen with care for patient-facing areas.",
-    zones: ["Family rooms", "Quiet rooms", "Staff spaces", "Reception"],
-    sizes: "A3 · A2",
-    ctaNoun: "a care setting",
-    art: ART_CARE,
-  },
-  {
-    id: "dining",
-    label: "Restaurants & clubs",
-    title: (
-      <>
-        One piece the room is <Em>known</Em> for.
-      </>
-    ),
-    body:
-      "A dining room is looked at for hours, so it can carry the boldest colourway in the catalogue. One large piece where the room turns, a run of the same work through the bar, and a commission for the wall everyone photographs.",
-    zones: ["Dining room", "Bar", "Private dining", "Members' lounge"],
-    sizes: "A1 · commission",
-    ctaNoun: "a restaurant, bar or club",
-    art: ART_DINING,
-  },
-  {
-    id: "residential",
-    label: "Residential & show homes",
-    title: (
-      <>
-        The show home sells the life. The buyer can take the art <Em>home</Em>.
-      </>
-    ),
-    body:
-      "A set that photographs well, framed to fit ordinary walls, delivered on a date. Every print is traceable in the Estate Registry, so the piece on the show-home wall is the same piece a buyer can order for their own.",
-    zones: ["Living room", "Bedroom", "Hallway", "Amenity lounge"],
-    sizes: "A3 · A2 · A1",
-    ctaNoun: "a residential scheme",
-    art: ART_HOME,
-  },
-];
 
 // ── the offer (what the estate provides) ─────────────────────────────────────
 
@@ -443,16 +333,9 @@ const Chips = ({ name, options, label }: { name: string; options: readonly strin
 
 // ── the project form (buyers) ────────────────────────────────────────────────
 
-const ProjectForm = ({ sector }: { sector: string }) => {
+const ProjectForm = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  // The sector selector above the form seeds this field, but ONLY until the
-  // buyer answers it themselves. It used to be `key={sector} defaultValue`,
-  // which remounted the select on every tab click and silently overwrote their
-  // answer. Derived during render (not synced in an effect) so there is no
-  // cascading re-render: null means "nobody has touched it, follow the tabs".
-  const [ownSector, setOwnSector] = useState<string | null>(null);
-  const sectorValue = ownSector ?? sector;
   const successRef = useRef<HTMLParagraphElement>(null);
   // The form unmounts on success, which drops focus to <body> — the top of a
   // 10,000px page for anyone on a keyboard. Move it to the confirmation, which
@@ -584,13 +467,12 @@ const ProjectForm = ({ sector }: { sector: string }) => {
           <span className={FIELD_LABEL}>Sector</span>
           <select
             name="sector"
-            value={sectorValue}
-            onChange={(e) => setOwnSector(e.target.value)}
+            defaultValue=""
             className={cn(FIELD_INPUT, "appearance-none")}
           >
             <option value="">Select…</option>
-            {SECTORS.map((s) => (
-              <option key={s.id} value={s.label}>{s.label}</option>
+            {SECTOR_LABELS.map((l) => (
+              <option key={l} value={l}>{l}</option>
             ))}
             <option value="Other">Other</option>
           </select>
@@ -848,41 +730,6 @@ const ScaleDiagram = () => {
 // ── the page ─────────────────────────────────────────────────────────────────
 
 export const Partners = () => {
-  // ⚠️ The sector is deep-linkable (?sector=wellness — an introducer can send a
-  // buyer straight to their own setting) but it is NOT router state. The site's
-  // ScrollManager (PageTransition.tsx) resets scroll on every `search` change,
-  // so a useSearchParams write threw the reader back to the masthead on every
-  // tab click. history.replaceState updates the address bar without a router
-  // navigation, so the URL stays shareable and the page stays put.
-  const [sectorId, setSectorId] = useState(
-    () =>
-      SECTORS.find((s) => s.id === new URLSearchParams(window.location.search).get("sector"))?.id ??
-      SECTORS[0].id,
-  );
-  const sector = SECTORS.find((s) => s.id === sectorId) ?? SECTORS[0];
-  const tabsId = useId();
-
-  const chooseSector = (id: string) => {
-    setSectorId(id);
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set("sector", id);
-      window.history.replaceState(window.history.state, "", url);
-    } catch {
-      /* address-bar sync is a nicety — never break the tab on it */
-    }
-  };
-
-  const onTabKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const i = SECTORS.findIndex((s) => s.id === sectorId);
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-      e.preventDefault();
-      const n = (i + (e.key === "ArrowRight" ? 1 : -1) + SECTORS.length) % SECTORS.length;
-      chooseSector(SECTORS[n].id);
-      (e.currentTarget.querySelectorAll<HTMLButtonElement>("button[role=tab]")[n])?.focus();
-    }
-  };
-
   // Sticky bar — visible once the masthead has scrolled away, hidden while
   // either form (or the footer) is on screen so there is never a double CTA.
   const heroRef = useRef<HTMLDivElement>(null);
@@ -994,31 +841,6 @@ export const Partners = () => {
                   </button>
                 </div>
               </div>
-              <p className={cn(EYEBROW_MUTED, "m-0 mt-5 md:mt-6 flex flex-wrap items-center gap-x-3 gap-y-1")}>
-                {SECTORS.map((s, i) => (
-                  <span key={s.id} className="contents">
-                    {i > 0 && (
-                      <span aria-hidden="true" className="text-ink/25">
-                        ·
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      aria-current={s.id === sectorId ? "true" : undefined}
-                      onClick={() => {
-                        chooseSector(s.id);
-                        jump(document.getElementById(`${tabsId}-panel`), "center");
-                      }}
-                      className={cn(
-                        "transition-colors hover:text-accent",
-                        s.id === sectorId && "text-accent",
-                      )}
-                    >
-                      {s.label}
-                    </button>
-                  </span>
-                ))}
-              </p>
             </PageMasthead>
           </Reveal>
         </div>
@@ -1027,16 +849,9 @@ export const Partners = () => {
         <section className="py-8 md:py-12">
           <div className={WRAP}>
 
-            <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-4 items-end mb-6 md:mb-8">
-              <h2 className={cn(TITLE, "lg:col-span-7 m-0")}>
-                A corridor of rooms, one <Em>hand</Em>.
-              </h2>
-              <p className={cn(SUBTITLE, "lg:col-span-5 m-0")}>
-                Stephen left many of his mandalas in more than one colourway, exactly as he set them. The
-                same work can run down a corridor or across a floor of rooms, each door opening on its own
-                colour, without the scheme coming apart.
-              </p>
-            </Reveal>
+            <Head sub="Stephen left many of his mandalas in more than one colourway, exactly as he set them. The same work can run down a corridor or across a floor of rooms, each door opening on its own colour, without the scheme coming apart.">
+              A corridor of rooms, one <Em>hand</Em>.
+            </Head>
           </div>
           {/* The demonstration row: ONE painting, every colourway Stephen set
               for it, at one size. The artwork carries the point — no room. */}
@@ -1136,84 +951,6 @@ export const Partners = () => {
           </div>
         </section>
 
-        {/* ── S4 WHERE THE WORK GOES — sector selector. ───────────────────── */}
-        <section className={cn(WRAP, "py-8 md:py-12")}>
-          <Head sub="Six kinds of room, six different jobs for the work. Pick yours and the page answers for that setting — then the form below is already filled in for you.">
-            Which rooms are <Em>yours</Em>?
-          </Head>
-          <div
-            role="tablist"
-            aria-label="Sector"
-            onKeyDown={onTabKey}
-            className="flex gap-x-6 md:gap-x-8 3xl:gap-x-10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-b border-line mb-8 md:mb-10"
-          >
-            {SECTORS.map((s) => {
-              const active = s.id === sectorId;
-              return (
-                <button
-                  key={s.id}
-                  role="tab"
-                  id={`${tabsId}-tab-${s.id}`}
-                  aria-selected={active}
-                  aria-controls={`${tabsId}-panel`}
-                  tabIndex={active ? 0 : -1}
-                  type="button"
-                  onClick={() => chooseSector(s.id)}
-                  className={cn(
-                    "relative flex-none pb-3 md:pb-4 font-display font-semibold tracking-[-0.015em] text-[clamp(17px,1.5vw,30px)] whitespace-nowrap transition-colors focus:outline-none focus-visible:text-accent",
-                    active ? "text-accent" : "text-ink-muted hover:text-ink",
-                  )}
-                >
-                  {s.label}
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "absolute left-0 right-0 -bottom-px h-px transition-opacity duration-300",
-                      active ? "bg-accent opacity-100" : "opacity-0",
-                    )}
-                  />
-                </button>
-              );
-            })}
-          </div>
-          <div
-            id={`${tabsId}-panel`}
-            role="tabpanel"
-            aria-labelledby={`${tabsId}-tab-${sector.id}`}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start"
-          >
-            <figure key={sector.id} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <div className="overflow-hidden ring-1 ring-line aspect-square max-w-[420px] sm:max-w-[520px] lg:max-w-none lg:max-h-[62svh] w-auto mx-auto">
-                <AssetImage
-                  src={sector.art.src}
-                  alt={paintingImageAlt(sector.art.painting, sector.art.colourway)}
-                  loading="lazy"
-                  sizes="(min-width:1024px) 40vw, 92vw"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <figcaption className={cn(META, "mt-3")}>
-                {sector.art.painting}
-                {sector.art.colourway ? ` · ${sector.art.colourway}` : ""}
-              </figcaption>
-            </figure>
-            <div key={sector.id} className="lg:col-span-7 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <h2 className={cn(TITLE, "m-0")}>{sector.title}</h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{sector.body}</p>
-              <dl className="m-0 mt-6 md:mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line pt-5">
-                <dt className={cn(EYEBROW_MUTED, "m-0")}>Suits</dt>
-                <dd className={cn(META, "m-0 text-ink")}>{sector.zones.join(" · ")}</dd>
-                <dt className={cn(EYEBROW_MUTED, "m-0")}>Sizes</dt>
-                <dd className={cn(META, "m-0 text-ink")}>{sector.sizes}</dd>
-              </dl>
-              <button type="button" onClick={() => scrollTo(projectRef)} className={cn(BTN_PRIMARY, "mt-7 md:mt-8")}>
-                Send me a proposal for {sector.ctaNoun}
-                <span aria-hidden="true" className="ml-2">→</span>
-              </button>
-            </div>
-          </div>
-        </section>
-
         {/* ── S5 WHAT THE ESTATE PROVIDES ─────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
 
@@ -1238,45 +975,56 @@ export const Partners = () => {
           </div>
         </section>
 
-        {/* ── S6 THE HAND-PAINTED PIECE ───────────────────────────────────── */}
-        <section className={cn(WRAP, "py-8 md:py-12")}>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-            <Reveal as="div" className="lg:col-span-7 order-2 lg:order-1">
-              <h2 className={cn(TITLE, "m-0")}>
+        {/* ── S6 THE HAND-PAINTED PIECE ───────────────────────────────────
+            The copy sits on one centred measure and the film runs FULL-BLEED
+            beneath it. It used to be a 12-column split — copy left, a tall 3/4
+            portrait right — and that is precisely the shape Hugo kept calling
+            gappy: two columns of wildly different height leave a void beside
+            the shorter one at every width, and the taller the media the worse
+            it gets. One column of text over one full-width piece of film has
+            no second column to be out of step with. ⚠️ The film is original,
+            unpublished footage of the Black Rose being drawn at wall scale —
+            it appears nowhere else on the site (Hugo, 2026-09-03: "use an
+            original video not seen on site totally different"). */}
+        <section className="py-8 md:py-12">
+          <div className={cn(WRAP, "max-w-[820px] 3xl:max-w-[980px] text-center")}>
+            <Reveal as="div">
+              <h2 className={cn(TITLE, "m-0 mx-auto")}>
                 For the feature wall, his sister still paints by <Em>hand</Em>.
               </h2>
-              {/* This section sells POLLY's hand. It used to open with a
-                  borrowed paragraph of Stephen's bio, so the line under
-                  "his SISTER still paints by hand" began "As a skilful
-                  practitioner of Sacred Geometry, HIS artworks amplify…" —
-                  two different referents for "his" in consecutive sentences,
-                  in the one place the reader needs to know whose hand is
-                  meant. The commission paragraph says everything the section
-                  needs on its own. */}
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
+              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6 mx-auto max-w-[62ch]")}>
                 The estate undertakes a small number of commissions each year, hand-painted by Polly,
                 Stephen's sister, working in his sacred-geometry tradition. Scale, palette and timeline
                 are agreed with you from the outset, and lead times are confirmed before any commitment.
               </p>
-              <p className={cn(SUBTITLE, "m-0 mt-4")}>
+              <p className={cn(SUBTITLE, "m-0 mt-4 mx-auto max-w-[62ch]")}>
                 Alongside a commission, the same scheme can carry a run of estate-stamped editions in
                 colourways chosen to sit with it, so one room holds the piece and the rest of the
                 building answers it.
               </p>
             </Reveal>
-            <Reveal as="figure" className="lg:col-span-5 order-1 lg:order-2 m-0">
-              <div className="overflow-hidden ring-1 ring-line aspect-[3/4] max-w-[360px] sm:max-w-[420px] lg:max-w-none lg:max-h-[68svh] w-auto mx-auto">
-                <AssetImage
-                  src="/img/welcome/hand-finishing-v1.jpg"
-                  alt="Hand-finishing a print in Stephen Meakin's geometric tradition"
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <figcaption className={cn(META, "mt-3")}>Hand-finishing in Stephen's tradition</figcaption>
-            </Reveal>
           </div>
+
+          <Reveal as="figure" className="m-0 mt-10 md:mt-14">
+            <div className="relative w-full overflow-hidden aspect-[16/9] max-h-[76svh]">
+              <video
+                className="absolute inset-0 w-full h-full object-cover"
+                poster={asset("/video/poster-black-rose-wall-v1.jpg")}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="none"
+                aria-label="A mandala being drawn by hand at wall scale"
+              >
+                <source src={asset("/video/black-rose-wall-v1.webm")} type="video/webm" />
+                <source src={asset("/video/black-rose-wall-v1.mp4")} type="video/mp4" />
+              </video>
+            </div>
+            <figcaption className={cn(META, WRAP, "mt-4 text-center")}>
+              The Black Rose, drawn by hand at wall scale
+            </figcaption>
+          </Reveal>
         </section>
 
         {/* ── S7 HOW A PROJECT RUNS ───────────────────────────────────────── */}
@@ -1307,18 +1055,11 @@ export const Partners = () => {
         {/* ── S8 SCALE ────────────────────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-            <Reveal as="div" className="lg:col-span-4">
-              <h2 className={cn(TITLE, "m-0")}>
-                Three sizes, one <Em>scale</Em>.
-              </h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
-                A3 for a pair beside a bed. A2 above a console or a desk. A1 over a sofa, in a lobby or at
-                the end of a corridor. Larger still, by commission. Every size is the same print on the
-                same paper, in the same frame.
-              </p>
-            </Reveal>
-            <Reveal as="div" className="lg:col-span-8 mx-auto w-full max-w-[1100px] 3xl:max-w-[1400px]">
+          <Head sub="A3 for a pair beside a bed. A2 above a console or a desk. A1 over a sofa, in a lobby or at the end of a corridor. Larger still, by commission. Every size is the same print on the same paper, in the same frame.">
+            Three sizes, one <Em>scale</Em>.
+          </Head>
+          <div>
+            <Reveal as="div" className="mx-auto w-full max-w-[900px] 2xl:max-w-[1100px] 3xl:max-w-[1300px]">
               <ScaleDiagram />
               {/* The drawing's labels live here, in real type, for the reason
                   given above the SVG. Same order as the squares, small to large. */}
@@ -1365,66 +1106,52 @@ export const Partners = () => {
         {/* ── S10 REGISTER A PROJECT — the buyer door. ────────────────────── */}
         <section ref={projectRef} id="proposal" className={cn(WRAP, "py-10 md:py-16 scroll-mt-20")}>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-            <Reveal as="div" className="lg:col-span-4">
-              <h2 className={cn(TITLE, "m-0")}>
-                Send me a <Em>proposal</Em>.
-              </h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
+          <Head
+            sub={
+              <>
                 Tell us the spaces, the count and the date. A member of the family replies personally,
                 usually within two working days, with the works placed on your walls and one quotation
-                for the scheme.
-              </p>
-              <p className={cn(META, "m-0 mt-6")}>
-                Or write to{" "}
+                for the scheme. Or write to{" "}
                 <a href="mailto:info@themandalacompany.com?subject=Project%20enquiry" className="text-accent hover:underline">
                   info@themandalacompany.com
                 </a>
-              </p>
-            </Reveal>
-            <Reveal as="div" className="lg:col-span-8">
-              <ProjectForm sector={sector.label} />
-            </Reveal>
-          </div>
+                .
+              </>
+            }
+          >
+            Send me a <Em>proposal</Em>.
+          </Head>
+          <Reveal as="div" className="mx-auto w-full max-w-[1000px] 2xl:max-w-[1160px]">
+            <ProjectForm />
+          </Reveal>
         </section>
 
         {/* ── S11 BRING THE ESTATE A PROJECT — the introducer door, quieter. */}
         <section ref={introRef} id="introduce" className={cn(WRAP, "py-10 md:py-16 scroll-mt-20")}>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
-            <Reveal as="div" className="lg:col-span-5">
-              <h2 className={cn(TITLE, "m-0")}>
-                Know a wall that needs <Em>this</Em>?
-              </h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
-                Some of Stephen's most important placements began with an introduction: a designer who
-                knew the right wall, a consultant who knew the right client. The estate keeps a small
-                circle of such partners. Bring a project and the family handles everything from
-                selection to delivery. You share in every placement that follows, on terms agreed
-                privately and in writing.
-              </p>
-              <ul className="list-none m-0 mt-6 p-0 border-t border-line">
-                {[
-                  "You introduce.",
-                  "The family selects, makes, frames and delivers.",
-                  "You share in the placement, and in the ones that follow.",
-                ].map((l) => (
-                  <li key={l} className={cn(META, "m-0 py-3 border-b border-line text-ink")}>
-                    {l}
-                  </li>
-                ))}
-              </ul>
-              <p className={cn(META, "m-0 mt-5")}>
-                Already a partner?{" "}
-                <Link to="/partners/terms" className="text-accent hover:underline">
-                  View your terms →
-                </Link>
-              </p>
-            </Reveal>
-            <Reveal as="div" className="lg:col-span-7">
-              <IntroducerForm />
-            </Reveal>
-          </div>
+          <Head sub="Some of Stephen's most important placements began with an introduction: a designer who knew the right wall, a consultant who knew the right client. The estate keeps a small circle of such partners. Bring a project and the family handles everything from selection to delivery. You share in every placement that follows, on terms agreed privately and in writing.">
+            Know a wall that needs <Em>this</Em>?
+          </Head>
+          <Reveal as="ul" className="list-none m-0 p-0 mx-auto max-w-[1000px] 2xl:max-w-[1160px] grid grid-cols-1 sm:grid-cols-3 gap-x-8 border-t border-line">
+            {[
+              "You introduce.",
+              "The family selects, makes, frames and delivers.",
+              "You share in the placement, and in the ones that follow.",
+            ].map((l) => (
+              <li key={l} className={cn(META, "m-0 py-4 text-ink border-b border-line sm:border-b-0")}>
+                {l}
+              </li>
+            ))}
+          </Reveal>
+          <Reveal as="div" className="mx-auto w-full max-w-[1000px] 2xl:max-w-[1160px] mt-10 md:mt-12">
+            <IntroducerForm />
+            <p className={cn(META, "m-0 mt-6 text-center")}>
+              Already a partner?{" "}
+              <Link to="/partners/terms" className="text-accent hover:underline">
+                View your terms →
+              </Link>
+            </p>
+          </Reveal>
         </section>
 
         {/* ── S12 CLOSE — on the artist, in his own words. ────────────────── */}
