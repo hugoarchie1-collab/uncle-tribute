@@ -487,10 +487,18 @@
 @property --amb-c5 { syntax: "<color>"; inherits: true; initial-value: #a173a5; }
 .ambient-bg {
   background-color: #0a0908;
+  /* SCROLL-DRIVEN HUE DRIFT (Hugo 2026-09-03: "I want it changing with the
+     scroll"). AmbientBackground.tsx writes `--amb-hue` from scroll progress
+     (quantised + write-guarded so it repaints only a handful of times per page,
+     never the per-frame storm we killed in d5ef059; home stays frozen at 0deg).
+     One cheap GPU filter over the whole mesh gently rotates the page's own
+     curated colours as you move down — the colour visibly shifts on scroll while
+     staying on Stephen's palette. Eased so the quantised steps read as smooth. */
+  filter: hue-rotate(var(--amb-hue, 0deg));
   /* Each blob colour eases as the on-screen palette changes — the fluid handoff. */
   transition:
     --amb-c1 1.3s ease, --amb-c2 1.3s ease, --amb-c3 1.3s ease,
-    --amb-c4 1.3s ease, --amb-c5 1.3s ease;
+    --amb-c4 1.3s ease, --amb-c5 1.3s ease, filter 0.7s ease;
 }
 .ambient-bg__blob {
   position: absolute;

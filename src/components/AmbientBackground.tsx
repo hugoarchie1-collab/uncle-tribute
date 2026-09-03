@@ -131,6 +131,9 @@ export const AmbientBackground = () => {
   // nothing). Persist across re-runs so a route change doesn't force a redundant
   // repaint when the palette is the same.
   const lastPal = useRef<string[]>([]);
+  // Last hue-rotation (deg) written for the scroll drift — guarded the same way
+  // so scrolling only writes on a real step change, never per frame.
+  const lastHue = useRef<number>(0);
 
   // Drive --amb-c1..5 from whatever art is on screen. The mesh should re-tint as
   // NEW art scrolls into view — NOT on every scroll frame.
@@ -188,12 +191,62 @@ export const AmbientBackground = () => {
     }
     // A resize can change which art is on screen; recompute once (rAF-coalesced).
     window.addEventListener("resize", schedule, { passive: true });
+
+    // SCROLL-DRIVEN HUE DRIFT (Hugo 2026-09-03: "I want it changing with the
+    // scroll"). Each page starts on its OWN curated palette (hue 0 at the top,
+    // so the per-route colours show exactly as designed) and gently rotates up
+    // to ~+30deg by the foot — the mesh's colour visibly shifts as you move
+    // down, while staying within Stephen's palette. ⚠️ Perf: this is why we did
+    // NOT re-add a per-frame recompute — the hue is QUANTISED to 3deg steps and
+    // write-guarded (lastHue), so a full-page scroll writes `--amb-hue` ~10
+    // times, each a single cheap GPU filter repaint eased over 0.7s. NOT the
+    // repaint storm killed in d5ef059. Home ("/") and reduced-motion stay at 0.
+    const reduce =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    const drift = pathname !== "/" && !reduce;
+    const HUE_MAX = 30; // deg by the foot of the page
+    const HUE_STEP = 3;
+    let sTimer = 0;
+    let sLast = 0;
+    const applyHue = () => {
+      const doc = document.documentElement;
+      // Read the scroll position defensively (normal document scroll on this
+      // site, but tolerate either scroll root).
+      const y = window.scrollY || doc.scrollTop || document.body.scrollTop || 0;
+      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const p = Math.min(1, Math.max(0, y / max));
+      const q = Math.round((p * HUE_MAX) / HUE_STEP) * HUE_STEP;
+      if (q !== lastHue.current) {
+        lastHue.current = q;
+        el.style.setProperty("--amb-hue", `${q}deg`);
+      }
+    };
+    const onScroll = () => {
+      if (sTimer) return;
+      const wait = Math.max(0, 120 - (performance.now() - sLast));
+      sTimer = window.setTimeout(() => {
+        sTimer = 0;
+        sLast = performance.now();
+        applyHue();
+      }, wait);
+    };
+    if (drift) {
+      applyHue();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    } else {
+      // Frozen home + reduced-motion: pin the mesh to its true, un-rotated hue.
+      lastHue.current = 0;
+      el.style.setProperty("--amb-hue", "0deg");
+    }
+
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       if (raf) cancelAnimationFrame(raf);
       io?.disconnect();
       window.removeEventListener("resize", schedule);
+      if (sTimer) window.clearTimeout(sTimer);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [pathname]);
 
