@@ -15,13 +15,72 @@ import { COLOURWAY_TINTS } from "../lib/colourwayTints";
  * … clone the most stunning Apple iPhone wallpapers").
  *
  * Colours come free from the DOM: every painting <img> renders its `.jpg` src,
- * and those `/img/paintings/…` paths are the keys of COLOURWAY_TINTS. Pages with
- * little or no art fall back to a WARM brand palette (plum/terracotta/purple/rose
- * — deliberately NO blue). Mounted once at the app root, z-0, behind every route.
+ * and those `/img/paintings/…` paths are the keys of COLOURWAY_TINTS.
+ * Mounted once at the app root, z-0, behind every route.
+ *
+ * ⚠️ PER-ROUTE PALETTES (Hugo, 2026-09-03: "I want every page to be a slightly
+ * different colourway mix … I don't like how they are all the same this light
+ * purple"). A page with art on screen still paints itself from that art — that
+ * behaviour is untouched. The change is the FALLBACK: pages with little or no
+ * artwork (legal, contact, account, the forms) all shared ONE warm plum palette,
+ * which is why every quiet page looked identical. Each route now falls back to
+ * its own mix instead.
+ *
+ * Every hue below is a REAL artwork halo lifted from COLOURWAY_TINTS, so a
+ * fallback can never drift off-brand — the mesh is always wearing colours
+ * Stephen actually mixed.
+ *
+ * 🔒 HOME IS UNCHANGED. `/` keeps the exact five hues this file has always used,
+ * so the frozen home page renders byte-identically. Do not re-tune `/`.
  */
 
-/** Warm brand fallback palette (no blue) for pages with little/no artwork. */
+/** The original warm brand palette. Still the site-wide default, and the home
+ *  page's palette verbatim — see the freeze note above. */
 const FALLBACK = ["#8a5fa6", "#b06a5a", "#9179b3", "#b16f8a", "#a173a5"];
+
+/** Route prefix → its own fallback mix, longest prefix wins. Anything not
+ *  listed keeps FALLBACK. */
+const ROUTE_PALETTES: [string, string[]][] = [
+  // Warm and personal — the portraits and the family photographs.
+  ["/about", ["#a28043", "#b07750", "#b16f8a", "#9179b3", "#998542"]],
+  // Tender: the rose and amethyst end of the catalogue.
+  ["/memories", ["#b46f81", "#b16f8a", "#9b75ac", "#a173a5", "#b07750"]],
+  // Fresher, greener — announcements and dates.
+  ["/news", ["#729258", "#8e8945", "#a28043", "#7781bc", "#948743"]],
+  // Calm and cool, so a form reads as quiet rather than urgent.
+  ["/contact", ["#7183bd", "#6e84bd", "#9179b3", "#a173a5", "#578db2"]],
+  // Deliberately the quietest on the site — long prose, nothing competing.
+  ["/legal", ["#7f8e4e", "#8e8945", "#918844", "#a28043", "#729258"]],
+  // Partners: indigo + gold. The most "business" ground on the site, and the
+  // one page that should not look like the shop.
+  ["/trade", ["#7183bd", "#5d89bb", "#a97c47", "#948743", "#9179b3"]],
+  ["/partners", ["#7183bd", "#5d89bb", "#a97c47", "#948743", "#9179b3"]],
+  // Celebratory — rose and gold.
+  ["/gift", ["#b46f81", "#ab7b49", "#b16f8a", "#a97c47", "#9b75ac"]],
+  // The money surfaces share one steady ground so the flow feels continuous.
+  ["/basket", ["#9179b3", "#a173a5", "#7d7fbb", "#b07750", "#998542"]],
+  ["/order", ["#9179b3", "#a173a5", "#7d7fbb", "#b07750", "#998542"]],
+  ["/account", ["#9179b3", "#a173a5", "#7d7fbb", "#b07750", "#998542"]],
+  ["/orders", ["#9179b3", "#a173a5", "#7d7fbb", "#b07750", "#998542"]],
+  // The registry: deep and archival.
+  ["/auth", ["#578db2", "#7183bd", "#9179b3", "#8e8945", "#a28043"]],
+];
+
+/** The fallback mix for a pathname. `/` is matched EXACTLY — a startsWith test
+ *  would make the home entry swallow every route on the site. */
+const paletteForRoute = (pathname: string): string[] => {
+  if (pathname === "/") return FALLBACK;
+  let best: string[] | null = null;
+  let bestLen = 0;
+  for (const [prefix, pal] of ROUTE_PALETTES) {
+    if (pathname.startsWith(prefix) && prefix.length > bestLen) {
+      best = pal;
+      bestLen = prefix.length;
+    }
+  }
+  return best ?? FALLBACK;
+};
+
 const BLOBS = 5;
 
 /** "/img/paintings/<stem>" → the artwork's halo hue. */
@@ -39,9 +98,9 @@ const tintForSrc = (src: string): string | null => {
 };
 
 /** Up to BLOBS distinct artwork halo hues from paintings in/near the viewport,
- *  nearest-to-centre first, padded with the warm brand fallback. */
-const pickPalette = (): string[] => {
-  if (typeof document === "undefined") return FALLBACK.slice(0, BLOBS);
+ *  nearest-to-centre first, padded with THIS ROUTE's fallback mix. */
+const pickPalette = (fallback: string[]): string[] => {
+  if (typeof document === "undefined") return fallback.slice(0, BLOBS);
   const vh = window.innerHeight;
   const cy = vh / 2;
   const found: { c: string; d: number }[] = [];
@@ -59,7 +118,7 @@ const pickPalette = (): string[] => {
     if (pal.length >= BLOBS) break;
   }
   let i = 0;
-  while (pal.length < BLOBS) pal.push(FALLBACK[i++ % FALLBACK.length]);
+  while (pal.length < BLOBS) pal.push(fallback[i++ % fallback.length]);
   return pal.slice(0, BLOBS);
 };
 
@@ -91,7 +150,7 @@ export const AmbientBackground = () => {
     const el = rootRef.current;
     if (!el) return;
     const apply = () => {
-      const pal = pickPalette();
+      const pal = pickPalette(paletteForRoute(pathname));
       for (let i = 0; i < BLOBS; i++) {
         if (lastPal.current[i] !== pal[i]) {
           el.style.setProperty(`--amb-c${i + 1}`, pal[i]);

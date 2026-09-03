@@ -7,7 +7,6 @@ import { Seo } from "../components/Seo";
 import { AssetImage } from "../components/AssetImage";
 import { PageMasthead } from "../components/PageMasthead";
 import {
-  EYEBROW,
   EYEBROW_MUTED,
   TITLE,
   SUBTITLE,
@@ -41,8 +40,9 @@ import { MEMORIAL_QUOTE } from "../data/content";
  * printer is never named (ESTATE_AUTHENTICATION.printer is the approved line).
  *
  * ⚠️ NO ROOM MOCK-UPS. Every image is either Stephen's own painting or a real
- * photograph of a real installed work (the Arista SunStar at Farmacy). Hugo is
- * making the in-room imagery himself; see the note above the artwork helpers.
+ * work. Hugo is making the in-room imagery himself; see the note above the
+ * artwork helpers. The Arista SunStar / Farmacy material was removed from this
+ * page on 2026-09-03 — Hugo is not releasing it publicly yet.
  *
  * Buyer form → kind:"trade-application" (api/newsletter-subscribe.ts, extended
  * 2026-09-02 with sector / project / pieces / spaces / sizes / timeline /
@@ -56,13 +56,21 @@ const WRAP =
 
 /** Section head: eyebrow left · quiet meta right · hairline beneath (the house
  *  header-row device). */
-const SectionHead = ({ eyebrow, meta }: { eyebrow: string; meta?: string }) => (
-  <Reveal
-    as="div"
-    className="border-t border-line pt-4 md:pt-5 mb-6 md:mb-8 flex flex-wrap items-end justify-between gap-x-8 gap-y-2"
-  >
-    <p className={cn(EYEBROW, "m-0")}>{eyebrow}</p>
-    {meta && <p className={cn(EYEBROW_MUTED, "m-0")}>{meta}</p>}
+/** One section heading, and nothing above it.
+ *
+ * ⚠️ This replaces a `SectionHead` that put a small rust label on the left, a
+ * small grey label on the right, and a full-width hairline over the pair — at
+ * the top of ELEVEN sections. That is the eyebrow/meta rule Hugo had removed
+ * from every page masthead in July ("the two lines at the top … looks crap on
+ * every page"), reintroduced once per section, and it is what made this page
+ * read as gappy and confusing: every section opened with two pieces of
+ * near-identical small print before it said anything. A section now opens with
+ * its own sentence, at heading size, and nothing else. Do not put a label rule
+ * back above these. */
+const Head = ({ children, sub }: { children: ReactNode; sub?: string }) => (
+  <Reveal as="div" className="mb-7 md:mb-10">
+    <h2 className={cn(TITLE, "m-0 max-w-[20ch]")}>{children}</h2>
+    {sub && <p className={cn(SUBTITLE, "m-0 mt-4 md:mt-5 max-w-[58ch]")}>{sub}</p>}
   </Reveal>
 );
 
@@ -85,11 +93,11 @@ const Em = ({ children }: { children: ReactNode }) => (
 // composites (the artwork placed on a photographed wall). Hugo, 2026-09-02:
 // "i never asked you to add the in the room images not until ive done from
 // canvy.com … take it down from all site." The only room-like image that
-// remains is the REAL photograph of the Arista SunStar installed at Farmacy —
-// a genuine installed commission, not a mock-up. Everything else is the
-// painting itself. Do not reintroduce /img/truesize here; when Hugo's own
-// room images exist they will arrive under new filenames (the assets are
-// cached immutable for a year).
+// on this page is the painting itself. Do not reintroduce /img/truesize here;
+// when Hugo's own room images exist they will arrive under new filenames (the
+// assets are cached immutable for a year). The Arista SunStar photograph and
+// the credentials band that carried it were removed 2026-09-03 — Hugo is not
+// releasing that material publicly yet, so do not put it back.
 
 type Art = { src: string; painting: string; colourway: string };
 
@@ -229,7 +237,7 @@ const SECTORS: Sector[] = [
       </>
     ),
     body:
-      "Farmacy in Notting Hill commissioned a 3.6-metre SunStar. For a room that wants a piece of its own, the estate takes on a small number of commissions each year, hand-painted by Polly in Stephen's tradition, alongside a run of framed editions matched to the palette of the room.",
+      "A dining room is looked at for hours, so it can carry the boldest colourway in the catalogue. One large piece where the room turns, a run of the same work through the bar, and a commission for the wall everyone photographs.",
     zones: ["Dining room", "Bar", "Private dining", "Members' lounge"],
     sizes: "A1 · commission",
     art: ART_DINING,
@@ -1017,63 +1025,10 @@ export const Partners = () => {
           </Reveal>
         </div>
 
-        {/* ── S2 ALREADY ON WALLS — the estate's proof, all of it real. ──── */}
-        <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="Already on walls" meta="Stephen Meakin · 1966–2021" />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center">
-            <Reveal as="figure" className="lg:col-span-6 m-0">
-              <div className="overflow-hidden ring-1 ring-line aspect-[16/9]">
-                <AssetImage
-                  src="/img/welcome/05-arista-sunstar-v3.jpg"
-                  alt="The Arista SunStar, Stephen Meakin's 3.6-metre commission for the Farmacy restaurant in Notting Hill"
-                  loading="lazy"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <figcaption className={cn(META, "mt-3")}>The Arista SunStar · Farmacy, Notting Hill · 2016</figcaption>
-            </Reveal>
-            <div className="lg:col-span-6 lg:border-l lg:border-line lg:pl-10 3xl:pl-14">
-              {[
-                {
-                  fig: "3.6 m",
-                  text: "The Arista SunStar, commissioned by Camilla Fayed for the Farmacy restaurant in Notting Hill, London.",
-                },
-                {
-                  fig: "F1",
-                  text: "The sacred geometry designed for the Sahara Force India Formula 1 car.",
-                },
-                {
-                  fig: "1,200",
-                  text: "Hospices and hospitals throughout the UK where the Tree of Wellbeing mandala was distributed to children.",
-                },
-              ].map((c, i) => (
-                <Reveal
-                  as="div"
-                  key={c.fig}
-                  className={cn("grid grid-cols-[auto_1fr] gap-x-6 md:gap-x-8 items-baseline py-5 md:py-6", i > 0 && "border-t border-line")}
-                >
-                  <p
-                    className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-[clamp(34px,3.6vw,64px)] leading-none whitespace-nowrap min-w-[3.2ch] [font-variant-numeric:tabular-nums]"
-                    style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
-                  >
-                    {c.fig}
-                  </p>
-                  <p className={cn(SUBTITLE, "max-w-none m-0")}>{c.text}</p>
-                </Reveal>
-              ))}
-              <Reveal as="div" className="pt-5 md:pt-6 border-t border-line">
-                <p className={cn(META, "m-0")}>
-                  Exhibited at the Majlis Gallery, Dubai · Trinity Gallery, London · Unique Arts, Brighton
-                </p>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
         {/* ── S3 ONE PAINTING, EVERY MOOD — same room, same size, five colours. */}
         <section className="py-8 md:py-12">
           <div className={WRAP}>
-            <SectionHead eyebrow="One painting, every mood" meta="Every colourway Stephen set for it" />
+
             <Reveal as="div" className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-4 items-end mb-6 md:mb-8">
               <h2 className={cn(TITLE, "lg:col-span-7 m-0")}>
                 A corridor of rooms, one <Em>hand</Em>.
@@ -1185,7 +1140,9 @@ export const Partners = () => {
 
         {/* ── S4 WHERE THE WORK GOES — sector selector. ───────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="Where the work goes" meta="Choose your setting" />
+          <Head sub="Six kinds of room, six different jobs for the work. Pick yours and the page answers for that setting — then the form below is already filled in for you.">
+            Which rooms are <Em>yours</Em>?
+          </Head>
           <div
             role="tablist"
             aria-label="Sector"
@@ -1228,7 +1185,7 @@ export const Partners = () => {
             className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center"
           >
             <figure key={sector.id} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <div className="overflow-hidden ring-1 ring-line aspect-square">
+              <div className="overflow-hidden ring-1 ring-line aspect-square max-w-[420px] sm:max-w-[520px] lg:max-w-none mx-auto">
                 <AssetImage
                   src={sector.art.src}
                   alt={paintingImageAlt(sector.art.painting, sector.art.colourway)}
@@ -1261,7 +1218,7 @@ export const Partners = () => {
 
         {/* ── S5 WHAT THE ESTATE PROVIDES ─────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="What the estate provides" meta="Carried by the family, end to end" />
+
           <Reveal as="div" className="mb-8 md:mb-10">
             <h2 className={cn(TITLE, "m-0 max-w-[22ch]")}>
               You bring the rooms. The estate does the <Em>rest</Em>.
@@ -1285,7 +1242,7 @@ export const Partners = () => {
 
         {/* ── S6 THE HAND-PAINTED PIECE ───────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="The hand-painted piece" meta="A small number each year" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center">
             <Reveal as="div" className="lg:col-span-7 order-2 lg:order-1">
               <h2 className={cn(TITLE, "m-0")}>
@@ -1311,7 +1268,7 @@ export const Partners = () => {
               </p>
             </Reveal>
             <Reveal as="figure" className="lg:col-span-5 order-1 lg:order-2 m-0">
-              <div className="overflow-hidden ring-1 ring-line aspect-[3/4]">
+              <div className="overflow-hidden ring-1 ring-line aspect-[3/4] max-w-[360px] sm:max-w-[420px] lg:max-w-none mx-auto">
                 <AssetImage
                   src="/img/welcome/hand-finishing-v1.jpg"
                   alt="Hand-finishing a print in Stephen Meakin's geometric tradition"
@@ -1326,7 +1283,9 @@ export const Partners = () => {
 
         {/* ── S7 HOW A PROJECT RUNS ───────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="How a project runs" meta="Four steps, one point of contact" />
+          <Head sub="Four steps, one point of contact, and nothing to sign before you have seen the work on your own walls.">
+            How a project <Em>runs</Em>.
+          </Head>
           <ol className="list-none m-0 p-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-x-8 lg:gap-x-10 gap-y-8">
             {STEPS.map((s, i) => (
               <li key={s.label} className="m-0 xl:border-l xl:border-line xl:pl-6 first:xl:border-l-0 first:xl:pl-0">
@@ -1349,7 +1308,7 @@ export const Partners = () => {
 
         {/* ── S8 SCALE ────────────────────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="Sized for the wall" meta="Drawn to one scale" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center">
             <Reveal as="div" className="lg:col-span-4">
               <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>
@@ -1373,7 +1332,9 @@ export const Partners = () => {
 
         {/* ── S9 QUESTIONS ────────────────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
-          <SectionHead eyebrow="Questions people ask" meta="Before you write" />
+          <Head>
+            Questions people <Em>ask</Em>.
+          </Head>
           <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-x-12 border-t border-line">
             {QUESTIONS.map((f) => (
               <details key={f.q} className="group border-b border-line py-5 md:py-6 [&_summary::-webkit-details-marker]:hidden">
@@ -1393,7 +1354,7 @@ export const Partners = () => {
 
         {/* ── S10 REGISTER A PROJECT — the buyer door. ────────────────────── */}
         <section ref={projectRef} id="proposal" className={cn(WRAP, "py-10 md:py-16 scroll-mt-20")}>
-          <SectionHead eyebrow="Tell us about the space" meta="One form, one reply, from a person" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
             <Reveal as="div" className="lg:col-span-4">
               <h2 className={cn(TITLE, "m-0")}>
@@ -1419,7 +1380,7 @@ export const Partners = () => {
 
         {/* ── S11 BRING THE ESTATE A PROJECT — the introducer door, quieter. */}
         <section ref={introRef} id="introduce" className={cn(WRAP, "py-10 md:py-16 scroll-mt-20")}>
-          <SectionHead eyebrow="Bring the estate a project" meta="By invitation · a small circle" />
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
             <Reveal as="div" className="lg:col-span-5">
               <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>

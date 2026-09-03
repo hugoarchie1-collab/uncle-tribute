@@ -339,7 +339,9 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             gaps, instead of clustering brand+nav on the left and stranding the
             icons in a lonely void on the far right (Hugo 2026-08-27: fill the
             screen, don't strand). Classic logo-left / nav-centre / cart-right
-            premium masthead. Below xl the nav folds into the hamburger. */}
+            premium masthead. Below xl the centre links fold away, but the menu
+            button itself is shown at EVERY width — it is the only route to the
+            four destinations the bar has no room for. */}
         <Link
             to="/"
             aria-label="The Art of Stephen Meakin — home"
@@ -496,7 +498,12 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
                 return !o;
               });
             }}
-            className="press xl:hidden inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/60 hover:text-ink transition-colors"
+            // ⚠️ NOT `xl:hidden`. The drawer carries NINE destinations; the
+            // desktop bar shows five. Hiding the button above 1280px made Gift
+            // cards, News, Authenticate and Contact unreachable from the header
+            // on exactly the screens Hugo works on (2026-09-03: "the menu side
+            // button tab doesn't show up on full screen or bigger screen").
+            className="press inline-flex items-center justify-center w-11 h-11 -mr-2 text-ink/60 hover:text-ink transition-colors"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               {menuOpen ? (
@@ -549,7 +556,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
         )}
       </AnimatePresence>
 
-      {/* Menu (<xl) — a slide-in side panel (drawer) portalled to document.body
+      {/* Menu (EVERY width) — a slide-in side panel (drawer) portalled to document.body
           so it layers cleanly above every page stacking context (incl. the
           film-grain at z-100). The site stays visible (dimmed) behind a
           translucent scrim, so the menu reads as a layer ON the site, not a
