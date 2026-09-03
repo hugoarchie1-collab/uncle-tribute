@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, type ReactNode } from "react";
 import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { Reveal } from "../components/Reveal";
@@ -6,7 +6,6 @@ import { ImageReveal } from "../components/ImageReveal";
 import { LoopFilm } from "../components/LoopFilm";
 import { AssetImage } from "../components/AssetImage";
 import { MagneticLink } from "../components/MagneticLink";
-import { PrintTile } from "../components/PrintTile";
 import { Seo } from "../components/Seo";
 import {
   ABOUT,
@@ -16,9 +15,8 @@ import {
   INTERVIEW,
   LIFE_DATES,
 } from "../data/content";
-import { PAINTINGS, type Painting } from "../data/paintings";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE } from "../components/ui/tokens";
+import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE } from "../components/ui/tokens";
 
 // =============================================================================
 // ABOUT — REBUILT 2026-09-02 AS A CLONE OF THE HOME PAGE (Welcome.tsx).
@@ -73,7 +71,76 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, TITLE, SUBTITLE } from "../compo
 //     the calm pass, so it is simply gone here — same ground as Home.
 // =============================================================================
 
-// ─── HOME'S LAYOUT + TYPE CANON (copied verbatim from Welcome.tsx) ───────────
+// =============================================================================
+// THE TYPE LADDER (rebuilt 2026-09-03 — Hugo: the page "looks so messy and not
+// clean and professional… what an apple.com or nike.com would have", 0/10).
+//
+// ⚠️ THE DEFECT WAS NEVER "THE TEXT IS BIG". It was that the page had EIGHTEEN
+// display-scale moments (≥60px at 1440), and FOUR different roles all landed in
+// a 60–72px band — the h1's italic subordinate (72), the chapter close (68), the
+// opening lede (64) and every section title (63). A 12px spread cannot carry
+// hierarchy, so at scroll speed they read as one undifferentiated shout. Worse,
+// the ladder RE-ORDERED ITSELF across widths: TITLE (116px cap) overtook the
+// pull-quote (104px cap) at 2364px, so on a 4K display a chapter label was
+// louder than the best line on the page.
+//
+// THE RULES NOW, and they are the whole design:
+//   1. FOUR display moments on the entire page — one PAGE_TITLE and three
+//      PULLs — each at least ~1.5 viewport heights from the next. Everything
+//      else is a section title or smaller. (Apple/Zwirner run one display
+//      moment per screen; this page ran five in the first two.)
+//   2. The ladder is MONOTONIC AT EVERY WIDTH. Every role's slope is set so the
+//      rank order at 390px is the rank order at 3840px. Never add a role that
+//      lands inside another's band, and never give one a higher cap than the
+//      role above it.
+//   3. ONE italic on the page (the interview question). Fraunces italic at
+//      display sizes is the swashy cut the finale already bans.
+//   4. ONE rust accent on the page (the closing full stop). Every other eyebrow
+//      is muted ink.
+//   5. ONE rhythm unit. Vertical space is 1× / 2× / 4× of RHYTHM — never a
+//      bespoke mt-3 md:mt-4 pair. This does most of the "clean" work.
+// Measured at 1440: 107 · 66 · 46 · 30 · 23 · 15 — steps of 1.6 / 1.4 / 1.5 /
+// 1.3 / 1.5, and the same order holds at 390 and 3840.
+// =============================================================================
+
+/** ROLE 1 — PAGE TITLE. The h1, once. */
+const PAGE_TITLE_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 48, "wght" 700',
+  fontWeight: 700,
+  fontSize: "clamp(46px, 7.4vw, 176px)",
+  lineHeight: 0.94,
+  letterSpacing: "-0.035em",
+};
+/** ROLE 2 — PULL. Three per page, one tier each (never a two-tier stack). */
+const PULL_STYLE: CSSProperties = {
+  fontVariationSettings: '"opsz" 48, "wght" 600',
+  fontWeight: 600,
+  fontSize: "clamp(34px, 4.6vw, 112px)",
+  lineHeight: 1.04,
+  letterSpacing: "-0.028em",
+};
+/** ROLE 3 — SECTION TITLE. Every chapter head and section head. */
+const SECTION_TITLE =
+  "font-display font-semibold text-[clamp(28px,3.2vw,78px)] leading-[1.08] tracking-[-0.018em] text-ink text-balance";
+/** ROLE 4 — LEAD. A section's opening line; the demoted former display tiers. */
+// ⚠️ The slope is set so LEAD always OUTRANKS BODY. The first cut of this
+// token was clamp(21px,0.667vw+11.4px,44px), which computes to 21px at 1440
+// against a 23px body — the lead rendered SMALLER than the paragraph under it,
+// which is the same rank inversion this whole rebuild exists to remove. Now:
+// 390→22 · 1440→30 · 1920→36 · 2560→43 · body is 20/23/26/30. Always above.
+const LEAD_P =
+  "font-sans font-normal text-[clamp(22px,1.2vw+12.7px,46px)] leading-[1.42] tracking-[-0.005em] text-ink/90 m-0 text-pretty";
+/** ROLE 6 — CAPTION / meta. */
+const CAPTION_P =
+  "font-sans font-normal text-[clamp(14px,0.333vw+9.2px,23px)] leading-[1.45] tracking-[0.01em] text-ink-muted";
+
+/** THE ONE VERTICAL UNIT. Space is 1× / 2× / 4× of this and nothing else. */
+const RHYTHM = "[--rhythm:clamp(17px,1.2vw,26px)]";
+const GAP_1 = "mt-[var(--rhythm)]";
+const GAP_2 = "mt-[calc(var(--rhythm)*2)]";
+const GAP_4 = "mt-[calc(var(--rhythm)*4)]";
+
+// ─── HOME'S LAYOUT CANON (copied verbatim from Welcome.tsx) ──────────────────
 /** Home's section container. */
 const CONTAINER =
   "mx-auto max-w-[1320px] 2xl:max-w-[1500px] 3xl:max-w-[2360px] 4xl:max-w-[3300px] px-4 sm:px-6 md:px-8 lg:px-12";
@@ -179,9 +246,16 @@ const SectionHead = ({
   title: ReactNode;
   className?: string;
 }) => (
+  // ⚠️ SECTION_TITLE, not the shared TITLE token: TITLE's clamp ceiling (116px)
+  // overtook the pull-quote's (104px) at 2364px, so on a 4K display a chapter
+  // label outranked the best line on the page. And the eyebrow is MUTED, not
+  // rust — fourteen accent kickers left the accent meaning nothing.
   <Reveal as="div" className={cn("text-center", className)}>
-    {eyebrow && <p className={cn(EYEBROW, "m-0 mb-3")}>{eyebrow}</p>}
-    <h2 className={cn(TITLE, MEASURE, "my-0 hero-text-shadow")}>{title}</h2>
+    {eyebrow && <p className={cn(EYEBROW_MUTED, "m-0 mb-[var(--rhythm)]")}>{eyebrow}</p>}
+    <h2 className={cn(SECTION_TITLE, MEASURE, "my-0 hero-text-shadow")}>
+      {title}
+      <span aria-hidden className="inline-block w-0 -mr-[0.24em]" />
+    </h2>
   </Reveal>
 );
 
@@ -374,75 +448,30 @@ const SideBySide = ({
   </Reveal>
 );
 
-// ─── DisplayPull — Home's two-tier pull-quote ("There is a star…") ───────────
-const DisplayPull = ({ lead, follow }: { lead: string; follow?: string }) => (
-  <Reveal delay={0.05} className="my-10 md:my-14 text-center">
-    <blockquote className="m-0 hero-text-shadow">
-      <span
-        className="block mx-auto font-display font-semibold text-ink text-balance"
-        style={{
-          fontVariationSettings: '"opsz" 48, "wght" 600',
-          fontWeight: 600,
-          fontSize: "clamp(44px, 8vw, 104px)",
-          letterSpacing: "-0.045em",
-          lineHeight: 0.98,
-        }}
-      >
-        {lead}
-      </span>
-      {follow && (
-        <span
-          className="block mx-auto font-display font-normal italic text-ink/90 text-balance"
-          style={{
-            fontVariationSettings: '"opsz" 40, "wght" 400',
-            fontWeight: 400,
-            fontSize: "clamp(28px, 5.5vw, 60px)",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-            marginTop: "clamp(12px, 1.8vw, 28px)",
-          }}
-        >
-          {follow}
-        </span>
-      )}
-    </blockquote>
-  </Reveal>
-);
-
-// ─── DisplayClose — Home's two-tier close ("Everything you think…") ──────────
-const DisplayClose = ({ lead, follow, accentStop = true }: { lead: string; follow?: string; accentStop?: boolean }) => {
-  const leadBody = accentStop && lead.endsWith(".") ? lead.slice(0, -1) : lead;
+// ─── Pull — ROLE 2. THE page's only display moment besides the h1. ───────────
+// ⚠️ ONE TIER, never two. The old component stacked a 104px lead over a 60px
+// italic follow, which is what put four roles inside one 12px band and made the
+// opening read as a shouting match. A pull is now a single sentence at a single
+// size; if a second sentence belongs with it, it is part of the SAME string and
+// wraps naturally. `accentStop` is allowed on exactly ONE pull per page (the
+// last), because one rust mark is a signature and fourteen are wallpaper.
+// The trailing full stop hangs (-0.28em) so the line is OPTICALLY centred —
+// without it a centred display line reads a quarter-em left of true.
+const Pull = ({ text, accentStop = false }: { text: string; accentStop?: boolean }) => {
+  const hasStop = text.endsWith(".");
+  const body = accentStop && hasStop ? text.slice(0, -1) : text;
   return (
-    <Reveal delay={0.1} className="text-center">
-      <p className={cn(MEASURE, "m-0 text-center hero-text-shadow")}>
+    <Reveal delay={0.05} className={cn("text-center", GAP_4, "mb-[calc(var(--rhythm)*4)]")}>
+      <blockquote className={cn(MEASURE, "m-0 hero-text-shadow")}>
         <span
-          className="block font-display text-ink text-balance mx-auto"
-          style={{
-            fontVariationSettings: '"opsz" 48, "wght" 600',
-            fontWeight: 600,
-            fontSize: "clamp(42px, 10.5vw, 68px)",
-            letterSpacing: "-0.03em",
-            lineHeight: 1.02,
-          }}
+          className="block mx-auto font-display text-ink text-balance"
+          style={PULL_STYLE}
         >
-          {leadBody}
-          {accentStop && lead.endsWith(".") && <span className="text-accent">.</span>}
+          {body}
+          {accentStop && hasStop && <span className="text-accent">.</span>}
+          <span aria-hidden className="inline-block w-0 -mr-[0.28em]" />
         </span>
-        {follow && (
-          <span
-            className="block font-display font-normal italic text-ink-muted text-balance mx-auto mt-4 md:mt-6"
-            style={{
-              fontVariationSettings: '"opsz" 36, "wght" 400',
-              fontWeight: 400,
-              fontSize: "clamp(25px, 6.2vw, 44px)",
-              letterSpacing: "-0.015em",
-              lineHeight: 1.2,
-            }}
-          >
-            {follow}
-          </span>
-        )}
-      </p>
+      </blockquote>
     </Reveal>
   );
 };
@@ -472,8 +501,19 @@ const openingPullFollow = openingPullSplit > 0 ? openingPull.slice(openingPullSp
 // the rest flows as the copy beside his portrait.
 const described = ABOUT.opening[1];
 const describedSplit = described.indexOf(". ");
+// ⚠️ opening[1] now feeds TWO sections, so it is cut ONCE here and each half is
+// rendered exactly once, in order. The tail (from "Just as a pentagon…") is the
+// passage in which he explains that each painting obeys its own law — that is
+// the "how to read one painting" section; everything before it stays with his
+// portrait. Marker miss ⇒ readingAt < 0 ⇒ the tail is empty and that section
+// simply does not render, never a duplicate.
+const readingAt = described.indexOf("Just as a pentagon");
+const readingText = readingAt > 0 ? described.slice(readingAt).trim() : "";
 const describedHead = describedSplit > 0 ? described.slice(0, describedSplit + 1) : described;
-const describedBody = describedSplit > 0 ? described.slice(describedSplit + 2) : "";
+const describedBody =
+  describedSplit > 0
+    ? described.slice(describedSplit + 2, readingAt > 0 ? readingAt : undefined).trim()
+    : "";
 
 // Return & the first mandala: earlyLife[4] is two sentences — the close.
 const firstMandala = ABOUT.earlyLife[4];
@@ -492,14 +532,6 @@ const anegadaQuoteSplit = ABOUT.anegadaQuote.indexOf(", I felt");
 const anegadaQuoteLead =
   anegadaQuoteSplit > 0 ? ABOUT.anegadaQuote.slice(0, anegadaQuoteSplit + 1) : ABOUT.anegadaQuote;
 const anegadaQuoteFollow = anegadaQuoteSplit > 0 ? ABOUT.anegadaQuote.slice(anegadaQuoteSplit + 2) : "";
-
-// The four traditions, named exactly as in ABOUT.legacy[0].
-const TRADITIONS = [
-  "Ancient Insular Island Arts",
-  "The Rose Windows of Medieval Europe",
-  "The Art of Persian Geometry",
-  "The Sacred Mandala of Tibet",
-];
 
 // The facts ledger — Home's material-spec strip, filled with the estate's
 // verifiable facts (dates from content.ts; the rest verbatim from ABOUT.legacy
@@ -530,7 +562,14 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
         {item.q}
       </p>
       {isBeat ? (
-        <DisplayClose lead={`“${item.a}”`} accentStop={false} />
+        // DEMOTED from a 68px display tier: a beat answer is a pull-quote
+        // INSIDE a transcript, not a monument. It keeps the page's ONE italic.
+        <p
+          className={cn(LEAD_P, "mx-auto max-w-[34ch] font-display text-ink")}
+          style={{ fontVariationSettings: '"opsz" 36, "wght" 400' }}
+        >
+          &ldquo;{item.a}&rdquo;
+        </p>
       ) : (
         <BodyProse text={item.a} />
       )}
@@ -539,18 +578,6 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
 };
 
 export const About = () => {
-  // Six paintings, a FRESH random six on every mount — Home's featured-grid
-  // draw, verbatim (Fisher–Yates on a COPY; a lazy initialiser so the impure
-  // draw runs exactly once per mount). Rendered with the SHARED PrintTile —
-  // never a hand-rolled tile (Hugo caught the per-page drift twice).
-  const [featured] = useState<Painting[]>(() => {
-    const pool = [...PAINTINGS];
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    return pool.slice(0, 6);
-  });
 
   return (
     <div className="relative">
@@ -565,7 +592,15 @@ export const About = () => {
           <main> (space-y), sections carry no padding of their own, so it can
           never double up or collapse. overflow-x-clip lets the full-bleed
           bands break out without a horizontal scrollbar. */}
-      <main className="relative isolate z-10 overflow-x-clip space-y-10 md:space-y-12 lg:space-y-14 pt-6 md:pt-8 pb-8 md:pb-10">
+      <main
+        className={cn(
+          "relative isolate z-10 overflow-x-clip space-y-10 md:space-y-12 lg:space-y-14 pt-6 md:pt-8 pb-8 md:pb-10",
+          // ⚠️ --rhythm is declared HERE, on <main>, because GAP_1/2/4 are used
+          // in sections all over the page and `calc(var(--rhythm)*2)` silently
+          // computes to nothing if the variable is not on an ancestor.
+          RHYTHM,
+        )}
+      >
         {/* 1 · FRONT COVER — Home's hero, beat for beat: the WHOLE photograph
             first at full content width (his best landscape photograph — sharp,
             at work, the mandala behind him), then the name set as the page's
@@ -574,14 +609,16 @@ export const About = () => {
         <section className="relative isolate w-full overflow-hidden">
           <div className={cn(CONTAINER, "flex flex-col w-full")}>
             <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
-              <h1 className={cn("font-display tracking-[-0.03em] text-ink m-0 text-balance hero-text-shadow", MEASURE)}>
-                <span
-                  className="block text-[clamp(56px,11vw,176px)] leading-[0.94]"
-                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
-                >
+              <h1 className={cn("font-display text-ink m-0 text-balance hero-text-shadow", MEASURE)}>
+                {/* ROLE 1. 176px→? at 1440 this is 107px, down from 158px: still
+                    the loudest thing on the page by 1.6×, but composed. */}
+                <span className="block" style={PAGE_TITLE_STYLE}>
                   Stephen Meakin
                 </span>
-                <span className="block font-normal italic text-[clamp(30px,5vw,72px)] leading-[1.06] mt-4 md:mt-6 text-ink/95">
+                {/* DEMOTED to the LEAD role, and ROMAN — a 72px Fraunces italic
+                    was the second display tier in the first screen and the
+                    swashy cut the finale bans. */}
+                <span className={cn(LEAD_P, "block mx-auto text-ink/80", GAP_1)}>
                   &mdash; mandala artist and sacred geometer.
                 </span>
               </h1>
@@ -601,21 +638,33 @@ export const About = () => {
               </div>
             </Reveal>
 
+            {/* ⚠️ HERO SWAPPED 2026-09-03. This was `28-at-the-drafting-table`
+                — Stephen bent over his work, a mandala on the wall behind him —
+                which is the SAME COMPOSITION as Home's hero
+                (`01-painting-wild-rose`: Stephen bent over his work, a mandala
+                on the wall behind him), in the same room, at the same furniture.
+                Two pages opening on the same picture is exactly the repetition
+                Hugo called out. The doorway portrait was sitting unused on disk
+                and is the better opening anyway: he is upright, looking
+                straight down the lens. A biography should open on the man's
+                face, not the back of his head. Shown WHOLE at its natural 2:3
+                and width-capped, so a tall portrait can never become a
+                full-screen wall. */}
             <Reveal
               as="figure"
-              className="order-1 m-0 mt-2 md:mt-3 mx-auto w-full max-w-[min(1400px,116svh)] 2xl:max-w-[min(1680px,116svh)] 3xl:max-w-[min(2100px,116svh)] 4xl:max-w-[min(2600px,116svh)]"
+              className="order-1 m-0 mx-auto w-full max-w-[clamp(280px,44vw,560px)] 2xl:max-w-[620px] 3xl:max-w-[720px]"
             >
               <ImageReveal
-                src="/img/about/28-at-the-drafting-table.jpg"
-                alt="Stephen Meakin leaning over a print on the drafting table in his studio, a large mandala on the wall behind him"
+                src="/img/about/stephen-doorway-portrait-v1.jpg"
+                alt="Stephen Meakin standing in the doorway of his studio in a pale denim shirt, glasses pushed up on his head, a mandala and a board behind him"
                 eager
-                aspect="aspect-[3/2]"
+                aspect="aspect-[2/3]"
                 edges="none"
                 parallax={0}
                 zoom={1}
                 objectPosition="center"
                 shadow=""
-                sizes="(min-width: 1400px) 1320px, 92vw"
+                sizes="(min-width: 1536px) 620px, 44vw"
               />
             </Reveal>
           </div>
@@ -626,26 +675,26 @@ export const About = () => {
             reading size, then its closing two sentences lifted as the two-tier
             pull. Every word of ABOUT.opening[0] appears exactly once. */}
         <section className={cn(CONTAINER, "relative isolate")}>
-          <Reveal as="header" className="mb-3 md:mb-4 text-center">
-            <p className={cn(EYEBROW, "m-0 mb-3")}>In memoriam · {LIFE_DATES}</p>
-            <p
-              className="font-display font-semibold tracking-[-0.03em] text-ink m-0 mx-auto max-w-[30ch] text-balance"
-              style={{
-                fontVariationSettings: '"opsz" 48, "wght" 600',
-                fontSize: "clamp(32px, 5.2vw, 64px)",
-                lineHeight: 1.04,
-                textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
-              }}
-            >
-              {openingLede}
-            </p>
+          {/* DEMOTED: this opening clause was a 64px display tier sitting one
+              screen under a 158px h1 and one screen above a 104px pull — three
+              display moments and two lines of prose in the first two screens.
+              It is the paragraph's first sentence, so it is now the section
+              LEAD (role 4) and the passage reads as one thought. */}
+          <Reveal as="header" className="text-center">
+            <p className={cn(EYEBROW_MUTED, "m-0 mb-[var(--rhythm)]")}>In memoriam · {LIFE_DATES}</p>
+            <p className={cn(LEAD_P, MEASURE, "reading-shadow")}>{openingLede}</p>
             {openingBody && (
-              <p className={cn(BODY_P, MEASURE, "mt-3 md:mt-4")} style={BODY_SHADOW}>
+              <p className={cn(BODY_P, MEASURE, GAP_1)} style={BODY_SHADOW}>
                 {openingBody}
               </p>
             )}
           </Reveal>
-          {openingPullLead && <DisplayPull lead={openingPullLead} follow={openingPullFollow} />}
+          {/* PULL 1 of 3. Both sentences ride ONE tier — the old 104px lead
+              over a 60px italic follow was the single loudest thing on the
+              page and it stacked two roles where one belongs. */}
+          {openingPullLead && (
+            <Pull text={[openingPullLead, openingPullFollow].filter(Boolean).join(" ")} />
+          )}
         </section>
 
         {/* 3 · AS HE DESCRIBED HIMSELF — Home's Meet-Stephen two-column: his
@@ -760,9 +809,15 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={ABOUT.earlyLife[3]} />
           </Reveal>
-          <div className="mt-10 md:mt-14">
-            <DisplayClose lead={firstMandalaLead} follow={firstMandalaFollow} />
-          </div>
+          {/* DEMOTED + SPLIT. "In 1999, while still an architecture student, he
+              had made his first major mandala." is a FACTUAL sentence and now
+              runs as body at the end of the chapter. Only "He never stopped."
+              stays display — three words are the whole point, and it is PULL 2
+              of 3. */}
+          <Reveal as="div" className={cn(MEASURE, "text-center", GAP_2)}>
+            <p className={cn(BODY_P, "mb-0")} style={BODY_SHADOW}>{firstMandalaLead}</p>
+          </Reveal>
+          {firstMandalaFollow && <Pull text={firstMandalaFollow} />}
         </section>
 
         <section className={CONTAINER}>
@@ -772,7 +827,8 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={anegadaBefore} />
           </Reveal>
-          <DisplayPull lead={anegadaQuoteLead} follow={anegadaQuoteFollow} />
+          {/* PULL 3 of 3, and the ONLY rust mark on the page. */}
+          <Pull text={[anegadaQuoteLead, anegadaQuoteFollow].filter(Boolean).join(" ")} accentStop />
           {anegadaAfter && (
             <Reveal as="div" className={cn(MEASURE, "text-center")}>
               <BodyProse text={anegadaAfter} />
@@ -885,22 +941,13 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center mb-6 md:mb-8")}>
             <BodyProse text={ABOUT.legacy[0]} />
           </Reveal>
-          <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 m-0 mb-6 md:mb-8">
-            {TRADITIONS.map((name, i) => (
-              <li
-                key={name}
-                className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
-              >
-                <p className={cn(EYEBROW_MUTED, "m-0 mb-2")}>{ROMAN[i]}</p>
-                <p
-                  className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 transition-colors duration-300 group-hover:text-accent text-balance"
-                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
-                >
-                  {name}
-                </p>
-              </li>
-            ))}
-          </Reveal>
+          {/* CUT 2026-09-03: the hairline four-traditions index lived here and
+              was byte-identical to Home §7 — same four names, same Roman
+              numerals, same hover. Worse, ABOUT.legacy[0] above and Home's
+              WELCOME.bio[1] print the SAME sentence, so the site named the four
+              traditions twice within one scroll. The prose stays (it is his
+              mission, and it belongs in his chapter); the Home-shaped module
+              goes, and the two reference photographs below now carry it. */}
           <TileRow cols={2}>
             <Tile
               src="/img/about/26-persian-geometry.jpg"
@@ -935,21 +982,10 @@ export const About = () => {
             </h2>
             <SideProse text={ABOUT.legacy[1]} per={2} />
           </SideBySide>
-          <Reveal as="ul" className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 md:gap-x-12 gap-y-6 md:gap-y-7 list-none p-0 m-0 mt-10 md:mt-14">
-            {CREDENTIALS.map((item) => (
-              <li
-                key={item}
-                className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
-              >
-                <p
-                  className="font-display text-ink text-[clamp(20px,2vw,32px)] tracking-[-0.02em] leading-[1.15] m-0 transition-colors duration-300 group-hover:text-accent text-balance"
-                  style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
-                >
-                  {item}
-                </p>
-              </li>
-            ))}
-          </Reveal>
+          {/* CUT 2026-09-03: a hairline index of all six CREDENTIALS sat here,
+              while the estate ledger in the ritual island already prints the
+              same six as its "Exhibited" and "Commissioned" rows. The page
+              listed the man's exhibitions twice. */}
         </section>
 
         <Band
@@ -958,21 +994,51 @@ export const About = () => {
           position="center 35%"
         />
 
-        {/* 11 · SIX PAINTINGS — Home's featured grid, the page's buy path,
-            placed where the biography turns to the work. The SHARED PrintTile,
-            a fresh random six per visit, the same heading Home uses. */}
+        {/* 11 · ON CLOSER INSPECTION — REPLACES the six-tile PrintTile grid that
+            stood here, which was byte-identical to Home §5 (same eyebrow "From
+            the hand", same heading, same random six, same CTA). Hugo: "I HATE
+            YOU REPEATING PHOTOS AND SECTIONS INSTEAD OF USING THE NEW ONES AND
+            NEW IDEAS."
+
+            What replaces it is the one thing only this page can do. Home SHOWS
+            the paintings so you can buy one; nowhere on the site teaches you
+            how to LOOK at one. So this is the passage where he explains that a
+            pentagon and a hexagon are different laws — verbatim, the tail of
+            ABOUT.opening[1], which until now was buried in a side column — over
+            the macro of his own hand laying a fine brush into the detail. The
+            photograph is the argument: the whole point is what you see close up.
+
+            ⚠️ The canvas shot `11-ophiuchus-painting.jpg` was the obvious
+            candidate and is deliberately NOT used: it was removed from this
+            page once already in `bfde9cc` ("fix image duplication") because
+            that artwork is in the shop. The brush macro belongs to no other
+            page. Likewise `19-evening-with-friends` and `14-family-group` sit
+            unused because Hugo had them REMOVED in `7f04f51` — "unused on disk"
+            is not the same as "available to use".
+
+            The buy path survives as the quiet text link, so the page still
+            opens into the shop; it just no longer re-runs Home's grid. */}
         <section className={CONTAINER}>
-          <SectionHead eyebrow="From the hand" title="Six paintings from a lifetime at the compass." />
-          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-2 md:grid-cols-3 mb-5 md:mb-6")}>
-            {featured.map((p) => (
-              <PrintTile
-                key={p.id}
-                painting={p}
-                sizes="(min-width: 1400px) 420px, (min-width: 640px) 30vw, 90vw"
-              />
-            ))}
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <BodyProse text={readingText} per={2} />
           </Reveal>
-          <Reveal as="div" className="text-center">
+          <Reveal
+            as="figure"
+            className={cn("relative m-0 mx-auto w-full max-w-[760px] 2xl:max-w-[900px]", GAP_2)}
+          >
+            <ImageReveal
+              src="/img/about/hand-finishing-brush-v1.jpg"
+              alt="Stephen's hand laying fine brushwork into a mandala, petal by petal"
+              aspect="aspect-[1100/940]"
+              edges="none"
+              parallax={0}
+              zoom={1}
+              objectPosition="center"
+              shadow=""
+              sizes="(min-width: 1536px) 900px, (min-width: 768px) 760px, 92vw"
+            />
+          </Reveal>
+          <Reveal as="div" className={cn("text-center", GAP_2)}>
             <MagneticLink
               to="/collections"
               className="press group inline-flex items-center gap-2 font-sans text-[14px] font-bold tracking-[0.02em] text-ink transition-colors duration-300 hover:text-accent"
@@ -1137,18 +1203,21 @@ export const About = () => {
             featured works) — all six are native 4:3 or wider, nobody is cut. */}
         <section className={CONTAINER}>
           <ChapterHead id="academy" className="mb-6 md:mb-8" />
-          <DisplayClose lead={ABOUT.legacy[2]} />
+          {/* DEMOTED: a dated factual sentence, not a monument. */}
+          <Reveal as="div" className={cn(MEASURE, "text-center")}>
+            <p className={cn(BODY_P, "mb-0")} style={BODY_SHADOW}>{ABOUT.legacy[2]}</p>
+          </Reveal>
           <Reveal as="div" className={cn(MEASURE, "text-center mt-8 md:mt-10")}>
             <BodyProse text={ABOUT.academyQuote} />
           </Reveal>
-          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6 md:mt-8")}>
-            <Tile
-              src="/img/about/08-taga-group.jpg"
-              alt="Stephen Meakin with four Academy participants, each holding up the mandala board they made"
-              aspect="aspect-[4/3]"
-              position="center"
-              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
-            />
+          {/* 2×2, NOT 3-up: two tiles were removed here and five tiles in a
+              three-column grid leaves a ragged last row.
+              · `08-taga-group` — Hugo moved that photograph to /memories in
+                `33c8a4b`, to sit with Stephen's own letter to those students.
+                Showing it here too is the repeat he called out.
+              · `02-painting-table` — same table, same collaborator, same
+                session as Home's ritual photograph. */}
+          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2 mt-6 md:mt-8")}>
             <Tile
               src="/img/about/10-taga-classroom.jpg"
               alt="Students at work around the tables of the TAGA classroom"
@@ -1166,13 +1235,6 @@ export const About = () => {
             <Tile
               src="/img/about/09-taga-studio.jpg"
               alt="A paint-spattered drafting easel in the studio, finished mandalas crowding the walls behind it"
-              aspect="aspect-[4/3]"
-              position="center"
-              sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
-            />
-            <Tile
-              src="/img/about/02-painting-table.jpg"
-              alt="Stephen Meakin and a collaborator working on a large blue and orange mandala print at the studio table"
               aspect="aspect-[4/3]"
               position="center"
               sizes="(min-width: 768px) 31vw, (min-width: 640px) 48vw, 100vw"
@@ -1214,6 +1276,42 @@ export const About = () => {
               },
             ]}
           />
+        </section>
+
+        {/* 16 · THE STUDIO AS IT STOOD — the closing plate, and a genuinely NEW
+            one. `welcome/04-paintings-collection.jpg` has sat on disk unused
+            since May; CLAUDE.md's pending list has carried it this whole time
+            as "kept on disk specifically for an About-page section we discussed
+            but haven't built" (open item #8). This is that section.
+
+            It earns the last word better than any portrait could: nine finished
+            canvases propped around the shed at Phoenix Place, the geometric
+            solids still hanging from the roof, a work lamp on — the life's work
+            in the room that made it. Full-bleed, because it is the only image
+            on the page that should be allowed to fill the frame, and it is the
+            last thing the reader sees. The caption is a plain place label, the
+            same convention the page already uses for Anegada and the Virgin
+            Islands. */}
+        <section>
+          <Reveal as="figure" className="m-0 w-full">
+            <div className={BAND_H}>
+              <ImageReveal
+                src="/img/welcome/04-paintings-collection.jpg"
+                alt="Nine large mandala canvases propped around the walls of Stephen's studio, geometric wire solids hanging from the roof beams and a work lamp lit beside them"
+                fill
+                edges="none"
+                parallax={0}
+                zoom={1}
+                objectPosition="center"
+                shadow=""
+                sizes="100vw"
+                className="h-full"
+              />
+            </div>
+            <figcaption className={cn(CAPTION_P, CONTAINER, "text-center", GAP_1)}>
+              Phoenix Place, Lewes
+            </figcaption>
+          </Reveal>
         </section>
       </main>
 
