@@ -785,6 +785,10 @@ const IntroducerForm = () => {
 /** A 3.2 m wall with a 2 m sofa and the three project sizes drawn to ONE scale
  *  (cm from artworkSizes — the single source of truth for print dimensions),
  *  hung with their centres 150 cm from the floor. */
+const SIZE_LEGEND = ARTWORK_SIZES.filter(
+  (z) => z.id === "a3" || z.id === "a2" || z.id === "a1",
+);
+
 const ScaleDiagram = () => {
   const W = 300; // cm of wall drawn
   const H = 210; // cm of wall drawn (floor sits on y = H)
@@ -801,12 +805,11 @@ const ScaleDiagram = () => {
     x: startX + sizes.slice(0, i).reduce((n, q) => n + q.cm + gap, 0),
     y: H - CENTRE - s.cm / 2,
   }));
-  const SANS = "Schibsted Grotesk, sans-serif";
   const stroke = "rgb(237 230 214 / 0.5)";
   const soft = "rgb(237 230 214 / 0.26)";
   return (
     <svg
-      viewBox={`0 0 ${W} ${H + 4}`}
+      viewBox={`0 0 ${W} ${H}`}
       className="w-full h-auto block"
       role="img"
       aria-label={`The project print sizes — ${frames
@@ -836,20 +839,6 @@ const ScaleDiagram = () => {
             strokeWidth="1"
           />
           <rect x={f.x + 3.5} y={f.y + 3.5} width={f.cm - 7} height={f.cm - 7} fill="none" stroke={soft} strokeWidth="0.4" />
-          <text
-            x={f.x + f.cm / 2}
-            y={f.y - 5}
-            textAnchor="middle"
-            fill="#ede6d6"
-            fontSize="8.5"
-            fontWeight="600"
-            fontFamily="Fraunces, serif"
-          >
-            {f.label}
-          </text>
-          <text x={f.x + f.cm / 2} y={f.y + f.cm + 9} textAnchor="middle" fill={stroke} fontSize="5.4" fontFamily={SANS}>
-            {`${f.cm} × ${f.cm} cm`}
-          </text>
         </g>
       ))}
     </svg>
@@ -1331,7 +1320,19 @@ export const Partners = () => {
             </Reveal>
             <Reveal as="div" className="lg:col-span-8 mx-auto w-full max-w-[1100px] 3xl:max-w-[1400px]">
               <ScaleDiagram />
-              <p className={cn(META, "mt-4 text-center")}>
+              {/* The drawing's labels live here, in real type, for the reason
+                  given above the SVG. Same order as the squares, small to large. */}
+              <ul className="list-none m-0 mt-5 p-0 flex flex-wrap justify-center gap-x-8 gap-y-2 border-t border-line pt-4">
+                {SIZE_LEGEND.map((z) => (
+                  <li key={z.id} className="m-0 flex items-baseline gap-2">
+                    <span className="font-display font-semibold text-ink text-[clamp(16px,1.1vw,22px)]">
+                      {z.label}
+                    </span>
+                    <span className={cn(META, "m-0")}>{`${z.cm} × ${z.cm} cm`}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className={cn(META, "mt-3 text-center")}>
                 Drawn to one scale · each hung with its centre 150 cm from the floor · shown against a
                 two-metre sofa
               </p>
