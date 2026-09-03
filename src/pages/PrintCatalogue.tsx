@@ -986,7 +986,17 @@ function BackCover() {
 // ── ASSEMBLY ─────────────────────────────────────────────────────────────────
 
 export function PrintCatalogue() {
-  _g = 0; // reset the editorial-ground colour rotation for a deterministic sequence
+  // The editorial-ground colour rotation is a module counter (`_g`) that each
+  // PavoGround advances as this static page tree renders. Resetting it HERE, at
+  // the top of that tree, is precisely what makes the sequence deterministic:
+  // every render pass — including StrictMode's double render — restarts from the
+  // same point and lays the grounds down in an identical order. The catalogue is
+  // a print-only document rendered as one static tree, so the counter never
+  // escapes a single pass. Threading an explicit index through all seven page
+  // components was rejected: it would re-order the printed catalogue's designed
+  // ground sequence for no reader-visible gain.
+  // eslint-disable-next-line react-hooks/globals -- deliberate; see above
+  _g = 0;
   useEffect(() => {
     document.body.classList.add("printing-catalogue");
     document.title = "The Art of Stephen Meakin — Catalogue";
