@@ -1,5 +1,14 @@
 # Go-live runbook — turning on revenue
 
+> **⚠️ Status, 2026-09-02 — read `GO-LIVE-CHECKLIST.md` first.** That file is
+> the current, ticked list of what's actually outstanding. This runbook is the
+> longer how-to for pasting each key in, and some of its "without this, X stays
+> empty" warnings are now historical: **Upstash/KV and Resend are both live**,
+> so reviews, memories, the estate registry and every email already work. Use
+> this page for the step-by-step when you need it; trust the checklist for what
+> still needs doing.
+
+
 The site's code is complete. What's left is **operational**: connecting your own
 third-party accounts by pasting their keys into Vercel. Nothing here needs code
 changes. Every feature **degrades gracefully** when its key is absent — the site
