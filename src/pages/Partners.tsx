@@ -192,7 +192,7 @@ const SECTOR_ROWS: SectorRow[] = [
     label: "Healthcare & hospices",
     rooms: "Family rooms · Quiet rooms · Staff spaces · Reception",
     sizes: "A3 · A2",
-    does: "Gentle colourways for the rooms families wait in, and for the spaces staff retreat to. Framing specified to your infection-control requirements.",
+    does: "Gentle colourways for the rooms families wait in, and for the spaces staff retreat to. Tell us the setting and the estate will confirm what framing can be arranged for it.",
   },
   {
     label: "Restaurants & clubs",
@@ -256,7 +256,7 @@ const STEPS: { label: string; title: string; body: string }[] = [
   },
   {
     label: "Proposal",
-    title: "The works placed on your walls, usually within two working days.",
+    title: "Your rooms, with the work in them.",
     body: "Sized true, with one quotation for the whole scheme, held in confidence for your studio.",
   },
   {
@@ -1232,9 +1232,8 @@ export const Partners = () => {
           <Head
             sub={
               <>
-                Tell us the spaces, the count and the date. A member of the family replies personally,
-                usually within two working days, with the works placed on your walls and one quotation
-                for the scheme. Or write to{" "}
+                Tell us the spaces, the count and the date. A member of the family replies
+                personally, with one quotation for the whole scheme. Or write to{" "}
                 <a href="mailto:info@themandalacompany.com?subject=Project%20enquiry" className="text-accent hover:underline">
                   info@themandalacompany.com
                 </a>
@@ -1303,7 +1302,7 @@ export const Partners = () => {
       >
         <div className="border-t border-line bg-bg/95">
           <div className={cn(WRAP, "py-3 flex items-center justify-between gap-4")}>
-            <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>Partners · a proposal with the works on your walls</p>
+            <p className={cn(EYEBROW_MUTED, "m-0 hidden sm:block")}>Partners · projects for hotels, wellness, workplace and care</p>
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <button type="button" onClick={() => scrollTo(projectRef)} className={cn(BTN_PRIMARY, "w-full sm:w-auto py-3.5")} tabIndex={showSticky ? 0 : -1}>
                 Send me a proposal
