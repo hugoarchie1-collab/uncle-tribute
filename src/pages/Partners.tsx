@@ -383,7 +383,11 @@ const FIELD_LABEL =
 const FIELD_INPUT =
   "w-full bg-transparent border-0 border-b border-line focus:border-accent focus:outline-none px-0 py-3 font-sans text-[16px] 2xl:text-[18px] 3xl:text-[21px] 4xl:text-[24px] text-ink placeholder:text-ink/30 transition-colors rounded-none";
 const CHIP =
-  "inline-flex items-center min-h-[40px] 3xl:min-h-[48px] px-4 3xl:px-5 rounded-full ring-1 ring-line font-sans text-[14px] 2xl:text-[15px] 3xl:text-[18px] 4xl:text-[20px] text-ink-muted cursor-pointer select-none transition-colors hover:ring-accent/60 hover:text-ink has-[:checked]:ring-accent has-[:checked]:text-ink has-[:checked]:bg-accent/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent";
+  // 44px is Apple's minimum comfortable tap target, and these chips are a primary
+// interaction on the page's conversion form — they were 40. `font-semibold` when
+// checked so the selected state is carried by WEIGHT as well as ring colour: a
+// ring-colour-only signal is information conveyed by colour alone.
+  "inline-flex items-center min-h-[44px] 3xl:min-h-[48px] px-4 3xl:px-5 rounded-full ring-1 ring-line font-sans text-[14px] 2xl:text-[15px] 3xl:text-[18px] 4xl:text-[20px] text-ink-muted cursor-pointer select-none transition-colors hover:ring-accent/60 hover:text-ink has-[:checked]:ring-accent has-[:checked]:text-ink has-[:checked]:font-semibold has-[:checked]:bg-accent/10 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent";
 
 const Honeypot = () => (
   <input
