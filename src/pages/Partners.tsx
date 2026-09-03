@@ -8,6 +8,7 @@ import { AssetImage } from "../components/AssetImage";
 import { PageMasthead } from "../components/PageMasthead";
 import {
   EYEBROW_MUTED,
+  EYEBROW_TIGHT,
   TITLE,
   SUBTITLE,
   META,
@@ -142,19 +143,72 @@ const SUITES = (() => {
 
 // ── sectors ──────────────────────────────────────────────────────────────────
 
-/** The sectors the estate works with. Once a whole section was built around
- *  these — a tab strip with a painting per setting — and Hugo binned it
- *  ("i hate the whole thing and whole concept"). What survives is the only
- *  place they earn their keep: the Sector question on the project form. Plain
- *  labels, nothing else. */
-const SECTOR_LABELS = [
-  "Hotels",
-  "Wellness & spa",
-  "Workplace",
-  "Healthcare & hospices",
-  "Restaurants & clubs",
-  "Residential & show homes",
-] as const;
+/** THE ROOM LEDGER — every sector, its rooms, its sizes and what the estate
+ *  would do, all six on screen at once, in type only.
+ *
+ *  ⚠️ This replaces a tab strip that showed ONE sector at a time with a painting
+ *  chosen for it. Hugo binned that outright: "i hate how you click on each
+ *  section on the top list of business and a random piece comes up its shit".
+ *  He was right on the substance — no painting belongs to hotels more than it
+ *  belongs to spas, so any pairing is a hunch presented as a recommendation, and
+ *  a widget made the reader work before the page said anything.
+ *
+ *  So: NO IMAGERY IS BOUND TO A SECTOR HERE, and nothing is hidden behind a
+ *  click. A survey of 19 premium B2B pages found none of them use an on-page
+ *  sector tab strip, and the ones that do pair a picture to an industry only
+ *  ever use a REAL named installed project — which this estate does not have
+ *  yet. A ledger is also the register the rest of the site already speaks in
+ *  (the home page's material ledger, the spec rows, the registry).
+ *
+ *  Same six labels still feed the form's Sector question. */
+type SectorRow = {
+  label: string;
+  rooms: string;
+  sizes: string;
+  /** One clause — what the estate actually does for that setting. */
+  does: string;
+};
+
+const SECTOR_ROWS: SectorRow[] = [
+  {
+    label: "Hotels",
+    rooms: "Bedrooms · Corridors · Suites · Lobby",
+    sizes: "A3 · A2 · A1",
+    does: "A pair at A3 beside each bed, and a corridor that runs one painting through its colourways, so every door opens on its own colour.",
+  },
+  {
+    label: "Wellness & spa",
+    rooms: "Treatment rooms · Relaxation lounge · Reception · Studios",
+    sizes: "A3 · A2 · A1",
+    does: "Calm colourways where people lie still, a warmer one for the lounge, and a single larger piece where guests arrive.",
+  },
+  {
+    label: "Workplace",
+    rooms: "Reception · Meeting rooms · Breakout · Boardroom",
+    sizes: "A2 · A1",
+    does: "One artist through every meeting room, each in its own colourway, so wayfinding and the look of the floor come from one decision.",
+  },
+  {
+    label: "Healthcare & hospices",
+    rooms: "Family rooms · Quiet rooms · Staff spaces · Reception",
+    sizes: "A3 · A2",
+    does: "Gentle colourways for the rooms families wait in, and for the spaces staff retreat to. Framing specified to your infection-control requirements.",
+  },
+  {
+    label: "Restaurants & clubs",
+    rooms: "Dining room · Bar · Private dining · Members' lounge",
+    sizes: "A1 · commission",
+    does: "A dining room is looked at for hours, so it carries the boldest colourway: one large piece where the room turns, a run of the same work through the bar.",
+  },
+  {
+    label: "Residential & show homes",
+    rooms: "Living room · Bedroom · Hallway · Amenity lounge",
+    sizes: "A3 · A2 · A1",
+    does: "A set that photographs well, framed for ordinary walls and delivered on a date — every print traceable in the Estate Registry.",
+  },
+];
+
+const SECTOR_LABELS = SECTOR_ROWS.map((r) => r.label);
 
 
 // ── the offer (what the estate provides) ─────────────────────────────────────
@@ -949,6 +1003,75 @@ export const Partners = () => {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* ── S4 THE ROOM LEDGER — every sector at once, in type. ─────────── */}
+        <section className={cn(WRAP, "py-8 md:py-12")}>
+          <Head sub="The same catalogue answers six different briefs. Find your row — the rooms it usually fills, the sizes that suit them, and what the estate would actually do.">
+            What we do for <Em>your</Em> rooms.
+          </Head>
+
+          {/* Column headers: desktop only — on a phone each row becomes a
+              stacked block that labels its own fields. */}
+          <Reveal as="div" className="hidden lg:grid grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_minmax(0,0.5fr)_minmax(0,2.1fr)] gap-x-8 xl:gap-x-12 border-b border-line pb-3">
+            {["Sector", "The rooms", "Sizes", "What the estate does"].map((h) => (
+              <p key={h} className={cn(EYEBROW_TIGHT, "m-0")}>
+                {h}
+              </p>
+            ))}
+          </Reveal>
+
+          <ul className="list-none m-0 p-0">
+            {SECTOR_ROWS.map((r, i) => (
+              <li key={r.label} className="m-0 border-t border-line first:border-t-0 lg:first:border-t">
+                <Reveal
+                  as="div"
+                  delay={i * 0.04}
+                  className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_minmax(0,0.5fr)_minmax(0,2.1fr)] gap-x-8 xl:gap-x-12 gap-y-3 lg:items-baseline py-6 md:py-7 3xl:py-9"
+                >
+                  <h3
+                    className="font-display font-semibold tracking-[-0.03em] text-ink m-0 text-balance max-w-[15ch] text-[clamp(24px,2.05vw,44px)] leading-[1.08]"
+                    style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
+                  >
+                    {r.label}
+                  </h3>
+
+                  {/* Phone: the two spec fields get their own labels, since the
+                      column headers above are desktop-only. */}
+                  <p className={cn(META, "m-0 text-ink")}>
+                    <span className="lg:hidden text-ink-muted">Rooms · </span>
+                    {r.rooms}
+                  </p>
+                  <p className={cn(META, "m-0 text-ink lg:whitespace-nowrap")}>
+                    <span className="lg:hidden text-ink-muted">Sizes · </span>
+                    {r.sizes}
+                  </p>
+                  <p className="font-sans text-ink-muted m-0 text-[clamp(17px,0.95vw+5px,30px)] leading-[1.5]">
+                    {r.does}
+                  </p>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+
+          {/* The one sector-specific claim worth promoting out of a row: a
+              documented fact, not a picture chosen on a hunch. Verbatim from
+              content.ts ABOUT.legacy. */}
+          <Reveal as="div" className="border-t border-line pt-6 md:pt-8">
+            <p
+              className="font-display italic font-normal text-accent m-0 text-[clamp(20px,1.6vw,34px)] leading-[1.35] text-balance"
+              style={{ fontVariationSettings: '"opsz" 40, "wght" 400' }}
+            >
+              Stephen's Tree of Wellbeing mandala was distributed to children in 1,200 hospices and
+              hospitals throughout the UK.
+            </p>
+            <div className="mt-7 md:mt-9">
+              <button type="button" onClick={() => scrollTo(projectRef)} className={BTN_PRIMARY}>
+                Send me a proposal
+                <span aria-hidden="true" className="ml-2">→</span>
+              </button>
+            </div>
+          </Reveal>
         </section>
 
         {/* ── S5 WHAT THE ESTATE PROVIDES ─────────────────────────────────── */}
