@@ -283,6 +283,28 @@ export const Welcome = () => {
   // TWO lines, breaking after "inside", so it never reads as one over-long line on
   // a wide desktop (Hugo 2026-08-26). Derived from the verbatim reminderLong[3] —
   // the words are never re-typed; only the line break is inserted.
+  // ⚠️ bio[1] was rendered TWICE on this page — in "Meet Stephen" AND again
+  // under the four-traditions cards — and its middle sentence is ALSO printed
+  // verbatim on /about (ABOUT.legacy[0]), so the site said the same 38 words
+  // three times. Hugo: "I HATE YOU REPEATING PHOTOS AND SECTIONS."
+  // Sliced here, never re-typed:
+  //   head  → "Meet Stephen" (who he was)
+  //   share → DROPPED from Home. The four cards directly above the traditions
+  //           section already name all four, so this is the redundant copy; the
+  //           sentence keeps its one home in his biography chapter on /about.
+  //   tail  → the four-traditions section (the "visual henosis" close)
+  // A marker miss leaves `share` empty and BOTH halves fall back to the whole
+  // paragraph, so the words can never silently vanish.
+  const bioShared = "His mission was to transcend cultural boundaries";
+  const bioSharedEnd = "the Sacred Mandala of Tibet.";
+  const bioAt = WELCOME.bio[1].indexOf(bioShared);
+  const bioEndAt = WELCOME.bio[1].indexOf(bioSharedEnd);
+  const bioSplitOk = bioAt > 0 && bioEndAt > bioAt;
+  const bioHead = bioSplitOk ? WELCOME.bio[1].slice(0, bioAt).trim() : WELCOME.bio[1];
+  const bioTail = bioSplitOk
+    ? WELCOME.bio[1].slice(bioEndAt + bioSharedEnd.length).trim()
+    : WELCOME.bio[1];
+
   const starSentence = WELCOME.reminderLong[3].split(". ")[0] + ".";
   const starBreakAt = starSentence.indexOf("inside ");
   const starLine1 =
@@ -895,7 +917,7 @@ export const Welcome = () => {
                   The art of Stephen Meakin — mandala artist and sacred geometer.
                 </h2>
                 <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>{WELCOME.bio[0]}</p>
-                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>{WELCOME.bio[1]}</p>
+                <p className={cn(SUBTITLE, "reading-shadow m-0 text-left 2xl:text-[22px] 3xl:text-[27px] 4xl:text-[32px] 3xl:leading-[1.6]")}>{bioHead}</p>
               </div>
             </Reveal>
           </section>
@@ -1387,7 +1409,7 @@ export const Welcome = () => {
 
             <Reveal>
               <p className={cn(SUBTITLE, "reading-shadow max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] mx-auto my-0 text-justify [text-align-last:center] hyphens-auto")}>
-                {WELCOME.bio[1]}
+                {bioTail}
               </p>
             </Reveal>
           </section>

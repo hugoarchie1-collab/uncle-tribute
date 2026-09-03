@@ -100,7 +100,7 @@ import { EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE } from "../components/ui/tokens"
 //      page is muted ink. Accent otherwise belongs only to hover/focus, as it
 //      does site-wide.
 //   5. RHYTHM is the unit for the seams this pass introduced (GAP_1/2/4).
-//      ⚠️ It is NOT yet universal — roughly twenty older `mt-6 md:mt-8`-style
+//      ⚠️ It is NOT yet universal — roughly twenty older `mt-[calc(var(--rhythm)*2)]`-style
 //      pairs survive from the previous build. Converting them is worth doing;
 //      until then, do not describe the page as being on one rhythm.
 //
@@ -159,7 +159,7 @@ const CONTAINER =
 const MEASURE = "mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px]";
 /** Home's body paragraph: ~20px sans, justified, last line centred, hyphenated. */
 const BODY_P =
-  "font-sans font-normal text-[clamp(20px,0.7vw+13px,30px)] leading-[1.5] text-ink-soft m-0 mb-4 md:mb-5 last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto";
+  "font-sans font-normal text-[clamp(20px,0.7vw+13px,30px)] leading-[1.5] text-ink-soft m-0 mb-[var(--rhythm)] last:mb-0 text-pretty text-justify [text-align-last:center] hyphens-auto";
 const BODY_SHADOW: CSSProperties = { textShadow: "0 1px 12px rgba(10,9,8,0.45)" };
 /** Home's two-column copy paragraph (Meet Stephen / ritual). */
 const SIDE_P = cn(
@@ -251,7 +251,7 @@ const SideProse = ({ text, per = 3 }: { text: string; per?: number }) => (
 const SectionHead = ({
   eyebrow,
   title,
-  className = "mb-4 md:mb-5",
+  className = "mb-[var(--rhythm)]",
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
@@ -580,7 +580,7 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   return (
     <Reveal as="div" className={cn(MEASURE, "text-center")}>
       <p
-        className="m-0 mb-3 md:mb-4 font-display italic font-normal text-ink-muted text-balance text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.35] hero-text-shadow"
+        className="m-0 mb-[var(--rhythm)] font-display italic font-normal text-ink-muted text-balance text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.35] hero-text-shadow"
         style={{ fontVariationSettings: '"opsz" 36, "wght" 400' }}
       >
         {item.q}
@@ -632,7 +632,7 @@ export const About = () => {
             pills. Nothing is cropped; the photo box matches its native 3:2. */}
         <section className="relative isolate w-full overflow-hidden">
           <div className={cn(CONTAINER, "flex flex-col w-full")}>
-            <Reveal as="div" className="order-2 mt-8 md:mt-10 text-center">
+            <Reveal as="div" className="order-2 mt-[calc(var(--rhythm)*2)] text-center">
               <h1 className={cn("font-display text-ink m-0 text-balance hero-text-shadow", MEASURE)}>
                 {/* ROLE 1. 176px→? at 1440 this is 107px, down from 158px: still
                     the loudest thing on the page by 1.6×, but composed. */}
@@ -646,7 +646,7 @@ export const About = () => {
                   &mdash; mandala artist and sacred geometer.
                 </span>
               </h1>
-              <div className="mt-6 md:mt-7 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-[calc(var(--rhythm)*2)] flex flex-wrap items-center justify-center gap-3">
                 <MagneticLink to="/collections" className={PILL_PRIMARY} ariaLabel="See the collection">
                   See the collection{" "}
                   <span
@@ -759,7 +759,7 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={ABOUT.earlyLife[0]} />
           </Reveal>
-          <TileRow cols={2} className="mt-6 md:mt-8">
+          <TileRow cols={2} className="mt-[calc(var(--rhythm)*2)]">
             <Tile
               src="/img/about/15-wedding-top-hats.jpg"
               alt="A bride and three young men in morning dress and grey top hats at a family wedding."
@@ -783,7 +783,7 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={ABOUT.earlyLife[1]} />
           </Reveal>
-          <TileRow cols={2} className="mt-6 md:mt-8">
+          <TileRow cols={2} className="mt-[calc(var(--rhythm)*2)]">
             <Tile
               src="/img/about/17-bournemouth-friends.jpg"
               alt="Four smartly dressed young men standing together outdoors under trees."
@@ -807,7 +807,7 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={ABOUT.earlyLife[2]} />
           </Reveal>
-          <TileRow cols={3} className="mt-6 md:mt-8">
+          <TileRow cols={3} className="mt-[calc(var(--rhythm)*2)]">
             <Tile
               src="/img/about/20-island-evening.jpg"
               alt="Stephen Meakin in a loose white shirt and jeans, seated outdoors at night during his years abroad."
@@ -856,7 +856,7 @@ export const About = () => {
         </section>
 
         <section className={CONTAINER}>
-          <Reveal as="div" className="text-center mb-4 md:mb-5">
+          <Reveal as="div" className="text-center mb-[var(--rhythm)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>Anegada · 1995</p>
           </Reveal>
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
@@ -879,7 +879,7 @@ export const About = () => {
             frame, so the column is anchored 100% right. */}
         <section className={CONTAINER}>
           <div className="relative overflow-hidden rounded-[22px] md:rounded-[32px] bg-[rgba(12,10,9,0.72)] ring-1 ring-line shadow-[0_50px_140px_-40px_rgba(0,0,0,0.85)] px-6 sm:px-10 md:px-12 lg:px-16 py-10 md:py-14 lg:py-16">
-            <ChapterHead id="ritual" className="mb-8 md:mb-10" />
+            <ChapterHead id="ritual" className="mb-[calc(var(--rhythm)*2)]" />
             <Reveal
               as="div"
               className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] items-stretch gap-8 lg:gap-12 xl:gap-16"
@@ -908,7 +908,7 @@ export const About = () => {
                 ))}
               </div>
             </Reveal>
-            <ul className="list-none p-0 m-0 mt-9 md:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
+            <ul className="list-none p-0 m-0 mt-[calc(var(--rhythm)*4)] grid grid-cols-1 sm:grid-cols-2 gap-x-10 md:gap-x-16">
               {FACTS.map(([label, value]) => (
                 <li key={label} className={LEDGER_ROW}>
                   <span className={cn(EYEBROW_TIGHT, "shrink-0 uppercase")}>{label}</span>
@@ -949,7 +949,7 @@ export const About = () => {
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={ABOUT.anegada[2]} />
           </Reveal>
-          <Reveal as="figure" className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[440px] md:max-w-[540px] 2xl:max-w-[600px]">
+          <Reveal as="figure" className="relative m-0 mt-[calc(var(--rhythm)*2)] mx-auto w-full max-w-[440px] md:max-w-[540px] 2xl:max-w-[600px]">
             <div className="overflow-hidden ring-1 ring-line">
               <AssetImage
                 src="/img/about/25-harmonic-frequencies.jpg"
@@ -973,7 +973,7 @@ export const About = () => {
             two reference photographs as one 16:9 row. */}
         <section className={CONTAINER}>
           <ChapterHead id="lewes" />
-          <Reveal as="div" className={cn(MEASURE, "text-center mb-6 md:mb-8")}>
+          <Reveal as="div" className={cn(MEASURE, "text-center mb-[calc(var(--rhythm)*2)]")}>
             <BodyProse text={ABOUT.legacy[0]} />
           </Reveal>
           {/* CUT 2026-09-03: the hairline four-traditions index lived here and
@@ -1103,7 +1103,7 @@ export const About = () => {
               </p>
             ))}
           </Reveal>
-          <Reveal as="figure" delay={0.08} className="relative m-0 mt-8 md:mt-10 mx-auto w-full max-w-[720px] 2xl:max-w-[820px]">
+          <Reveal as="figure" delay={0.08} className="relative m-0 mt-[calc(var(--rhythm)*2)] mx-auto w-full max-w-[720px] 2xl:max-w-[820px]">
             <div className="overflow-hidden ring-1 ring-line">
               <AssetImage
                 src="/img/about/04-mystic-rose-flyer.jpg"
@@ -1211,7 +1211,7 @@ export const About = () => {
 
         {/* 13 · FROM THE DESIGN ARCHIVE — the Force India plates, one 3:2 row. */}
         <section className={CONTAINER}>
-          <Reveal as="div" className="text-center mb-4 md:mb-5">
+          <Reveal as="div" className="text-center mb-[var(--rhythm)]">
             <p className={cn(EYEBROW_MUTED, "m-0")}>From the design archive</p>
           </Reveal>
           <TileRow cols={2}>
@@ -1237,12 +1237,12 @@ export const About = () => {
             photographs of the place as one uniform 4:3 grid (3×2, like the
             featured works) — all six are native 4:3 or wider, nobody is cut. */}
         <section className={CONTAINER}>
-          <ChapterHead id="academy" className="mb-6 md:mb-8" />
+          <ChapterHead id="academy" className="mb-[calc(var(--rhythm)*2)]" />
           {/* DEMOTED: a dated factual sentence, not a monument. */}
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <p className={cn(BODY_P, "mb-0")} style={BODY_SHADOW}>{ABOUT.legacy[2]}</p>
           </Reveal>
-          <Reveal as="div" className={cn(MEASURE, "text-center mt-8 md:mt-10")}>
+          <Reveal as="div" className={cn(MEASURE, "text-center mt-[calc(var(--rhythm)*2)]")}>
             <BodyProse text={ABOUT.academyQuote} />
           </Reveal>
           {/* 2×2, NOT 3-up: two tiles were removed here and five tiles in a
@@ -1252,7 +1252,7 @@ export const About = () => {
                 Showing it here too is the repeat he called out.
               · `02-painting-table` — same table, same collaborator, same
                 session as Home's ritual photograph. */}
-          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2 mt-6 md:mt-8")}>
+          <Reveal as="div" className={cn(TILE_GRID, "grid-cols-1 sm:grid-cols-2 mt-[calc(var(--rhythm)*2)]")}>
             <Tile
               src="/img/about/10-taga-classroom.jpg"
               alt="Students at work around the tables of the TAGA classroom"
@@ -1290,7 +1290,7 @@ export const About = () => {
             desert beside Stephen among the children with their mandalas. */}
         <section className={CONTAINER}>
           <ChapterHead id="azzarqa" />
-          <Reveal as="div" className={cn(MEASURE, "text-center mb-6 md:mb-8")}>
+          <Reveal as="div" className={cn(MEASURE, "text-center mb-[calc(var(--rhythm)*2)]")}>
             <BodyProse text={ABOUT.palestine} />
           </Reveal>
           <WholeRow
