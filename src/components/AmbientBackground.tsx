@@ -40,6 +40,48 @@ const FALLBACK = ["#8a5fa6", "#b06a5a", "#9179b3", "#b16f8a", "#a173a5"];
 
 /** Route prefix → its own fallback mix, longest prefix wins. Anything not
  *  listed keeps FALLBACK. */
+/** Rotate a `#rrggbb` around the HSL hue wheel and return `#rrggbb`.
+ *  ⚠️ This exists so the scroll drift never needs a CSS `filter`. See the
+ *  perf note on `applyHue` below — a filter on `.ambient-bg` is catastrophic. */
+const rotateHex = (hex: string, deg: number): string => {
+  if (!deg) return hex;
+  const m = /^#?([\da-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  let r = ((n >> 16) & 255) / 255;
+  let g = ((n >> 8) & 255) / 255;
+  let b = (n & 255) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const d = max - min;
+  let h = 0;
+  let sat = 0;
+  if (d) {
+    sat = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    h /= 6;
+  }
+  h = (h + deg / 360) % 1;
+  if (h < 0) h += 1;
+  const chan = (pp: number, qq: number, t: number) => {
+    let u = t;
+    if (u < 0) u += 1;
+    if (u > 1) u -= 1;
+    if (u < 1 / 6) return pp + (qq - pp) * 6 * u;
+    if (u < 1 / 2) return qq;
+    if (u < 2 / 3) return pp + (qq - pp) * (2 / 3 - u) * 6;
+    return pp;
+  };
+  const q2 = l < 0.5 ? l * (1 + sat) : l + sat - l * sat;
+  const p2 = 2 * l - q2;
+  r = chan(p2, q2, h + 1 / 3);
+  g = chan(p2, q2, h);
+  b = chan(p2, q2, h - 1 / 3);
+  const hx = (v: number) => Math.round(Math.min(1, Math.max(0, v)) * 255).toString(16).padStart(2, "0");
+  return `#${hx(r)}${hx(g)}${hx(b)}`;
+};
+
 const ROUTE_PALETTES: [string, string[]][] = [
   // Warm and personal — the portraits and the family photographs.
   ["/about", ["#a28043", "#b07750", "#b16f8a", "#9179b3", "#998542"]],
@@ -152,12 +194,16 @@ export const AmbientBackground = () => {
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
+    // The scroll drift's current rotation, applied to the palette HERE so there
+    // is exactly ONE writer of --amb-c1..5 and the mesh needs no CSS filter.
+    let hueDeg = 0;
     const apply = () => {
       const pal = pickPalette(paletteForRoute(pathname));
       for (let i = 0; i < BLOBS; i++) {
-        if (lastPal.current[i] !== pal[i]) {
-          el.style.setProperty(`--amb-c${i + 1}`, pal[i]);
-          lastPal.current[i] = pal[i];
+        const c = rotateHex(pal[i], hueDeg);
+        if (lastPal.current[i] !== c) {
+          el.style.setProperty(`--amb-c${i + 1}`, c);
+          lastPal.current[i] = c;
         }
       }
     };
@@ -196,11 +242,24 @@ export const AmbientBackground = () => {
     // scroll"). Each page starts on its OWN curated palette (hue 0 at the top,
     // so the per-route colours show exactly as designed) and gently rotates up
     // to ~+30deg by the foot — the mesh's colour visibly shifts as you move
-    // down, while staying within Stephen's palette. ⚠️ Perf: this is why we did
-    // NOT re-add a per-frame recompute — the hue is QUANTISED to 3deg steps and
-    // write-guarded (lastHue), so a full-page scroll writes `--amb-hue` ~10
-    // times, each a single cheap GPU filter repaint eased over 0.7s. NOT the
-    // repaint storm killed in d5ef059. Home ("/") and reduced-motion stay at 0.
+    // down, while staying within Stephen's palette.
+    //
+    // ⚠️⚠️ THIS MUST NEVER GO BACK TO A CSS `filter` (Hugo 2026-09-03, on the
+    // live site: "the lag on the entire scroll everytime you scroll nothing
+    // comes up for at least 3 sec"). The first cut shipped
+    // `filter: hue-rotate(var(--amb-hue))` on `.ambient-bg` — a FIXED,
+    // FULL-VIEWPORT parent of five blobs inset -25%, THREE of which run
+    // infinite drift animations. A filter there forces the browser to flatten
+    // all five oversized layers into one filter render surface and re-rasterise
+    // it EVERY FRAME, forever, because the children never stop animating; it
+    // also strips the translate-only GPU compositing that made those blobs
+    // free. On a 4K display that is five ~5760×3240 layers re-filtered per
+    // frame. The JS throttling here was never the problem and tuning it would
+    // not have helped.
+    // The rotation is applied to the PALETTE in JS instead (rotateHex above):
+    // identical on screen, quantised to 3deg, write-guarded, ~10 colour writes
+    // per full-page scroll, each eased by the --amb-c transition that already
+    // existed. Home ("/") and reduced-motion stay at 0.
     const reduce =
       window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     const drift = pathname !== "/" && !reduce;
@@ -218,7 +277,10 @@ export const AmbientBackground = () => {
       const q = Math.round((p * HUE_MAX) / HUE_STEP) * HUE_STEP;
       if (q !== lastHue.current) {
         lastHue.current = q;
-        el.style.setProperty("--amb-hue", `${q}deg`);
+        hueDeg = q;
+        // Re-write the ROTATED colours. The 1.3s --amb-c easing that already
+        // existed makes the quantised step read exactly as the filter did.
+        apply();
       }
     };
     const onScroll = () => {
@@ -236,7 +298,7 @@ export const AmbientBackground = () => {
     } else {
       // Frozen home + reduced-motion: pin the mesh to its true, un-rotated hue.
       lastHue.current = 0;
-      el.style.setProperty("--amb-hue", "0deg");
+      hueDeg = 0;
     }
 
     return () => {

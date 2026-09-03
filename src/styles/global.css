@@ -487,18 +487,21 @@
 @property --amb-c5 { syntax: "<color>"; inherits: true; initial-value: #a173a5; }
 .ambient-bg {
   background-color: #0a0908;
-  /* SCROLL-DRIVEN HUE DRIFT (Hugo 2026-09-03: "I want it changing with the
-     scroll"). AmbientBackground.tsx writes `--amb-hue` from scroll progress
-     (quantised + write-guarded so it repaints only a handful of times per page,
-     never the per-frame storm we killed in d5ef059; home stays frozen at 0deg).
-     One cheap GPU filter over the whole mesh gently rotates the page's own
-     curated colours as you move down — the colour visibly shifts on scroll while
-     staying on Stephen's palette. Eased so the quantised steps read as smooth. */
-  filter: hue-rotate(var(--amb-hue, 0deg));
+  /* ⚠️⚠️ NEVER PUT A `filter` ON THIS ELEMENT. It is fixed, full-viewport, and
+     the parent of five blobs inset -25%, three of which run infinite drift
+     animations. Any filter here forces all five oversized layers to be
+     flattened into one filter render surface and re-rasterised EVERY FRAME
+     forever (the children never stop animating), and it strips the
+     translate-only GPU compositing that makes those blobs free. A
+     `filter: hue-rotate()` shipped here on 2026-09-03 and made the whole site
+     unusable — "nothing comes up for at least 3 sec" on every scroll.
+     The scroll-driven hue drift is real and still here; it is applied to the
+     PALETTE in JS (rotateHex in AmbientBackground.tsx), so the colour still
+     shifts as you scroll and costs nothing. */
   /* Each blob colour eases as the on-screen palette changes — the fluid handoff. */
   transition:
     --amb-c1 1.3s ease, --amb-c2 1.3s ease, --amb-c3 1.3s ease,
-    --amb-c4 1.3s ease, --amb-c5 1.3s ease, filter 0.7s ease;
+    --amb-c4 1.3s ease, --amb-c5 1.3s ease;
 }
 .ambient-bg__blob {
   position: absolute;
