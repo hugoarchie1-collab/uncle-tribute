@@ -662,18 +662,26 @@ export const About = () => {
               </div>
             </Reveal>
 
-            {/* ⚠️ HERO SWAPPED 2026-09-03. This was `28-at-the-drafting-table`
-                — Stephen bent over his work, a mandala on the wall behind him —
-                which is the SAME COMPOSITION as Home's hero
-                (`01-painting-wild-rose`: Stephen bent over his work, a mandala
-                on the wall behind him), in the same room, at the same furniture.
-                Two pages opening on the same picture is exactly the repetition
-                Hugo called out. The doorway portrait was sitting unused on disk
-                and is the better opening anyway: he is upright, looking
-                straight down the lens. A biography should open on the man's
-                face, not the back of his head. Shown WHOLE at its natural 2:3
-                and width-capped, so a tall portrait can never become a
-                full-screen wall. */}
+            {/* ⚠️ THE HERO MUST NOT BE A STUDIO-DESK PHOTOGRAPH. Home owns that
+                image, and TWO attempts here failed on it:
+                  · `28-at-the-drafting-table` — same shed, same blue wall, same
+                    mandala, same black-shirt-over-white-polo, same posture bent
+                    over a print. It is the same shoot as Home's hero
+                    (`01-painting-wild-rose`), a tighter crop of the same moment.
+                  · `stephen-doorway-portrait-v1` — swapped in to fix that, and
+                    WORSE: it is the same shoot as Home's "Meet Stephen"
+                    portrait (`02-portrait-denim`) — same doorway, same frame,
+                    same denim shirt, same glasses pushed up. Hugo spotted it on
+                    the live site immediately: "how is this done when this is
+                    literally a repeated image".
+                ⚠️ An agent reported that file as "unused anywhere", which was
+                true of the CODE and irrelevant: unused ≠ not a duplicate. Open
+                the candidate AND the images already live on other pages and
+                compare the pixels before choosing a hero.
+                This is the artist WITH his work, in public, at an exhibition —
+                a register Home never uses. Shown WHOLE at its native 2:3 and
+                width-capped so a tall portrait can never become a screen-filling
+                wall. */}
             <Reveal
               as="figure"
               // ⚠️ `min(92vw, …)` not `44vw`: at a 555px window 44vw was 244px,
@@ -682,8 +690,8 @@ export const About = () => {
               className="order-1 m-0 mx-auto w-full max-w-[min(92vw,560px)] 2xl:max-w-[620px] 3xl:max-w-[720px]"
             >
               <ImageReveal
-                src="/img/about/stephen-doorway-portrait-v1.jpg"
-                alt="Stephen Meakin standing in the doorway of his studio in a pale denim shirt, glasses pushed up on his head, a mandala and a board behind him"
+                src="/img/about/01-stephen-at-gallery.jpg"
+                alt="Stephen Meakin standing beside one of his framed paintings at an exhibition, hands in his pockets, looking up at the work"
                 eager
                 aspect="aspect-[2/3]"
                 edges="none"
@@ -691,7 +699,7 @@ export const About = () => {
                 zoom={1}
                 objectPosition="center"
                 shadow=""
-                sizes="(min-width: 1536px) 620px, 44vw"
+                sizes="(min-width: 1536px) 560px, 44vw"
               />
             </Reveal>
           </div>
