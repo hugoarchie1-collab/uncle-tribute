@@ -16,7 +16,7 @@ import {
   LIFE_DATES,
 } from "../data/content";
 import { cn } from "../lib/cn";
-import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE } from "../components/ui/tokens";
+import { EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE } from "../components/ui/tokens";
 
 // =============================================================================
 // ABOUT — REBUILT 2026-09-02 AS A CLONE OF THE HOME PAGE (Welcome.tsx).
@@ -93,14 +93,25 @@ import { EYEBROW, EYEBROW_MUTED, EYEBROW_TIGHT, SUBTITLE } from "../components/u
 //      rank order at 390px is the rank order at 3840px. Never add a role that
 //      lands inside another's band, and never give one a higher cap than the
 //      role above it.
-//   3. ONE italic on the page (the interview question). Fraunces italic at
-//      display sizes is the swashy cut the finale already bans.
-//   4. ONE rust accent on the page (the closing full stop). Every other eyebrow
-//      is muted ink.
-//   5. ONE rhythm unit. Vertical space is 1× / 2× / 4× of RHYTHM — never a
-//      bespoke mt-3 md:mt-4 pair. This does most of the "clean" work.
-// Measured at 1440: 107 · 66 · 46 · 30 · 23 · 15 — steps of 1.6 / 1.4 / 1.5 /
-// 1.3 / 1.5, and the same order holds at 390 and 3840.
+//   3. Italic marks the INTERVIEWER's questions, and nothing else in body
+//      flow. (A work's title still takes <i> — "‘The Mystic Rose’" — which is
+//      a citation convention, not a display register.)
+//   4. ONE rust mark at rest: the final pull's full stop. Every eyebrow on the
+//      page is muted ink. Accent otherwise belongs only to hover/focus, as it
+//      does site-wide.
+//   5. RHYTHM is the unit for the seams this pass introduced (GAP_1/2/4).
+//      ⚠️ It is NOT yet universal — roughly twenty older `mt-6 md:mt-8`-style
+//      pairs survive from the previous build. Converting them is worth doing;
+//      until then, do not describe the page as being on one rhythm.
+//
+// THE LADDER, MEASURED (not estimated) at 1440:
+//   title 107 · pull 66 · section 46 · side-head 35 · lead 30 · body 23 ·
+//   caption 14 · eyebrow 14
+// The DISPLAY and PROSE roles hold that order from 1024px to 3840px. ⚠️ The
+// quietest roles (side prose, ledger value, caption, eyebrow) do cross each
+// other between 1440 and 3840 by a point or two — they are all within a few
+// pixels and read as one "small" register, but the order is not guaranteed
+// there. Do not add a new role in that band without re-measuring.
 // =============================================================================
 
 /** ROLE 1 — PAGE TITLE. The h1, once. */
@@ -121,7 +132,7 @@ const PULL_STYLE: CSSProperties = {
 };
 /** ROLE 3 — SECTION TITLE. Every chapter head and section head. */
 const SECTION_TITLE =
-  "font-display font-semibold text-[clamp(28px,3.2vw,78px)] leading-[1.08] tracking-[-0.018em] text-ink text-balance";
+  "font-display font-semibold text-[clamp(28px,3.2vw,60px)] leading-[1.08] tracking-[-0.018em] text-ink text-balance";
 /** ROLE 4 — LEAD. A section's opening line; the demoted former display tiers. */
 // ⚠️ The slope is set so LEAD always OUTRANKS BODY. The first cut of this
 // token was clamp(21px,0.667vw+11.4px,44px), which computes to 21px at 1440
@@ -129,7 +140,7 @@ const SECTION_TITLE =
 // which is the same rank inversion this whole rebuild exists to remove. Now:
 // 390→22 · 1440→30 · 1920→36 · 2560→43 · body is 20/23/26/30. Always above.
 const LEAD_P =
-  "font-sans font-normal text-[clamp(22px,1.2vw+12.7px,46px)] leading-[1.42] tracking-[-0.005em] text-ink/90 m-0 text-pretty";
+  "font-sans font-normal text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.42] tracking-[-0.005em] text-ink/90 m-0 text-pretty";
 /** ROLE 6 — CAPTION / meta. */
 const CAPTION_P =
   "font-sans font-normal text-[clamp(14px,0.333vw+9.2px,23px)] leading-[1.45] tracking-[0.01em] text-ink-muted";
@@ -431,7 +442,16 @@ const SideBySide = ({
     as="div"
     className="grid grid-cols-1 lg:grid-cols-[clamp(400px,34vw,540px)_1fr] items-stretch gap-8 md:gap-12 lg:gap-16"
   >
-    <figure className="relative m-0 mx-auto w-[64%] max-w-[300px] lg:w-full lg:max-w-none lg:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
+    {/* ⚠️ STACKED (below lg) THE PHOTO FILLS THE WIDTH. It used to be
+        `w-[64%] max-w-[300px] mx-auto`, inherited from Home's mobile portrait.
+        That reads fine on a 390px phone but on any narrow WINDOW — Hugo caught
+        it at ~555px — a 300px portrait floats in the middle of a 555px column
+        with ~127px of dead ground either side, which is the isolated-island gap
+        he has banned repeatedly ("i cant have that isolated portrait in the
+        middle — it leaves gaps either side"). Full width has no side void at
+        any width, and a 2:3 portrait at 390px is 585px tall — tall, but nowhere
+        near the screen-filling wall he also bans. */}
+    <figure className="relative m-0 w-full lg:h-auto overflow-hidden rounded-[4px] ring-1 ring-line">
       <AssetImage
         src={src}
         alt={alt}
@@ -486,7 +506,7 @@ const Pull = ({ text, accentStop = false }: { text: string; accentStop?: boolean
 // two-tier pull; the middle = body.
 const opening = ABOUT.opening[0];
 const openingSplit = opening.indexOf(". ");
-const openingLede = (openingSplit > 0 ? opening.slice(0, openingSplit + 1) : opening).replace(/ (\S+)$/, " $1");
+const openingLede = (openingSplit > 0 ? opening.slice(0, openingSplit + 1) : opening).replace(/ (\S+)$/, "\u00a0$1");
 const openingPullAt = opening.indexOf("That kind of knowledge");
 const openingBody =
   openingSplit > 0
@@ -542,7 +562,11 @@ const FACTS: [string, string][] = [
   ["Studio", "Phoenix Place, Lewes"],
   ["Academy", "TAGA — The Art of Geometry Academy · 2010"],
   ["Exhibited", CREDENTIALS.slice(0, 3).join(" · ")],
-  ["Commissioned", CREDENTIALS.slice(3, 5).join(" · ")],
+  // slice(3) — NOT slice(3,5). The bounded form dropped CREDENTIALS[5]
+  // ("Tree of Wellbeing · 1,200 UK hospices & hospitals") off the page
+  // entirely when the credentials index was removed. An open-ended slice
+  // cannot silently lose a credential when one is added.
+  ["Commissioned", CREDENTIALS.slice(3).join(" · ")],
 ];
 
 // Interview answers at or under this length are the emotional beats ("To
@@ -556,7 +580,7 @@ const InterviewQA = ({ item }: { item: { q: string; a: string } }) => {
   return (
     <Reveal as="div" className={cn(MEASURE, "text-center")}>
       <p
-        className="m-0 mb-3 md:mb-4 font-display italic font-normal text-ink-muted text-balance text-[clamp(20px,1.6vw,32px)] leading-[1.35] hero-text-shadow"
+        className="m-0 mb-3 md:mb-4 font-display italic font-normal text-ink-muted text-balance text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.35] hero-text-shadow"
         style={{ fontVariationSettings: '"opsz" 36, "wght" 400' }}
       >
         {item.q}
@@ -652,7 +676,10 @@ export const About = () => {
                 full-screen wall. */}
             <Reveal
               as="figure"
-              className="order-1 m-0 mx-auto w-full max-w-[clamp(280px,44vw,560px)] 2xl:max-w-[620px] 3xl:max-w-[720px]"
+              // ⚠️ `min(92vw, …)` not `44vw`: at a 555px window 44vw was 244px,
+              // so the hero portrait sat marooned with dead ground either side.
+              // It now fills the column until it reaches its cap on wide screens.
+              className="order-1 m-0 mx-auto w-full max-w-[min(92vw,560px)] 2xl:max-w-[620px] 3xl:max-w-[720px]"
             >
               <ImageReveal
                 src="/img/about/stephen-doorway-portrait-v1.jpg"
@@ -709,7 +736,7 @@ export const About = () => {
             alt="Stephen Meakin"
             position="50% 25%"
           >
-            <p className={cn(EYEBROW, "m-0")}>As he described himself &mdash;</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>As he described himself &mdash;</p>
             <h2 className={SIDE_H2} style={OPSZ40}>
               {describedHead}
             </h2>
@@ -822,7 +849,7 @@ export const About = () => {
 
         <section className={CONTAINER}>
           <Reveal as="div" className="text-center mb-4 md:mb-5">
-            <p className={cn(EYEBROW, "m-0")}>Anegada · 1995</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>Anegada · 1995</p>
           </Reveal>
           <Reveal as="div" className={cn(MEASURE, "text-center")}>
             <BodyProse text={anegadaBefore} />
@@ -976,7 +1003,7 @@ export const About = () => {
             alt="Stephen Meakin seated at a tilted easel in the studio, working on a large circular canvas"
             position="center 25%"
           >
-            <p className={cn(EYEBROW, "m-0")}>{chapter("exhibitions").eyebrow}</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>{chapter("exhibitions").eyebrow}</p>
             <h2 className={SIDE_H2} style={OPSZ40}>
               {chapter("exhibitions").title}
             </h2>
@@ -1177,7 +1204,7 @@ export const About = () => {
         {/* 13 · FROM THE DESIGN ARCHIVE — the Force India plates, one 3:2 row. */}
         <section className={CONTAINER}>
           <Reveal as="div" className="text-center mb-4 md:mb-5">
-            <p className={cn(EYEBROW, "m-0")}>From the design archive</p>
+            <p className={cn(EYEBROW_MUTED, "m-0")}>From the design archive</p>
           </Reveal>
           <TileRow cols={2}>
             <Tile

@@ -116,7 +116,14 @@ export const EYEBROW =
   "font-display font-semibold normal-case text-[14px] md:text-[15px] 2xl:text-[18px] 3xl:text-[21px] 4xl:text-[25px] tracking-[-0.005em] text-accent";
 
 /** Section TITLE (h2) — the one display-serif heading treatment every page
- *  shares. Fraunces (font-display) at opsz 40 / wght 600 — NOT the 700 of the
+ *  shares.
+ *  ⚠️ 2026-09-03 — CEILING 116px → 60px. At 116 this token was the engine of
+ *  the "huge text … messy" complaint on every page at once: it kept growing
+ *  past every role it should sit under, overtaking the home page's closing
+ *  statement at ~1610px and (before the About rebuild) that page's pull-quote
+ *  at 2364px, so on a 4K display an ordinary section label outranked the best
+ *  line on the page. Nothing below 1364px changes; only large displays calm
+ *  down, which is exactly where the complaint came from. Fraunces (font-display) at opsz 40 / wght 600 — NOT the 700 of the
  *  masthead, so an h2 never reads as heavy as its page's h1.
  *  ⚠️ The live size is `clamp(34px, 4.4vw, 116px)`, on the line below. The
  *  "clamp 52→92px" this comment used to claim was three revisions stale, and it
@@ -132,7 +139,7 @@ export const EYEBROW =
  *  centered variant, or leave left-aligned. End the copy with a full stop,
  *  sentence-case. */
 export const TITLE =
-  "font-display font-semibold [font-variation-settings:'opsz'_40,'wght'_600] tracking-[-0.03em] text-[clamp(34px,4.4vw,116px)] leading-[1.05] md:leading-[1.02] text-ink text-balance";
+  "font-display font-semibold [font-variation-settings:'opsz'_40,'wght'_600] tracking-[-0.03em] text-[clamp(34px,4.4vw,60px)] leading-[1.05] md:leading-[1.02] text-ink text-balance";
 
 /** Section SUBTITLE / lead body — the one running-prose treatment under a
  *  TITLE. Body sans (Hanken Grotesk), muted via the single muted-ink token.

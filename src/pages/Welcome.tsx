@@ -591,7 +591,14 @@ export const Welcome = () => {
                   >
                     So here we are on Earth
                   </span>
-                  <span className="block font-normal italic text-[clamp(30px,5vw,72px)] leading-[1.06] mt-4 md:mt-6 text-ink/95">
+                  {/* DEMOTED 2026-09-03 (Hugo: home + about "with huge text …
+                      looks so messy and not clean and professional"). This is a
+                      SUBORDINATE CLAUSE and it was running at 72px — one of SIX
+                      roles the page had packed into the 56–72px band, which is
+                      why the type read as a smear rather than a hierarchy. It
+                      now sits in the lead register (30px at 1440), roman, so
+                      the 158px line above it is unmistakably the headline. */}
+                  <span className="block font-sans font-normal text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.42] tracking-[-0.005em] mt-4 md:mt-6 text-ink/80">
                     &mdash; orbiting a Sun Star at about 67,062 miles an hour.
                   </span>
                 </h1>
@@ -685,14 +692,15 @@ export const Welcome = () => {
                   verbatim paragraph drops to reading size beneath. The .drop-cap
                   recipe (global.css, @supports initial-letter:2) scales for free.
                   Words untouched; the full paragraph still appears once, in order. */}
+              {/* DEMOTED 2026-09-03: at 64px this opening clause sat between a
+                  158px headline and a 104px pull — three display tiers and two
+                  lines of prose across the first two screens. It is the
+                  paragraph's first sentence, so it now leads the passage at
+                  reading scale instead of competing with it. The rust drop-cap
+                  still illuminates it. */}
               <p
-                className="font-display font-semibold tracking-[-0.03em] text-ink m-0 mx-auto max-w-[30ch] text-balance"
-                style={{
-                  fontVariationSettings: '"opsz" 48, "wght" 600',
-                  fontSize: "clamp(32px, 5.2vw, 64px)",
-                  lineHeight: 1.04,
-                  textShadow: "0 1px 18px rgba(10,9,8,0.5), 0 1px 3px rgba(10,9,8,0.4)",
-                }}
+                className="font-sans font-normal text-[clamp(22px,1.2vw+12.7px,40px)] leading-[1.42] tracking-[-0.005em] text-ink/90 m-0 mx-auto max-w-[52ch] text-pretty"
+                style={{ textShadow: "0 1px 12px rgba(10,9,8,0.45)" }}
               >
                 {reminderLeadHead}
               </p>
@@ -735,7 +743,7 @@ export const Welcome = () => {
                   style={{
                     fontVariationSettings: '"opsz" 48, "wght" 600',
                     fontWeight: 600,
-                    fontSize: "clamp(44px, 8vw, 104px)",
+                    fontSize: "clamp(40px, 5.6vw, 96px)",
                     letterSpacing: "-0.045em",
                     lineHeight: 0.98,
                   }}
@@ -744,22 +752,16 @@ export const Welcome = () => {
                   {starLine2 && (
                     <span className="block">{starLine2}</span>
                   )}
-                </span>
-                {/* Subordinate — "Quite literally." centred beneath, its closing
-                    period the one rust note. */}
-                <span
-                  className="block mx-auto font-display font-normal italic text-ink/90"
-                  style={{
-                    fontVariationSettings: '"opsz" 40, "wght" 400',
-                    fontWeight: 400,
-                    fontSize: "clamp(28px, 5.5vw, 60px)",
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.1,
-                    marginTop: "clamp(12px, 1.8vw, 28px)",
-                  }}
-                >
-                  {WELCOME.reminderLong[3].split(". ")[1]}
-                  <span className="not-italic">.</span>
+                  {/* "Quite literally." rides the SAME tier (2026-09-03) — it was
+                      a 60px italic SECOND tier, and a two-tier pull is what put
+                      four roles inside one 12px band. It sits INSIDE this span
+                      so it inherits the pull's size; as a sibling it would have
+                      fallen back to body size. Its full stop is the one rust
+                      mark, as before. */}
+                  <span className="block mt-[clamp(12px,1.8vw,28px)]">
+                    {WELCOME.reminderLong[3].split(". ")[1]}
+                    <span className="not-italic">.</span>
+                  </span>
                 </span>
               </blockquote>
             </Reveal>
@@ -809,29 +811,28 @@ export const Welcome = () => {
                 Split at the single ". " boundary in reminderLong[4]; both halves
                 stay verbatim. */}
             <Reveal delay={0.1} className="mt-10 md:mt-14 text-center">
-              <p className="m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center hero-text-shadow">
-                <span
-                  className="block font-display text-ink text-balance mx-auto"
-                  style={{
-                    fontVariationSettings: '"opsz" 48, "wght" 600',
-                    fontWeight: 600,
-                    fontSize: "clamp(42px, 10.5vw, 68px)",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1.02,
-                  }}
-                >
+              {/* The SIZE lives on the <p> (2026-09-03) so the closing clause
+                  below shares this tier by inheritance instead of being a
+                  fourth display size. */}
+              <p
+                className="m-0 mx-auto max-w-[1280px] 2xl:max-w-[1520px] 3xl:max-w-[1780px] 4xl:max-w-[2040px] text-center hero-text-shadow"
+                style={{
+                  fontVariationSettings: '"opsz" 48, "wght" 600',
+                  fontWeight: 600,
+                  fontSize: "clamp(36px, 4.6vw, 80px)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.02,
+                }}
+              >
+                <span className="block font-display text-ink text-balance mx-auto">
                   {WELCOME.reminderLong[4].split(". ")[0]}
                   <span className="text-accent">.</span>
                 </span>
+                {/* The closing clause joins its own sentence's tier
+                    (2026-09-03) instead of forming a fourth display size. */}
                 <span
-                  className="block font-display font-normal italic text-ink-muted text-balance mx-auto mt-4 md:mt-6"
-                  style={{
-                    fontVariationSettings: '"opsz" 36, "wght" 400',
-                    fontWeight: 400,
-                    fontSize: "clamp(25px, 6.2vw, 44px)",
-                    letterSpacing: "-0.015em",
-                    lineHeight: 1.2,
-                  }}
+                  className="block font-display font-normal italic text-balance mx-auto mt-3 md:mt-4 text-ink-muted"
+                  style={{ fontVariationSettings: '"opsz" 36, "wght" 400', fontWeight: 400 }}
                 >
                   {WELCOME.reminderLong[4].split(". ").slice(1).join(". ")}
                 </span>
@@ -888,7 +889,7 @@ export const Welcome = () => {
               <div className="w-full flex flex-col items-start justify-start text-left gap-4 md:gap-5 3xl:gap-7 4xl:gap-9">
                 <p className={cn(EYEBROW, "m-0")}>{WELCOME.invocation}</p>
                 <h2
-                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(28px,2.4vw,44px)] 3xl:text-[clamp(44px,2.5vw,60px)] 4xl:text-[clamp(56px,2.4vw,74px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
+                  className="font-display font-semibold tracking-[-0.02em] text-[clamp(26px,2.6vw,48px)] leading-[1.14] text-ink text-balance hero-text-shadow m-0"
                   style={{ fontVariationSettings: '"opsz" 40, "wght" 600' }}
                 >
                   The art of Stephen Meakin — mandala artist and sacred geometer.
@@ -1372,7 +1373,7 @@ export const Welcome = () => {
                   className="group m-0 border-t border-line pt-4 md:pt-5 transition-colors duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] hover:border-accent"
                 >
                   <p
-                    className="font-display text-ink text-[clamp(22px,2.6vw,36px)] tracking-[-0.02em] leading-[1.1] m-0 mb-2 transition-colors duration-300 group-hover:text-accent"
+                    className="font-display text-ink text-[clamp(26px,2.6vw,48px)] tracking-[-0.02em] leading-[1.1] m-0 mb-2 transition-colors duration-300 group-hover:text-accent"
                     style={{ fontVariationSettings: '"opsz" 48, "wght" 700', fontWeight: 700 }}
                   >
                     {item.name}
