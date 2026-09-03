@@ -24,6 +24,18 @@ This document is the project's running source of truth — paste it at the start
 
 ## ⚠️ Current live state (read this first)
 
+**2026-09-03 (evening) — THE AMBIENT LAYER MADE THE WHOLE SITE UNSCROLLABLE, and the About hero was a literal repeat. `a1b9e7a` + `32ec4db`, both live and verified.**
+
+⚠️⚠️ **NEVER PUT A CSS `filter` ON `.ambient-bg`. THIS IS THE THIRD TIME THAT LAYER HAS CAUSED SITE-WIDE SCROLL LAG.** `9ce0f26` added `filter: hue-rotate(var(--amb-hue))` + `filter 0.7s ease` to it for a scroll-driven colour drift. Hugo, within the hour: *"the lag on the entire scroll everytime you scroll nothing comes up for at least 3 sec"* — every page, unusable.
+
+- **Why it is catastrophic** (measured in-browser on production before touching anything: filter present, transition includes filter, 5 blobs, **3 animating**): `.ambient-bg` is `position: fixed`, full-viewport, and the PARENT of five `.ambient-bg__blob` children at `inset: -25%`, three of which run **infinite** drift animations. A filter on that parent forces the browser to flatten all five oversized layers into ONE filter render surface and re-rasterise it **every frame, forever**, because the children never stop animating. It also destroys the only thing that made those blobs free — they were `translate`-only and GPU-composited. On a 4K display that is five ~5760×3240 layers re-filtered per frame.
+- ⚠️ **The JS was NOT the problem.** The handler was already throttled to 120ms, quantised to 3deg and write-guarded (~10 writes per full-page scroll). Do not chase this kind of lag in the scroll handler.
+- **The correct way to tint/rotate the mesh** is in JS, on the palette: `rotateHex()` does an HSL round-trip on the route's hex colours and writes the ROTATED values into the existing `--amb-c1..5`, so the 1.3s colour transition that already existed carries it. Identical on screen, zero compositing cost. There is exactly ONE writer of `--amb-c*` (`apply()`); the scroll rotation feeds it through a `hueDeg` local. Both files carry a loud comment. ⚠️ `AmbientBackground.tsx` is hook-locked with `Welcome.tsx` — `touch .claude/HOME_UNLOCKED` to edit, and re-lock after.
+
+⚠️ **"UNUSED ON DISK" IS A FACT ABOUT THE CODE, NOT ABOUT THE PICTURE.** The About hero shipped that morning as `stephen-doorway-portrait-v1` on an agent's report that it was "used nowhere". True of the code, and irrelevant: it is the same shoot as Home's "Meet Stephen" portrait `welcome/02-portrait-denim` — same doorway, same wooden frame, same pale denim shirt, same glasses pushed up. Hugo spotted it on the live site immediately: *"how is this done when this is literally a repeated image"*. Comparing the pixels showed the photo it replaced was no better — `28-at-the-drafting-table` is the same shoot as Home's hero `01-painting-wild-rose` (same shed, blue wall, mandala, shirt, posture). **Home owns "Stephen at the desk" AND "Stephen in the doorway".** The hero is now `about/01-stephen-at-gallery` — the artist beside one of his own framed paintings at an exhibition, a register Home never uses. **Open the candidate AND what is already live on the other pages and compare them before choosing an image; `grep` proves nothing here.** (This is the second image trap in two days — the first was "unused because Hugo had it REMOVED".)
+
+---
+
 **2026-09-03 — /about TYPE HIERARCHY + DE-DUPLICATION PASS. Build (gated) + `tsc -b` + lint green.**
 
 Hugo, on the page shipped the day before: "I CANT EVEN DESCRIBE THE STYLE HERE AND ON HOME WITH HUGE TEXT, I THINK IT LOOKS SO MESSY AND NOT CLEAN AND PROFESSIONAL WHAT AN APPLE.COM OR NIKE.COM WOULD HAVE… I HATE YOU REPEATING PHOTOS AND SECTIONS INSTEAD OF USING THE NEW ONES AND NEW IDEAS." 0/10.
