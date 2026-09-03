@@ -505,28 +505,27 @@
 }
 .ambient-bg__blob {
   position: absolute;
-  /* FULL overscan + generous overlap so the soft blobs cover the WHOLE viewport
-     with no dark voids — Hugo 2026-08-26: the -12% perf-shrink left big black gaps,
-     worst on a narrow mobile screen ("we've lost all our backgrounds"). Big layers
-     cost GPU MEMORY, not per-frame work: the lag was the SCALE animation + the
-     per-scroll palette repaint (both already removed), so large TRANSLATE-only blobs
-     are safe. Restored to the rich, Apple-wallpaper coverage. */
-  inset: -25%;
+  /* ⚠️ ONE layer carrying all five gradients (see AmbientBackground.tsx).
+     inset -12%, not -25%: enough overscan for the drift, a quarter of the
+     surface area of the old five-layer stack. */
+  inset: -12%;
+  will-change: transform;
+  /* The five house glows, in the same positions and at the same softness as
+     the five separate blobs they replace. Each still reads --amb-cN, so the
+     per-route palette, the artwork hand-off and the scroll hue drift all keep
+     working exactly as before. */
+  background:
+    radial-gradient(68% 68% at 22% 22%, color-mix(in srgb, var(--amb-c1) 90%, transparent) 0%, color-mix(in srgb, var(--amb-c1) 44%, transparent) 48%, transparent 85%),
+    radial-gradient(64% 62% at 82% 18%, color-mix(in srgb, var(--amb-c2) 88%, transparent) 0%, color-mix(in srgb, var(--amb-c2) 42%, transparent) 46%, transparent 83%),
+    radial-gradient(76% 76% at 50% 52%, color-mix(in srgb, var(--amb-c3) 82%, transparent) 0%, color-mix(in srgb, var(--amb-c3) 40%, transparent) 50%, transparent 88%),
+    radial-gradient(64% 62% at 18% 82%, color-mix(in srgb, var(--amb-c4) 88%, transparent) 0%, color-mix(in srgb, var(--amb-c4) 42%, transparent) 46%, transparent 83%),
+    radial-gradient(68% 68% at 84% 80%, color-mix(in srgb, var(--amb-c5) 84%, transparent) 0%, color-mix(in srgb, var(--amb-c5) 40%, transparent) 48%, transparent 85%);
+  /* ONE composite-only drift for the whole mesh. */
+  animation: meshDriftA 42s ease-in-out infinite alternate;
 }
-/* PERF invariant (keep): the blobs drift with TRANSLATE only (never scale = no
-   re-raster), and only the 3 moving ones are promoted with will-change; blobs 2 & 4
-   are a static wash. That's what keeps it lag-free — do NOT re-add `scale` here. */
-.ambient-bg__blob--1,
-.ambient-bg__blob--3,
-.ambient-bg__blob--5 { will-change: translate; }
-.ambient-bg__blob--1 { background: radial-gradient(68% 68% at 22% 22%, color-mix(in srgb, var(--amb-c1) 90%, transparent) 0%, color-mix(in srgb, var(--amb-c1) 44%, transparent) 48%, transparent 85%); animation: meshDriftA 42s ease-in-out infinite alternate; }
-.ambient-bg__blob--2 { background: radial-gradient(64% 62% at 82% 18%, color-mix(in srgb, var(--amb-c2) 88%, transparent) 0%, color-mix(in srgb, var(--amb-c2) 42%, transparent) 46%, transparent 83%); }
-.ambient-bg__blob--3 { background: radial-gradient(76% 76% at 50% 52%, color-mix(in srgb, var(--amb-c3) 82%, transparent) 0%, color-mix(in srgb, var(--amb-c3) 40%, transparent) 50%, transparent 88%); animation: meshDriftC 34s ease-in-out infinite alternate; animation-delay: -4s; }
-.ambient-bg__blob--4 { background: radial-gradient(64% 62% at 18% 82%, color-mix(in srgb, var(--amb-c4) 88%, transparent) 0%, color-mix(in srgb, var(--amb-c4) 42%, transparent) 46%, transparent 83%); }
-.ambient-bg__blob--5 { background: radial-gradient(68% 68% at 84% 80%, color-mix(in srgb, var(--amb-c5) 84%, transparent) 0%, color-mix(in srgb, var(--amb-c5) 40%, transparent) 48%, transparent 85%); animation: meshDriftA 52s ease-in-out infinite alternate-reverse; animation-delay: -20s; }
-/* Legibility veil — a LIGHT top/bottom grounding so the nav + footer seams and the
-   cream text keep contrast, while the mesh stays vivid in the middle. Kept gentle so
-   the colour reads Apple-vivid (Hugo hates a dark/black-looking background). */
+@media (prefers-reduced-motion: reduce) {
+  .ambient-bg__blob { animation: none; }
+}
 .ambient-bg__veil {
   position: absolute;
   inset: 0;

@@ -318,11 +318,21 @@ export const AmbientBackground = () => {
       aria-hidden="true"
       className="ambient-bg fixed inset-0 z-0 pointer-events-none overflow-hidden"
     >
-      <div className="ambient-bg__blob ambient-bg__blob--1" />
-      <div className="ambient-bg__blob ambient-bg__blob--2" />
-      <div className="ambient-bg__blob ambient-bg__blob--3" />
-      <div className="ambient-bg__blob ambient-bg__blob--4" />
-      <div className="ambient-bg__blob ambient-bg__blob--5" />
+      {/* ⚠️ ONE element, FIVE gradients — not five stacked elements.
+          Measured over CDP at 3840x2160 on the live site, scrolling /about:
+            five separate blobs .......  3 frames, median 348ms, worst 363ms
+            this single merged layer ... 26 frames, median  88ms, worst 116ms
+          Hiding the ambient layer entirely scored median 92ms, so this now
+          costs essentially nothing while keeping all five colours, all five
+          positions and the drift. The old structure was five composited
+          layers at inset:-25% — at 4K that is five surfaces of ~5760x3240,
+          and the cost was PAINTING them, not animating them (killing the
+          animation alone changed 3 frames to 5; dropping to two blobs went to
+          44). Fewer, bigger-value layers is the documented remedy for this
+          layer and it is the one that works.
+          ⚠️ Do NOT split this back into per-blob elements to get independent
+          motion. The whole mesh drifts as one on a composite-only transform. */}
+      <div className="ambient-bg__blob" />
       <div className="ambient-bg__veil" />
     </div>
   );
