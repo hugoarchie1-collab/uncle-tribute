@@ -65,14 +65,20 @@ export const FaqAccordion = ({
       Questions &amp; answers
     </h2>
 
-    <ul className="list-none p-0 m-0 border-t border-line max-w-[860px] 3xl:max-w-[1100px]">
+    <ul className="list-none p-0 m-0 border-t border-line max-w-[1000px] 2xl:max-w-[1120px] 3xl:max-w-[1280px] 4xl:max-w-[1400px]">
       {items.map((qa) => (
         <li key={qa.question} className="m-0 border-b border-line">
           <details className="group">
+            {/* ⚠️ The question is a real <h3>, not a <span>. Screen-reader users
+                navigate a page by its headings; as bare spans these 8-15
+                questions were invisible to that, leaving an unlabelled run of
+                disclosure widgets under a single "Questions & answers" heading.
+                The <h3> wraps INSIDE <summary> (valid, and keeps the whole row
+                the click target) and carries no extra styling of its own. */}
             <summary className="flex items-center justify-between gap-5 cursor-pointer list-none py-5 [&::-webkit-details-marker]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 rounded-sm">
-              <span className="font-display font-semibold text-[clamp(17px,1.7vw,23px)] leading-[1.25] text-ink">
+              <h3 className="font-display font-semibold text-[clamp(17px,1.7vw,23px)] leading-[1.25] text-ink m-0">
                 {qa.question}
-              </span>
+              </h3>
               <span
                 aria-hidden="true"
                 className="shrink-0 text-[24px] leading-none text-ink-muted transition-transform duration-300 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-open:rotate-45"

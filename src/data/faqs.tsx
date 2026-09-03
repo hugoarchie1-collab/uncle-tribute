@@ -369,9 +369,22 @@ const nodeText = (node: ReactNode): string => {
   return "";
 };
 
-/** FAQPage structured data — wins expandable FAQ rich-results in Google (free
- *  organic SERP real estate). Built from the SAME FAQS the page renders (via
- *  nodeText), so the schema text can never diverge from what the user sees. */
+/**
+ * FAQPage structured data. Built from the SAME FAQS the page renders (via
+ * nodeText), so the schema text can never diverge from what the user sees.
+ *
+ * ⚠️ It no longer "wins rich results" — that claim was true when written and is
+ * not now. Google restricted FAQ rich results to government and health sites in
+ * 2023, they stopped appearing entirely in May 2026, and the FAQPage
+ * documentation page has since been removed. It is kept because it is still
+ * valid schema.org and still describes the page honestly to non-Google
+ * consumers and AI summarisers — NOT because it earns SERP real estate.
+ *
+ * ⚠️ Emit it on /contact ONLY. Repeating identical FAQ markup and identical FAQ
+ * TEXT across every product URL is textbook boilerplate: it dilutes the signal
+ * across instances and reads as low quality. The product page deliberately
+ * renders a curated SUBSET (QA.pdp) with no FAQPage block of its own.
+ */
 const FAQ_JSONLD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
