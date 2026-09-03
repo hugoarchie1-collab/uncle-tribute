@@ -18,7 +18,7 @@ import {
 import { cn } from "../lib/cn";
 import { PAINTINGS, ESTATE_AUTHENTICATION, paintingImageAlt } from "../data/paintings";
 import { ARTWORK_SIZES } from "../lib/artworkSizes";
-import { WELCOME, MEMORIAL_QUOTE } from "../data/content";
+import { MEMORIAL_QUOTE } from "../data/content";
 
 /**
  * /trade — PARTNERS. The estate's page for BULK and PROJECT buyers (hotels,
@@ -35,7 +35,7 @@ import { WELCOME, MEMORIAL_QUOTE } from "../data/content";
  * section says "share in every placement" and nothing more.
  *
  * ⚠️ REAL CLAIMS ONLY. Every credential on this page is a verbatim string from
- * src/data/content.ts (WELCOME.bio / ABOUT.legacy / CREDENTIALS). No logos, no
+ * src/data/content.ts (CREDENTIALS / MEMORIAL_QUOTE). No logos, no
  * testimonials, no "insured", no install service, no fixed project lead time,
  * no fire rating, no glazing promise the studio has not confirmed, and the
  * printer is never named (ESTATE_AUTHENTICATION.printer is the approved line).
@@ -1287,11 +1287,23 @@ export const Partners = () => {
               <h2 className={cn(TITLE, "m-0")}>
                 For the feature wall, his sister still paints by <Em>hand</Em>.
               </h2>
-              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{WELCOME.bio[1]}</p>
-              <p className={cn(SUBTITLE, "m-0 mt-4")}>
+              {/* This section sells POLLY's hand. It used to open with a
+                  borrowed paragraph of Stephen's bio, so the line under
+                  "his SISTER still paints by hand" began "As a skilful
+                  practitioner of Sacred Geometry, HIS artworks amplify…" —
+                  two different referents for "his" in consecutive sentences,
+                  in the one place the reader needs to know whose hand is
+                  meant. The commission paragraph says everything the section
+                  needs on its own. */}
+              <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
                 The estate undertakes a small number of commissions each year, hand-painted by Polly,
                 Stephen's sister, working in his sacred-geometry tradition. Scale, palette and timeline
                 are agreed with you from the outset, and lead times are confirmed before any commitment.
+              </p>
+              <p className={cn(SUBTITLE, "m-0 mt-4")}>
+                Alongside a commission, the same scheme can carry a run of estate-stamped editions in
+                colourways chosen to sit with it, so one room holds the piece and the rest of the
+                building answers it.
               </p>
             </Reveal>
             <Reveal as="figure" className="lg:col-span-5 order-1 lg:order-2 m-0">
