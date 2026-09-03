@@ -227,8 +227,29 @@ const PageShell = ({ children }: { children: ReactNode }) => {
   // resize so a rotate / window-drag while the menu is open keeps the slide
   // flush with the panel.
   const [drawerPx, setDrawerPx] = useState(() => getDrawerWidthPx());
+  // ⚠️ THE PUSH IS A PHONE GESTURE ONLY. The drawer is a fraction of a phone
+  // screen (86vw) so sliding the page out from under it reads as one motion.
+  // On a desktop it is a fixed 420px panel: the page slid 420px left while
+  // `html { overflow-x: clip }` amputated the leftmost ~260px of the content
+  // container, leaving the remainder visibly off-centre behind the scrim. The
+  // push was only ever reachable below 1280px, so nobody had seen it — until
+  // the menu button was shown at every width (2026-09-03). Above the drawer's
+  // design breakpoint the panel simply OVERLAYS, which is also what every
+  // gallery site does at that size.
+  //
+  // It also fixes a second bug for free: while the shell is transformed it
+  // becomes the containing block for every `position: fixed` descendant, so
+  // the pages' fixed legibility scrims re-base off the viewport. The comment
+  // below says the drawer's scrim hides that — true when the drawer covered
+  // 86vw of a phone, false across the ~1500px it leaves visible on a desktop.
+  const [pushes, setPushes] = useState(
+    () => typeof window === "undefined" || window.innerWidth < 1280,
+  );
   useEffect(() => {
-    const onResize = () => setDrawerPx(getDrawerWidthPx());
+    const onResize = () => {
+      setDrawerPx(getDrawerWidthPx());
+      setPushes(window.innerWidth < 1280);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -254,7 +275,7 @@ const PageShell = ({ children }: { children: ReactNode }) => {
       return () => window.clearTimeout(t);
     }
   }, [menuOpen]);
-  const slides = menuOpen || closing;
+  const slides = (menuOpen || closing) && pushes;
 
   return (
     <div

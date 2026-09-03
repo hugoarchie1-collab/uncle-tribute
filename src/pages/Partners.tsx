@@ -77,7 +77,7 @@ const Head = ({ children, sub }: { children: ReactNode; sub?: string }) => (
 /** The suite-grid tile edge. Every colourway square on the page is exactly this
  *  wide, in every group, so the grid reads as one set of squares rather than
  *  rows that each chose their own scale. */
-const TILE = "clamp(72px, 9vw, 152px)";
+const TILE = "clamp(64px, 9vw, 152px)";
 const TILE_GAP = "10px";
 
 const ITALIC_STYLE = { fontVariationSettings: '"opsz" 40, "wght" 400' } as const;
@@ -168,6 +168,9 @@ type Sector = {
   body: string;
   zones: string[];
   sizes: string;
+  /** Singular noun for the CTA. Deriving it from `label` produced "a hotels
+   *  scheme" and "a restaurants & clubs scheme". */
+  ctaNoun: string;
   art: Art;
 };
 
@@ -184,6 +187,7 @@ const SECTORS: Sector[] = [
       "Bedrooms take a pair at A3 or a single A2 over the headboard. Corridors take a run of one painting in its colourways, so each door opens on its own colour and the building still holds together. The lobby takes an A1, or a piece painted for it. Every print carries a certificate a guest can check.",
     zones: ["Bedrooms", "Corridors", "Suites", "Lobby"],
     sizes: "A3 · A2 · A1 · commission",
+    ctaNoun: "a hotel scheme",
     art: ART_HOTEL,
   },
   {
@@ -198,6 +202,7 @@ const SECTORS: Sector[] = [
       "Mandalas were made for rooms where people lie still. Calm colourways for the treatment rooms, a warmer one for the lounge, and a single hero piece where guests arrive. Each work comes with its own geometry and its own story for the team to tell.",
     zones: ["Treatment rooms", "Relaxation lounge", "Reception", "Studios"],
     sizes: "A3 · A2 · A1",
+    ctaNoun: "a spa or wellness scheme",
     art: ART_WELLNESS,
   },
   {
@@ -212,6 +217,7 @@ const SECTORS: Sector[] = [
       "The same artist in every meeting room, each room in its own colourway, so wayfinding and wellbeing come from one decision. Reception takes the largest piece; the certificates give it something to say.",
     zones: ["Reception", "Meeting rooms", "Breakout", "Boardroom"],
     sizes: "A2 · A1",
+    ctaNoun: "a workplace scheme",
     art: ART_WORKPLACE,
   },
   {
@@ -226,6 +232,7 @@ const SECTORS: Sector[] = [
       "Stephen's Tree of Wellbeing mandala was distributed to children in 1,200 hospices and hospitals throughout the UK. The estate continues that work: gentle colourways for family rooms, quiet rooms and staff spaces, chosen with care for patient-facing areas.",
     zones: ["Family rooms", "Quiet rooms", "Staff spaces", "Reception"],
     sizes: "A3 · A2",
+    ctaNoun: "a care setting",
     art: ART_CARE,
   },
   {
@@ -240,6 +247,7 @@ const SECTORS: Sector[] = [
       "A dining room is looked at for hours, so it can carry the boldest colourway in the catalogue. One large piece where the room turns, a run of the same work through the bar, and a commission for the wall everyone photographs.",
     zones: ["Dining room", "Bar", "Private dining", "Members' lounge"],
     sizes: "A1 · commission",
+    ctaNoun: "a restaurant, bar or club",
     art: ART_DINING,
   },
   {
@@ -254,6 +262,7 @@ const SECTORS: Sector[] = [
       "A set that photographs well, framed to fit ordinary walls, delivered on a date. Every print is traceable in the Estate Registry, so the piece on the show-home wall is the same piece a buyer can order for their own.",
     zones: ["Living room", "Bedroom", "Hallway", "Amenity lounge"],
     sizes: "A3 · A2 · A1",
+    ctaNoun: "a residential scheme",
     art: ART_HOME,
   },
 ];
@@ -271,7 +280,7 @@ const PROVIDES: { title: string; body: string }[] = [
   },
   {
     title: "Framed and glazed as standard",
-    body: "Solid oak, white or black frames, a white conservation mount and float glass. Canvas as an option. Nothing arrives unframed.",
+    body: "Solid oak, white or black frames, a white window mount and float glass. Or the same image as a fine-art canvas print, if a room suits it better. Framed is the default on every project.",
   },
   {
     title: "Specification sheets on request",
@@ -309,7 +318,7 @@ const STEPS: { label: string; title: string; body: string }[] = [
   {
     label: "Approve",
     title: "Change colourways, sizes or frames as often as you need.",
-    body: "If it helps, one framed proof piece can come first and be credited against the project.",
+    body: "Change colourways, sizes or frames as often as you need. Nothing is made until you are happy with the scheme.",
   },
   {
     label: "Made & delivered",
@@ -329,7 +338,7 @@ const QUESTIONS: { q: string; a: string }[] = [
   },
   {
     q: "Can we see one piece before we commit?",
-    a: "Yes. A framed proof can be arranged and credited against the project.",
+    a: "Ask when you write. The estate will tell you what can be arranged for your project before anything is made.",
   },
   {
     q: "How is a project invoiced?",
@@ -375,7 +384,7 @@ const SPACES = [
   "Feature wall",
   "Whole building",
 ] as const;
-const SIZES = ["A3", "A2", "A1", "Larger or hand-painted", "Canvas", "Not sure"] as const;
+const SIZES = ["A4", "A3", "A2", "A1", "Larger or hand-painted", "Canvas", "Not sure"] as const;
 const TIMELINES = [
   "Within a month",
   "1–3 months",
@@ -1182,10 +1191,10 @@ export const Partners = () => {
             id={`${tabsId}-panel`}
             role="tabpanel"
             aria-labelledby={`${tabsId}-tab-${sector.id}`}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center"
+            className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start"
           >
             <figure key={sector.id} className="lg:col-span-5 m-0 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <div className="overflow-hidden ring-1 ring-line aspect-square max-w-[420px] sm:max-w-[520px] lg:max-w-none mx-auto">
+              <div className="overflow-hidden ring-1 ring-line aspect-square max-w-[420px] sm:max-w-[520px] lg:max-w-none lg:max-h-[62svh] w-auto mx-auto">
                 <AssetImage
                   src={sector.art.src}
                   alt={paintingImageAlt(sector.art.painting, sector.art.colourway)}
@@ -1200,7 +1209,7 @@ export const Partners = () => {
               </figcaption>
             </figure>
             <div key={sector.id} className="lg:col-span-7 motion-safe:animate-[fadeIn_0.5s_ease-out]">
-              <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>{sector.title}</h2>
+              <h2 className={cn(TITLE, "m-0")}>{sector.title}</h2>
               <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>{sector.body}</p>
               <dl className="m-0 mt-6 md:mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line pt-5">
                 <dt className={cn(EYEBROW_MUTED, "m-0")}>Suits</dt>
@@ -1209,7 +1218,7 @@ export const Partners = () => {
                 <dd className={cn(META, "m-0 text-ink")}>{sector.sizes}</dd>
               </dl>
               <button type="button" onClick={() => scrollTo(projectRef)} className={cn(BTN_PRIMARY, "mt-7 md:mt-8")}>
-                Send me a proposal for a {sector.label.toLowerCase()} scheme
+                Send me a proposal for {sector.ctaNoun}
                 <span aria-hidden="true" className="ml-2">→</span>
               </button>
             </div>
@@ -1243,7 +1252,7 @@ export const Partners = () => {
         {/* ── S6 THE HAND-PAINTED PIECE ───────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
             <Reveal as="div" className="lg:col-span-7 order-2 lg:order-1">
               <h2 className={cn(TITLE, "m-0")}>
                 For the feature wall, his sister still paints by <Em>hand</Em>.
@@ -1268,7 +1277,7 @@ export const Partners = () => {
               </p>
             </Reveal>
             <Reveal as="figure" className="lg:col-span-5 order-1 lg:order-2 m-0">
-              <div className="overflow-hidden ring-1 ring-line aspect-[3/4] max-w-[360px] sm:max-w-[420px] lg:max-w-none mx-auto">
+              <div className="overflow-hidden ring-1 ring-line aspect-[3/4] max-w-[360px] sm:max-w-[420px] lg:max-w-none lg:max-h-[68svh] w-auto mx-auto">
                 <AssetImage
                   src="/img/welcome/hand-finishing-v1.jpg"
                   alt="Hand-finishing a print in Stephen Meakin's geometric tradition"
@@ -1309,9 +1318,9 @@ export const Partners = () => {
         {/* ── S8 SCALE ────────────────────────────────────────────────────── */}
         <section className={cn(WRAP, "py-8 md:py-12")}>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
             <Reveal as="div" className="lg:col-span-4">
-              <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>
+              <h2 className={cn(TITLE, "m-0")}>
                 Three sizes, one <Em>scale</Em>.
               </h2>
               <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>
@@ -1320,7 +1329,7 @@ export const Partners = () => {
                 same paper, in the same frame.
               </p>
             </Reveal>
-            <Reveal as="div" className="lg:col-span-8">
+            <Reveal as="div" className="lg:col-span-8 mx-auto w-full max-w-[1100px] 3xl:max-w-[1400px]">
               <ScaleDiagram />
               <p className={cn(META, "mt-4 text-center")}>
                 Drawn to one scale · each hung with its centre 150 cm from the floor · shown against a
@@ -1383,7 +1392,7 @@ export const Partners = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-12 gap-y-8 items-start">
             <Reveal as="div" className="lg:col-span-5">
-              <h2 className={cn(TITLE, "m-0 text-[clamp(30px,3.4vw,72px)]")}>
+              <h2 className={cn(TITLE, "m-0")}>
                 Know a wall that needs <Em>this</Em>?
               </h2>
               <p className={cn(SUBTITLE, "m-0 mt-5 md:mt-6")}>

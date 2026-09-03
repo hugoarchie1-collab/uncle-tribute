@@ -207,41 +207,30 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
     evaluate();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // MOBILE HARDENING — the bar should react even when a `scroll` event on
-    // `window` does not arrive. Hugo, 2026-09-03: "on mobile when I scroll up it
+    // MOBILE HARDENING — Hugo, 2026-09-03: "on mobile when I scroll up it
     // doesn't show the top banner like it should, on all pages."
     //
-    // ⚠️ HONESTY NOTE: this is precautionary, NOT a reproduced fix. The symptom
-    // could not be reproduced on desktop — and the automation pane that looked
-    // like it reproduced it turned out to be a HIDDEN tab, where rAF never fires
-    // and every scroll-driven handler on any site appears dead. Don't repeat
-    // that mistake: check `document.visibilityState` before concluding anything
-    // about scroll behaviour from a headless pane.
+    // ⚠️ HONESTY NOTE: precautionary, NOT a reproduced fix. The symptom could
+    // not be reproduced on desktop, and the automation pane that looked like it
+    // reproduced it turned out to be a HIDDEN tab, where rAF never fires and
+    // every scroll-driven handler on any site appears dead. Check
+    // `document.visibilityState` before concluding anything about scroll
+    // behaviour from a headless pane.
     //
-    // What IS true regardless: iOS Safari delivers scroll callbacks sparsely
-    // during momentum scrolling and fires `visualViewport` scroll where `window`
-    // can stay quiet, so a reveal that depends on a single event source is
-    // fragile on exactly the platform Hugo reported. Two extra sources, both
-    // cheap:
-    //  · visualViewport scroll — the one iOS reliably fires.
-    //  · a 120ms sampler that reads window.scrollY and returns immediately
-    //    unless it MOVED. ~8 property reads a second, no work at all while the
-    //    page is still, so it cannot repeat the 2026-08-25 scroll-lag
-    //    regression; `evaluate` only sets state when a threshold is crossed.
+    // What is true regardless: the reveal listened to exactly ONE source, and
+    // iOS Safari fires `visualViewport` scroll where `window` can stay quiet
+    // during momentum scrolling. So it listens to both. It does NOT poll:
+    // a `setInterval` reading `window.scrollY` was tried and removed, because
+    // that read forces a style/layout flush — a permanent 8×/sec layout flush on
+    // every page, on a site with a documented scroll-lag history, to chase a bug
+    // that was never reproduced. Both listeners share one rAF, so at most one
+    // evaluate per frame however many fire.
     const vv = window.visualViewport;
     vv?.addEventListener("scroll", onScroll, { passive: true });
-    let sampled = -1;
-    const sampler = window.setInterval(() => {
-      const y = Math.max(0, window.scrollY);
-      if (y === sampled) return;
-      sampled = y;
-      onScroll();
-    }, 120);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       vv?.removeEventListener("scroll", onScroll);
-      window.clearInterval(sampler);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -512,7 +501,7 @@ export const Nav = ({ overlay = false }: { overlay?: boolean } = {}) => {
             )}
           </NavLink>
 
-          {/* Hamburger — below xl; opens the full drawer (every page). */}
+          {/* Menu button — EVERY width; opens the full drawer (every page). */}
           <button
             ref={menuButtonRef}
             type="button"
